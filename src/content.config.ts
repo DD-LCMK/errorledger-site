@@ -9,14 +9,17 @@ const blog = defineCollection({
 		description: z.string().optional(),
 		meta_description: z.string().optional(),
 		pubDate: z.coerce.date().optional(),
-		pipeline_contract_version: z.string().optional(),
-		slug: z.string().optional(),
-		validated_environments: z.array(z.string()).optional(),
-	}).transform((data) => ({
-		title: data.meta_title || data.title || "Untitled Post",
-		description: data.meta_description || data.description || "",
-		pubDate: data.pubDate || new Date(),
-	})),
+	}).transform((data, entry) => {
+		// Slice the long filename down to the first 5 core terms for the URL
+		const shortSlug = entry.id.split('-').slice(0, 5).join('-');
+		
+		return {
+			title: data.meta_title || data.title || "Untitled Post",
+			description: data.meta_description || data.description || "",
+			pubDate: data.pubDate || new Date(),
+			shortenedSlug: shortSlug,
+		};
+	}),
 });
 
 export const collections = { blog };
