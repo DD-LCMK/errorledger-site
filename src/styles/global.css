@@ -139,3 +139,25 @@ hr {
 	/* added line to stop words getting smushed together (as they go onto separate lines and some screen readers do not understand line feeds as a space */
 	white-space: nowrap;
 }
+
+/* Technical Blog Layout Extensions */
+.prose {
+width: 960px !important; /* Widens the post container from 720px */
+max-width: calc(100% - 2rem) !important;
+}
+
+/* Prevent tables from squashing text vertically */
+.prose table {
+display: block;
+width: 100% !important;
+overflow-x: auto; /* Enables smooth horizontal scrolling on smaller screens */
+border-collapse: collapse;
+margin: 2rem 0;
+}
+
+.prose th, .prose td {
+min-width: 150px; /* Gives table columns breathing room */
+padding: 10px 14px;
+text-align: left;
+vertical-align: top;
+}
