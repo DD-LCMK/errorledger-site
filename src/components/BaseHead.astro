@@ -14,7 +14,6 @@ interface Props {
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const { title, description, image = FallbackImage } = Astro.props;
 
-// Replaces the default Astro banner with a clean, dark developer graphic for social link previews
 const ogImage = image.src.includes('blog-placeholder-1') 
 	? 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=1200&h=630&fit=crop&q=80' 
 	: new URL(image.src, Astro.url).href;
@@ -74,32 +73,56 @@ const ogImage = image.src.includes('blog-placeholder-1')
   }
 </script>
 
-<!-- Dark Mode Global Injections -->
+<!-- Comprehensive Dark Mode Global Overrides -->
 <style is:global>
   html.dark {
-    background-color: #0f172a !important;
+    background: #0f172a !important;
+    background-image: none !important;
     color: #e2e8f0 !important;
   }
-  html.dark body, html.dark main {
-    background-color: #0f172a !important;
+  html.dark body, 
+  html.dark main, 
+  html.dark article, 
+  html.dark .prose {
+    background: #0f172a !important;
+    background-image: none !important;
     color: #e2e8f0 !important;
   }
   html.dark header {
     background-color: #1e293b !important;
+    background-image: none !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
   }
-  html.dark h1, html.dark h2, html.dark h3, html.dark h4, html.dark h5, html.dark h6 {
+  
+  /* Formats headers, labels, and grid headings to high contrast white */
+  html.dark h1, html.dark h2, html.dark h3, html.dark h4, html.dark h5, html.dark h6,
+  html.dark th, html.dark dt, html.dark strong {
     color: #f8fafc !important;
   }
-  html.dark p, html.dark li, html.dark time, html.dark span:not([style*="color"]) {
+  
+  /* Sets body text, code explanations, and grid text fields to light grey */
+  html.dark p, html.dark li, html.dark time, html.dark td, html.dark dd, html.dark div:not([style*="color"]) {
     color: #cbd5e1 !important;
   }
+  
+  /* Specific styling resets for lists and navigation items */
   html.dark .internal-links a {
     color: #cbd5e1 !important;
   }
   html.dark .internal-links a.active {
     color: #f8fafc !important;
   }
+  html.dark ul li a h4 {
+    color: #f8fafc !important;
+  }
+
+  /* Inline styles component override fallback */
+  html.dark [style*="color: #1e293b"], 
+  html.dark [style*="color: rgb(var(--black))"] {
+    color: #cbd5e1 !important;
+  }
+
+  /* Inline syntax block handling */
   html.dark pre, html.dark code {
     background-color: #1e293b !important;
     color: #f1f5f9 !important;
@@ -107,11 +130,9 @@ const ogImage = image.src.includes('blog-placeholder-1')
   html.dark footer {
     background-color: #0f172a !important;
     color: #94a3b8 !important;
+    background-image: none !important;
   }
   html.dark .prose a {
     color: #38bdf8 !important;
-  }
-  html.dark ul li a h4 {
-    color: #f8fafc !important;
   }
 </style>
