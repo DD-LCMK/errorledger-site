@@ -10,7 +10,7 @@ const blog = defineCollection({
 		meta_description: z.string().optional(),
 		pubDate: z.coerce.date().optional(),
 		slug: z.string().optional(),
-		tags: z.array(z.string()).optional(), // Added support for explicit frontmatter tags
+		tags: z.array(z.string()).optional(),
 	}).transform((data) => {
 		const baseString = data.slug || data.meta_title || data.title || "post";
 		
@@ -21,27 +21,80 @@ const blog = defineCollection({
 
 		const shortSlug = cleanSlug.split('-').slice(0, 5).join('-');
 		
-		// Auto-infer metadata tags from the title to avoid editing raw .md files
+		// 1. Initialize tags from frontmatter if explicitly provided
 		const inferredTags: string[] = data.tags || [];
+		
 		if (inferredTags.length === 0) {
 			const lowerTitle = (data.title || "").toLowerCase();
-			if (lowerTitle.includes("supabase")) inferredTags.push("Supabase", "Database");
-			if (lowerTitle.includes("stripe")) inferredTags.push("Stripe", "Payments");
-			if (lowerTitle.includes("clerk")) inferredTags.push("Clerk", "Auth");
-			if (lowerTitle.includes("auth0")) inferredTags.push("Auth0", "Auth");
-			if (lowerTitle.includes("firebase")) inferredTags.push("Firebase", "Backend");
-			if (lowerTitle.includes("prisma")) inferredTags.push("Prisma", "ORM");
-			if (lowerTitle.includes("mongodb") || lowerTitle.includes("mongoose")) inferredTags.push("MongoDB", "Database");
-			if (lowerTitle.includes("redis")) inferredTags.push("Redis", "Cache");
-			if (lowerTitle.includes("sentry")) inferredTags.push("Sentry", "DevOps");
-			if (lowerTitle.includes("openai")) inferredTags.push("OpenAI", "AI");
-			if (lowerTitle.includes("resend")) inferredTags.push("Resend", "Email");
-			if (lowerTitle.includes("lambda")) inferredTags.push("AWS", "Serverless");
-			if (lowerTitle.includes("worker")) inferredTags.push("Cloudflare", "Serverless");
-			if (lowerTitle.includes("node")) inferredTags.push("Node.js");
 			
-			// Fallback if no keywords match
-			if (inferredTags.length === 0) inferredTags.push("Backend");
+			// 2. Definitive Core Ecosystem Vocabulary Dictionary
+			const ecosystemMap: Record<string, string> = {
+				'supabase': 'Supabase',
+				'stripe': 'Stripe',
+				'clerk': 'Clerk',
+				'auth0': 'Auth0',
+				'firebase': 'Firebase',
+				'prisma': 'Prisma',
+				'mongodb': 'MongoDB',
+				'mongoose': 'Mongoose',
+				'redis': 'Redis',
+				'sentry': 'Sentry',
+				'openai': 'OpenAI',
+				'anthropic': 'Anthropic',
+				'claude': 'Claude',
+				'resend': 'Resend',
+				'sendgrid': 'SendGrid',
+				'vercel': 'Vercel',
+				'slack': 'Slack',
+				'aws': 'AWS',
+				'lambda': 'Lambda',
+				'cloudflare': 'Cloudflare',
+				'wrangler': 'Wrangler',
+				'zapier': 'Zapier',
+				'make.com': 'Make.com',
+				'airtable': 'Airtable',
+				'github': 'GitHub',
+				'octokit': 'Octokit',
+				'node': 'Node.js'
+			};
+
+			// 3. Structural Category Categorization Layer
+			const categoryMap: Record<string, string> = {
+				'auth': 'Auth',
+				'database': 'Database',
+				'policy': 'Database',
+				'rls': 'Database',
+				'payments': 'Payments',
+				'signature': 'Webhooks',
+				'webhook': 'Webhooks',
+				'serverless': 'Serverless',
+				'functions': 'Serverless',
+				'api': 'API Gateway',
+				'cache': 'Cache',
+				'orm': 'ORM',
+				'email': 'Email',
+				'devops': 'DevOps',
+				'graphql': 'API Gateway'
+			};
+
+			// Extract matched core ecosystems from the Title String
+			Object.entries(ecosystemMap.sort((a, b) => b[0].length - a[0].length)).forEach(([keyword, formattedTag]) => {
+				if (lowerTitle.includes(keyword) && !inferredTags.includes(formattedTag)) {
+					inferredTags.push(formattedTag);
+				}
+			});
+
+			// Extract cross-cutting layer categories from the Title String
+			Object.entries(categoryMap).forEach(([keyword, formattedTag]) => {
+				if (lowerTitle.includes(keyword) && !inferredTags.includes(formattedTag)) {
+					inferredTags.push(formattedTag);
+				}
+			});
+
+			// 4. Clean up cross-dependencies and fallback strings
+			if (inferredTags.length === 0) {
+				inferredTags.push("Backend");
+			}
 		}
 		
 		return {
