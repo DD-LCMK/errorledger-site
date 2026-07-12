@@ -4,11 +4,15 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
 import { getCollection } from 'astro:content';
-import FormattedDate from '../../components/FormattedDate.astro';
 
-const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-);
+const allPosts = await getCollection('blog');
+
+// Safe sorting: prevents crashes if pubDate is missing or undefined
+const posts = allPosts.sort((a, b) => {
+	const dateA = a.data.pubDate ? new Date(a.data.pubDate).valueOf() : 0;
+	const dateB = b.data.pubDate ? new Date(b.data.pubDate).valueOf() : 0;
+	return dateB - dateA;
+});
 ---
 
 <html lang="en">
@@ -33,7 +37,6 @@ const posts = (await getCollection('blog')).sort(
 			ul li a { text-decoration: none; }
 			ul li a:hover .title { color: #3182ce; }
 			.description { margin: 0 0 1rem 0; color: #4a5568; font-size: 0.95rem; line-height: 1.5; }
-			.date { color: #718096; font-size: 0.85rem; }
 
 			/* Search Container Styling */
 			.search-container {
@@ -95,6 +98,28 @@ const posts = (await getCollection('blog')).sort(
 						aria-label="Search posts"
 					/>
 				</div>
+
+				<ul>
+					{
+						posts.map((post) => (
+							<li>
+								<a href={`/blog/${post.data.shortenedSlug}/`}>
+									<!-- Metadata Tag Row -->
+									<div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+										{post.data.tags.map((tag: string) => (
+											<span style="font-size: 0.75rem; font-weight: 700; background: #f1f5f9; color: #475569; padding: 0.15rem 0.45rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.025em;" class="card-tag">
+												{tag}
+											</span>
+										))}
+									</div>
+
+									<h4 class="title">{post.data.title}</h4>
+									<p class="description">{post.data.description}</p>
+								</a>
+							</li>
+						))
+					}
+				</ul>
 			</section>
 		</main>
 		<Footer />
@@ -110,15 +135,12 @@ const posts = (await getCollection('blog')).sort(
 				postElements.forEach((post) => {
 					const titleElement = post.querySelector('.title');
 					const descElement = post.querySelector('.description');
-					// Capture all card tags within the current loop element
 					const tagElements = post.querySelectorAll('.card-tag');
 					
 					const titleText = titleElement?.textContent?.toLowerCase() || '';
 					const descText = descElement?.textContent?.toLowerCase() || '';
-					// Flatten tag values into a readable comparative string string
 					const tagsText = Array.from(tagElements).map(tag => tag.textContent?.toLowerCase() || '').join(' ');
 					
-					// Match query parameters against tags array text data points
 					if (titleText.includes(query) || descText.includes(query) || tagsText.includes(query)) {
 						(post as HTMLElement).style.display = '';
 					} else {
@@ -127,10 +149,8 @@ const posts = (await getCollection('blog')).sort(
 				});
 			}
 
-			// Listen for typing events inside the input field
 			searchBox?.addEventListener('input', filterPosts);
 
-			// Check URL parameters on page load to handle homepage form submission and quick badges
 			window.addEventListener('DOMContentLoaded', () => {
 				const urlParams = new URLSearchParams(window.location.search);
 				const urlQuery = urlParams.get('q');

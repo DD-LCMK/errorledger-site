@@ -4,11 +4,16 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
-import FormattedDate from '../components/FormattedDate.astro';
 
-const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-);
+const allPosts = await getCollection('blog');
+
+// Safe sorting: prevents crashes if pubDate is missing or undefined
+const posts = allPosts.sort((a, b) => {
+	const dateA = a.data.pubDate ? new Date(a.data.pubDate).valueOf() : 0;
+	const dateB = b.data.pubDate ? new Date(b.data.pubDate).valueOf() : 0;
+	return dateB - dateA;
+});
+
 // Only display the 3 most recent solutions on the landing page
 const recentPosts = posts.slice(0, 3);
 ---
@@ -72,7 +77,6 @@ const recentPosts = posts.slice(0, 3);
 			ul li a { text-decoration: none; }
 			ul li a:hover .title { color: #3182ce; }
 			.description { margin: 0 0 1rem 0; color: #4a5568; font-size: 0.95rem; line-height: 1.5; }
-			.date { color: #718096; font-size: 0.85rem; }
 
 			.view-all-container { text-align: center; margin-top: 2.5rem; }
 			.view-all-btn {
@@ -136,6 +140,28 @@ const recentPosts = posts.slice(0, 3);
 
 			<section>
 				<h3 class="feed-title">Latest Error Fixes</h3>
+				<ul>
+					{
+						recentPosts.map((post) => (
+							<li>
+								<a href={`/blog/${post.data.shortenedSlug}/`}>
+									<!-- Metadata Tag Row -->
+									<div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+										{post.data.tags.map((tag: string) => (
+											<span style="font-size: 0.75rem; font-weight: 700; background: #f1f5f9; color: #475569; padding: 0.15rem 0.45rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.025em;" class="card-tag">
+												{tag}
+											</span>
+										))}
+									</div>
+									
+									<h4 class="title">{post.data.title}</h4>
+									<p class="description">{post.data.description}</p>
+								</a>
+							</li>
+						))
+					}
+				</ul>
+				
 				<div class="view-all-container">
 					<a href="/blog" class="view-all-btn">View All Solutions →</a>
 				</div>
