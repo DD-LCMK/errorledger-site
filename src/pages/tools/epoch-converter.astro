@@ -1,0 +1,127 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<html lang="en">
+	<head>
+		<BaseHead title="Unix Epoch Timestamp Converter | ErrorLedger" description="Fast, client-side Unix timestamp converter to translate epoch integers into human-readable UTC and local dates." />
+		<style>
+			main { width: 720px; max-width: calc(100% - 2rem); margin: 0 auto; padding: 3em 1rem; }
+			h1 { font-size: 2.25rem; margin-bottom: 0.5rem; color: #1a202c; }
+			p.subtitle { color: #475569; margin-bottom: 2rem; }
+			
+			.tool-box { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.75rem; margin-bottom: 2rem; }
+			.live-box { background: #f8fafc; border-left: 4px solid #ef4444; padding: 1rem; margin-bottom: 1.5rem; border-radius: 0 4px 4px 0; display: flex; justify-content: space-between; align-items: center; }
+			.live-label { font-size: 0.85rem; font-weight: 700; color: #475569; text-transform: uppercase; }
+			.live-value { font-family: monospace; font-size: 1.25rem; font-weight: 700; color: #0f172a; }
+
+			.input-group { margin-bottom: 1.25rem; }
+			label { display: block; font-size: 0.9rem; font-weight: 600; color: #334155; margin-bottom: 0.5rem; }
+			.input-row { display: flex; gap: 0.5rem; }
+			input { flex: 1; padding: 0.65rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-family: monospace; font-size: 1rem; outline: none; }
+			input:focus { border-color: #ef4444; }
+			button { background: #0f172a; color: white; border: none; padding: 0.65rem 1.25rem; border-radius: 6px; font-weight: 600; cursor: pointer; }
+			button:hover { background: #ef4444; }
+
+			.result-display { background: #f1f5f9; border-radius: 6px; padding: 1rem; margin-top: 1rem; font-family: monospace; font-size: 0.95rem; color: #1e293b; display: none; line-height: 1.6; }
+
+			/* Dark Mode */
+			:global(html.dark) h1 { color: #f8fafc; }
+			:global(html.dark) .tool-box { background: #1e293b; border-color: #334155; }
+			:global(html.dark) .live-box { background: #0f172a; }
+			:global(html.dark) .live-value { color: #ef4444; }
+			:global(html.dark) label { color: #cbd5e1; }
+			:global(html.dark) input { background: #0f172a; border-color: #334155; color: #f8fafc; }
+			:global(html.dark) button { background: #334155; }
+			:global(html.dark) button:hover { background: #ef4444; }
+			:global(html.dark) .result-display { background: #0f172a; color: #cbd5e1; }
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>Unix Epoch Timestamp Converter</h1>
+			<p class="subtitle">Convert raw epoch timestamps into human-readable date formats entirely client-side.</p>
+
+			<div class="tool-box">
+				<div class="live-box">
+					<span class="live-label">Current Unix Epoch Time</span>
+					<span class="live-value" id="current-epoch">Loading...</span>
+				</div>
+
+				<!-- Epoch to Human Date -->
+				<div class="input-group">
+					<label for="epoch-input">Convert Unix Timestamp to Date</label>
+					<div class="input-row">
+						<input type="number" id="epoch-input" placeholder="e.g. 1783857600" />
+						<button id="btn-to-date">Convert</button>
+					</div>
+					<div class="result-display" id="date-result"></div>
+				</div>
+
+				<hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 2rem 0; :global(html.dark) & { border-top-color: #334155; }" />
+
+				<!-- Human Date to Epoch -->
+				<div class="input-group">
+					<label for="date-input">Convert Human Date String to Epoch</label>
+					<div class="input-row">
+						<input type="text" id="date-input" placeholder="e.g. Sunday, July 12, 2026 12:00:00" />
+						<button id="btn-to-epoch">Convert</button>
+					</div>
+					<div class="result-display" id="epoch-result"></div>
+				</div>
+			</div>
+		</main>
+		<Footer />
+
+		<script>
+			// Live ticking epoch clock
+			const clockElement = document.getElementById('current-epoch');
+			if (clockElement) {
+				setInterval(() => {
+					clockElement.textContent = Math.floor(Date.now() / 1000).toString();
+				}, 1000);
+			}
+
+			// Convert Epoch -> Date
+			document.getElementById('btn-to-date')?.addEventListener('click', () => {
+				const input = (document.getElementById('epoch-input') as HTMLInputElement).value;
+				const display = document.getElementById('date-result');
+				if (!input || !display) return;
+
+				let timestamp = parseInt(input);
+				// Automatically fix if user enters milliseconds instead of seconds
+				if (input.length > 11) timestamp = Math.floor(timestamp / 1000);
+
+				const date = new Date(timestamp * 1000);
+				if (isNaN(date.getTime())) {
+					display.style.display = 'block';
+					display.textContent = '❌ Invalid Unix Timestamp';
+					return;
+				}
+
+				display.style.display = 'block';
+				display.innerHTML = `<strong>GMT/UTC:</strong> ${date.toUTCString()}<br><strong>Local Time:</strong> ${date.toString()}`;
+			});
+
+			// Convert Date -> Epoch
+			document.getElementById('btn-to-epoch')?.addEventListener('click', () => {
+				const input = (document.getElementById('date-input') as HTMLInputElement).value;
+				const display = document.getElementById('epoch-result');
+				if (!input || !display) return;
+
+				const date = new Date(input);
+				if (isNaN(date.getTime())) {
+					display.style.display = 'block';
+					display.textContent = '❌ Could not parse date format. Try YYYY-MM-DD HH:MM:SS';
+					return;
+				}
+
+				display.style.display = 'block';
+				display.innerHTML = `<strong>Seconds:</strong> ${Math.floor(date.getTime() / 1000)}<br><strong>Milliseconds:</strong> ${date.getTime()}`;
+			});
+		</script>
+	</body>
+</html>
