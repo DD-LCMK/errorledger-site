@@ -95,31 +95,6 @@ const posts = (await getCollection('blog')).sort(
 						aria-label="Search posts"
 					/>
 				</div>
-
-				<ul>
-					{
-						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.data.shortenedSlug}/`}>
-									<!-- Metadata Tag Row -->
-									<div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
-										{post.data.tags.map((tag: string) => (
-											<span style="font-size: 0.75rem; font-weight: 700; background: #f1f5f9; color: #475569; padding: 0.15rem 0.45rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.025em;" class="card-tag">
-												{tag}
-											</span>
-										))}
-									</div>
-
-									<h4 class="title">{post.data.title}</h4>
-									<p class="description">{post.data.description}</p>
-									<span class="date">
-										Updated: <FormattedDate date={post.data.pubDate} />
-									</span>
-								</a>
-							</li>
-						))
-					}
-				</ul>
 			</section>
 		</main>
 		<Footer />
