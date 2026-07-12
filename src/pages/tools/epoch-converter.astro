@@ -68,11 +68,11 @@ import Footer from '../../components/Footer.astro';
 
 				<hr />
 
-				<!-- Section 2: Human Date to Epoch -->
+				<!-- Section 2: Human Date to Epoch (Updated Placeholder) -->
 				<div class="input-group">
 					<label for="date-input">Convert Human Date String to Epoch</label>
 					<div class="input-row">
-						<input type="text" id="date-input" placeholder="e.g. Sunday, July 12, 2026 12:00:00" />
+						<input type="text" id="date-input" placeholder="e.g. 12.07.2026 12:00:00  (DD.MM.YYYY HH:MM:SS)" />
 						<button id="btn-to-epoch">Convert</button>
 					</div>
 					<div class="result-display" id="epoch-result"></div>
@@ -120,7 +120,7 @@ import Footer from '../../components/Footer.astro';
 				if (!input || !display) return;
 
 				let timestamp = parseInt(input);
-				if (input.length > 11) timestamp = Math.floor(timestamp / 1000); // Fix ms injection
+				if (input.length > 11) timestamp = Math.floor(timestamp / 1000);
 
 				const date = new Date(timestamp * 1000);
 				if (isNaN(date.getTime())) {
@@ -133,16 +133,35 @@ import Footer from '../../components/Footer.astro';
 				display.innerHTML = `<strong>GMT/UTC:</strong> ${date.toUTCString()}<br><strong>Local Time:</strong> ${date.toString()}`;
 			});
 
-			// Convert Date -> Epoch
+			// Convert Date -> Epoch (Updated Parser Logic)
 			document.getElementById('btn-to-epoch')?.addEventListener('click', () => {
-				const input = (document.getElementById('date-input') as HTMLInputElement).value;
+				const input = (document.getElementById('date-input') as HTMLInputElement).value.trim();
 				const display = document.getElementById('epoch-result');
 				if (!input || !display) return;
 
-				const date = new Date(input);
+				let date: Date;
+
+				// Custom expression matching DD.MM.YYYY HH:MM:SS (also allows / or - as separators)
+				const ddmmyyyyRegex = /^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/;
+				const match = input.match(ddmmyyyyRegex);
+
+				if (match) {
+					const day = parseInt(match[1], 10);
+					const month = parseInt(match[2], 10) - 1; // JS months are 0-indexed
+					const year = parseInt(match[3], 10);
+					const hour = match[4] ? parseInt(match[4], 10) : 0;
+					const minute = match[5] ? parseInt(match[5], 10) : 0;
+					const second = match[6] ? parseInt(match[6], 10) : 0;
+					
+					date = new Date(year, month, day, hour, minute, second);
+				} else {
+					// Fall back to standard native parsing if they paste ISO style (YYYY-MM-DD) or text strings
+					date = new Date(input);
+				}
+
 				if (isNaN(date.getTime())) {
 					display.style.display = 'block';
-					display.textContent = '❌ Could not parse date format. Try YYYY-MM-DD HH:MM:SS';
+					display.textContent = '❌ Could not parse date format. Use DD.MM.YYYY HH:MM:SS or YYYY-MM-DD HH:MM:SS';
 					return;
 				}
 
@@ -150,7 +169,7 @@ import Footer from '../../components/Footer.astro';
 				display.innerHTML = `<strong>Unix Epoch (seconds):</strong> ${Math.floor(date.getTime() / 1000)}<br><strong>Milliseconds:</strong> ${date.getTime()}`;
 			});
 
-			// Offset Math Matrix Parser
+			// Offset Math Parser
 			document.getElementById('btn-calc-math')?.addEventListener('click', () => {
 				const display = document.getElementById('math-result');
 				if (!display) return;
