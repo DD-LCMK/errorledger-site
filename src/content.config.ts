@@ -25,7 +25,8 @@ const blog = defineCollection({
 		const inferredTags: string[] = data.tags || [];
 		
 		if (inferredTags.length === 0) {
-			const lowerTitle = (data.title || "").toLowerCase();
+			// FIX: Fall back to meta_title or slug strings since frontmatter prioritizes meta_title
+			const lowerTitle = (data.meta_title || data.title || data.slug || "").toLowerCase();
 			
 			// 2. Definitive Core Ecosystem Vocabulary Dictionary
 			const ecosystemMap: Record<string, string> = {
