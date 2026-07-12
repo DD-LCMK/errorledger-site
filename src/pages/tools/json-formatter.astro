@@ -1,0 +1,117 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<html lang="en">
+	<head>
+		<BaseHead title="JSON Formatter & Minifier | ErrorLedger" description="Clean, format, validate, and minify JSON data strings instantly and securely in your browser." />
+		<style>
+			main { width: 720px; max-width: calc(100% - 2rem); margin: 0 auto; padding: 3em 1rem; }
+			h1 { font-size: 2.25rem; margin-bottom: 0.5rem; color: #1a202c; }
+			p.subtitle { color: #475569; margin-bottom: 2rem; }
+			
+			.tool-box { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.75rem; margin-bottom: 2rem; }
+			
+			.input-group { margin-bottom: 1.5rem; }
+			label { display: block; font-size: 0.9rem; font-weight: 600; color: #334155; margin-bottom: 0.5rem; }
+			textarea { width: 100%; height: 160px; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-family: monospace; font-size: 0.95rem; outline: none; background: #ffffff; color: #1e293b; resize: vertical; }
+			textarea:focus { border-color: #ef4444; }
+			
+			.action-row { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+			button { background: #0f172a; color: white; border: none; padding: 0.65rem 1.25rem; border-radius: 6px; font-weight: 600; cursor: pointer; }
+			button:hover { background: #ef4444; }
+			.btn-secondary { background: #64748b; }
+			.btn-secondary:hover { background: #475569; }
+
+			.error-display { background: #fef2f2; border: 1px solid #fee2e2; color: #b91c1c; border-radius: 6px; padding: 0.75rem; margin-bottom: 1.5rem; display: none; font-family: monospace; font-size: 0.9rem; white-space: pre-wrap; }
+
+			/* Dark Mode */
+			:global(html.dark) h1 { color: #f8fafc; }
+			:global(html.dark) .tool-box { background: #1e293b; border-color: #334155; }
+			:global(html.dark) label { color: #cbd5e1; }
+			:global(html.dark) textarea { background: #0f172a; border-color: #334155; color: #f8fafc; }
+			:global(html.dark) button { background: #334155; }
+			:global(html.dark) button:hover { background: #ef4444; }
+			:global(html.dark) .btn-secondary { background: #475569; }
+			:global(html.dark) .btn-secondary:hover { background: #334155; }
+			:global(html.dark) .error-display { background: #451a03; border-color: #78350f; color: #fef3c7; }
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>JSON Formatter & Minifier</h1>
+			<p class="subtitle">Validate, prettify, or compact JSON data structures instantly using safe client-side parsing.</p>
+
+			<div class="tool-box">
+				<div class="input-group">
+					<label for="input-json">Raw JSON Input</label>
+					<textarea id="input-json" placeholder='{"error":"unauthorized","code":401,"meta":{"timestamp":1783861752}}'></textarea>
+				</div>
+
+				<div class="action-row">
+					<button id="btn-format">✨ Prettify / Format</button>
+					<button id="btn-minify" class="btn-secondary">⚡ Minify</button>
+				</div>
+
+				<div class="error-display" id="json-error"></div>
+
+				<div class="input-group">
+					<label for="output-json">Output Result</label>
+					<textarea id="output-json" placeholder="Processed JSON output will appear here..." readonly></textarea>
+				</div>
+			</div>
+		</main>
+		<Footer />
+
+		<script>
+			const inputArea = document.getElementById('input-json') as HTMLTextAreaElement;
+			const outputArea = document.getElementById('output-json') as HTMLTextAreaElement;
+			const errorDiv = document.getElementById('json-error');
+
+			function showError(msg: string) {
+				if (!errorDiv) return;
+				errorDiv.textContent = msg;
+				errorDiv.style.display = 'block';
+			}
+
+			function clearError() {
+				if (errorDiv) errorDiv.style.display = 'none';
+			}
+
+			function getParsedJson() {
+				clearError();
+				const rawInput = inputArea.value.trim();
+				if (!rawInput) {
+					outputArea.value = '';
+					return null;
+				}
+				try {
+					return JSON.parse(rawInput);
+				} catch (e: any) {
+					showError(`❌ Invalid JSON: ${e.message}`);
+					outputArea.value = '';
+					return null;
+				}
+			}
+
+			// Format / Prettify Logic
+			document.getElementById('btn-format')?.addEventListener('click', () => {
+				const parsed = getParsedJson();
+				if (parsed !== null) {
+					outputArea.value = JSON.stringify(parsed, null, 2);
+				}
+			});
+
+			// Minify Logic
+			document.getElementById('btn-minify')?.addEventListener('click', () => {
+				const parsed = getParsedJson();
+				if (parsed !== null) {
+					outputArea.value = JSON.stringify(parsed);
+				}
+			});
+		</script>
+	</body>
+</html>
