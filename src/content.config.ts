@@ -77,12 +77,14 @@ const blog = defineCollection({
 				'graphql': 'API Gateway'
 			};
 
-			// Extract matched core ecosystems from the Title String
-			Object.entries(ecosystemMap.sort((a, b) => b[0].length - a[0].length)).forEach(([keyword, formattedTag]) => {
-				if (lowerTitle.includes(keyword) && !inferredTags.includes(formattedTag)) {
-					inferredTags.push(formattedTag);
-				}
-			});
+			// Corrected Array Sorting Chain Syntax
+			Object.entries(ecosystemMap)
+				.sort((a, b) => b[0].length - a[0].length)
+				.forEach(([keyword, formattedTag]) => {
+					if (lowerTitle.includes(keyword) && !inferredTags.includes(formattedTag)) {
+						inferredTags.push(formattedTag);
+					}
+				});
 
 			// Extract cross-cutting layer categories from the Title String
 			Object.entries(categoryMap).forEach(([keyword, formattedTag]) => {
