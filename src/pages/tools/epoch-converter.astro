@@ -6,7 +6,7 @@ import Footer from '../../components/Footer.astro';
 
 <html lang="en">
 	<head>
-		<BaseHead title="Unix Epoch Timestamp Converter | ErrorLedger" description="Fast, client-side Unix timestamp converter to translate epoch integers into human-readable UTC and local dates." />
+		<BaseHead title="Unix Epoch Timestamp Converter | ErrorLedger" description="Fast, client-side Unix timestamp converter to translate epoch integers into human dates and calculate time offsets." />
 		<style>
 			main { width: 720px; max-width: calc(100% - 2rem); margin: 0 auto; padding: 3em 1rem; }
 			h1 { font-size: 2.25rem; margin-bottom: 0.5rem; color: #1a202c; }
@@ -20,12 +20,16 @@ import Footer from '../../components/Footer.astro';
 			.input-group { margin-bottom: 1.25rem; }
 			label { display: block; font-size: 0.9rem; font-weight: 600; color: #334155; margin-bottom: 0.5rem; }
 			.input-row { display: flex; gap: 0.5rem; }
-			input { flex: 1; padding: 0.65rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-family: monospace; font-size: 1rem; outline: none; }
-			input:focus { border-color: #ef4444; }
-			button { background: #0f172a; color: white; border: none; padding: 0.65rem 1.25rem; border-radius: 6px; font-weight: 600; cursor: pointer; }
+			input, select { padding: 0.65rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-family: monospace; font-size: 1rem; outline: none; background: #ffffff; color: #1e293b; }
+			input { flex: 1; }
+			select { min-width: 110px; cursor: pointer; }
+			input:focus, select:focus { border-color: #ef4444; }
+			button { background: #0f172a; color: white; border: none; padding: 0.65rem 1.25rem; border-radius: 6px; font-weight: 600; cursor: pointer; white-space: nowrap; }
 			button:hover { background: #ef4444; }
 
 			.result-display { background: #f1f5f9; border-radius: 6px; padding: 1rem; margin-top: 1rem; font-family: monospace; font-size: 0.95rem; color: #1e293b; display: none; line-height: 1.6; }
+
+			hr { border: 0; border-top: 1px dashed #e2e8f0; margin: 2rem 0; }
 
 			/* Dark Mode */
 			:global(html.dark) h1 { color: #f8fafc; }
@@ -33,17 +37,18 @@ import Footer from '../../components/Footer.astro';
 			:global(html.dark) .live-box { background: #0f172a; }
 			:global(html.dark) .live-value { color: #ef4444; }
 			:global(html.dark) label { color: #cbd5e1; }
-			:global(html.dark) input { background: #0f172a; border-color: #334155; color: #f8fafc; }
+			:global(html.dark) input, :global(html.dark) select { background: #0f172a; border-color: #334155; color: #f8fafc; }
 			:global(html.dark) button { background: #334155; }
 			:global(html.dark) button:hover { background: #ef4444; }
 			:global(html.dark) .result-display { background: #0f172a; color: #cbd5e1; }
+			:global(html.dark) hr { border-top-color: #334155; }
 		</style>
 	</head>
 	<body>
 		<Header />
 		<main>
 			<h1>Unix Epoch Timestamp Converter</h1>
-			<p class="subtitle">Convert raw epoch timestamps into human-readable date formats entirely client-side.</p>
+			<p class="subtitle">Convert raw epoch integers, interpret human date strings, and calculate precision time offsets entirely client-side.</p>
 
 			<div class="tool-box">
 				<div class="live-box">
@@ -51,7 +56,7 @@ import Footer from '../../components/Footer.astro';
 					<span class="live-value" id="current-epoch">Loading...</span>
 				</div>
 
-				<!-- Epoch to Human Date -->
+				<!-- Section 1: Epoch to Human Date -->
 				<div class="input-group">
 					<label for="epoch-input">Convert Unix Timestamp to Date</label>
 					<div class="input-row">
@@ -61,9 +66,9 @@ import Footer from '../../components/Footer.astro';
 					<div class="result-display" id="date-result"></div>
 				</div>
 
-				<hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 2rem 0; :global(html.dark) & { border-top-color: #334155; }" />
+				<hr />
 
-				<!-- Human Date to Epoch -->
+				<!-- Section 2: Human Date to Epoch -->
 				<div class="input-group">
 					<label for="date-input">Convert Human Date String to Epoch</label>
 					<div class="input-row">
@@ -71,6 +76,29 @@ import Footer from '../../components/Footer.astro';
 						<button id="btn-to-epoch">Convert</button>
 					</div>
 					<div class="result-display" id="epoch-result"></div>
+				</div>
+
+				<hr />
+
+				<!-- Section 3: Epoch Offset Math Calculator -->
+				<div class="input-group">
+					<label for="math-epoch-input">Epoch Time Math / Offset Modifier</label>
+					<div class="input-row">
+						<input type="number" id="math-epoch-input" placeholder="Base Epoch (defaults to current)" />
+						<select id="math-operator">
+							<option value="add">+</option>
+							<option value="subtract">-</option>
+						</select>
+						<input type="number" id="math-value" placeholder="Value" style="max-width: 100px; flex: initial;" />
+						<select id="math-unit">
+							<option value="60">Minutes</option>
+							<option value="3600">Hours</option>
+							<option value="86400">Days</option>
+							<option value="1">Seconds</option>
+						</select>
+						<button id="btn-calc-math">Calculate</button>
+					</div>
+					<div class="result-display" id="math-result"></div>
 				</div>
 			</div>
 		</main>
@@ -92,8 +120,7 @@ import Footer from '../../components/Footer.astro';
 				if (!input || !display) return;
 
 				let timestamp = parseInt(input);
-				// Automatically fix if user enters milliseconds instead of seconds
-				if (input.length > 11) timestamp = Math.floor(timestamp / 1000);
+				if (input.length > 11) timestamp = Math.floor(timestamp / 1000); // Fix ms injection
 
 				const date = new Date(timestamp * 1000);
 				if (isNaN(date.getTime())) {
@@ -120,7 +147,33 @@ import Footer from '../../components/Footer.astro';
 				}
 
 				display.style.display = 'block';
-				display.innerHTML = `<strong>Seconds:</strong> ${Math.floor(date.getTime() / 1000)}<br><strong>Milliseconds:</strong> ${date.getTime()}`;
+				display.innerHTML = `<strong>Unix Epoch (seconds):</strong> ${Math.floor(date.getTime() / 1000)}<br><strong>Milliseconds:</strong> ${date.getTime()}`;
+			});
+
+			// Offset Math Matrix Parser
+			document.getElementById('btn-calc-math')?.addEventListener('click', () => {
+				const display = document.getElementById('math-result');
+				if (!display) return;
+
+				let baseEpochInput = (document.getElementById('math-epoch-input') as HTMLInputElement).value;
+				let baseEpoch = baseEpochInput ? parseInt(baseEpochInput) : Math.floor(Date.now() / 1000);
+				
+				const operator = (document.getElementById('math-operator') as HTMLSelectElement).value;
+				const valInput = (document.getElementById('math-value') as HTMLInputElement).value;
+				const unitMultiplier = parseInt((document.getElementById('math-unit') as HTMLSelectElement).value);
+
+				if (!valInput) {
+					display.style.display = 'block';
+					display.textContent = '❌ Please specify an offset value quantity.';
+					return;
+				}
+
+				let offsetSeconds = parseInt(valInput) * unitMultiplier;
+				let finalEpoch = operator === 'add' ? baseEpoch + offsetSeconds : baseEpoch - offsetSeconds;
+				const finalDate = new Date(finalEpoch * 1000);
+
+				display.style.display = 'block';
+				display.innerHTML = `<strong>Resulting Epoch:</strong> ${finalEpoch}<br><strong>GMT/UTC:</strong> ${finalDate.toUTCString()}<br><strong>Local Time:</strong> ${finalDate.toString()}`;
 			});
 		</script>
 	</body>
