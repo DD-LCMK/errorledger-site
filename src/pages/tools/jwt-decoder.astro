@@ -1,0 +1,119 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<html lang="en">
+	<head>
+		<BaseHead title="JSON Web Token (JWT) Decoder | ErrorLedger" description="Decode JWT payloads instantly client-side to inspect headers, claims, and expiration timestamps safely." />
+		<style>
+			main { width: 800px; max-width: calc(100% - 2rem); margin: 0 auto; padding: 3em 1rem; }
+			h1 { font-size: 2.25rem; margin-bottom: 0.5rem; color: #1a202c; }
+			p.subtitle { color: #475569; margin-bottom: 2rem; }
+			
+			.tool-box { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.75rem; margin-bottom: 2rem; }
+			
+			label { display: block; font-size: 0.9rem; font-weight: 600; color: #334155; margin-bottom: 0.5rem; }
+			textarea { width: 100%; height: 120px; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-family: monospace; font-size: 0.95rem; outline: none; background: #ffffff; color: #1e293b; resize: vertical; }
+			textarea:focus { border-color: #ef4444; }
+			
+			.output-container { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; }
+			.output-block { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 1rem; }
+			.block-title { font-size: 0.85rem; font-weight: 700; color: #475569; text-transform: uppercase; margin-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.25rem; }
+			pre { margin: 0; font-family: monospace; font-size: 0.9rem; overflow-x: auto; white-space: pre-wrap; color: #0f172a; }
+
+			.error-display { background: #fef2f2; border: 1px solid #fee2e2; color: #b91c1c; border-radius: 6px; padding: 0.75rem; margin-top: 1rem; display: none; font-size: 0.9rem; }
+
+			/* Dark Mode */
+			:global(html.dark) h1 { color: #f8fafc; }
+			:global(html.dark) .tool-box { background: #1e293b; border-color: #334155; }
+			:global(html.dark) label { color: #cbd5e1; }
+			:global(html.dark) textarea { background: #0f172a; border-color: #334155; color: #f8fafc; }
+			:global(html.dark) .output-block { background: #0f172a; border-color: #334155; }
+			:global(html.dark) .block-title { color: #cbd5e1; border-bottom-color: #334155; }
+			:global(html.dark) pre { color: #cbd5e1; }
+			:global(html.dark) .error-display { background: #451a03; border-color: #78350f; color: #fef3c7; }
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>JWT Decoder</h1>
+			<p class="subtitle">Decode JSON Web Token payloads and header configurations securely inside your browser.</p>
+
+			<div class="tool-box">
+				<label for="jwt-input">Paste encoded JWT string here</label>
+				<textarea id="jwt-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."></textarea>
+				
+				<div class="error-display" id="jwt-error"></div>
+
+				<div class="output-container">
+					<div class="output-block">
+						<div class="block-title">Header (Algorithm & Type)</div>
+						<pre id="jwt-header-out">&#123;&#125;</pre>
+					</div>
+					<div class="output-block">
+						<div class="block-title">Payload (Data Claims)</div>
+						<pre id="jwt-payload-out">&#123;&#125;</pre>
+					</div>
+				</div>
+			</div>
+		</main>
+		<Footer />
+
+		<script>
+			const input = document.getElementById('jwt-input') as HTMLTextAreaElement;
+			const headerOut = document.getElementById('jwt-header-out');
+			const payloadOut = document.getElementById('jwt-payload-out');
+			const errorDiv = document.getElementById('jwt-error');
+
+			function decodeBase64Url(str: string) {
+				// Convert base64url format to standard base64 format safely
+				let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+				while (base64.length % 4) {
+					base64 += '=';
+				}
+				return decodeURIComponent(atob(base64).split('').map(c => {
+					return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+				}).join(''));
+			}
+
+			input?.addEventListener('input', () => {
+				const token = input.value.trim();
+				if (!errorDiv || !headerOut || !payloadOut) return;
+
+				// Reset displays
+				errorDiv.style.display = 'none';
+				if (!token) {
+					headerOut.textContent = '{}';
+					payloadOut.textContent = '{}';
+					return;
+				}
+
+				const parts = token.split('.');
+				if (parts.length < 2 || parts.length > 3) {
+					errorDiv.textContent = '❌ Invalid JWT format. Tokens must contain a header and payload separated by dots.';
+					errorDiv.style.display = 'block';
+					return;
+				}
+
+				try {
+					const decodedHeader = JSON.parse(decodeBase64Url(parts[0]));
+					headerOut.textContent = JSON.stringify(decodedHeader, null, 2);
+				} catch (e) {
+					errorDiv.textContent = '❌ Failed to parse token header block.';
+					errorDiv.style.display = 'block';
+				}
+
+				try {
+					const decodedPayload = JSON.parse(decodeBase64Url(parts[1]));
+					payloadOut.textContent = JSON.stringify(decodedPayload, null, 2);
+				} catch (e) {
+					errorDiv.textContent = '❌ Failed to parse token payload claims block.';
+					errorDiv.style.display = 'block';
+				}
+			});
+		</script>
+	</body>
+</html>
