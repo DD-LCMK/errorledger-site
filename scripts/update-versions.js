@@ -2,11 +2,35 @@ import fs from 'fs';
 import path from 'path';
 
 const packages = [
+  // Frameworks & Runtimes
   { id: 'next', name: 'Next.js' },
+  { id: 'astro', name: 'Astro' },
+  { id: 'react', name: 'React' },
+  { id: 'vue', name: 'Vue' },
+  { id: 'bun', name: 'Bun Runtime' },
+  { id: 'deno', name: 'Deno' },
+  
+  // Databases & ORMs
   { id: 'prisma', name: 'Prisma ORM' },
+  { id: 'drizzle-orm', name: 'Drizzle ORM' },
   { id: '@supabase/supabase-js', name: 'Supabase JS' },
+  { id: 'mongodb', name: 'MongoDB Driver' },
+  { id: 'mongoose', name: 'Mongoose' },
+  { id: 'redis', name: 'Redis Client' },
+
+  // Auth & Security
   { id: '@clerk/backend', name: 'Clerk Backend' },
-  { id: 'stripe', name: 'Stripe Node' }
+  { id: 'auth0', name: 'Auth0 Node' },
+  { id: 'jose', name: 'Jose JWT' },
+  { id: 'jsonwebtoken', name: 'JsonWebToken' },
+
+  // Backend & Utilities
+  { id: 'express', name: 'Express' },
+  { id: 'fastify', name: 'Fastify' },
+  { id: 'stripe', name: 'Stripe Node' },
+  { id: 'resend', name: 'Resend SDK' },
+  { id: 'zod', name: 'Zod Validation' },
+  { id: 'axios', name: 'Axios' }
 ];
 
 async function updateVersions() {
