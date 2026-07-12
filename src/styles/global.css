@@ -161,3 +161,30 @@ padding: 10px 14px;
 text-align: left;
 vertical-align: top;
 }
+
+/* Ultra-Wide Technical Layout Extensions */
+main {
+max-width: 1200px !important;
+width: 100% !important;
+margin: 0 auto !important;
+}
+
+.prose {
+width: 1200px !important;
+max-width: 100% !important;
+}
+
+/* Allow the table to lay out naturally without desktop compression */
+.prose table {
+display: table !important;
+width: 100% !important;
+overflow-x: visible !important;
+}
+
+/* Fallback responsive block strictly for small mobile viewports */
+@media (max-width: 768px) {
+.prose table {
+display: block !important;
+overflow-x: auto !important;
+}
+}
