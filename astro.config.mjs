@@ -6,7 +6,7 @@ import { defineConfig, fontProviders } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://hakkoharvest.com',
+	site: 'https://errorledger.com',
 	integrations: [mdx(), sitemap()],
 	fonts: [
 		{
