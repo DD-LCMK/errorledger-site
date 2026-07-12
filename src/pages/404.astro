@@ -1,0 +1,61 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`404: Page Not Found | ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main style="max-width: 720px; margin: 4rem auto; padding: 0 1rem;">
+			<!-- Terminal Container -->
+			<div style="background-color: #0f172a; color: #38bdf8; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; padding: 1.5rem; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); border: 1px solid #334155;">
+				
+				<!-- Window Header Bar -->
+				<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid #334155; padding-bottom: 0.75rem;">
+					<span style="width: 12px; height: 12px; background-color: #ef4444; border-radius: 50%; display: inline-block;"></span>
+					<span style="width: 12px; height: 12px; background-color: #eab308; border-radius: 50%; display: inline-block;"></span>
+					<span style="width: 12px; height: 12px; background-color: #22c55e; border-radius: 50%; display: inline-block;"></span>
+					<span style="color: #64748b; font-size: 0.85rem; margin-left: 0.5rem;">bash — error_handler.sh</span>
+				</div>
+				
+				<!-- Terminal Output -->
+				<p style="margin: 0 0 0.75rem 0; color: #64748b;">[System status: Operational]</p>
+				<p style="margin: 0 0 0.75rem 0;"><span style="color: #22c55e;">visitor@errorledger:~$</span> look-for --page="current-route"</p>
+				
+				<!-- Error Message -->
+				<p style="margin: 0 0 0.75rem 0; color: #ef4444; font-weight: bold;">
+					ERROR 404: Target route routing mismatch. 
+				</p>
+				<p style="margin: 0 0 1.5rem 0; color: #cbd5e1;">
+					The page you are looking for does not exist or has been moved to a new directory log.
+				</p>
+				
+				<!-- Interactive Link Action -->
+				<p style="margin: 0 0 1.5rem 0;">
+					<span style="color: #22c55e;">visitor@errorledger:~$</span> <a href="/" style="color: #f97316; text-decoration: underline; font-weight: bold;">cd /home</a>
+				</p>
+				
+				<p style="margin: 0; color: #64748b;"><span class="cursor-blink">_</span></p>
+			</div>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.cursor-blink {
+		animation: blink 1s step-end infinite;
+		color: #f8fafc;
+		font-weight: bold;
+	}
+	@keyframes blink {
+		from, to { color: transparent }
+		50% { color: #f8fafc; }
+	}
+</style>
