@@ -34,12 +34,62 @@ const posts = (await getCollection('blog')).sort(
 			ul li a:hover .title { color: #3182ce; }
 			.description { margin: 0 0 1rem 0; color: #4a5568; font-size: 0.95rem; line-height: 1.5; }
 			.date { color: #718096; font-size: 0.85rem; }
+
+			/* Search Container Styling */
+			.search-container {
+				margin-bottom: 2rem;
+				width: 100%;
+			}
+			#search-box {
+				width: 100%;
+				padding: 0.75rem 1rem;
+				font-size: 1rem;
+				border-radius: 6px;
+				border: 1px solid #cbd5e1;
+				background-color: #ffffff;
+				color: #1e293b;
+				outline: none;
+				font-family: inherit;
+			}
+			#search-box:focus {
+				border-color: #ef4444;
+			}
+
+			/* Local Card Dark Mode Overrides */
+			:global(html.dark) ul li {
+				background: #1e293b;
+				border-color: #334155;
+			}
+			:global(html.dark) .title {
+				color: #f8fafc;
+			}
+			:global(html.dark) .description {
+				color: #cbd5e1;
+			}
+			:global(html.dark) #search-box {
+				background-color: #1e293b;
+				border-color: #334155;
+				color: #f8fafc;
+			}
+			:global(html.dark) #search-box:focus {
+				border-color: #ef4444;
+			}
 		</style>
 	</head>
 	<body>
 		<Header />
 		<main>
 			<section>
+				<!-- Interactive Search Bar Component -->
+				<div class="search-container">
+					<input 
+						type="text" 
+						id="search-box" 
+						placeholder="Search error codes, frameworks, or keywords..." 
+						aria-label="Search posts"
+					/>
+				</div>
+
 				<ul>
 					{
 						posts.map((post) => (
@@ -58,5 +108,28 @@ const posts = (await getCollection('blog')).sort(
 			</section>
 		</main>
 		<Footer />
+
+		<!-- Client-Side Filter Script -->
+		<script>
+			const searchBox = document.getElementById('search-box') as HTMLInputElement;
+			const postElements = document.querySelectorAll('main ul li');
+
+			searchBox?.addEventListener('input', () => {
+				const query = searchBox.value.toLowerCase().trim();
+
+				postElements.forEach((post) => {
+					const titleElement = post.querySelector('.title');
+					const descElement = post.querySelector('.description');
+					const titleText = titleElement?.textContent?.toLowerCase() || '';
+					const descText = descElement?.textContent?.toLowerCase() || '';
+					
+					if (titleText.includes(query) || descText.includes(query)) {
+						(post as HTMLElement).style.display = '';
+					} else {
+						(post as HTMLElement).style.display = 'none';
+					}
+				});
+			});
+		</script>
 	</body>
 </html>
