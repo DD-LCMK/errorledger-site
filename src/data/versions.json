@@ -1,8 +1,26 @@
 [
-  { "name": "Node.js", "version": "v24.x" },
-  { "name": "Next.js", "version": "v15.x" },
-  { "name": "Prisma ORM", "version": "v6.x" },
-  { "name": "Supabase JS", "version": "v2.x" },
-  { "name": "Clerk Backend", "version": "v5.x" },
-  { "name": "Stripe Node", "version": "v14.x" }
+  {
+    "name": "Node.js",
+    "version": "v26.5.0"
+  },
+  {
+    "name": "Next.js",
+    "version": "v16.2.10"
+  },
+  {
+    "name": "Prisma ORM",
+    "version": "v7.8.0"
+  },
+  {
+    "name": "Supabase JS",
+    "version": "v2.110.2"
+  },
+  {
+    "name": "Clerk Backend",
+    "version": "v3.11.4"
+  },
+  {
+    "name": "Stripe Node",
+    "version": "v22.3.1"
+  }
 ]
