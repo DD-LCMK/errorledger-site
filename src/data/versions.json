@@ -8,19 +8,87 @@
     "version": "v16.2.10"
   },
   {
+    "name": "Astro",
+    "version": "v7.0.7"
+  },
+  {
+    "name": "React",
+    "version": "v19.2.7"
+  },
+  {
+    "name": "Vue",
+    "version": "v3.5.39"
+  },
+  {
+    "name": "Bun Runtime",
+    "version": "v1.3.14"
+  },
+  {
+    "name": "Deno",
+    "version": "v2.9.2"
+  },
+  {
     "name": "Prisma ORM",
     "version": "v7.8.0"
+  },
+  {
+    "name": "Drizzle ORM",
+    "version": "v0.45.2"
   },
   {
     "name": "Supabase JS",
     "version": "v2.110.2"
   },
   {
+    "name": "MongoDB Driver",
+    "version": "v7.5.0"
+  },
+  {
+    "name": "Mongoose",
+    "version": "v9.7.4"
+  },
+  {
+    "name": "Redis Client",
+    "version": "v6.1.0"
+  },
+  {
     "name": "Clerk Backend",
     "version": "v3.11.4"
   },
   {
+    "name": "Auth0 Node",
+    "version": "v5.14.0"
+  },
+  {
+    "name": "Jose JWT",
+    "version": "v6.2.3"
+  },
+  {
+    "name": "JsonWebToken",
+    "version": "v9.0.3"
+  },
+  {
+    "name": "Express",
+    "version": "v5.2.1"
+  },
+  {
+    "name": "Fastify",
+    "version": "v5.10.0"
+  },
+  {
     "name": "Stripe Node",
     "version": "v22.3.1"
+  },
+  {
+    "name": "Resend SDK",
+    "version": "v6.17.2"
+  },
+  {
+    "name": "Zod Validation",
+    "version": "v4.4.3"
+  },
+  {
+    "name": "Axios",
+    "version": "v1.18.1"
   }
 ]
