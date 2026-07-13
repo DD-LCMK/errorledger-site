@@ -90,5 +90,21 @@
   {
     "name": "Axios",
     "version": "v1.18.1"
+  },
+  {
+    "name": "Gemini API",
+    "version": "v1.0.0"
+  },
+  {
+    "name": "Antigravity",
+    "version": "v21.0.0"
+  },
+  {
+    "name": "Apache Kafka",
+    "version": "v2.2.4"
+  },
+  {
+    "name": "GitHub Actions",
+    "version": "v2.315.0"
   }
 ]
