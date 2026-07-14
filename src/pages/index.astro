@@ -8,7 +8,7 @@ import versions from '../data/versions.json';
 
 const allPosts = await getCollection('blog');
 
-// 1. Count occurrences of each tag across all existing posts
+// 1. Count occurrences of each tag dynamically across active posts
 const tagCounts: Record<string, number> = {};
 allPosts.forEach(post => {
 	if (post.data.tags) {
@@ -18,19 +18,20 @@ allPosts.forEach(post => {
 	}
 });
 
-// 2. Sort tags by frequency and pick the top 5 biggest topics
+// 2. Extract only the top 5 tags with existing posts (hides empty topics)
 const topTags = Object.entries(tagCounts)
 	.sort((a, b) => b[1] - a[1])
 	.map(entry => entry[0])
 	.slice(0, 5);
 
-// Safe sorting for recent posts
+// Safe sorting: prevents crashes if pubDate is missing or undefined
 const posts = allPosts.sort((a, b) => {
 	const dateA = a.data.pubDate ? new Date(a.data.pubDate).valueOf() : 0;
 	const dateB = b.data.pubDate ? new Date(b.data.pubDate).valueOf() : 0;
 	return dateB - dateA;
 });
 
+// Only display the 3 most recent solutions
 const recentPosts = posts.slice(0, 3);
 ---
 
@@ -40,9 +41,9 @@ const recentPosts = posts.slice(0, 3);
 		<style>
 			main { width: 960px; max-width: calc(100% - 2rem); margin: 0 auto; padding: 1.5em 1rem; }
 			
-			/* Tighter Hero Layout to bring content above the fold */
+			/* Hero Layout for Search Section */
 			.hero { text-align: center; margin-bottom: 2.5rem; padding: 1rem 0; }
-			.hero h1 { font-size: 2.75rem; margin-bottom: 0.75rem; letter-spacing: -0.025em; }
+			.hero h1 { font-size: 2.25rem; margin-bottom: 0.75rem; letter-spacing: -0.025em; }
 			.hero p { font-size: 1.15rem; color: #475569; max-width: 650px; margin: 0 auto 1.75rem auto; line-height: 1.5; }
 			
 			/* Hero Search Field */
@@ -75,7 +76,7 @@ const recentPosts = posts.slice(0, 3);
 			.badge:hover { background: #ef4444; color: white; }
 
 			/* Version Matrix Dashboard Grid Styles */
-			.version-dashboard { margin-bottom: 2.5rem; }
+			.version-dashboard { margin-bottom: 1rem; }
 			.version-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
 			.version-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; text-align: center; }
 			.pkg-name { display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.25rem; }
@@ -154,42 +155,8 @@ const recentPosts = posts.slice(0, 3);
 	<body>
 		<Header />
 		<main>
-			<section class="hero">
-				<h1>Search Production Error Fixes</h1>
-				<p>Verified, step-by-step troubleshooting runbooks for Node.js, databases, cloud platforms, and modern backend frameworks.</p>
-				
-				<form action="/blog" method="GET" class="search-form">
-					<input 
-						type="text" 
-						name="q" 
-						class="search-input"
-						placeholder="Search error messages, stack traces, SDKs, or frameworks..." 
-						autocomplete="off"
-					/>
-				</form>
-
-				<div class="badge-container">
-					{topTags.map((tag) => (
-						<a href={`/blog?q=${tag.toLowerCase()}`} class="badge">{tag}</a>
-					))}
-				</div>
-			</section>
-
-			<!-- Static Ecosystem Version Dashboard Gadget -->
-			<section class="version-dashboard">
-				<h3 class="feed-title">Ecosystem Version Matrix</h3>
-				<div class="version-grid">
-					{versions.map((pkg) => (
-						<div class="version-card">
-							<span class="pkg-name">{pkg.name}</span>
-							<span class="pkg-version">{pkg.version}</span>
-						</div>
-					))}
-				</div>
-			</section>
-
-			<!-- New Developer Utilities Dashboard -->
-			<section class="tools-dashboard">
+			<!-- 1. Developer Utilities Section (Top) -->
+			<section class="tools-dashboard" style="margin-top: 1rem;">
 				<h3 class="feed-title">Developer Utilities</h3>
 				<div class="tools-grid">
 					<a href="/tools/epoch-converter" class="tool-card">
@@ -211,7 +178,30 @@ const recentPosts = posts.slice(0, 3);
 				</div>
 			</section>
 
-			<section>
+			<!-- 2. Search Section (Next) -->
+			<section class="hero">
+				<h1>Search Production Error Fixes</h1>
+				<p>Verified, step-by-step troubleshooting runbooks for databases, cloud infrastructure, AI integrations, and backend frameworks.</p>
+				
+				<form action="/blog" method="GET" class="search-form">
+					<input 
+						type="text" 
+						name="q" 
+						class="search-input"
+						placeholder="Search error messages, stack traces, SDKs, or frameworks..." 
+						autocomplete="off"
+					/>
+				</form>
+
+				<div class="badge-container">
+					{topTags.map((tag) => (
+						<a href={`/blog?q=${tag.toLowerCase()}`} class="badge">{tag}</a>
+					))}
+				</div>
+			</section>
+
+			<!-- 3. Latest Error Fixes (Next) -->
+			<section style="margin-bottom: 3.5rem;">
 				<h3 class="feed-title">Latest Error Fixes</h3>
 				<ul>
 					{
@@ -236,6 +226,19 @@ const recentPosts = posts.slice(0, 3);
 				
 				<div class="view-all-container">
 					<a href="/blog" class="view-all-btn">View All Solutions →</a>
+				</div>
+			</section>
+
+			<!-- 4. Ecosystem Version Matrix Dashboard (Bottom) -->
+			<section class="version-dashboard">
+				<h3 class="feed-title">Ecosystem Version Matrix</h3>
+				<div class="version-grid">
+					{versions.map((pkg) => (
+						<div class="version-card">
+							<span class="pkg-name">{pkg.name}</span>
+							<span class="pkg-version">{pkg.version}</span>
+						</div>
+					))}
 				</div>
 			</section>
 		</main>
