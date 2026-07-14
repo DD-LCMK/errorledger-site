@@ -7,7 +7,14 @@ import { defineConfig, fontProviders } from 'astro/config';
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://errorledger.com',
-	integrations: [mdx(), sitemap()],
+	integrations: [
+		mdx(), 
+		sitemap({
+			changefreq: 'daily',
+			priority: 0.7,
+			lastmod: new Date()
+		})
+	],
 	fonts: [
 		{
 			provider: fontProviders.local(),

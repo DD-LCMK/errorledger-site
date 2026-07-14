@@ -7,12 +7,16 @@ import FormattedDate from '../components/FormattedDate.astro';
 
 type Props = CollectionEntry<'blog'>['data'];
 
-const { title, description, pubDate } = Astro.props;
+const { title, description, pubDate, tags = [] } = Astro.props;
+
+// Automatically prefix the page title with the primary topic tag for search result clarity
+const visualTag = tags.length > 0 ? `[${tags[0].toUpperCase()}] ` : '';
+const cleanSeoTitle = `${visualTag}${title}`;
 ---
 
 <html lang="en">
 	<head>
-		<BaseHead title={title} description={description} />
+		<BaseHead title={cleanSeoTitle} description={description} />
 		<style>
 			main { width: calc(100% - 2rem); max-width: 720px; margin: 0 auto; padding: 3em 1rem; }
 			.prose { color: #2d3748; line-height: 1.75; font-size: 1.1rem; }

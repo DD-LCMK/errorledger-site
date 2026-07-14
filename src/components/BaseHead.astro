@@ -17,6 +17,20 @@ const { title, description, image = FallbackImage } = Astro.props;
 const ogImage = image.src.includes('blog-placeholder-1') 
 	? 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=1200&h=630&fit=crop&q=80' 
 	: new URL(image.src, Astro.url).href;
+
+// Formats a clean JSON-LD object for Google to pull structured code rich results
+const techArticleSchema = JSON.stringify({
+	"@context": "https://schema.org",
+	"@type": "TechArticle",
+	"headline": title,
+	"description": description,
+	"proficienciesRequired": "Developer",
+	"publisher": {
+		"@type": "Organization",
+		"name": "ErrorLedger",
+		"url": "https://errorledger.com"
+	}
+});
 ---
 
 <!-- Global Metadata -->
@@ -40,6 +54,9 @@ const ogImage = image.src.includes('blog-placeholder-1')
 <!-- Primary Meta Tags -->
 <title>{title}</title>
 <meta name="description" content={description} />
+
+<!-- TechArticle JSON-LD Schema (Invisible Structured Data Integration) -->
+<script type="application/ld+json" set:html={techArticleSchema}></script>
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website" />
