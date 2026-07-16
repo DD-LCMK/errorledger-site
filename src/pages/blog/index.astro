@@ -15,7 +15,8 @@ const postsWithYears = allPosts.map(post => {
 	try {
 		const fileContent = post.body || '';
 		if (fileContent) {
-			const tableMatch = fileContent.match(/\|\s*\\*?\\*?Date\\*?\\*?\s*\|\s*([^|]+)\|/i);
+			// Fixed: Removed literal backslash typos to properly parse table rows
+			const tableMatch = fileContent.match(/\|\s*\*?\*?Date\*?\*?\s*\|\s*([^|]+)\|/i);
 			const textMatch = fileContent.match(/(?:^|\n|#|-|\*)\s*\*?\*?Date\*?\*?\s*:\s*([^#\n\r|*]+)/i);
 			const rawDateString = tableMatch ? tableMatch[1] : (textMatch ? textMatch[1] : null);
 			
