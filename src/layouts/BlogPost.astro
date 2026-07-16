@@ -182,29 +182,35 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 				<!-- Main Content Panel -->
 				<article>
 					<div class="prose">
-						<div class="meta-wrapper">
-							{pubDate && (
-								<div class="date">
-									<FormattedDate date={pubDate} />
+						<!-- Only render publication dates and action triggers on true incident records -->
+						{!isStaticPage && (
+							<div class="meta-wrapper">
+								{pubDate && (
+									<div class="date">
+										<FormattedDate date={pubDate} />
+									</div>
+								)}
+								<div class="share-actions">
+									<a href={`https://x.com/intent/tweet?url=${encodeURIComponent(Astro.url.href)}&text=${encodeURIComponent(title)}`} target="_blank" rel="noopener noreferrer" class="share-btn">
+										Share on X
+									</a>
+									<button id="copy-link-btn" class="share-btn">
+										Copy Link
+									</button>
 								</div>
-							)}
-							<div class="share-actions">
-								<a href={`https://x.com/intent/tweet?url=${encodeURIComponent(Astro.url.href)}&text=${encodeURIComponent(title)}`} target="_blank" rel="noopener noreferrer" class="share-btn">
-									Share on X
-								</a>
-								<button id="copy-link-btn" class="share-btn">
-									Copy Link
-								</button>
 							</div>
-						</div>
+						)}
 
-						<div class="tag-container">
-							{tags.map((tag) => (
-								<span class="tag-badge">
-									{tag}
-								</span>
-							))}
-						</div>
+						<!-- Only render taxonomy tags if it is an incident record -->
+						{!isStaticPage && tags.length > 0 && (
+							<div class="tag-container">
+								{tags.map((tag) => (
+									<span class="tag-badge">
+										{tag}
+									</span>
+								))}
+							</div>
+						)}
 
 						<slot />
 					</div>
