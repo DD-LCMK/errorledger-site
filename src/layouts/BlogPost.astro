@@ -25,9 +25,17 @@ const currentIndex = sortedPosts.findIndex(post => post.data.title === title);
 const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
 const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
 
-// 3. Normalize tags to lowercase to match uppercase frontmatter variants (e.g., META, PRIVACY)
+// 3. Robust routing match to flag utility layout views (hides tag bars and date info)
 const lowercaseTags = tags.map((tag: string) => tag.toLowerCase());
-const isStaticPage = lowercaseTags.includes('meta') || lowercaseTags.includes('contact') || lowercaseTags.includes('privacy') || lowercaseTags.includes('about');
+const isStaticPage = 
+	lowercaseTags.includes('meta') || 
+	lowercaseTags.includes('contact') || 
+	lowercaseTags.includes('privacy') || 
+	lowercaseTags.includes('about') ||
+	title.toLowerCase().includes('privacy') ||
+	title.toLowerCase().includes('about') ||
+	title.toLowerCase().includes('contact');
+
 const showSidebar = !isStaticPage && (nextPost || prevPost);
 ---
 

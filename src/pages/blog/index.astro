@@ -4,41 +4,24 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
 import { getCollection } from 'astro:content';
-import fs from 'node:fs';
-import path from 'node:path';
 
 const allPosts = await getCollection('blog');
 
-// Scrape the incident year from the markdown for the client-side filter
+// Scrape the incident year directly from the markdown body text
 const postsWithYears = allPosts.map(post => {
 	let parsedDate = post.data.pubDate ? new Date(post.data.pubDate) : new Date();
 	let incidentYear = '';
 	
 	try {
-		let filePath = '';
-		const customPath = (post as any).filePath;
-		
-		if (customPath && fs.existsSync(path.resolve(customPath))) {
-			filePath = path.resolve(customPath);
-		} else {
-			const primaryPath = path.resolve('./src/content/blog', post.id);
-			const fallbackPath = path.resolve('./src/content/blog', `${post.id}.md`);
-			if (fs.existsSync(primaryPath)) {
-				filePath = primaryPath;
-			} else if (fs.existsSync(fallbackPath)) {
-				filePath = fallbackPath;
-			}
-		}
-
-		if (filePath && fs.existsSync(filePath)) {
-			const fileContent = fs.readFileSync(filePath, 'utf-8');
-			
+		const fileContent = post.body || '';
+		if (fileContent) {
 			const tableMatch = fileContent.match(/\|\s*\\*?\\*?Date\\*?\\*?\s*\|\s*([^|]+)\|/i);
-			const textMatch = fileContent.match(/(?:^|\n)\\*?\\*?Date\\*?\\*?:\s*([^\n]+)/i);
+			const textMatch = fileContent.match(/(?:^|\n|#|-|\*)\s*\*?\*?Date\*?\*?\s*:\s*([^#\n\r|*]+)/i);
 			const rawDateString = tableMatch ? tableMatch[1] : (textMatch ? textMatch[1] : null);
 			
 			if (rawDateString) {
-				const cleanParsedDate = new Date(rawDateString.trim());
+				const cleanDateStr = rawDateString.replace(/[\*\_]/g, '').trim();
+				const cleanParsedDate = new Date(cleanDateStr);
 				if (!isNaN(cleanParsedDate.getTime())) {
 					incidentYear = cleanParsedDate.getUTCFullYear().toString();
 				}

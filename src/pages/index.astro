@@ -4,8 +4,6 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
-import fs from 'node:fs';
-import path from 'node:path';
 
 const allPosts = await getCollection('blog');
 
@@ -32,38 +30,22 @@ const posts = allPosts.sort((a, b) => {
 	return dateB - dateA;
 });
 
-// 3. Dynamic Telemetry Scraper: Extract the real incident year from the Markdown body text
+// 3. Serverless-Safe Scraping Engine: Parse incident dates using pure Astro metadata body strings
 const annualMetrics: Record<number, number> = {};
 
 allPosts.forEach(post => {
 	let parsedDate = post.data.pubDate ? new Date(post.data.pubDate) : new Date();
 	
 	try {
-		let filePath = '';
-		const customPath = (post as any).filePath;
-		
-		if (customPath && fs.existsSync(path.resolve(customPath))) {
-			filePath = path.resolve(customPath);
-		} else {
-			const primaryPath = path.resolve('./src/content/blog', post.id);
-			const fallbackPath = path.resolve('./src/content/blog', `${post.id}.md`);
-			if (fs.existsSync(primaryPath)) {
-				filePath = primaryPath;
-			} else if (fs.existsSync(fallbackPath)) {
-				filePath = fallbackPath;
-			}
-		}
-		
-		if (filePath && fs.existsSync(filePath)) {
-			const fileContent = fs.readFileSync(filePath, 'utf-8');
-			
-			// Broadened parsing supporting markdown table rows or text metrics blocks
-			const tableMatch = fileContent.match(/\|\s*\\*?\\*?Date\\*?\\*?\s*\|\s*([^|]+)\|/i);
-			const textMatch = fileContent.match(/(?:^|\n)\\*?\\*?Date\\*?\\*?:\s*([^\n]+)/i);
+		const fileContent = post.body || '';
+		if (fileContent) {
+			const tableMatch = fileContent.match(/\|\s*\*?\*?Date\*?\*?\s*\|\s*([^|]+)\|/i);
+			const textMatch = fileContent.match(/(?:^|\n|#|-|\*)\s*\*?\*?Date\*?\*?\s*:\s*([^#\n\r|*]+)/i);
 			const rawDateString = tableMatch ? tableMatch[1] : (textMatch ? textMatch[1] : null);
 			
 			if (rawDateString) {
-				const cleanParsedDate = new Date(rawDateString.trim());
+				const cleanDateStr = rawDateString.replace(/[\*\_]/g, '').trim();
+				const cleanParsedDate = new Date(cleanDateStr);
 				if (!isNaN(cleanParsedDate.getTime())) {
 					parsedDate = cleanParsedDate;
 				}
