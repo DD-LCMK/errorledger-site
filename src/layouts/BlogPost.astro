@@ -9,7 +9,6 @@ type Props = CollectionEntry<'blog'>['data'];
 
 const { title, meta_title, description, pubDate, tags = [] } = Astro.props;
 
-// Prioritize your optimized, click-friendly search title
 const seoTitle = meta_title || title;
 ---
 
@@ -17,20 +16,19 @@ const seoTitle = meta_title || title;
 	<head>
 		<BaseHead title={seoTitle} description={description} />
 		<style>
-			/* Layout expands on desktop views to accommodate the forensic sidebar element side-by-side */
-			main { width: calc(100% - 2rem); max-width: 720px; margin: 0 auto; padding: 3em 1rem; transition: max-width 0.2s ease; }
+			/* Match main width strictly to the 960px header alignment */
+			main { width: calc(100% - 2rem); max-width: 960px; margin: 0 auto; padding: 2em 1rem; }
 			
 			@media (min-width: 1024px) {
-				main { max-width: 1040px; }
 				.post-layout-grid {
 					display: grid;
-					grid-template-columns: 240px 1fr;
-					gap: 3.5rem;
+					grid-template-columns: 1fr 250px; /* Content left, structured telemetry panel right */
+					gap: 3rem;
 					align-items: start;
 				}
 			}
 
-			/* Sticky Telemetry Sidebar Layout Panel */
+			/* Upgraded Structural Telemetry Sidebar Panel */
 			.sidebar-wrapper {
 				display: none;
 			}
@@ -38,59 +36,60 @@ const seoTitle = meta_title || title;
 				.sidebar-wrapper {
 					display: block;
 					position: sticky;
-					top: 5.5rem; /* Comfortably clears the glass sticky header */
+					top: 5.5rem; /* Clears sticky glass header */
 					height: fit-content;
 					max-height: calc(100vh - 7rem);
 					overflow-y: auto;
-					padding-right: 0.5rem;
+					background: #f8fafc;
+					border: 1px solid #e2e8f0;
+					border-radius: 8px;
+					padding: 1.25rem;
 				}
 			}
 
 			.toc-title {
 				font-family: ui-monospace, monospace;
-				font-size: 0.75rem;
+				font-size: 0.72rem;
 				font-weight: 700;
 				text-transform: uppercase;
 				letter-spacing: 0.05em;
-				color: #718096;
+				color: #64748b;
 				margin-bottom: 0.75rem;
+				border-bottom: 1px solid #e2e8f0;
+				padding-bottom: 0.5rem;
 			}
 			.toc-list {
 				list-style: none;
 				padding: 0;
 				margin: 0;
-				border-left: 1px solid #e2e8f0;
 			}
 			.toc-item {
-				padding: 0.35rem 0 0.35rem 0.85rem;
-				margin-left: -1px;
-				font-size: 0.88rem;
-				border-left: 2px solid transparent;
-				transition: all 0.15s ease;
+				margin-bottom: 0.5rem;
+				font-size: 0.85rem;
+				line-height: 1.4;
 				white-space: nowrap;
 				overflow: hidden;
 				text-overflow: ellipsis;
 			}
 			.toc-item a {
-				color: #4a5568;
+				color: #475569;
 				text-decoration: none;
-				display: block;
+				transition: color 0.15s ease;
 			}
 			.toc-item:hover a {
-				color: #e53e3e;
-			}
-			.toc-item.active {
-				border-left-color: #e53e3e;
+				color: #ef4444;
 			}
 			.toc-item.active a {
-				color: #e53e3e;
-				font-weight: 600;
+				color: #ef4444;
+				font-weight: 700;
 			}
 
 			/* Depth Indentation Rules for Subheadings (H3) */
 			.toc-depth-h3 {
-				padding-left: 1.6rem;
-				font-size: 0.82rem;
+				padding-left: 0.75rem;
+				font-size: 0.8rem;
+				border-left: 1px solid #e2e8f0;
+				margin-left: 0.25rem;
 			}
 
 			.prose { color: #2d3748; line-height: 1.75; font-size: 1.1rem; }
@@ -98,7 +97,6 @@ const seoTitle = meta_title || title;
 			.prose h2 { font-size: 1.5em; margin-top: 1.5em; margin-bottom: 0.5em; color: #2d3748; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.3em; scroll-margin-top: 6.5rem; }
 			.prose :global(h3) { font-size: 1.2em; margin-top: 1.3em; margin-bottom: 0.4em; color: #2d3748; font-weight: 700; scroll-margin-top: 6.5rem; }
 			
-			/* Global overrides to target elements inside the markdown <slot /> safely */
 			.prose :global(pre) { 
 				position: relative !important; 
 				padding: 2.75rem 1rem 1.25rem 1rem !important; 
@@ -108,7 +106,6 @@ const seoTitle = meta_title || title;
 			.prose :global(code) { background-color: #f7fafc; padding: 0.2em 0.4em; border-radius: 4px; font-size: 0.9em; color: #e53e3e; font-family: monospace; }
 			.prose :global(pre code) { background-color: transparent !important; padding: 0 !important; color: inherit !important; font-size: inherit !important; }
 			
-			/* Premium Modern Code Block Copy Button Styles */
 			.prose :global(.code-copy-btn) {
 				position: absolute !important;
 				top: 0.75rem !important;
@@ -127,34 +124,23 @@ const seoTitle = meta_title || title;
 				box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
 				z-index: 10 !important;
 			}
-			
-			.prose :global(pre:hover .code-copy-btn) { 
-				opacity: 1 !important; 
-			}
-			
-			.prose :global(.code-copy-btn:hover) { 
-				background: #f8fafc !important; 
-				border-color: #cbd5e1 !important;
-				color: #0f172a !important;
-				transform: translateY(-1px);
-			}
+			.prose :global(pre:hover .code-copy-btn) { opacity: 1 !important; }
+			.prose :global(.code-copy-btn:hover) { background: #f8fafc !important; border-color: #cbd5e1 !important; color: #0f172a !important; transform: translateY(-1px); }
 
 			.prose :global(table) { width: 100%; margin: 2em 0; border-collapse: collapse; }
 			.prose :global(th) { background-color: #f7fafc; padding: 10px; border-bottom: 2px solid #edf2f7; text-align: left; }
 			.prose :global(td) { padding: 10px; border-bottom: 1px solid #edf2f7; }
 			
-			/* Share Actions Styles */
 			.meta-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px dashed #e2e8f0; flex-wrap: wrap; gap: 1rem; }
 			.date { color: #718096; font-size: 0.95rem; }
 			.share-actions { display: flex; gap: 0.5rem; }
 			.share-btn { background: #ffffff; border: 1px solid #cbd5e1; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; color: #334155; text-decoration: none; font-weight: 500; }
 			.share-btn:hover { background: #f8fafc; border-color: #94a3b8; color: #0f172a; }
 
-			/* 3-Tier Tag Layout badge row */
 			.tag-container { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
 			.tag-badge { font-size: 0.75rem; font-weight: 700; background: #f1f5f9; color: #475569; padding: 0.15rem 0.45rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.025em; }
 
-			/* Premium Dark Mode Styles */
+			/* Premium Dark Mode Interfacing */
 			:global(html.dark) .prose { color: #cbd5e1; }
 			:global(html.dark) .prose h1, :global(html.dark) .prose h2, :global(html.dark) .prose :global(h3) { color: #f8fafc; }
 			:global(html.dark) .prose :global(th) { background-color: #1e293b; border-bottom-color: #334155; }
@@ -164,28 +150,17 @@ const seoTitle = meta_title || title;
 			:global(html.dark) .share-btn { background: #1e293b; border-color: #334155; color: #cbd5e1; }
 			:global(html.dark) .share-btn:hover { background: #273549; border-color: #475569; color: #f8fafc; }
 
-			/* Dark Mode Matrix Overrides for Sticky Sidebar */
-			:global(html.dark) .toc-title { color: #94a3b8; }
-			:global(html.dark) .toc-list { border-left-color: #334155; }
+			/* Dark Mode Panel Configuration overrides */
+			:global(html.dark) .sidebar-wrapper { background: #1e293b; border-color: #334155; }
+			:global(html.dark) .toc-title { color: #cbd5e1; border-bottom-color: #334155; }
 			:global(html.dark) .toc-item a { color: #cbd5e1; }
 			:global(html.dark) .toc-item:hover a { color: #ef4444; }
-			:global(html.dark) .toc-item.active { border-left-color: #ef4444; }
 			:global(html.dark) .toc-item.active a { color: #ef4444; }
+			:global(html.dark) .toc-depth-h3 { border-left-color: #334155; }
 
-			:global(html.dark) .prose :global(.code-copy-btn) {
-				background: #1e293b !important;
-				border-color: #334155 !important;
-				color: #cbd5e1 !important;
-				box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-			}
-			:global(html.dark) .prose :global(.code-copy-btn:hover) {
-				background: #273549 !important;
-				border-color: #475569 !important;
-				color: #f8fafc !important;
-			}
-			:global(html.dark) .prose :global(pre) {
-				box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
-			}
+			:global(html.dark) .prose :global(.code-copy-btn) { background: #1e293b !important; border-color: #334155 !important; color: #cbd5e1 !important; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important; }
+			:global(html.dark) .prose :global(.code-copy-btn:hover) { background: #273549 !important; border-color: #475569 !important; color: #f8fafc !important; }
+			:global(html.dark) .prose :global(pre) { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important; }
 		</style>
 	</head>
 
@@ -193,12 +168,7 @@ const seoTitle = meta_title || title;
 		<Header />
 		<main>
 			<div class="post-layout-grid">
-				<!-- Dynamic Interactive Forensic Sidebar Component -->
-				<aside class="sidebar-wrapper">
-					<div class="toc-title">Telemetry Matrix</div>
-					<ul class="toc-list" id="dynamic-toc-bus"></ul>
-				</aside>
-
+				<!-- Main Body Content Area (Left aligned) -->
 				<article>
 					<div class="prose">
 						<div class="meta-wrapper">
@@ -228,12 +198,17 @@ const seoTitle = meta_title || title;
 						<slot />
 					</div>
 				</article>
+
+				<!-- Structured Right-Aligned Telemetry Panel -->
+				<aside class="sidebar-wrapper">
+					<div class="toc-title">Telemetry Matrix</div>
+					<ul class="toc-list" id="dynamic-toc-bus"></ul>
+				</aside>
 			</div>
 		</main>
 		<Footer />
 
 		<script lang="ts">
-			// Handle article URL sharing clipboard actions
 			const copyBtn = document.getElementById('copy-link-btn');
 			if (copyBtn) {
 				copyBtn.addEventListener('click', () => {
@@ -246,7 +221,6 @@ const seoTitle = meta_title || title;
 				});
 			}
 
-			// Dynamically locate markdown pre containers and attach the modern copy utility
 			const codeBlocks = document.querySelectorAll('.prose pre');
 			codeBlocks.forEach((block) => {
 				const button = document.createElement('button');
@@ -270,68 +244,66 @@ const seoTitle = meta_title || title;
 				});
 			});
 
-			// --- COMPASS AUTOMATED TABLE OF CONTENTS SCROLLER ENGINE ---
-			const targetContainer = document.getElementById('dynamic-toc-bus');
-			const contentHeadings = document.querySelectorAll('.prose h2, .prose h3');
-			
-			if (targetContainer && contentHeadings.length > 0) {
-				contentHeadings.forEach((heading, idx) => {
-					// 1. Ensure element contains a distinct hash identifier for navigation parsing
-					if (!heading.id) {
-						const slug = heading.textContent
-							?.toLowerCase()
-							.replace(/[^a-z0-9]+/g, '-')
-							.replace(/(^-|-$)/g, '') || `metric-${idx}`;
-						heading.id = slug;
-					}
-
-					// 2. Synthesize item elements into the navigation column
-					const li = document.createElement('li');
-					li.className = `toc-item toc-depth-${heading.tagName.toLowerCase()}`;
-					li.dataset.targetId = heading.id;
-
-					const anchor = document.createElement('a');
-					anchor.href = `#${heading.id}`;
-					anchor.textContent = heading.textContent || 'Telemetry Node';
-
-					li.appendChild(anchor);
-					targetContainer.appendChild(li);
-				});
-
-				// 3. Coordinate Tracking: Track heading viewport coordinates to highlight active track positions
-				const observerOptions = {
-					root: null,
-					rootMargin: '-10% 0px -70% 0px',
-					threshold: 0
-				};
-
-				let activelyIntersectingIds: string[] = [];
-
-				const trackingObserver = new IntersectionObserver((entries) => {
-					entries.forEach((entry) => {
-						const elementId = entry.target.id;
-						if (entry.isIntersecting) {
-							if (!activelyIntersectingIds.includes(elementId)) {
-								activelyIntersectingIds.push(elementId);
-							}
-						} else {
-							activelyIntersectingIds = activelyIntersectingIds.filter(id => id !== elementId);
+			// --- TIMING-SAFE INTERACTIVE FORENSIC SIDEBAR ENGINE ---
+			window.addEventListener('DOMContentLoaded', () => {
+				const targetContainer = document.getElementById('dynamic-toc-bus');
+				const contentHeadings = document.querySelectorAll('.prose h2, .prose h3');
+				
+				if (targetContainer && contentHeadings.length > 0) {
+					contentHeadings.forEach((heading, idx) => {
+						if (!heading.id) {
+							const slug = heading.textContent
+								?.toLowerCase()
+								.replace(/[^a-z0-9]+/g, '-')
+								.replace(/(^-|-$)/g, '') || `metric-${idx}`;
+							heading.id = slug;
 						}
+
+						const li = document.createElement('li');
+						li.className = `toc-item toc-depth-${heading.tagName.toLowerCase()}`;
+						li.dataset.targetId = heading.id;
+
+						const anchor = document.createElement('a');
+						anchor.href = `#${heading.id}`;
+						anchor.textContent = heading.textContent || 'Telemetry Node';
+
+						li.appendChild(anchor);
+						targetContainer.appendChild(li);
 					});
 
-					// Locate the layout node matching the current coordinate zone and highlight it
-					const activeId = activelyIntersectingIds[activelyIntersectingIds.length - 1] || targetContainer.querySelector('.toc-item')?.getAttribute('data-target-id');
-					
-					if (activeId) {
-						document.querySelectorAll('#dynamic-toc-bus .toc-item').forEach((item) => {
-							const htmlItem = item as HTMLElement;
-							htmlItem.classList.toggle('active', htmlItem.dataset.targetId === activeId);
-						});
-					}
-				}, observerOptions);
+					const observerOptions = {
+						root: null,
+						rootMargin: '-10% 0px -70% 0px',
+						threshold: 0
+					};
 
-				contentHeadings.forEach((el) => trackingObserver.observe(el));
-			}
+					let activelyIntersectingIds: string[] = [];
+
+					const trackingObserver = new IntersectionObserver((entries) => {
+						entries.forEach((entry) => {
+							const elementId = entry.target.id;
+							if (entry.isIntersecting) {
+								if (!activelyIntersectingIds.includes(elementId)) {
+									activelyIntersectingIds.push(elementId);
+								}
+							} else {
+								activelyIntersectingIds = activelyIntersectingIds.filter(id => id !== elementId);
+							}
+						});
+
+						const activeId = activelyIntersectingIds[activelyIntersectingIds.length - 1] || targetContainer.querySelector('.toc-item')?.getAttribute('data-target-id');
+						
+						if (activeId) {
+							document.querySelectorAll('#dynamic-toc-bus .toc-item').forEach((item) => {
+								const htmlItem = item as HTMLElement;
+								htmlItem.classList.toggle('active', htmlItem.dataset.targetId === activeId);
+							});
+						}
+					}, observerOptions);
+
+					contentHeadings.forEach((el) => trackingObserver.observe(el));
+				}
+			});
 		</script>
 	</body>
 </html>
