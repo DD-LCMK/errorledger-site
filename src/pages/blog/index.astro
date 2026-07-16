@@ -204,14 +204,22 @@ const posts = postsWithYears.sort((a, b) => {
 
 			searchBox?.addEventListener('input', filterPosts);
 
-			window.addEventListener('DOMContentLoaded', () => {
+			// --- TIMING-SAFE URL INTENT PARSING ENGINE ---
+			function parseUrlQueryParameters() {
 				const urlParams = new URLSearchParams(window.location.search);
 				const urlQuery = urlParams.get('q');
 				if (urlQuery && searchBox) {
 					searchBox.value = urlQuery;
 					filterPosts();
 				}
-			});
+			}
+
+			// If DOM is already settled, fire instantly; otherwise drop onto mount stage
+			if (document.readyState === 'loading') {
+				window.addEventListener('DOMContentLoaded', parseUrlQueryParameters);
+			} else {
+				parseUrlQueryParameters();
+			}
 		</script>
 	</body>
 </html>
