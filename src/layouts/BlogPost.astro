@@ -278,6 +278,33 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 					}
 				});
 			});
+
+			// Append automated Wayback Machine archive links adjacent to external hyperlinks
+			document.addEventListener('astro:page-load', () => {
+				const postLinks = document.querySelectorAll('.prose a');
+				postLinks.forEach((link) => {
+					const href = link.getAttribute('href');
+					
+					// Parse HTTP/S targets excluding internal hooks or active archive domains
+					if (href && href.startsWith('http') && !href.includes('web.archive.org') && !href.includes(window.location.host)) {
+						// Block repeated appending across client routing cycles
+						if (link.nextElementSibling && link.nextElementSibling.classList.contains('wayback-fallback')) return;
+
+						const archiveLink = document.createElement('a');
+						archiveLink.href = `https://web.archive.org/web/${href}`;
+						archiveLink.target = '_blank';
+						archiveLink.rel = 'noopener noreferrer';
+						archiveLink.className = 'wayback-fallback';
+						archiveLink.style.fontSize = '0.78em';
+						archiveLink.style.marginLeft = '0.4rem';
+						archiveLink.style.color = '#64748b';
+						archiveLink.style.fontFamily = 'ui-monospace, monospace';
+						archiveLink.textContent = '[archive]';
+						
+						link.parentNode?.insertBefore(archiveLink, link.nextSibling);
+					}
+				});
+			});
 		</script>
 	</body>
 </html>

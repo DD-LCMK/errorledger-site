@@ -1,6 +1,10 @@
 name: Scaled Link Checker
 
 on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
   schedule:
     # Runs every night at midnight UTC
     - cron: '0 0 * * *'
@@ -12,51 +16,55 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
-      - name: Identify Today's Hash Shard
-        id: select-shard
+      - name: Get Changed Blog Files
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+        with:
+          files: src/content/blog/**/*.md
+
+      - name: Identify Target Files
+        id: select-files
         run: |
-          FILES=$(node -e "
-            const fs = require('fs');
-            const path = require('path');
-            const blogDir = './src/content/blog';
-            
-            if (!fs.existsSync(blogDir)) {
-              console.log('');
-              process.exit(0);
-            }
-            
-            // Simple string hashing function
-            function getHashBucket(str, buckets) {
-              let hash = 0;
-              for (let i = 0; i < str.length; i++) {
-                hash = str.charCodeAt(i) + ((hash << 5) - hash);
+          if [ "${{ github.event_name }}" = "push" ] || [ "${{ github.event_name }}" = "pull_request" ]; then
+            # Check ONLY changed files on commits
+            FILES="${{ steps.changed-files.outputs.all_changed_files }}"
+            echo "files=$FILES" >> $GITHUB_OUTPUT
+          else
+            # Run 28-day hash rotation on schedule
+            FILES=$(node -e "
+              const fs = require('fs');
+              const path = require('path');
+              const blogDir = './src/content/blog';
+              if (!fs.existsSync(blogDir)) { console.log(''); process.exit(0); }
+              
+              function getHashBucket(str, buckets) {
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) { hash = str.charCodeAt(i) + ((hash << 5) - hash); }
+                return Math.abs(hash) % buckets;
               }
-              return Math.abs(hash) % buckets;
-            }
-            
-            const files = fs.readdirSync(blogDir).filter(f => f.endsWith('.md'));
-            
-            // Map to 28 consistent daily buckets
-            const totalBuckets = 28;
-            const todayBucket = (new Date().getUTCDate() - 1) % totalBuckets; 
-            
-            const matchingFiles = [];
-            
-            files.forEach(file => {
-              // Bucket the file based strictly on its name
-              if (getHashBucket(file, totalBuckets) === todayBucket) {
-                matchingFiles.push(path.join(blogDir, file));
-              }
-            });
-            
-            console.log(matchingFiles.join(' '));
-          ")
-          echo "files=$FILES" >> $GITHUB_OUTPUT
+              
+              const files = fs.readdirSync(blogDir).filter(f => f.endsWith('.md'));
+              const totalBuckets = 28;
+              const todayBucket = (new Date().getUTCDate() - 1) % totalBuckets;
+              const matchingFiles = [];
+              
+              files.forEach(file => {
+                if (getHashBucket(file, totalBuckets) === todayBucket) {
+                  matchingFiles.push(path.join(blogDir, file));
+                }
+              });
+              console.log(matchingFiles.join(' '));
+            ")
+            echo "files=$FILES" >> $GITHUB_OUTPUT
+          fi
 
-      - name: Test Today's Shard
-        if: steps.select-shard.outputs.files != ''
+      - name: Test Selected Links
+        if: steps.select-files.outputs.files != ''
         uses: lycheeverse/lychee-action@v1.9.0
         with:
-          args: --verbose --no-progress ${{ steps.select-shard.outputs.files }}
-          fail: false
+          args: --verbose --no-progress ${{ steps.select-files.outputs.files }}
+          # Fail the build if a new commit has a broken link. Don't fail on scheduled checks.
+          fail: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
