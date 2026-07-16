@@ -1,11 +1,6 @@
 ---
 import HeaderLink from './HeaderLink.astro';
 import { SITE_TITLE } from '../consts';
-
-// Automate search bar visibility based on the current URL pathname
-const { pathname } = Astro.url;
-const cleanPath = pathname.replace(/\/$/, "");
-const showSearch = cleanPath.startsWith('/tools') || (cleanPath.startsWith('/blog') && cleanPath !== '/blog');
 ---
 
 <header>
@@ -17,19 +12,17 @@ const showSearch = cleanPath.startsWith('/tools') || (cleanPath.startsWith('/blo
 			</a>
 		</h2>
 
-		<!-- Mini search bar renders automatically on tools pages and individual blog post pages -->
-		{showSearch && (
-			<form action="/blog" method="GET" class="header-search-form">
-				<input 
-					type="text" 
-					name="q" 
-					class="header-search-input" 
-					placeholder="Search incidents..." 
-					aria-label="Search incidents globally"
-					autocomplete="off"
-				/>
-			</form>
-		)}
+		<!-- Search utility is now global and renders unconditionally on all viewpoints -->
+		<form action="/blog" method="GET" class="header-search-form">
+			<input 
+				type="text" 
+				name="q" 
+				class="header-search-input" 
+				placeholder="Search incidents..." 
+				aria-label="Search incidents globally"
+				autocomplete="off"
+			/>
+		</form>
 
 		<div class="internal-links" style="display: flex; align-items: center; gap: 0.25rem;">
 			<HeaderLink href="/">Home</HeaderLink>
