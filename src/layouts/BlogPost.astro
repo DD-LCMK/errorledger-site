@@ -12,7 +12,7 @@ const { title, meta_title, description, pubDate, tags = [] } = Astro.props;
 
 const seoTitle = meta_title || title;
 
-// 1. Fetch and sort collection to establish relative node tracking mapping
+// 1. Fetch and sort collection to establish relative document paths
 const allPosts = await getCollection('blog');
 const sortedPosts = allPosts.sort((a, b) => {
 	const dateA = a.data.pubDate ? new Date(a.data.pubDate).valueOf() : 0;
@@ -20,16 +20,21 @@ const sortedPosts = allPosts.sort((a, b) => {
 	return dateB - dateA;
 });
 
-// 2. Identify neighbors based on the unique document record title match
+// 2. Identify neighbors based on the current document title match
 const currentIndex = sortedPosts.findIndex(post => post.data.title === title);
 const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
 const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
+
+// 3. Evaluate if this page is a static site page or an incident log entry
+const isStaticPage = tags.includes('meta') || tags.includes('contact');
+const showSidebar = !isStaticPage && (nextPost || prevPost);
 ---
 
 <html lang="en">
 	<head>
 		<BaseHead title={seoTitle} description={description} />
 		<style>
+			/* Layout constraints aligned to header boundaries */
 			main { width: calc(100% - 2rem); max-width: 960px; margin: 0 auto; padding: 2em 1rem; }
 			
 			.post-layout-grid {
@@ -41,11 +46,11 @@ const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentInde
 
 			@media (min-width: 1024px) {
 				.post-layout-grid.has-sidebar {
-					grid-template-columns: 1fr 260px; /* Split column grid tracking configuration */
+					grid-template-columns: 1fr 260px;
 				}
 			}
 
-			/* Structural Telemetry Sidebar Panel */
+			/* Minimal Fixed Sidebar Wrapper */
 			.sidebar-wrapper {
 				display: none;
 			}
@@ -53,7 +58,7 @@ const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentInde
 				.post-layout-grid.has-sidebar .sidebar-wrapper {
 					display: block;
 					position: sticky;
-					top: 5.5rem;
+					top: 5.5rem; /* Clears sticky header bar smoothly */
 					height: fit-content;
 					max-height: calc(100vh - 7rem);
 					overflow-y: auto;
@@ -64,55 +69,13 @@ const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentInde
 				}
 			}
 
-			.toc-title {
-				font-family: ui-monospace, monospace;
-				font-size: 0.72rem;
-				font-weight: 700;
-				text-transform: uppercase;
-				letter-spacing: 0.05em;
-				color: #64748b;
-				margin-bottom: 0.75rem;
-				border-bottom: 1px solid #e2e8f0;
-				padding-bottom: 0.5rem;
-			}
-			.toc-list {
-				list-style: none;
-				padding: 0;
-				margin: 0 0 1.5rem 0;
-			}
-			.toc-item {
-				margin-bottom: 0.5rem;
-				font-size: 0.85rem;
-				line-height: 1.4;
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
-			}
-			.toc-item a {
-				color: #475569;
-				text-decoration: none;
-				transition: color 0.15s ease;
-			}
-			.toc-item:hover a { color: #ef4444; }
-			.toc-item.active a { color: #ef4444; font-weight: 700; }
-
-			.toc-depth-h3 {
-				padding-left: 0.75rem;
-				font-size: 0.8rem;
-				border-left: 1px solid #e2e8f0;
-				margin-left: 0.25rem;
-			}
-
-			/* Adjacent Records Navigation block inside the sidebar box */
-			.adjacent-bus-panel {
-				margin-top: 1.5rem;
-				border-top: 1px dashed #e2e8f0;
-				padding-top: 1rem;
-			}
+			/* Clean Record Navigation Nodes */
 			.nav-node-link {
 				display: block;
 				text-decoration: none;
-				margin-bottom: 0.75rem;
+			}
+			.nav-node-link:not(:last-child) {
+				margin-bottom: 1.25rem;
 			}
 			.nav-node-label {
 				display: block;
@@ -121,20 +84,21 @@ const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentInde
 				font-weight: 700;
 				color: #94a3b8;
 				text-transform: uppercase;
-				margin-bottom: 0.15rem;
+				margin-bottom: 0.25rem;
+				letter-spacing: 0.025em;
 			}
 			.nav-node-title {
 				display: block;
 				font-size: 0.82rem;
 				color: #475569;
-				line-height: 1.3;
+				line-height: 1.35;
 				font-weight: 600;
 				white-space: nowrap;
 				overflow: hidden;
 				text-overflow: ellipsis;
 				transition: color 0.15s ease;
 			}
-			.nav-node-link:hover .nav-node-title { color: #ef4444; }
+			.nav-node-link:hover .nav-node-title { color: #ef4444 !important; }
 
 			.prose { color: #2d3748; line-height: 1.75; font-size: 1.1rem; }
 			.prose h1 { font-size: 2.25em; margin-top: 0; margin-bottom: 0.8em; color: #1a202c; line-height: 1.2; }
@@ -179,7 +143,7 @@ const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentInde
 			.tag-container { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
 			.tag-badge { font-size: 0.75rem; font-weight: 700; background: #f1f5f9; color: #475569; padding: 0.15rem 0.45rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.025em; }
 
-			/* Premium Dark Mode Interfacing Configuration */
+			/* --- STRICT DARK MODE SYSTEM OVERRIDES --- */
 			:global(html.dark) .prose { color: #cbd5e1; }
 			:global(html.dark) .prose h1, :global(html.dark) .prose h2, :global(html.dark) .prose :global(h3) { color: #f8fafc; }
 			:global(html.dark) .prose :global(th) { background-color: #1e293b; border-bottom-color: #334155; }
@@ -189,15 +153,21 @@ const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentInde
 			:global(html.dark) .share-btn { background: #1e293b; border-color: #334155; color: #cbd5e1; }
 			:global(html.dark) .share-btn:hover { background: #273549; border-color: #475569; color: #f8fafc; }
 
-			:global(html.dark) .sidebar-wrapper { background: #1e293b; border-color: #334155; }
-			:global(html.dark) .toc-title { color: #cbd5e1; border-bottom-color: #334155; }
-			:global(html.dark) .toc-item a { color: #cbd5e1; }
-			:global(html.dark) .toc-item:hover a { color: #ef4444; }
-			:global(html.dark) .toc-item.active a { color: #ef4444; }
-			:global(html.dark) .toc-depth-h3 { border-left-color: #334155; }
-			:global(html.dark) .adjacent-bus-panel { border-top-color: #334155; }
-			:global(html.dark) .nav-node-title { color: #cbd5e1; }
-			:global(html.dark) .nav-node-link:hover .nav-node-title { color: #ef4444; }
+			/* Explicit high-specificity overrides for the floating card container */
+			:global(html.dark) .post-layout-grid.has-sidebar .sidebar-wrapper {
+				background: #1e293b !important;
+				border: 1px solid #334155 !important;
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+			}
+			:global(html.dark) .nav-node-title {
+				color: #cbd5e1 !important;
+			}
+			:global(html.dark) .nav-node-link:hover .nav-node-title {
+				color: #ef4444 !important;
+			}
+			:global(html.dark) .nav-node-label {
+				color: #64748b !important;
+			}
 
 			:global(html.dark) .prose :global(.code-copy-btn) { background: #1e293b !important; border-color: #334155 !important; color: #cbd5e1 !important; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important; }
 			:global(html.dark) .prose :global(.code-copy-btn:hover) { background: #273549 !important; border-color: #475569 !important; color: #f8fafc !important; }
@@ -208,9 +178,8 @@ const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentInde
 	<body>
 		<Header />
 		<main>
-			<!-- Layout grid defaults to tracking structure wrapper, code auto-collapses this via JS if empty -->
-			<div class="post-layout-grid has-sidebar" id="layout-grid-frame">
-				<!-- Main Body Content Area -->
+			<div class={showSidebar ? "post-layout-grid has-sidebar" : "post-layout-grid"}>
+				<!-- Main Content Panel -->
 				<article>
 					<div class="prose">
 						<div class="meta-wrapper">
@@ -241,15 +210,9 @@ const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentInde
 					</div>
 				</article>
 
-				<!-- Structured Right-Aligned Telemetry Panel Container -->
-				<aside class="sidebar-wrapper">
-					<div class="toc-title">Telemetry Matrix</div>
-					<ul class="toc-list" id="dynamic-toc-bus"></ul>
-
-					<!-- Adjacent Paging Node Subpanel -->
-					<div class="adjacent-bus-panel">
-						<div class="toc-title">Adjacent Logs</div>
-						
+				<!-- Simplified Mini Navigation Sidebar Card -->
+				{showSidebar && (
+					<aside class="sidebar-wrapper">
 						{nextPost && (
 							<a href={`/blog/${nextPost.data.shortenedSlug}/`} class="nav-node-link">
 								<span class="nav-node-label">← Next Record</span>
@@ -263,13 +226,13 @@ const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentInde
 								<span class="nav-node-title">{prevPost.data.title}</span>
 							</a>
 						)}
-					</div>
-				</aside>
+					</aside>
+				)}
 			</div>
 		</main>
 		<Footer />
 
-		<script lang="ts">
+		<script>
 			// Handle article URL sharing clipboard actions
 			const copyBtn = document.getElementById('copy-link-btn');
 			if (copyBtn) {
@@ -306,85 +269,6 @@ const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentInde
 					}
 				});
 			});
-
-			// --- TIMING-SAFE SIDEBAR RENDER ENGINE WITH AUTO-COLLAPSE FOR GENERAL PAGES ---
-			function buildTelemetryInterface() {
-				const targetContainer = document.getElementById('dynamic-toc-bus');
-				const contentHeadings = document.querySelectorAll('.prose h2, .prose h3');
-				const layoutFrame = document.getElementById('layout-grid-frame');
-
-				// If no metric headings are found (About/Contact pages), collapse layout structure back to uniform width
-				if (contentHeadings.length === 0) {
-					if (layoutFrame) {
-						layoutFrame.classList.remove('has-sidebar');
-					}
-					return;
-				}
-				
-				if (targetContainer) {
-					targetContainer.innerHTML = ''; // Sanitize container box
-					
-					contentHeadings.forEach((heading, idx) => {
-						if (!heading.id) {
-							const slug = heading.textContent
-								?.toLowerCase()
-								.replace(/[^a-z0-9]+/g, '-')
-								.replace(/(^-|-$)/g, '') || `metric-${idx}`;
-							heading.id = slug;
-						}
-
-						const li = document.createElement('li');
-						li.className = `toc-item toc-depth-${heading.tagName.toLowerCase()}`;
-						li.dataset.targetId = heading.id;
-
-						const anchor = document.createElement('a');
-						anchor.href = `#${heading.id}`;
-						anchor.textContent = heading.textContent || 'Telemetry Node';
-
-						li.appendChild(anchor);
-						targetContainer.appendChild(li);
-					});
-
-					const observerOptions = {
-						root: null,
-						rootMargin: '-10% 0px -70% 0px',
-						threshold: 0
-					};
-
-					let activelyIntersectingIds: string[] = [];
-
-					const trackingObserver = new IntersectionObserver((entries) => {
-						entries.forEach((entry) => {
-							const elementId = entry.target.id;
-							if (entry.isIntersecting) {
-								if (!activelyIntersectingIds.includes(elementId)) {
-									activelyIntersectingIds.push(elementId);
-								}
-							} else {
-								activelyIntersectingIds = activelyIntersectingIds.filter(id => id !== elementId);
-							}
-						});
-
-						const activeId = activelyIntersectingIds[activelyIntersectingIds.length - 1] || targetContainer.querySelector('.toc-item')?.getAttribute('data-target-id');
-						
-						if (activeId) {
-							document.querySelectorAll('#dynamic-toc-bus .toc-item').forEach((item) => {
-								const htmlItem = item as HTMLElement;
-								htmlItem.classList.toggle('active', htmlItem.dataset.targetId === activeId);
-							});
-						}
-					}, observerOptions);
-
-					contentHeadings.forEach((el) => trackingObserver.observe(el));
-				}
-			}
-
-			// Race-condition fallback: Execute instantly if layout DOM is already settled
-			if (document.readyState === 'loading') {
-				window.addEventListener('DOMContentLoaded', buildTelemetryInterface);
-			} else {
-				buildTelemetryInterface();
-			}
 		</script>
 	</body>
 </html>
