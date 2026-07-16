@@ -31,6 +31,11 @@ import { SITE_TITLE } from '../consts';
 			</button>
 		</div>
 	</nav>
+
+	<!-- Telemetry Reading Progress Infrastructure Container -->
+	<div class="progress-bus">
+		<div id="reading-progress-bar" class="progress-fill"></div>
+	</div>
 </header>
 
 <script>
@@ -60,14 +65,32 @@ import { SITE_TITLE } from '../consts';
 		}
 		updateIcons();
 	});
+
+	// Dynamic Reading Progress Engine
+	window.addEventListener('scroll', () => {
+		const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+		const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+		const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+		const progressBar = document.getElementById('reading-progress-bar');
+		if (progressBar) {
+			progressBar.style.width = scrolled + '%';
+		}
+	});
 </script>
 
 <style>
 	header {
+		position: sticky;
+		top: 0;
+		z-index: 100;
 		margin: 0;
 		padding: 0 1rem;
-		background: white;
-		box-shadow: 0 2px 8px rgba(var(--black), 5%);
+		background: rgba(255, 255, 255, 0.82);
+		backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: blur(8px);
+		border-bottom: 1px solid #e2e8f0;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+		transition: background-color 0.2s ease, border-color 0.2s ease;
 	}
 	h2 {
 		margin: 0;
@@ -96,7 +119,37 @@ import { SITE_TITLE } from '../consts';
 	.hidden {
 		display: none !important;
 	}
+
+	/* Telemetry Tracking Line Styles */
+	.progress-bus {
+		position: absolute;
+		bottom: -1px;
+		left: 0;
+		width: 100%;
+		height: 2px;
+		background: transparent;
+	}
+	.progress-fill {
+		height: 100%;
+		width: 0%;
+		background: #ef4444;
+		box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+		transition: width 0.05s ease-out;
+	}
+
+	/* Premium Dark Mode Glass Adjustments */
+	:global(html.dark) header {
+		background: rgba(15, 23, 42, 0.82);
+		border-bottom-color: #1e293b;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+	}
 	:global(html.dark) .logo-text-main {
 		color: #f8fafc !important;
+	}
+	:global(html.dark) .internal-links a {
+		color: #cbd5e1;
+	}
+	:global(html.dark) .internal-links a.active {
+		color: #f8fafc;
 	}
 </style>

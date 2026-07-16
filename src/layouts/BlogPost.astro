@@ -17,10 +17,86 @@ const seoTitle = meta_title || title;
 	<head>
 		<BaseHead title={seoTitle} description={description} />
 		<style>
-			main { width: calc(100% - 2rem); max-width: 720px; margin: 0 auto; padding: 3em 1rem; }
+			/* Layout expands on desktop views to accommodate the forensic sidebar element side-by-side */
+			main { width: calc(100% - 2rem); max-width: 720px; margin: 0 auto; padding: 3em 1rem; transition: max-width 0.2s ease; }
+			
+			@media (min-width: 1024px) {
+				main { max-width: 1040px; }
+				.post-layout-grid {
+					display: grid;
+					grid-template-columns: 240px 1fr;
+					gap: 3.5rem;
+					align-items: start;
+				}
+			}
+
+			/* Sticky Telemetry Sidebar Layout Panel */
+			.sidebar-wrapper {
+				display: none;
+			}
+			@media (min-width: 1024px) {
+				.sidebar-wrapper {
+					display: block;
+					position: sticky;
+					top: 5.5rem; /* Comfortably clears the glass sticky header */
+					height: fit-content;
+					max-height: calc(100vh - 7rem);
+					overflow-y: auto;
+					padding-right: 0.5rem;
+				}
+			}
+
+			.toc-title {
+				font-family: ui-monospace, monospace;
+				font-size: 0.75rem;
+				font-weight: 700;
+				text-transform: uppercase;
+				letter-spacing: 0.05em;
+				color: #718096;
+				margin-bottom: 0.75rem;
+			}
+			.toc-list {
+				list-style: none;
+				padding: 0;
+				margin: 0;
+				border-left: 1px solid #e2e8f0;
+			}
+			.toc-item {
+				padding: 0.35rem 0 0.35rem 0.85rem;
+				margin-left: -1px;
+				font-size: 0.88rem;
+				border-left: 2px solid transparent;
+				transition: all 0.15s ease;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+			.toc-item a {
+				color: #4a5568;
+				text-decoration: none;
+				display: block;
+			}
+			.toc-item:hover a {
+				color: #e53e3e;
+			}
+			.toc-item.active {
+				border-left-color: #e53e3e;
+			}
+			.toc-item.active a {
+				color: #e53e3e;
+				font-weight: 600;
+			}
+
+			/* Depth Indentation Rules for Subheadings (H3) */
+			.toc-depth-h3 {
+				padding-left: 1.6rem;
+				font-size: 0.82rem;
+			}
+
 			.prose { color: #2d3748; line-height: 1.75; font-size: 1.1rem; }
 			.prose h1 { font-size: 2.25em; margin-top: 0; margin-bottom: 0.8em; color: #1a202c; line-height: 1.2; }
-			.prose h2 { font-size: 1.5em; margin-top: 1.5em; margin-bottom: 0.5em; color: #2d3748; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.3em; }
+			.prose h2 { font-size: 1.5em; margin-top: 1.5em; margin-bottom: 0.5em; color: #2d3748; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.3em; scroll-margin-top: 6.5rem; }
+			.prose :global(h3) { font-size: 1.2em; margin-top: 1.3em; margin-bottom: 0.4em; color: #2d3748; font-weight: 700; scroll-margin-top: 6.5rem; }
 			
 			/* Global overrides to target elements inside the markdown <slot /> safely */
 			.prose :global(pre) { 
@@ -47,12 +123,11 @@ const seoTitle = meta_title || title;
 				color: #475569 !important;
 				font-weight: 600 !important;
 				transition: all 0.15s ease-in-out !important;
-				opacity: 0; /* Hidden until container hover */
+				opacity: 0;
 				box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
 				z-index: 10 !important;
 			}
 			
-			/* Show copy button clearly when hovering over the code snippet box */
 			.prose :global(pre:hover .code-copy-btn) { 
 				opacity: 1 !important; 
 			}
@@ -81,13 +156,21 @@ const seoTitle = meta_title || title;
 
 			/* Premium Dark Mode Styles */
 			:global(html.dark) .prose { color: #cbd5e1; }
-			:global(html.dark) .prose h1, :global(html.dark) .prose h2 { color: #f8fafc; }
+			:global(html.dark) .prose h1, :global(html.dark) .prose h2, :global(html.dark) .prose :global(h3) { color: #f8fafc; }
 			:global(html.dark) .prose :global(th) { background-color: #1e293b; border-bottom-color: #334155; }
 			:global(html.dark) .prose :global(td) { border-bottom-color: #334155; }
 			:global(html.dark) .meta-wrapper { border-bottom-color: #334155; }
 			:global(html.dark) .tag-badge { background: #334155; color: #cbd5e1; }
 			:global(html.dark) .share-btn { background: #1e293b; border-color: #334155; color: #cbd5e1; }
 			:global(html.dark) .share-btn:hover { background: #273549; border-color: #475569; color: #f8fafc; }
+
+			/* Dark Mode Matrix Overrides for Sticky Sidebar */
+			:global(html.dark) .toc-title { color: #94a3b8; }
+			:global(html.dark) .toc-list { border-left-color: #334155; }
+			:global(html.dark) .toc-item a { color: #cbd5e1; }
+			:global(html.dark) .toc-item:hover a { color: #ef4444; }
+			:global(html.dark) .toc-item.active { border-left-color: #ef4444; }
+			:global(html.dark) .toc-item.active a { color: #ef4444; }
 
 			:global(html.dark) .prose :global(.code-copy-btn) {
 				background: #1e293b !important;
@@ -109,42 +192,47 @@ const seoTitle = meta_title || title;
 	<body>
 		<Header />
 		<main>
-			<article>
-				<div class="prose">
-					<div class="meta-wrapper">
-						{pubDate && (
-							<div class="date">
-								<FormattedDate date={pubDate} />
+			<div class="post-layout-grid">
+				<!-- Dynamic Interactive Forensic Sidebar Component -->
+				<aside class="sidebar-wrapper">
+					<div class="toc-title">Telemetry Matrix</div>
+					<ul class="toc-list" id="dynamic-toc-bus"></ul>
+				</aside>
+
+				<article>
+					<div class="prose">
+						<div class="meta-wrapper">
+							{pubDate && (
+								<div class="date">
+									<FormattedDate date={pubDate} />
+								</div>
+							)}
+							<div class="share-actions">
+								<a href={`https://x.com/intent/tweet?url=${encodeURIComponent(Astro.url.href)}&text=${encodeURIComponent(title)}`} target="_blank" rel="noopener noreferrer" class="share-btn">
+									Share on X
+								</a>
+								<button id="copy-link-btn" class="share-btn">
+									Copy Link
+								</button>
 							</div>
-						)}
-						<div class="share-actions">
-							<!-- X Share Intent -->
-							<a href={`https://x.com/intent/tweet?url=${encodeURIComponent(Astro.url.href)}&text=${encodeURIComponent(title)}`} target="_blank" rel="noopener noreferrer" class="share-btn">
-								Share on X
-							</a>
-							<!-- Copy Link Action -->
-							<button id="copy-link-btn" class="share-btn">
-								Copy Link
-							</button>
 						</div>
-					</div>
 
-					<!-- Visual 3-Tier Tag Ledger Row -->
-					<div class="tag-container">
-						{tags.map((tag) => (
-							<span class="tag-badge">
-								{tag}
-							</span>
-						))}
-					</div>
+						<div class="tag-container">
+							{tags.map((tag) => (
+								<span class="tag-badge">
+									{tag}
+								</span>
+							))}
+						</div>
 
-					<slot />
-				</div>
-			</article>
+						<slot />
+					</div>
+				</article>
+			</div>
 		</main>
 		<Footer />
 
-		<script>
+		<script lang="ts">
 			// Handle article URL sharing clipboard actions
 			const copyBtn = document.getElementById('copy-link-btn');
 			if (copyBtn) {
@@ -181,6 +269,69 @@ const seoTitle = meta_title || title;
 					}
 				});
 			});
+
+			// --- COMPASS AUTOMATED TABLE OF CONTENTS SCROLLER ENGINE ---
+			const targetContainer = document.getElementById('dynamic-toc-bus');
+			const contentHeadings = document.querySelectorAll('.prose h2, .prose h3');
+			
+			if (targetContainer && contentHeadings.length > 0) {
+				contentHeadings.forEach((heading, idx) => {
+					// 1. Ensure element contains a distinct hash identifier for navigation parsing
+					if (!heading.id) {
+						const slug = heading.textContent
+							?.toLowerCase()
+							.replace(/[^a-z0-9]+/g, '-')
+							.replace(/(^-|-$)/g, '') || `metric-${idx}`;
+						heading.id = slug;
+					}
+
+					// 2. Synthesize item elements into the navigation column
+					const li = document.createElement('li');
+					li.className = `toc-item toc-depth-${heading.tagName.toLowerCase()}`;
+					li.dataset.targetId = heading.id;
+
+					const anchor = document.createElement('a');
+					anchor.href = `#${heading.id}`;
+					anchor.textContent = heading.textContent || 'Telemetry Node';
+
+					li.appendChild(anchor);
+					targetContainer.appendChild(li);
+				});
+
+				// 3. Coordinate Tracking: Track heading viewport coordinates to highlight active track positions
+				const observerOptions = {
+					root: null,
+					rootMargin: '-10% 0px -70% 0px',
+					threshold: 0
+				};
+
+				let activelyIntersectingIds: string[] = [];
+
+				const trackingObserver = new IntersectionObserver((entries) => {
+					entries.forEach((entry) => {
+						const elementId = entry.target.id;
+						if (entry.isIntersecting) {
+							if (!activelyIntersectingIds.includes(elementId)) {
+								activelyIntersectingIds.push(elementId);
+							}
+						} else {
+							activelyIntersectingIds = activelyIntersectingIds.filter(id => id !== elementId);
+						}
+					});
+
+					// Locate the layout node matching the current coordinate zone and highlight it
+					const activeId = activelyIntersectingIds[activelyIntersectingIds.length - 1] || targetContainer.querySelector('.toc-item')?.getAttribute('data-target-id');
+					
+					if (activeId) {
+						document.querySelectorAll('#dynamic-toc-bus .toc-item').forEach((item) => {
+							const htmlItem = item as HTMLElement;
+							htmlItem.classList.toggle('active', htmlItem.dataset.targetId === activeId);
+						});
+					}
+				}, observerOptions);
+
+				contentHeadings.forEach((el) => trackingObserver.observe(el));
+			}
 		</script>
 	</body>
 </html>
