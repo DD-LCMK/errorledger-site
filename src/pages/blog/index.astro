@@ -15,13 +15,30 @@ const postsWithYears = allPosts.map(post => {
 	let incidentYear = '';
 	
 	try {
-		const filePath = path.resolve('./src/content/blog', post.id);
-		if (fs.existsSync(filePath)) {
+		let filePath = '';
+		const customPath = (post as any).filePath;
+		
+		if (customPath && fs.existsSync(path.resolve(customPath))) {
+			filePath = path.resolve(customPath);
+		} else {
+			const primaryPath = path.resolve('./src/content/blog', post.id);
+			const fallbackPath = path.resolve('./src/content/blog', `${post.id}.md`);
+			if (fs.existsSync(primaryPath)) {
+				filePath = primaryPath;
+			} else if (fs.existsSync(fallbackPath)) {
+				filePath = fallbackPath;
+			}
+		}
+
+		if (filePath && fs.existsSync(filePath)) {
 			const fileContent = fs.readFileSync(filePath, 'utf-8');
-			const match = fileContent.match(/\|\s*\*\*Date\*\*\s*\|\s*([^|]+)\|/i);
 			
-			if (match && match[1]) {
-				const cleanParsedDate = new Date(match[1].trim());
+			const tableMatch = fileContent.match(/\|\s*\\*?\\*?Date\\*?\\*?\s*\|\s*([^|]+)\|/i);
+			const textMatch = fileContent.match(/(?:^|\n)\\*?\\*?Date\\*?\\*?:\s*([^\n]+)/i);
+			const rawDateString = tableMatch ? tableMatch[1] : (textMatch ? textMatch[1] : null);
+			
+			if (rawDateString) {
+				const cleanParsedDate = new Date(rawDateString.trim());
 				if (!isNaN(cleanParsedDate.getTime())) {
 					incidentYear = cleanParsedDate.getUTCFullYear().toString();
 				}
@@ -71,7 +88,6 @@ const posts = postsWithYears.sort((a, b) => {
 			ul li a:hover .title { color: #ef4444; }
 			.description { margin: 0 0 1rem 0; color: #4a5568; font-size: 0.95rem; line-height: 1.5; }
 
-			/* Search and Filtering Header */
 			.search-container {
 				margin-bottom: 2rem;
 				width: 100%;
@@ -92,7 +108,6 @@ const posts = postsWithYears.sort((a, b) => {
 				border-color: #ef4444;
 			}
 
-			/* 3-Tier Tag Layout badge row */
 			.tag-row {
 				display: flex;
 				gap: 0.5rem;
@@ -110,7 +125,6 @@ const posts = postsWithYears.sort((a, b) => {
 				letter-spacing: 0.025em;
 			}
 
-			/* Premium Dark Mode Overrides */
 			:global(html.dark) ul li { background: #1e293b; border-color: #334155; }
 			:global(html.dark) .title { color: #f8fafc; }
 			:global(html.dark) .description { color: #cbd5e1; }
@@ -133,7 +147,7 @@ const posts = postsWithYears.sort((a, b) => {
 							type="text" 
 							name="q"
 							id="search-box" 
-							placeholder="Filter incidents by platform, protocol, vector, root cause, year, or status..." 
+							placeholder="Filter incidents by platform, protocol, vector, or root cause..." 
 							aria-label="Filter incidents"
 							autocomplete="off"
 						/>
@@ -165,7 +179,6 @@ const posts = postsWithYears.sort((a, b) => {
 		<Footer />
 
 		<script lang="ts">
-			// Strict item checking and list filtration logic
 			function filterPosts() {
 				const searchBox = document.getElementById('search-box') as HTMLInputElement;
 				const postElements = document.querySelectorAll('main ul li');
@@ -181,11 +194,9 @@ const posts = postsWithYears.sort((a, b) => {
 						.join(' ');
 					const yearText = (post as HTMLElement).dataset.year?.toLowerCase() || '';
 					
-					// If search is completely blank, display every item in database
 					if (query === '') {
 						(post as HTMLElement).style.display = '';
 					} else {
-						// Otherwise perform a strict evaluation (no empty string matches)
 						if (titleText.includes(query) || descText.includes(query) || tagsText.includes(query) || yearText.includes(query)) {
 							(post as HTMLElement).style.display = '';
 						} else {
@@ -195,7 +206,6 @@ const posts = postsWithYears.sort((a, b) => {
 				});
 			}
 
-			// Core engine orchestrating value parsing and listener binding
 			function initSearchEngine() {
 				const searchBox = document.getElementById('search-box') as HTMLInputElement;
 				if (!searchBox) return;
@@ -206,24 +216,21 @@ const posts = postsWithYears.sort((a, b) => {
 				if (queryParam) {
 					searchBox.value = queryParam;
 				} else {
-					searchBox.value = ''; // Enforce clean empty state
+					searchBox.value = '';
 				}
 
-				// Execute the filtering rules immediately using parsed queries
 				filterPosts();
 
 				searchBox.removeEventListener('input', filterPosts);
 				searchBox.addEventListener('input', filterPosts);
 			}
 
-			// Ensure scripts run during standard loading phases
 			if (document.readyState === 'loading') {
 				window.addEventListener('DOMContentLoaded', initSearchEngine);
 			} else {
 				initSearchEngine();
 			}
 
-			// Register initialization to hook into client-side View Transitions swaps safely
 			document.addEventListener('astro:page-load', initSearchEngine);
 		</script>
 	</body>

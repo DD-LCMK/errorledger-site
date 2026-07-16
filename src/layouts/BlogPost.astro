@@ -25,9 +25,9 @@ const currentIndex = sortedPosts.findIndex(post => post.data.title === title);
 const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
 const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
 
-// 3. Normalize tags to lowercase to match uppercase frontmatter variants (e.g., META, CONTACT)
+// 3. Normalize tags to lowercase to match uppercase frontmatter variants (e.g., META, PRIVACY)
 const lowercaseTags = tags.map((tag: string) => tag.toLowerCase());
-const isStaticPage = lowercaseTags.includes('meta') || lowercaseTags.includes('contact');
+const isStaticPage = lowercaseTags.includes('meta') || lowercaseTags.includes('contact') || lowercaseTags.includes('privacy') || lowercaseTags.includes('about');
 const showSidebar = !isStaticPage && (nextPost || prevPost);
 ---
 
@@ -171,8 +171,7 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 	</head>
 
 	<body>
-		<!-- Set context flag parameter to true inside the post layout template framework -->
-		<Header isPost={true} />
+		<Header />
 		<main>
 			<div class={showSidebar ? "post-layout-grid has-sidebar" : "post-layout-grid"}>
 				<!-- Main Content Panel -->

@@ -32,21 +32,38 @@ const posts = allPosts.sort((a, b) => {
 	return dateB - dateA;
 });
 
-// 3. Dynamic Telemetry Scraper: Extract the real incident year from the Markdown table body text
+// 3. Dynamic Telemetry Scraper: Extract the real incident year from the Markdown body text
 const annualMetrics: Record<number, number> = {};
 
 allPosts.forEach(post => {
 	let parsedDate = post.data.pubDate ? new Date(post.data.pubDate) : new Date();
 	
 	try {
-		const filePath = path.resolve('./src/content/blog', post.id);
+		let filePath = '';
+		const customPath = (post as any).filePath;
 		
-		if (fs.existsSync(filePath)) {
+		if (customPath && fs.existsSync(path.resolve(customPath))) {
+			filePath = path.resolve(customPath);
+		} else {
+			const primaryPath = path.resolve('./src/content/blog', post.id);
+			const fallbackPath = path.resolve('./src/content/blog', `${post.id}.md`);
+			if (fs.existsSync(primaryPath)) {
+				filePath = primaryPath;
+			} else if (fs.existsSync(fallbackPath)) {
+				filePath = fallbackPath;
+			}
+		}
+		
+		if (filePath && fs.existsSync(filePath)) {
 			const fileContent = fs.readFileSync(filePath, 'utf-8');
-			const match = fileContent.match(/\|\s*\*\*Date\*\*\s*\|\s*([^|]+)\|/i);
 			
-			if (match && match[1]) {
-				const cleanParsedDate = new Date(match[1].trim());
+			// Broadened parsing supporting markdown table rows or text metrics blocks
+			const tableMatch = fileContent.match(/\|\s*\\*?\\*?Date\\*?\\*?\s*\|\s*([^|]+)\|/i);
+			const textMatch = fileContent.match(/(?:^|\n)\\*?\\*?Date\\*?\\*?:\s*([^\n]+)/i);
+			const rawDateString = tableMatch ? tableMatch[1] : (textMatch ? textMatch[1] : null);
+			
+			if (rawDateString) {
+				const cleanParsedDate = new Date(rawDateString.trim());
 				if (!isNaN(cleanParsedDate.getTime())) {
 					parsedDate = cleanParsedDate;
 				}
@@ -84,11 +101,8 @@ const recentPosts = posts.slice(0, 3);
 			.hero { text-align: center; margin-bottom: 2.5rem; padding: 1rem 0; }
 			.hero h1 { font-size: 2.25rem; margin-bottom: 0.75rem; letter-spacing: -0.025em; color: #0f172a; font-weight: 800; }
 			.hero h1 span { color: #ef4444; }
-			
-			/* Expanded hero description paragraph bounds to fix line wrapping alignment bugs */
 			.hero p { font-size: 1.15rem; color: #475569; max-width: 800px; margin: 0 auto 1.75rem auto; line-height: 1.6; }
 			
-			/* Expanded Hero Search Field frame container */
 			.search-form { max-width: 760px; margin: 0 auto 1.5rem auto; }
 			.search-input {
 				width: 100%;
@@ -104,7 +118,6 @@ const recentPosts = posts.slice(0, 3);
 			}
 			.search-input:focus { border-color: #ef4444; }
 
-			/* Category Quick Filters */
 			.badge-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-bottom: 1rem; }
 			.badge {
 				text-decoration: none;
@@ -118,7 +131,6 @@ const recentPosts = posts.slice(0, 3);
 			}
 			.badge:hover { background: #ef4444; color: white; }
 
-			/* Developer Diagnostics Section */
 			.tools-dashboard { margin-bottom: 2.5rem; }
 			.tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
 			.tool-card { display: block; text-decoration: none; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem; transition: transform 0.2s ease, box-shadow 0.2s ease; }
@@ -126,7 +138,6 @@ const recentPosts = posts.slice(0, 3);
 			.tool-title { display: block; font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem; }
 			.tool-desc { display: block; font-size: 0.85rem; color: #475569; line-height: 1.4; }
 
-			/* MACRO ANNUAL INCIDENT FREQUENCY TIMELINE */
 			.timeline-window {
 				width: 100%;
 				overflow-x: auto;
@@ -203,7 +214,6 @@ const recentPosts = posts.slice(0, 3);
 				transition: all 0.2s ease;
 			}
 			
-			/* Hover Indicators */
 			.timeline-node-link:hover .timeline-year-label { color: #ef4444; }
 			.timeline-node-link:hover .timeline-pulse-dot {
 				transform: scale(1.3);
@@ -215,7 +225,6 @@ const recentPosts = posts.slice(0, 3);
 				color: #ffffff;
 			}
 
-			/* Content Feed Grid Layout */
 			.feed-title { font-size: 1.35rem; font-weight: 700; margin-bottom: 1.25rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; color: #0f172a; text-transform: uppercase; letter-spacing: 0.05em; }
 			ul { display: flex; flex-direction: column; gap: 1.5rem; list-style-type: none; margin: 0 0 2rem 0; padding: 0; }
 			ul li {
@@ -261,12 +270,10 @@ const recentPosts = posts.slice(0, 3);
 			:global(html.dark) .view-all-btn { background: #1e293b; border: 1px solid #334155; }
 			:global(html.dark) .view-all-btn:hover { background: #ef4444; border-color: #ef4444; }
 
-			/* Tools Dashboard Dark Mode */
 			:global(html.dark) .tool-card { background: #1e293b; border-color: #334155; }
 			:global(html.dark) .tool-title { color: #f8fafc; }
 			:global(html.dark) .tool-desc { color: #cbd5e1; }
 
-			/* Macro Timeline Dark Mode Configuration */
 			:global(html.dark) .timeline-window { 
 				background-color: #0f172a; 
 				background-image: linear-gradient(#1e293b 1px, transparent 1px), linear-gradient(90deg, #1e293b 1px, transparent 1px);
@@ -283,7 +290,6 @@ const recentPosts = posts.slice(0, 3);
 			:global(html.dark) .timeline-count-badge { background: #1e293b; color: #cbd5e1; }
 			:global(html.dark) .timeline-node-link:hover .timeline-count-badge { background: #ef4444; color: #ffffff; }
 
-			/* Metadata Tag Dark Mode Handling */
 			:global(html.dark) .card-tag {
 				background: #334155 !important;
 				color: #cbd5e1 !important;
@@ -293,7 +299,6 @@ const recentPosts = posts.slice(0, 3);
 	<body>
 		<Header />
 		<main>
-			<!-- 1. Search & Filter Hero Gateway -->
 			<section class="hero" style="margin-top: 1.5rem;">
 				<h1>Welcome to <span>ErrorLedger</span></h1>
 				<p>An independent, evergreen post-mortem analysis library documenting significant cloud infrastructure outages, cybersecurity breaches, and deep architectural failures.</p>
@@ -315,7 +320,6 @@ const recentPosts = posts.slice(0, 3);
 				</div>
 			</section>
 
-			<!-- 2. Developer Diagnostic Utilities -->
 			<section class="tools-dashboard">
 				<h3 class="feed-title">Diagnostic & Forensic Tools</h3>
 				<div class="tools-grid">
@@ -338,7 +342,6 @@ const recentPosts = posts.slice(0, 3);
 				</div>
 			</section>
 
-			<!-- 3. Annual Macro Frequency Map Timeline -->
 			<section style="margin-bottom: 2.5rem;">
 				<h3 class="feed-title">Incident History Matrix</h3>
 				<div class="timeline-window">
@@ -359,7 +362,6 @@ const recentPosts = posts.slice(0, 3);
 				</div>
 			</section>
 
-			<!-- 4. Recently Disclosed Incidents -->
 			<section style="margin-bottom: 3.5rem;">
 				<h3 class="feed-title">Recently Disclosed Incidents</h3>
 				<ul>
