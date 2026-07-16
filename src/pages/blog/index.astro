@@ -165,6 +165,7 @@ const posts = postsWithYears.sort((a, b) => {
 		<Footer />
 
 		<script lang="ts">
+			// Strict item checking and list filtration logic
 			function filterPosts() {
 				const searchBox = document.getElementById('search-box') as HTMLInputElement;
 				const postElements = document.querySelectorAll('main ul li');
@@ -180,38 +181,50 @@ const posts = postsWithYears.sort((a, b) => {
 						.join(' ');
 					const yearText = (post as HTMLElement).dataset.year?.toLowerCase() || '';
 					
-					// If the search string matches absolutely nothing, display is set to none
-					if (query === '' || titleText.includes(query) || descText.includes(query) || tagsText.includes(query) || yearText.includes(query)) {
+					// If search is completely blank, display every item in database
+					if (query === '') {
 						(post as HTMLElement).style.display = '';
 					} else {
-						(post as HTMLElement).style.display = 'none';
+						// Otherwise perform a strict evaluation (no empty string matches)
+						if (titleText.includes(query) || descText.includes(query) || tagsText.includes(query) || yearText.includes(query)) {
+							(post as HTMLElement).style.display = '';
+						} else {
+							(post as HTMLElement).style.display = 'none';
+						}
 					}
 				});
 			}
 
+			// Core engine orchestrating value parsing and listener binding
 			function initSearchEngine() {
 				const searchBox = document.getElementById('search-box') as HTMLInputElement;
 				if (!searchBox) return;
 
-				// Parse parameters directly out of the live browser window context
 				const urlParams = new URLSearchParams(window.location.search);
 				const queryParam = urlParams.get('q');
 				
 				if (queryParam) {
 					searchBox.value = queryParam;
+				} else {
+					searchBox.value = ''; // Enforce clean empty state
 				}
 
-				// Run the filtering logic immediately using the parsed parameter values
+				// Execute the filtering rules immediately using parsed queries
 				filterPosts();
 
+				searchBox.removeEventListener('input', filterPosts);
 				searchBox.addEventListener('input', filterPosts);
 			}
 
+			// Ensure scripts run during standard loading phases
 			if (document.readyState === 'loading') {
 				window.addEventListener('DOMContentLoaded', initSearchEngine);
 			} else {
 				initSearchEngine();
 			}
+
+			// Register initialization to hook into client-side View Transitions swaps safely
+			document.addEventListener('astro:page-load', initSearchEngine);
 		</script>
 	</body>
 </html>

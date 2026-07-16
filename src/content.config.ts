@@ -8,6 +8,7 @@ const blog = defineCollection({
 		meta_title: z.string().optional(),
 		description: z.string().optional(),
 		pubDate: z.coerce.date().optional(),
+		incidentDate: z.coerce.date().optional(), // Ingest actual incident date
 		tags: z.array(z.string()).optional(),
 		slug: z.string().optional(),
 	}).transform((data) => {
@@ -24,8 +25,9 @@ const blog = defineCollection({
 				? rawDescription.slice(0, 152) + "..." 
 				: rawDescription;
 
-		// 3. Fallback date sorting guard (defaults to current date if missing)
+		// 3. Fallback date sorting guard
 		const finalPubDate = data.pubDate || new Date();
+		const finalIncidentDate = data.incidentDate || data.pubDate || new Date(); // Fallback to pubDate if missing
 
 		// 4. Fallback Slug dynamic parser
 		const baseSlug = data.slug || rawMetaTitle || "incident-record";
@@ -120,6 +122,7 @@ const blog = defineCollection({
 			meta_title: cleanMetaTitle,
 			description: cleanDescription,
 			pubDate: finalPubDate,
+			incidentDate: finalIncidentDate, // Return the processed incident date
 			tags: inferredTags,
 			slug: finalSlug,
 			shortenedSlug: finalSlug,
