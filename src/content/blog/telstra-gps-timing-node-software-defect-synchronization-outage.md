@@ -152,20 +152,20 @@ The common thread across these events is the tension between the **long operatio
 
 ### References
 
-- [VC001] [Reddit r/sysadmin — Telstra Outage Discussion](https://www.reddit.com/r/sysadmin/comments/1uvz7ns/telstra_australias_largest_telco_blames_outage_on/)
-- [VC002] [ACS Information Age — Telstra Outage Technical Analysis](https://ia.acs.org.au/article/2026/telstra-outage-blamed-on-known-bug-in-obsolete-server.html)
-- [VC003] [Wikipedia — GPS Week Number Rollover Technical Details](https://en.wikipedia.org/wiki/GPS_week_number_rollover)
-- [VC004] [Telstra Official — Outage Resolution and RCA Statement](https://www.telstra.com.au/exchange/some-mobile-calls-and-data-services-are-affected-today--here-s-w)
-- [VC005] [The Silicon Review — Telstra Triple Zero Failure Metrics](https://thesiliconreview.com/2026/07/telstra-outage-software-bug-600-triple-zero-calls-minister-delay)
-- [VC006] [The Silicon Review — Government Notification Delay and Welfare Check Statistics](https://thesiliconreview.com/2026/07/telstra-outage-software-bug-600-triple-zero-calls-minister-delay)
-- [VC007] [The Guardian — Telstra Outage Mobile Network Failure Scope](https://www.theguardian.com/business/2026/jul/08/telstra-outage-mobile-network-stark-reminder-widespread-effects-system-failures)
-- [VC008] [Latrobe Valley Express — V/Line Train Suspension Details](https://latrobevalleyexpress.com.au/news/2026/07/14/telstra-outage-downs-train-lines/)
-- [VC009] [Whistleout Australia — Mobile Network Outage Coverage](https://www.whistleout.com.au/MobilePhones/News/Telstra-outage-July-2026)
-- [VC011] [Whistleout Australia — Secondary Triple Zero Outage Details](https://www.whistleout.com.au/MobilePhones/News/Telstra-secondary-outage-July-2026)
-- [VC012] [The Guardian — Outage Cyberattack Denial Confirmation](https://www.theguardian.com/business/2026/jul/08/telstra-outage-mobile-network-stark-reminder-widespread-effects-system-failures)
-- [VC013] [ACS Information Age — Senate Scrutiny and Industry Sc scrutiny](https://ia.acs.org.au/article/2026/telstra-outage-blamed-on-known-bug-in-obsolete-server.html)
-- [VC014] [Intellect IT — Telstra Network Failure Business Impacts](https://www.intellectit.com.au/telstra/)
-- [VC015] [Transport Victoria — V/Line Service Free Travel Compensation](https://transport.vic.gov.au/news-and-resources/news/free-travel-for-vline-customers-on-13-and-14-july)
+*   [Reddit r/sysadmin — Telstra Outage Discussion](https://www.reddit.com/r/sysadmin/comments/1uvz7ns/telstra_australias_largest_telco_blames_outage_on/)
+*   [ACS Information Age — Telstra Outage Technical Analysis](https://ia.acs.org.au/article/2026/telstra-outage-blamed-on-known-bug-in-obsolete-server.html)
+*   [Wikipedia — GPS Week Number Rollover Technical Details](https://en.wikipedia.org/wiki/GPS_week_number_rollover)
+*   [Telstra Official — Outage Resolution and RCA Statement](https://www.telstra.com.au/exchange/some-mobile-calls-and-data-services-are-affected-today--here-s-w)
+*   [The Silicon Review — Telstra Triple Zero Failure Metrics](https://thesiliconreview.com/2026/07/telstra-outage-software-bug-600-triple-zero-calls-minister-delay)
+*   [The Silicon Review — Government Notification Delay and Welfare Check Statistics](https://thesiliconreview.com/2026/07/telstra-outage-software-bug-600-triple-zero-calls-minister-delay)
+*   [The Guardian — Telstra Outage Mobile Network Failure Scope](https://www.theguardian.com/business/2026/jul/08/telstra-outage-mobile-network-stark-reminder-widespread-effects-system-failures)
+*   [Latrobe Valley Express — V/Line Train Suspension Details](https://latrobevalleyexpress.com.au/news/2026/07/14/telstra-outage-downs-train-lines/)
+*   [Whistleout Australia — Mobile Network Outage Coverage](https://www.whistleout.com.au/MobilePhones/News/Telstra-outage-July-2026)
+*   [Whistleout Australia — Secondary Triple Zero Outage Details](https://www.whistleout.com.au/MobilePhones/News/Telstra-secondary-outage-July-2026)
+*   [The Guardian — Outage Cyberattack Denial Confirmation](https://www.theguardian.com/business/2026/jul/08/telstra-outage-mobile-network-stark-reminder-widespread-effects-system-failures)
+*   [ACS Information Age — Senate Scrutiny and Industry Sc scrutiny](https://ia.acs.org.au/article/2026/telstra-outage-blamed-on-known-bug-in-obsolete-server.html)
+*   [Intellect IT — Telstra Network Failure Business Impacts](https://www.intellectit.com.au/telstra/)
+*   [Transport Victoria — V/Line Service Free Travel Compensation](https://transport.vic.gov.au/news-and-resources/news/free-travel-for-vline-customers-on-13-and-14-july)
 
 <script type="application/ld+json">
 {

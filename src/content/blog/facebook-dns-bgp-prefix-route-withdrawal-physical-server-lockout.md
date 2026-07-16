@@ -18,7 +18,7 @@ slug: "facebook-dns-bgp-prefix-route-withdrawal-physical-server-lockout"
 | **Category** | Border Gateway Protocol (BGP) Routing Collapse |
 | **Root Cause** | Auditing bug passing a faulty capacity assessment command that severed backbone routing |
 | **Operational Impact** | Worldwide outage of Facebook, Instagram, WhatsApp, and physical security lockout |
-| **Official RCA** | [Meta Engineering Post-Mortem](https://engineering.fb.com/2021/10/05/networking/outage/) |
+| **Official RCA** | [Meta Engineering Post-Mortem](https://engineering.fb.com/2021/10/05/networking-traffic/outage-details/) |
 
 On October 4, 2021, an accidental backbone network configuration change caused a massive global Facebook DNS BGP prefix route withdrawal physical server lockout. The incident began during a routine capacity assessment when a command bypassed safety checks due to a bug in the audit tool, severing data center connections. As a safety response, Facebook's DNS servers withdrew their route advertisements, locking engineers out of both logical networks and physical servers. Global internet traffic could no longer route to Facebook domains, causing a total blackout of Facebook, Instagram, WhatsApp, Messenger, and Oculus services for roughly six hours.
 
@@ -39,10 +39,10 @@ Once the backbone routers dropped connections, the self-hosted DNS servers lost 
 To resolve the outage, dispatch teams had to physically enter data centers, bypass electronic door locks, and interface directly with router console ports via physical serial cables. Since the outage, Facebook has implemented strict validation protocols in its auditing systems, separated corporate network lines from production networks, configured data center badge systems to run on local decentralized fallback databases, and segmented the backbone network to restrict single-command blast zones.
 
 ### Engineering Analysis & Historical Comparisons
-The October 2021 Facebook incident demonstrates the risk of circular dependencies where a logical network failure disables the physical tools needed to repair it. It is historically compared to the 2018 Rogers Communications outage, where large-scale BGP table updates overloaded router memory capacity. SRE teams must isolate administrative networks from production routing paths and maintain out-of-band serial consoles that do not rely on local DNS or active IP backbones.
+The October 2021 Facebook incident demonstrates the risk of circular dependencies where a logical network failure disables the physical tools needed to repair it. It is historically compared to the [2022 Rogers Communications Outage](/blog/rogers-routing-table-overload-outage-2022/), where a faulty configuration change deleted a routing filter, exceeding core network capacity and disabling service nationwide. SRE teams must isolate administrative networks from production routing paths and maintain out-of-band serial consoles that do not rely on local DNS or active IP backbones.
 
 ### References
-*   [Meta Engineering Backbone Outage Post-Mortem Report](https://engineering.fb.com/2021/10/05/networking/outage/)
+*   [Meta Engineering Backbone Outage Post-Mortem Report](https://engineering.fb.com/2021/10/05/networking-traffic/outage-details/)
 *   [Cloudflare BGP and DNS Outage Analysis Blog](https://blog.cloudflare.com/october-2021-facebook-outage/)
 
 <script type="application/ld+json">

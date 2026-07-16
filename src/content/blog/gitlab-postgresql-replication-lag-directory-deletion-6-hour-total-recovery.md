@@ -18,9 +18,9 @@ slug: "gitlab-postgresql-replication-lag-directory-deletion-6-hour-total-recover
 | **Category** | Primary Database Directory Deletion |
 | **Root Cause** | Accidental rm -rf execution on the primary node during replication lag resynchronization |
 | **Operational Impact** | Service downtime of roughly 18 hours and permanent loss of 6 hours of user metadata |
-| **Official RCA** | [GitLab Post-Mortem Blog](https://about.gitlab.com/blog/2017/02/01/gitlab-dot-com-database-offline/) |
+| **Official RCA** | [GitLab Post-Mortem Blog](https://about.gitlab.com/blog/postmortem-of-database-outage-of-january-31/) |
 
-On January 31, 2017, a series of cascading system failures on GitLab.com resulted in a catastrophic GitLab PostgreSQL replication lag directory deletion 6-hour total recovery event. The incident began when high traffic spikes caused the secondary node to stop synchronizing with the primary database. In an attempt to clear the lag, an engineer accidentally executed a directory deletion command on the primary server instead of the replica node, wiping over [300 GB](https://about.gitlab.com/blog/2017/02/01/gitlab-dot-com-database-offline/) of live customer data. The recovery process was severely delayed because multiple backup procedures had failed silently prior to the event, leading to [6-hour](https://about.gitlab.com/blog/2017/02/01/gitlab-dot-com-database-offline/) periods of permanent user data loss during the [18-hour](https://about.gitlab.com/blog/2017/02/01/gitlab-dot-com-database-offline/) service outage.
+On January 31, 2017, a series of cascading system failures on GitLab.com resulted in a catastrophic GitLab PostgreSQL replication lag directory deletion 6-hour total recovery event. The incident began when high traffic spikes caused the secondary node to stop synchronizing with the primary database. In an attempt to clear the lag, an engineer accidentally executed a directory deletion command on the primary server instead of the replica node, wiping over [300 GB](https://about.gitlab.com/blog/postmortem-of-database-outage-of-january-31/) of live customer data. The recovery process was severely delayed because multiple backup procedures had failed silently prior to the event, leading to [6-hour](https://about.gitlab.com/blog/postmortem-of-database-outage-of-january-31/) periods of permanent user data loss during the [18-hour](https://about.gitlab.com/blog/postmortem-of-database-outage-of-january-31/) service outage.
 
 *   **2017-01-31 17:20 UTC**: High traffic load triggers replication lag on the secondary PostgreSQL database instance, halting synchronization.
 *   **2017-01-31 23:00 UTC**: An engineer initiates a manual resync, executing `rm -rf` on the primary database server by mistake.
@@ -46,8 +46,8 @@ To restore operations, GitLab engineers located an LVM snapshot taken on the pri
 The GitLab database crash highlights the critical importance of validating backup integrity and restricting privileged terminal access. A common operational anti-pattern is assuming that because a backup cron script runs, it successfully generates valid archives. This outage shares technical characteristics with the 2012 Knight Capital Group software failure, where manual deployment errors on production servers led to immediate business liquidation. To avoid manual execution bugs, infrastructure teams must execute database maintenance operations using automated configuration management playbooks rather than raw terminal shells.
 
 ### References
-*   [GitLab Post-Mortem Incident Report](https://about.gitlab.com/blog/2017/02/01/gitlab-dot-com-database-offline/)
-*   [GitLab Public Incident Issue Tracker](https://gitlab.com/gitlab-com/infrastructure-outages/-/issues/1107)
+*   [GitLab Post-Mortem Incident Report](https://about.gitlab.com/blog/postmortem-of-database-outage-of-january-31/)
+*   [GitLab Public Incident Issue Tracker](https://gitlab.com/gitlab-com/www-gitlab-com/-/issues/1108)
 
 <script type="application/ld+json">
 {
