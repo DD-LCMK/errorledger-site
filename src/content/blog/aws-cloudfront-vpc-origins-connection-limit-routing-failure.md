@@ -133,7 +133,7 @@ The AWS CloudFront VPC Origins outage is a textbook example of how **centralized
 
 - **Fastly CDN Global Outage (June 8, 2021):** A customer configuration change triggered a latent software bug in Fastly's CDN, causing roughly 85% of Fastly's network to return errors. The incident lasted approximately one hour. The architectural parallel is direct: a control-plane configuration failure in a CDN caused global data-plane disruption.
 
-- [October 2021 Facebook DNS BGP Outage](../facebook-dns-bgp-prefix-route-withdrawal-physical-server-lockout/): A configuration command error similarly withdrew core routing paths and locked out internal administration tools, illustrating the identical structural tension between centralized configuration management and distributed edge nodes.
+- [October 2021 Facebook DNS BGP Outage](https://errorledger.com/blog/facebook-dns-bgp-prefix-route-withdrawal): A configuration command error similarly withdrew core routing paths and locked out internal administration tools, illustrating the identical structural tension between centralized configuration management and distributed edge nodes.
 
 The recurring theme across these incidents is the **asymmetry between control-plane and data-plane reliability**. CDN and cloud infrastructure vendors invest heavily in data-plane redundancy—multiple edge locations, anycast routing, health-checked failover—but the control-plane systems that configure and coordinate these distributed nodes often remain centralized, capacity-constrained, and insufficiently isolated from single-region failures.
 
