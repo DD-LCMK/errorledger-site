@@ -164,8 +164,8 @@ The 2015 DynamoDB outage represents a foundational case study in distributed sof
     *   [AWS Engineering Analysis: Network Disruption and Metadata Architecture Timeline](https://aws.amazon.com/message/5467D2/)
 
 *   **Ecosystem Impact Reports**
-    *   [VentureBeat Analysis: Regional Downtime and Effects on Consumer Platforms](https://venturebeat.com/cloud/amazon-aws-is-down-taking-netflix-reddit-tinder-and-others-with-it/)
-    *   [TechMonitor Cloud Infrastructure Study: Capacity Planning and Control Plane Saturated Retries](https://techmonitor.ai/technology/cloud/aws-dynamodb-outage-what-went-wrong-and-why-it-took-so-long-to-fix-4676579)
+    *   [The Independent: Netflix, Reddit and Tinder all down during Amazon web service crash](https://www.independent.co.uk/news/business/netflix-reddit-and-tinder-all-down-during-amazon-web-service-crash-a6661926.html)
+    *   [TechMonitor Cloud Infrastructure Study: AWS Outage Brings Down Netflix, Tinder & Wink](https://www.techmonitor.ai/hardware/cloud/aws-outage-brings-down-netflix-tinder-wink-4674278)
 
 <script type="application/ld+json">
 {
