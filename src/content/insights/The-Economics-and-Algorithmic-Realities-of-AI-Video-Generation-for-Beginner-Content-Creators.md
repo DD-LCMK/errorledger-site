@@ -34,14 +34,14 @@ The analysis demonstrates that raw, unedited AI output fails to engage audiences
 The primary point of failure for fully automated content lies in its misalignment with YouTube's core recommendation engine. In 2026, YouTube's discovery architecture prioritizes long-term viewer satisfaction over short-term engagement metrics, effectively rendering low-effort automated content non-viable.
 
 ```
-[YouTube Recommendation Algorithm]
+             [YouTube Recommendation Algorithm]
                               │
   ┌───────────────────────────┴───────────────────────────┐
   ▼                                                       ▼
-[Viewer Engagement Signals]                             [Viewer Satisfaction Signals]
+[Viewer Engagement Signals]                  [Viewer Satisfaction Signals]
 ├─ Click-Through Rate (CTR)                  ├─ Post-View Satisfaction Surveys
-├─ Average View Duration (AVD)           ├─ 7-Day Return Viewing Habits
-└─ "Good Clicks" (Sustained sessions)         └─ End-of-Session Platform Contribution
+├─ Average View Duration (AVD)               ├─ 7-Day Return Viewing Habits
+└─ "Good Clicks" (Sustained sessions)        └─ End-of-Session Platform Contribution
 ```
 #### The Satisfaction Optimization Framework
 YouTube's recommendation system relies on a multi-tiered signal stack that de-prioritizes raw watch time in favor of qualitative satisfaction:
@@ -54,8 +54,8 @@ YouTube's recommendation system relies on a multi-tiered signal stack that de-pr
 Unsupervised automated videos typically experience severe viewer attrition during the critical opening sequence. The first 10 seconds of a video serve as a major sorting gate for retention. When exposed to raw, unedited synthetic outputs, audiences demonstrate immediate drop-off behavior driven by specific technical flaws:
 ```
 [0s: Video Begins] ──> [3s: Synthetic Voice Detected] ──> [7s: Stock Footage Mismatch] ──> [10s: Session Exit]
-│                            │                               │                            │
-(Initial Impression)         (Passive Fatigue)            (Semantic Disconnect)          (Algorithmic Drop)
+   │                      │                                  │                                 │
+(Initial Impression)   (Passive Fatigue)                  (Semantic Disconnect)            (Algorithmic Drop)
 ```
 *   **Monotonous Synthetic Narration:** Basic synthetic voices lack natural pitch variation, emotional resonance, and contextual emphasis. Viewers detect this robotic pacing quickly, triggering a cognitive mismatch that leads to abandonment within the first 7 to 10 seconds.
 *   **Unrelated Stock Footage Loops:** Cloud video generators rely on basic semantic keyword matching to align stock clips with the narrative. This process often yields literal, uninspired, and disconnected visual sequences. For example, a script discussing a "bear market" might render generic footage of a wild grizzly bear, creating a jarring visual mismatch that alienates viewers.
@@ -121,18 +121,41 @@ To produce high-quality synthetic visuals, narration, and editing scripts, a cre
 
 The baseline operational cost for a cloud-dependent stack is calculated as:
 
-$$C_{\text{fixed}} = 95.00 + 22.00 + 20.00 + 15.00 = 152.00$$
+> **Fixed Monthly Cost**
+
+```text
+C_fixed = 95.00 + 22.00 + 20.00 + 15.00
+        = 152.00 USD/month
+```
 
 #### Scripting API and Prompt Caching Economics
 For creators using direct API integrations to run automated workflows, cost accumulation scales geometrically with session length. In a typical API workflow, the system resubmits the entire conversation history, tools, and instructions on every turn, driving up token usage.
 
 The following expressions are simplified conceptual models intended to illustrate the mechanics of retry amplification rather than formal queueing-theory equations. The token cost accumulation function for a scripting session over $T$ turns, with input token count $I_t$, output token count $O_t$, base input price $P_i$, and base output price $P_o$, is represented as:
 
-$$C_{\text{session}} = \sum_{t=1}^{T} \left( I_t \cdot P_i + O_t \cdot P_o \right)$$
+```text
+Session Cost
+
+C_session =
+Σ ( InputTokens_t × InputPrice
+  + OutputTokens_t × OutputPrice )
+for t = 1 → T
+```
 
 Without optimization, a long session on an advanced model can become costly. However, using prompt caching—such as Claude 3.5 Sonnet's 90% discount on cache reads ($P_{\text{read}} = \$0.30 \text{ per million tokens}$ versus $P_i = \$3.00 \text{ per million tokens}$)—changes the cost equation:
 
-$$C_{\text{cached}} = \left( I_{\text{static}} \cdot P_{\text{write}} \right) + \sum_{t=1}^{T} \left( I_{\text{static}} \cdot P_{\text{read}} + I_{\text{dynamic}, t} \cdot P_i + O_t \cdot P_o \right)$$
+```text
+Cached Cost
+
+C_cached =
+StaticPrompt × WritePrice
+
++ Σ(
+    StaticPrompt × CacheReadPrice
+  + DynamicPrompt_t × InputPrice
+  + Output_t × OutputPrice
+)
+```
 
 This architectural change is essential for developers and creators building custom automation tools, as it reduces API costs by 60% to 90%.
 
@@ -144,7 +167,10 @@ Rendering custom video assets using advanced diffusion models carries a high pre
 
 For an 8-minute video (480 seconds), assuming a conservative b-roll coverage of 60% (288 seconds of custom-generated AI footage), the base credit requirements are substantial. At standard model rates (12 credits/sec), a single project consumes:
 
-$$288 \times 12 = 3,456$$
+```text
+288 seconds × 12 credits/sec
+= 3,456 credits
+```
 
 Because standard monthly plans cap credits (625 for Standard, 2,250 for Pro), creators working at volume must purchase extra credits or upgrade to the Unlimited Plan (\$95.00/month), which significantly increases baseline expenses.
 
@@ -153,16 +179,30 @@ Low-effort, automated channels are systematically flagged and suppressed by the 
 
 The typical RPM for a suppressed, low-retention channel ranges from:
 
-$$\text{RPM}_{\text{suppressed}} \in [0.50, 2.00]$$
+```text
+Suppressed RPM Range
+
+$0.50 – $2.00
+```
 
 Conversely, highly polished, human-led channels in premium niches (such as personal finance, business analysis, or technology) command far higher ad rates:
 
-$$\text{RPM}_{\text{premium}} \in [9.00, 18.00]$$
+```text
+premium RPM Range
+
+$9.00 – $18.00
+```
 
 #### Operational Break-Even Analysis
 A channel's net monthly margin ($\mathcal{M}$) is calculated as:
 
-$$\mathcal{M} = \left( \frac{V_{\text{monthly}}}{1,000} \times \text{RPM} \right) - C_{\text{fixed}}$$
+```text
+Monthly Profit
+
+Profit =
+(Monthly Views / 1000 × RPM)
+− Fixed Monthly Costs
+```
 
 The table below illustrates the stark operational contrast, mapping the monthly view volumes required to cover fixed tool overhead across different performance profiles and niches.
 
@@ -181,14 +221,14 @@ This economic analysis demonstrates that a beginner utilizing raw, unedited AI c
 
 In addition to algorithmic suppression and unfavorable economics, beginner creators face significant policy barriers. The platform updated the YouTube Partner Program (YPP) guidelines to target mass-produced, automated content, establishing strict criteria for channel monetization.
 ```
-[YouTube Partner Program (YPP) Review]
+                [YouTube Partner Program (YPP) Review]
                                    │
          ┌─────────────────────────┴─────────────────────────┐
          ▼                                                   ▼
-[Reused Content Policy]                            [Inauthentic Content Policy]
-├─ Third-party compilation limits   ├─ Mass-produced template detection
+[Reused Content Policy]                   [Inauthentic Content Policy]
+├─ Third-party compilation limits         ├─ Mass-produced template detection
 ├─ Absolute requirement of transformation ├─ Synthetic voice clustering signals
-└─ Commentary and editing rules     └─ Strict restriction of sensitive topics
+└─ Commentary and editing rules           └─ Strict restriction of sensitive topics
 ```
 #### The Semantic Shift: Inauthentic Content
 The most critical policy update was the renaming of the "Repetitious Content" policy to **"Inauthentic Content"**. This change shifted the platform's review methodology:
@@ -237,14 +277,14 @@ An operational audit of an automated true crime channel demonstrates the impact 
 
 AI tools are highly ineffective when used to replace human creativity, but they offer strong returns when used as assistant tools within a human-guided workflow. Creators can optimize their production pipelines by targeting AI tools at specific technical tasks.
 ```
-[The Pragmatic Utility Framework]
+                [The Pragmatic Utility Framework]
                                  │
          ┌───────────────────────┴───────────────────────┐
          ▼                                               ▼
-[High ROI: AI-Augmented Tasks]                 [Low ROI: Banned AI Automation]
-├─ 30s Hook Ideation Loops           ├─ Unedited, One-Shot Scripting
-├─ Audio Silence & Pop Removal      ├─ Raw, Automated B-Roll Layouts
-└─ Thumbnail Base Layout Design     └─ Sensitive Niches (Medicine/Finance)
+[High ROI: AI-Augmented Tasks]          [Low ROI: Banned AI Automation]
+├─ 30s Hook Ideation Loops              ├─ Unedited, One-Shot Scripting
+├─ Audio Silence & Pop Removal          ├─ Raw, Automated B-Roll Layouts
+└─ Thumbnail Base Layout Design         └─ Sensitive Niches (Medicine/Finance)
 ```
 #### High-ROI Technical Applications
 To maximize efficiency and maintain platform compliance, beginners should focus their AI integration on three key areas:
@@ -264,20 +304,20 @@ To build a viable, compliant YouTube channel, beginner creators must use a hybri
 +---------------------------------------------------------------------------------+
 |                                                                                 |
 |   +-----------------------+      AI Core Utility Strategy                       |
-|   | SCRIPTING LAYER       |> Generates 10 distinct variations of a          |
-|   | 70% Human / 30% AI    |      30-second structural opening hook loop.|
+|   | SCRIPTING LAYER       |====> Generates 10 distinct variations of a          |
+|   | 70% Human / 30% AI    |      30-second structural opening hook loop.        |
 |   +-----------------------+                                                     |
 |               │                                                                 |
 |               v                                                                 |
 |   +-----------------------+      AI Core Utility Strategy                       |
-|   | AUDIO LAYER           |> Runs automated silence-stripping, breath       |
-|   | 50% Human / 50% AI    |      removal, and programmatic EQ adjustments.|
+|   | AUDIO LAYER           |====> Runs automated silence-stripping, breath       |
+|   | 50% Human / 50% AI    |      removal, and programmatic EQ adjustments.      |
 |   +-----------------------+                                                     |
 |               │                                                                 |
 |               v                                                                 |
 |   +-----------------------+      AI Core Utility Strategy                       |
 |   | VISUAL LAYER          |====> Generates frame assets, dynamic subtitle       |
-|   | 30% Human / 70% AI    |      transcripts, and thumbnail layout backgrounds.|
+|   | 30% Human / 70% AI    |      transcripts, and thumbnail layout backgrounds. |
 |   +-----------------------+                                                     |
 +---------------------------------------------------------------------------------+
 ```
@@ -296,7 +336,12 @@ Creators can reduce their software costs and protect their profit margins by mov
 A budget-conscious local setup requires careful hardware and memory planning to ensure smooth performance:
 *   **Memory Benchmarks:** Model execution requires matching the system's memory budget to the model's file size. A standard 4-bit quantized model ($Q4\_K\_M$) requires a RAM budget approximately equal to the file size plus $2\text{ GB}$ of system overhead:
 
-$$\text{RAM}_{\text{minimum}} \approx \text{Size}_{\text{file}} + 2\text{ GB}$$
+```text
+Minimum RAM Required
+
+≈ Model File Size
++ 2 GB System Overhead
+```
 
 *   **The 8 GB GPU Class:** For creators using standard workstation hardware (such as an RTX 4060 or Apple Silicon Mac with $8\text{ GB}$ of unified memory), Qwen 2.5 Coder 7B or Llama 3.2 8B models are ideal. These models run locally, providing reliable scripting and hook ideation without incurring cloud API costs.
 *   **The 24 GB GPU Class:** Creators with access to an advanced desktop GPU or unified memory system (such as an RTX 4090 or large Mac Studio) can run larger models. Running Qwen 2.5 Coder 32B or DeepSeek R1 Distil Qwen 32B provides professional-grade scripting, detailed research analysis, and automated editing suggestions directly on-device.
