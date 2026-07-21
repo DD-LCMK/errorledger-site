@@ -160,13 +160,14 @@ const recentPosts = posts.slice(0, 3);
 				z-index: 1;
 			}
 			.timeline-track {
-				display: flex;
-				position: relative;
-				gap: 6rem;
-				padding: 0 4rem;
-				min-height: 140px;
-				align-items: center;
-				width: max-content;
+			    display: flex;
+			    position: relative;
+			    gap: 6rem;
+			    padding: 0 4rem;
+			    min-height: 140px;
+			    align-items: center;
+			    width: max-content;
+			    min-width: 100%; /* Ensures track and line span full width */
 			}
 			.timeline-node-link {
 				text-decoration: none;
@@ -337,20 +338,20 @@ const recentPosts = posts.slice(0, 3);
 			<section style="margin-bottom: 2.5rem;">
 				<h3 class="feed-title">Incident History Matrix</h3>
 				<div class="timeline-window">
-					<div class="timeline-axis"></div>
-					<div class="timeline-track">
-						{
-							timelineYears.map((node) => (
-								<a href={`/search?q=${node.year}`} class="timeline-node-link">
-									<span class="timeline-year-label">{node.year}</span>
-									<div class="timeline-pulse-dot"></div>
-									<span class="timeline-count-badge">
-										{node.count} {node.count === 1 ? 'Incident' : 'Incidents'}
-									</span>
-								</a>
-							))
-						}
-					</div>
+				    <div class="timeline-track">
+				    <div class="timeline-axis"></div>
+				        {
+				            timelineYears.map((node) => (
+				                <a href={`/search?q=${node.year}`} class="timeline-node-link">
+				                    <span class="timeline-year-label">{node.year}</span>
+				                    <div class="timeline-pulse-dot"></div>
+				                    <span class="timeline-count-badge">
+				                        {node.count} {node.count === 1 ? 'Incident' : 'Incidents'}
+				                    </span>
+				                </a>
+				            ))
+        				}
+   				 </div>
 				</div>
 			</section>
 
