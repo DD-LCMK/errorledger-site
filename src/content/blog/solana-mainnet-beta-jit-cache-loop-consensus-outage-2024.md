@@ -36,7 +36,7 @@ canonical_terminology:
 | **Affected Services** | Transaction Processing, Smart Contract Execution, Block Production |
 | **Root Cause** | Infinite JIT Compilation Cache Invalidation Loop in `LoadedPrograms` Module |
 | **Root Cause Status** | Officially Confirmed (Anza & Solana Foundation RCA) |
-| **Official RCA** | [Solana Foundation Outage Report](https://solana.com/news/feb-6-2024-mainnet-beta-outage-report) |
+| **Official RCA** | [Solana Foundation Outage Report](https://solana.com/news/02-06-24-solana-mainnet-beta-outage-report) |
 | **Investigation Status** | Completed |
 
 > ### Key Takeaways
@@ -155,8 +155,8 @@ Solana core developers and Anza engineers published validator client release **v
 ### References
 
 * **Primary Sources & Official Documentation**
-  * [Solana Foundation Official Outage Report: Feb 6 2024 Mainnet Beta Outage](https://solana.com/news/feb-6-2024-mainnet-beta-outage-report)
+  * [Solana Foundation Official Outage Report: 02-06-24 Mainnet Beta Outage](https://solana.com/news/02-06-24-solana-mainnet-beta-outage-report)
   * [Anza Engineering Post-Mortem & Patch Verification](https://www.anza.xyz/blog)
 
 * **Independent Engineering Analysis**
-  * [Helius Dev Technical RCA: Solana Feb 6 Outage Analysis](https://www.helius.dev/blog/solana-outage-feb-6-2024)
+  * [Helius Dev Technical RCA: All You Need to Know About Solana's v1.17 Update](https://www.helius.dev/blog/all-you-need-to-know-about-solanas-v1-17-update)
