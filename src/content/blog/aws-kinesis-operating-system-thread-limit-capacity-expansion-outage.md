@@ -137,7 +137,7 @@ The front-end fleet used a fully connected peer-to-peer mesh to synchronize inte
 
 Because every new server required every existing server to create additional peer connections, total thread consumption across the fleet increased quadratically as the fleet expanded:
 
-$$\text{Total Fleet Threads} = O(N^2)$$
+> **Total Fleet Threads** = O(N²)
 
 *(Where $N$ represents the total number of front-end servers in the fleet).*
 

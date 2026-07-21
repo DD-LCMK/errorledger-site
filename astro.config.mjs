@@ -3,6 +3,8 @@
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig, fontProviders } from 'astro/config';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 
 // https://astro.build/config
 export default defineConfig({
@@ -12,6 +14,10 @@ export default defineConfig({
 	// Forces Astro to output flat files (like 404.html) instead of folders
 	build: {
 		format: 'file',
+	},
+	markdown: {
+		remarkPlugins: [remarkMath],
+		rehypePlugins: [rehypeKatex],
 	},
 	integrations: [
 		mdx(), 
