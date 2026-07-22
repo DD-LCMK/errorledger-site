@@ -12,6 +12,10 @@ const { title, meta_title, description, pubDate, tags = [] } = Astro.props;
 
 const seoTitle = meta_title || title;
 
+// Compute clean canonical URL (strips .html extension and trailing slashes)
+const cleanPathname = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '');
+const cleanUrl = new URL(cleanPathname || '/', Astro.site).href;
+
 // Dynamically generate Google JSON-LD TechArticle schema from post frontmatter
 const schemaData = {
 	"@context": "https://schema.org",
@@ -19,7 +23,7 @@ const schemaData = {
 	"headline": title,
 	"description": description,
 	"datePublished": pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
-	"url": Astro.url.href,
+	"url": cleanUrl,
 	"image": [
 		"https://errorledger.com/favicon.svg"
 	],
@@ -224,7 +228,7 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 									</div>
 								)}
 								<div class="share-actions">
-									<a href={`https://x.com/intent/tweet?url=${encodeURIComponent(Astro.url.href)}&text=${encodeURIComponent(title)}`} target="_blank" rel="noopener noreferrer" class="share-btn">
+									<a href={`https://x.com/intent/tweet?url=${encodeURIComponent(cleanUrl)}&text=${encodeURIComponent(title)}`} target="_blank" rel="noopener noreferrer" class="share-btn">
 										Share on X
 									</a>
 									<button id="copy-link-btn" class="share-btn">

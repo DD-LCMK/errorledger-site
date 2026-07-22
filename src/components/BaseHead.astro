@@ -16,9 +16,10 @@ const cleanPathname = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '
 const canonicalURL = new URL(cleanPathname || '/', Astro.site);
 const { title, description, image = FallbackImage } = Astro.props;
 
+// Ensure fallback or dynamic asset URLs resolve safely against Astro.site
 const ogImage = image.src.includes('blog-placeholder-1') 
 	? 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=1200&h=630&fit=crop&q=80' 
-	: new URL(image.src, Astro.url).href;
+	: new URL(image.src, Astro.site).href;
 
 // Formats a clean Breadcrumb List to display a safe category tree inside Google Search instead of raw URLs
 const breadcrumbSchema = JSON.stringify({
@@ -57,7 +58,7 @@ const breadcrumbSchema = JSON.stringify({
 <Font cssVariable="--font-atkinson" preload />
 
 <!-- Canonical URL -->
-<link rel="canonical" href={canonicalURL} />
+<link rel="canonical" href={canonicalURL.href} />
 
 <!-- Primary Meta Tags -->
 <title>{title}</title>
@@ -68,13 +69,16 @@ const breadcrumbSchema = JSON.stringify({
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website" />
-<meta property="og:url" content={Astro.url} />
+<meta property="og:url" content={canonicalURL.href} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={ogImage} />
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content={canonicalURL.href} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImage} />
 
 <!-- Google AdSense -->
