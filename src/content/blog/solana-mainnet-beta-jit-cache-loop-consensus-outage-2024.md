@@ -12,19 +12,6 @@ canonical_terminology:
   approved: ["Solana Mainnet Beta", "LoadedPrograms Cache", "JIT Compilation", "Validator Client", "Consensus Slot"]
 ---
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "TechArticle",
-  "headline": "Solana Mainnet Beta Outage (2024): How a JIT Cache Loop Stalled Network Consensus",
-  "datePublished": "2024-02-06",
-  "author": {
-    "@type": "Organization",
-    "name": "ErrorLedger"
-  }
-}
-</script>
-
 # Solana Mainnet Beta Outage (2024): How a JIT Cache Loop Stalled Network Consensus [Status: RESOLVED]
 
 | Metadata Field | Details |

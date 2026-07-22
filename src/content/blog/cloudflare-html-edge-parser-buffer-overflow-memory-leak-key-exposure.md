@@ -159,21 +159,3 @@ The common thread across these incidents is the **asymmetry between defect sever
 *   [Ragel Parser State Machine Language Documentation](https://en.wikipedia.org/wiki/Ragel)
 *   [Wikipedia — Cloudbleed Data Exposure Incident Overview](https://en.wikipedia.org/wiki/Cloudbleed)
 *   [Wikipedia — Heartbleed Vulnerability Details (CVE-2014-0160)](https://en.wikipedia.org/wiki/Heartbleed)
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "TechArticle",
-  "headline": "Cloudflare HTML Edge Parser Buffer Overflow Memory Leak Key Exposure: How a Single Character Bug Leaked Millions of Users' Secrets",
-  "description": "A single-character bug in Cloudflare's HTML parser caused edge servers to leak passwords, cookies, and API keys from millions of websites for five months before discovery.",
-  "datePublished": "2026-07-17",
-  "author": {
-    "@type": "Organization",
-    "name": "ErrorLedger"
-  },
-  "about": {
-    "@type": "Thing",
-    "name": "cloudflare"
-  }
-}
-</script>

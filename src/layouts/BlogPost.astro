@@ -12,6 +12,29 @@ const { title, meta_title, description, pubDate, tags = [] } = Astro.props;
 
 const seoTitle = meta_title || title;
 
+// Dynamically generate Google JSON-LD TechArticle schema from post frontmatter
+const schemaData = {
+	"@context": "https://schema.org",
+	"@type": "TechArticle",
+	"headline": title,
+	"description": description,
+	"datePublished": pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
+	"url": Astro.url.href,
+	"author": {
+		"@type": "Organization",
+		"name": "ErrorLedger",
+		"url": "https://errorledger.com"
+	},
+	"publisher": {
+		"@type": "Organization",
+		"name": "ErrorLedger",
+		"logo": {
+			"@type": "ImageObject",
+			"url": "https://errorledger.com/favicon.svg"
+		}
+	}
+};
+
 // 1. Fetch and sort collection to establish relative document paths
 const allPosts = await getCollection('blog');
 const sortedPosts = allPosts.sort((a, b) => {
@@ -43,6 +66,8 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 	<head>
 		<BaseHead title={seoTitle} description={description} />
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+		<!-- Automated Google JSON-LD Structured Data Injection -->
+		<script type="application/ld+json" set:html={JSON.stringify(schemaData)} />
 		<style>
 			/* Layout constraints aligned to header boundaries */
 			main { width: calc(100% - 2rem); max-width: 960px; margin: 0 auto; padding: 2em 1rem; }

@@ -166,21 +166,3 @@ The common thread across these events is the tension between the **long operatio
 *   [ACS Information Age — Senate Scrutiny and Industry Sc scrutiny](https://ia.acs.org.au/article/2026/telstra-outage-blamed-on-known-bug-in-obsolete-server.html)
 *   [Intellect IT — Telstra Network Failure Business Impacts](https://www.intellectit.com.au/telstra/)
 *   [Transport Victoria — V/Line Service Free Travel Compensation](https://transport.vic.gov.au/news-and-resources/news/free-travel-for-vline-customers-on-13-and-14-july)
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "TechArticle",
-  "headline": "Telstra GPS Timing Node Software Defect Synchronization Outage: How a Legacy Clock Rollover Took Down Australia's Largest Mobile Network",
-  "description": "A legacy GPS timing node reset its clock 20 years into the past, cascading into a nationwide mobile blackout that silenced emergency calls across Australia.",
-  "datePublished": "2026-07-17",
-  "author": {
-    "@type": "Organization",
-    "name": "ErrorLedger"
-  },
-  "about": {
-    "@type": "Thing",
-    "name": "telstra"
-  }
-}
-</script>

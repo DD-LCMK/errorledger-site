@@ -169,21 +169,3 @@ The 2015 DynamoDB outage represents a foundational case study in distributed sof
 *   **Ecosystem Impact Reports**
     *   [The Independent: Netflix, Reddit and Tinder all down during Amazon web service crash](https://www.independent.co.uk/news/business/netflix-reddit-and-tinder-all-down-during-amazon-web-service-crash-a6661926.html)
     *   [TechMonitor Cloud Infrastructure Study: AWS Outage Brings Down Netflix, Tinder & Wink](https://www.techmonitor.ai/hardware/cloud/aws-outage-brings-down-netflix-tinder-wink-4674278)
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "TechArticle",
-  "headline": "AWS DynamoDB 2015: The Metadata Service Failure That Triggered a Retry Storm",
-  "description": "An analytical breakdown of how GSI metadata payload bloat and an unmitigated retry storm caused a cascading control-plane failure in AWS DynamoDB.",
-  "datePublished": "2026-07-19",
-  "author": {
-    "@type": "Organization",
-    "name": "ErrorLedger"
-  },
-  "about": {
-    "@type": "Thing",
-    "name": "aws-dynamodb"
-  }
-}
-</script>

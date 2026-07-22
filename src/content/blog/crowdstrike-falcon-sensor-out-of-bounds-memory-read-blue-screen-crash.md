@@ -77,16 +77,3 @@ This incident parallels historical flaws in high-velocity automated systems—su
 
 *   **Ecosystem Impact Reports**
     *   [Wikipedia: 2024 CrowdStrike Incident Global Impact Summary](https://en.wikipedia.org/wiki/2024_CrowdStrike_incident)
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "TechArticle",
-  "headline": "CrowdStrike Falcon Sensor Out-of-Bounds Memory Read Blue Screen Crash",
-  "datePublished": "2024-07-19",
-  "author": {
-    "@type": "Organization",
-    "name": "ErrorLedger"
-  }
-}
-</script>

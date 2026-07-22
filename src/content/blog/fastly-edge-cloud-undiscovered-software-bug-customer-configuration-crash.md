@@ -86,16 +86,3 @@ To insulate production lines from systemic configuration failures, infrastructur
 
 *   **Systems Engineering & SRE Post-Mortems**
     *   [SRE Weekly: Comprehensive Post-Mortem Analysis of Configuration Propagation Blasts](https://sreweekly.com)
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "TechArticle",
-  "headline": "Fastly June 2021 Outage: How a Latent Software Bug Crashed Edge Nodes Worldwide",
-  "datePublished": "2021-06-08",
-  "author": {
-    "@type": "Organization",
-    "name": "ErrorLedger"
-  }
-}
-</script>

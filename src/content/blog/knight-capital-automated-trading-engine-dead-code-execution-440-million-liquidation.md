@@ -164,21 +164,3 @@ The common thread across these incidents is the **accumulation of latent risk th
 *   [Wikipedia — Knight Capital Group Acquisition](https://en.wikipedia.org/wiki/Knight_Capital_Group)
 *   Henrico Dolfing — Silent Deployment Script Failure (henricodolfing.com)
 *   Henrico Dolfing — Buy-High/Sell-Low Loop Analysis (henricodolfing.com)
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "TechArticle",
-  "headline": "Knight Capital Automated Trading Engine Dead Code Execution 440 Million Liquidation: How a Missed Server Deployment Destroyed a Trading Firm in 45 Minutes",
-  "description": "A missed deployment on one of eight servers reactivated deprecated trading logic, causing Knight Capital to lose $460 million in 45 minutes and triggering the firm's collapse.",
-  "datePublished": "2026-07-19",
-  "author": {
-    "@type": "Organization",
-    "name": "ErrorLedger"
-  },
-  "about": {
-    "@type": "Thing",
-    "name": "knight-capital"
-  }
-}
-</script>

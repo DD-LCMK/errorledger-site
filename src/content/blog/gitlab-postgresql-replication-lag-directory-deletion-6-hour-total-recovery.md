@@ -48,21 +48,3 @@ The GitLab database crash highlights the critical importance of validating backu
 ### References
 *   [GitLab Post-Mortem Incident Report](https://about.gitlab.com/blog/postmortem-of-database-outage-of-january-31/)
 *   [GitLab Public Incident Issue Tracker](https://gitlab.com/gitlab-com/www-gitlab-com/-/issues/1108)
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "TechArticle",
-  "headline": "GitLab PostgreSQL replication lag directory deletion 6-hour total recovery",
-  "description": "An accidental rm -rf execution on GitLab's primary PostgreSQL database during a replication resync on Jan 31, 2017, caused an 18-hour outage.",
-  "datePublished": "2026-07-16",
-  "author": {
-    "@type": "Organization",
-    "name": "ErrorLedger"
-  },
-  "about": {
-    "@type": "Thing",
-    "name": "gitlab"
-  }
-}
-</script>

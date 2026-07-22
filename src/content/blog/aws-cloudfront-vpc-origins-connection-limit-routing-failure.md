@@ -148,21 +148,3 @@ The recurring theme across these incidents is the **asymmetry between control-pl
 *   [downstream confirmation](https://isdown.app/status/hugging-face/incidents/623420-hub-unavailable)
 *   [Chronicle Live — UK National Lottery Website Disruption](https://www.chroniclelive.co.uk/news/uk-news/national-lottery-outage-website-goes-34299533)
 *   [Gigazine — Niconico Service Disruption Report](https://gigazine.net/gsc_news/en/20260716-aws-cloudfront-down/)
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "TechArticle",
-  "headline": "AWS CloudFront VPC Origins Connection Limit Routing Failure: How an Internal Fleet Constraint Took Down Global CDN Traffic",
-  "description": "An internal connection-management limit on the VPC Origins fleet broke routing configuration distribution, causing global 5xx errors across CloudFront for over three hours.",
-  "datePublished": "2026-07-17",
-  "author": {
-    "@type": "Organization",
-    "name": "ErrorLedger"
-  },
-  "about": {
-    "@type": "Thing",
-    "name": "aws"
-  }
-}
-</script>

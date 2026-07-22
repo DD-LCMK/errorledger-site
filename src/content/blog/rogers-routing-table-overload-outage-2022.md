@@ -43,21 +43,3 @@ The Rogers Communications collapse underscores the importance of soft-limiting c
 ### References
 *   [CRTC Rogers Outage Inquiry Report](https://crtc.gc.ca/eng/publications/reports/xona2024.htm)
 *   [ThousandEyes Rogers Network Outage Analysis](https://www.thousandeyes.com/blog/rogers-outage-analysis-july-8-2022)
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "TechArticle",
-  "headline": "Rogers Communications IP routing prefix distribution table overload national network crash",
-  "description": "A configuration change on July 8, 2022, removed access filters, triggering a massive routing table overload that crashed Rogers core network.",
-  "datePublished": "2026-07-15",
-  "author": {
-    "@type": "Organization",
-    "name": "ErrorLedger"
-  },
-  "about": {
-    "@type": "Thing",
-    "name": "rogers"
-  }
-}
-</script>

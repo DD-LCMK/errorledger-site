@@ -44,21 +44,3 @@ The October 2021 Facebook incident demonstrates the risk of circular dependencie
 ### References
 *   [Meta Engineering Backbone Outage Post-Mortem Report](https://engineering.fb.com/2021/10/05/networking-traffic/outage-details/)
 *   [Cloudflare BGP and DNS Outage Analysis Blog](https://blog.cloudflare.com/october-2021-facebook-outage/)
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "TechArticle",
-  "headline": "Facebook DNS BGP prefix route withdrawal physical server lockout",
-  "description": "A faulty maintenance command triggered a global Facebook DNS BGP prefix route withdrawal physical server lockout, disabling services for six hours.",
-  "datePublished": "2026-07-16",
-  "author": {
-    "@type": "Organization",
-    "name": "ErrorLedger"
-  },
-  "about": {
-    "@type": "Thing",
-    "name": "facebook"
-  }
-}
-</script>

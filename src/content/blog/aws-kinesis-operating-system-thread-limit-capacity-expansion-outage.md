@@ -12,19 +12,6 @@ canonical_terminology:
   approved: ["Amazon Web Services", "Kinesis Data Streams", "Front-End Fleet", "OS Thread Limit", "Shard Maps"]
 ---
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "TechArticle",
-  "headline": "AWS Kinesis US-EAST-1 Outage (2020): How an OS Thread Limit Caused a 17-Hour AWS Failure",
-  "datePublished": "2020-11-25",
-  "author": {
-    "@type": "Organization",
-    "name": "ErrorLedger"
-  }
-}
-</script>
-
 # AWS Kinesis US-EAST-1 Outage (2020): How an OS Thread Limit Caused a 17-Hour AWS Failure [Status: RESOLVED]
 
 | Metadata | Details |
