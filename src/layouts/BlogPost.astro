@@ -20,6 +20,9 @@ const schemaData = {
 	"description": description,
 	"datePublished": pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
 	"url": Astro.url.href,
+	"image": [
+		"https://errorledger.com/favicon.svg"
+	],
 	"author": {
 		"@type": "Organization",
 		"name": "ErrorLedger",
@@ -28,6 +31,7 @@ const schemaData = {
 	"publisher": {
 		"@type": "Organization",
 		"name": "ErrorLedger",
+		"url": "https://errorledger.com",
 		"logo": {
 			"@type": "ImageObject",
 			"url": "https://errorledger.com/favicon.svg"

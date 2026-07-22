@@ -18,20 +18,6 @@ const ogImage = image.src.includes('blog-placeholder-1')
 	? 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=1200&h=630&fit=crop&q=80' 
 	: new URL(image.src, Astro.url).href;
 
-// Formats a clean JSON-LD object for Google to pull structured code rich results
-const techArticleSchema = JSON.stringify({
-	"@context": "https://schema.org",
-	"@type": "TechArticle",
-	"headline": title,
-	"description": description,
-	"proficienciesRequired": "Developer",
-	"publisher": {
-		"@type": "Organization",
-		"name": "ErrorLedger",
-		"url": "https://errorledger.com"
-	}
-});
-
 // Formats a clean Breadcrumb List to display a safe category tree inside Google Search instead of raw URLs
 const breadcrumbSchema = JSON.stringify({
 	"@context": "https://schema.org",
@@ -76,7 +62,6 @@ const breadcrumbSchema = JSON.stringify({
 <meta name="description" content={description} />
 
 <!-- Invisible Structured Search Schemas Injection -->
-<script type="application/ld+json" set:html={techArticleSchema}></script>
 <script type="application/ld+json" set:html={breadcrumbSchema}></script>
 
 <!-- Open Graph / Facebook -->
