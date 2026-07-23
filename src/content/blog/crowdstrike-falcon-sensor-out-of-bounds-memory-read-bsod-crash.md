@@ -1,9 +1,9 @@
 ---
-pipeline_contract_version: "23.0.0"
+pipeline_contract_version: "27.0.0"
 title: "Why Windows Kernel Drivers BSOD Endpoints: CrowdStrike Falcon Outage Post-Mortem"
 meta_title: "CrowdStrike July 2024 Outage: Falcon Kernel Crash RCA"
 description: "Technical post-mortem of the July 2024 CrowdStrike outage caused by an out-of-bounds memory read in the Falcon sensor kernel driver csagent.sys."
-pubDate: "2024-07-19"
+pubDate: "2026-07-22"
 tags: ["operating-system", "crowdstrike", "windows-kernel", "out-of-bounds-read", "bsod-boot-loop", "sre-postmortem", "endpoint-security"]
 shortenedSlug: "crowdstrike-falcon-sensor-out-of-bounds-memory-read-bsod-crash"
 keyword: "CrowdStrike Falcon Sensor Kernel Driver Out-of-Bounds Memory Read BSOD Crash"

@@ -1,19 +1,26 @@
 ---
+pipeline_contract_version: "27.0.0"
 title: "Cloudflare HTML Edge Parser Buffer Overflow Memory Leak Key Exposure: How a Single Character Bug Leaked Millions of Users' Secrets"
 meta_title: "Cloudbleed: Cloudflare Parser Buffer Overflow Leak"
 description: "A single-character bug in Cloudflare's HTML parser caused edge servers to leak passwords, cookies, and API keys from millions of websites for five months before discovery."
-pubDate: 2026-07-17
+pubDate: "2026-07-17"
 tags: ["cloudflare", "buffer-overflow", "memory-leak", "data-exposure", "edge-computing"]
+shortenedSlug: "cloudflare-html-edge-parser-buffer-overflow-memory-leak-key-exposure"
+keyword: "Cloudflare HTML Edge Parser Buffer Overflow Memory Leak Key Exposure"
 slug: "cloudflare-html-edge-parser-buffer-overflow-memory-leak-key-exposure"
+target_systems: "Cloudflare Edge NGINX Infrastructure & HTML Parser Engine"
+article_confidence: "★★★★★"
+canonical_terminology:
+  approved: ["Cloudflare", "HTML Parser", "Cloudbleed", "Buffer Overflow", "Memory Leak"]
 ---
 
 # Cloudflare HTML Edge Parser Buffer Overflow Memory Leak Key Exposure: How a Single Character Bug Leaked Millions of Users' Secrets [Status: RESOLVED]
 
-| Field | Value |
+| Metadata Field | Details |
 | :--- | :--- |
+| **Incident Date** | 2017-02-17 |
 | **Company** | Cloudflare |
-| **Date** | February 17, 2017 (discovered); September 22, 2016 (introduced) |
-| **Status** | Resolved |
+| **Status** | RESOLVED |
 | **Category** | Edge Server Memory Leak / Data Exposure Vulnerability |
 | **Root Cause** | Buffer overrun in HTML parser caused by equality operator (==) instead of greater-than-or-equal-to (>=) in boundary check, activated by a parser migration that changed the memory buffering model |
 | **Operational Impact** | HTTP cookies, authentication tokens, passwords, API keys, and POST bodies from millions of proxied websites leaked through edge server responses for approximately five months; leaked data cached by search engines |

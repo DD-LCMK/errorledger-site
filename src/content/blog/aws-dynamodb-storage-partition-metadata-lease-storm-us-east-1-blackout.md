@@ -1,19 +1,26 @@
 ---
+pipeline_contract_version: "27.0.0"
 title: "AWS DynamoDB 2015: The Metadata Service Failure That Triggered a Retry Storm"
 meta_title: "AWS DynamoDB US-East-1 Retry Storm Outage 2015"
 description: "An analytical examination of how expanded metadata payloads and an unmitigated retry storm caused a cascading control-plane failure in AWS DynamoDB."
-pubDate: 2026-07-19
+pubDate: "2026-07-19"
 tags: ["aws", "dynamodb", "lease-storm", "retry-storm", "cloud-infrastructure"]
-slug: "aws-dynamodb-us-east-1-metadata-lease-retry-storm-2015"
+shortenedSlug: "aws-dynamodb-storage-partition-metadata-lease-storm-us-east-1-blackout"
+keyword: "AWS DynamoDB storage partition metadata lease storm US-East-1 blackout"
+slug: "aws-dynamodb-storage-partition-metadata-lease-storm-us-east-1-blackout"
+target_systems: "AWS DynamoDB Control Plane & Storage Partition Metadata Service"
+article_confidence: "★★★★★"
+canonical_terminology:
+  approved: ["AWS", "DynamoDB", "Metadata Service", "Retry Storm", "Partition Lease"]
 ---
 
 # AWS DynamoDB 2015: The Metadata Service Failure That Triggered a Retry Storm [Status: RESOLVED]
 
-| Field | Value |
+| Metadata Field | Details |
 | :--- | :--- |
+| **Incident Date** | 2015-09-20 |
 | **Company** | Amazon Web Services (AWS) |
-| **Date** | September 20, 2015 |
-| **Status** | Resolved |
+| **Status** | RESOLVED |
 | **Category** | Cloud Infrastructure / Metadata Retry Storm |
 | **Root Cause** | Transient network disruption followed by a storage server retry storm that saturated an under-provisioned internal metadata service due to unmonitored payload expansion |
 | **Operational Impact** | 55% peak error rate for customer requests in US-East-1 over five hours; cascading failures across dependent AWS services and consumer platforms |
@@ -168,4 +175,3 @@ The 2015 DynamoDB outage represents a foundational case study in distributed sof
 
 *   **Ecosystem Impact Reports**
     *   [The Independent: Netflix, Reddit and Tinder all down during Amazon web service crash](https://www.independent.co.uk/news/business/netflix-reddit-and-tinder-all-down-during-amazon-web-service-crash-a6661926.html)
-    *   [TechMonitor Cloud Infrastructure Study: AWS Outage Brings Down Netflix, Tinder & Wink](https://www.techmonitor.ai/hardware/cloud/aws-outage-brings-down-netflix-tinder-wink-4674278)

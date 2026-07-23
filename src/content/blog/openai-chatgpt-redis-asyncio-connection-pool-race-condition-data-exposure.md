@@ -1,9 +1,9 @@
 ---
-pipeline_contract_version: "23.0.0"
+pipeline_contract_version: "27.0.0"
 title: "Why Redis Connection Pools Leak Data: OpenAI 2023 ChatGPT Outage Post-Mortem"
 meta_title: "OpenAI March 2023 Outage: Redis Async State Leak RCA"
 description: "Technical post-mortem of the March 2023 OpenAI ChatGPT outage caused by a redis-py Asyncio connection pool race condition exposing user data."
-pubDate: "2023-03-20"
+pubDate: "2026-07-23"
 tags: ["cloud-infrastructure", "openai", "redis", "python-asyncio", "connection-pool-leak", "sre-postmortem", "data-privacy"]
 shortenedSlug: "openai-chatgpt-redis-asyncio-connection-pool-race-condition-data-exposure"
 keyword: "OpenAI ChatGPT Redis Asyncio Connection Pool Race Condition Data Exposure"

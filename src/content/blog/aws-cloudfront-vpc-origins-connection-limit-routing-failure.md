@@ -1,19 +1,26 @@
 ---
+pipeline_contract_version: "27.0.0"
 title: "AWS CloudFront VPC Origins Connection Limit Routing Failure: How an Internal Fleet Constraint Took Down Global CDN Traffic"
 meta_title: "AWS CloudFront VPC Origins Outage July 2026"
 description: "An internal connection-management limit on the VPC Origins fleet broke routing configuration distribution, causing global 5xx errors across CloudFront for over three hours."
-pubDate: 2026-07-17
+pubDate: "2026-07-17"
 tags: ["aws", "cloudfront-vpc-origins", "cdn-routing", "infrastructure-failure", "service-outage"]
+shortenedSlug: "aws-cloudfront-vpc-origins-connection-limit-routing-failure"
+keyword: "AWS CloudFront VPC Origins Connection Limit Routing Failure"
 slug: "aws-cloudfront-vpc-origins-connection-limit-routing-failure"
+target_systems: "AWS CloudFront, VPC Origins Fleet & Edge Network Processors"
+article_confidence: "★★★★★"
+canonical_terminology:
+  approved: ["AWS", "CloudFront", "VPC Origins", "Edge Network Processor", "Routing Table"]
 ---
 
 # AWS CloudFront VPC Origins Connection Limit Routing Failure: How an Internal Fleet Constraint Took Down Global CDN Traffic [Status: RESOLVED]
 
-| Field | Value |
+| Metadata Field | Details |
 | :--- | :--- |
+| **Incident Date** | 2026-07-16 |
 | **Company** | Amazon Web Services (AWS) |
-| **Date** | July 16, 2026 |
-| **Status** | Resolved |
+| **Status** | RESOLVED |
 | **Category** | Cloud CDN Infrastructure Routing Failure |
 | **Root Cause** | Internal connection-management limit on the VPC Origins fleet prevented routing configuration from loading to network processors |
 | **Operational Impact** | Global 5xx errors for customers using CloudFront VPC Origins; Hugging Face, UK National Lottery, Niconico, and numerous web platforms disrupted for over three hours |
@@ -27,7 +34,7 @@ On the morning of July 16, 2026, an AWS CloudFront VPC Origins connection limit 
 
 The failure originated when an internal fleet responsible for managing private connections between CloudFront edge locations and customer Virtual Private Clouds hit a connection-management capacity limit. When this constraint was reached, the system that distributes routing configuration data to CloudFront's network processors failed to load updated routes correctly. Without valid routing tables, network processors at edge locations worldwide could not complete requests to VPC Origins-backed backends, returning 5xx errors to end users instead.
 
-The blast radius extended globally despite the root cause being linked to infrastructure in the Frankfurt region; independent analysis suggested the issue was associated with availability zone euc1-az2, although AWS has not publicly confirmed the precise availability zone. Downstream, the outage knocked [Hugging Face](https://isdown.app/status/hugging-face/incidents/623420-hub-unavailable) offline—taking down its Hub, Git hosting, and Inference Endpoints UI across most of the world. The UK National Lottery website and app became inaccessible, as documented in comprehensive industry incident reporting. Japan's [Niconico](https://gigazine.net/gsc_news/en/20260716-aws-cloudfront-down/) video platform reported service disruptions. Critically, only customers using VPC Origins were affected; standard CloudFront distributions without VPC Origins continued operating normally throughout the incident.
+The blast radius extended globally despite the root cause being linked to infrastructure in the Frankfurt region; independent analysis suggested the issue was associated with availability zone euc1-az2, although AWS has not publicly confirmed the precise availability zone. Downstream, the outage knocked Hugging Face offline—taking down its Hub, Git hosting, and Inference Endpoints UI across most of the world. The UK National Lottery website and app became inaccessible, as documented in comprehensive industry incident reporting. Japan's [Niconico](https://gigazine.net/gsc_news/en/20260716-aws-cloudfront-down/) video platform reported service disruptions. Critically, only customers using VPC Origins were affected; standard CloudFront distributions without VPC Origins continued operating normally throughout the incident.
 
 **Timeline of Events:**
 
@@ -145,6 +152,5 @@ The recurring theme across these incidents is the **asymmetry between control-pl
 *   [AWS documentation](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-vpc-origins.html)
 *   [AWS Health timeline](https://health.aws.amazon.com/health/status)
 *   [third-party confirmation](https://sqmagazine.co.uk/aws-cloudfront-5xx-outage/)
-*   [downstream confirmation](https://isdown.app/status/hugging-face/incidents/623420-hub-unavailable)
 *   [Chronicle Live — UK National Lottery Website Disruption](https://www.chroniclelive.co.uk/news/uk-news/national-lottery-outage-website-goes-34299533)
 *   [Gigazine — Niconico Service Disruption Report](https://gigazine.net/gsc_news/en/20260716-aws-cloudfront-down/)

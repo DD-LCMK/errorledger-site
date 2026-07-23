@@ -1,19 +1,25 @@
 ---
+pipeline_contract_version: "27.0.0"
 title: "GitLab PostgreSQL replication lag directory deletion 6-hour total recovery"
 meta_title: "GitLab 2017 Outage: Database Directory Deletion"
 description: "An accidental rm -rf execution on GitLab's primary PostgreSQL database during a replication resync on Jan 31, 2017, caused an 18-hour outage."
 pubDate: "2026-07-16"
 tags: ["gitlab", "postgresql", "database", "service-outage", "incident-analysis"]
+shortenedSlug: "gitlab-postgresql-replication-lag-directory-deletion-6-hour-total-recovery"
+keyword: "GitLab PostgreSQL replication lag directory deletion 6-hour total recovery"
 slug: "gitlab-postgresql-replication-lag-directory-deletion-6-hour-total-recovery"
+target_systems: "GitLab Production PostgreSQL Relational Database Infrastructure"
+article_confidence: "★★★★★"
+canonical_terminology:
+  approved: ["GitLab", "PostgreSQL", "Replication Lag", "Directory Deletion", "Hard Outage"]
 ---
 
 # GitLab PostgreSQL replication lag directory deletion 6-hour total recovery [Status: RESOLVED]
 
-### The Incident
-| Field | Value |
+| Metadata Field | Details |
 | :--- | :--- |
+| **Incident Date** | 2017-01-31 |
 | **Company** | GitLab |
-| **Date** | January 31, 2017 |
 | **Status** | RESOLVED |
 | **Category** | Primary Database Directory Deletion |
 | **Root Cause** | Accidental rm -rf execution on the primary node during replication lag resynchronization |

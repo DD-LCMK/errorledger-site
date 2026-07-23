@@ -1,11 +1,13 @@
 ---
-pipeline_contract_version: "22.0.2"
+pipeline_contract_version: "27.0.0"
 title: "Fastly June 2021 Outage: How a Latent Software Bug Crashed Edge Nodes Worldwide"
-pubDate: "2021-06-08"
-keyword: "Fastly Edge Cloud Undiscovered Software Bug Customer Configuration Crash"
-slug: "fastly-edge-cloud-undiscovered-software-bug-customer-configuration-crash"
 meta_title: "Fastly June 2021 Outage: Latent Software Bug Post-Mortem"
 description: "Technical post-mortem of the Fastly June 2021 outage exploring how a latent edge software defect was activated during configuration processing."
+pubDate: "2026-07-19"
+tags: ["fastly", "cdn-edge", "configuration-crash", "software-defect", "service-outage"]
+shortenedSlug: "fastly-edge-cloud-undiscovered-software-bug-customer-configuration-crash"
+keyword: "Fastly Edge Cloud Undiscovered Software Bug Customer Configuration Crash"
+slug: "fastly-edge-cloud-undiscovered-software-bug-customer-configuration-crash"
 target_systems: "Fastly Global CDN Edge Nodes"
 article_confidence: "★★★★★"
 canonical_terminology:

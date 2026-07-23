@@ -1,9 +1,9 @@
 ---
-pipeline_contract_version: "23.0.0"
+pipeline_contract_version: "27.0.0"
 title: "Why Decommissioning Scripts Delete Production: Atlassian 2022 Outage Post-Mortem"
 meta_title: "Atlassian April 2022 Outage: 14-Day Site Deletion RCA"
 description: "Technical post-mortem of the April 2022 Atlassian Cloud outage where an un-bounded maintenance script deleted 775 customer sites."
-pubDate: "2022-04-05"
+pubDate: "2026-07-17"
 tags: ["cloud-infrastructure", "atlassian", "jira-service-management", "hard-deletion-api", "site-decommissioning", "sre-postmortem", "data-recovery"]
 shortenedSlug: "atlassian-cloud-site-decommissioning-script-customer-site-deletion-outage"
 keyword: "Atlassian Cloud Site Decommissioning Script Customer Site Deletion Outage"

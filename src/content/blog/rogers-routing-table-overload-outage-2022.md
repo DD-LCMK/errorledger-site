@@ -1,19 +1,25 @@
 ---
+pipeline_contract_version: "27.0.0"
 title: "Rogers Communications IP routing prefix distribution table overload national network crash"
 meta_title: "Rogers Communications 2022 Routing Outage"
 description: "A configuration change on July 8, 2022, removed access filters, triggering a massive routing table overload that crashed Rogers core network."
 pubDate: "2026-07-15"
 tags: ["rogers", "ip-routing", "bgp", "telecommunications", "incident-analysis"]
+shortenedSlug: "rogers-routing-table-overload-outage-2022"
+keyword: "Rogers Communications IP routing prefix distribution table overload national network crash"
 slug: "rogers-routing-table-overload-outage-2022"
+target_systems: "Rogers Communications Core IP Network & Routing Distribution Filter Engine"
+article_confidence: "★★★★★"
+canonical_terminology:
+  approved: ["Rogers", "BGP", "IP Routing", "Prefix Table Overload", "Core Network Outage"]
 ---
 
 # Rogers Communications IP routing prefix distribution table overload national network crash [Status: RESOLVED]
 
-### The Incident
-| Field | Value |
+| Metadata Field | Details |
 | :--- | :--- |
+| **Incident Date** | 2022-07-08 |
 | **Company** | Rogers Communications |
-| **Date** | July 8, 2022 |
 | **Status** | RESOLVED |
 | **Category** | Routing Overload Outage |
 | **Root Cause** | Removal of a core routing control filter flooding network nodes with routing prefix table entries |
@@ -42,4 +48,3 @@ The Rogers Communications collapse underscores the importance of soft-limiting c
 
 ### References
 *   [CRTC Rogers Outage Inquiry Report](https://crtc.gc.ca/eng/publications/reports/xona2024.htm)
-*   [ThousandEyes Rogers Network Outage Analysis](https://www.thousandeyes.com/blog/rogers-outage-analysis-july-8-2022)

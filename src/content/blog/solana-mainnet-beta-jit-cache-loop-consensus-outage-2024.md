@@ -1,11 +1,13 @@
 ---
-pipeline_contract_version: "23.0.0"
+pipeline_contract_version: "27.0.0"
 title: "Solana Mainnet Beta Outage (2024): How a JIT Cache Loop Stalled Network Consensus"
-pubDate: "2024-02-06"
-keyword: "solana-mainnet-beta-jit-cache-loop-consensus-outage-2024"
-slug: "solana-mainnet-beta-jit-cache-loop-consensus-outage-2024"
 meta_title: "Solana Feb 2024 Outage: JIT Compilation Cache Loop RCA"
 description: "Technical post-mortem of the February 2024 Solana Mainnet Beta outage caused by a JIT compilation cache loop in the LoadedPrograms validator module."
+pubDate: "2026-07-24"
+tags: ["blockchain", "solana", "jit-cache", "consensus-outage", "validator-client"]
+shortenedSlug: "solana-mainnet-beta-jit-cache-loop-consensus-outage-2024"
+keyword: "solana-mainnet-beta-jit-cache-loop-consensus-outage-2024"
+slug: "solana-mainnet-beta-jit-cache-loop-consensus-outage-2024"
 target_systems: "Solana Validator Client (v1.16 LoadedPrograms Cache)"
 article_confidence: "★★★★★"
 canonical_terminology:

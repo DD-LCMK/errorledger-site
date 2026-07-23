@@ -1,11 +1,13 @@
 ---
-pipeline_contract_version: "22.0.2"
+pipeline_contract_version: "27.0.0"
 title: "AWS Kinesis US-EAST-1 Outage (2020): How an OS Thread Limit Caused a 17-Hour AWS Failure"
-pubDate: "2020-11-25"
-keyword: "AWS Kinesis US-EAST-1 Outage 2020 OS Thread Limit Root Cause Analysis"
-slug: "aws-kinesis-operating-system-thread-limit-capacity-expansion-outage"
 meta_title: "AWS Kinesis Outage (2020): OS Thread Limit Root Cause Analysis"
 description: "Technical post-mortem of the November 2020 AWS Kinesis outage where adding server capacity breached OS thread limits in US-EAST-1."
+pubDate: "2026-07-19"
+tags: ["aws", "kinesis", "os-thread-limit", "cloud-infrastructure"]
+shortenedSlug: "aws-kinesis-operating-system-thread-limit-capacity-expansion-outage"
+keyword: "AWS Kinesis US-EAST-1 Outage 2020 OS Thread Limit Root Cause Analysis"
+slug: "aws-kinesis-operating-system-thread-limit-capacity-expansion-outage"
 target_systems: "AWS Kinesis Data Streams Front-End Fleet (US-EAST-1)"
 article_confidence: "★★★★★"
 canonical_terminology:
@@ -172,4 +174,3 @@ In its official Post-Event Summary, AWS outlined several architectural commitmen
 * **Systems Engineering & Independent Post-Mortems**
   * [Postmortems.app: Amazon Kinesis US-EAST-1 Incident Breakdown](https://postmortems.app/postmortem/8d520e9f-0316-4a36-9891-21a3e2918d6c)
   * [Evan Jones Systems Engineering: Lessons from the AWS Kinesis Outage](https://www.evanjones.ca/kinesis-outage.html)
-  * [The Downtime Project Podcast: Kinesis Hits the Thread Limit](https://downtimeproject.com/podcast/kinesis-hits-the-thread-limit/)

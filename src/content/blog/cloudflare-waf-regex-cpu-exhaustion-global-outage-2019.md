@@ -1,11 +1,13 @@
 ---
-pipeline_contract_version: "23.0.0"
+pipeline_contract_version: "27.0.0"
 title: "Cloudflare WAF Global Outage (2019): How a Regular Expression Spiked Edge CPU to 100%"
-pubDate: "2019-07-02"
-keyword: "cloudflare-waf-regex-cpu-exhaustion-global-outage-2019"
-slug: "cloudflare-waf-regex-cpu-exhaustion-global-outage-2019"
 meta_title: "Cloudflare July 2019 WAF Outage: Catastrophic Backtracking RCA"
 description: "Technical post-mortem of the July 2019 Cloudflare outage caused by an unescaped WAF regular expression that spiked CPU usage to 100% globally."
+pubDate: "2026-07-20"
+tags: ["cloudflare", "waf", "regex-backtracking", "edge-computing", "service-outage"]
+shortenedSlug: "cloudflare-waf-regex-cpu-exhaustion-global-outage-2019"
+keyword: "cloudflare-waf-regex-cpu-exhaustion-global-outage-2019"
+slug: "cloudflare-waf-regex-cpu-exhaustion-global-outage-2019"
 target_systems: "Cloudflare Web Application Firewall (WAF) & NGINX Edge Proxies"
 article_confidence: "★★★★★"
 canonical_terminology:

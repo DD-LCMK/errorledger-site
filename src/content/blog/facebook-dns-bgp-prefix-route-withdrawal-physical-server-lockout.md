@@ -1,19 +1,25 @@
 ---
-title: "Facebook DNS BGP prefix route withdrawal physical server lockout"
+pipeline_contract_version: "27.0.0"
+title: "Why BGP Routing Collapses: Facebook 2021 DNS Lockout Post-Mortem"
 meta_title: "Facebook 2021 BGP DNS Routing Outage"
 description: "A faulty maintenance command triggered a global Facebook DNS BGP prefix route withdrawal physical server lockout, disabling services for six hours."
 pubDate: "2026-07-16"
 tags: ["facebook", "bgp", "dns", "network-routing", "incident-analysis", "service-outage"]
+shortenedSlug: "facebook-dns-bgp-prefix-route-withdrawal-physical-server-lockout"
+keyword: "Facebook DNS BGP prefix route withdrawal physical server lockout"
 slug: "facebook-dns-bgp-prefix-route-withdrawal-physical-server-lockout"
+target_systems: "Meta Global Network Backbone, BGP Routing Control Plane & DNS Infrastructure"
+article_confidence: "★★★★★"
+canonical_terminology:
+  approved: ["Facebook", "Meta", "BGP", "DNS", "Prefix Route Withdrawal"]
 ---
 
-# Facebook DNS BGP prefix route withdrawal physical server lockout [Status: RESOLVED]
+# Why BGP Routing Collapses: Facebook 2021 DNS Lockout Post-Mortem [Status: RESOLVED]
 
-### The Incident
-| Field | Value |
+| Metadata Field | Details |
 | :--- | :--- |
+| **Incident Date** | 2021-10-04 |
 | **Company** | Facebook (Meta) |
-| **Date** | October 4, 2021 |
 | **Status** | RESOLVED |
 | **Category** | Border Gateway Protocol (BGP) Routing Collapse |
 | **Root Cause** | Auditing bug passing a faulty capacity assessment command that severed backbone routing |
