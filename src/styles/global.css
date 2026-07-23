@@ -34,16 +34,16 @@ body {
   line-height: 1.7;
   min-height: 100vh;
 
-  /* Enhanced, Visible Dot Grid Canvas (Light Mode) */
+  /* Enhanced Visible Dot Grid Canvas (Light Mode) */
   background-color: #f8fafc !important;
-  background-image: radial-gradient(rgba(15, 23, 42, 0.12) 1.2px, transparent 1.2px) !important;
+  background-image: radial-gradient(rgba(15, 23, 42, 0.15) 1.2px, transparent 1.2px) !important;
   background-size: 24px 24px !important;
 }
 
-/* Dark Mode Grid Canvas Adaptation */
+/* Dark Mode Grid Canvas Adaptation (High Contrast Dot Fix) */
 html.dark body {
   background-color: #090d16 !important;
-  background-image: radial-gradient(rgba(248, 250, 252, 0.12) 1.2px, transparent 1.2px) !important;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.22) 1.4px, transparent 1.4px) !important;
   background-size: 24px 24px !important;
   color: #cbd5e1 !important;
 }
