@@ -21,7 +21,7 @@ html {
 	min-height: 100%;
 }
 
-/* --- LIGHT MODE CANVAS: Crisp Dot Grid --- */
+/* --- LIGHT MODE CANVAS: Crisp Slate Dot Grid --- */
 body {
   font-family: var(--font-atkinson);
   margin: 0;
@@ -35,17 +35,15 @@ body {
   min-height: 100vh;
 
   background-color: #f8fafc !important;
-  background-image: radial-gradient(rgba(15, 23, 42, 0.16) 1.5px, transparent 1.5px) !important;
+  background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px) !important;
   background-size: 24px 24px !important;
 }
 
-/* --- DARK MODE CANVAS: High-Visibility Engineering Blueprint Grid --- */
+/* --- DARK MODE CANVAS: High-Contrast Solid Slate Dots Fix --- */
 html.dark body {
   background-color: #090d16 !important;
-  background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px) !important;
-  background-size: 32px 32px !important;
+  background-image: radial-gradient(#334155 1.5px, transparent 1.5px) !important;
+  background-size: 24px 24px !important;
   color: #cbd5e1 !important;
 }
 

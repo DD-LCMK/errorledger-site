@@ -157,7 +157,7 @@ const timelineYears = Object.entries(annualMetrics)
 				border: 1px solid #cbd5e1;
 				border-radius: 12px;
 				position: relative;
-				margin: 2rem 0;
+				margin: 1.5rem 0 2.5rem 0;
 				padding: 2.5rem 0;
 				box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.03);
 			}
@@ -325,6 +325,7 @@ const timelineYears = Object.entries(annualMetrics)
 				</div>
 			</section>
 
+			<!-- Diagnostic & Forensic Tools -->
 			<section class="tools-dashboard">
 				<h3 class="feed-title">Diagnostic & Forensic Tools</h3>
 				<div class="tools-grid">
@@ -346,6 +347,29 @@ const timelineYears = Object.entries(annualMetrics)
 					</a>
 				</div>
 			</section>
+
+			<!-- MOVED TO TOP: Engineering History Matrix -->
+			{timelineYears.length > 0 && (
+				<section style="margin-bottom: 3.5rem;">
+					<h3 class="feed-title">Engineering History Matrix</h3>
+					<div class="timeline-window">
+					    <div class="timeline-track">
+					    <div class="timeline-axis"></div>
+					        {
+					            timelineYears.map((node) => (
+					                <a href={`/search?q=${node.year}`} class="timeline-node-link">
+					                    <span class="timeline-year-label">{node.year}</span>
+					                    <div class="timeline-pulse-dot"></div>
+					                    <span class="timeline-count-badge">
+					                        {node.count} {node.count === 1 ? 'Record' : 'Records'}
+					                    </span>
+					                </a>
+					            ))
+	        				}
+	   				 </div>
+					</div>
+				</section>
+			)}
 
 			<!-- Pillar 1: AI Platform Evolutions & SDK Shifts -->
 			{aiEvolutions.length > 0 && (
@@ -440,28 +464,6 @@ const timelineYears = Object.entries(annualMetrics)
 							</li>
 						))}
 					</ul>
-				</section>
-			)}
-
-			{timelineYears.length > 0 && (
-				<section style="margin-bottom: 2.5rem;">
-					<h3 class="feed-title">Engineering History Matrix</h3>
-					<div class="timeline-window">
-					    <div class="timeline-track">
-					    <div class="timeline-axis"></div>
-					        {
-					            timelineYears.map((node) => (
-					                <a href={`/search?q=${node.year}`} class="timeline-node-link">
-					                    <span class="timeline-year-label">{node.year}</span>
-					                    <div class="timeline-pulse-dot"></div>
-					                    <span class="timeline-count-badge">
-					                        {node.count} {node.count === 1 ? 'Record' : 'Records'}
-					                    </span>
-					                </a>
-					            ))
-	        				}
-	   				 </div>
-					</div>
 				</section>
 			)}
 
