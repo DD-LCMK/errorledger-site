@@ -6,9 +6,14 @@ import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import { getCollection } from 'astro:content';
 
-type Props = CollectionEntry<'blog'>['data'];
+type Props = CollectionEntry<'blog'>['data'] & { body?: string };
 
-const { title, meta_title, description, pubDate, tags = [] } = Astro.props;
+const { title, meta_title, description, pubDate, tags = [], article_confidence } = Astro.props;
+
+// Calculate Reading Time (Average: 200 words per minute)
+const rawContent = Astro.props.body || '';
+const wordCount = rawContent.split(/\s+/).filter(Boolean).length;
+const readTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
 
 const seoTitle = meta_title || title;
 
@@ -178,14 +183,12 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 			.prose :global(td) { padding: 10px; border-bottom: 1px solid #edf2f7; }
 			
 			.meta-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px dashed #e2e8f0; flex-wrap: wrap; gap: 1rem; }
-			.date { color: #718096; font-size: 0.95rem; }
+			.date-info { color: #718096; font-size: 0.88rem; display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
 			.share-actions { display: flex; gap: 0.5rem; }
 			.share-btn { background: #ffffff; border: 1px solid #cbd5e1; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; color: #334155; text-decoration: none; font-weight: 500; }
 			.share-btn:hover { background: #f8fafc; border-color: #94a3b8; color: #0f172a; }
 
 			.tag-container { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
-			.tag-badge { font-size: 0.75rem; font-weight: 700; background: #f1f5f9; color: #475569; padding: 0.15rem 0.45rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.025em; text-decoration: none; }
-			.tag-badge:hover { background: #ef4444; color: #ffffff; }
 
 			/* --- STRICT DARK MODE SYSTEM OVERRIDES --- */
 			:global(html.dark) .prose { color: #cbd5e1; }
@@ -193,12 +196,9 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 			:global(html.dark) .prose :global(th) { background-color: #1e293b; border-bottom-color: #334155; }
 			:global(html.dark) .prose :global(td) { border-bottom-color: #334155; }
 			:global(html.dark) .meta-wrapper { border-bottom-color: #334155; }
-			:global(html.dark) .tag-badge { background: #334155; color: #cbd5e1; }
-			:global(html.dark) .tag-badge:hover { background: #ef4444; color: #ffffff; }
 			:global(html.dark) .share-btn { background: #1e293b; border-color: #334155; color: #cbd5e1; }
 			:global(html.dark) .share-btn:hover { background: #273549; border-color: #475569; color: #f8fafc; }
 
-			/* Explicit high-specificity overrides for the floating card container */
 			:global(html.dark) .post-layout-grid.has-sidebar .sidebar-wrapper {
 				background: #1e293b !important;
 				border: 1px solid #334155 !important;
@@ -221,14 +221,26 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 				<!-- Main Content Panel -->
 				<article>
 					<div class="prose">
-						<!-- Only render publication dates and action triggers on true intelligence records -->
+						<!-- Only render publication dates, reading time, and action triggers on true intelligence records -->
 						{!isStaticPage && (
 							<div class="meta-wrapper">
-								{pubDate && (
-									<div class="date">
-										Published on <FormattedDate date={pubDate} />
-									</div>
-								)}
+								<div class="date-info font-mono-tech">
+									{pubDate && (
+										<span>Published on <FormattedDate date={pubDate} /></span>
+									)}
+									<span>•</span>
+									<span>⏱️ {readTimeMinutes} min read</span>
+									
+									{article_confidence && (
+										<>
+											<span>•</span>
+											<span class="badge-pill badge-pillar-arch" style="font-size: 0.68rem;">
+												{article_confidence}
+											</span>
+										</>
+									)}
+								</div>
+
 								<div class="share-actions">
 									<a href={`https://x.com/intent/tweet?url=${encodeURIComponent(cleanUrl)}&text=${encodeURIComponent(title)}`} target="_blank" rel="noopener noreferrer" class="share-btn">
 										Share on X
@@ -240,11 +252,11 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 							</div>
 						)}
 
-						<!-- Only render taxonomy tags if it is an intelligence record -->
+						<!-- Render translucent taxonomy badges -->
 						{!isStaticPage && tags.length > 0 && (
 							<div class="tag-container">
 								{tags.map((tag) => (
-									<a href={`/search?q=${encodeURIComponent(tag.toLowerCase())}`} class="tag-badge">
+									<a href={`/search?q=${encodeURIComponent(tag.toLowerCase())}`} class="badge-pill badge-pillar-neutral">
 										#{tag}
 									</a>
 								))}

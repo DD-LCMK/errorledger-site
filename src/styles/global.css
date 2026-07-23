@@ -103,12 +103,6 @@ pre {
 pre > code {
 	all: unset;
 }
-blockquote {
-	border-left: 4px solid var(--accent);
-	padding: 0 0 0 20px;
-	margin: 0;
-	font-size: 1.333em;
-}
 hr {
 	border: none;
 	border-top: 1px solid rgb(var(--gray-light));
@@ -130,19 +124,15 @@ hr {
 	height: 1px;
 	width: 1px;
 	overflow: hidden;
-	/* IE6, IE7 - a 0 height clip, off to the bottom right of the visible 1px box */
 	clip: rect(1px 1px 1px 1px);
-	/* maybe deprecated but we need to support legacy browsers */
 	clip: rect(1px, 1px, 1px, 1px);
-	/* modern browsers, clip-path works inwards from each corner */
 	clip-path: inset(50%);
-	/* added line to stop words getting smushed together (as they go onto separate lines and some screen readers do not understand line feeds as a space */
 	white-space: nowrap;
 }
 
 /* Technical Blog Layout Extensions */
 .prose {
-width: 960px !important; /* Widens the post container from 720px */
+width: 960px !important;
 max-width: calc(100% - 2rem) !important;
 }
 
@@ -150,13 +140,13 @@ max-width: calc(100% - 2rem) !important;
 .prose table {
 display: block;
 width: 100% !important;
-overflow-x: auto; /* Enables smooth horizontal scrolling on smaller screens */
+overflow-x: auto;
 border-collapse: collapse;
 margin: 2rem 0;
 }
 
 .prose th, .prose td {
-min-width: 150px; /* Gives table columns breathing room */
+min-width: 150px;
 padding: 10px 14px;
 text-align: left;
 vertical-align: top;
@@ -174,17 +164,122 @@ width: 1200px !important;
 max-width: 100% !important;
 }
 
-/* Allow the table to lay out naturally without desktop compression */
 .prose table {
 display: table !important;
 width: 100% !important;
 overflow-x: visible !important;
 }
 
-/* Fallback responsive block strictly for small mobile viewports */
 @media (max-width: 768px) {
 .prose table {
 display: block !important;
 overflow-x: auto !important;
 }
+}
+
+/* ==========================================================================
+   AESTHETIC UPGRADE EXTENSIONS (ENGINEERING COMMAND CENTER)
+   ========================================================================== */
+
+/* High-Density Monospace Typography */
+.font-mono-tech {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  letter-spacing: -0.025em;
+}
+
+/* Translucent Glass Badge System */
+.badge-pill {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.18rem 0.55rem;
+  border-radius: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  backdrop-filter: blur(8px);
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.15s ease-in-out;
+}
+
+/* Pillar 1: AI Evolutions (Blue Glass) */
+.badge-pillar-ai {
+  background: rgba(59, 130, 246, 0.12);
+  color: #2563eb;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+:global(html.dark) .badge-pillar-ai {
+  background: rgba(59, 130, 246, 0.18);
+  color: #60a5fa;
+  border-color: rgba(96, 165, 250, 0.3);
+}
+
+/* Pillar 2: Architecture & Protocols (Emerald Glass) */
+.badge-pillar-arch {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+:global(html.dark) .badge-pillar-arch {
+  background: rgba(16, 185, 129, 0.18);
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.3);
+}
+
+/* Pillar 3: System Failures & Incidents (Red Glass) */
+.badge-pillar-incident {
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+:global(html.dark) .badge-pillar-incident {
+  background: rgba(239, 68, 68, 0.18);
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.3);
+}
+
+/* Catch-All / Neutral Pillar (Slate Glass) */
+.badge-pillar-neutral {
+  background: rgba(100, 116, 139, 0.12);
+  color: #475569;
+  border: 1px solid rgba(100, 116, 139, 0.25);
+}
+:global(html.dark) .badge-pillar-neutral {
+  background: rgba(100, 116, 139, 0.2);
+  color: #cbd5e1;
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+/* Custom SRE Blockquote / Markdown Callout Box */
+.prose blockquote {
+  background: rgba(241, 245, 249, 0.65) !important;
+  border-left: 4px solid #ef4444 !important;
+  border-radius: 0 8px 8px 0;
+  padding: 1.1rem 1.3rem !important;
+  margin: 1.75rem 0 !important;
+  font-style: normal !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  font-size: 1.05rem;
+}
+:global(html.dark) .prose blockquote {
+  background: rgba(30, 41, 59, 0.5) !important;
+  border-left-color: #f87171 !important;
+}
+
+.prose blockquote h3 {
+  margin-top: 0 !important;
+  margin-bottom: 0.5rem !important;
+  font-size: 1.1rem !important;
+  letter-spacing: -0.01em;
+}
+
+/* Interactive Timeline Pulse Ring Animation */
+@keyframes nodePulse {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.timeline-pulse-dot {
+  animation: nodePulse 3s infinite ease-in-out;
 }

@@ -34,7 +34,16 @@ const incidentPosts = posts.filter(p =>
 	)
 ).slice(0, 3);
 
-// 3. Count occurrences of each tag dynamically across active posts
+// 3. Catch-All Safety Net: Identify posts that did not fit into the top 3 pillars
+const featuredIds = new Set([
+	...aiEvolutions.map(p => p.id),
+	...architecturePosts.map(p => p.id),
+	...incidentPosts.map(p => p.id)
+]);
+
+const uncategorizedPosts = posts.filter(p => !featuredIds.has(p.id)).slice(0, 3);
+
+// 4. Count occurrences of each tag dynamically across active posts
 const tagCounts: Record<string, number> = {};
 allPosts.forEach(post => {
 	if (post.data.tags) {
@@ -58,17 +67,15 @@ const recentInsights = allInsights
 	})
 	.slice(0, 3);
 
-// 4. Strict Historical Event Scraping Engine
+// 5. Strict Historical Event Scraping Engine
 // Only scrapes explicit Release Date, Incident Date, Event Date, or Date from markdown metadata tables.
 // If missing, the post is EXCLUDED from the timeline.
 const annualMetrics: Record<number, number> = {};
 
-// Evaluate across all blog records and technical insights
 [...allPosts, ...allInsights].forEach(post => {
 	try {
 		const fileContent = post.body || '';
 		if (fileContent) {
-			// Regex targeting Release Date, Incident Date, Event Date, or Date in markdown tables
 			const tableMatch = fileContent.match(/\|\s*\*?\*?(?:Release Date|Incident Date|Event Date|Date)\*?\*?\s*\|\s*([^|]+)\|/i);
 			
 			if (tableMatch && tableMatch[1]) {
@@ -295,11 +302,6 @@ const timelineYears = Object.entries(annualMetrics)
 			:global(html.dark) .timeline-node-link:hover .timeline-pulse-dot { background: #ef4444; }
 			:global(html.dark) .timeline-count-badge { background: #1e293b; color: #cbd5e1; }
 			:global(html.dark) .timeline-node-link:hover .timeline-count-badge { background: #ef4444; color: #ffffff; }
-
-			:global(html.dark) .card-tag {
-				background: #334155 !important;
-				color: #cbd5e1 !important;
-			}
 		</style>
 	</head>
 	<body>
@@ -358,8 +360,8 @@ const timelineYears = Object.entries(annualMetrics)
 								<a href={`/blog/${post.data.shortenedSlug || post.slug}`}>
 									<div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
 										{post.data.tags.map((tag: string) => (
-											<span class="card-tag" style="font-size: 0.72rem; font-weight: 700; background: #3b82f6; color: #ffffff; padding: 0.15rem 0.45rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.025em;">
-												{tag}
+											<span class="badge-pill badge-pillar-ai">
+												#{tag}
 											</span>
 										))}
 									</div>
@@ -382,8 +384,8 @@ const timelineYears = Object.entries(annualMetrics)
 								<a href={`/blog/${post.data.shortenedSlug || post.slug}`}>
 									<div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
 										{post.data.tags.map((tag: string) => (
-											<span class="card-tag" style="font-size: 0.72rem; font-weight: 700; background: #10b981; color: #ffffff; padding: 0.15rem 0.45rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.025em;">
-												{tag}
+											<span class="badge-pill badge-pillar-arch">
+												#{tag}
 											</span>
 										))}
 									</div>
@@ -406,8 +408,32 @@ const timelineYears = Object.entries(annualMetrics)
 								<a href={`/blog/${post.data.shortenedSlug || post.slug}`}>
 									<div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
 										{post.data.tags.map((tag: string) => (
-											<span class="card-tag" style="font-size: 0.72rem; font-weight: 700; background: #f1f5f9; color: #475569; padding: 0.15rem 0.45rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.025em;">
-												{tag}
+											<span class="badge-pill badge-pillar-incident">
+												#{tag}
+											</span>
+										))}
+									</div>
+									<h4 class="title">{post.data.title}</h4>
+									<p class="description">{post.data.description}</p>
+								</a>
+							</li>
+						))}
+					</ul>
+				</section>
+			)}
+
+			<!-- Catch-All Safety Bucket for Uncategorized / General Engineering Analysis -->
+			{uncategorizedPosts.length > 0 && (
+				<section style="margin-bottom: 3.5rem;">
+					<h3 class="feed-title"><span style="color: #64748b;">📦</span> General Engineering & Systems Analysis</h3>
+					<ul>
+						{uncategorizedPosts.map((post) => (
+							<li>
+								<a href={`/blog/${post.data.shortenedSlug || post.slug}`}>
+									<div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+										{post.data.tags.map((tag: string) => (
+											<span class="badge-pill badge-pillar-neutral">
+												#{tag}
 											</span>
 										))}
 									</div>
@@ -452,8 +478,8 @@ const timelineYears = Object.entries(annualMetrics)
 								<a href={`/insights/${post.data.shortenedSlug}`}>
 									<div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
 										{post.data.tags.map((tag: string) => (
-											<span class="card-tag" style="font-size: 0.72rem; font-weight: 700; background: #ef4444; color: #ffffff; padding: 0.15rem 0.45rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.025em;">
-												{tag}
+											<span class="badge-pill badge-pillar-incident">
+												#{tag}
 											</span>
 										))}
 									</div>
