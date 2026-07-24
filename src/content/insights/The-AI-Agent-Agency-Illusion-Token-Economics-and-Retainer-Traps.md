@@ -24,7 +24,7 @@ canonical_terminology:
 | **Target Systems** | Autonomous Agent Workflows, Orchestration Frameworks & MCP Servers |
 | **Primary Primitives** | Multi-Turn Execution Loops, $O(K^2)$ Cumulative Context Expansion, Tool Schema Injection & Local SLM Fallbacks |
 | **Financial Vector** | Fixed-Retainer Revenue vs. Uncapped Pay-As-You-Go API Utility Costs |
-| **Primary Reference** | [ErrorLedger Software Economics Study](https://errorledger.com/blog/true-cost-of-vibe-coding-hidden-token-fees) |
+| **Primary Reference** | [ErrorLedger Software Economics Study](https://errorledger.com/insights/true-cost-of-vibe-coding-hidden) |
 
 > ### Key Takeaways
 > * **The Retainer Margin Vulnerability:** Offering fixed-rate monthly retainers while paying uncapped, pay-as-you-go foundational model API utility costs creates financial fragility. Unhandled edge cases transform predictable client revenue into variable utility expenses.
@@ -140,7 +140,7 @@ The following figures are illustrative calculations derived from the simplified 
 
 *Model Parameters: Assumes $S = 2,000$ tokens; $M_{\text{MCP}} = 15,000$ tokens; $D = 2,000$ tokens/turn; Output = 300 tokens/turn. Un-compacted cumulative context assumed.*
 
-If a client contract is structured at $2,000/month and end-users submit queries that trigger 15-turn un-compacted loops 100 times per day, utility expenses scale to ~$4.4k per month, generating an operational loss on that account. This data-plane context dynamic reinforces the software economics analyzed in [The Economics of Vibe Coding](https://errorledger.com/blog/true-cost-of-vibe-coding-hidden-token-fees).
+If a client contract is structured at $2,000/month and end-users submit queries that trigger 15-turn un-compacted loops 100 times per day, utility expenses scale to ~$4.4k per month, generating an operational loss on that account. This data-plane context dynamic reinforces the software economics analyzed in [The Economics of Vibe Coding](https://errorledger.com/insights/true-cost-of-vibe-coding-hidden).
 
 ---
 
@@ -285,9 +285,9 @@ For a dedicated local workstation setup running an open-weight 32B model (amorti
 
 ### Related Articles
 
-*   **[The Economics of Vibe Coding: Context Windows, Token Costs, and Hybrid Development](https://errorledger.com/blog/true-cost-of-vibe-coding-hidden-token-fees)** — Analysis of token ingestion mechanics, prompt caching limits, and developer software economics.
-*   **[The One-Shot Video Illusion: Automated Content Labor Economics](https://errorledger.com/blog/the-one-shot-video-illusion-automated-content-labor-economics)** — Operational study analyzing automated media generation pipelines and platform policy constraints.
-*   **[OpenAI ChatGPT Redis Asyncio Connection Pool Data Leak](https://errorledger.com/blog/openai-chatgpt-redis-asyncio-connection-pool-race-condition-data-exposure)** — Examination of state race conditions and connection pool failure modes in production systems.
+*   **[The Economics of Vibe Coding: Context Windows, Token Costs, and Hybrid Development](https://errorledger.com/insights/true-cost-of-vibe-coding-hidden)** — Analysis of token ingestion mechanics, prompt caching limits, and developer software economics.
+*   **[The One-Shot Video Illusion: Automated Content Labor Economics](https://errorledger.com/insights/the-one-shot-video-illusion-automated)** — Operational study analyzing automated media generation pipelines and platform policy constraints.
+*   **[OpenAI ChatGPT Redis Asyncio Connection Pool Data Leak](https://errorledger.com/blog/openai-chatgpt-redis-asyncio-connection-pool)** — Examination of state race conditions and connection pool failure modes in production systems.
 
 ---
 
