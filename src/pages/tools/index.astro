@@ -6,7 +6,7 @@ import Footer from '../../components/Footer.astro';
 
 <html lang="en">
 	<head>
-		<BaseHead title="Developer Utilities & Debugging Tools | ErrorLedger" description="Free, client-side developer tools including a Unix Epoch Converter, JWT Decoder, Base64 Converter, and JSON Formatter." />
+		<BaseHead title="Developer Utilities & Debugging Tools | ErrorLedger" description="Free, client-side developer tools including a Unix Epoch Converter, JWT Decoder, Base64 Converter, JSON Formatter, Cron Parser, and Regex Tester." />
 		<style>
 			main { width: 960px; max-width: calc(100% - 2rem); margin: 0 auto; padding: 3em 1rem; }
 			h1 { font-size: 2.25rem; margin-bottom: 0.5rem; color: #1a202c; }
@@ -48,6 +48,14 @@ import Footer from '../../components/Footer.astro';
 				<a href="/tools/json-formatter" class="tool-card">
 					<span class="tool-title">🧹 JSON Formatter & Minifier</span>
 					<span class="tool-desc">Validate messy JSON strings, format them into readable nested tree structures, or minify them to remove whitespace.</span>
+				</a>
+				<a href="/tools/cron-parser" class="tool-card">
+					<span class="tool-title">⏰ Cron Expression Parser</span>
+					<span class="tool-desc">Translate complex Cron schedules into human-readable text and calculate upcoming execution times.</span>
+				</a>
+				<a href="/tools/regex-tester" class="tool-card">
+					<span class="tool-title">🔍 Regex Backtracking Tester</span>
+					<span class="tool-desc">Analyze regular expressions for catastrophic backtracking vulnerabilities and exponential execution time.</span>
 				</a>
 			</div>
 		</main>

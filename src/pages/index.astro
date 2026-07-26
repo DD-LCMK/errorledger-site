@@ -107,7 +107,39 @@ const recentInsights = allInsights
 			}
 			.badge:hover { background: #ef4444; color: white; }
 
-			.tools-dashboard { margin-bottom: 2.5rem; }
+			/* --- E-E-A-T Editorial Manifesto Box --- */
+			.editorial-manifesto { margin-bottom: 3.5rem; }
+			.manifesto-box {
+				background: #f8fafc;
+				border: 1px solid #e2e8f0;
+				border-left: 4px solid #ef4444;
+				border-radius: 8px;
+				padding: 1.5rem;
+				box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+			}
+			.manifesto-box p { margin: 0 0 1rem 0; color: #334155; font-size: 0.95rem; line-height: 1.6; }
+			ul.manifesto-list { 
+				display: grid; 
+				grid-template-columns: 1fr; 
+				gap: 0.75rem; 
+				margin: 0 0 1.25rem 0; 
+				padding: 0; 
+			}
+			@media (min-width: 768px) { ul.manifesto-list { grid-template-columns: 1fr 1fr 1fr; } }
+			ul.manifesto-list li { 
+				background: transparent !important; 
+				border: none !important; 
+				padding: 0 !important; 
+				box-shadow: none !important; 
+				color: #0f172a; 
+				font-weight: 700; 
+				font-size: 0.9rem; 
+			}
+			ul.manifesto-list li:hover { transform: none !important; box-shadow: none !important; }
+			.methodology-link { font-size: 0.95rem; font-weight: 700; text-decoration: none; color: #3b82f6; display: inline-flex; align-items: center; gap: 0.25rem; }
+			.methodology-link:hover { color: #2563eb; text-decoration: underline; }
+
+			.tools-dashboard { margin-bottom: 3.5rem; }
 			.tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
 			.tool-card { display: block; text-decoration: none; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem; transition: transform 0.2s ease, box-shadow 0.2s ease; }
 			.tool-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); border-color: #ef4444; }
@@ -115,22 +147,22 @@ const recentInsights = allInsights
 			.tool-desc { display: block; font-size: 0.85rem; color: #475569; line-height: 1.4; }
 
 			.feed-title { font-size: 1.35rem; font-weight: 700; margin-bottom: 1.25rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; color: #0f172a; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.5rem; }
-			ul { display: flex; flex-direction: column; gap: 1.5rem; list-style-type: none; margin: 0 0 2rem 0; padding: 0; }
-			ul li {
+			ul.post-list { display: flex; flex-direction: column; gap: 1.5rem; list-style-type: none; margin: 0 0 2rem 0; padding: 0; }
+			ul.post-list li {
 				background: #ffffff;
 				border: 1px solid #e2e8f0;
 				border-radius: 8px;
 				padding: 1.5rem;
 				transition: transform 0.2s ease, box-shadow 0.2s ease;
 			}
-			ul li:hover {
+			ul.post-list li:hover {
 				transform: translateY(-2px);
 				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 				border-color: #cbd5e1;
 			}
 			.title { margin: 0 0 0.5rem 0; font-size: 1.35rem; color: #1a202c; line-height: 1.3; }
-			ul li a { text-decoration: none; }
-			ul li a:hover .title { color: #ef4444; }
+			ul.post-list li a { text-decoration: none; }
+			ul.post-list li a:hover .title { color: #ef4444; }
 			.description { margin: 0 0 1rem 0; color: #4a5568; font-size: 0.95rem; line-height: 1.5; }
 
 			.view-all-container { text-align: center; margin-top: 2.5rem; }
@@ -153,7 +185,7 @@ const recentInsights = allInsights
 			:global(html.dark) .badge { background: #1e293b; color: #cbd5e1; }
 			:global(html.dark) .badge:hover { background: #ef4444; color: white; }
 			:global(html.dark) .feed-title { border-color: #334155; color: #f8fafc; }
-			:global(html.dark) ul li { background: #1e293b; border-color: #334155; }
+			:global(html.dark) ul.post-list li { background: #1e293b; border-color: #334155; }
 			:global(html.dark) .title { color: #f8fafc; }
 			:global(html.dark) .description { color: #cbd5e1; }
 			:global(html.dark) .view-all-btn { background: #1e293b; border: 1px solid #334155; }
@@ -162,6 +194,12 @@ const recentInsights = allInsights
 			:global(html.dark) .tool-card { background: #1e293b; border-color: #334155; }
 			:global(html.dark) .tool-title { color: #f8fafc; }
 			:global(html.dark) .tool-desc { color: #cbd5e1; }
+
+			:global(html.dark) .manifesto-box { background: #1e293b; border-color: #334155; border-left-color: #ef4444; }
+			:global(html.dark) .manifesto-box p { color: #cbd5e1; }
+			:global(html.dark) ul.manifesto-list li { color: #f8fafc; }
+			:global(html.dark) .methodology-link { color: #60a5fa; }
+			:global(html.dark) .methodology-link:hover { color: #93c5fd; }
 		</style>
 	</head>
 	<body>
@@ -169,7 +207,7 @@ const recentInsights = allInsights
 		<main>
 			<section class="hero" style="margin-top: 1.5rem;">
 				<h1>Welcome to <span>ErrorLedger</span></h1>
-				<p>An independent Engineering Intelligence Library documenting platform shifts, protocol mechanics, cloud infrastructure failures, and deep software post-mortems[cite: 16].</p>
+				<p>An independent Engineering Intelligence Library documenting platform shifts, protocol mechanics, cloud infrastructure failures, and deep software post-mortems[cite: 22].</p>
 				
 				<form action="/search" method="GET" class="search-form">
 					<input 
@@ -188,25 +226,46 @@ const recentInsights = allInsights
 				</div>
 			</section>
 
+			<!-- E-E-A-T Editorial Standards Box -->
+			<section class="editorial-manifesto">
+				<div class="manifesto-box">
+					<p><strong>The ErrorLedger Editorial Standard:</strong> We bypass generic news to dissect the exact technical, physical, and software-driven root causes that trigger major global network failures. Every analysis is strictly compiled by our engineering team using a rigid zero-trust sourcing hierarchy.</p>
+					<ul class="manifesto-list">
+						<li>✓ Official Root Cause Analyses (RCAs)</li>
+						<li>✓ Code & Commit Forensics</li>
+						<li>✓ Verified Telemetry Logs & Dumps</li>
+					</ul>
+					<a href="/methodology" class="methodology-link">Read our full Incident Research Methodology →</a>
+				</div>
+			</section>
+
 			<!-- Diagnostic & Forensic Tools -->
 			<section class="tools-dashboard">
 				<h3 class="feed-title">Diagnostic & Forensic Tools</h3>
 				<div class="tools-grid">
 					<a href="/tools/epoch-converter" class="tool-card">
 						<span class="tool-title">⏱️ Unix Epoch Converter</span>
-						<span class="tool-desc">Interpret raw incident timestamps into human-readable UTC and local time arrays client-side[cite: 16].</span>
+						<span class="tool-desc">Interpret raw incident timestamps into human-readable UTC and local time arrays client-side[cite: 22].</span>
 					</a>
 					<a href="/tools/jwt-decoder" class="tool-card">
 						<span class="tool-title">🔐 JWT Decoder</span>
-						<span class="tool-desc">Decode JSON Web Tokens locally to inspect authentication headers, claims, and token signatures[cite: 16].</span>
+						<span class="tool-desc">Decode JSON Web Tokens locally to inspect authentication headers, claims, and token signatures[cite: 22].</span>
 					</a>
 					<a href="/tools/base64-converter" class="tool-card">
 						<span class="tool-title">📦 Base64 Converter</span>
-						<span class="tool-desc">Deconstruct string data payloads or sanitize encoded authorization blocks securely[cite: 16].</span>
+						<span class="tool-desc">Deconstruct string data payloads or sanitize encoded authorization blocks securely[cite: 22].</span>
 					</a>
 					<a href="/tools/json-formatter" class="tool-card">
 						<span class="tool-title">🧹 JSON Formatter</span>
-						<span class="tool-desc">Validate, prettify, or inspect complex API responses and configuration payloads[cite: 16].</span>
+						<span class="tool-desc">Validate, prettify, or inspect complex API responses and configuration payloads[cite: 22].</span>
+					</a>
+					<a href="/tools/cron-parser" class="tool-card">
+						<span class="tool-title">⏰ Cron Expression Parser</span>
+						<span class="tool-desc">Translate complex Cron schedules into human-readable text and calculate upcoming execution times.</span>
+					</a>
+					<a href="/tools/regex-tester" class="tool-card">
+						<span class="tool-title">🔍 Regex Backtracking Tester</span>
+						<span class="tool-desc">Analyze regular expressions for catastrophic backtracking vulnerabilities and exponential execution time.</span>
 					</a>
 				</div>
 			</section>
@@ -215,7 +274,7 @@ const recentInsights = allInsights
 			{aiEvolutions.length > 0 && (
 				<section style="margin-bottom: 3.5rem;">
 					<h3 class="feed-title"><span style="color: #3b82f6;">🤖</span> AI Platform Evolutions & SDK Shifts</h3>
-					<ul>
+					<ul class="post-list">
 						{aiEvolutions.map((post) => (
 							<li>
 								<a href={`/blog/${post.data.shortenedSlug || post.slug}`}>
@@ -239,7 +298,7 @@ const recentInsights = allInsights
 			{architecturePosts.length > 0 && (
 				<section style="margin-bottom: 3.5rem;">
 					<h3 class="feed-title"><span style="color: #10b981;">⚙️</span> Architecture & Protocol Mechanics</h3>
-					<ul>
+					<ul class="post-list">
 						{architecturePosts.map((post) => (
 							<li>
 								<a href={`/blog/${post.data.shortenedSlug || post.slug}`}>
@@ -263,7 +322,7 @@ const recentInsights = allInsights
 			{incidentPosts.length > 0 && (
 				<section style="margin-bottom: 3.5rem;">
 					<h3 class="feed-title"><span style="color: #ef4444;">🔥</span> System Failures & Incident Post-Mortems</h3>
-					<ul>
+					<ul class="post-list">
 						{incidentPosts.map((post) => (
 							<li>
 								<a href={`/blog/${post.data.shortenedSlug || post.slug}`}>
@@ -287,7 +346,7 @@ const recentInsights = allInsights
 			{uncategorizedPosts.length > 0 && (
 				<section style="margin-bottom: 3.5rem;">
 					<h3 class="feed-title"><span style="color: #64748b;">📦</span> General Engineering & Systems Analysis</h3>
-					<ul>
+					<ul class="post-list">
 						{uncategorizedPosts.map((post) => (
 							<li>
 								<a href={`/blog/${post.data.shortenedSlug || post.slug}`}>
@@ -310,7 +369,7 @@ const recentInsights = allInsights
 			<!-- Technical & Software Economics Insights Section -->
 			<section style="margin-bottom: 3.5rem;">
 				<h3 class="feed-title">Latest Technical Insights</h3>
-				<ul>
+				<ul class="post-list">
 					{
 						recentInsights.map((post) => (
 							<li>

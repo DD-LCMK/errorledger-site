@@ -34,8 +34,8 @@ const schemaData = {
 	],
 	"author": {
 		"@type": "Organization",
-		"name": "ErrorLedger",
-		"url": "https://errorledger.com"
+		"name": "ErrorLedger Editorial Team",
+		"url": "https://errorledger.com/about"
 	},
 	"publisher": {
 		"@type": "Organization",
@@ -68,9 +68,11 @@ const isStaticPage =
 	lowercaseTags.includes('contact') || 
 	lowercaseTags.includes('privacy') || 
 	lowercaseTags.includes('about') ||
+	lowercaseTags.includes('methodology') ||
 	title.toLowerCase().includes('privacy') ||
 	title.toLowerCase().includes('about') ||
-	title.toLowerCase().includes('contact');
+	title.toLowerCase().includes('contact') ||
+	title.toLowerCase().includes('methodology');
 
 const showSidebar = !isStaticPage && (nextPost || prevPost);
 ---
@@ -187,6 +189,23 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 
 			.tag-container { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
 
+			/* --- E-E-A-T AUTHOR BYLINE --- */
+			.author-byline {
+				background: #f8fafc;
+				border: 1px solid #e2e8f0;
+				border-left: 4px solid #ef4444;
+				border-radius: 6px;
+				padding: 1.25rem;
+				margin-bottom: 2rem;
+				display: flex;
+				flex-direction: column;
+				gap: 0.35rem;
+			}
+			.author-name { font-weight: 800; color: #0f172a; font-size: 1.05rem; }
+			.author-title { color: #475569; font-size: 0.9rem; font-family: ui-monospace, monospace; }
+			.author-reviewed { color: #64748b; font-size: 0.85rem; margin-top: 0.25rem; display: flex; align-items: center; gap: 0.35rem; }
+			.author-reviewed-icon { color: #10b981; }
+
 			/* --- STRICT DARK MODE OVERRIDES --- */
 			:global(html.dark) .prose { color: #cbd5e1; }
 			:global(html.dark) .prose h1, :global(html.dark) .prose h2, :global(html.dark) .prose :global(h3) { color: #f8fafc; }
@@ -195,6 +214,11 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 			:global(html.dark) .meta-wrapper { border-bottom-color: #334155; }
 			:global(html.dark) .share-btn { background: #1e293b; border-color: #334155; color: #cbd5e1; }
 			:global(html.dark) .share-btn:hover { background: #273549; border-color: #475569; color: #f8fafc; }
+
+			:global(html.dark) .author-byline { background: #1e293b; border-color: #334155; border-left-color: #ef4444; }
+			:global(html.dark) .author-name { color: #f8fafc; }
+			:global(html.dark) .author-title { color: #94a3b8; }
+			:global(html.dark) .author-reviewed { color: #94a3b8; }
 
 			:global(html.dark) .post-layout-grid.has-sidebar .sidebar-wrapper {
 				background: #1e293b !important;
@@ -245,6 +269,17 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 										Copy Link
 									</button>
 								</div>
+							</div>
+						)}
+
+						{!isStaticPage && (
+							<div class="author-byline">
+								<span class="author-name">Written by: The ErrorLedger Editorial Team</span>
+								<span class="author-title">Database Developers, Python Architects & Infrastructure Engineers</span>
+								<span class="author-reviewed">
+									<span class="author-reviewed-icon">✓</span> 
+									Fact-Checked & Verified: {pubDate ? new Date(pubDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'Recently'}
+								</span>
 							</div>
 						)}
 

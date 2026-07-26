@@ -4,34 +4,29 @@ import Layout from '../layouts/BlogPost.astro';
 
 <Layout
 	title="About ErrorLedger"
-	meta_title="About ErrorLedger: Incident Research Methodology"
-	description="Learn about the technical research framework, zero-trust data gathering standards, and sourcing guidelines for the ErrorLedger incident database."
-	pubDate={new Date('July 15, 2026')}
-	tags={["meta", "methodology", "research"]}
+	meta_title="About ErrorLedger: The Engineering Research Team"
+	description="ErrorLedger is an independent engineering publication operated by senior database developers and infrastructure architects based in Australia."
+	pubDate={new Date('July 20, 2026')}
+	tags={["meta", "about"]}
 >
-	<h2>Our Mission</h2>
+	<h2>The Mission</h2>
 	<p>
-		<strong>ErrorLedger</strong> is an independent, zero-trust technology incident database and deep-dive post-mortem research library. We bypass generic media headlines to dissect the exact technical, physical, and software-driven root causes that trigger major global network failures.
-	</p>
-	<p>
-		Our analyses translate real-world disaster scenarios into evergreen architectural lessons, helping systems engineers, software architects, and security operations teams build resilient, self-healing platforms.
+		<strong>ErrorLedger</strong> was created to document real-world distributed systems failures, cloud infrastructure incidents, and the architectural decisions behind modern AI platforms. We bypass generic media headlines to dissect the exact technical, physical, and software-driven root causes that trigger major global network failures.
 	</p>
 
-	<h2>The Sourcing Hierarchy</h2>
+	<h2>The Editorial Team</h2>
 	<p>
-		To prevent inaccuracy, speculation, and AI hallucinations, every incident record in our database is strictly compiled using a rigid primary-source authentication hierarchy:
+		The <strong>ErrorLedger Editorial Team</strong> consists of independent database developers, Python architects, and infrastructure engineers based in Australia. We have spent years designing, breaking, tuning, and scaling enterprise database systems and local AI tooling frameworks. 
 	</p>
-	<ul>
-		<li><strong>Tier 1 — Official Root Cause Analyses (RCAs):</strong> Post-mortem documentations, security advisories, and service health reports issued directly by the affected platforms.</li>
-		<li><strong>Tier 2 — Threat Intel & Incident Forensics:</strong> Technical deconstructions from certified threat intelligence firms and verified engineering security blogs.</li>
-		<li><strong>Tier 3 — Telemetry Logs:</strong> Public network route announcements, DNS records, and transaction ledger states.</li>
-	</ul>
+	<p>
+		We built this platform because modern engineering teams need actionable post-mortems, rigorous documentation, and clear architectural teardowns—not generic SEO summaries. Our goal is to translate real-world disaster scenarios into evergreen architectural lessons, helping systems engineers and software architects build more resilient, self-healing platforms.
+	</p>
 
-	<h2>Why We Do Not Generate Code Fixes</h2>
+	<h2>The Standard</h2>
 	<p>
-		Unlike typical programming blogs or package documentation engines, ErrorLedger does not publish quick patches, temporary API workarounds, or localized configuration hacks. 
+		This site is an independent research library built for senior infrastructure teams. Every incident record in our database is compiled using a rigid primary-source authentication hierarchy. We believe that understanding exactly <em>why</em> a network collapsed or a memory buffer overflowed is the most valuable step in preventing the next disaster.
 	</p>
 	<p>
-		Instead, we look at system-level behaviors—such as BGP routing cascades, out-of-bounds memory accesses in kernel space, or garbage collection deadlocks—to expose structural bugs and core trust boundary vulnerabilities. We believe that truly understanding why a network collapsed is the most valuable step in preventing the next disaster.
+		For full transparency into how we gather facts, verify claims, and build our technical teardowns, please review our <a href="/methodology">Research Methodology</a>.
 	</p>
 </Layout>

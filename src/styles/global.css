@@ -332,3 +332,52 @@ html.dark .prose blockquote code {
 .timeline-pulse-dot {
   animation: nodePulse 3s infinite ease-in-out;
 }
+
+/* ==========================================================================
+   INCIDENT SUMMARY BOX (E-E-A-T VISUAL AUTHORITY)
+   ========================================================================== */
+.incident-summary-box {
+	background: #f1f5f9;
+	border: 1px solid #cbd5e1;
+	border-left: 5px solid #3b82f6;
+	border-radius: 8px;
+	padding: 1.5rem;
+	margin: 2rem 0;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+html.dark .incident-summary-box {
+	background: #1e293b;
+	border-color: #334155;
+	border-left-color: #3b82f6;
+}
+.incident-summary-title {
+	font-size: 1.1rem !important;
+	font-weight: 800 !important;
+	color: #0f172a !important;
+	margin-top: 0 !important;
+	margin-bottom: 1rem !important;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+html.dark .incident-summary-title {
+	color: #f8fafc !important;
+}
+.incident-summary-box ul {
+	margin: 0 !important;
+	padding-left: 1.25rem !important;
+}
+.incident-summary-box li {
+	margin-bottom: 0.75rem !important;
+	color: #334155 !important;
+	font-size: 0.95rem !important;
+	line-height: 1.5 !important;
+}
+html.dark .incident-summary-box li {
+	color: #cbd5e1 !important;
+}
+.incident-summary-box li strong {
+	color: #0f172a !important;
+}
+html.dark .incident-summary-box li strong {
+	color: #f8fafc !important;
+}
