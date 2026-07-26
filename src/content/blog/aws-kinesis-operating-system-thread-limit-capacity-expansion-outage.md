@@ -1,20 +1,18 @@
 ---
-pipeline_contract_version: "27.0.0"
+pipeline_contract_version: "42.1.0"
 title: "AWS Kinesis US-EAST-1 Outage (2020): How an OS Thread Limit Caused a 17-Hour AWS Failure"
 meta_title: "AWS Kinesis Outage (2020): OS Thread Limit Root Cause Analysis"
 description: "Technical post-mortem of the November 2020 AWS Kinesis outage where adding server capacity breached OS thread limits in US-EAST-1."
 pubDate: "2026-07-19"
 tags: ["aws", "kinesis", "os-thread-limit", "cloud-infrastructure"]
 shortenedSlug: "aws-kinesis-operating-system-thread-limit-capacity-expansion-outage"
-keyword: "AWS Kinesis US-EAST-1 Outage 2020 OS Thread Limit Root Cause Analysis"
 slug: "aws-kinesis-operating-system-thread-limit-capacity-expansion-outage"
 target_systems: "AWS Kinesis Data Streams Front-End Fleet (US-EAST-1)"
-article_confidence: "★★★★★"
-canonical_terminology:
-  approved: ["Amazon Web Services", "Kinesis Data Streams", "Front-End Fleet", "OS Thread Limit", "Shard Maps"]
+read_time_minutes: 8
+difficulty_level: "Advanced"
 ---
 
-# AWS Kinesis US-EAST-1 Outage (2020): How an OS Thread Limit Caused a 17-Hour AWS Failure [Status: RESOLVED]
+# AWS Kinesis US-EAST-1 Outage (2020): How an OS Thread Limit Caused a 17-Hour AWS Failure
 
 | Metadata | Details |
 | :--- | :--- |
@@ -27,7 +25,6 @@ canonical_terminology:
 | **Official RCA** | [AWS Post-Event Summary (Nov 25, 2020)](https://aws.amazon.com/message/11201/) |
 | **Investigation Status** | Completed |
 
-> ### Key Takeaways
 > * **The Trigger:** Routine capacity expansion on the Kinesis front-end fleet added new servers ahead of US Thanksgiving traffic.
 > * **The Structural Flaw:** Front-end nodes operated on a fully connected peer-to-peer mesh, allocating one OS thread per connection, causing $O(N^2)$ thread consumption growth.
 > * **The Failure Mechanism:** Adding capacity pushed total OS threads past kernel `ulimit -u` ceilings, breaking shard-map cache construction and locking request routing.
@@ -90,8 +87,7 @@ The failure originated within the **Kinesis Data Streams Front-End Fleet**, whic
 ---
 
 ### Technical Deep Dive & Root Cause
-The technical failure was driven by a quadratic thread consumption model embedded within the front-end fleet's communication architecture.
-```
+The technical failure was driven by a quadratic thread consumption model embedded within the front-end fleet's communication architecture.`
 +-----------------------------------------------------------------+
 |               QUADRATIC THREAD EXHAUSTION MESH                  |
 |    How Adding Capacity Caused Kernel Thread Limit Collapses     |
@@ -119,8 +115,7 @@ The technical failure was driven by a quadratic thread consumption model embedde
 |   +-----------------------------------------------------------+ |
 |   | 4. System Deadlock & Regional Request Failure             | |
 |   +-----------------------------------------------------------+ |
-+-----------------------------------------------------------------+
-```
++-----------------------------------------------------------------+`
 #### The Peer-Mesh Thread Explosion
 The front-end fleet used a fully connected peer-to-peer mesh to synchronize internal administrative state. In this architecture, every front-end server maintained an active TCP connection to every other front-end server in the fleet, with each connection assigned a dedicated operating system thread.
 

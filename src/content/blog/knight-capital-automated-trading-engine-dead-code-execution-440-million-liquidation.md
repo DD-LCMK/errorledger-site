@@ -1,32 +1,18 @@
 ---
-pipeline_contract_version: "27.0.0"
+pipeline_contract_version: "42.1.0"
 title: "Knight Capital Automated Trading Engine Dead Code Execution 440 Million Liquidation: How a Missed Server Deployment Destroyed a Trading Firm in 45 Minutes"
 meta_title: "Knight Capital Dead Code Trading Failure 2012"
 description: "A missed deployment on one of eight servers reactivated deprecated trading logic, causing Knight Capital to lose $460 million in 45 minutes and triggering the firm's collapse."
 pubDate: "2026-07-19"
 tags: ["knight-capital", "dead-code-execution", "deployment-failure", "automated-trading", "enterprise-systems"]
 shortenedSlug: "knight-capital-automated-trading-engine-dead-code-execution-440-million-liquidation"
-keyword: "Knight Capital Automated Trading Engine Dead Code Execution 440 Million Liquidation"
 slug: "knight-capital-automated-trading-engine-dead-code-execution-440-million-liquidation"
 target_systems: "Knight Capital SMARS Trading Engine & NYSE Retail Liquidity Infrastructure"
-article_confidence: "★★★★★"
-canonical_terminology:
-  approved: ["Knight Capital", "SMARS", "Power Peg", "Dead Code Execution", "Liquidation"]
+read_time_minutes: 8
+difficulty_level: "Advanced"
 ---
 
-# Knight Capital Automated Trading Engine Dead Code Execution 440 Million Liquidation: How a Missed Server Deployment Destroyed a Trading Firm in 45 Minutes [Status: RESOLVED]
-
-| Metadata Field | Details |
-| :--- | :--- |
-| **Incident Date** | 2012-08-01 |
-| **Company** | Knight Capital Group |
-| **Status** | RESOLVED |
-| **Category** | Automated Trading System Catastrophic Failure |
-| **Root Cause** | Manual deployment failure left one of eight servers running deprecated Power Peg code; a repurposed binary flag reactivated the dead code, triggering an unbounded buy-high/sell-low trading loop |
-| **Operational Impact** | $460 million loss in 45 minutes; over 4 million erroneous trades across 154 stocks; firm rendered insolvent; acquired by GETCO; SEC fined Knight Capital $12 million |
-| **Official RCA** | SEC Administrative Proceeding No. 3-15570 (sec.gov/litigation/admin/2013/34-70694.pdf) |
-
----
+# Knight Capital Automated Trading Engine Dead Code Execution 440 Million Liquidation: How a Missed Server Deployment Destroyed a Trading Firm in 45 Minutes
 
 ### The Incident
 

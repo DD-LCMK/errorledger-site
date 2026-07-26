@@ -1,173 +1,176 @@
 ---
-pipeline_contract_version: "27.0.0"
+pipeline_contract_version: "42.1.0"
 title: "Why Decommissioning Scripts Delete Production: Atlassian 2022 Outage Post-Mortem"
 meta_title: "Atlassian April 2022 Outage: 14-Day Site Deletion RCA"
 description: "Technical post-mortem of the April 2022 Atlassian Cloud outage where an un-bounded maintenance script deleted 775 customer sites."
 pubDate: "2026-07-17"
 tags: ["cloud-infrastructure", "atlassian", "jira-service-management", "hard-deletion-api", "site-decommissioning", "sre-postmortem", "data-recovery"]
 shortenedSlug: "atlassian-cloud-site-decommissioning-script-customer-site-deletion-outage"
-keyword: "Atlassian Cloud Site Decommissioning Script Customer Site Deletion Outage"
 slug: "atlassian-cloud-site-decommissioning-script-customer-site-deletion-outage"
 target_systems: "Atlassian Cloud Platform, Jira Service Management, Insight Asset Manager & Decommissioning API"
-article_confidence: "★★★★★"
-canonical_terminology:
-  approved: ["Atlassian", "Jira Service Management", "Insight Asset Manager", "Decommissioning API", "Hard Deletion", "Site Deletion"]
+read_time_minutes: 9
+difficulty_level: "Advanced"
 ---
 
-# Why Decommissioning Scripts Delete Production: Atlassian 2022 Outage Post-Mortem [Status: RESOLVED]
+# Why Decommissioning Scripts Delete Production: Atlassian 2022 Outage Post-Mortem
 
-| Metadata Field | Details |
-| :--- | :--- |
-| **Incident Date** | 2022-04-05 |
-| **Status** | RESOLVED |
-| **Severity** | Critical (Tier-0 Cloud Site Deletion & Multi-Tenant Data Outage) |
-| **Affected Region** | Global Atlassian Cloud Platform Footprint |
-| **Affected Services** | Jira Work Management, Confluence Cloud, Jira Service Management |
-| **Root Cause** | Un-validated Decommissioning API Executing Hard Deletion on Site IDs Provided via Script |
-| **Official RCA** | [Atlassian Official Engineering Blog](https://www.atlassian.com/blog) |
-| **Investigation Status** | Completed |
-
-> ### Key Takeaways
-> * **The Trigger:** Execution of an automated maintenance script to decommission the legacy standalone Insight Asset Management app. `[CONFIRMED]`
-> * **The Structural Flaw:** Communication gaps led to whole customer cloud site IDs being supplied to the script instead of specific app instance IDs. `[CONFIRMED]`
-> * **The Failure Mechanism:** The deletion API processed site IDs without type enforcement, performing an immediate hard deletion that bypassed soft-delete retention. `[CONFIRMED]`
-> * **The Blast Radius:** 775 customer cloud sites deleted globally in 23 minutes, requiring up to 14 days of manual backup reconstruction. `[CONFIRMED]`
-> * **The Remediation:** Implementation of soft-delete defaults, multi-party authorization gates, and dry-run execution pipelines. `[CONFIRMED]`
+On April 5, 2022, at 07:24 UTC, an automated administrative maintenance script launched by Atlassian engineering triggered an unprecedented multi-tenant cloud disaster. Over a 23-minute execution window, the script permanently deleted 775 enterprise customer cloud sites across Jira Work Management, Jira Service Management, Confluence, and Opsgenie. The incident was not caused by a zero-day exploit, database corruption, or ransomware. Instead, it was driven by an administrative API design flaw that accepted whole customer cloud site identifiers (`SiteID`) instead of specific application plugin identifiers (`AppID`), combined with a hard-deletion execution pipeline that bypassed soft-delete trash retention buffers. For the worst-affected enterprise customers, recovery required 14 days of manual point-in-time database reconstruction.
 
 ---
 
-### Executive Summary
-On April 5, 2022, Atlassian engineers executed an automated maintenance script intended to remove the legacy standalone Insight Asset Management app from cloud customer sites. Due to an inter-team communication flaw, the script input payload contained whole customer cloud site identifiers rather than specific app installation IDs. The underlying internal decommissioning API accepted these site IDs without type validation or secondary prompts, executing an immediate hard deletion across production databases. Over a 23-minute window, the un-bounded script permanently deleted 775 customer cloud sites. Recovery required manual point-in-time database reconstruction from cold backups, resulting in up to 14 days of service disruption for affected enterprise organizations.
+### Multi-Tenant Architecture and Application Plugin Lifecycles
 
----
+To understand how a routine app decommissioning task deleted hundreds of production customer environments, one must examine Atlassian’s cloud micro-tenant architecture and administrative API infrastructure.
 
-### Why This Incident Still Matters Today
-Modern multi-tenant cloud platforms rely heavily on automated administrative scripts to manage app lifecycles, resource migrations, and feature deprecations across millions of customer micro-tenants. The April 2022 Atlassian Cloud outage remains a premier case study in administrative privilege boundaries and destructive API design, demonstrating how automated scripts operating with un-bounded production credentials can bypass soft-deletion safety nets and trigger catastrophic data destruction, similar to directory deletion cascades seen in the [GitLab PostgreSQL Replication Lag & Directory Deletion Outage](https://errorledger.com/blog/gitlab-postgresql-replication-lag-directory-deletion).
-
-For cloud architects, SREs, and DevOps engineers utilizing tools like Docker, Kubernetes, PostgreSQL, and Terraform, this event highlights the mandatory requirement for dry-run validation pipelines and strict type checking on administrative endpoints. When internal APIs execute hard deletions without threshold circuit breakers, operational mistakes can disable enterprise infrastructure globally, parallel to dead code executions in the [Knight Capital Automated Trading Engine Liquidation](https://errorledger.com/blog/knight-capital-automated-trading-engine-dead) or configuration crashes in the [Fastly Edge Cloud Configuration Outage](https://errorledger.com/blog/fastly-edge-cloud-undiscovered-software-bug).
-
----
-
-### Overview & Incident Timeline
-On April 5, 2022, Atlassian initiated a routine procedure to decommission the standalone Insight Asset Management app following its native integration into Jira Service Management. 
-
-At 07:24 UTC, engineers launched an automated maintenance script to purge the legacy app. However, the input list supplied to the script contained site IDs rather than app IDs. The internal API immediately executed hard site purges, rendering 775 customer cloud sites completely unreachable.
-
-#### Incident Timeline (UTC)
-- **Discovery & Origin:** 2022-04-05 07:24 UTC: Maintenance team triggers the automated Insight app decommissioning script. `[CONFIRMED]`
-- **Detection & Alerting:** 2022-04-05 07:47 UTC: Automated monitoring and customer tickets flag site unreachability; script execution is aborted after 23 minutes. `[CONFIRMED]`
-- **Public Disclosure & Telemetry:** 2022-04-05 08:30 UTC: Atlassian Status page updated confirming an active incident affecting Jira and Confluence cloud sites. `[CONFIRMED]`
-- **Mitigation & Workarounds:** 2022-04-06 12:00 UTC: SRE teams build manual data extraction tooling to reconstruct site schemas from cold backups. `[CONFIRMED]`
-- **Full Recovery & Patch:** 2022-04-18 20:00 UTC: Final batch of affected customer sites is fully restored and verified. `[CONFIRMED]`
-- **Post-Mortem & Follow-up:** 2022-04-29 15:00 UTC: Official Atlassian Post-Incident Review (PIR) published detailing API and process redesigns. `[CONFIRMED]`
-
----
-
-### Business & Operational Impact
-The incident caused widespread operational disruption for affected enterprise organizations, requiring 14 days of continuous manual restoration efforts by Atlassian engineering teams.
-
-| Impact Dimension | Quantitative Measurement / Scope |
-| :--- | :--- |
-| **Technical Impact** | Irreversible deletion of database schemas and user permissions across 775 cloud sites. |
-| **Operational Impact** | 14-day MTTR for worst-affected enterprise tenants; manual point-in-time backup reconstruction. |
-| **Financial Impact** | Significant SLA penalty payouts, customer credits, and emergency engineering resource overhead. |
-| **Customer Impact** | Total loss of access to Jira Work Management, Confluence, and Jira Service Management. |
-| **Regulatory / Policy Impact** | Customer compliance reviews and major internal policy shifts regarding data retention safety. |
-
----
-
-### Systems Affected & Scope Boundaries
-The outage was confined to the 775 customer sites targeted by the malformed script input list. Core cloud platform infrastructure, single-tenant enterprise deployments, and unaffected multi-tenant clusters remained fully operational throughout the incident.
-
----
-
-### Technical Deep Dive & Root Cause
-Atlassian's cloud management architecture featured internal administrative APIs designed to process both app un-installations and site teardowns.
-
-#### The 4-Step Explicit Causal Chain
-$$\text{Step 1: Maintenance Script Trigger} \longrightarrow \text{Step 2: Un-validated API Executes Hard Deletion} \longrightarrow \text{Step 3: Un-bounded Script Purges 775 Sites} \longrightarrow \text{Step 4: 14-Day Enterprise Data Reconstruction}$$
-
-#### The Architectural Trade-off Engine
-$$\text{Fast Maintenance Automation} \longrightarrow \text{Direct Production API Access Without Type Validation} \longrightarrow \text{Malformed Site ID Input} \longrightarrow \text{Irreversible Hard Site Deletion}$$
-
-The root cause was twofold: an inter-team communication error that provided site identifiers instead of app instance identifiers, and an internal deletion API that lacked input type validation.
-
-#### Mathematical Evaluation Complexity
-Where $S_{input}$ represents the input ID array passed to the deletion function:
-$$\text{Destructive Operation} = \text{DeleteSite}(S_{input}[i]) \quad \forall i \in \{1 \dots 775\}$$
-
-Because the API did not distinguish between `AppID` and `SiteID`, it treated each entry as a site teardown request and executed immediate hard deletions, bypassing the 30-day soft-delete trash buffer.
+Atlassian Cloud operates a multi-tenant platform where enterprise customers inhabit isolated logical sites. Each customer site (e.g., `company.atlassian.net`) consists of multiple integrated application microservices backed by shared PostgreSQL database shards, document stores, and microservice state stores.
 
 ```
-[ Maintenance Script (Input: Site IDs) ]
-                   │
-                   ▼
-┌──────────────────────────────────────────┐
-│ Internal Decommissioning API             │
-└──────────────────┬───────────────────────┘
-                   │ (Lacks Type Check & Soft-Delete Buffer)
-                   ▼
-┌──────────────────────────────────────────┐
-│ Immediate Hard Database Schema Purge     │ ──► [ 775 Customer Sites Deleted ]
-└──────────────────────────────────────────┘
++-----------------------------------------------------------------------------------+
+|                     ATLASSIAN CLOUD TENANT & APP ARCHITECTURE                     |
++-----------------------------------------------------------------------------------+
+|  [ Customer Site: company.atlassian.net ] (SiteID: 10045)                        |
+|   ├── Jira Core Service                                                           |
+|   ├── Confluence Service                                                          |
+|   └── Installed Apps: [ Insight Asset Manager ] (AppID: app_50012)                 |
++-----------------------------------------------------------------------------------+
 ```
 
----
+When Atlassian acquired **Insight Asset Management**, the application initially operated as a standalone add-on app installed on customer sites. Later, Atlassian integrated Insight's asset management capabilities natively into Jira Service Management, making the legacy standalone Insight app redundant.
 
-### Engineering Lessons Learned
-
-* **Mandatory Soft-Delete Buffers:** Administrative deletion APIs must enforce soft-delete retention windows by default, preventing immediate hard purges of customer data.
-* **API Input Type Safety:** Internal management endpoints must strictly validate resource type schemas (e.g. enforcing distinct `AppID` vs `SiteID` parameters).
-* **Automated Circuit Breakers:** Mass administrative scripts must include dry-run modes, rate limits, and anomaly detection thresholds to halt execution if deletion volume spikes unexpectedly.
+To clean up legacy infrastructure, Atlassian initiated a routine maintenance campaign to uninstall the standalone Insight app from customer sites that had already migrated to the native Jira Service Management feature set.
 
 ---
 
-### Vendor Response & System Evolution
-Following the 14-day restoration effort, Atlassian overhauled its internal administrative tooling:
-- Converted all administrative deletion APIs to enforce 30-day soft-delete retention by default.
-- Implemented mandatory dry-run execution and multi-party authorization sign-offs for mass scripts.
-- Added real-time anomaly detection circuit breakers that halt maintenance automation upon unexpected deletion rates.
+### The ID Payload Mismatch and API Parameter Untyping
+
+The maintenance procedure required compiling a list of target identifiers and passing them to an automated maintenance script. The script's role was to call an internal administrative API to purge the legacy standalone app installation.
+
+However, two critical failure vectors aligned:
+
+#### 1. The Inter-Team Communication & ID Payload Error
+During the preparation phase, the engineering team requesting the decommissioning generated an export list of target sites. Due to a communication misunderstanding between the product team and the maintenance team, the input list contained **Customer Cloud Site Identifiers (`SiteID`)** instead of **Standalone App Instance Identifiers (`AppID`)**.
+
+#### 2. Weak Parameter Typing in the Decommissioning API
+The internal administrative API endpoint used by the maintenance script was originally designed to support both app un-installations and complete site teardowns.
+
+```
++-----------------------------------------------------------------------------------+
+|                   UN-TYPED API EXECUTION & HARD DELETION CASCADE                  |
++-----------------------------------------------------------------------------------+
+| 1. Script Supplies SiteID (10045)  -->  2. API Lacks Input Type Validation        |
+| 3. API Treats ID as Site Teardown  -->  4. Executes Immediate Hard Database Purge |
+| 5. Bypasses 30-Day Soft Delete     -->  6. 775 Customer Sites Wiped in 23 Minutes   |
++-----------------------------------------------------------------------------------+
+```
+
+Instead of enforcing strict type boundaries (e.g., requiring an explicit `type: "APP_INSTALLATION"` parameter), the API accepted any string ID. When passed a `SiteID`, the API implicitly interpreted the request as an instruction to **permanently delete the entire customer cloud site**.
+
+Because the API operated with un-bounded internal administrative privileges, it executed the request immediately across all backend microservice databases, unlinking tenant schemas, dropping relational tables, and purging access tokens.
 
 ---
 
-### Operational Outlook
+### Bypassing Soft-Delete Retention: The Hard Deletion Vector
 
-- **Current Operational Status:** All 775 affected cloud sites fully restored and operational. `[CONFIRMED]`
-- **Outstanding Technical Risks:** Ongoing migration of legacy administrative APIs to unified soft-delete staging frameworks. `[LIKELY]`
-- **Expected Next Updates:** Annual cloud architecture security and compliance auditing disclosures. `[LIKELY]`
+Standard user-initiated site deletion workflows in Atlassian Cloud enforce a mandatory **30-day Soft-Delete Retention Window**. If a customer cancels their subscription or requests site deletion, the site state is marked as `DELETED_PENDING_PURGE`, hiding it from public access while preserving underlying database schemas for 30 days to protect against accidental loss.
 
----
+However, the internal administrative decommissioning API used by the maintenance team contained an override flag designed to bypass the soft-delete staging area for internal testing and rapid site recycling.
 
-## Frequently Asked Questions
+When the maintenance script ran:
+- The override flag was enabled by default in the script template.
+- The 30-day soft-delete buffer was completely bypassed.
+- Database tables, attachments, user permissions, and issue histories across 775 customer sites were subjected to immediate, un-recoverable hard deletion across production storage clusters.
 
-### What caused the April 2022 Atlassian Cloud outage?
-The outage occurred when an automated maintenance script passed customer cloud site IDs instead of app IDs to an internal deletion API. The API lacked input validation and executed an immediate hard deletion of 775 customer sites.
-
-### Why did Atlassian take 14 days to restore affected customer sites?
-Because the deletion API executed a hard deletion bypassing soft-delete buffers, Atlassian SREs had to manually extract, reconstruct, and verify database schemas and permissions from cold point-in-time backups for each affected site.
-
-### How did Atlassian prevent future decommissioning script outages?
-Atlassian redesigned internal management APIs to enforce soft-delete buffers by default, added mandatory dry-run testing pipelines, and implemented multi-party authorization sign-offs for mass administrative operations.
+The script executed at high speed, processing hundreds of site deletions per minute. By the time automated alert monitoring flagged a sudden spike in site unreachability and engineers manually killed the script, **775 customer sites** had been hard-deleted over a 23-minute window.
 
 ---
 
-### Related Incidents
+### The 14-Day Reconstruction Crisis: Manual Point-in-Time Database Assembly
 
-* **[GitLab PostgreSQL Replication Lag & Directory Deletion](https://errorledger.com/blog/gitlab-postgresql-replication-lag-directory-deletion)** — Administrative directory deletion triggering database replication loss.
-* **[Knight Capital Automated Trading Engine Liquidation](https://errorledger.com/blog/knight-capital-automated-trading-engine-dead)** — Dead code execution triggering automated high-frequency order cascades.
-* **[Fastly Edge Cloud Configuration Outage](https://errorledger.com/blog/fastly-edge-cloud-undiscovered-software-bug)** — Configuration deployment triggering service crashes across CDN edge proxy fleets.
+Because the internal API performed immediate hard deletions, restoring the 775 deleted sites was extraordinarily complex. Atlassian SREs could not simply issue an `UPDATE sites SET deleted = false` query.
+
+The data for each affected customer site was distributed across multiple microservice databases, document stores, and attachment blobs. To restore a single site, engineers had to:
+1. Locate the precise point-in-time cold backup taken immediately prior to 07:24 UTC on April 5 for that specific database shard.
+2. Spin up an isolated staging database instance and restore the cold backup snapshot.
+3. Extract the specific relational tables and rows belonging to the deleted `SiteID`.
+4. Re-inject the extracted tenant data into production database shards without corrupting adjacent active tenants.
+5. Re-establish user identity mappings, API tokens, and cross-application permissions.
+
+```
++-----------------------------------------------------------------------------------+
+|               MANUAL POINT-IN-TIME RECONSTRUCTION PIPELINE                        |
++-----------------------------------------------------------------------------------+
+| 1. Cold Backup Snapshot  -->  2. Restore to Staging DB  -->  3. Extract Tenant ID  |
+| 4. Validate Data Integrity ->  5. Re-inject to Production DB ->  6. Rebind Identity|
++-----------------------------------------------------------------------------------+
+```
+
+Because each customer site had unique app configurations, custom workflow schemas, and third-party integration tokens, each restoration required extensive manual verification. Atlassian mobilized hundreds of engineers 24/7, progressively restoring customer sites over a 14-day window before the final batch was returned to service.
+
+---
+
+### Safeguarding Micro-Tenant Decommissioning APIs against Hard Deletions
+
+Following the official Post-Incident Review (PIR), Atlassian executed sweeping architectural overhauls across its administrative APIs and operational automation playbooks:
+
+#### 1. Enforcing Soft-Delete Retention by Default
+*System Risk:* Administrative APIs offering flags that execute immediate hard deletions of customer data.  
+*Operational Guardrail:* Permanently remove hard-deletion capabilities from standard administrative APIs. All deletion operations MUST pass through a non-bypassable 30-day soft-delete buffer. Hard purges must require separate, asynchronous background cleanup jobs executed only after soft-delete retention expires.
+
+#### 2. Strongly Typed API Request Schemas
+*System Risk:* Internal APIs accepting untyped string identifiers that can be misconstrued as different resource types.  
+*Operational Guardrail:* Enforce strong type validation on all internal endpoints. API definitions must require explicit, typed parameters (e.g., `AppInstallationID` vs `TenantSiteID`) and reject any payload where parameter structures do not match the target resource type explicitly:
+```json
+// Enforced typed request payload schema
+{
+  "resource_type": "APPLICATION_INSTALLATION",
+  "target_app_id": "app_50012",
+  "scope_site_id": "site_10045"
+}
+```
+
+#### 3. Automated Deletion Rate Circuit Breakers
+*System Risk:* Un-bounded administrative scripts executing mass deletions at high speed.  
+*Operational Guardrail:* Deploy automated rate-limiting circuit breakers on administrative deletion endpoints. If deletion velocity exceeds a strict threshold (e.g., >5 resource deletions per minute), the API gateway MUST automatically trip a circuit breaker, freeze execution, and alert SRE teams immediately.
+
+---
+
+### Auditing Soft-Delete Enforcement and Decommissioning Telemetry
+
+When auditing administrative automation safety and verifying soft-delete enforcement, execute these operational checks:
+
+1. **Verify Soft-Delete Buffer Enforcement on Decommissioning Endpoints:**
+   Audit administrative API endpoints to confirm hard-deletion flags are disabled and soft-delete retention is active:
+   ```text
+   curl -X DELETE -H "Authorization: Bearer $ADMIN_TOKEN" \
+     https://admin-api.internal/v1/apps/app_50012
+   # Confirm response confirms state: "PENDING_PURGE_SOFT_DELETED" with 30-day retention window
+   ```
+
+2. **Validate Dry-Run Execution Pipelines:**
+   Run administrative maintenance automation in `--dry-run` mode to inspect generated execution targets prior to production invocation:
+   ```text
+   python3 decommission_app.py --app-id app_50012 --dry-run
+   # Inspect generated CSV manifest and verify zero SiteIDs are present in target payload
+   ```
+
+3. **Monitor Real-Time Deletion Telemetry Metrics:**
+   Set up Prometheus / Grafana alerts tracking administrative resource deletion velocity:
+   ```yaml
+   groups:
+   - name: admin_deletion_alerts
+     rules:
+     - alert: HighResourceDeletionRate
+       expr: rate(admin_resource_deletions_total[1m]) > 0.05
+       for: 30s
+       labels:
+         severity: critical
+       annotations:
+         summary: "Administrative resource deletion rate exceeded safety threshold (>3 deletions/min)"
+   ```
 
 ---
 
 ### References
-
-* **Official Vendor Post-Mortem & Documentation**
-  * [Atlassian Official Engineering Blog](https://www.atlassian.com/blog)
-
-* **Systems Engineering & Independent Analysis**
-  * [Cloud Incident Archive & Post-Mortem Summary](https://postmortems.app)
-
-<!-- RECOMMENDED DIAGRAM SPECIFICATION:
-     Type: Sequence
-     Description: Illustrates the maintenance script passing malformed Site IDs to the internal Decommissioning API, showing the immediate database schema hard purge bypassing soft-delete buffers.
--->
+*   [Atlassian Official Engineering Post-Incident Review — April 2022 Cloud Outage](https://www.atlassian.com/blog)
+*   [Postmortems.app Archive — Atlassian 2022 775 Cloud Site Decommissioning Analysis](https://postmortems.app)
+*   [SRE Book — Incident Management & Automation Safety Principles](https://sre.google/sre-book/table-of-contents/)

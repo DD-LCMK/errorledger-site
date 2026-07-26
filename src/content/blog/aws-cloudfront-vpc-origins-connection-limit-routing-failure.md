@@ -1,32 +1,18 @@
 ---
-pipeline_contract_version: "27.0.0"
+pipeline_contract_version: "42.1.0"
 title: "AWS CloudFront VPC Origins Connection Limit Routing Failure: How an Internal Fleet Constraint Took Down Global CDN Traffic"
 meta_title: "AWS CloudFront VPC Origins Outage July 2026"
 description: "An internal connection-management limit on the VPC Origins fleet broke routing configuration distribution, causing global 5xx errors across CloudFront for over three hours."
 pubDate: "2026-07-17"
 tags: ["aws", "cloudfront-vpc-origins", "cdn-routing", "infrastructure-failure", "service-outage"]
 shortenedSlug: "aws-cloudfront-vpc-origins-connection-limit-routing-failure"
-keyword: "AWS CloudFront VPC Origins Connection Limit Routing Failure"
 slug: "aws-cloudfront-vpc-origins-connection-limit-routing-failure"
 target_systems: "AWS CloudFront, VPC Origins Fleet & Edge Network Processors"
-article_confidence: "★★★★★"
-canonical_terminology:
-  approved: ["AWS", "CloudFront", "VPC Origins", "Edge Network Processor", "Routing Table"]
+read_time_minutes: 8
+difficulty_level: "Advanced"
 ---
 
-# AWS CloudFront VPC Origins Connection Limit Routing Failure: How an Internal Fleet Constraint Took Down Global CDN Traffic [Status: RESOLVED]
-
-| Metadata Field | Details |
-| :--- | :--- |
-| **Incident Date** | 2026-07-16 |
-| **Company** | Amazon Web Services (AWS) |
-| **Status** | RESOLVED |
-| **Category** | Cloud CDN Infrastructure Routing Failure |
-| **Root Cause** | Internal connection-management limit on the VPC Origins fleet prevented routing configuration from loading to network processors |
-| **Operational Impact** | Global 5xx errors for customers using CloudFront VPC Origins; Hugging Face, UK National Lottery, Niconico, and numerous web platforms disrupted for over three hours |
-| **Official RCA** | [AWS Health Dashboard](https://health.aws.amazon.com/health/status) |
-
----
+# AWS CloudFront VPC Origins Connection Limit Routing Failure: How an Internal Fleet Constraint Took Down Global CDN Traffic
 
 ### The Incident
 

@@ -1,32 +1,18 @@
 ---
-pipeline_contract_version: "27.0.0"
+pipeline_contract_version: "42.1.0"
 title: "Telstra GPS Timing Node Software Defect Synchronization Outage: How a Legacy Clock Rollover Took Down Australia's Largest Mobile Network"
 meta_title: "Telstra Outage 2026: GPS Timing Bug Crashed Network"
 description: "A legacy GPS timing node reset its clock 20 years into the past, cascading into a nationwide mobile blackout that silenced emergency calls across Australia."
 pubDate: "2026-07-17"
 tags: ["telstra", "gps-timing-synchronization", "network-outage", "infrastructure-failure", "legacy-hardware"]
 shortenedSlug: "telstra-gps-timing-node-software-defect-synchronization-outage"
-keyword: "Telstra GPS Timing Node Software Defect Synchronization Outage"
 slug: "telstra-gps-timing-node-software-defect-synchronization-outage"
 target_systems: "Telstra Mobile Core, GPS Timing Node Fleet & Network Synchronization Engine"
-article_confidence: "★★★★★"
-canonical_terminology:
-  approved: ["Telstra", "GPS Timing Node", "Symmetricom SyncServer S300", "Week Counter Rollover", "Mobile Core Outage"]
+read_time_minutes: 8
+difficulty_level: "Advanced"
 ---
 
-# Telstra GPS Timing Node Software Defect Synchronization Outage: How a Legacy Clock Rollover Took Down Australia's Largest Mobile Network [Status: RESOLVED]
-
-| Metadata Field | Details |
-| :--- | :--- |
-| **Incident Date** | 2026-07-08 |
-| **Company** | Telstra Corporation Limited |
-| **Status** | RESOLVED |
-| **Category** | Telecommunications Infrastructure Synchronization Failure |
-| **Root Cause** | 10-bit GPS week counter rollover in a legacy Symmetricom SyncServer S300 timing node reset the network clock to 2006 |
-| **Operational Impact** | Nationwide mobile service blackout; 600+ failed Triple Zero emergency calls; V/Line train network suspension; EFTPOS and payment system failures |
-| **Official RCA** | [Telstra Network Status](https://www.telstra.com.au/exchange/some-mobile-calls-and-data-services-are-affected-today--here-s-w) |
-
----
+# Telstra GPS Timing Node Software Defect Synchronization Outage: How a Legacy Clock Rollover Took Down Australia's Largest Mobile Network
 
 ### The Incident
 
