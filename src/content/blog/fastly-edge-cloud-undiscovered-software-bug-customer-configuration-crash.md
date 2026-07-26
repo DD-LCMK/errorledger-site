@@ -36,7 +36,7 @@ Fastly built its high-performance edge platform on a heavily customized version 
 |                                                     v                             |
 |  [ Client HTTP Request ] -------> [ Edge Varnish Proxy Daemon ]                   |
 +-----------------------------------------------------------------------------------+
-`When a customer submits VCL configurations via Fastly’s control plane API:
+When a customer submits VCL configurations via Fastly’s control plane API:
 1. Fastly's compiler translates the high-level VCL rules into C-code source text.
 2. The C-compiler compiles the code into a shared binary object (`.so`).
 3. The shared binary is dynamically linked into the running Varnish edge proxy process without restarting the daemon.
@@ -66,7 +66,7 @@ At 09:47 UTC on June 8, a single Fastly customer executed a valid configuration 
 | 3. Sub-Second Global Propagation Bus -->  4. 85% of Edge Nodes Ingest Config      |
 | 5. Latent May 12 Bug Activated       -->  6. Varnish Worker Daemons Panic (503)   |
 +-----------------------------------------------------------------------------------+
-`Fastly's configuration distribution system—designed for extreme agility—replicated the newly compiled binary to edge nodes worldwide in sub-second timeframes.
+Fastly's configuration distribution system—designed for extreme agility—replicated the newly compiled binary to edge nodes worldwide in sub-second timeframes.
 
 As edge nodes across 85% of Fastly’s data centers ingested the new configuration and processed incoming client HTTP requests against the updated VCL binary:
 - The latent May 12 code path was executed for the first time in production.
@@ -90,7 +90,9 @@ While the data plane (the global fleet of edge Varnish proxies) was returning 50
 |                                                                                    |
 | Data Plane (Crashing):        [ Edge Proxy 01 (503) ]  [ Edge Proxy 02 (503) ]     |
 +------------------------------------------------------------------------------------+
-`This isolation allowed SREs to diagnose and resolve the incident rapidly:
+```
+
+This isolation allowed SREs to diagnose and resolve the incident rapidly:
 1. **09:47 UTC:** Customer configuration change deploys globally; edge errors spike.
 2. **10:10 UTC:** SRE teams isolate the error spikes to the specific customer configuration change deployed at 09:47 UTC.
 3. **10:27 UTC:** Fastly engineers use the operational control plane to disable the specific customer configuration change globally.

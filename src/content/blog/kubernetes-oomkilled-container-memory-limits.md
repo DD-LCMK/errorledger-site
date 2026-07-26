@@ -93,10 +93,13 @@ To detect memory distress before it results in a container crash or silent laten
 
 PSI measures the exact percentage of wall-clock time that tasks spend waiting for available memory pages. It exposes two distinct metric vectors:
 1. **`some` Pressure:** The percentage of time in which *at least one* task in the cgroup was stalled on memory allocation (e.g., waiting for page reclaim or swap I/O).
-2. **`full` Pressure:** The percentage of time in which *all* tasks in the cgroup were simultaneously blocked on memory allocation, indicating complete execution paralysis.`text
+2. **`full` Pressure:** The percentage of time in which *all* tasks in the cgroup were simultaneously blocked on memory allocation, indicating complete execution paralysis.
+
+```text
 # Reading /proc/pressure/memory inside a cgroup v2 container
 some avg10=12.45 avg60=5.12 avg300=1.02 total=4512089
-full avg10=4.10 avg60=1.20 avg300=0.15 total=1204890`
+full avg10=4.10 avg60=1.20 avg300=0.15 total=1204890
+```
 
 An elevated `some` value indicates that file page cache churn is forcing individual threads into direct reclaim. An elevated `full` value confirms that the container is actively thrashing, serving as a direct predictive indicator of an imminent `memory.max` OOMKilled termination. Similar thread exhaustion patterns caused by underlying OS kernel limits are detailed in the [AWS Kinesis OS Thread Limit Failure](https://errorledger.com/blog/aws-kinesis-operating-system-thread-limit/).
 

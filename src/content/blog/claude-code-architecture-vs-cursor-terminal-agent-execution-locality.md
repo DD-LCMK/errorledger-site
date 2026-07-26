@@ -34,7 +34,8 @@ In early generations, developers copied code blocks manually between web interfa
 Developer Shell ──► Claude CLI Harness ──(Seatbelt / bubblewrap)──► Subprocessor / Tool Execution
 
 [ Cursor IDE: Editor Control Plane & Worktrees ]
-VS Code Frontend ──► IDE Planner Engine ──(Git Worktrees / Cloud VMs)──► Parallel Worker Execution`
+VS Code Frontend ──► IDE Planner Engine ──(Git Worktrees / Cloud VMs)──► Parallel Worker Execution
+```
 
 To resolve these scaling bottlenecks, modern agent harnesses separate user orchestration from tool execution locality. Claude Code wraps local sub-processes inside OS-level sandbox policies that restrict file access to the current repository, while Cursor creates isolated Git worktree directories to execute parallel agent branches without corrupting the primary workspace.
 
@@ -96,10 +97,10 @@ The competition between terminal-native and IDE-integrated agent architectures i
 
 ### Architectural Maturity & Industry Direction
 
-- **Architectural Maturity Level:** Early Production / Rapid Evolution.- **Current Industry Adoption:** Broad adoption across senior SREs, CLI developers, and full-stack software engineering teams. `[LIKELY]
-```
-
-- **Primary Migration Drivers:** Demand for autonomous multi-step coding, reduced manual copy-paste friction, and robust local execution safety.- **Long-Term Strategic Direction:** Convergence toward hybrid agent architectures where local terminal harnesses operate within OS-level sandboxes while offloading multi-agent parallel builds to cloud VM pools. `[LIKELY]`
+* **Architectural Maturity Level:** Early Production / Rapid Evolution.
+* **Current Industry Adoption:** Broad adoption across senior SREs, CLI developers, and full-stack software engineering teams.
+* **Primary Migration Drivers:** Demand for autonomous multi-step coding, reduced manual copy-paste friction, and robust local execution safety.
+* **Long-Term Strategic Direction:** Convergence toward hybrid agent architectures where local terminal harnesses operate within OS-level sandboxes while offloading multi-agent parallel builds to cloud VM pools.
 
 ---
 

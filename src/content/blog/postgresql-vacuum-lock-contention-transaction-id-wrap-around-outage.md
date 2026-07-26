@@ -24,11 +24,14 @@ The mechanics of PostgreSQL transaction ID wraparound stem from the fundamental 
 #### The MVCC Horizon & Wraparound Engine
 $$\text{Active Transactions} \longrightarrow \text{Sequential 32-bit XID Counter} \longrightarrow \text{Un-advanced } datfrozenxid \text{ Horizon} \longrightarrow \text{Emergency Shutdown at } 2^{31} \text{ Limit}$$
 
-Every row tuple inserted or updated in PostgreSQL contains `xmin` and `xmax` fields in its header, representing the transaction IDs that created or deleted the row. When comparing whether a row is visible to a current transaction, the engine evaluates whether the tuple's `xmin` is older than the current transaction ID using modulo arithmetic across the 32-bit integer space.`
+Every row tuple inserted or updated in PostgreSQL contains `xmin` and `xmax` fields in its header, representing the transaction IDs that created or deleted the row. When comparing whether a row is visible to a current transaction, the engine evaluates whether the tuple's `xmin` is older than the current transaction ID using modulo arithmetic across the 32-bit integer space.
+
+```text
 [ Active XID Space: 2.1 Billion Window ]
 ... ──► [ Frozen Tuples (xmin = FrozenXID) ] ──► [ datfrozenxid Horizon ] ──► [ Active XIDs ] ──► [ Wraparound Limit ]
                                                                                                         │
-                                                                                        (Emergency Forced Shutdown)`
+                                                                                        (Emergency Forced Shutdown)
+```
 
 #### Chronological Incident Evolution
 1. **Un-monitored XID Consumption:** High-volume DML workloads (INSERT, UPDATE, DELETE) consume tens of millions of XIDs daily.

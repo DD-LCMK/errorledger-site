@@ -25,7 +25,9 @@ The Model Context Protocol operates as an application-layer wire protocol separa
 $$\text{Fragmented } N \times M \text{ Glue Code} \longrightarrow \text{Un-standardized Tool Schemas} \longrightarrow \text{Standardized JSON-RPC 2.0 Ingress Control Plane} \longrightarrow \text{Universal Execution Locality \& Dynamic Discovery}$$
 
 #### Protocol Layers & Initialization Handshake
-When an MCP Host launches an MCP Server, communication proceeds through a structured initialization phase over the transport channel. The protocol relies on JSON-RPC 2.0 message framing, allowing asynchronous request-response pairings and one-way notification events.`
+When an MCP Host launches an MCP Server, communication proceeds through a structured initialization phase over the transport channel. The protocol relies on JSON-RPC 2.0 message framing, allowing asynchronous request-response pairings and one-way notification events.
+
+```text
 [ MCP Host (e.g., IDE / Desktop App) ] ──(JSON-RPC 2.0 over stdio / SSE)──► [ MCP Server (e.g., Postgres / GitHub) ]
                                       │
   1. initialize request ──────────────┼─────────────────────────────────► Validates Protocol Version
@@ -36,7 +38,8 @@ When an MCP Host launches an MCP Server, communication proceeds through a struct
   5. tools/list response ─────────────┼◄───────────────────────────────── Returns Tool Schemas
                                       │
   6. tools/call request ──────────────┼─────────────────────────────────► Executes Local Action
-  7. tools/call response ─────────────┼◄───────────────────────────────── Returns Execution Result`
+  7. tools/call response ─────────────┼◄───────────────────────────────── Returns Execution Result
+```
 
 MCP divides server capabilities into three standardized protocol primitives:
 1. **Tools:** Executable action handlers exposed by the server. Tools define JSON Schema parameters that the model evaluates and invokes during agentic execution loops.
