@@ -96,7 +96,7 @@ The technical failure was driven by a quadratic thread consumption model embedde
 +-----------------------------------------------------------------+
 |                                                                 |
 |   +------------------+  1. Fleet Expansion  +-----------------+ |
-|   |  Front-End Fleet |=================>|  New Nodes Join | |
+|   |  Front-End Fleet |=================>    |  New Nodes Join | |
 |   |  (Server Count N)|                      |   Mesh Network  | |
 |   +------------------+                      +-----------------+ |
 |            |                                         |          |
@@ -109,7 +109,7 @@ The technical failure was driven by a quadratic thread consumption model embedde
 |                                |                                |
 |                                v                                |
 |   +-----------------------------------------------------------+ |
-|   | 3. Kernel ulimit -u / Thread Ceiling Breached           | |
+|   | 3. Kernel ulimit -u / Thread Ceiling Breached             | |
 |   |    Cache allocation fails -> Shard-maps rendered useless  | |
 |   +-----------------------------------------------------------+ |
 |                                |                                |

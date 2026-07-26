@@ -45,7 +45,7 @@ If the primary node's write volume during the network blip remained within the b
 | Primary Node:  [ Circular Backlog Ring: Offset 1000 -> 5000 ]                     |
 |                               ^                                                   |
 | Replica Re-connects: "PSYNC Master_ID 1200"                                       |
-| Primary Action: Replays bytes 1201 to 5000 directly from RAM backlog ring          |
+| Primary Action: Replays bytes 1201 to 5000 directly from RAM backlog ring         |
 +-----------------------------------------------------------------------------------+
 ```
 
@@ -57,7 +57,7 @@ However, if write throughput is high or the disconnection exceeds the temporal c
 +-----------------------------------------------------------------------------------+
 | 1. Replica Offset Overwritten  -->  2. Primary Triggers FULLSYNC                  |
 | 3. Primary Calls fork()        -->  4. Linux Kernel Instantiates Copy-On-Write    |
-| 5. Client Buffers Expand       -->  6. Buffer Breach Triggers Disconnect / Re-sync |
+| 5. Client Buffers Expand       -->  6. Buffer Breach Triggers Disconnect / Re-sync|
 +-----------------------------------------------------------------------------------+
 ```
 

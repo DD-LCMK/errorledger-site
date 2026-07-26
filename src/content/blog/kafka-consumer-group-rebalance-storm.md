@@ -43,9 +43,9 @@ Under the Eager Rebalance Protocol, partition reassignment is not localized; it 
 +-----------------------------------------------------------------------------------+
 |                        EAGER REBALANCE PROTOCOL (LEGACY)                          |
 +-----------------------------------------------------------------------------------+
-| Node 1: [P0, P1] --(Revoke All)--> [ PAUSED ] -------------> [P0, P1, P2]        |
+| Node 1: [P0, P1] --(Revoke All)--> [ PAUSED ] -------------> [P0, P1, P2]         |
 | Node 2: [P2, P3] --(Revoke All)--> [ PAUSED ] -------------> [P3]                 |
-| Node 3: [P4, P5] --(Exceeded max.poll.interval.ms) -> [ EVICTED & REBALANCING ]  |
+| Node 3: [P4, P5] --(Exceeded max.poll.interval.ms) -> [ EVICTED & REBALANCING ]   |
 +-----------------------------------------------------------------------------------+
 ```
 
@@ -69,8 +69,8 @@ Apache Kafka 2.4.0 introduced **Incremental Cooperative Rebalancing** (`Cooperat
 +-----------------------------------------------------------------------------------+
 |                   INCREMENTAL COOPERATIVE REBALANCING (KIP-429)                   |
 +-----------------------------------------------------------------------------------+
-| Node 1: [P0, P1] --(Retains P0, P1)--> [ Active Processing ] -> [P0, P1, P4]     |
-| Node 2: [P2, P3] --(Retains P2, P3)--> [ Active Processing ] -> [P2, P3]         |
+| Node 1: [P0, P1] --(Retains P0, P1)--> [ Active Processing ] -> [P0, P1, P4]      |
+| Node 2: [P2, P3] --(Retains P2, P3)--> [ Active Processing ] -> [P2, P3]          |
 | Node 3: [P4, P5] --(Evicted / Migrating P4, P5) -------------> [Reassigned P4,P5] |
 +-----------------------------------------------------------------------------------+
 ```

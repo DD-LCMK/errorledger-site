@@ -24,8 +24,6 @@ To understand how a single regular expression pattern locked up a global edge pr
 
 Cloudflare edge nodes run customized NGINX proxy servers integrated with LuaJIT through OpenResty. Incoming HTTP requests pass through a pipeline of OpenResty Lua modules executing security inspection, rate limiting, and cache routing directly on the event-driven worker threads.
 
-``
-
 ```text
 +-----------------------------------------------------------------------------------+
 |                        CLOUDFLARE EDGE WORKER ARCHITECTURE                        |
@@ -40,8 +38,6 @@ Cloudflare edge nodes run customized NGINX proxy servers integrated with LuaJIT 
 +-----------------------------------------------------------------------------------+
 ```
 
-``
-
 Because NGINX operates an event-driven, single-threaded-per-core loop, each worker process handles thousands of concurrent client connections asynchronously. If a Lua module executing inside a worker process blocks the CPU in a synchronous computation loop, that entire CPU core becomes incapable of processing new network events or completing pending HTTP responses.
 
 ---
@@ -52,22 +48,18 @@ Regular expression engines fall into two primary algorithmic categories:
 1. **Deterministic Finite Automata (DFA):** Algorithms (such as Google’s RE2) that construct a single state machine. DFAs evaluate string inputs in strict linear time ($O(N)$), guaranteeing that execution time scales predictably with string length.
 2. **Non-Deterministic Finite Automata (NFA):** Algorithms (such as standard PCRE) that support advanced features like backreferences, lookarounds, and lazy quantifiers. NFAs evaluate patterns using a depth-first search tree. If a branch fails, the engine **backtracks** to the previous choice point and tries alternative permutations.
 
-``
-
 ```text
 +-----------------------------------------------------------------------------------+
 |                    EXPONENTIAL BACKTRACKING EVALUATION TREE                       |
 +-----------------------------------------------------------------------------------+
 | Pattern: .* ( .* = .* )                                                           |
-| Target String: "x=12345678901234567890" (Non-matching string)                    |
+| Target String: "x=12345678901234567890" (Non-matching string)                     |
 |                                                                                   |
 | Attempt 1: .* grabs whole string --> remaining fails --> Backtrack 1 char         |
 | Attempt 2: .* grabs N-1 chars   --> inner .* grabs 1  --> Backtrack 2 chars       |
 | Attempt 3: Permutations explode exponentially: O(2^N)                             |
 +-----------------------------------------------------------------------------------+
 ```
-
-``
 
 The offending WAF rule introduced on July 2, 2019, contained a newly added un-anchored wildcard pattern designed to match malicious inline JavaScript assignments:
 
@@ -90,19 +82,15 @@ The catastrophe was exacerbated by Cloudflare's global ruleset deployment pipeli
 
 At the time of the incident, security ruleset updates were pushed globally in a single atomic release stage. Unlike core binary software updates—which were deployed in phased canary rings across edge locations over several days—WAF ruleset updates were considered low-risk configuration data and were synchronized across all 180+ data centers simultaneously within seconds.
 
-``
-
 ```text
 +-----------------------------------------------------------------------------------+
 |                   GLOBAL SYNCHRONOUS CONFIGURATION FAILURE                        |
 +-----------------------------------------------------------------------------------+
 | 1. Rule Pushed to Production  -->  2. 180+ Data Centers Sync Rule Simultaneously  |
 | 3. HTTP Traffic Triggers NFA  -->  4. 100% CPU Core Lockup Globally               |
-| 5. Event Loop Paralyzed        -->  6. Edge Proxies Return HTTP 502 Bad Gateway    |
+| 5. Event Loop Paralyzed       -->  6. Edge Proxies Return HTTP 502 Bad Gateway    |
 +-----------------------------------------------------------------------------------+
 ```
-
-``
 
 1. At 13:42 UTC, the WAF update pipeline distributed the new ruleset globally.
 2. Within seconds, real-world user HTTP requests arrived at edge PoPs globally and were evaluated against the new `.*(?:.*=.*)` pattern.

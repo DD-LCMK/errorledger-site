@@ -24,21 +24,17 @@ To understand how a configuration edit on a single distribution router crashed a
 
 Rogers operates an Autonomous System (AS812 / AS6509) spanning national fiber backbones, regional distribution hubs, and access nodes servicing cellular towers, home broadband, and enterprise fiber links.
 
-``
-
 ```text
 +-----------------------------------------------------------------------------------+
 |                  SERVICE PROVIDER CORE IP ROUTING ARCHITECTURE                    |
 +-----------------------------------------------------------------------------------+
-|  [ Global Internet / Transit ISPs ] <--- eBGP ---> [ Border Edge Routers ]        |
+|  [ Global Internet / Transit ISPs ] <-- eBGP --> [ Border Edge Routers ]          |
 |                                                                |                  |
 |                                                              iBGP                 |
 |                                                                v                  |
-|  [ Regional Access Nodes ] <--- Distribution Routers <--- [ Core Route Reflectors ] |
+|  [ Regional Access Nodes ] <-- Distribution Routers <-- [ Core Route Reflectors ] |
 +-----------------------------------------------------------------------------------+
 ```
-
-``
 
 Inside an SP network, routing information is split into two layers:
 1. **Interior Gateway Protocol (IGP - OSPF/IS-IS):** Manages internal link-state routing between physical routers inside the autonomous system.
@@ -76,19 +72,15 @@ Within 60 seconds of the filter deletion, core routers were inundated with a thu
 
 Core routers have finite Control Plane DRAM and fixed-capacity TCAM tables. As the routing table expanded beyond the physical capacity of the routers' memory modules:
 
-``
-
 ```text
 +-----------------------------------------------------------------------------------+
 |                  CORE ROUTING ENGINE OVERLOAD FEEDBACK LOOP                       |
 +-----------------------------------------------------------------------------------+
 | 1. Policy Filter Removed   -->  2. Unfiltered Prefix Stream Floods iBGP           |
-| 3. DRAM / TCAM Overflowed   -->  4. Core Router Process Crashes & Resets           |
-| 5. Flapping iBGP Sessions  -->  6. Upstream eBGP Withdraws AS812 Global Routes   |
+| 3. DRAM / TCAM Overflowed   -->  4. Core Router Process Crashes & Resets          |
+| 5. Flapping iBGP Sessions  -->  6. Upstream eBGP Withdraws AS812 Global Routes    |
 +-----------------------------------------------------------------------------------+
 ```
-
-``
 
 1. **DRAM Exhaustion & Process Crash:** The main BGP process on core routers ran out of memory attempting to store the inflated RIB, triggering kernel panics and automatic router reboots.
 2. **TCAM Overflow & Packet Loss:** Line cards attempting to push the bloated FIB table into TCAM hardware encountered allocation failures, dropping transit data packets indiscriminately.

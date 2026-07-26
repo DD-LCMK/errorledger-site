@@ -35,7 +35,7 @@ $$\text{Working Set Size} = \text{Total Memory Usage} - \text{Inactive File Page
 |                     CONTAINER MEMORY ALLOCATION BREAKDOWN                         |
 +-----------------------------------------------------------------------------------+
 |  [ Anonymous RSS (Heap/Stack) ]  +  [ Active File Cache ]  |  [ Inactive Cache ]  |
-|  <------------------- WORKING SET SIZE (WSS) ------------->  |  (Reclaimable)    |
+|  <------------------- WORKING SET SIZE (WSS) ------------->  |  (Reclaimable)     |
 |  <-------------------------- TOTAL MEMORY USAGE --------------------------------> |
 +-----------------------------------------------------------------------------------+
 ```
@@ -73,11 +73,11 @@ When a container's memory consumption breaches `memory.high`, the kernel does no
 
 ```text
 +-----------------------------------------------------------------------------------+
-|               CGROUP V2 MEMORY THRESHOLD & BACKPRESSURE STAGES                   |
+|               CGROUP V2 MEMORY THRESHOLD & BACKPRESSURE STAGES                    |
 +-----------------------------------------------------------------------------------+
 | Usage Level:      [ Normal ] -------> [ memory.high ] -------> [ memory.max ]     |
 | Kernel Action:   Async Reclaim      Process Throttled            OOM Killer       |
-| System State:     Full Speed         High CPU / I/O Stalls        Pod Exit 137      |
+| System State:     Full Speed         High CPU / I/O Stalls        Pod Exit 137    |
 +-----------------------------------------------------------------------------------+
 ```
 

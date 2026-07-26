@@ -71,7 +71,7 @@ The DynamoDB outage highlights the destructive mechanics of a **retry storm** pa
 +-----------------------------------------------------------------+
 |                                                                 |
 |   +------------------+  1. Network Blip   +-----------------+   |
-|   |  Storage Fleet   |=>| Metadata Tier   |   	      |   |
+|   |  Storage Fleet   |=>| Metadata Tier   |   	          |   |
 |   |  Reconnection    |                    |  Expanded GSI   |   |
 |   +------------------+                    |  Data Payloads  |   |
 |      ^            |                       +-----------------+   |

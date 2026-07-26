@@ -24,13 +24,11 @@ To understand how a smart contract compilation bug halted global blockchain cons
 
 Unlike single-threaded Virtual Machines (such as the Ethereum Virtual Machine / EVM), Solana executes smart contracts (programs) in parallel across thousands of CPU threads. Solana smart contracts are written in Rust or C and compiled to a specialized variant of eBPF bytecode (`rBPF`).
 
-``
-
 ```text
 +-----------------------------------------------------------------------------------+
 |                     SOLANA VALIDATOR PROGRAM EXECUTION PIPELINE                   |
 +-----------------------------------------------------------------------------------+
-| [ Transaction Payload ] ---> [ Sealevel Parallel Runtime ]                       |
+| [ Transaction Payload ] ---> [ Sealevel Parallel Runtime ]                        |
 |                                       |                                           |
 |                                       v                                           |
 |                           [ LoadedPrograms Cache ]                                |
@@ -40,8 +38,6 @@ Unlike single-threaded Virtual Machines (such as the Ethereum Virtual Machine / 
 |               [ Native x86_64 Executable ]   [ rBPF JIT Compilation Engine ]      |
 +-----------------------------------------------------------------------------------+
 ```
-
-``
 
 When a transaction invokes a program:
 1. The validator checks its in-memory **`LoadedPrograms` cache** for an existing, pre-compiled native x86_64 machine code binary of that program.
@@ -60,19 +56,15 @@ In validator client release v1.16, core developers overhauled the program cachin
 
 When a transaction invoked a legacy program:
 
-``
-
 ```text
-+-----------------------------------------------------------------------------------+
-|                   INFINITE JIT RE-COMPILATION FEEDBACK LOOP                       |
-+-----------------------------------------------------------------------------------+
-| 1. Transaction Invokes Legacy Program  -->  2. LoadedPrograms Queries Cache       |
++------------------------------------------------------------------------------------+
+|                   INFINITE JIT RE-COMPILATION FEEDBACK LOOP                        |
++------------------------------------------------------------------------------------+
+| 1. Transaction Invokes Legacy Program  -->  2. LoadedPrograms Queries Cache        |
 | 3. Metadata Check Misinterprets Entry  -->  4. Program Declared Invalidated / Miss |
 | 5. JIT Engine Re-compiles Bytecode     -->  6. Loop Repeats Inline on Core Threads |
-+-----------------------------------------------------------------------------------+
++------------------------------------------------------------------------------------+
 ```
-
-``
 
 1. **The Cache Query:** The validator queried `LoadedPrograms` for the compiled program binary.
 2. **The Metadata Parsing Flaw:** The cache loader inspected the cached program's metadata header. Due to an unhandled discrepancy between legacy metadata schemas and the new v1.16 `LoadedPrograms` data structure, the cache loader failed to recognize the cached binary as valid.
@@ -94,19 +86,15 @@ When the `LoadedPrograms` JIT cache loop triggered:
 - The thread pools responsible for processing incoming vote messages from peer validators were starved of CPU cycles.
 - Nodes could no longer process or emit Tower BFT vote transactions.
 
-``
-
 ```text
-+-----------------------------------------------------------------------------------+
-|                   VALIDATOR CPU EXHAUSTION & CONSENSUS STALL                      |
-+-----------------------------------------------------------------------------------+
-| 1. JIT Loop Exhausts 100% CPU  -->  2. Consensus Vote Threads Starved of Cycles    |
++-------------------------------------------------------------------------------------+
+|                   VALIDATOR CPU EXHAUSTION & CONSENSUS STALL                        |
++-------------------------------------------------------------------------------------+
+| 1. JIT Loop Exhausts 100% CPU  -->  2. Consensus Vote Threads Starved of Cycles     |
 | 3. Node Stops Emitting Votes   -->  4. Cluster Stake Drops Below 66.6% Supermajority|
 | 5. Slot Finalization Halts     -->  6. Global Block Production Stalls at 0 TPS      |
-+-----------------------------------------------------------------------------------+
++-------------------------------------------------------------------------------------+
 ```
-
-``
 
 Because validator nodes across the global cluster encountered the same legacy instruction transaction at slot 246,464,040, nodes representing over 33.4% of total active network stake stalled simultaneously. Without a two-thirds (66.6%) supermajority of voting stake online to finalize slots, Tower BFT consensus stalled completely.
 

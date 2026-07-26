@@ -42,11 +42,11 @@ An HNSW index consists of a hierarchy of graph layers:
 +-----------------------------------------------------------------------------------+
 |                        HNSW MULTI-LAYER GRAPH ARCHITECTURE                        |
 +-----------------------------------------------------------------------------------+
-| Layer 2 (Sparse Skip-List):  [Node A] ----------------------------> [Node Z]     |
+| Layer 2 (Sparse Skip-List):  [Node A] ----------------------------> [Node Z]      |
 |                                  |                                       |        |
 | Layer 1 (Medium Routing):    [Node A] --------------> [Node M] ------> [Node Z]   |
 |                                  |                        |              |        |
-| Layer 0 (Dense Base Layer):  [Node A] -> [Node B] -> [Node M] -> ... -> [Node Z]   |
+| Layer 0 (Dense Base Layer):  [Node A] -> [Node B] -> [Node M] -> ... -> [Node Z]  |
 +-----------------------------------------------------------------------------------+
 ```
 
@@ -75,13 +75,13 @@ Product Quantization decomposes a high-dimensional vector into $d$ smaller sub-v
 - **Recall Impact:** Introduces approximation noise due to centroid quantization, which can cause a more noticeable drop in recall if used without rescoring.
 
 ```text
-+-----------------------------------------------------------------------------------+
-|                    VECTOR QUANTIZATION COMPRESSION MECHANICS                      |
-+-----------------------------------------------------------------------------------+
-| Original Float32 Vector:  [ 0.824, -0.192, 0.415, 0.901, ..., 0.034 ] (6144 B)    |
-| SQ8 Quantized Vector:    [ 105,   24,    53,    115,   ..., 4     ] (1536 B) [4x] |
++------------------------------------------------------------------------------------+
+|                    VECTOR QUANTIZATION COMPRESSION MECHANICS                       |
++------------------------------------------------------------------------------------+
+| Original Float32 Vector:  [ 0.824, -0.192, 0.415, 0.901, ..., 0.034 ] (6144 B)     |
+| SQ8 Quantized Vector:    [ 105,   24,    53,    115,   ..., 4     ] (1536 B) [4x]  |
 | PQ Codebook Indexing:    [ Centroid_12, Centroid_84, Centroid_03   ] (192 B)  [32x]|
-+-----------------------------------------------------------------------------------+
++------------------------------------------------------------------------------------+
 ```
 
 ---
