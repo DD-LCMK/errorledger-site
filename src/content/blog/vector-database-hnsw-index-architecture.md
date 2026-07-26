@@ -3,7 +3,7 @@ pipeline_contract_version: "35.0.0"
 title: "Vector Database HNSW Index Architecture: Memory Quantization, Graph Traversal & Search Recall Trade-offs"
 meta_title: "Vector Database HNSW Architecture: Quantization & Recall"
 description: "Architectural teardown of vector database HNSW graph indexes, analyzing multi-layer traversal, SQ8 vs PQ quantization, and two-pass rescoring."
-pubDate: "2026-07-24"
+pubDate: "2026-07-26"
 tags: ["vector-database", "ai-infrastructure", "data-structures", "search-architecture"]
 shortenedSlug: "vector-database-hnsw-index-architecture"
 slug: "vector-database-hnsw-index-architecture"
