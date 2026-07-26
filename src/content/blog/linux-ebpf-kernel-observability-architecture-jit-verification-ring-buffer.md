@@ -22,7 +22,9 @@ Historically, extracting granular telemetry from the Linux kernel required eithe
 Understanding eBPF requires analyzing the pipeline that transforms user-defined bytecode into verified, JIT-compiled native kernel execution.
 
 #### The eBPF Kernel Compilation & Verification Pipeline
-$$\text{eBPF C Code} \longrightarrow \text{LLVM/Clang Bytecode} \longrightarrow \text{In-Kernel Static Verifier} \longrightarrow \text{Native JIT Compiler} \longrightarrow \text{Hook Execution}$$`
+$$\text{eBPF C Code} \longrightarrow \text{LLVM/Clang Bytecode} \longrightarrow \text{In-Kernel Static Verifier} \longrightarrow \text{Native JIT Compiler} \longrightarrow \text{Hook Execution}$$
+
+```text
 [ User Space ]
 C / Go Observability Code ──► [ LLVM BPF Backend ] ──► eBPF Bytecode (.o)
                                                               │ (bpf() Syscall)
@@ -41,7 +43,8 @@ C / Go Observability Code ──► [ LLVM BPF Backend ] ──► eBPF Bytecode
                                                    [ MPSC BPF Ring Buffer ]
                                                               │ (mmap Direct Read)
                                                               ▼
-                                                   [ Userspace Consumers ]`
+                                                   [ Userspace Consumers ]
+```
 
 #### 1. The In-Kernel Verifier & DAG Analysis
 The eBPF verifier is the central safety gate guarding the Linux kernel. Before any bytecode is allowed to attach to a kernel hook (such as `kprobes`, `tracepoints`, or `XDP`), the verifier performs rigorous static analysis over the program's Control Flow Graph (CFG):

@@ -24,7 +24,9 @@ To understand how a single maintenance command un-routed an entire global infras
 
 Internet routing relies on BGP, a path-vector protocol that allows autonomous systems to exchange reachability information across network boundaries. Meta operates a global backbone network consisting of tens of thousands of miles of terrestrial and submarine fiber connecting massive data center facilities to edge points of presence (PoPs) located worldwide.
 
-```
+``
+
+```text
 +-----------------------------------------------------------------------------------+
 |                        META NETWORK ROUTING ARCHITECTURE                          |
 +-----------------------------------------------------------------------------------+
@@ -34,6 +36,8 @@ Internet routing relies on BGP, a path-vector protocol that allows autonomous sy
 |  Health Checkers                                     to Transit Providers         |
 +-----------------------------------------------------------------------------------+
 ```
+
+``
 
 Meta’s authoritative DNS servers do not sit directly inside the primary data center clusters. Instead, they run at the edge PoPs close to end users. To ensure high availability and sub-millisecond response times, Meta utilizes **BGP Anycast routing**. Under Anycast, multiple geographically distributed DNS edge nodes announce the exact same IP address prefixes (such as `129.134.30.12` for `a.ns.facebook.com`) via BGP to upstream Tier-1 Internet Service Providers (ISPs).
 
@@ -62,7 +66,9 @@ The severance of the backbone network immediately activated a secondary, automat
 
 To prevent sending end-user traffic to broken or isolated edge facilities, Meta deployed automated health-checking daemons on every DNS server. These daemons continuously ping internal data center services over the backbone network. The design rationale was straightforward: if a DNS edge server cannot communicate with backend data centers, it cannot fulfill user requests (such as authenticating a login or loading a news feed).
 
-```
+``
+
+```text
 +-----------------------------------------------------------------------------------+
 |                 AUTOMATED BGP ROUTE WITHDRAWAL FEEDBACK LOOP                     |
 +-----------------------------------------------------------------------------------+
@@ -71,6 +77,8 @@ To prevent sending end-user traffic to broken or isolated edge facilities, Meta 
 | 5. Global DNS Lookup Timeout-->  6. Internal Out-of-Band & Badge Locks Severed    |
 +-----------------------------------------------------------------------------------+
 ```
+
+``
 
 When the backbone collapsed, the DNS health checkers detected 100% packet loss to all backend data centers. Following their operational mandate, the health-checking daemons executed an immediate, emergency BGP withdrawal:
 * The DNS servers sent BGP `WITHDRAW` messages to all connected upstream Tier-1 ISPs.

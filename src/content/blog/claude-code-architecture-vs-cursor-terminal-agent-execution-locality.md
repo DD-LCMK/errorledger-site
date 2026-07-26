@@ -27,7 +27,9 @@ $$\text{V1: Inline Autocomplete} \longrightarrow \text{V2: Chat Sidebar \& Conte
 In early generations, developers copied code blocks manually between web interfaces and local editors. As models gained function-calling primitives, tools began executing local commands. However, un-sandboxed execution created severe operational hazards:
 1. **Un-bounded Shell Execution:** Agents running arbitrary bash commands could accidentally delete directory trees, corrupt system dependencies, or expose local secrets.
 2. **Context Window Churn:** Long multi-turn debugging sessions rapidly exhausted context limits, forcing models to forget initial system constraints.
-3. **Working Tree Corruption:** Simultaneous edits across multiple files left local Git repositories in inconsistent, dirty states.`
+3. **Working Tree Corruption:** Simultaneous edits across multiple files left local Git repositories in inconsistent, dirty states.
+
+```text
 [ Claude Code: Terminal-Native OS Sandbox ]
 Developer Shell ──► Claude CLI Harness ──(Seatbelt / bubblewrap)──► Subprocessor / Tool Execution
 
@@ -94,7 +96,9 @@ The competition between terminal-native and IDE-integrated agent architectures i
 
 ### Architectural Maturity & Industry Direction
 
-- **Architectural Maturity Level:** Early Production / Rapid Evolution.- **Current Industry Adoption:** Broad adoption across senior SREs, CLI developers, and full-stack software engineering teams. `[LIKELY]`
+- **Architectural Maturity Level:** Early Production / Rapid Evolution.- **Current Industry Adoption:** Broad adoption across senior SREs, CLI developers, and full-stack software engineering teams. `[LIKELY]
+```
+
 - **Primary Migration Drivers:** Demand for autonomous multi-step coding, reduced manual copy-paste friction, and robust local execution safety.- **Long-Term Strategic Direction:** Convergence toward hybrid agent architectures where local terminal harnesses operate within OS-level sandboxes while offloading multi-agent parallel builds to cloud VM pools. `[LIKELY]`
 
 ---

@@ -24,7 +24,9 @@ To understand how a routine app decommissioning task deleted hundreds of product
 
 Atlassian Cloud operates a multi-tenant platform where enterprise customers inhabit isolated logical sites. Each customer site (e.g., `company.atlassian.net`) consists of multiple integrated application microservices backed by shared PostgreSQL database shards, document stores, and microservice state stores.
 
-```
+``
+
+```text
 +-----------------------------------------------------------------------------------+
 |                     ATLASSIAN CLOUD TENANT & APP ARCHITECTURE                     |
 +-----------------------------------------------------------------------------------+
@@ -34,6 +36,8 @@ Atlassian Cloud operates a multi-tenant platform where enterprise customers inha
 |   └── Installed Apps: [ Insight Asset Manager ] (AppID: app_50012)                 |
 +-----------------------------------------------------------------------------------+
 ```
+
+``
 
 When Atlassian acquired **Insight Asset Management**, the application initially operated as a standalone add-on app installed on customer sites. Later, Atlassian integrated Insight's asset management capabilities natively into Jira Service Management, making the legacy standalone Insight app redundant.
 
@@ -53,7 +57,9 @@ During the preparation phase, the engineering team requesting the decommissionin
 #### 2. Weak Parameter Typing in the Decommissioning API
 The internal administrative API endpoint used by the maintenance script was originally designed to support both app un-installations and complete site teardowns.
 
-```
+``
+
+```text
 +-----------------------------------------------------------------------------------+
 |                   UN-TYPED API EXECUTION & HARD DELETION CASCADE                  |
 +-----------------------------------------------------------------------------------+
@@ -62,6 +68,8 @@ The internal administrative API endpoint used by the maintenance script was orig
 | 5. Bypasses 30-Day Soft Delete     -->  6. 775 Customer Sites Wiped in 23 Minutes   |
 +-----------------------------------------------------------------------------------+
 ```
+
+``
 
 Instead of enforcing strict type boundaries (e.g., requiring an explicit `type: "APP_INSTALLATION"` parameter), the API accepted any string ID. When passed a `SiteID`, the API implicitly interpreted the request as an instruction to **permanently delete the entire customer cloud site**.
 
@@ -95,7 +103,9 @@ The data for each affected customer site was distributed across multiple microse
 4. Re-inject the extracted tenant data into production database shards without corrupting adjacent active tenants.
 5. Re-establish user identity mappings, API tokens, and cross-application permissions.
 
-```
+``
+
+```text
 +-----------------------------------------------------------------------------------+
 |               MANUAL POINT-IN-TIME RECONSTRUCTION PIPELINE                        |
 +-----------------------------------------------------------------------------------+
@@ -103,6 +113,8 @@ The data for each affected customer site was distributed across multiple microse
 | 4. Validate Data Integrity ->  5. Re-inject to Production DB ->  6. Rebind Identity|
 +-----------------------------------------------------------------------------------+
 ```
+
+``
 
 Because each customer site had unique app configurations, custom workflow schemas, and third-party integration tokens, each restoration required extensive manual verification. Atlassian mobilized hundreds of engineers 24/7, progressively restoring customer sites over a 14-day window before the final batch was returned to service.
 

@@ -24,7 +24,9 @@ Understanding Gemini Context Caching requires examining how Transformer models p
 #### The Transformer KV Attention Calculation Pipeline
 $$\text{Static Tokens} \longrightarrow \text{Embedding & Positional Encoding} \longrightarrow \text{KV Tensor Matrix Computation} \longrightarrow \text{Server Memory Cache} \longrightarrow \text{Fast Sub-sequence Attention}$$
 
-In a standard stateless LLM API invocation, the inference engine evaluates input tokens through all Transformer layers sequentially:`
+In a standard stateless LLM API invocation, the inference engine evaluates input tokens through all Transformer layers sequentially:
+
+```text
 [ Stateless Pipeline ]
 User Request ──► [ Tokenizer ] ──► [ KV Tensor Calculation (Full Sequence) ] ──► [ Output Generation ]
                                    (Re-computed on every API call)
@@ -33,7 +35,8 @@ User Request ──► [ Tokenizer ] ──► [ KV Tensor Calculation (Full Seq
 Initial Load ──► [ KV Tensor Calculation ] ──► [ Server Storage (cachedContent ID) ]
                                                         │
 Subsequent Request ──► [ Reference Cache ID ] ──────────┴─► [ Sub-sequence Attention ] ──► [ Output Generation ]
-                                                           (Bypasses 90% of Layer Compute)`
+                                                           (Bypasses 90% of Layer Compute)
+```
 
 #### Implicit vs. Explicit Caching Architecture
 Google implements Context Caching across two distinct operational patterns:

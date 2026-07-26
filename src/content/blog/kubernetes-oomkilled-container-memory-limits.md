@@ -28,14 +28,17 @@ The Linux kernel divides cgroup memory allocations into two primary classificati
 
 Kubernetes calculates container Working Set Size using a specific equation designed to prevent premature eviction while accounting for un-reclaimable file buffers:
 
-$$\text{Working Set Size} = \text{Total Memory Usage} - \text{Inactive File Page Cache}$$`
+$$\text{Working Set Size} = \text{Total Memory Usage} - \text{Inactive File Page Cache}$$
+
+```text
 +-----------------------------------------------------------------------------------+
 |                     CONTAINER MEMORY ALLOCATION BREAKDOWN                         |
 +-----------------------------------------------------------------------------------+
 |  [ Anonymous RSS (Heap/Stack) ]  +  [ Active File Cache ]  |  [ Inactive Cache ]  |
 |  <------------------- WORKING SET SIZE (WSS) ------------->  |  (Reclaimable)    |
 |  <-------------------------- TOTAL MEMORY USAGE --------------------------------> |
-+-----------------------------------------------------------------------------------+`
++-----------------------------------------------------------------------------------+
+```
 
 If an application performs continuous disk reads (such as log parsing or streaming database exports), the kernel allocates physical RAM pages to store file data. Under normal conditions, when overall host memory becomes tight, the kernel asynchronously reclaims inactive file pages without impacting running processes. 
 
@@ -66,14 +69,17 @@ In cgroup v2, Kubernetes maps `resources.limits.memory` directly to `memory.max`
 
 While `memory.max` triggers an abrupt `OOMKilled` crash, cgroup v2 introduces a intermediate failure state controlled by `memory.high`.
 
-When a container's memory consumption breaches `memory.high`, the kernel does not invoke the OOM Killer. Instead, it forces every process inside that cgroup attempting memory allocations into a synchronous page reclaim loop (`direct reclaim`). The kernel slows down the process by allocating synthetic sleep delays proportional to the degree by which `memory.high` is exceeded.`
+When a container's memory consumption breaches `memory.high`, the kernel does not invoke the OOM Killer. Instead, it forces every process inside that cgroup attempting memory allocations into a synchronous page reclaim loop (`direct reclaim`). The kernel slows down the process by allocating synthetic sleep delays proportional to the degree by which `memory.high` is exceeded.
+
+```text
 +-----------------------------------------------------------------------------------+
 |               CGROUP V2 MEMORY THRESHOLD & BACKPRESSURE STAGES                   |
 +-----------------------------------------------------------------------------------+
 | Usage Level:      [ Normal ] -------> [ memory.high ] -------> [ memory.max ]     |
 | Kernel Action:   Async Reclaim      Process Throttled            OOM Killer       |
 | System State:     Full Speed         High CPU / I/O Stalls        Pod Exit 137      |
-+-----------------------------------------------------------------------------------+`
++-----------------------------------------------------------------------------------+
+```
 
 This behavior introduces a severe operational trade-off:
 * **The Benefit:** It gives memory-hungry processes time to perform internal garbage collection (such as JVM or Node.js GC sweeps) or flush dirty file buffers before reaching `memory.max`.
@@ -109,27 +115,33 @@ $$\text{Container Limit} = \text{Max Application Heap} \times 1.30$$
 In Kubernetes clusters running on cgroup v2, configure Memory QoS features to populate `memory.high` automatically below `memory.max`. Setting `memory.high` at 85% of `memory.max` forces early background page reclamation without causing severe process stalls, allowing language runtime garbage collectors to run before hard limits are hit.
 
 #### 3. Analyzing Container Memory Events via `memory.events`
-When inspecting a Pod experiencing transient instability, execute a shell session into the container's cgroup v2 path to read actual kernel event counters:`text
+When inspecting a Pod experiencing transient instability, execute a shell session into the container's cgroup v2 path to read actual kernel event counters:
+
+```text
 cat /sys/fs/cgroup/memory.events
 # Output:
 # low 0
 # high 14502         <-- High value indicates soft throttling / latency stalls
 # max 3              <-- Non-zero value indicates hard limit breach
 # oom 3              <-- Confirms OOM Killer invocation
-# oom_kill 3         <-- Exact count of killed processes inside cgroup`
+# oom_kill 3         <-- Exact count of killed processes inside cgroup
+```
 
 #### 4. Setting Prometheus Alerts on Memory PSI Telemetry
-Configure Prometheus alert rules on cgroup v2 PSI metrics using `container_memory_pressure_user_stalled_seconds_total` (exposed by cAdvisor):`yaml
+Configure Prometheus alert rules on cgroup v2 PSI metrics using `container_memory_pressure_user_stalled_seconds_total` (exposed by cAdvisor):
+
+```yaml
 groups:
 - name: cgroup_memory_alerts
-  rules:
-  - alert: ContainerMemoryPressureHigh
-    expr: rate(container_memory_pressure_user_stalled_seconds_total[5m]) > 0.2
-    for: 2m
-    labels:
-      severity: warning
-    annotations:
-      summary: "Container experiencing heavy cgroup memory stall duration (>20% of CPU time blocked on memory reclaim)"`
+rules:
+- alert: ContainerMemoryPressureHigh
+expr: rate(container_memory_pressure_user_stalled_seconds_total[5m]) > 0.2
+for: 2m
+labels:
+severity: warning
+annotations:
+summary: "Container experiencing heavy cgroup memory stall duration (>20% of CPU time blocked on memory reclaim)"
+```
 
 ---
 

@@ -24,7 +24,9 @@ To understand how an open-source Python database client library leaked cross-ten
 
 High-throughput Python web applications built on asynchronous frameworks (such as FastAPI or Tornado) process thousands of concurrent client requests on a single OS thread using an `asyncio` event loop.
 
-```
+``
+
+```text
 +-----------------------------------------------------------------------------------+
 |               PYTHON ASYNCIO CONNECTION POOL MULTIPLEXING                         |
 +-----------------------------------------------------------------------------------+
@@ -33,6 +35,8 @@ High-throughput Python web applications built on asynchronous frameworks (such a
 |  [ User B Request Task ] ---/        (Shared Pool)        [ Socket 2 ]            |
 +-----------------------------------------------------------------------------------+
 ```
+
+``
 
 Creating a new TCP connection and establishing TLS handshakes for every database query is prohibitively expensive. To maximize throughput, services instantiate a shared **Connection Pool** (`redis.asyncio.ConnectionPool`).
 
@@ -54,7 +58,9 @@ When an `asyncio` coroutine is cancelled mid-execution:
 1. The coroutine immediately aborts execution at its current `await` expression.
 2. An `asyncio.CancelledError` bubbles up the call stack.
 
-```
+``
+
+```text
 +-----------------------------------------------------------------------------------+
 |               TAINTED CONNECTION POOL RETURN & DATA LEAK FLOW                     |
 +-----------------------------------------------------------------------------------+
@@ -64,6 +70,8 @@ When an `asyncio` coroutine is cancelled mid-execution:
 | 7. User B Reads UserA_Data from Buffer-->  8. User B Receives User A Private Data |
 +-----------------------------------------------------------------------------------+
 ```
+
+``
 
 On March 20, a server-side backend update inadvertently increased the rate of `asyncio` task cancellations across ChatGPT web workers.
 

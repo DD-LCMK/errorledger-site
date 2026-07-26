@@ -87,7 +87,9 @@ The failure originated within the **Kinesis Data Streams Front-End Fleet**, whic
 ---
 
 ### Technical Deep Dive & Root Cause
-The technical failure was driven by a quadratic thread consumption model embedded within the front-end fleet's communication architecture.`
+The technical failure was driven by a quadratic thread consumption model embedded within the front-end fleet's communication architecture.
+
+```text
 +-----------------------------------------------------------------+
 |               QUADRATIC THREAD EXHAUSTION MESH                  |
 |    How Adding Capacity Caused Kernel Thread Limit Collapses     |
@@ -115,7 +117,9 @@ The technical failure was driven by a quadratic thread consumption model embedde
 |   +-----------------------------------------------------------+ |
 |   | 4. System Deadlock & Regional Request Failure             | |
 |   +-----------------------------------------------------------+ |
-+-----------------------------------------------------------------+`
++-----------------------------------------------------------------+
+```
+
 #### The Peer-Mesh Thread Explosion
 The front-end fleet used a fully connected peer-to-peer mesh to synchronize internal administrative state. In this architecture, every front-end server maintained an active TCP connection to every other front-end server in the fleet, with each connection assigned a dedicated operating system thread.
 

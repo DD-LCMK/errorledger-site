@@ -26,7 +26,9 @@ Modern CPUs enforce hardware-level privilege boundaries known as Protection Ring
 - **Ring 3 (User Mode):** Where standard applications (browsers, IDEs, web servers) execute. Code running in Ring 3 operates in an isolated virtual address space. If a user-mode process attempts an illegal memory access or dereferences a null pointer, the Windows kernel catches the exception, terminates that single process (SIGSEGV / Access Violation), and keeps the host operating system online.
 - **Ring 0 (Kernel Mode):** Where the core OS kernel (`ntoskrnl.exe`), hardware abstraction layer (HAL), and kernel drivers execute. Ring 0 code has unrestricted physical access to system RAM, hardware registers, and CPU execution states.
 
-```
+``
+
+```text
 +-----------------------------------------------------------------------------------+
 |                   WINDOWS MEMORY & PRIVILEGE ARCHITECTURE                         |
 +-----------------------------------------------------------------------------------+
@@ -36,6 +38,8 @@ Modern CPUs enforce hardware-level privilege boundaries known as Protection Ring
 |                         (Un-handled Memory Access Violation -> Immediate BSOD)   |
 +-----------------------------------------------------------------------------------+
 ```
+
+``
 
 CrowdStrike’s Falcon sensor operates a kernel-mode file system minifilter driver named `csagent.sys`. To detect sophisticated threat vectors (such as kernel-level rootkits or process injection), `csagent.sys` executes directly inside Ring 0.
 
@@ -49,7 +53,9 @@ On July 19, 2024, CrowdStrike deployed an updated Channel File 291 payload desig
 
 The root cause of the incident was an unhandled schema mismatch between the IPC Template Interpreter inside the `csagent.sys` driver binary and the binary payload structure contained in the newly released Channel File 291.
 
-```
+``
+
+```text
 +-----------------------------------------------------------------------------------+
 |               RING 0 OUT-OF-BOUNDS MEMORY DEREFERENCE FLOW                       |
 +-----------------------------------------------------------------------------------+
@@ -58,6 +64,8 @@ The root cause of the incident was an unhandled schema mismatch between the IPC 
 | 5. Non-Paged Pool Fault       -->  6. Windows Kernel Triggers Immediate BugCheck  |
 +-----------------------------------------------------------------------------------+
 ```
+
+``
 
 1. **The Structural Mismatch:** The IPC Template Interpreter in `csagent.sys` was compiled with an internal static assumption that IPC evaluation templates contained exactly 20 parameter fields. However, the automated Content Validator tool compiled Channel File 291 with 21 input parameters.
 2. **Out-of-Bounds Pointer Access:** As `csagent.sys` parsed the payload during system startup, the driver executed a loop intended to populate an internal 20-element pointer array. When the loop reached index 20 (the 21st parameter), it attempted to read an un-initialized memory address beyond the allocated buffer boundary in Non-Paged Pool RAM.

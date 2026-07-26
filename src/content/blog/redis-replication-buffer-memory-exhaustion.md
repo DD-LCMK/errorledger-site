@@ -36,7 +36,9 @@ When network throughput drops or a replica node stalls due to heavy CPU deserial
 
 When a temporary network disruption disconnects a replica, the replica re-establishes its TCP connection and sends a `PSYNC <master_replid> <replication_offset>` command to the primary node.
 
-If the primary node's write volume during the network blip remained within the bounds of `repl-backlog-size`, the primary simply replays the missing byte range from its circular ring buffer. The replica catches up in milliseconds without interrupting normal database operations.`
+If the primary node's write volume during the network blip remained within the bounds of `repl-backlog-size`, the primary simply replays the missing byte range from its circular ring buffer. The replica catches up in milliseconds without interrupting normal database operations.
+
+```text
 +-----------------------------------------------------------------------------------+
 |               PARTIAL RESYNCHRONIZATION (PSYNC) LIGHTWEIGHT REPLAY                |
 +-----------------------------------------------------------------------------------+
@@ -44,16 +46,20 @@ If the primary node's write volume during the network blip remained within the b
 |                               ^                                                   |
 | Replica Re-connects: "PSYNC Master_ID 1200"                                       |
 | Primary Action: Replays bytes 1201 to 5000 directly from RAM backlog ring          |
-+-----------------------------------------------------------------------------------+`
++-----------------------------------------------------------------------------------+
+```
 
-However, if write throughput is high or the disconnection exceeds the temporal capacity of `repl-backlog-size`, the primary's circular buffer overwrites the requested offset. At this point, partial resynchronization becomes impossible, forcing the primary state machine to fall back to a **Full Resynchronization (`FULLSYNC`)**:`
+However, if write throughput is high or the disconnection exceeds the temporal capacity of `repl-backlog-size`, the primary's circular buffer overwrites the requested offset. At this point, partial resynchronization becomes impossible, forcing the primary state machine to fall back to a **Full Resynchronization (`FULLSYNC`)**:
+
+```text
 +-----------------------------------------------------------------------------------+
 |              FULL RESYNCHRONIZATION (FULLSYNC) MEMORY FEEDBACK LOOP               |
 +-----------------------------------------------------------------------------------+
 | 1. Replica Offset Overwritten  -->  2. Primary Triggers FULLSYNC                  |
 | 3. Primary Calls fork()        -->  4. Linux Kernel Instantiates Copy-On-Write    |
 | 5. Client Buffers Expand       -->  6. Buffer Breach Triggers Disconnect / Re-sync |
-+-----------------------------------------------------------------------------------+`
++-----------------------------------------------------------------------------------+
+```
 
 1. **Child Process Spawning (`fork`):** The primary calls the Linux `fork()` system call to create a background process that generates an RDB point-in-time snapshot file.
 2. **Copy-On-Write (COW) Memory Inflation:** The parent primary process and child snapshot process initially share physical memory pages. However, as new write commands modify data in the primary process, the Linux kernel allocates new 4KB physical pages to store the modified bytes. Under heavy write workloads, Copy-On-Write can duplicate up to 100% of the database memory space.
@@ -82,7 +88,7 @@ In-memory data stores and stateful message brokers use differing state machines 
 
 The instability caused by replication buffer overflows has driven significant architectural shifts across modern cloud infrastructure and developer tooling:
 
-1. **Cloud Managed Service Tuning:** Cloud providers operating managed Redis instances (such as AWS ElastiCache and GCP Cloud Memorystore) enforce automatic kernel parameter tuning, setting `vm.overcommit_memory = 1` and reserving 25% to 50% of system RAM as system headroom to prevent `oom-killer` terminations during COW bursts.
+1. **Cloud Managed Service Tuning:** Cloud providers operating managed Redis instances (such as AWS ElastiCache and GCP Cloud Memorystore) enforce automatic kernel parameter tuning, setting `vm.overcommit_memory = 1 and reserving 25% to 50% of system RAM as system headroom to prevent `oom-killer` terminations during COW bursts.
 2. **Diskless Replication (`repl-diskless-sync`):** To avoid disk I/O bottlenecks during `FULLSYNC` RDB generation, Redis introduced diskless replication. The primary streams the RDB payload directly from the child process memory socket to the replica TCP socket. While this eliminates disk latency, the underlying process `fork()` and Copy-On-Write memory duplication mechanics remain active.
 3. **Observability & SRE Metrics:** Production telemetry pipelines track specific replication health metrics: `master_repl_offset`, `connected_slaves`, `rdb_bgsave_in_progress`, and `subscribers_output_buffer_bytes`. Alerts trigger when `master_repl_offset` drift between primary and replica exceeds 50% of `repl-backlog-size`, warning SREs of impending `FULLSYNC` cascades.
 
@@ -100,14 +106,20 @@ $$\text{repl-backlog-size} = \text{Peak Write Bytes/Sec} \times \text{Max Expect
 
 #### 2. Output Buffer Threshold Guard Principle
 *System Risk:* Setting `client-output-buffer-limit replica` hard limits too low causes premature replica disconnects, while setting them too high allows runaway memory growth.  
-*Vendor Implementation:* Configure replica output buffer limits in `redis.conf`:`text
-client-output-buffer-limit replica 512mb 128mb 60`
+*Vendor Implementation:* Configure replica output buffer limits in `redis.conf`:
+
+```text
+client-output-buffer-limit replica 512mb 128mb 60
+```
 *Operational Trade-off:* Allows lagging replicas up to 60 seconds to consume accumulated writes (up to 512MB hard limit) before disconnecting, balancing replica recovery against primary RAM protection.
 
 #### 3. OS Memory Overcommit & Reserve Memory Principle
 *System Risk:* Operating a primary Redis instance near 100% of host RAM guarantees an OOM crash when `fork()` triggers Copy-On-Write page duplication.  
-*Vendor Implementation:* Set Linux kernel parameters via `sysctl`:`text
-vm.overcommit_memory = 1`
+*Vendor Implementation:* Set Linux kernel parameters via `sysctl`:
+
+```text
+vm.overcommit_memory = 1
+```
 Maintain instance `maxmemory` at no more than 65% of total host RAM on write-heavy workloads.  
 *Operational Trade-off:* Requires provisioning extra host RAM headroom, increasing infrastructure compute costs to guarantee snapshot safety.
 
@@ -118,22 +130,31 @@ Maintain instance `maxmemory` at no more than 65% of total host RAM on write-hea
 When investigating suspected replication buffer pressure or sync loops, execute this verification sequence via `redis-cli`:
 
 1. **Inspect Replication State & Offset Drift:**
-   Query `INFO replication` to check replica connection status and byte offset lag:`text
-   redis-cli INFO replication
-   # Check: role:master
-   # Check: connected_slaves > 0
-   # Compare: master_repl_offset vs replica offset`
+   Query `INFO replication` to check replica connection status and byte offset lag:
+
+```text
+redis-cli INFO replication
+# Check: role:master
+# Check: connected_slaves > 0
+# Compare: master_repl_offset vs replica offset
+```
 
 2. **Monitor Client Output Buffer Usage:**
-   List connected clients and sort by output buffer length (`omem`):`text
-   redis-cli CLIENT LIST
-   # Filter for cmd=psync or cmd=sync and inspect omem (output memory bytes)`
+   List connected clients and sort by output buffer length (`omem`):
+
+```text
+redis-cli CLIENT LIST
+# Filter for cmd=psync or cmd=sync and inspect omem (output memory bytes)
+```
 
 3. **Validate Memory Allocation & Copy-On-Write Overhead:**
-   Inspect current memory usage and historical COW memory allocation during background saves:`text
-   redis-cli INFO memory
-   # Inspect: mem_fragmentation_ratio
-   # Inspect: rdb_last_cow_size (bytes allocated by Copy-On-Write during last fork)`
+   Inspect current memory usage and historical COW memory allocation during background saves:
+
+```text
+redis-cli INFO memory
+# Inspect: mem_fragmentation_ratio
+# Inspect: rdb_last_cow_size (bytes allocated by Copy-On-Write during last fork)
+```
 
 ### References
 *   [Redis Documentation — Replication Architecture & Configuration](https://redis.io/docs/latest/operate/oss_and_stack/management/replication/)

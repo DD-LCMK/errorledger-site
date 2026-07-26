@@ -62,7 +62,9 @@ The US-East-1 outage impacted major public platforms, though the operational sev
 
 ### The Technical Failure
 
-The DynamoDB outage highlights the destructive mechanics of a **retry storm** paired with **administrative lockout** and **unmonitored data payload expansion**.`
+The DynamoDB outage highlights the destructive mechanics of a **retry storm** paired with **administrative lockout** and **unmonitored data payload expansion**.
+
+```text
 +-----------------------------------------------------------------+
 |                    THE UNMITIGATED RETRY STORM                  |
 |          How Immediate Retries Collapse a Saturated System      |
@@ -89,7 +91,8 @@ The DynamoDB outage highlights the destructive mechanics of a **retry storm** pa
 |                                           | ADMINISTRATIVE  |   |
 |                                           |     LOCKOUT     |   |
 |                                           +-----------------+   |
-+-----------------------------------------------------------------+`
++-----------------------------------------------------------------+
+```
 
 **The Payload Size Blind Spot:**
 The addition of Global Secondary Indexes (GSIs) required routing data structures to be stored directly inside the primary partition membership data. As customers adopted GSIs, the structural size of the metadata payload grew silently. AWS's capacity models monitored request *volume* but failed to measure the *size dimension* of the payload itself. When the storage fleet reconnected, the metadata service had to process these unexpectedly large data structures simultaneously, exhausting its CPU and network capacity.

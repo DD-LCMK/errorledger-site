@@ -24,7 +24,9 @@ To understand the architectural necessity of the Responses API, one must evaluat
 
 Under Chat Completions, every API turn is processed as an isolated, stateless transaction. To maintain multi-turn context, client applications must append new user inputs to the full historical message array and send the entire payload over the network.
 
-```
+``
+
+```text
 +-----------------------------------------------------------------------------------+
 |               LEGATION CHAT COMPLETIONS STATELESS PAYLOAD INFLATION               |
 +-----------------------------------------------------------------------------------+
@@ -34,6 +36,8 @@ Under Chat Completions, every API turn is processed as an isolated, stateless tr
 | Total Tokens Processed Across N Turns: O(N^2) Cumulative Growth                    |
 +-----------------------------------------------------------------------------------+
 ```
+
+``
 
 For a conversation spanning $N$ turns where each turn adds $M$ tokens, the total number of tokens transmitted and parsed by the model scales quadratically:
 
@@ -52,7 +56,9 @@ The Responses API resolves quadratic token inflation by shifting session persist
 
 When a client initializes a session using the Responses API with `store: true`, the server returns a persistent session handle. Subsequent API calls simply pass new input deltas referenced against the existing session handle.
 
-```
+``
+
+```text
 +-----------------------------------------------------------------------------------+
 |                  RESPONSES API SERVER-SIDE SESSION & KV CACHING                   |
 +-----------------------------------------------------------------------------------+
@@ -62,6 +68,8 @@ When a client initializes a session using the Responses API with `store: true`, 
 | Server GPU Action:      Reuses Resident KV Cache; Skips Pre-Fill Phase            |
 +-----------------------------------------------------------------------------------+
 ```
+
+``
 
 #### How Automatic Prompt Caching Operates at the GPU Layer
 In transformer inference engines, calculating the attention matrix for a sequence of tokens requires computing Key ($K$) and Value ($V$) vectors for every transformer layer:
@@ -81,7 +89,9 @@ Beyond session persistence, the Responses API shifts tool orchestration (such as
 
 Under the legacy Chat Completions paradigm, executing a tool required a multi-step client polling loop:
 
-```
+``
+
+```text
 +-----------------------------------------------------------------------------------+
 |                 LEGACY CHAT COMPLETIONS CLIENT CALLBACK LOOP                      |
 +-----------------------------------------------------------------------------------+
@@ -91,11 +101,15 @@ Under the legacy Chat Completions paradigm, executing a tool required a multi-st
 +-----------------------------------------------------------------------------------+
 ```
 
+``
+
 This required backend developers to write extensive glue code, handle network retries, parse JSON tool arguments, and manage multi-turn error boundaries.
 
 Under the Responses API, tool execution is fully integrated into the server's internal execution pipeline:
 
-```
+``
+
+```text
 +-----------------------------------------------------------------------------------+
 |                  RESPONSES API SERVER-MANAGED AGENTIC LOOP                        |
 +-----------------------------------------------------------------------------------+
@@ -107,6 +121,8 @@ Under the Responses API, tool execution is fully integrated into the server's in
 | Client App  <---  [ Final Streamed Output & Execution Trace ]                     |
 +-----------------------------------------------------------------------------------+
 ```
+
+``
 
 The client transmits a single API call specifying available tools. OpenAI's server infrastructure autonomously invokes sandboxed code execution environments or web search indexers, feeds execution results back into the model's context stream, and streams the final synthesized answer back to the client over a single HTTP connection.
 

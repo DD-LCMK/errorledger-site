@@ -24,7 +24,9 @@ To understand how a customer configuration edit crashed a global CDN platform, o
 
 Fastly built its high-performance edge platform on a heavily customized version of the open-source **Varnish HTTP Accelerator**. Fastly allows customers to write custom traffic handling rules using **Varnish Control Language (VCL)**, a domain-specific procedural language.
 
-```
+``
+
+```text
 +-----------------------------------------------------------------------------------+
 |                        FASTLY EDGE VCL EXECUTION PIPELINE                         |
 +-----------------------------------------------------------------------------------+
@@ -37,6 +39,8 @@ Fastly built its high-performance edge platform on a heavily customized version 
 |  [ Client HTTP Request ] -------> [ Edge Varnish Proxy Daemon ]                   |
 +-----------------------------------------------------------------------------------+
 ```
+
+``
 
 When a customer submits VCL configurations via Fastly’s control plane API:
 1. Fastly's compiler translates the high-level VCL rules into C-code source text.
@@ -60,7 +64,9 @@ The bug was a **latent defect**: it contained a conditional assertion check that
 #### 2. The Customer Configuration Trigger (June 8, 2021)
 At 09:47 UTC on June 8, a single Fastly customer executed a valid configuration change via the Fastly administrative control plane. The update contained a specific combination of valid VCL directives that happened to match the exact conditional criteria required to activate the dormant May 12 defect.
 
-```
+``
+
+```text
 +-----------------------------------------------------------------------------------+
 |                  CASCADING GLOBAL CONFIGURATION PROPAGATION                       |
 +-----------------------------------------------------------------------------------+
@@ -69,6 +75,8 @@ At 09:47 UTC on June 8, a single Fastly customer executed a valid configuration 
 | 5. Latent May 12 Bug Activated       -->  6. Varnish Worker Daemons Panic (503)   |
 +-----------------------------------------------------------------------------------+
 ```
+
+``
 
 Fastly's configuration distribution system—designed for extreme agility—replicated the newly compiled binary to edge nodes worldwide in sub-second timeframes.
 
@@ -86,7 +94,9 @@ The single saving grace of the June 8 incident was the structural decoupling of 
 
 While the data plane (the global fleet of edge Varnish proxies) was returning 503 errors, Fastly’s control plane—the administrative APIs, dashboard, and configuration distribution pipeline—remained fully operational on separate, isolated infrastructure.
 
-```
+``
+
+```text
 +-----------------------------------------------------------------------------------+
 |                     CONTROL PLANE VS DATA PLANE ISOLATION                         |
 +-----------------------------------------------------------------------------------+
@@ -95,6 +105,8 @@ While the data plane (the global fleet of edge Varnish proxies) was returning 50
 | Data Plane (Crashing):         [ Edge Proxy 01 (503) ]  [ Edge Proxy 02 (503) ]    |
 +-----------------------------------------------------------------------------------+
 ```
+
+``
 
 This isolation allowed SREs to diagnose and resolve the incident rapidly:
 1. **09:47 UTC:** Customer configuration change deploys globally; edge errors spike.

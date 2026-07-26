@@ -37,14 +37,17 @@ Engineers often assume that when a single consumer node stalls, only that node's
 Under the Eager Rebalance Protocol, partition reassignment is not localized; it is a global "stop-the-world" synchronization barrier:
 - **Phase 1 (Global Revocation):** Upon receiving a rebalance signal from the Group Coordinator broker, *every* consumer in the group immediately revokes 100% of its assigned partitions, flushes uncommitted state, and pauses data ingestion.
 - **Phase 2 (Join & Sync Phase):** All consumers send `JoinGroup` and `SyncGroup` requests to elect a Group Leader and generate a clean partition assignment matrix.
-- **Phase 3 (Re-ingestion Resume):** Consumers receive new partition assignments, seek to stored topic offsets, and resume processing.`
+- **Phase 3 (Re-ingestion Resume):** Consumers receive new partition assignments, seek to stored topic offsets, and resume processing.
+
+```text
 +-----------------------------------------------------------------------------------+
 |                        EAGER REBALANCE PROTOCOL (LEGACY)                          |
 +-----------------------------------------------------------------------------------+
 | Node 1: [P0, P1] --(Revoke All)--> [ PAUSED ] -------------> [P0, P1, P2]        |
 | Node 2: [P2, P3] --(Revoke All)--> [ PAUSED ] -------------> [P3]                 |
 | Node 3: [P4, P5] --(Exceeded max.poll.interval.ms) -> [ EVICTED & REBALANCING ]  |
-+-----------------------------------------------------------------------------------+`
++-----------------------------------------------------------------------------------+
+```
 
 When an overloaded consumer is evicted due to a processing delay, the Eager protocol revokes all partitions across the entire group. The partitions previously owned by the evicted consumer are reassigned to the remaining healthy nodes. These remaining nodes must now process their original workload plus the accumulated backlog of the reassigned partitions.
 
@@ -60,14 +63,17 @@ Apache Kafka 2.4.0 introduced **Incremental Cooperative Rebalancing** (`Cooperat
 
 1. **Round 1 (Non-Blocking Assignment):** When a consumer joins or leaves, the Group Coordinator triggers a rebalance. However, consumers do **not** revoke all partitions. They continue processing records on partitions that do not need to move.
 2. **Targeted Revocation:** Only the specific partitions designated for reassignment across nodes are marked for revocation.
-3. **Round 2 (Final Handover):** Once the targeted partitions are cleanly unassigned and state is checkpointed, a second lightweight assignor pass binds those partitions to their new target consumers.`
+3. **Round 2 (Final Handover):** Once the targeted partitions are cleanly unassigned and state is checkpointed, a second lightweight assignor pass binds those partitions to their new target consumers.
+
+```text
 +-----------------------------------------------------------------------------------+
 |                   INCREMENTAL COOPERATIVE REBALANCING (KIP-429)                   |
 +-----------------------------------------------------------------------------------+
 | Node 1: [P0, P1] --(Retains P0, P1)--> [ Active Processing ] -> [P0, P1, P4]     |
 | Node 2: [P2, P3] --(Retains P2, P3)--> [ Active Processing ] -> [P2, P3]         |
 | Node 3: [P4, P5] --(Evicted / Migrating P4, P5) -------------> [Reassigned P4,P5] |
-+-----------------------------------------------------------------------------------+`
++-----------------------------------------------------------------------------------+
+```
 
 By allowing consumers to maintain active processing loops on un-migrated partitions, Incremental Cooperative Rebalancing prevents group-wide ingestion stalls, containing localized processing spikes and preventing cascading failures.
 
