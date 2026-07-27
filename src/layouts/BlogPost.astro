@@ -8,12 +8,16 @@ import { getCollection } from 'astro:content';
 
 type Props = CollectionEntry<'blog'>['data'] & { body?: string };
 
-const { title, meta_title, description, pubDate, tags = [], article_confidence } = Astro.props;
+// FIXED: Destructure read_time_minutes directly from the frontmatter props
+const { title, meta_title, description, pubDate, tags = [], article_confidence, read_time_minutes } = Astro.props;
 
-// Calculate Reading Time (Average: 200 words per minute)
+// Calculate Reading Time Fallback (Used only if frontmatter doesn't have it)
 const rawContent = Astro.props.body || '';
 const wordCount = rawContent.split(/\s+/).filter(Boolean).length;
-const readTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
+const calculatedReadTime = Math.max(1, Math.ceil(wordCount / 200));
+
+// FIXED: Prioritize the frontmatter value over the manual calculation
+const displayReadTime = read_time_minutes || calculatedReadTime;
 
 const seoTitle = meta_title || title;
 
@@ -254,7 +258,7 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 										<span>Published on <FormattedDate date={pubDate} /></span>
 									)}
 									<span>•</span>
-									<span>⏱️ {readTimeMinutes} min read</span>
+									<span>⏱️ {displayReadTime} min read</span>
 									
 									{article_confidence && (
 										<>
