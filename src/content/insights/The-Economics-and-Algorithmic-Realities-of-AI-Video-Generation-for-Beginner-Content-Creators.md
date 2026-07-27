@@ -143,7 +143,7 @@ C_session =
 for t = 1 → T
 ```
 
-Without optimization, a long session on an advanced model can become costly. However, using prompt caching—such as Claude 3.5 Sonnet's 90% discount on cache reads ($P_{\text{read}} = \$0.30 \text{ per million tokens}$ versus $P_i = \$3.00 \text{ per million tokens}$)—changes the cost equation:
+Without optimization, a long session on an advanced model can become costly. However, using prompt caching—such as Claude 3.5 Sonnet's 90% discount on cache reads ($P_{\text{read}}$ = &#36;0.30 per million tokens versus $P_i$ = &#36;3.00 per million tokens)—changes the cost equation:
 
 ```text
 Cached Cost
