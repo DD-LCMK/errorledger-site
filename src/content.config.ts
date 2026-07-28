@@ -21,12 +21,16 @@ const blog = defineCollection({
 		shortenedSlug: z.string().optional(),
 		slug: z.string().optional(),
 
-		// Technical Metadata (Version 27.0.0)
+		// Technical Metadata (Version 27.0.0+)
 		target_systems: z.string().optional(),
 		article_confidence: z.string().optional(),
 		canonical_terminology: z.object({
 			approved: z.array(z.string()),
 		}).optional(),
+		
+		// FIXED: Tell Astro to accept pipeline-generated read times and difficulty levels
+		read_time_minutes: z.number().optional(),
+		difficulty_level: z.string().optional(),
 
 		// Legacy / Hero Image Support
 		heroImage: z.string().optional(),
