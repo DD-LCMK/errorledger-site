@@ -256,13 +256,13 @@ These Prometheus alerting rules continuously track WAF evaluation duration and m
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [Kafka Consumer Rebalance Loop Fix](https://errorledger.com/blog/kafka-consumer-rebalance-loop-max-poll-interval-ms-fix/) — Resolving consumer group rebalance loops under high processing latency.
+- [Kafka Consumer Rebalance Loop Fix](https://errorledger.com/blog/kafka-consumer-rebalance-loop-max-poll) — Resolving consumer group rebalance loops under high processing latency.
 
 ### Related Architecture
-- [Kubernetes OOMKilled Exit Code 137 Fix](https://errorledger.com/blog/kubernetes-oomkilled-exit-code-137-cgroup-v2-memory-max-fix/) — Deep dive into cgroup v2 memory limits and kernel eviction bounds.
+- [Kubernetes OOMKilled Exit Code 137 Fix](https://errorledger.com/blog/kubernetes-oomkilled-exit-code-137-cgroup) — Deep dive into cgroup v2 memory limits and kernel eviction bounds.
 
 ### Next Steps
-- [PostgreSQL shared_buffers Lock Contention Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock-buffermapping-fix/) — Resolving buffer mapping lock contention in database storage engines.
+- [PostgreSQL shared_buffers Lock Contention Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock) — Resolving buffer mapping lock contention in database storage engines.
 
 ## References & Primary Sources
 

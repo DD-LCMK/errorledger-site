@@ -261,13 +261,13 @@ These Prometheus alerting rules continuously track circuit breaker trip rates an
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [Redis Master-Replica Sync Disconnect Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output-buffer-fix/) — Resolving memory exhaustion in replica output buffers.
+- [Redis Master-Replica Sync Disconnect Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Resolving memory exhaustion in replica output buffers.
 
 ### Related Architecture
-- [PostgreSQL shared_buffers Lock Contention Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock-buffermapping-fix/) — Resolving buffer mapping lock contention in database storage engines.
+- [PostgreSQL shared_buffers Lock Contention Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock) — Resolving buffer mapping lock contention in database storage engines.
 
 ### Next Steps
-- [Kubernetes OOMKilled Exit Code 137 Fix](https://errorledger.com/blog/kubernetes-oomkilled-exit-code-137-cgroup-v2-memory-max-fix/) — Deep dive into cgroup v2 memory limits and container eviction bounds.
+- [Kubernetes OOMKilled Exit Code 137 Fix](https://errorledger.com/blog/kubernetes-oomkilled-exit-code-137-cgroup) — Deep dive into cgroup v2 memory limits and container eviction bounds.
 
 ## References & Primary Sources
 
