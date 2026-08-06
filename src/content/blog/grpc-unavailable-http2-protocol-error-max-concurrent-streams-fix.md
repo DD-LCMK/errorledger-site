@@ -1,4 +1,4 @@
----
+﻿---
 pipeline_contract_version: "56.0.0"
 title: "gRPC Unavailable Status: HTTP/2 PROTOCOL_ERROR & max_concurrent_streams Fix"
 meta_title: "gRPC HTTP/2 PROTOCOL_ERROR Fix"
@@ -282,13 +282,13 @@ These Prometheus alerting rules continuously monitor gRPC transport status codes
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [Nginx 502 Bad Gateway Upstream Sent Too Big Header Fix](https://errorledger.com/blog/nginx-502-bad-gateway-upstream-sent) — Resolving edge proxy header buffer overflows.
+- [Nginx 502 Upstream Too Big Header Fix](https://errorledger.com/blog/nginx-502-bad-gateway-upstream-sent) — Resolving edge proxy header buffer overflows.
 
 ### Related Architecture
 - [RabbitMQ PRECONDITION_FAILED Channel Closure Fix](https://errorledger.com/blog/rabbitmq-precondition-failed-channel-closure-x) — Resolving channel closure loops and socket desynchronization.
 
 ### Next Steps
-- [Redis Master-Replica Sync Disconnect Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Resolving memory exhaustion in replica output buffers.
+- [Redis Replica Sync Disconnect: Client Output Buffer Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Resolving memory exhaustion in replica output buffers.
 
 ## References & Primary Sources
 

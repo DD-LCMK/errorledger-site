@@ -1,4 +1,4 @@
----
+﻿---
 pipeline_contract_version: "56.0.0"
 title: "Nginx 502 Bad Gateway: Upstream Sent Too Big Header & proxy_buffer_size Fix"
 meta_title: "Nginx 502 Upstream Too Big Header Fix"
@@ -6,7 +6,7 @@ description: "Root cause analysis and resolution playbook for Nginx 502 Bad Gate
 pubDate: "2026-07-29"
 tags: ["nginx", "reverse-proxy", "http-headers", "devops", "sre-playbook"]
 slug: "nginx-502-bad-gateway-upstream-sent-too-big-header-fix"
-shortenedSlug: "nginx-502-bad-gateway-upstream-sent-too-big-header-fix"
+shortenedSlug: "nginx-502-bad-gateway-upstream-sent"
 target_systems: "Nginx 1.22.x, Nginx 1.24.x, OpenResty 1.21.x, OAuth2 / JWT Headers"
 read_time_minutes: 11
 difficulty_level: "Intermediate"
@@ -262,13 +262,13 @@ These Prometheus alerting rules continuously monitor 502 error rates, notifying 
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [Cloudflare WAF Regex CPU Exhaustion ReDoS Fix](https://errorledger.com/blog/cloudflare-waf-regex-cpu-exhaustion-redos) — Resolving catastrophic NFA backtracking in edge proxies.
+- [Cloudflare WAF Regex CPU Exhaustion: ReDoS Fix](https://errorledger.com/blog/cloudflare-waf-regex-cpu-exhaustion-redos) — Resolving catastrophic NFA backtracking in edge proxies.
 
 ### Related Architecture
 - [RabbitMQ PRECONDITION_FAILED Channel Closure Fix](https://errorledger.com/blog/rabbitmq-precondition-failed-channel-closure-x) — Resolving channel closure loops and socket desynchronization.
 
 ### Next Steps
-- [Redis Master-Replica Sync Disconnect Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Resolving memory exhaustion in replica output buffers.
+- [Redis Replica Sync Disconnect: Client Output Buffer Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Resolving memory exhaustion in replica output buffers.
 
 ## References & Primary Sources
 

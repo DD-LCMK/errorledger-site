@@ -1,4 +1,4 @@
----
+﻿---
 pipeline_contract_version: "56.0.0"
 title: "Cassandra WriteTimeoutException: QUORUM Consistency Timeout & commitlog Fix"
 meta_title: "Cassandra WriteTimeoutException QUORUM Fix"
@@ -6,7 +6,7 @@ description: "Root cause analysis and resolution playbook for Apache Cassandra W
 pubDate: "2026-07-30"
 tags: ["cassandra", "database-performance", "distributed-systems", "storage-engine", "sre-playbook"]
 slug: "cassandra-writetimeoutexception-quorum-consistency-timeout-commitlog-fix"
-shortenedSlug: "cassandra-writetimeoutexception-quorum-consistency-timeout-commitlog-fix"
+shortenedSlug: "cassandra-writetimeoutexception-quorum-consistency-timeout-commitlog"
 target_systems: "Apache Cassandra 4.0.x, Apache Cassandra 4.1.x, Cassandra 5.0, JVM 11/17"
 read_time_minutes: 13
 difficulty_level: "Advanced"
@@ -257,13 +257,13 @@ These Prometheus alerting rules continuously monitor write timeout exception rat
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [PostgreSQL shared_buffers Lock Contention Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock) — Resolving buffer mapping lock contention in database storage engines.
+- [PostgreSQL Shared Buffers Lock Contention: LWLock Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock) — Resolving buffer mapping lock contention in database storage engines.
 
 ### Related Architecture
 - [MongoDB Socket Exception Connection Reset Fix](https://errorledger.com/blog/mongodb-socket-exception-connection-reset-maxpoolsize) — Tuning database connection pools and kernel TCP keepalives.
 
 ### Next Steps
-- [Redis Master-Replica Sync Disconnect Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Resolving memory exhaustion in replica output buffers.
+- [Redis Replica Sync Disconnect: Client Output Buffer Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Resolving memory exhaustion in replica output buffers.
 
 ## References & Primary Sources
 

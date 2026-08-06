@@ -1,4 +1,4 @@
----
+﻿---
 pipeline_contract_version: "56.0.0"
 title: "Docker Daemon Deadlock: containerd Container Did Not Exit in Time & overlay2 Fix"
 meta_title: "Docker Daemon Container Did Not Exit Fix"
@@ -6,7 +6,7 @@ description: "Root cause analysis and resolution playbook for Docker daemon dead
 pubDate: "2026-07-30"
 tags: ["docker", "containerd", "containers", "storage-drivers", "sre-playbook"]
 slug: "docker-daemon-deadlock-containerd-container-did-not-exit-in-time-fix"
-shortenedSlug: "docker-daemon-deadlock-containerd-container-did-not-exit-in-time-fix"
+shortenedSlug: "docker-daemon-deadlock-containerd-container-did"
 target_systems: "Docker Engine 24.x, Docker Engine 26.x, containerd 1.6/1.7, Linux Kernel 5.15+ / 6.x (overlay2)"
 read_time_minutes: 13
 difficulty_level: "Advanced"
@@ -271,13 +271,13 @@ These Prometheus alerting rules continuously track containerd shim process count
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [Kubernetes OOMKilled Exit Code 137 Fix](https://errorledger.com/blog/kubernetes-oomkilled-exit-code-137-cgroup) — Deep dive into cgroup v2 memory limits and container eviction bounds.
+- [Kubernetes OOMKilled Exit Code 137: cgroup v2 Fix](https://errorledger.com/blog/kubernetes-oomkilled-exit-code-137-cgroup) — Deep dive into cgroup v2 memory limits and container eviction bounds.
 
 ### Related Architecture
 - [RabbitMQ PRECONDITION_FAILED Channel Closure Fix](https://errorledger.com/blog/rabbitmq-precondition-failed-channel-closure-x) — Resolving channel closure loops and socket desynchronization.
 
 ### Next Steps
-- [PostgreSQL shared_buffers Lock Contention Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock) — Resolving buffer mapping lock contention in database storage engines.
+- [PostgreSQL Shared Buffers Lock Contention: LWLock Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock) — Resolving buffer mapping lock contention in database storage engines.
 
 ## References & Primary Sources
 

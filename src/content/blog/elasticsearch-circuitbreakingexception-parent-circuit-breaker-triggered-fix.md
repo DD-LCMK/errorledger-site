@@ -1,4 +1,4 @@
----
+﻿---
 pipeline_contract_version: "56.0.0"
 title: "Elasticsearch CircuitBreakingException: Parent Circuit Breaker Triggered & Heap Fix"
 meta_title: "Elasticsearch CircuitBreaker Fix: Heap Tuning"
@@ -6,7 +6,7 @@ description: "Root cause analysis and resolution playbook for Elasticsearch Circ
 pubDate: "2026-07-28"
 tags: ["elasticsearch", "opensearch", "jvm-performance", "database-tuning", "sre-playbook"]
 slug: "elasticsearch-circuitbreakingexception-parent-circuit-breaker-triggered-fix"
-shortenedSlug: "elasticsearch-circuitbreakingexception-parent-circuit-breaker-triggered-fix"
+shortenedSlug: "elasticsearch-circuitbreakingexception-parent-circuit-breaker-triggered"
 target_systems: "Elasticsearch 7.x, Elasticsearch 8.x, OpenSearch 2.x, JVM 17/21 (G1GC)"
 read_time_minutes: 13
 difficulty_level: "Advanced"
@@ -261,13 +261,13 @@ These Prometheus alerting rules continuously track circuit breaker trip rates an
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [Redis Master-Replica Sync Disconnect Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Resolving memory exhaustion in replica output buffers.
+- [Redis Replica Sync Disconnect: Client Output Buffer Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Resolving memory exhaustion in replica output buffers.
 
 ### Related Architecture
-- [PostgreSQL shared_buffers Lock Contention Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock) — Resolving buffer mapping lock contention in database storage engines.
+- [PostgreSQL Shared Buffers Lock Contention: LWLock Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock) — Resolving buffer mapping lock contention in database storage engines.
 
 ### Next Steps
-- [Kubernetes OOMKilled Exit Code 137 Fix](https://errorledger.com/blog/kubernetes-oomkilled-exit-code-137-cgroup) — Deep dive into cgroup v2 memory limits and container eviction bounds.
+- [Kubernetes OOMKilled Exit Code 137: cgroup v2 Fix](https://errorledger.com/blog/kubernetes-oomkilled-exit-code-137-cgroup) — Deep dive into cgroup v2 memory limits and container eviction bounds.
 
 ## References & Primary Sources
 

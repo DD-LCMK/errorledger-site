@@ -1,4 +1,4 @@
-﻿---
+---
 pipeline_contract_version: "52.2.0"
 title: "Kafka Consumer Rebalance Loop: max.poll.interval.ms Fix & Static Membership"
 meta_title: "Kafka Consumer Rebalance Loop: max.poll.interval.ms Fix"
@@ -6,7 +6,7 @@ description: "Root cause analysis and step-by-step resolution playbook for Kafka
 pubDate: "2026-07-27"
 tags: ["kafka", "distributed-systems", "java", "event-streaming", "sre-playbook"]
 slug: "kafka-consumer-rebalance-loop-max-poll-interval-ms-fix"
-shortenedSlug: "kafka-consumer-rebalance-loop-max-poll-interval-ms-fix"
+shortenedSlug: "kafka-consumer-rebalance-loop-max-poll"
 target_systems: "Apache Kafka 2.8+, Apache Kafka 3.x, Confluent Platform 7.x, JDK 17/21"
 read_time_minutes: 12
 difficulty_level: "Advanced"

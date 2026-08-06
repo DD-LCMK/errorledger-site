@@ -1,4 +1,4 @@
----
+﻿---
 pipeline_contract_version: "56.0.0"
 title: "Redis Master-Replica Sync Disconnect: Client Output Buffer Exceeded & repl-backlog Fix"
 meta_title: "Redis Replica Sync Disconnect: Client Output Buffer Fix"
@@ -6,7 +6,7 @@ description: "Root cause analysis and resolution playbook for primary Redis memo
 pubDate: "2026-07-28"
 tags: ["redis", "database-performance", "memory-management", "replication", "sre-playbook"]
 slug: "redis-replica-sync-disconnect-client-output-buffer-fix"
-shortenedSlug: "redis-replica-sync-disconnect-client-output-buffer-fix"
+shortenedSlug: "redis-replica-sync-disconnect-client-output"
 target_systems: "Redis 6.2.x, Redis 7.0.x, Redis 7.2.x, Redis 7.4.x, Linux Kernel 5.15+"
 read_time_minutes: 12
 difficulty_level: "Advanced"
@@ -258,13 +258,13 @@ These Prometheus alerting rules continuously track replica buffer sizes and offs
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [Cloudflare WAF Regex CPU Exhaustion ReDoS Fix](https://errorledger.com/blog/cloudflare-waf-regex-cpu-exhaustion-redos) — Resolving catastrophic NFA backtracking in edge proxies.
+- [Cloudflare WAF Regex CPU Exhaustion: ReDoS Fix](https://errorledger.com/blog/cloudflare-waf-regex-cpu-exhaustion-redos) — Resolving catastrophic NFA backtracking in edge proxies.
 
 ### Related Architecture
-- [PostgreSQL shared_buffers Lock Contention Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock) — Tuning database buffer pool lock contention under heavy write load.
+- [PostgreSQL Shared Buffers Lock Contention: LWLock Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock) — Tuning database buffer pool lock contention under heavy write load.
 
 ### Next Steps
-- [Kubernetes OOMKilled Exit Code 137 Fix](https://errorledger.com/blog/kubernetes-oomkilled-exit-code-137-cgroup) — Deep dive into cgroup v2 memory limits and container eviction bounds.
+- [Kubernetes OOMKilled Exit Code 137: cgroup v2 Fix](https://errorledger.com/blog/kubernetes-oomkilled-exit-code-137-cgroup) — Deep dive into cgroup v2 memory limits and container eviction bounds.
 
 ## References & Primary Sources
 

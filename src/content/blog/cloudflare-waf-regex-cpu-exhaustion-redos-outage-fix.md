@@ -1,4 +1,4 @@
----
+﻿---
 pipeline_contract_version: "56.0.0"
 title: "Cloudflare WAF Regex CPU Exhaustion: ReDoS Outage Fix & Backtracking Prevention"
 meta_title: "Cloudflare WAF Regex CPU Exhaustion: ReDoS Fix"
@@ -6,7 +6,7 @@ description: "Root cause analysis and resolution playbook for Web Application Fi
 pubDate: "2026-07-28"
 tags: ["cloudflare", "security", "regex", "waf", "edge-computing", "sre-playbook"]
 slug: "cloudflare-waf-regex-cpu-exhaustion-redos-outage-fix"
-shortenedSlug: "cloudflare-waf-regex-cpu-exhaustion-redos-outage-fix"
+shortenedSlug: "cloudflare-waf-regex-cpu-exhaustion-redos"
 target_systems: "Cloudflare WAF Engine, Nginx / OpenResty, Rust Regex 1.x, PCRE2 10.x, Hyperscan 5.x"
 read_time_minutes: 13
 difficulty_level: "Advanced"
@@ -256,13 +256,13 @@ These Prometheus alerting rules continuously track WAF evaluation duration and m
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [Kafka Consumer Rebalance Loop Fix](https://errorledger.com/blog/kafka-consumer-rebalance-loop-max-poll) — Resolving consumer group rebalance loops under high processing latency.
+- [Kafka Consumer Rebalance Loop: max.poll.interval.ms Fix](https://errorledger.com/blog/kafka-consumer-rebalance-loop-max-poll) — Resolving consumer group rebalance loops under high processing latency.
 
 ### Related Architecture
-- [Kubernetes OOMKilled Exit Code 137 Fix](https://errorledger.com/blog/kubernetes-oomkilled-exit-code-137-cgroup) — Deep dive into cgroup v2 memory limits and kernel eviction bounds.
+- [Kubernetes OOMKilled Exit Code 137: cgroup v2 Fix](https://errorledger.com/blog/kubernetes-oomkilled-exit-code-137-cgroup) — Deep dive into cgroup v2 memory limits and kernel eviction bounds.
 
 ### Next Steps
-- [PostgreSQL shared_buffers Lock Contention Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock) — Resolving buffer mapping lock contention in database storage engines.
+- [PostgreSQL Shared Buffers Lock Contention: LWLock Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock) — Resolving buffer mapping lock contention in database storage engines.
 
 ## References & Primary Sources
 

@@ -1,4 +1,4 @@
----
+﻿---
 pipeline_contract_version: "56.0.0"
 title: "RabbitMQ Socket Desynchronization: PRECONDITION_FAILED Channel Closure & x-max-priority Fix"
 meta_title: "RabbitMQ PRECONDITION_FAILED Channel Closure Fix"
@@ -6,7 +6,7 @@ description: "Root cause analysis and resolution playbook for RabbitMQ AMQP 406 
 pubDate: "2026-07-29"
 tags: ["rabbitmq", "amqp", "messaging", "distributed-systems", "sre-playbook"]
 slug: "rabbitmq-precondition-failed-channel-closure-x-max-priority-fix"
-shortenedSlug: "rabbitmq-precondition-failed-channel-closure-x-max-priority-fix"
+shortenedSlug: "rabbitmq-precondition-failed-channel-closure-x"
 target_systems: "RabbitMQ 3.11.x, RabbitMQ 3.12.x, RabbitMQ 3.13.x, Erlang/OTP 25/26"
 read_time_minutes: 12
 difficulty_level: "Advanced"
@@ -252,13 +252,13 @@ These Prometheus alerting rules continuously monitor channel exception rates and
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [Elasticsearch CircuitBreakingException Fix](https://errorledger.com/blog/elasticsearch-circuitbreakingexception-parent-circuit-breaker-triggered) — Resolving heap memory pressure and parent circuit breaker trips.
+- [Elasticsearch CircuitBreaker Fix: Heap Tuning](https://errorledger.com/blog/elasticsearch-circuitbreakingexception-parent-circuit-breaker-triggered) — Resolving heap memory pressure and parent circuit breaker trips.
 
 ### Related Architecture
-- [Kafka Consumer Rebalance Loop Fix](https://errorledger.com/blog/kafka-consumer-rebalance-loop-max-poll) — Tuning consumer group rebalance boundaries under high latency.
+- [Kafka Consumer Rebalance Loop: max.poll.interval.ms Fix](https://errorledger.com/blog/kafka-consumer-rebalance-loop-max-poll) — Tuning consumer group rebalance boundaries under high latency.
 
 ### Next Steps
-- [Redis Master-Replica Sync Disconnect Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Resolving memory exhaustion in replica output buffers.
+- [Redis Replica Sync Disconnect: Client Output Buffer Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Resolving memory exhaustion in replica output buffers.
 
 ## References & Primary Sources
 

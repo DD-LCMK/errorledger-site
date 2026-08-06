@@ -1,4 +1,4 @@
----
+﻿---
 pipeline_contract_version: "56.0.0"
 title: "MongoDB Socket Exception: Connection Reset by Peer & maxPoolSize Fix"
 meta_title: "MongoDB Socket Exception Connection Reset Fix"
@@ -6,7 +6,7 @@ description: "Root cause analysis and resolution playbook for MongoDB Socket Exc
 pubDate: "2026-07-30"
 tags: ["mongodb", "database-performance", "connection-pooling", "networking", "sre-playbook"]
 slug: "mongodb-socket-exception-connection-reset-maxpoolsize-fix"
-shortenedSlug: "mongodb-socket-exception-connection-reset-maxpoolsize-fix"
+shortenedSlug: "mongodb-socket-exception-connection-reset-maxpoolsize"
 target_systems: "MongoDB 6.0.x, MongoDB 7.0.x, PyMongo, Mongoose / Node.js, Linux Kernel 5.15+"
 read_time_minutes: 12
 difficulty_level: "Advanced"
@@ -264,13 +264,13 @@ These Prometheus alerting rules continuously monitor connection utilization and 
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [Redis Master-Replica Sync Disconnect Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Resolving memory exhaustion in replica output buffers.
+- [Redis Replica Sync Disconnect: Client Output Buffer Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Resolving memory exhaustion in replica output buffers.
 
 ### Related Architecture
 - [RabbitMQ PRECONDITION_FAILED Channel Closure Fix](https://errorledger.com/blog/rabbitmq-precondition-failed-channel-closure-x) — Resolving channel closure loops and socket desynchronization.
 
 ### Next Steps
-- [PostgreSQL shared_buffers Lock Contention Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock) — Resolving buffer mapping lock contention in database storage engines.
+- [PostgreSQL Shared Buffers Lock Contention: LWLock Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock) — Resolving buffer mapping lock contention in database storage engines.
 
 ## References & Primary Sources
 

@@ -259,13 +259,13 @@ These rules continuously track GC performance, notifying DBAs before degraded no
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [Elasticsearch CircuitBreakingException Fix](https://errorledger.com/blog/nginx-502-bad-gateway-upstream-sent) — Resolving JVM heap exhaustion in Lucene field data caches.
+- [Nginx 502 Upstream Too Big Header Fix](https://errorledger.com/blog/nginx-502-bad-gateway-upstream-sent) — Resolving JVM heap exhaustion in Lucene field data caches.
 
 ### Related Architecture
-- [Kafka NotLeaderOrFollowerException Fix](https://errorledger.com/blog/grpc-unavailable-http2-protocol-error-max) — Resolving partition leadership re-elections during GC pauses.
+- [gRPC HTTP/2 PROTOCOL_ERROR Fix](https://errorledger.com/blog/grpc-unavailable-http2-protocol-error-max) — Resolving partition leadership re-elections during GC pauses.
 
 ### Next Steps
-- [Redis Master-Replica Sync Disconnect Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Resolving memory exhaustion in replica output buffers.
+- [Redis Replica Sync Disconnect: Client Output Buffer Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Resolving memory exhaustion in replica output buffers.
 
 ## References & Primary Sources
 

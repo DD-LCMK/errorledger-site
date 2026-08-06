@@ -1,4 +1,4 @@
----
+﻿---
 pipeline_contract_version: "56.0.0"
 title: "OpenAI Node.js SDK: APIError 429 RateLimitError & Stream ECONNRESET Fix"
 meta_title: "OpenAI Node.js SDK 429 & ECONNRESET Fix"
@@ -297,13 +297,13 @@ These Prometheus alerting rules continuously track 429 rate limits and socket re
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [gRPC Unavailable Status Fix](https://errorledger.com/blog/grpc-unavailable-http2-protocol-error-max) — Resolving HTTP/2 stream multiplexing resets and PROTOCOL_ERROR failures.
+- [gRPC HTTP/2 PROTOCOL_ERROR Fix](https://errorledger.com/blog/grpc-unavailable-http2-protocol-error-max) — Resolving HTTP/2 stream multiplexing resets and PROTOCOL_ERROR failures.
 
 ### Related Architecture
-- [Nginx 502 Bad Gateway Fix](https://errorledger.com/blog/nginx-502-bad-gateway-upstream-sent) — Resolving edge proxy header buffer overflows.
+- [Nginx 502 Upstream Too Big Header Fix](https://errorledger.com/blog/nginx-502-bad-gateway-upstream-sent) — Resolving edge proxy header buffer overflows.
 
 ### Next Steps
-- [Redis Master-Replica Sync Disconnect Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Resolving memory exhaustion in replica output buffers.
+- [Redis Replica Sync Disconnect: Client Output Buffer Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Resolving memory exhaustion in replica output buffers.
 
 ## References & Primary Sources
 

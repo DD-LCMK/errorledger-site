@@ -1,4 +1,4 @@
-﻿---
+---
 pipeline_contract_version: "52.2.0"
 title: "PostgreSQL Shared Buffers Lock Contention: LWLock BufferMapping Fix & bgwriter Tuning"
 meta_title: "PostgreSQL Shared Buffers Lock Contention: LWLock Fix"
@@ -6,7 +6,7 @@ description: "Root cause analysis and resolution playbook for PostgreSQL shared_
 pubDate: "2026-07-27"
 tags: ["postgresql", "database-performance", "memory-management", "database-internals", "linux-kernel"]
 slug: "postgresql-shared-buffers-lock-contention-lwlock-buffermapping-fix"
-shortenedSlug: "postgresql-shared-buffers-lock-contention-lwlock-buffermapping-fix"
+shortenedSlug: "postgresql-shared-buffers-lock-contention-lwlock"
 target_systems: "PostgreSQL 14.x, PostgreSQL 15.x, PostgreSQL 16.x, Linux Kernel 5.15+"
 read_time_minutes: 13
 difficulty_level: "Advanced"
