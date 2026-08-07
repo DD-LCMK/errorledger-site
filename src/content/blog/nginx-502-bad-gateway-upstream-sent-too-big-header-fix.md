@@ -262,13 +262,13 @@ These Prometheus alerting rules continuously monitor 502 error rates, notifying 
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [Cloudflare WAF Regex CPU Exhaustion: ReDoS Fix](https://errorledger.com/blog/cloudflare-waf-regex-cpu-exhaustion-redos) — Resolving catastrophic NFA backtracking in edge proxies.
+- [Cloudflare WAF Regex CPU Exhaustion: ReDoS Fix](https://errorledger.com/blog/cloudflare-waf-regex-cpu-exhaustion-redos-outage-fix) — Resolving catastrophic NFA backtracking in edge proxies.
 
 ### Related Architecture
-- [RabbitMQ PRECONDITION_FAILED Channel Closure Fix](https://errorledger.com/blog/rabbitmq-precondition-failed-channel-closure-x) — Resolving channel closure loops and socket desynchronization.
+- [RabbitMQ PRECONDITION_FAILED Channel Closure Fix](https://errorledger.com/blog/rabbitmq-precondition-failed-channel-closure-x-max-priority-fix) — Resolving channel closure loops and socket desynchronization.
 
 ### Next Steps
-- [Redis Replica Sync Disconnect: Client Output Buffer Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Resolving memory exhaustion in replica output buffers.
+- [Redis Replica Sync Disconnect: Client Output Buffer Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output-buffer-fix) — Resolving memory exhaustion in replica output buffers.
 
 ## References & Primary Sources
 

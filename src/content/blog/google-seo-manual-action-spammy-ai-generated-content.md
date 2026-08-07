@@ -239,7 +239,7 @@ def generate_seo_safe_content(error_code: str, verified_facts: list, reviewer_na
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [OpenAI Node.js SDK 429 & ECONNRESET Fix](https://errorledger.com/blog/openai-node-sdk-apierror-429-ratelimiterror) — Managing API rate limits when scaling automated content generation pipelines.
+- [OpenAI Node.js SDK 429 & ECONNRESET Fix](https://errorledger.com/blog/openai-node-sdk-apierror-429-ratelimiterror-econnreset-fix) — Managing API rate limits when scaling automated content generation pipelines.
 
 ## References & Primary Sources
 

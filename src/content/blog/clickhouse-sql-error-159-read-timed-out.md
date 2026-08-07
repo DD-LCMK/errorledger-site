@@ -230,10 +230,10 @@ Deploy the following ClickHouse user profile configuration to enforce server-sid
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [PostgreSQL Shared Buffers Lock Contention: LWLock Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock) — Tuning memory limits for relational databases vs columnar OLAP engines.
+- [PostgreSQL Shared Buffers Lock Contention: LWLock Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock-buffermapping-fix) — Tuning memory limits for relational databases vs columnar OLAP engines.
 
 ### Related Architecture
-- [Elasticsearch CircuitBreaker Fix: Heap Tuning](https://errorledger.com/blog/elasticsearch-circuitbreakingexception-parent-circuit-breaker-triggered) — Managing query execution boundaries in distributed search engines.
+- [Elasticsearch CircuitBreaker Fix: Heap Tuning](https://errorledger.com/blog/elasticsearch-circuitbreakingexception-parent-circuit-breaker-triggered-fix) — Managing query execution boundaries in distributed search engines.
 
 ## References & Primary Sources
 

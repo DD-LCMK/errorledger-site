@@ -264,13 +264,13 @@ These Prometheus alerting rules continuously monitor connection utilization and 
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [Redis Replica Sync Disconnect: Client Output Buffer Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Resolving memory exhaustion in replica output buffers.
+- [Redis Replica Sync Disconnect: Client Output Buffer Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output-buffer-fix) — Resolving memory exhaustion in replica output buffers.
 
 ### Related Architecture
-- [RabbitMQ PRECONDITION_FAILED Channel Closure Fix](https://errorledger.com/blog/rabbitmq-precondition-failed-channel-closure-x) — Resolving channel closure loops and socket desynchronization.
+- [RabbitMQ PRECONDITION_FAILED Channel Closure Fix](https://errorledger.com/blog/rabbitmq-precondition-failed-channel-closure-x-max-priority-fix) — Resolving channel closure loops and socket desynchronization.
 
 ### Next Steps
-- [PostgreSQL Shared Buffers Lock Contention: LWLock Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock) — Resolving buffer mapping lock contention in database storage engines.
+- [PostgreSQL Shared Buffers Lock Contention: LWLock Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock-buffermapping-fix) — Resolving buffer mapping lock contention in database storage engines.
 
 ## References & Primary Sources
 

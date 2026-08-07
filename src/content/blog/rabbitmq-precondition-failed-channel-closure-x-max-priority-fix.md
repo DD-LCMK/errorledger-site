@@ -252,13 +252,13 @@ These Prometheus alerting rules continuously monitor channel exception rates and
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [Elasticsearch CircuitBreaker Fix: Heap Tuning](https://errorledger.com/blog/elasticsearch-circuitbreakingexception-parent-circuit-breaker-triggered) — Resolving heap memory pressure and parent circuit breaker trips.
+- [Elasticsearch CircuitBreaker Fix: Heap Tuning](https://errorledger.com/blog/elasticsearch-circuitbreakingexception-parent-circuit-breaker-triggered-fix) — Resolving heap memory pressure and parent circuit breaker trips.
 
 ### Related Architecture
-- [Kafka Consumer Rebalance Loop: max.poll.interval.ms Fix](https://errorledger.com/blog/kafka-consumer-rebalance-loop-max-poll) — Tuning consumer group rebalance boundaries under high latency.
+- [Kafka Consumer Rebalance Loop: max.poll.interval.ms Fix](https://errorledger.com/blog/kafka-consumer-rebalance-loop-max-poll-interval-ms-fix) — Tuning consumer group rebalance boundaries under high latency.
 
 ### Next Steps
-- [Redis Replica Sync Disconnect: Client Output Buffer Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Resolving memory exhaustion in replica output buffers.
+- [Redis Replica Sync Disconnect: Client Output Buffer Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output-buffer-fix) — Resolving memory exhaustion in replica output buffers.
 
 ## References & Primary Sources
 

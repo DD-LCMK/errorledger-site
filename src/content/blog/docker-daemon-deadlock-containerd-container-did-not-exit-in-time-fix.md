@@ -271,13 +271,13 @@ These Prometheus alerting rules continuously track containerd shim process count
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [Kubernetes OOMKilled Exit Code 137: cgroup v2 Fix](https://errorledger.com/blog/kubernetes-oomkilled-exit-code-137-cgroup) — Deep dive into cgroup v2 memory limits and container eviction bounds.
+- [Kubernetes OOMKilled Exit Code 137: cgroup v2 Fix](https://errorledger.com/blog/kubernetes-oomkilled-exit-code-137-cgroup-v2-memory-max-fix) — Deep dive into cgroup v2 memory limits and container eviction bounds.
 
 ### Related Architecture
-- [RabbitMQ PRECONDITION_FAILED Channel Closure Fix](https://errorledger.com/blog/rabbitmq-precondition-failed-channel-closure-x) — Resolving channel closure loops and socket desynchronization.
+- [RabbitMQ PRECONDITION_FAILED Channel Closure Fix](https://errorledger.com/blog/rabbitmq-precondition-failed-channel-closure-x-max-priority-fix) — Resolving channel closure loops and socket desynchronization.
 
 ### Next Steps
-- [PostgreSQL Shared Buffers Lock Contention: LWLock Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock) — Resolving buffer mapping lock contention in database storage engines.
+- [PostgreSQL Shared Buffers Lock Contention: LWLock Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock-buffermapping-fix) — Resolving buffer mapping lock contention in database storage engines.
 
 ## References & Primary Sources
 

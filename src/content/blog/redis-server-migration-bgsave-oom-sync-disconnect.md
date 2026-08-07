@@ -242,13 +242,13 @@ These rules continuously track replication stability, notifying DBAs before a mi
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [Elasticsearch CircuitBreaker Fix: Heap Tuning](https://errorledger.com/blog/elasticsearch-circuitbreakingexception-parent-circuit-breaker-triggered) — Resolving JVM heap exhaustion in Lucene field data caches.
+- [Elasticsearch CircuitBreaker Fix: Heap Tuning](https://errorledger.com/blog/elasticsearch-circuitbreakingexception-parent-circuit-breaker-triggered-fix) — Resolving JVM heap exhaustion in Lucene field data caches.
 
 ### Related Architecture
-- [Kafka Consumer Rebalance Loop: max.poll.interval.ms Fix](https://errorledger.com/blog/kafka-consumer-rebalance-loop-max-poll) — Resolving partition leadership re-elections.
+- [Kafka Consumer Rebalance Loop: max.poll.interval.ms Fix](https://errorledger.com/blog/kafka-consumer-rebalance-loop-max-poll-interval-ms-fix) — Resolving partition leadership re-elections.
 
 ### Next Steps
-- [Redis Replica Sync Disconnect: Client Output Buffer Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Deeper dive into output buffer internals.
+- [Redis Replica Sync Disconnect: Client Output Buffer Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output-buffer-fix) — Deeper dive into output buffer internals.
 
 ## References & Primary Sources
 

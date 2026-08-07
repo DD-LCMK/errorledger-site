@@ -258,13 +258,13 @@ These Prometheus alerting rules continuously track replica buffer sizes and offs
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [Cloudflare WAF Regex CPU Exhaustion: ReDoS Fix](https://errorledger.com/blog/cloudflare-waf-regex-cpu-exhaustion-redos) — Resolving catastrophic NFA backtracking in edge proxies.
+- [Cloudflare WAF Regex CPU Exhaustion: ReDoS Fix](https://errorledger.com/blog/cloudflare-waf-regex-cpu-exhaustion-redos-outage-fix) — Resolving catastrophic NFA backtracking in edge proxies.
 
 ### Related Architecture
-- [PostgreSQL Shared Buffers Lock Contention: LWLock Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock) — Tuning database buffer pool lock contention under heavy write load.
+- [PostgreSQL Shared Buffers Lock Contention: LWLock Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock-buffermapping-fix) — Tuning database buffer pool lock contention under heavy write load.
 
 ### Next Steps
-- [Kubernetes OOMKilled Exit Code 137: cgroup v2 Fix](https://errorledger.com/blog/kubernetes-oomkilled-exit-code-137-cgroup) — Deep dive into cgroup v2 memory limits and container eviction bounds.
+- [Kubernetes OOMKilled Exit Code 137: cgroup v2 Fix](https://errorledger.com/blog/kubernetes-oomkilled-exit-code-137-cgroup-v2-memory-max-fix) — Deep dive into cgroup v2 memory limits and container eviction bounds.
 
 ## References & Primary Sources
 

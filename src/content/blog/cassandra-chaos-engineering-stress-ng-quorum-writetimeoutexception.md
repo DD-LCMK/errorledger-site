@@ -256,13 +256,13 @@ These rules continuously track OS-level container isolation, notifying SREs befo
 
 ### Related Failures
 - [Cassandra QUORUM WriteTimeoutException & GC Freeze Fix](https://errorledger.com/blog/cassandra-quorum-writetimeoutexception-node-memory-stress) — Resolving JVM heap exhaustion in legacy VM deployments.
-- [Kubernetes OOMKilled Exit Code 137: cgroup v2 Fix](https://errorledger.com/blog/kubernetes-oomkilled-exit-code-137-cgroup) — Deeper dive into Linux kernel OOM killer mechanics.
+- [Kubernetes OOMKilled Exit Code 137: cgroup v2 Fix](https://errorledger.com/blog/kubernetes-oomkilled-exit-code-137-cgroup-v2-memory-max-fix) — Deeper dive into Linux kernel OOM killer mechanics.
 
 ### Related Architecture
-- [Elasticsearch CircuitBreaker Fix: Heap Tuning](https://errorledger.com/blog/elasticsearch-circuitbreakingexception-parent-circuit-breaker-triggered) — Managing JVM heap and OS page cache interactions.
+- [Elasticsearch CircuitBreaker Fix: Heap Tuning](https://errorledger.com/blog/elasticsearch-circuitbreakingexception-parent-circuit-breaker-triggered-fix) — Managing JVM heap and OS page cache interactions.
 
 ### Next Steps
-- [Kafka Consumer Rebalance Loop: max.poll.interval.ms Fix](https://errorledger.com/blog/kafka-consumer-rebalance-loop-max-poll) — Handling distributed system timeouts during node degradation.
+- [Kafka Consumer Rebalance Loop: max.poll.interval.ms Fix](https://errorledger.com/blog/kafka-consumer-rebalance-loop-max-poll-interval-ms-fix) — Handling distributed system timeouts during node degradation.
 
 ## References & Primary Sources
 

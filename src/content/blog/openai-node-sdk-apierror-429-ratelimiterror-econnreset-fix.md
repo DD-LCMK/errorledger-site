@@ -297,13 +297,13 @@ These Prometheus alerting rules continuously track 429 rate limits and socket re
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [gRPC HTTP/2 PROTOCOL_ERROR Fix](https://errorledger.com/blog/grpc-unavailable-http2-protocol-error-max) — Resolving HTTP/2 stream multiplexing resets and PROTOCOL_ERROR failures.
+- [gRPC HTTP/2 PROTOCOL_ERROR Fix](https://errorledger.com/blog/grpc-unavailable-http2-protocol-error-max-concurrent-streams-fix) — Resolving HTTP/2 stream multiplexing resets and PROTOCOL_ERROR failures.
 
 ### Related Architecture
-- [Nginx 502 Upstream Too Big Header Fix](https://errorledger.com/blog/nginx-502-bad-gateway-upstream-sent) — Resolving edge proxy header buffer overflows.
+- [Nginx 502 Upstream Too Big Header Fix](https://errorledger.com/blog/nginx-502-bad-gateway-upstream-sent-too-big-header-fix) — Resolving edge proxy header buffer overflows.
 
 ### Next Steps
-- [Redis Replica Sync Disconnect: Client Output Buffer Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Resolving memory exhaustion in replica output buffers.
+- [Redis Replica Sync Disconnect: Client Output Buffer Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output-buffer-fix) — Resolving memory exhaustion in replica output buffers.
 
 ## References & Primary Sources
 

@@ -257,13 +257,13 @@ These Prometheus alerting rules continuously monitor write timeout exception rat
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [PostgreSQL Shared Buffers Lock Contention: LWLock Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock) — Resolving buffer mapping lock contention in database storage engines.
+- [PostgreSQL Shared Buffers Lock Contention: LWLock Fix](https://errorledger.com/blog/postgresql-shared-buffers-lock-contention-lwlock-buffermapping-fix) — Resolving buffer mapping lock contention in database storage engines.
 
 ### Related Architecture
-- [MongoDB Socket Exception Connection Reset Fix](https://errorledger.com/blog/mongodb-socket-exception-connection-reset-maxpoolsize) — Tuning database connection pools and kernel TCP keepalives.
+- [MongoDB Socket Exception Connection Reset Fix](https://errorledger.com/blog/mongodb-socket-exception-connection-reset-maxpoolsize-fix) — Tuning database connection pools and kernel TCP keepalives.
 
 ### Next Steps
-- [Redis Replica Sync Disconnect: Client Output Buffer Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Resolving memory exhaustion in replica output buffers.
+- [Redis Replica Sync Disconnect: Client Output Buffer Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output-buffer-fix) — Resolving memory exhaustion in replica output buffers.
 
 ## References & Primary Sources
 

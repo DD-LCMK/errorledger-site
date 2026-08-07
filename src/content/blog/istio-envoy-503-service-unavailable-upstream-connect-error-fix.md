@@ -286,13 +286,13 @@ These Prometheus alerting rules continuously track sidecar connection failure ra
 ## Topical Cluster & Related Architecture
 
 ### Related Failures
-- [gRPC HTTP/2 PROTOCOL_ERROR Fix](https://errorledger.com/blog/grpc-unavailable-http2-protocol-error-max) — Resolving HTTP/2 stream multiplexing resets and PROTOCOL_ERROR failures.
+- [gRPC HTTP/2 PROTOCOL_ERROR Fix](https://errorledger.com/blog/grpc-unavailable-http2-protocol-error-max-concurrent-streams-fix) — Resolving HTTP/2 stream multiplexing resets and PROTOCOL_ERROR failures.
 
 ### Related Architecture
-- [RabbitMQ PRECONDITION_FAILED Channel Closure Fix](https://errorledger.com/blog/rabbitmq-precondition-failed-channel-closure-x) — Resolving channel closure loops and socket desynchronization.
+- [RabbitMQ PRECONDITION_FAILED Channel Closure Fix](https://errorledger.com/blog/rabbitmq-precondition-failed-channel-closure-x-max-priority-fix) — Resolving channel closure loops and socket desynchronization.
 
 ### Next Steps
-- [Redis Replica Sync Disconnect: Client Output Buffer Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Resolving memory exhaustion in replica output buffers.
+- [Redis Replica Sync Disconnect: Client Output Buffer Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output-buffer-fix) — Resolving memory exhaustion in replica output buffers.
 
 ## References & Primary Sources
 
