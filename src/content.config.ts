@@ -58,7 +58,7 @@ const blog = defineCollection({
 			.toLowerCase()
 			.replace(/[^a-z0-9]+/g, '-')
 			.replace(/(^-|-$)/g, '');
-		const finalSlug = cleanSlug.split('-').slice(0, 6).join('-');
+		const finalSlug = cleanSlug;
 
 		// 5. Automatic Keyword Tag Ingestion fallback
 		const inferredTags: string[] = data.tags || [];
@@ -159,7 +159,7 @@ const insights = defineCollection({
 		slug: z.string().optional(),
 	}).transform((data) => {
 		const baseSlug = data.slug || data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-		const finalSlug = baseSlug.split('-').slice(0, 6).join('-');
+		cconst finalSlug = baseSlug;
 		return {
 			...data,
 			shortenedSlug: finalSlug,
