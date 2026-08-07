@@ -10,9 +10,16 @@ shortenedSlug: "cassandra-chaos-engineering-stress-ng-quorum-writetimeoutexcepti
 target_systems: "Apache Cassandra 4.x / 5.x, Chaos Mesh, stress-ng, Linux cgroup v2"
 read_time_minutes: 13
 difficulty_level: "Advanced"
+heroImage: "/images/hero-cassandra-chaos-engineering-stress-ng-quorum-writetimeoutexception.png"
+ogImage: "/images/hero-cassandra-chaos-engineering-stress-ng-quorum-writetimeoutexception.png"
 ---
 
 # Cassandra Chaos Engineering: stress-ng Freezes & QUORUM WriteTimeoutException
+
+<a href="/images/hero-cassandra-chaos-engineering-stress-ng-quorum-writetimeoutexception.png" target="_blank" rel="noopener noreferrer">
+  <img src="/images/hero-cassandra-chaos-engineering-stress-ng-quorum-writetimeoutexception.png" alt="System Architecture Diagram" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin: 2rem 0;" />
+</a>
+
 
 When running Chaos Engineering experiments using tools like Chaos Mesh or Litmus to validate the resilience of an Apache Cassandra cluster, engineers frequently employ the `stress-ng` utility to simulate memory exhaustion (`disrupt_memory_stress`). While the intent is to test how the cluster handles a degraded node, this specific fault often inadvertently freezes the targeted node's JVM completely, causing a cascade of `WriteTimeoutException` errors across the cluster during `QUORUM` operations. This catastrophic failure occurs when the synthetic memory pressure forces the Linux kernel to swap out the JVM heap, turning nanosecond memory accesses into multi-second disk I/O waits during Garbage Collection. In this playbook, you will learn how to configure Linux cgroup v2 memory limits (`memory.max` and `memory.swap.max`) to properly isolate the Cassandra JVM from sidecar chaos injection, ensuring the node degrades gracefully without inducing systemic cluster timeouts.
 

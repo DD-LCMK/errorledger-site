@@ -10,9 +10,16 @@ shortenedSlug: "clickhouse-sql-error-159-read-timed-out"
 target_systems: "ClickHouse 23.x / 24.x, DBeaver 23+, ClickHouse JDBC Driver"
 read_time_minutes: 10
 difficulty_level: "Intermediate"
+heroImage: "/images/hero-clickhouse-sql-error-159-read-timed-out.png"
+ogImage: "/images/hero-clickhouse-sql-error-159-read-timed-out.png"
 ---
 
 # ClickHouse SQL Error 159: Read timed out during DBeaver Queries
+
+<a href="/images/hero-clickhouse-sql-error-159-read-timed-out.png" target="_blank" rel="noopener noreferrer">
+  <img src="/images/hero-clickhouse-sql-error-159-read-timed-out.png" alt="System Architecture Diagram" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin: 2rem 0;" />
+</a>
+
 
 When data engineers and analysts execute heavy analytical queries against a ClickHouse distributed DBMS using SQL IDEs like DBeaver, long-running aggregations frequently fail with `SQL Error [159] .. Read timed out`. While engineers often assume this indicates a database failure, memory exhaustion (OOM), or a network drop, it is typically a superficial mismatch between the client's JDBC socket timeout configuration and the sheer computational duration of OLAP columnar queries. ClickHouse is designed to process billions of rows per second, but complex `JOIN`s or massive `GROUP BY` operations over petabyte-scale datasets can legitimately take minutes to execute. In this playbook, you will learn how to align the DBeaver JDBC driver's `socket_timeout` parameter with the ClickHouse server's `max_execution_time` profile settings, preventing premature client-side connection closures during valid analytical workloads.
 

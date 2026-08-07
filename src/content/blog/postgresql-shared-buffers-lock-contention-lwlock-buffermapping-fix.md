@@ -10,9 +10,16 @@ shortenedSlug: "postgresql-shared-buffers-lock-contention-lwlock"
 target_systems: "PostgreSQL 14.x, PostgreSQL 15.x, PostgreSQL 16.x, Linux Kernel 5.15+"
 read_time_minutes: 13
 difficulty_level: "Advanced"
+heroImage: "/images/hero-postgresql-shared-buffers-lock-contention-lwlock.png"
+ogImage: "/images/hero-postgresql-shared-buffers-lock-contention-lwlock.png"
 ---
 
 # PostgreSQL Shared Buffers Lock Contention: LWLock BufferMapping Fix & bgwriter Tuning
+
+<a href="/images/hero-postgresql-shared-buffers-lock-contention-lwlock.png" target="_blank" rel="noopener noreferrer">
+  <img src="/images/hero-postgresql-shared-buffers-lock-contention-lwlock.png" alt="System Architecture Diagram" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin: 2rem 0;" />
+</a>
+
 
 High-concurrency transactional database workloads running PostgreSQL frequently suffer severe latency spikes caused by memory subsystem lock contention. When active queries stall in `LWLock:BufferMapping` wait events, backend worker threads spend CPU cycles competing for access to the shared buffer hash table instead of executing queries. In this playbook, you will learn how to identify active buffer locks using `pg_stat_activity`, tune the background writer (`bgwriter`) to prevent backend page flushes, and configure `shared_buffers` optimal sizing to eliminate memory contention.
 

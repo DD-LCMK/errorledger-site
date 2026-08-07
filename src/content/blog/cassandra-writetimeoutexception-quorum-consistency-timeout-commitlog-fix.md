@@ -10,9 +10,16 @@ shortenedSlug: "cassandra-writetimeoutexception-quorum-consistency-timeout-commi
 target_systems: "Apache Cassandra 4.0.x, Apache Cassandra 4.1.x, Cassandra 5.0, JVM 11/17"
 read_time_minutes: 13
 difficulty_level: "Advanced"
+heroImage: "/images/hero-cassandra-writetimeoutexception-quorum-consistency-timeout-commitlog-fix.png"
+ogImage: "/images/hero-cassandra-writetimeoutexception-quorum-consistency-timeout-commitlog-fix.png"
 ---
 
 # Cassandra WriteTimeoutException: QUORUM Consistency Timeout & commitlog Fix
+
+<a href="/images/hero-cassandra-writetimeoutexception-quorum-consistency-timeout-commitlog.png" target="_blank" rel="noopener noreferrer">
+  <img src="/images/hero-cassandra-writetimeoutexception-quorum-consistency-timeout-commitlog.png" alt="System Architecture Diagram" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin: 2rem 0;" />
+</a>
+
 
 Production Apache Cassandra clusters operating under heavy write concurrency frequently encounter application exception spikes during peak load windows. In client error logs and application stack traces, this failure manifests as `org.apache.cassandra.exceptions.WriteTimeoutException: Operation timed out - received 1 responses, required 2 (QUORUM)`. This critical failure occurs when a coordinator node fails to receive write mutation acknowledgments from a quorum of replica nodes within the configured `write_request_timeout_in_ms` threshold. The primary underlying bottleneck is disk I/O contention between sequential `commitlog` appends and asynchronous SSTable compaction flushes. In this guide, you will learn how to diagnose commitlog queue backlogs, isolate storage directories on dedicated NVMe drives, tune `commitlog_sync_period_in_ms`, and optimize JVM heap allocations to prevent QUORUM write timeouts.
 

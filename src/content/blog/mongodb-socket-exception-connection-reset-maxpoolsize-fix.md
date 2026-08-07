@@ -10,9 +10,16 @@ shortenedSlug: "mongodb-socket-exception-connection-reset-maxpoolsize"
 target_systems: "MongoDB 6.0.x, MongoDB 7.0.x, PyMongo, Mongoose / Node.js, Linux Kernel 5.15+"
 read_time_minutes: 12
 difficulty_level: "Advanced"
+heroImage: "/images/hero-mongodb-socket-exception-connection-reset-maxpoolsize-fix.png"
+ogImage: "/images/hero-mongodb-socket-exception-connection-reset-maxpoolsize-fix.png"
 ---
 
 # MongoDB Socket Exception: Connection Reset by Peer & maxPoolSize Fix
+
+<a href="/images/hero-mongodb-socket-exception-connection-reset-maxpoolsize.png" target="_blank" rel="noopener noreferrer">
+  <img src="/images/hero-mongodb-socket-exception-connection-reset-maxpoolsize.png" alt="System Architecture Diagram" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin: 2rem 0;" />
+</a>
+
 
 Production backend services interacting with MongoDB clusters—such as PyMongo, Mongoose, or Java driver applications—frequently encounter sudden burst exceptions in error logs. In client diagnostics, this failure manifests as `com.mongodb.MongoSocketReadException: Prematurely reached end of stream` or `pymongo.errors.AutoReconnect: connection closed`. This critical failure occurs when intermediate cloud infrastructure (such as AWS Network Load Balancers, Azure Load Balancers, or NAT gateways) silently drops idle TCP connections after an inactivity timeout without sending TCP FIN packets. When client drivers attempt to re-use dead sockets from their connection pools, the operating system returns a `Connection Reset by Peer` error. In this guide, you will learn how to diagnose stale socket resets, tune driver connection pool parameters with `maxIdleTimeMS`, and align Linux OS kernel `tcp_keepalive_time` settings across your database architecture.
 

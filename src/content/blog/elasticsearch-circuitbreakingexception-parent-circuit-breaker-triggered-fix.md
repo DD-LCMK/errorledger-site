@@ -10,9 +10,16 @@ shortenedSlug: "elasticsearch-circuitbreakingexception-parent-circuit-breaker-tr
 target_systems: "Elasticsearch 7.x, Elasticsearch 8.x, OpenSearch 2.x, JVM 17/21 (G1GC)"
 read_time_minutes: 13
 difficulty_level: "Advanced"
+heroImage: "/images/hero-elasticsearch-circuitbreakingexception-parent-circuit-breaker-triggered-fix.png"
+ogImage: "/images/hero-elasticsearch-circuitbreakingexception-parent-circuit-breaker-triggered-fix.png"
 ---
 
 # Elasticsearch CircuitBreakingException: Parent Circuit Breaker Triggered & Heap Fix
+
+<a href="/images/hero-elasticsearch-circuitbreakingexception-parent-circuit-breaker-triggered.png" target="_blank" rel="noopener noreferrer">
+  <img src="/images/hero-elasticsearch-circuitbreakingexception-parent-circuit-breaker-triggered.png" alt="System Architecture Diagram" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin: 2rem 0;" />
+</a>
+
 
 Production Elasticsearch and OpenSearch clusters running high-cardinality aggregations or heavy indexing workloads frequently experience sudden client query rejections accompanied by `HTTP 429 Too Many Requests` status codes. This critical failure occurs when the internal parent circuit breaker detects that total estimated or real-time JVM memory usage has breached safety limits, throwing a `CircuitBreakingException [parent] Data too large` error. In this guide, you will learn how to diagnose circuit breaker trip events, tune real memory tracking parameters, and configure optimal JVM heap boundaries while preserving compressed ordinary object pointers.
 

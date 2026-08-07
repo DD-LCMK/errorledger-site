@@ -10,9 +10,16 @@ shortenedSlug: "grpc-unavailable-http2-protocol-error-max"
 target_systems: "gRPC Core 1.54+, gRPC-Go 1.55+, Envoy Proxy 1.26+, HTTP/2 Multiplexing"
 read_time_minutes: 12
 difficulty_level: "Advanced"
+heroImage: "/images/hero-grpc-unavailable-http2-protocol-error-max-concurrent-streams-fix.png"
+ogImage: "/images/hero-grpc-unavailable-http2-protocol-error-max-concurrent-streams-fix.png"
 ---
 
 # gRPC Unavailable Status: HTTP/2 PROTOCOL_ERROR & max_concurrent_streams Fix
+
+<a href="/images/hero-grpc-unavailable-http2-protocol-error-max.png" target="_blank" rel="noopener noreferrer">
+  <img src="/images/hero-grpc-unavailable-http2-protocol-error-max.png" alt="System Architecture Diagram" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin: 2rem 0;" />
+</a>
+
 
 High-throughput microservice architectures using gRPC for inter-service communication frequently experience burst connection failures under high load. In client application logs and tracing platforms, this failure manifests as `rpc error: code = Unavailable desc = transport is closing` or `gRPC status 14 (UNAVAILABLE)`. This critical failure occurs when a client application attempts to open more concurrent RPC streams over a single TCP connection than allowed by the server's or edge proxy's `MAX_CONCURRENT_STREAMS` limit (default 100). When this limit is exceeded, the receiving HTTP/2 transport layer immediately rejects new stream creation by transmitting an HTTP/2 `RST_STREAM` frame with error code `PROTOCOL_ERROR (0x1)`. In this guide, you will learn how to diagnose HTTP/2 stream multiplexing bottlenecks, configure `max_concurrent_streams` in gRPC servers and Envoy proxies, tune `initial_stream_window_size` flow control, and implement gRPC channel pooling across your microservice fleet.
 

@@ -10,9 +10,16 @@ shortenedSlug: "google-seo-manual-action-spammy-ai-generated-content"
 target_systems: "Google Search Console, LLM Pipelines (ChatGPT, Claude), Programmatic SEO"
 read_time_minutes: 15
 difficulty_level: "Advanced"
+heroImage: "/images/hero-google-seo-manual-action-spammy-ai-generated-content.png"
+ogImage: "/images/hero-google-seo-manual-action-spammy-ai-generated-content.png"
 ---
 
 # Google SEO Manual Action: Spammy AI-Generated Content Penalty Fix
+
+<a href="/images/hero-google-seo-manual-action-spammy-ai-generated-content.png" target="_blank" rel="noopener noreferrer">
+  <img src="/images/hero-google-seo-manual-action-spammy-ai-generated-content.png" alt="System Architecture Diagram" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin: 2rem 0;" />
+</a>
+
 
 As engineering teams scale programmatic SEO by hooking CMS platforms directly into Large Language Models (LLMs) like OpenAI's GPT-4, many sites are suddenly vanishing from search results. The root cause is typically a Google Search Console (GSC) manual action citing `Spammy automatically generated content`. With the March 2024 Core Update, Google explicitly began targeting "scaled content abuse"—the practice of using automation to generate massive volumes of unoriginal pages designed solely to manipulate search rankings. If an LLM pipeline generates generic, hallucinatory, or redundant content without verified grounding and expert oversight (E-E-A-T), Google's Helpful Content System will algorithmically demote or manually de-index the entire domain. In this playbook, you will learn how to diagnose AI content penalties and restructure generative pipelines using strict Retrieval-Augmented Generation (RAG) and human-in-the-loop publisher trust blocks to satisfy Google's quality thresholds.
 

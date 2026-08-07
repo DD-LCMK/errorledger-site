@@ -10,9 +10,16 @@ shortenedSlug: "clickhouse-error-code-241-memory-limit-exceeded"
 target_systems: "ClickHouse 23.x / 24.x"
 read_time_minutes: 12
 difficulty_level: "Advanced"
+heroImage: "/images/hero-clickhouse-error-code-241-memory-limit-exceeded.png"
+ogImage: "/images/hero-clickhouse-error-code-241-memory-limit-exceeded.png"
 ---
 
 # ClickHouse Error Code 241: Memory limit (for query) exceeded Fix
+
+<a href="/images/hero-clickhouse-error-code-241-memory-limit-exceeded.png" target="_blank" rel="noopener noreferrer">
+  <img src="/images/hero-clickhouse-error-code-241-memory-limit-exceeded.png" alt="System Architecture Diagram" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin: 2rem 0;" />
+</a>
+
 
 ClickHouse is famously engineered to utilize every available CPU cycle and byte of RAM to execute analytical queries at blinding speeds. However, when executing massive `GROUP BY`, `DISTINCT`, or global `JOIN` operations across billions of rows, engineers frequently encounter the fatal exception: `Code: 241. DB::Exception: Memory limit (for query) exceeded`. This error is an intentional self-preservation mechanism. ClickHouse tracks memory allocation per query, per user, and globally. If a single query's intermediate state (typically a massive hash table) breaches the `max_memory_usage` boundary defined in the user's profile, ClickHouse forcefully kills the query to prevent the Linux kernel's OOM Killer from terminating the entire database process. In this playbook, you will learn how to diagnose RAM-heavy queries, surgically tune `max_memory_usage`, and enable `max_bytes_before_external_group_by` to gracefully spill intermediate aggregation states to disk.
 

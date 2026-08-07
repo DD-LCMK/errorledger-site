@@ -10,9 +10,16 @@ shortenedSlug: "kubernetes-oomkilled-exit-code-137-cgroup"
 target_systems: "Kubernetes 1.26+, Kubernetes 1.28+, Linux Kernel 5.15+, containerd v1.7+"
 read_time_minutes: 12
 difficulty_level: "Advanced"
+heroImage: "/images/hero-kubernetes-oomkilled-exit-code-137-cgroup.png"
+ogImage: "/images/hero-kubernetes-oomkilled-exit-code-137-cgroup.png"
 ---
 
 # Kubernetes OOMKilled Exit Code 137: cgroup v2 Memory Max Fix & Page Cache Tuning
+
+<a href="/images/hero-kubernetes-oomkilled-exit-code-137-cgroup.png" target="_blank" rel="noopener noreferrer">
+  <img src="/images/hero-kubernetes-oomkilled-exit-code-137-cgroup.png" alt="System Architecture Diagram" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin: 2rem 0;" />
+</a>
+
 
 Containerized workloads running in Kubernetes clusters frequently experience sudden process terminations accompanied by `OOMKilled` status and process `Exit Code 137`. This disruptive failure occurs when a container's combined anonymous memory heap and active file page cache breach the `memory.max` threshold configured in the Linux kernel `cgroup v2` memory controller. In this playbook, you will learn how to verify OOMKilled events using `kubectl`, inspect host-level `cgroup v2` kernel counters, and configure Guaranteed Quality of Service (QoS) classes to eliminate abrupt container terminations.
 

@@ -10,9 +10,16 @@ shortenedSlug: "kafka-consumer-rebalance-loop-max-poll"
 target_systems: "Apache Kafka 2.8+, Apache Kafka 3.x, Confluent Platform 7.x, JDK 17/21"
 read_time_minutes: 12
 difficulty_level: "Advanced"
+heroImage: "/images/hero-kafka-consumer-rebalance-loop-max-poll.png"
+ogImage: "/images/hero-kafka-consumer-rebalance-loop-max-poll.png"
 ---
 
 # Kafka Consumer Rebalance Loop: max.poll.interval.ms Fix & Static Membership
+
+<a href="/images/hero-kafka-consumer-rebalance-loop-max-poll.png" target="_blank" rel="noopener noreferrer">
+  <img src="/images/hero-kafka-consumer-rebalance-loop-max-poll.png" alt="System Architecture Diagram" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin: 2rem 0;" />
+</a>
+
 
 High-throughput event streaming applications on Apache Kafka frequently get trapped in perpetual consumer group rebalance loops, causing topic processing throughput to collapse to zero. This failure occurs when individual batch execution times exceed `max.poll.interval.ms`, causing the broker coordinator to declare the consumer dead and increment the group generation ID while the application is still processing records. In this playbook, you will learn how to diagnose rebalance triggers, configure Static Group Membership (`group.instance.id`), and deploy the `CooperativeStickyAssignor` to eliminate rebalance storms permanently.
 

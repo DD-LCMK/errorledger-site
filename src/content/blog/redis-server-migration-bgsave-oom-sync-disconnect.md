@@ -10,9 +10,16 @@ shortenedSlug: "redis-server-migration-bgsave-oom-sync-disconnect"
 target_systems: "Redis 6.x / 7.x, Linux Kernel 5.15+"
 read_time_minutes: 12
 difficulty_level: "Intermediate"
+heroImage: "/images/hero-redis-server-migration-bgsave-oom-sync-disconnect.png"
+ogImage: "/images/hero-redis-server-migration-bgsave-oom-sync-disconnect.png"
 ---
 
 # Redis Server Migration: Preventing BGSAVE OOM and SYNC Disconnects
+
+<a href="/images/hero-redis-server-migration-bgsave-oom-sync-disconnect.png" target="_blank" rel="noopener noreferrer">
+  <img src="/images/hero-redis-server-migration-bgsave-oom-sync-disconnect.png" alt="System Architecture Diagram" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin: 2rem 0;" />
+</a>
+
 
 Migrating a production Redis database from one server to another with zero downtime typically involves configuring the new server as a replica of the existing master. However, during the initial data synchronization phase, the master node must execute a `BGSAVE` to create an RDB snapshot. This process forks the Redis process, relying on Linux Copy-on-Write (CoW) memory management. On heavily loaded instances, this `fork()` can fail or trigger the Linux Out-Of-Memory (OOM) killer. Furthermore, if the master generates write traffic faster than the replica can process the initial sync, the `client-output-buffer-limit replica` is breached, causing the master to abruptly terminate the synchronization. In this guide, you will learn how to tune Linux `vm.overcommit_memory` and Redis replication buffer limits to ensure a safe, interruption-free database migration.
 

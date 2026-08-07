@@ -10,9 +10,15 @@ shortenedSlug: "cloudflare-waf-regex-cpu-exhaustion-redos"
 target_systems: "Cloudflare WAF Engine, Nginx / OpenResty, Rust Regex 1.x, PCRE2 10.x, Hyperscan 5.x"
 read_time_minutes: 13
 difficulty_level: "Advanced"
+heroImage: "/images/hero-cloudflare-waf-regex-cpu-exhaustion-redos-outage-fix.png"
+ogImage: "/images/hero-cloudflare-waf-regex-cpu-exhaustion-redos-outage-fix.png"
 ---
 
 # Cloudflare WAF Regex CPU Exhaustion: ReDoS Outage Fix & Backtracking Prevention
+
+<a href="/images/hero-cloudflare-waf-regex-cpu-exhaustion-redos.png" target="_blank" rel="noopener noreferrer">
+  <img src="/images/hero-cloudflare-waf-regex-cpu-exhaustion-redos.png" alt="System Architecture Diagram" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin: 2rem 0;" />
+</a>
 
 Web Application Firewalls (WAF) and edge API gateways frequently suffer catastrophic global outages when a single malicious or poorly authored regular expression triggers 100% CPU exhaustion across all worker nodes. This critical failure—known as Regular Expression Denial of Service (ReDoS)—occurs when Non-deterministic Finite Automaton (NFA) regex engines encounter un-anchored nested quantifiers and undergo exponential state backtracking. In this playbook, you will learn how to diagnose ReDoS backtracking bottlenecks, enforce strict execution step limits in PCRE engines, and migrate WAF rulesets to Deterministic Finite Automaton (DFA) linear-time evaluation engines.
 

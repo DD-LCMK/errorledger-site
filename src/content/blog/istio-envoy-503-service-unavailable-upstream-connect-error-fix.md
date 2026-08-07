@@ -10,9 +10,16 @@ shortenedSlug: "istio-envoy-503-service-unavailable-upstream"
 target_systems: "Istio 1.18+, Istio 1.20+, Envoy Proxy 1.26+, Kubernetes 1.27+"
 read_time_minutes: 13
 difficulty_level: "Advanced"
+heroImage: "/images/hero-istio-envoy-503-service-unavailable-upstream-connect-error-fix.png"
+ogImage: "/images/hero-istio-envoy-503-service-unavailable-upstream-connect-error-fix.png"
 ---
 
 # Istio Envoy 503 Service Unavailable: Upstream Connect Reset & idle_timeout Fix
+
+<a href="/images/hero-istio-envoy-503-service-unavailable-upstream.png" target="_blank" rel="noopener noreferrer">
+  <img src="/images/hero-istio-envoy-503-service-unavailable-upstream.png" alt="System Architecture Diagram" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin: 2rem 0;" />
+</a>
+
 
 Production Kubernetes microservices running Istio service meshes frequently encounter intermittent HTTP 503 errors during traffic shifts or low-volume periods. In Envoy sidecar access logs and application tracing platforms, this failure manifests as `upstream connect error or disconnect/reset before headers, reset reason: connection termination` with response flags `UC` (Upstream Connection Termination) or `URX` (Upstream Reset). This critical failure occurs when intermediate cloud infrastructure (such as AWS Network Load Balancers, Azure Load Balancers, or cloud NAT gateways) silently drops idle TCP connections after an inactivity timeout without sending TCP FIN packets. When Envoy sidecars attempt to reuse these dead sockets from their upstream connection pool, the operating system returns a connection reset. In this guide, you will learn how to diagnose Envoy response flags, configure Istio `DestinationRule` `idleTimeout` and `maxRequestsPerConnection` parameters, and align sidecar keepalives across your Kubernetes cluster.
 

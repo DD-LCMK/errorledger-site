@@ -10,9 +10,16 @@ shortenedSlug: "nginx-502-bad-gateway-upstream-sent"
 target_systems: "Nginx 1.22.x, Nginx 1.24.x, OpenResty 1.21.x, OAuth2 / JWT Headers"
 read_time_minutes: 11
 difficulty_level: "Intermediate"
+heroImage: "/images/hero-nginx-502-bad-gateway-upstream-sent-too-big-header-fix.png"
+ogImage: "/images/hero-nginx-502-bad-gateway-upstream-sent-too-big-header-fix.png"
 ---
 
 # Nginx 502 Bad Gateway: Upstream Sent Too Big Header & proxy_buffer_size Fix
+
+<a href="/images/hero-nginx-502-bad-gateway-upstream-sent.png" target="_blank" rel="noopener noreferrer">
+  <img src="/images/hero-nginx-502-bad-gateway-upstream-sent.png" alt="System Architecture Diagram" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin: 2rem 0;" />
+</a>
+
 
 Production web applications using Nginx or OpenResty as edge reverse proxies frequently experience intermittent HTTP 502 Bad Gateway errors during user authentication or session management workflows. In Nginx error log files, this issue manifests as `upstream sent too big header while reading response header from upstream`. This critical failure occurs when backend application servers (such as Node.js, Spring Boot, or Go services) return HTTP response headers—such as large OAuth2 OIDC JWT tokens or extensive `Set-Cookie` chains—that exceed Nginx's default 4KB or 8KB initial proxy buffer size. In this guide, you will learn how to diagnose header buffer overflow bottlenecks, configure `proxy_buffer_size` and `proxy_buffers`, and enforce proportionate `proxy_busy_buffers_size` settings across your edge proxy fleet.
 

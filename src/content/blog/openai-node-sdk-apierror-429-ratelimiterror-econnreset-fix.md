@@ -10,9 +10,16 @@ shortenedSlug: "openai-node-sdk-apierror-429-ratelimiterror"
 target_systems: "OpenAI Node.js SDK v4.x (openai 4.28+), Node.js 18 LTS / 20 LTS / 22 LTS, TypeScript 5.x"
 read_time_minutes: 12
 difficulty_level: "Intermediate"
+heroImage: "/images/hero-openai-node-sdk-apierror-429-ratelimiterror-econnreset-fix.png"
+ogImage: "/images/hero-openai-node-sdk-apierror-429-ratelimiterror-econnreset-fix.png"
 ---
 
 # OpenAI Node.js SDK: APIError 429 RateLimitError & Stream ECONNRESET Fix
+
+<a href="/images/hero-openai-node-sdk-apierror-429-ratelimiterror.png" target="_blank" rel="noopener noreferrer">
+  <img src="/images/hero-openai-node-sdk-apierror-429-ratelimiterror.png" alt="System Architecture Diagram" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin: 2rem 0;" />
+</a>
+
 
 Production Node.js services executing Large Language Model (LLM) inference via the official OpenAI Node.js SDK (`openai`) frequently experience unexpected exception spikes during peak application load. In server error logs and crash dumps, this issue manifests as `APIError: 429 RateLimitError: Rate limit reached` or `Error: read ECONNRESET` during Server-Sent Events (SSE) chat completion streams. These critical failures occur when backend services exceed OpenAI API organization quotas or when idle TCP sockets are dropped by intermediate cloud NAT gateways during slow token generation windows. In this guide, you will learn how to configure client-side exponential backoff, tune custom HTTP agent keep-alives, wrap streaming responses in `AbortController` signals, and monitor SDK error rates across your Node.js microservices.
 

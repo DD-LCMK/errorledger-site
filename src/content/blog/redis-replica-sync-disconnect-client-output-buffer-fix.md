@@ -10,9 +10,16 @@ shortenedSlug: "redis-replica-sync-disconnect-client-output"
 target_systems: "Redis 6.2.x, Redis 7.0.x, Redis 7.2.x, Redis 7.4.x, Linux Kernel 5.15+"
 read_time_minutes: 12
 difficulty_level: "Advanced"
+heroImage: "/images/hero-redis-replica-sync-disconnect-client-output-buffer-fix.png"
+ogImage: "/images/hero-redis-replica-sync-disconnect-client-output-buffer-fix.png"
 ---
 
 # Redis Master-Replica Sync Disconnect: Client Output Buffer Exceeded & repl-backlog Fix
+
+<a href="/images/hero-redis-replica-sync-disconnect-client-output.png" target="_blank" rel="noopener noreferrer">
+  <img src="/images/hero-redis-replica-sync-disconnect-client-output.png" alt="System Architecture Diagram" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin: 2rem 0;" />
+</a>
+
 
 Primary Redis instances operating under heavy write concurrency or network latency spikes frequently suffer sudden memory exhaustion and process termination by the host operating system. This critical failure occurs when unsent replication data accumulates inside per-replica client output buffers on the primary node faster than the network socket can flush it. In this guide, you will learn how to identify offending replica buffers using `redis-cli`, configure safety thresholds with `client-output-buffer-limit`, and tune the shared replication backlog ring buffer to prevent cascading resynchronization loops.
 

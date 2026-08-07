@@ -10,9 +10,15 @@ shortenedSlug: "docker-daemon-deadlock-containerd-container-did"
 target_systems: "Docker Engine 24.x, Docker Engine 26.x, containerd 1.6/1.7, Linux Kernel 5.15+ / 6.x (overlay2)"
 read_time_minutes: 13
 difficulty_level: "Advanced"
+heroImage: "/images/hero-docker-daemon-deadlock-containerd-container-did-not-exit-in-time-fix.png"
+ogImage: "/images/hero-docker-daemon-deadlock-containerd-container-did-not-exit-in-time-fix.png"
 ---
 
 # Docker Daemon Deadlock: containerd Container Did Not Exit in Time & overlay2 Fix
+
+<a href="/images/hero-docker-daemon-deadlock-containerd-container-did.png" target="_blank" rel="noopener noreferrer">
+  <img src="/images/hero-docker-daemon-deadlock-containerd-container-did.png" alt="System Architecture Diagram" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin: 2rem 0;" />
+</a>
 
 High-churn container environments running automated CI/CD build runners or Kubernetes microservice workloads frequently experience complete Docker daemon freezes. In host error logs and CLI outputs, this failure manifests as `context deadline exceeded: container did not exit in time` or `Error response from daemon: i/o timeout`. This critical failure occurs when containerized applications fail to shut down within the default stop timeout, causing containerd to issue a `SIGKILL` while the `overlay2` storage driver is still processing un-flushed disk I/O. The resulting un-cleared mount points leave orphaned `containerd-shim-runc-v2` processes hanging in kernel memory, blocking subsequent Docker daemon API calls. In this guide, you will learn how to diagnose containerd-shim process hangs, clean up stale overlay2 VFS mounts, and configure optimal stop timeouts and kernel `inotify` limits across your container host nodes.
 

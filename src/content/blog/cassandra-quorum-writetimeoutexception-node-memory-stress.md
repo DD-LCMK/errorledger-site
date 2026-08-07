@@ -10,9 +10,16 @@ shortenedSlug: "cassandra-quorum-writetimeoutexception-node-memory-stress"
 target_systems: "Apache Cassandra 4.x / 5.x, Java 11 / Java 17, Linux Kernel 5.15+"
 read_time_minutes: 14
 difficulty_level: "Advanced"
+heroImage: "/images/hero-cassandra-quorum-writetimeoutexception-node-memory-stress.png"
+ogImage: "/images/hero-cassandra-quorum-writetimeoutexception-node-memory-stress.png"
 ---
 
 # Apache Cassandra QUORUM WriteTimeoutException: Solving Node Memory Stress and JVM GC Freezes
+
+<a href="/images/hero-cassandra-quorum-writetimeoutexception-node-memory-stress.png" target="_blank" rel="noopener noreferrer">
+  <img src="/images/hero-cassandra-quorum-writetimeoutexception-node-memory-stress.png" alt="System Architecture Diagram" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin: 2rem 0;" />
+</a>
+
 
 Production Apache Cassandra clusters executing heavy ingest workloads frequently experience severe latency degradation during peak traffic. In coordinator logs and client application dashboards, this issue manifests as `WriteTimeoutException` when executing `QUORUM` or `LOCAL_QUORUM` consistency level writes. These critical failures occur when node memory stress and aggressive Linux kernel swapping trigger prolonged Stop-The-World (STW) JVM Garbage Collection pauses. While the coordinator node awaits acknowledgments from replicas, frozen replica nodes fail to respond within the default `write_request_timeout_in_ms` (2000ms), causing the write to fail. In this guide, you will learn how to configure G1GC JVM flags, tune Linux `vm.swappiness` and transparent huge pages (THP), and monitor GC pause durations to maintain node availability.
 
