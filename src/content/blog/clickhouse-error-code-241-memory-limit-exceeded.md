@@ -210,7 +210,7 @@ If external spilling causes the node's disk I/O to saturate, severely degrading 
 
 ### Related Failures
 - [Kubernetes OOMKilled Exit Code 137: cgroup v2 Fix](https://errorledger.com/blog/kubernetes-oomkilled-exit-code-137-cgroup) — Deeper dive into OS-level memory termination when limits are bypassed.
-- [ClickHouse SQL Error 159: Read Timed Out Fix](https://errorledger.com/blog/clickhouse-sql-error-159-read-timed-out) — Handling network drops when heavy analytical queries run too long.
+- [ClickHouse SQL Error 159: Read Timed Out Fix](https://errorledger.com/blog/clickhouse-sql-error-159-read-timed) — Handling network drops when heavy analytical queries run too long.
 
 ### Related Architecture
 - [Redis Replica Sync Disconnect: Client Output Buffer Fix](https://errorledger.com/blog/redis-replica-sync-disconnect-client-output) — Managing in-memory buffer exhaustion in distributed systems.
