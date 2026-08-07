@@ -159,7 +159,7 @@ const insights = defineCollection({
 		slug: z.string().optional(),
 	}).transform((data) => {
 		const baseSlug = data.slug || data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-		cconst finalSlug = baseSlug;
+		const finalSlug = baseSlug;
 		return {
 			...data,
 			shortenedSlug: finalSlug,
