@@ -197,6 +197,38 @@ If your new RAG pipeline fails to generate readable content or the prompt constr
    - **Action:** Pause the automated pipeline entirely. Rely on human engineers to write content while the RAG constraints are tuned.
    - **Rollback Risk:** Content velocity drops to zero, but SEO safety is guaranteed.
 
+## Reusable Engineering Tools
+
+<!-- ASSET: ASSET-PY-SCRIPT-SEO-RAG -->
+Deploy the following Python wrapper script to enforce RAG-grounded fact injection and Publisher Trust Block metadata in automated content generation pipelines:
+
+```python
+import os
+import json
+
+def generate_seo_safe_content(error_code: str, verified_facts: list, reviewer_name: str) -> str:
+    """
+    Generates an SRE playbook prompt grounded strictly in verified knowledge base facts
+    to prevent Google scaled content abuse penalties.
+    """
+    trust_block = f"""
+> **Publisher Trust Block**
+> Last Reviewed: 2026-08-07
+> Verified Reviewer: {reviewer_name}
+> Data Grounding: Knowledge Base Claims {json.dumps([f['claim_id'] for f in verified_facts])}
+"""
+    
+    prompt = {
+        "system": "You are a technical synthesizer. Format ONLY the provided facts. Do not invent steps.",
+        "context": {
+            "target_error": error_code,
+            "facts": verified_facts,
+            "provenance_header": trust_block.strip()
+        }
+    }
+    return json.dumps(prompt, indent=2)
+```
+
 ## Key Takeaways
 
 - ✓ **Root Cause:** Google penalizes AI content not because it's AI, but because raw LLM outputs lack original Information Gain and E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness).

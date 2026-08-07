@@ -199,6 +199,27 @@ If external spilling causes the node's disk I/O to saturate, severely degrading 
    - **Action:** Reset `<max_bytes_before_external_group_by>` and `<max_bytes_before_external_sort>` to `0` in `users.xml` and run `SYSTEM RELOAD CONFIG`.
    - **Rollback Risk:** Re-exposes the cluster to Code 241 memory limit errors for heavy queries.
 
+## Reusable Engineering Tools
+
+<!-- ASSET: ASSET-SYSCTL-CONF-CLK-241 -->
+Deploy the following ClickHouse user profile configuration to enforce memory caps and enable automatic disk spilling for large aggregations in production:
+
+```xml
+<!-- /etc/clickhouse-server/users.d/memory_limits.xml -->
+<clickhouse>
+    <profiles>
+        <analyst_profile>
+            <!-- Maximum RAM per query (30 GB) -->
+            <max_memory_usage>30000000000</max_memory_usage>
+            <!-- Spill GROUP BY to disk after 15 GB -->
+            <max_bytes_before_external_group_by>15000000000</max_bytes_before_external_group_by>
+            <!-- Spill ORDER BY to disk after 15 GB -->
+            <max_bytes_before_external_sort>15000000000</max_bytes_before_external_sort>
+        </analyst_profile>
+    </profiles>
+</clickhouse>
+```
+
 ## Key Takeaways
 
 - ✓ **Root Cause:** ClickHouse Code 241 occurs when a query's intermediate processing state (like a massive hash table) exceeds the `max_memory_usage` limit.

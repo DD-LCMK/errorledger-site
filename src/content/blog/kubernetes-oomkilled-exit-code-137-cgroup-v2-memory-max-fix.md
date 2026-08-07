@@ -198,6 +198,13 @@ groups:
 
 These Prometheus alerting rules continuously monitor `kube-state-metrics` and `cAdvisor` exporter endpoints, alerting engineering teams before pods undergo emergency restart cycles.
 
+## Key Takeaways
+
+- ✓ **Root Cause:** Exit Code 137 occurs when a container's memory working set exceeds its `cgroup v2` `memory.max` limit, triggering SIGKILL from the Linux kernel.
+- ✓ **Immediate Triage:** Inspect `kubectl describe pod <pod_name>` for `OOMKilled` termination status and check cAdvisor `container_memory_working_set_bytes`.
+- ✓ **Permanent Fix:** Align container limits with `Guaranteed` QoS by setting equal requests and limits, ensuring `resources.requests.memory == resources.limits.memory`.
+- ✓ **Architectural Alignment:** Use `cgroup v2` memory accounting aware of page cache reclaim to prevent aggressive heap sizing from tripping cgroup boundaries.
+
 ## References & Primary Sources
 
 ### Primary Sources

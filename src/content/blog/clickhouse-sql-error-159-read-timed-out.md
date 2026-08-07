@@ -1,4 +1,4 @@
-﻿---
+---
 pipeline_contract_version: "56.0.0"
 title: "ClickHouse SQL Error 159: Read timed out during DBeaver Queries"
 meta_title: "ClickHouse SQL Error 159: Read Timed Out Fix"
@@ -199,6 +199,26 @@ If tightening `max_execution_time` breaks essential long-running financial repor
 1. **Revert Server Limits:**
    - **Action:** Reset `<max_execution_time>` to `0` (unlimited) in `users.xml` and run `SYSTEM RELOAD CONFIG` in ClickHouse.
    - **Rollback Risk:** Re-exposes the cluster to runaway queries and resource exhaustion.
+
+## Reusable Engineering Tools
+
+<!-- ASSET: ASSET-SYSCTL-CONF-CLK-159 -->
+Deploy the following ClickHouse user profile configuration to enforce server-side query timeouts and align JDBC driver sockets in production:
+
+```xml
+<!-- /etc/clickhouse-server/users.d/timeouts.xml -->
+<clickhouse>
+    <profiles>
+        <default>
+            <!-- Hard upper bound for query execution time (seconds) -->
+            <max_execution_time>270</max_execution_time>
+            <timeout_overflow_mode>throw</timeout_overflow_mode>
+            <max_result_rows>100000</max_result_rows>
+            <result_overflow_mode>break</result_overflow_mode>
+        </default>
+    </profiles>
+</clickhouse>
+```
 
 ## Key Takeaways
 

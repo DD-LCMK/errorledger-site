@@ -182,6 +182,13 @@ groups:
 
 These alerting rules calculate real-time rates of lock contention and backend page write operations, triggering warnings when background writer capacity is exhausted.
 
+## Key Takeaways
+
+- ✓ **Root Cause:** LWLock:BufferMapping contention occurs when backend processes collide while searching or updating the buffer hash table due to undersized `shared_buffers` or aggressive backend evictions.
+- ✓ **Immediate Triage:** Query `pg_stat_activity` for `wait_event = 'BufferMapping'` to identify queries triggering high buffer lookup contention.
+- ✓ **Permanent Fix:** Right-size `shared_buffers` to ~25% of total system RAM and tune `bgwriter_lru_maxpages` to prevent backend processes from taking over dirty page flushing.
+- ✓ **Architectural Alignment:** Balance PostgreSQL shared memory with Linux page cache writeback settings (`vm.dirty_background_ratio`) to maintain steady I/O throughput.
+
 ## References & Primary Sources
 
 ### Primary Sources

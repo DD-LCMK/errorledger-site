@@ -165,6 +165,13 @@ groups:
 
 These Prometheus alerting rules continuously monitor JMX metrics exported by the Kafka Java client, notifying platform engineering teams before rebalance loops degrade user-facing SLAs.
 
+## Key Takeaways
+
+- ✓ **Root Cause:** Rebalance storms occur when consumer processing loops exceed `max.poll.interval.ms`, causing the broker coordinator to consider the consumer dead.
+- ✓ **Immediate Triage:** Increase `max.poll.interval.ms` or lower `max.poll.records` to ensure batch processing completes within the timeout boundary.
+- ✓ **Permanent Fix:** Upgrade to Cooperative Sticky Assignor (`CooperativeStickyAssignor`) and configure `group.instance.id` for static membership.
+- ✓ **Architectural Alignment:** Decouple long-running tasks into asynchronous worker thread pools to keep the poll loop responsive.
+
 ## References & Primary Sources
 
 ### Primary Sources
