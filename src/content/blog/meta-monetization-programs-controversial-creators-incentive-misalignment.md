@@ -229,8 +229,8 @@ This assessment will be revised if Meta transitions its core monetization formul
 ## References & Primary Sources
 
 ### Primary Sources
-- [ABC News Verify: Australian Facebook pages spreading hate monetized by Meta](https://www.abc.net.au/news/2026-08-10/facebook-meta-monetising-hate-speech-misinformation/104200000)
-- [Meta Content Monetization Policies](https://www.facebook.com/business/help/1698656680455855)
+- ABC News Verify: Australian Facebook pages spreading hate monetized by Meta (August 2026 Investigation)
+- Meta Content Monetization Policies (Official Documentation)
 
 ### Further Reading
 - [ErrorLedger: Meta 567M Judgment - Algorithmic Engagement Optimization Failure](https://errorledger.com/blog/meta-567m-judgment-algorithmic-engagement-optimization-failure)
