@@ -17,21 +17,9 @@ ogImage: "/images/hero-compression-is-prediction.png"
 
 # Compression is Prediction: The Architecture of Generative AI Lossy Encodings
 
-<hero_diagram>
-graph LR
-    subgraph Expected_Model
-        A[Training Data] -->|Stored as| B[Factual Database]
-        B -->|Queried for| C[Exact Facts]
-    end
-    subgraph Observed_Reality
-        D[Training Data] -->|Compressed into| E[Model Weights]
-        E -->|Lossy Decompression| F[Hallucination Artifacts]
-    end
-    Expected_Model ~~~ Observed_Reality
-    style Expected_Model fill:#3f1414,stroke:#ff4d4d,stroke-width:2px,color:#ffffff
-    style Observed_Reality fill:#143f1d,stroke:#4dff88,stroke-width:2px,color:#ffffff
-    classDef default fill:#2d3748,stroke:#4a5568,stroke-width:1px,color:#ffffff
-</hero_diagram>
+<a href="/images/hero-compression-is-prediction.png" target="_blank" rel="noopener noreferrer">
+  <img src="/images/hero-compression-is-prediction.png" alt="System Architecture Diagram" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin: 2rem 0;" />
+</a>
 
 > **Publisher Trust Block**
 > Last Audited: 2026-08-12
