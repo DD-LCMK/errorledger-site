@@ -1,4 +1,4 @@
-﻿---
+---
 pipeline_contract_version: "56.0.0"
 title: "Nginx 502 Bad Gateway: Upstream Sent Too Big Header & proxy_buffer_size Fix"
 meta_title: "Nginx 502 Upstream Too Big Header Fix"
@@ -283,7 +283,7 @@ These Prometheus alerting rules continuously monitor 502 error rates, notifying 
 
 - [Nginx Official Documentation: ngx_http_proxy_module proxy_buffer_size Reference](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_buffer_size)
 - [Nginx Official Documentation: ngx_http_proxy_module proxy_buffers Specification](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_buffers)
-- [Prometheus Nginx Exporter Source Code & Metric Definitions](https://github.com/prometheus/nginx-exporter)
+- [Prometheus Nginx Exporter Source Code & Metric Definitions](https://github.com/nginxinc/nginx-prometheus-exporter)
 
 ### Further Reading
 

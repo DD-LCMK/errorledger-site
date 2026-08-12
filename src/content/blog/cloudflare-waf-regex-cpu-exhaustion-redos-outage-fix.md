@@ -1,4 +1,4 @@
-﻿---
+---
 pipeline_contract_version: "56.0.0"
 title: "Cloudflare WAF Regex CPU Exhaustion: ReDoS Outage Fix & Backtracking Prevention"
 meta_title: "Cloudflare WAF Regex CPU Exhaustion: ReDoS Fix"
@@ -277,7 +277,7 @@ These Prometheus alerting rules continuously track WAF evaluation duration and m
 - [Cloudflare Engineering Incident Analysis: Details of WAF Ruleset Regular Expression CPU Exhaustion](https://blog.cloudflare.com/details-of-the-cloudflare-outage-on-july-2-2019/)
 - [Rust Regex Crate Documentation: Linear-Time DFA Engine Guarantee Specs](https://docs.rs/regex/latest/regex/#performance)
 - [PCRE2 API Specification: pcre2_set_match_limit Manual](https://pcre.org/current/doc/html/pcre2_set_match_limit.html)
-- [Prometheus Nginx Exporter Source Code & Metric Definitions](https://github.com/prometheus/nginx-exporter)
+- [Prometheus Nginx Exporter Source Code & Metric Definitions](https://github.com/nginxinc/nginx-prometheus-exporter)
 
 ### Further Reading
 

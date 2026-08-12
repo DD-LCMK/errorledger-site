@@ -1,4 +1,4 @@
-﻿---
+---
 pipeline_contract_version: "56.0.0"
 title: "OpenAI Node.js SDK: APIError 429 RateLimitError & Stream ECONNRESET Fix"
 meta_title: "OpenAI Node.js SDK 429 & ECONNRESET Fix"
@@ -318,7 +318,7 @@ These Prometheus alerting rules continuously track 429 rate limits and socket re
 
 - [OpenAI Official Node.js SDK GitHub Repository & Architecture Specifications](https://github.com/openai/openai-node)
 - [OpenAI Platform Documentation: Organization Rate Limits & Tier Quotas Guide](https://platform.openai.com/docs/guides/rate-limits)
-- [Prometheus Node.js Client: prom-client Metric Definitions](https://github.com/prom-client/prom-client)
+- [Prometheus Node.js Client: prom-client Metric Definitions](https://github.com/siimon/prom-client)
 
 ### Further Reading
 

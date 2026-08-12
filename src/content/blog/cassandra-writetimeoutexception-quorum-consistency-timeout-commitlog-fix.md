@@ -1,4 +1,4 @@
-﻿---
+---
 pipeline_contract_version: "56.0.0"
 title: "Cassandra WriteTimeoutException: QUORUM Consistency Timeout & commitlog Fix"
 meta_title: "Cassandra WriteTimeoutException QUORUM Fix"
@@ -276,9 +276,9 @@ These Prometheus alerting rules continuously monitor write timeout exception rat
 
 ### Primary Sources
 
-- [Apache Cassandra Official Documentation: Storage Engine & CommitLog Architecture](https://cassandra.apache.org/doc/latest/cassandra/architecture/storage_engine.html)
-- [Apache Cassandra Hardware Documentation: Disk Storage & Volume Isolation Guidelines](https://cassandra.apache.org/doc/latest/cassandra/operating/hardware.html)
-- [Prometheus Cassandra Exporter Source Code & Metric Definitions](https://github.com/nssubramanian/cassandra_exporter)
+- Apache Cassandra Official Documentation: Storage Engine & CommitLog Architecture
+- Apache Cassandra Hardware Documentation: Disk Storage & Volume Isolation Guidelines
+- [Prometheus Cassandra Exporter Source Code & Metric Definitions](https://github.com/criteo/cassandra_exporter)
 
 ### Further Reading
 
