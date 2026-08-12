@@ -8,18 +8,25 @@ import { Font } from 'astro:assets';
 interface Props {
 	title: string;
 	description: string;
-	image?: ImageMetadata;
+	// ALLOWS BOTH: Astro image objects (for static pages) OR raw string paths (from blog frontmatter)
+	image?: string | ImageMetadata;
+	// ADDS DYNAMIC TYPE: Enables us to switch between "website" and "article"
+	type?: string; 
 }
 
 // Strip `.html` and trailing slashes so canonical URLs are always clean
 const cleanPathname = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '');
 const canonicalURL = new URL(cleanPathname || '/', Astro.site);
-const { title, description, image = FallbackImage } = Astro.props;
 
-// Ensure fallback or dynamic asset URLs resolve safely against Astro.site
-const ogImage = image.src.includes('blog-placeholder-1') 
-	? 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=1200&h=630&fit=crop&q=80' 
-	: new URL(image.src, Astro.site).href;
+// Default to "website" type if not explicitly passed
+const { title, description, image = FallbackImage, type = 'website' } = Astro.props;
+
+// RESOLVES P1 ISSUE: Safely process both string paths (from our pipeline) and Astro ImageMetadata fallbacks
+const ogImage = typeof image === 'string'
+	? new URL(image, Astro.site).href
+	: (image.src.includes('blog-placeholder-1') 
+		? 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=1200&h=630&fit=crop&q=80' 
+		: new URL(image.src, Astro.site).href);
 
 // Formats a clean Breadcrumb List to display a safe category tree inside Google Search instead of raw URLs
 const breadcrumbSchema = JSON.stringify({
@@ -68,7 +75,8 @@ const breadcrumbSchema = JSON.stringify({
 <script type="application/ld+json" set:html={breadcrumbSchema}></script>
 
 <!-- Open Graph / Facebook -->
-<meta property="og:type" content="website" />
+<!-- RESOLVES P1 ISSUE: Dynamically sets "article" for blog posts and "website" for the homepage -->
+<meta property="og:type" content={type} />
 <meta property="og:url" content={canonicalURL.href} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />

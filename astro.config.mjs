@@ -15,6 +15,10 @@ export default defineConfig({
 	build: {
 		format: 'file',
 	},
+	// RESOLVES P0 ISSUE: Redirects legacy crawlers to the correct Astro sitemap index
+	redirects: {
+		'/sitemap.xml': '/sitemap-index.xml'
+	},
 	markdown: {
 		remarkPlugins: [remarkMath],
 		rehypePlugins: [rehypeKatex],

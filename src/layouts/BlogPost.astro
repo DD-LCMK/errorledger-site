@@ -8,8 +8,8 @@ import { getCollection } from 'astro:content';
 
 type Props = CollectionEntry<'blog'>['data'] & { body?: string };
 
-// FIXED: Destructure read_time_minutes directly from the frontmatter props
-const { title, meta_title, description, pubDate, tags = [], article_confidence, read_time_minutes } = Astro.props;
+// FIXED: Destructure read_time_minutes and heroImage directly from the frontmatter props
+const { title, meta_title, description, pubDate, tags = [], article_confidence, read_time_minutes, heroImage } = Astro.props;
 
 // Calculate Reading Time Fallback (Used only if frontmatter doesn't have it)
 const rawContent = Astro.props.body || '';
@@ -33,8 +33,9 @@ const schemaData = {
 	"description": description,
 	"datePublished": pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
 	"url": cleanUrl,
+	// RESOLVES P1 ISSUE: Injects dynamic hero image into JSON-LD for rich Google snippets
 	"image": [
-		"https://errorledger.com/favicon.svg"
+		new URL(heroImage || '/images/default-social-card.png', Astro.site).href
 	],
 	"author": {
 		"@type": "Organization",
@@ -88,7 +89,8 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 
 <html lang="en">
 	<head>
-		<BaseHead title={seoTitle} description={description} />
+		<!-- RESOLVES P1 ISSUE: Pass dynamic heroImage and article type to OpenGraph meta tags -->
+		<BaseHead title={seoTitle} description={description} image={heroImage} type="article" />
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
 		<!-- Automated Google JSON-LD Structured Data Injection -->
 		<script type="application/ld+json" set:html={JSON.stringify(schemaData)} />
