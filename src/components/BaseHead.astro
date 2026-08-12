@@ -21,6 +21,12 @@ const canonicalURL = new URL(cleanPathname || '/', Astro.site);
 // Default to "website" type if not explicitly passed
 const { title, description, image = FallbackImage, type = 'website' } = Astro.props;
 
+// Truncate title to 60 characters for SEO
+const truncatedTitle = title && title.length > 60 ? title.substring(0, 57) + '...' : title;
+
+// Truncate description to 160 characters for SEO snippets
+const truncatedDescription = description && description.length > 160 ? description.substring(0, 157) + '...' : description;
+
 // RESOLVES P1 ISSUE: Safely process both string paths (from our pipeline) and Astro ImageMetadata fallbacks
 const ogImage = typeof image === 'string'
 	? new URL(image, Astro.site).href
@@ -68,8 +74,8 @@ const breadcrumbSchema = JSON.stringify({
 <link rel="canonical" href={canonicalURL.href} />
 
 <!-- Primary Meta Tags -->
-<title>{title}</title>
-<meta name="description" content={description} />
+<title>{truncatedTitle}</title>
+<meta name="description" content={truncatedDescription} />
 
 <!-- Invisible Structured Search Schemas Injection -->
 <script type="application/ld+json" set:html={breadcrumbSchema}></script>
@@ -78,15 +84,15 @@ const breadcrumbSchema = JSON.stringify({
 <!-- RESOLVES P1 ISSUE: Dynamically sets "article" for blog posts and "website" for the homepage -->
 <meta property="og:type" content={type} />
 <meta property="og:url" content={canonicalURL.href} />
-<meta property="og:title" content={title} />
-<meta property="og:description" content={description} />
+<meta property="og:title" content={truncatedTitle} />
+<meta property="og:description" content={truncatedDescription} />
 <meta property="og:image" content={ogImage} />
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:url" content={canonicalURL.href} />
-<meta name="twitter:title" content={title} />
-<meta name="twitter:description" content={description} />
+<meta name="twitter:title" content={truncatedTitle} />
+<meta name="twitter:description" content={truncatedDescription} />
 <meta name="twitter:image" content={ogImage} />
 
 <!-- Google AdSense -->

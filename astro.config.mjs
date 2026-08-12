@@ -26,9 +26,7 @@ export default defineConfig({
 	integrations: [
 		mdx(), 
 		sitemap({
-			changefreq: 'daily',
-			priority: 0.7,
-			lastmod: new Date()
+			// Remove ignored priority and changefreq, and avoid build-time lastmod per Google guidelines
 		})
 	],
 	fonts: [
