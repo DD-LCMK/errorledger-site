@@ -11,7 +11,9 @@ interface Props {
 	// ALLOWS BOTH: Astro image objects (for static pages) OR raw string paths (from blog frontmatter)
 	image?: string | ImageMetadata;
 	// ADDS DYNAMIC TYPE: Enables us to switch between "website" and "article"
-	type?: string; 
+	type?: string;
+	// DYNAMIC BREADCRUMB: Array of {name, url} items. Last item is current page (no url needed).
+	breadcrumb?: { name: string; url?: string }[];
 }
 
 // Strip `.html` and trailing slashes so canonical URLs are always clean
@@ -19,10 +21,10 @@ const cleanPathname = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '
 const canonicalURL = new URL(cleanPathname || '/', Astro.site);
 
 // Default to "website" type if not explicitly passed
-const { title, description, image = FallbackImage, type = 'website' } = Astro.props;
+const { title, description, image = FallbackImage, type = 'website', breadcrumb } = Astro.props;
 
-// Truncate title to 60 characters for SEO
-const truncatedTitle = title && title.length > 60 ? title.substring(0, 57) + '...' : title;
+// Truncate title to 70 characters for SEO (Google supports up to ~70 before truncating)
+const truncatedTitle = title && title.length > 70 ? title.substring(0, 67) + '...' : title;
 
 // Truncate description to 160 characters for SEO snippets
 const truncatedDescription = description && description.length > 160 ? description.substring(0, 157) + '...' : description;
@@ -34,24 +36,21 @@ const ogImage = typeof image === 'string'
 		? 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=1200&h=630&fit=crop&q=80' 
 		: new URL(image.src, Astro.site).href);
 
-// Formats a clean Breadcrumb List to display a safe category tree inside Google Search instead of raw URLs
+// Builds a dynamic BreadcrumbList for rich results.
+// Falls back to a simple Home > Blog structure if no breadcrumb is passed.
+const breadcrumbItems = breadcrumb && breadcrumb.length > 0
+	? breadcrumb
+	: [{ name: 'Home', url: 'https://errorledger.com' }, { name: 'Blog', url: 'https://errorledger.com/blog' }];
+
 const breadcrumbSchema = JSON.stringify({
 	"@context": "https://schema.org",
 	"@type": "BreadcrumbList",
-	"itemListElement": [
-		{
-			"@type": "ListItem",
-			"position": 1,
-			"name": "Home",
-			"item": "https://errorledger.com"
-		},
-		{
-			"@type": "ListItem",
-			"position": 2,
-			"name": "Blog",
-			"item": "https://errorledger.com/blog"
-		}
-	]
+	"itemListElement": breadcrumbItems.map((item, index) => ({
+		"@type": "ListItem",
+		"position": index + 1,
+		"name": item.name,
+		...(item.url ? { "item": item.url } : {})
+	}))
 });
 ---
 
@@ -68,6 +67,10 @@ const breadcrumbSchema = JSON.stringify({
 />
 <meta name="generator" content={Astro.generator} />
 
+<!-- Preconnect for performance (reduces DNS lookup time for external resources) -->
+<link rel="preconnect" href="https://pagead2.googlesyndication.com" />
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+
 <Font cssVariable="--font-atkinson" preload />
 
 <!-- Canonical URL -->
@@ -76,6 +79,8 @@ const breadcrumbSchema = JSON.stringify({
 <!-- Primary Meta Tags -->
 <title>{truncatedTitle}</title>
 <meta name="description" content={truncatedDescription} />
+<meta name="author" content="ErrorLedger Systems Team" />
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
 
 <!-- Invisible Structured Search Schemas Injection -->
 <script type="application/ld+json" set:html={breadcrumbSchema}></script>
@@ -87,6 +92,11 @@ const breadcrumbSchema = JSON.stringify({
 <meta property="og:title" content={truncatedTitle} />
 <meta property="og:description" content={truncatedDescription} />
 <meta property="og:image" content={ogImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={truncatedTitle} />
+<meta property="og:site_name" content="ErrorLedger" />
+<meta property="og:locale" content="en_US" />
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
@@ -94,6 +104,7 @@ const breadcrumbSchema = JSON.stringify({
 <meta name="twitter:title" content={truncatedTitle} />
 <meta name="twitter:description" content={truncatedDescription} />
 <meta name="twitter:image" content={ogImage} />
+<meta name="twitter:image:alt" content={truncatedTitle} />
 
 <!-- Google AdSense -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9920262252083841" crossorigin="anonymous"></script>

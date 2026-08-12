@@ -11,16 +11,38 @@ export async function GET(context) {
 		(a, b) => new Date(b.data.pubDate).valueOf() - new Date(a.data.pubDate).valueOf()
 	);
 
+	const siteUrl = context.site || 'https://errorledger.com';
+
 	return rss({
 		title: SITE_TITLE,
 		description: SITE_DESCRIPTION,
-		site: context.site || 'https://errorledger.com',
-		items: allPosts.map((post) => ({
-			title: post.data.title,
-			description: post.data.description,
-			pubDate: new Date(post.data.pubDate),
-			// Clean URL output without trailing slashes matching canonical site routing
-			link: `/${post.collection}/${post.data.shortenedSlug || post.slug}`,
-		})),
+		site: siteUrl,
+		// Adds media namespace for image thumbnails in Feedly/Inoreader
+		xmlns: {
+			media: 'http://search.yahoo.com/mrss/',
+		},
+		items: allPosts.map((post) => {
+			const heroImage = post.data.heroImage
+				? new URL(post.data.heroImage, siteUrl).href
+				: `${siteUrl}/images/default-social-card.png`;
+
+			return {
+				title: post.data.title,
+				description: post.data.description,
+				pubDate: new Date(post.data.pubDate),
+				// Clean URL output without trailing slashes matching canonical site routing
+				link: `/${post.collection}/${post.data.shortenedSlug || post.slug}`,
+				// Expose tags as RSS categories for topic-based aggregator pickup
+				categories: post.data.tags || [],
+				// Adds image thumbnail for RSS readers that support media:content
+				customData: `<media:content
+					url="${heroImage}"
+					medium="image"
+					type="image/png"
+					width="1200"
+					height="630"
+				/>`,
+			};
+		}),
 	});
 }

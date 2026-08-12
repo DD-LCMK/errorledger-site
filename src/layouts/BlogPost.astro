@@ -21,6 +21,9 @@ const displayReadTime = read_time_minutes || calculatedReadTime;
 
 const seoTitle = meta_title || title;
 
+// Derive article section from first tag for schema categorization
+const articleSection = tags.length > 0 ? tags[0] : 'Engineering Analysis';
+
 // Compute clean canonical URL (strips .html extension and trailing slashes)
 const cleanPathname = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '');
 const cleanUrl = new URL(cleanPathname || '/', Astro.site).href;
@@ -32,7 +35,11 @@ const schemaData = {
 	"headline": title,
 	"description": description,
 	"datePublished": pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
+	"dateModified": pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
 	"url": cleanUrl,
+	"wordCount": wordCount,
+	"timeRequired": `PT${displayReadTime}M`,
+	"articleSection": articleSection,
 	// RESOLVES P1 ISSUE: Injects dynamic hero image into JSON-LD for rich Google snippets
 	"image": [
 		new URL(heroImage || '/images/default-social-card.png', Astro.site).href
@@ -57,6 +64,13 @@ const schemaData = {
 		}
 	}
 };
+
+// Dynamic breadcrumb: Home > Blog > [Post Title]
+const postBreadcrumb = [
+	{ name: 'Home', url: 'https://errorledger.com' },
+	{ name: 'Blog', url: 'https://errorledger.com/blog' },
+	{ name: seoTitle }
+];
 
 // 1. Fetch and sort collection to establish relative document paths
 const allPosts = await getCollection('blog');
@@ -89,8 +103,8 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 
 <html lang="en">
 	<head>
-		<!-- RESOLVES P1 ISSUE: Pass dynamic heroImage and article type to OpenGraph meta tags -->
-		<BaseHead title={seoTitle} description={description} image={heroImage} type="article" />
+		<!-- RESOLVES P1 ISSUE: Pass dynamic heroImage, article type, and breadcrumb to meta tags -->
+		<BaseHead title={seoTitle} description={description} image={heroImage} type="article" breadcrumb={postBreadcrumb} />
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
 		<!-- Automated Google JSON-LD Structured Data Injection -->
 		<script type="application/ld+json" set:html={JSON.stringify(schemaData)} />

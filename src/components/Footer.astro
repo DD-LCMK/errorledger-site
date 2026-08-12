@@ -3,47 +3,147 @@ const today = new Date();
 ---
 
 <footer>
-	<div class="footer-content">
-		<span>&copy; {today.getFullYear()} ErrorLedger. All rights reserved.</span>
-		<span class="separator">|</span>
-		<a href="/methodology" class="footer-link">Research Methodology</a>
-		<span class="separator">|</span>
-		<a href="/privacy" class="footer-link">Privacy Policy</a>
+	<div class="footer-grid">
+		<div class="footer-brand">
+			<a href="/" class="footer-logo">
+				<span class="logo-badge">&gt;_</span>
+				<span>Error<span class="logo-red">Ledger</span></span>
+			</a>
+			<p class="footer-tagline">An independent Engineering Intelligence Library. Zero-fluff systems analysis.</p>
+			<a href="/rss.xml" class="rss-link" target="_blank" rel="noopener noreferrer">
+				<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: #f97316; vertical-align: middle;"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg>
+				Subscribe via RSS
+			</a>
+		</div>
+
+		<nav class="footer-nav-col" aria-label="Blog posts navigation">
+			<h4 class="footer-col-title">Library</h4>
+			<a href="/blog" class="footer-link">All Posts</a>
+			<a href="/insights" class="footer-link">Technical Insights</a>
+			<a href="/search" class="footer-link">Search</a>
+		</nav>
+
+		<nav class="footer-nav-col" aria-label="Developer tools navigation">
+			<h4 class="footer-col-title">Tools</h4>
+			<a href="/tools/epoch-converter" class="footer-link">Epoch Converter</a>
+			<a href="/tools/json-formatter" class="footer-link">JSON Formatter</a>
+			<a href="/tools/jwt-decoder" class="footer-link">JWT Decoder</a>
+			<a href="/tools" class="footer-link">All Tools →</a>
+		</nav>
+
+		<nav class="footer-nav-col" aria-label="Site information">
+			<h4 class="footer-col-title">About</h4>
+			<a href="/about" class="footer-link">About ErrorLedger</a>
+			<a href="/methodology" class="footer-link">Research Methodology</a>
+			<a href="/contact" class="footer-link">Contact</a>
+			<a href="/privacy" class="footer-link">Privacy Policy</a>
+		</nav>
 	</div>
+
+	<div class="footer-bottom">
+		<span>&copy; {today.getFullYear()} ErrorLedger. All rights reserved.</span>
+	</div>
+
 	<style>
 		footer {
-			padding: 2rem 1rem 3rem 1rem;
-			text-align: center;
-			font-size: 0.9rem;
-			color: rgb(var(--gray));
+			padding: 3rem 1.5rem 1.5rem 1.5rem;
 			border-top: 1px solid #e4e4e7;
 			margin-top: auto;
+			font-size: 0.9rem;
 		}
-		.footer-content {
-			display: flex;
-			justify-content: center;
+		.footer-grid {
+			display: grid;
+			grid-template-columns: 2fr 1fr 1fr 1fr;
+			gap: 2rem;
+			max-width: 960px;
+			margin: 0 auto 2rem auto;
+		}
+		@media (max-width: 768px) {
+			.footer-grid {
+				grid-template-columns: 1fr 1fr;
+			}
+		}
+		@media (max-width: 480px) {
+			.footer-grid {
+				grid-template-columns: 1fr;
+			}
+		}
+		.footer-logo {
+			display: inline-flex;
 			align-items: center;
-			gap: 0.5rem;
-			flex-wrap: wrap;
-		}
-		.footer-link {
-			color: inherit;
+			gap: 0.4rem;
 			text-decoration: none;
+			font-family: ui-monospace, monospace;
+			font-weight: 700;
+			font-size: 1.1rem;
+			color: #1e293b;
+			margin-bottom: 0.75rem;
+		}
+		.logo-badge {
+			background: #0f172a;
+			color: #ef4444;
+			padding: 0.1rem 0.3rem;
+			border-radius: 3px;
+			font-size: 0.85rem;
+			font-weight: 900;
+		}
+		.logo-red { color: #ef4444; }
+		.footer-tagline {
+			color: #64748b;
+			font-size: 0.85rem;
+			line-height: 1.5;
+			margin: 0.5rem 0 0.75rem 0;
+			max-width: 280px;
+		}
+		.rss-link {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.35rem;
+			color: #64748b;
+			text-decoration: none;
+			font-size: 0.82rem;
 			transition: color 0.15s ease;
 		}
-		.footer-link:hover {
-			color: #ef4444;
-			text-decoration: underline;
-		}
-		.separator {
-			color: #cbd5e1;
-		}
-		:global(html.dark) footer {
-			border-top-color: #334155;
+		.rss-link:hover { color: #f97316; }
+		.footer-col-title {
+			font-size: 0.75rem;
+			font-weight: 700;
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
 			color: #94a3b8;
+			margin: 0 0 0.85rem 0;
 		}
-		:global(html.dark) .separator {
+		.footer-nav-col {
+			display: flex;
+			flex-direction: column;
+			gap: 0.5rem;
+		}
+		.footer-link {
 			color: #475569;
+			text-decoration: none;
+			font-size: 0.88rem;
+			transition: color 0.15s ease;
 		}
+		.footer-link:hover { color: #ef4444; }
+		.footer-bottom {
+			text-align: center;
+			color: #94a3b8;
+			font-size: 0.82rem;
+			border-top: 1px solid #f1f5f9;
+			padding-top: 1.5rem;
+			max-width: 960px;
+			margin: 0 auto;
+		}
+
+		/* Dark mode */
+		:global(html.dark) footer { border-top-color: #1e293b; }
+		:global(html.dark) .footer-logo { color: #f8fafc; }
+		:global(html.dark) .footer-tagline { color: #64748b; }
+		:global(html.dark) .footer-col-title { color: #475569; }
+		:global(html.dark) .footer-link { color: #94a3b8; }
+		:global(html.dark) .footer-link:hover { color: #ef4444; }
+		:global(html.dark) .footer-bottom { color: #475569; border-top-color: #1e293b; }
+		:global(html.dark) .rss-link { color: #475569; }
+		:global(html.dark) .rss-link:hover { color: #f97316; }
 	</style>
 </footer>

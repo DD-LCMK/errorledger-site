@@ -71,6 +71,39 @@ const recentInsights = allInsights
 <html lang="en">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<!-- WebSite Schema: enables Google Sitelinks Search Box in SERP -->
+		<script type="application/ld+json" set:html={JSON.stringify({
+			"@context": "https://schema.org",
+			"@type": "WebSite",
+			"name": "ErrorLedger",
+			"url": "https://errorledger.com",
+			"description": "An independent Engineering Intelligence Library documenting platform shifts, protocol mechanics, cloud infrastructure failures, and deep software post-mortems.",
+			"potentialAction": {
+				"@type": "SearchAction",
+				"target": {
+					"@type": "EntryPoint",
+					"urlTemplate": "https://errorledger.com/search?q={search_term_string}"
+				},
+				"query-input": "required name=search_term_string"
+			}
+		})} />
+		<!-- Organization Schema: primary signal for Google Knowledge Panel -->
+		<script type="application/ld+json" set:html={JSON.stringify({
+			"@context": "https://schema.org",
+			"@type": "Organization",
+			"name": "ErrorLedger",
+			"url": "https://errorledger.com",
+			"logo": "https://errorledger.com/favicon.svg",
+			"description": "An independent Engineering Intelligence Library documenting platform shifts, protocol mechanics, cloud infrastructure failures, and deep software post-mortems.",
+			"founder": {
+				"@type": "Person",
+				"name": "Chang Kim",
+				"jobTitle": "Independent Software Engineer"
+			},
+			"sameAs": [
+				"https://github.com/DD-LCMK"
+			]
+		})} />
 		<style>
 			main { width: 960px; max-width: calc(100% - 2rem); margin: 0 auto; padding: 1.5em 1rem; }
 			
