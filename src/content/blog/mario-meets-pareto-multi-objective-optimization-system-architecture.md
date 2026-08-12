@@ -1,5 +1,6 @@
----
+﻿---
 pipeline_contract_version: "60.0.0"
+archetype: "systems-analysis"
 title: "System Architecture: Mario Meets Pareto and Multi-Objective Optimization"
 meta_title: "Mario Meets Pareto: Multi-Objective Optimization Analysis"
 description: "Analyze the systemic trade-offs of Mario Kart 8 build optimization using the Pareto frontier, and how it applies to cloud infrastructure provisioning."
@@ -212,3 +213,4 @@ The application of the Pareto frontier to constrain complex configuration spaces
 | Version | Date | Author | Notes |
 |---|---|---|---|
 | 1.0.0 | 2026-08-08 | System | Initial systems analysis published. |
+

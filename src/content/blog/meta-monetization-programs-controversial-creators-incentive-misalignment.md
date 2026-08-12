@@ -1,5 +1,6 @@
----
+﻿---
 pipeline_contract_version: "61.0.0"
+archetype: "systems-analysis"
 title: "Social Graph Incentive Misalignment: How Meta's Monetization Engine Funds Controversial Actors"
 meta_title: "Meta's Token Economics: Social Graph Incentive Misalignment"
 description: "An architectural teardown of how Meta's engagement-based monetization models structurally misalign with community guidelines, inadvertently funding controversial actors."
@@ -289,3 +290,4 @@ This assessment will be revised if Meta transitions its core monetization formul
   }]
 }
 </script>
+

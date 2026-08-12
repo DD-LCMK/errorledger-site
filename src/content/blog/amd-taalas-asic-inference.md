@@ -1,5 +1,6 @@
----
+﻿---
 pipeline_contract_version: "60.0.0"
+archetype: "systems-analysis"
 title: "System Architecture: Hardwiring AI via Taalas' Model-in-Silicon ASIC"
 meta_title: "AMD's Taalas Acquisition: Etching LLMs into Silicon"
 description: "An architectural teardown of Taalas' Model-in-Silicon ASIC approach. Discover why hardwiring AI models eliminates memory bottlenecks and how AMD plans to mitigate hardware obsolescence."
@@ -197,3 +198,4 @@ The Model-in-Silicon ASIC architecture is a highly effective, physically necessa
 | Version | Date | Author | Notes |
 |---|---|---|---|
 | 1.0.0 | 2026-08-08 | System | Initial systems analysis published. |
+

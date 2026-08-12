@@ -1,5 +1,6 @@
----
+﻿---
 pipeline_contract_version: "56.0.0"
+archetype: "systems-analysis"
 title: "Google SEO Manual Action: Spammy AI-Generated Content Penalty Fix"
 meta_title: "Google SEO Manual Action: AI-Generated Content Penalty Fix"
 description: "Root cause analysis and mitigation playbook for recovering from Google's 'Spammy automatically generated content' manual actions on LLM-driven publishing pipelines."
@@ -266,3 +267,4 @@ def generate_seo_safe_content(error_code: str, verified_facts: list, reviewer_na
 | 1.0 | 2026-08-07 | Initial publication under ErrorLedger v56.0.0 Precision & Provenance Release |
 
 The architectural analysis and tuning directives presented in this document are derived from official Google Search guidelines and cross-validated across high-traffic programmatic SEO deployments.
+

@@ -1,5 +1,6 @@
----
+﻿---
 pipeline_contract_version: "61.0.0"
+archetype: "systems-analysis"
 title: "AI is Removing the Middle Class of Software Engineering: Token-Loop Economics Teardown"
 meta_title: "AI is Removing the Middle Class of Software Engineering"
 description: "An architectural teardown of how AI code generation collapses syntax creation costs, hollowing out mid-level software engineering roles and shifting value to verification."
@@ -293,3 +294,4 @@ This assessment will be revised if deterministic formal verification models achi
   }]
 }
 </script>
+

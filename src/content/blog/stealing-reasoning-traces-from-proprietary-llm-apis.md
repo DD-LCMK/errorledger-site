@@ -1,5 +1,6 @@
----
+﻿---
 pipeline_contract_version: "60.0.0"
+archetype: "systems-analysis"
 title: "Stealing Reasoning Traces: The Architecture of LLM API Distillation"
 meta_title: "Stealing Reasoning Traces from Proprietary LLM APIs"
 description: "A systems analysis of how competitors extract hidden Chain of Thought reasoning traces from proprietary LLMs to bypass inference-time compute research costs."
@@ -333,3 +334,4 @@ This analysis should be re-audited when:
 | Version | Date | Change Summary |
 |---|---|---|
 | 1.0 | 2026-08-12 | Initial publication under ErrorLedger v60.0.0 Universal Systems Analysis Framework |
+

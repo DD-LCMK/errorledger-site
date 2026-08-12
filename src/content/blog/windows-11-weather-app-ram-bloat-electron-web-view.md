@@ -1,5 +1,6 @@
----
+﻿---
 pipeline_contract_version: "60.0.0"
+archetype: "systems-analysis"
 title: "Windows 11 Weather App Wastes 1GB of RAM: A Systems Analysis of WebView2 Architectural Bloat"
 meta_title: "Windows 11 Weather App RAM Bloat: WebView2 Analysis"
 description: "A ruthlessly objective systems audit on why Windows 11's built-in Weather app consumes over 1GB of RAM — analyzing the WebView2 architectural decision, its cascading costs, and the systemic consequences."
@@ -365,3 +366,4 @@ This analysis should be re-audited when:
 | Version | Date | Change Summary |
 |---|---|---|
 | 1.0 | 2026-08-10 | Initial publication under ErrorLedger v60.0.0 Universal Systems Analysis Framework |
+

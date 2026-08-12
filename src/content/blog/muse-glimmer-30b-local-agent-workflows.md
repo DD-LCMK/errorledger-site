@@ -1,5 +1,6 @@
----
+﻿---
 pipeline_contract_version: "60.0.0"
+archetype: "systems-analysis"
 title: "Muse Glimmer 30B: The Hardware Constraints of Always-On Local Agents"
 meta_title: "Muse Glimmer 30B Local Agent: Hardware Limits & VRAM"
 description: "A systems analysis of running the Muse Glimmer 30B model as an always-on local agent, evaluating the VRAM constraints, context growth OOM crashes, and hardware scaling limits."
@@ -321,3 +322,4 @@ This analysis should be re-audited when:
 | Version | Date | Change Summary |
 |---|---|---|
 | 1.0 | 2026-08-10 | Initial publication under ErrorLedger v60.0.0 Universal Systems Analysis Framework |
+

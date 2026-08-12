@@ -7,6 +7,11 @@ const blog = defineCollection({
 		// Versioning & Contract
 		pipeline_contract_version: z.string().optional(),
 
+		// Editorial Archetype — used to split blog archive into two sections
+		// 'incident-forensics' = SRE runbooks, post-mortems, cloud outages
+		// 'systems-analysis' = economics, algorithms, AI, social systems
+		archetype: z.enum(['incident-forensics', 'systems-analysis']).optional(),
+
 		// Core SEO & Header Metadata
 		title: z.string().optional(),
 		meta_title: z.string().optional(),

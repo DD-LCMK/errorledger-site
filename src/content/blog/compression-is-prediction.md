@@ -1,5 +1,6 @@
----
+﻿---
 pipeline_contract_version: "60.0.0"
+archetype: "systems-analysis"
 title: "Compression is Prediction: The Architecture of Generative AI Lossy Encodings"
 meta_title: "Compression is Prediction: LLM Lossy Encodings Architecture"
 description: "A systems analysis of how LLMs function as highly advanced lossy compression algorithms, and why hallucinations are decompression artifacts, not logical failures."
@@ -196,4 +197,5 @@ This analysis should be re-audited if a fundamentally new, non-autoregressive ar
 | Version | Date | Change Summary |
 |---|---|---|
 | 1.0 | 2026-08-12 | Initial publication under ErrorLedger v60.0.0 Universal Systems Analysis Framework |
+
 

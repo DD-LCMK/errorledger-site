@@ -1,5 +1,6 @@
----
+﻿---
 pipeline_contract_version: "60.0.0"
+archetype: "systems-analysis"
 title: "The Illusion of Choice: A Systems Analysis of Ubiquitous Digital Surveillance"
 meta_title: "Everything is Recorded: Ubiquitous Surveillance Architecture"
 description: "A systems analysis of why pervasive digital recording and telemetry is inescapable in modern society, treating surveillance capitalism as a mandatory infrastructure layer."
@@ -301,3 +302,4 @@ This analysis should be re-audited when:
 | Version | Date | Change Summary |
 |---|---|---|
 | 1.0 | 2026-08-10 | Initial publication under ErrorLedger v60.0.0 Universal Systems Analysis Framework |
+

@@ -77,7 +77,7 @@ const recentInsights = allInsights
 			"@type": "WebSite",
 			"name": "ErrorLedger",
 			"url": "https://errorledger.com",
-			"description": "An independent Engineering Intelligence Library documenting platform shifts, protocol mechanics, cloud infrastructure failures, and deep software post-mortems.",
+			"description": "Engineering analysis of real-world systems — where expected models meet actual constraints. Incident forensics, systems economics, AI infrastructure, and architectural failure teardowns.",
 			"potentialAction": {
 				"@type": "SearchAction",
 				"target": {
@@ -94,7 +94,7 @@ const recentInsights = allInsights
 			"name": "ErrorLedger",
 			"url": "https://errorledger.com",
 			"logo": "https://errorledger.com/favicon.svg",
-			"description": "An independent Engineering Intelligence Library documenting platform shifts, protocol mechanics, cloud infrastructure failures, and deep software post-mortems.",
+			"description": "Engineering analysis of real-world systems — where expected models meet actual constraints. Incident forensics, systems economics, AI infrastructure, and architectural failure teardowns.",
 			"founder": {
 				"@type": "Person",
 				"name": "Chang Kim",
@@ -239,8 +239,8 @@ const recentInsights = allInsights
 		<Header />
 		<main>
 			<section class="hero" style="margin-top: 1.5rem;">
-				<h1>Welcome to <span>ErrorLedger</span></h1>
-				<p>An independent Engineering Intelligence Library documenting platform shifts, protocol mechanics, cloud infrastructure failures, and deep software post-mortems.</p>
+				<h1>Real-World Systems.<br/><span>Real Constraints.</span></h1>
+				<p>Engineering analysis of where expected models meet actual reality. We take complex systems, claims and failures apart to understand what actually happens under constraints.</p>
 				
 				<form action="/search" method="GET" class="search-form">
 					<input 
@@ -293,7 +293,7 @@ const recentInsights = allInsights
 			<!-- Pillar 1: AI Platform Evolutions & SDK Shifts -->
 			{aiEvolutions.length > 0 && (
 				<section style="margin-bottom: 3.5rem;">
-					<h3 class="feed-title"><span style="color: #3b82f6;">🤖</span> AI Platform Evolutions & SDK Shifts</h3>
+					<h3 class="feed-title"><span style="color: #3b82f6;">&#9650;</span> Latest Systems Analyses</h3>
 					<ul class="post-list">
 						{aiEvolutions.map((post) => (
 							<li>
@@ -317,7 +317,7 @@ const recentInsights = allInsights
 			<!-- Pillar 2: Architecture & Protocol Mechanics -->
 			{architecturePosts.length > 0 && (
 				<section style="margin-bottom: 3.5rem;">
-					<h3 class="feed-title"><span style="color: #10b981;">⚙️</span> Architecture & Protocol Mechanics</h3>
+					<h3 class="feed-title"><span style="color: #10b981;">&#9650;</span> Architecture & Protocol Mechanics</h3>
 					<ul class="post-list">
 						{architecturePosts.map((post) => (
 							<li>
@@ -341,7 +341,7 @@ const recentInsights = allInsights
 			<!-- Pillar 3: System Failures & Incident Post-Mortems -->
 			{incidentPosts.length > 0 && (
 				<section style="margin-bottom: 3.5rem;">
-					<h3 class="feed-title"><span style="color: #ef4444;">🔥</span> System Failures & Incident Post-Mortems</h3>
+					<h3 class="feed-title"><span style="color: #ef4444;">&#9650;</span> Incident Forensics</h3>
 					<ul class="post-list">
 						{incidentPosts.map((post) => (
 							<li>
@@ -365,7 +365,7 @@ const recentInsights = allInsights
 			<!-- Catch-All Safety Bucket for Uncategorized / General Engineering Analysis -->
 			{uncategorizedPosts.length > 0 && (
 				<section style="margin-bottom: 3.5rem;">
-					<h3 class="feed-title"><span style="color: #64748b;">📦</span> General Engineering & Systems Analysis</h3>
+					<h3 class="feed-title"><span style="color: #64748b;">&#9650;</span> Systems Economics & Engineering Analysis</h3>
 					<ul class="post-list">
 						{uncategorizedPosts.map((post) => (
 							<li>
@@ -388,7 +388,7 @@ const recentInsights = allInsights
 
 			<!-- Technical & Software Economics Insights Section -->
 			<section style="margin-bottom: 1.5rem;">
-				<h3 class="feed-title">Latest Technical Insights</h3>
+				<h3 class="feed-title">Engineering Insights</h3>
 				<ul class="post-list">
 					{
 						recentInsights.map((post) => (
@@ -418,18 +418,18 @@ const recentInsights = allInsights
 			<!-- E-E-A-T Editorial Standards Box (Moved to Bottom) -->
 			<section class="editorial-manifesto">
 				<div class="manifesto-box">
-					<p><strong>The ErrorLedger Editorial Standard:</strong> We bypass generic news to dissect the exact technical, physical, and software-driven root causes that trigger major global network failures. Every analysis is strictly compiled by our engineering team using a rigid zero-trust sourcing hierarchy.</p>
+					<p><strong>The ErrorLedger Methodology:</strong> We find a system, identify its intended behavior, isolate hidden constraints, trace failure or inefficiency, quantify consequences, and derive engineering lessons. Primary evidence first. Engineering interpretation second.</p>
 					<ul class="manifesto-list">
-						<li>✓ Official Root Cause Analyses (RCAs)</li>
-						<li>✓ Code & Commit Forensics</li>
-						<li>✓ Verified Telemetry Logs & Dumps</li>
+						<li>&#10003; Primary Evidence First — Official RCAs, post-mortems, and primary source documentation</li>
+						<li>&#10003; Systems Model — Expected behavior versus observed reality under constraints</li>
+						<li>&#10003; Quantified Consequences — Blast radius, recovery cost, and systemic risk</li>
 					</ul>
-					<a href="/methodology" class="methodology-link">Read our full Incident Research Methodology →</a>
+					<a href="/methodology" class="methodology-link">Read our full Systems Analysis Methodology &#8594;</a>
 				</div>
 			</section>
 
 			<div class="view-all-container" style="margin-bottom: 3.5rem;">
-				<a href="/blog" class="view-all-btn">Browse Full Engineering Library Archive →</a>
+				<a href="/blog" class="view-all-btn">Browse Full Knowledge Archive &#8594;</a>
 			</div>
 		</main>
 		<Footer />
