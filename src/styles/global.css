@@ -150,8 +150,8 @@ hr {
 
 /* Technical Blog Layout Extensions */
 .prose {
-width: 960px !important;
-max-width: calc(100% - 2rem) !important;
+width: 100% !important;
+max-width: 100% !important;
 }
 
 /* Prevent tables from squashing text vertically */
@@ -178,7 +178,7 @@ margin: 0 auto !important;
 }
 
 .prose {
-width: 1200px !important;
+width: 100% !important;
 max-width: 100% !important;
 }
 
