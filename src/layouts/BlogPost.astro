@@ -122,6 +122,9 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 				.post-layout-grid.has-sidebar {
 					grid-template-columns: 1fr 260px;
 				}
+				.post-layout-grid.has-sidebar > article {
+					min-width: 0;
+				}
 			}
 
 			.sidebar-wrapper {
