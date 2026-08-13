@@ -29,6 +29,7 @@ body {
   text-align: left;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  overflow-x: hidden;
   color: rgb(var(--gray-dark));
   font-size: 20px;
   line-height: 1.7;
@@ -152,6 +153,11 @@ hr {
 .prose {
 width: 100% !important;
 max-width: 100% !important;
+}
+
+.prose img {
+  max-width: 100% !important;
+  height: auto !important;
 }
 
 /* Prevent tables from squashing text vertically */
