@@ -49,7 +49,7 @@ Proponents assert that exposing the body to extreme cold induces rapid anti-infl
 Controlled physiological measurements reveal a more nuanced and constrained biological system:
 1. **Catecholamine Surge is Acute, Not a Permanent Baseline Shift:** Cold exposure triggers a robust sympathetic stress response. In young healthy males, immersion in 14°C water for up to an hour was documented to elevate plasma dopamine by ~250% and norepinephrine by ~530% over baseline. However, this elevation is transient, decaying back toward homeostatic baseline over several hours rather than resetting permanent basal levels.
 2. **Hypertrophy Blunting via Anabolic Pathway Suppression:** When cold water immersion is applied immediately following resistance exercise, rapid cooling and reduced blood flow attenuate the intracellular signaling cascade (specifically p70S6K phosphorylation) required for myofibrillar protein synthesis. Over longitudinal 12-week resistance blocks, this practice significantly blunts muscle fiber cross-sectional area (CSA) growth and maximal strength development compared to passive or active recovery.
-3. **Perception of Recovery vs Objective Tissue Repair:** Meta-analyses show that while cold immersion consistently reduces subjective sensations of muscle soreness (DOMS) by approximately 15% to 20%, objective systemic markers of muscle damage (such as serum creatine kinase) show inconsistent or negligible long-term improvements in untrained cohorts.
+3. **Perception of Recovery vs Objective Tissue Repair:** Meta-analyses show that while cold immersion can modestly reduce perceived muscle soreness during the first 24–48 hours, objective systemic markers of muscle damage (such as serum creatine kinase) show inconsistent or negligible long-term improvements in untrained cohorts.
 
 ## Observable Signals & Quick Specs
 
@@ -57,15 +57,15 @@ Controlled physiological measurements reveal a more nuanced and constrained biol
 | :--- | :--- | :--- |
 | **Dopamine Response** | Permanent baseline dopamine upregulation | **Acute ~250% transient spike** (documented in 1-hour immersion at 14°C; decays over hours) |
 | **Resistance Training Adaptation** | Faster muscle repair and accelerated growth | **Significantly blunts muscle hypertrophy and strength gains** when done immediately post-lifting |
-| **Muscle Soreness (DOMS)** | Completely eliminates post-workout inflammation | **Modest 15%-20% reduction in subjective soreness** at 24h-48h post-exercise |
-| **Cardiovascular Impact** | Universal cardiovascular conditioner | **Induces acute peripheral vasoconstriction, elevated MAP, and cardiac workload** |
+| **Muscle Soreness (DOMS)** | Completely eliminates post-workout inflammation | **Modest reduction in perceived soreness during first 24h-48h** (evidence remains limited and heterogeneous) |
+| **Cardiovascular Impact** | Universal cardiovascular conditioner | **Triggers acute sympathetic activation, vasoconstriction, and elevated cardiac workload** |
 
 ## Immediate Reality Check
 
-1. **Timing is the Defining Constraint:** Cold immersion is an effective acute tool for reducing perceived fatigue during multi-event athletic tournaments, but it is counter-productive when executed immediately following resistance training aimed at muscle growth.
-2. **The Famous Dopamine Study Used a 60-Minute Protocol:** The widely cited "250% dopamine spike" (Šrámek et al., 2000) involved healthy young males submerged to the neck in 14°C water for 60 consecutive minutes—not a 2-minute plunge. While short plunges induce acute shock, their sustained kinetic profile differs.
-3. **Subjective Relief Exceeds Objective Biomarker Shifts:** Cold water immersion reliably numbs pain receptors and reduces subjective stiffness, but it does not accelerate underlying structural muscle protein synthesis.
-4. **Cardiovascular Stress is Substantial:** Cold shock induces rapid peripheral vasoconstriction and transient surges in mean arterial pressure, representing a clear physiological constraint for individuals with cardiovascular risks.
+1. **Timing is the Defining Constraint:** Cold immersion is an effective acute tool for reducing perceived fatigue during multi-event athletic tournaments, but routine application immediately after resistance training blunts muscular adaptations.
+2. **The Famous Dopamine Study Used a 60-Minute Protocol:** The widely cited "250% dopamine spike" (Šrámek et al., 2000) involved healthy young males submerged to the neck in 14°C water for 60 consecutive minutes—not a brief 2-minute plunge. While short plunges induce acute shock, their sustained kinetic profile differs.
+3. **Subjective Relief Exceeds Objective Tissue Changes:** Cold-water immersion can modestly reduce perceived muscle soreness during the first 24–48 hours, but it does not accelerate underlying structural muscle protein synthesis.
+4. **Cardiovascular Stress is Substantial:** Cold shock induces rapid peripheral vasoconstriction and transient surges in mean arterial pressure, representing a clear physiological constraint for individuals with underlying vascular risks.
 
 ## System Architecture & State Transformation
 
@@ -85,16 +85,16 @@ The evidence base for cold water immersion is methodologically robust across ath
 ## Evidence Validation: Facts vs. Inference
 
 *   **Observed Facts:**
-    - Controlled human trials show cold water immersion immediately post-exercise blunts p70S6K phosphorylation and long-term muscle hypertrophy in active young men (Source: EV-LIFE-002, Grade A — Measured Outcome, RCT n=21).
+    - Controlled human trials show cold water immersion immediately post-exercise attenuates acute anabolic signalling and blunts long-term muscle cross-sectional area and strength gains in active young men (Source: EV-LIFE-002, Grade A — Measured Outcome, RCT n=21).
     - Immersion in 14°C water for 60 minutes elevated plasma dopamine by ~250% and noradrenaline by ~530% in healthy young male subjects (Source: EV-LIFE-001, Grade B — Measured Outcome, Physiological Intervention n=10).
-    - Cold immersion reduces subjective muscle soreness ratings by approximately 15% to 20% at 24 to 48 hours post-exercise across pooled trial data (Source: EV-LIFE-004, Grade A — Measured Outcome, Meta-Analysis n=522).
+    - Meta-analyses indicate cold-water immersion can modestly reduce perceived muscle soreness during the first 24–48 hours post-exercise across pooled trial data, though underlying trial heterogeneity is high (Source: EV-LIFE-004, Grade A — Measured Outcome, Meta-Analysis n=522).
 *   **Systemic Inference:**
     - Short-duration cold plunges (2–3 minutes) likely generate an acute catecholamine spike via sympathetic shock, but extrapolating a full sustained 250% dopamine elevation from a 60-minute immersion study to brief plunges remains an inference until replicated in short-duration cohorts.
 *   **Analytical Confidence Level:** High for muscle hypertrophy interference and subjective soreness reduction; Medium for neurochemical magnitude in brief recreational plunges.
 
 ## Operational Constraints & Failure Modes
 
-1. **Hypertrophy Interference Failure Mode:** Applying cold water immersion within 4 hours of a resistance training session blunts the local inflammatory signaling necessary for muscular remodeling.
+1. **Hypertrophy Interference:** Applying cold water immersion immediately following resistance training attenuates the local anabolic signaling necessary for muscular remodeling. If hypertrophy is the priority, separating the exposure from the lifting session provides a more conservative approach, though exact optimal separation intervals remain an open research question.
 2. **Cardiovascular Overload:** In unacclimatized individuals or those with subclinical arterial stiffness, the simultaneous cold shock response (tachycardia, hyperventilation) and peripheral vasoconstriction sharply elevate cardiac afterload.
 3. **Adherence Burnout:** The severe thermal discomfort and high logistical burden of maintaining ice baths lead to high drop-out rates in non-athlete populations.
 
@@ -106,10 +106,10 @@ Executing a regular cold water immersion protocol requires navigating substantia
 - **Time Cost & Re-Warming:** A typical 3-minute plunge requires 15–20 minutes of total protocol time including skin drying, autonomic re-warming, and shivering resolution.
 - **Estimated Abandonment:** Available behavioral surveys suggest over 60% of recreational adopters discontinue daily protocols within 30 to 60 days due to cumulative friction.
 
-## Safety Constraints & Contraindications
+## Safety Constraints & Medical Considerations
 
-- **Cardiovascular Pathologies:** Absolute contraindication for individuals with uncontrolled hypertension, diagnosed arrhythmias, or coronary artery disease due to the sharp spike in peripheral vascular resistance and myocardial oxygen demand.
-- **Peripheral Vascular Disorders:** Contraindicated for individuals with Raynaud's phenomenon or cold-induced urticaria.
+- **Cardiovascular Considerations:** People with cardiovascular disease, uncontrolled hypertension, significant arrhythmias, or other relevant vascular conditions should seek medical advice before using cold-water immersion due to the acute surge in peripheral vascular resistance and myocardial workload.
+- **Peripheral Vascular Conditions:** Not recommended for individuals with Raynaud's phenomenon or cold-induced urticaria without prior clinical consultation.
 - **Target Population Boundary:** Available neurochemical and hypertrophy evidence is derived predominantly from healthy young adult cohorts (18–35 years). Generalizing these findings to elderly or clinically compromised populations constitutes an unverified extrapolation.
 - **Evidence Gap:** Evidence is currently insufficient to determine long-term endocrine safety or hormonal adaptations in female-specific cohorts across different menstrual cycle phases.
 
@@ -117,8 +117,8 @@ Executing a regular cold water immersion protocol requires navigating substantia
 
 | User Goal | Protocol Viability | Primary Constraint | Practical Recommendation |
 | :--- | :--- | :--- | :--- |
-| **Maximal Muscle Hypertrophy & Bodybuilding** | Poor (Contraindicated post-workout) | Anabolic pathway suppression | Avoid CWI within 4-6 hours of lifting; reserve for rest days or omit entirely. |
-| **Multi-Match Athletic Tournaments** | High (Beneficial) | Acute soreness management | Use immediately between tournament rounds to restore perceived readiness. |
+| **Maximal Muscle Hypertrophy & Bodybuilding** | Not recommended post-workout | Anabolic pathway suppression | If hypertrophy is the primary goal, avoid routine CWI immediately post-lifting; separating exposure from lifting is a more conservative approach. |
+| **Multi-Match Athletic Tournaments** | High (Beneficial) | Acute soreness management | Useful between tournament rounds to restore perceived readiness and thermal comfort. |
 | **Acute Mental Alertness & Focus** | Moderate | Transient duration of catecholamine surge | Deploy short 2-3 min morning exposures; treat as an acute stimulus rather than a permanent baseline fix. |
 | **Cardiorespiratory Endurance Athletes** | Moderate | Minimal interference with mitochondrial biogenesis | Viable post-endurance runs; does not blunt aerobic signaling to the same extent as hypertrophy. |
 
@@ -131,9 +131,9 @@ Executing a regular cold water immersion protocol requires navigating substantia
 ## Effect Size & Practical Significance
 
 Does cold water immersion materially change real-world outcomes?
-- **For Muscle Hypertrophy:** The negative effect size is practically meaningful. A 10%-15% reduction in long-term muscle cross-sectional area growth represents a substantial penalty for serious resistance trainees.
-- **For Acute Soreness:** The positive effect size is modest. A 1-2 point reduction on a 10-point visual analog pain scale provides noticeable symptomatic relief, but does not translate into measurably superior power output in subsequent testing sessions.
-- **For Cognitive Alertness:** The acute surge in catecholamines produces immediate subjective wakefulness comparable to an acute dose of caffeine, but does not provide permanent cognitive enhancement once catecholamines clear.
+- **For Muscle Hypertrophy:** The negative effect can be practically meaningful, particularly when CWI is repeatedly applied immediately after resistance training. Attenuation of muscle cross-sectional area growth represents a notable drawback for serious resistance trainees.
+- **For Acute Soreness:** The positive effect size is modest. Cold-water immersion can modestly reduce perceived muscle soreness during the first 24–48 hours, providing symptomatic relief without necessarily improving subsequent functional performance.
+- **For Cognitive Alertness:** The acute surge in catecholamines produces immediate subjective wakefulness comparable to an acute stimulant, but does not provide permanent baseline cognitive enhancement once catecholamines clear.
 
 ## Known Unknowns & Future Variables
 
@@ -176,17 +176,18 @@ def evaluate_cwi_timing(training_modality: str, hours_post_workout: float, prima
     # Evaluation logic based on Roberts et al. (2015) & Bleakley et al. (2012)
     if "hypertrophy" in goal or "strength" in goal or "resistance" in modality:
         if hours < 4.0:
-            print("STATUS: ❌ HIGH INTERFERENCE RISK (Contraindicated)")
-            print("RATIONALE: Cold water immersion within 4 hours of resistance training")
-            print("           suppresses p70S6K signaling and blunts long-term muscle growth.")
-            print("RECOMMENDATION: Delay cold immersion by at least 4-6 hours or perform on rest days.")
+            print("STATUS: ⚠ CAUTION: POTENTIAL HYPERTROPHY INTERFERENCE")
+            print("RATIONALE: Cold water immersion immediately after resistance training")
+            print("           attenuates anabolic signaling and blunts long-term growth.")
+            print("RECOMMENDATION: Avoid routine CWI immediately post-lifting; separating")
+            print("                sessions conservatively provides a safer approach.")
         else:
             print("STATUS: ⚠ CONDITIONALLY COMPATIBLE")
-            print("RATIONALE: Sufficient temporal separation from lifting reduces anabolic suppression.")
+            print("RATIONALE: Temporal separation from lifting reduces anabolic suppression risk.")
             print("RECOMMENDATION: Limit immersion to 3-5 minutes @ 10°C-14°C.")
     elif "tournament" in goal or "rapid_recovery" in goal:
         print("STATUS: ✅ EVIDENCE-SUPPORTED FOR ACUTE SYMPTOM RELIEF")
-        print("RATIONALE: Reduces subjective soreness and thermal load between tournament rounds.")
+        print("RATIONALE: Modestly reduces subjective soreness between tournament rounds.")
         print("RECOMMENDATION: 10 minutes @ 10°C-12°C for acute recovery between events.")
     else:
         print("STATUS: ⚠ MODERATE COMPATIBILITY")
@@ -207,10 +208,10 @@ if __name__ == "__main__":
 
 ## Key Takeaways
 
-- ✓ **Cold immersion blunts muscle hypertrophy:** Applying ice baths immediately post-lifting significantly impairs long-term muscle cross-sectional area gains by suppressing anabolic signaling.
-- ✓ **Dopamine spikes are transient acute reactions:** Cold exposure triggers acute sympathetic catecholamine release, but available evidence does not support permanent baseline elevation.
-- ✓ **Subjective soreness relief is validated:** Systematic reviews confirm a 15%-20% reduction in subjective DOMS ratings, useful for in-season tournaments.
-- ✓ **Timing is the critical variable:** Separating cold water exposure from resistance exercise by at least 4–6 hours substantially mitigates hypertrophy interference.
+- ✓ **Cold immersion blunts resistance adaptations:** Repeated post-exercise CWI significantly attenuates long-term muscle cross-sectional area and strength gains by suppressing anabolic signaling.
+- ✓ **Dopamine spikes are transient acute reactions:** Prolonged cold immersion (60 min @ 14°C) triggers acute sympathetic catecholamine release, but evidence does not establish a permanent baseline reset from brief recreational plunges.
+- ✓ **Subjective soreness relief is modest:** Cold-water immersion can modestly reduce perceived muscle soreness during the first 24–48 hours, useful for tournament scenarios.
+- ✓ **Separation reduces interference risk:** If hypertrophy is the priority, avoiding CWI immediately post-lifting provides a conservative approach, though exact physiological cutoff intervals remain an open research question.
 
 ## Standardized System Scoring
 
@@ -221,7 +222,7 @@ if __name__ == "__main__":
 | **Effect Magnitude** | 3 | Strong acute subjective pain relief and catecholamine surge; long-term positive structural adaptations are limited or negative for hypertrophy. |
 | **Sustainability** | 2 | High thermal discomfort, preparation time, and equipment logistics result in elevated long-term user drop-off. |
 | **Implementation Cost** | 2 | Significant financial cost for dedicated chillers ($1,500+) or high weekly expense and effort for manual ice sourcing. |
-| **Risk Profile** | 3 | Marked acute cardiovascular workload and blood pressure surges require screening for vascular contraindications. |
+| **Risk Profile** | 3 | Marked acute cardiovascular workload and blood pressure surges require clinical consultation for vascular conditions. |
 
 ## Final System Classification
 

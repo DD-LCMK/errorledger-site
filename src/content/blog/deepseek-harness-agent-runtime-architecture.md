@@ -1,5 +1,5 @@
 ---
-pipeline_contract_version: "61.0.0"
+pipeline_contract_version: "61.1.0"
 title: "DeepSeek Harness Architecture: Where the Agent Control Plane Ends and the Sandbox Begins"
 meta_title: "DeepSeek Harness Architecture & Cordis Sandboxing Limits"
 description: "A clinical engineering analysis of DeepSeek Harness: evaluating the Cordis plugin event bus, spatiotemporal composability, and sandbox security constraints."
@@ -46,12 +46,12 @@ ogImage: "/images/hero-deepseek-harness-architecture.png"
 
 ## Observable Signals & Quick Specs
 
-| Architecture Component | Expected Claim (DeepSeek Docs) | Verified Operating Reality |
+| Architecture Component | Expected Claim (DeepSeek Docs) | Documented Architectural Reality |
 | :--- | :--- | :--- |
-| **Execution Engine** | Fully modular "Everything is a Plugin" | Confirmed. Built on Cordis framework. |
-| **State Management** | Append-only session traces | Confirmed. Full trajectory replayability. |
+| **Execution Engine** | Fully modular "Everything is a Plugin" | **Documented in architecture specs.** Built on Cordis framework. |
+| **State Management** | Append-only session traces | **Event/trajectory recording;** deterministic replay semantics depend on implementation and environment. |
 | **Security Envelope** | Isolated local execution | **Context-Dependent.** Host OS execution requires external containerization. |
-| **Agent Composability** | Sub-agent delegation | Confirmed via hierarchical plugin scheduling. |
+| **Agent Composability** | Sub-agent delegation | **Documented in framework.** Enabled via hierarchical plugin scheduling. |
 
 ## Immediate Reality Check
 
@@ -76,9 +76,9 @@ ogImage: "/images/hero-deepseek-harness-architecture.png"
 
 ## Reproducible Architecture Trace
 
-> **Evidence status:** Illustrative reconstruction — not an observed production incident. 
+> **Evidence status:** Illustrative execution trace — reconstructed from documented architecture; not emitted by an actual DeepSeek Harness session.
 
-The following trace is a representative execution sequence derived from the documented architecture, not an externally reported production incident. It illustrates how the Cordis bus handles event dispatch.
+The following trace is an illustrative execution sequence derived from the documented architecture, not an externally reported production incident. It illustrates how the Cordis bus handles event dispatch.
 
 ```text
 [2026-08-14 09:00:00 UTC] DEV_ENV: dsh initialization via local Terminal Plugin.
@@ -124,9 +124,13 @@ The expected baseline for agent runtimes (e.g., early AutoGPT) was a flat script
 
 ## Evidence Validation: Facts vs. Inference
 
-*   **Observed Facts:** DeepSeek Harness utilizes a plugin architecture based on Cordis. It outputs append-only session logs. It requires explicit user approval for destructive commands by default.
-*   **Engineering Inference:** Event-mediated composition can introduce additional serialization or dispatch overhead compared with direct in-process function calls. This overhead may scale linearly with large payload transfers between plugins.
-*   **Analytical Confidence Level:** Medium. As a Developer Preview, the exact stability of the API surface over the next 12 months remains highly volatile.
+*   **Observed Facts:**
+    - DeepSeek Harness utilizes a plugin architecture based on Cordis (Source: EV-001, Grade C — Documented Specification).
+    - Session traces are recorded in an append-only format on disk (Source: EV-002, Grade C — Documented Specification).
+    - The framework enforces interactive confirmation for destructive shell commands by default (Source: EV-003, Grade C — Documented Specification).
+*   **Engineering Inference:**
+    - Event-mediated composition can introduce additional serialization or dispatch overhead compared with direct in-process function calls. This overhead may scale with large payload transfers between plugins.
+*   **Analytical Confidence Level:** Medium. As a Developer Preview, the exact stability of the API surface over the next 12 months remains subject to iteration.
 
 ## Known Unknowns & Future Variables
 
@@ -239,3 +243,51 @@ This architectural analysis must be re-audited upon the release of DeepSeek Harn
 | :--- | :--- | :--- | :--- |
 | 2026-08-14 | 1.1.0 | Updated to v61 contract; refined architecture thesis and security boundaries based on editorial review. | ErrorLedger Editorial Team |
 | 2026-08-14 | 1.0.0 | Initial systems architecture analysis of the Developer Preview. | ErrorLedger Editorial Team |
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "DeepSeek Harness Architecture: Where the Agent Control Plane Ends and the Sandbox Begins",
+  "description": "A clinical engineering analysis of DeepSeek Harness: evaluating the Cordis plugin event bus, spatiotemporal composability, and sandbox security constraints.",
+  "author": {
+    "@type": "Organization",
+    "name": "ErrorLedger Editorial Team",
+    "url": "https://errorledger.com/about"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "ErrorLedger",
+    "url": "https://errorledger.com"
+  },
+  "datePublished": "2026-08-14",
+  "dateModified": "2026-08-14"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://errorledger.com"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Blog",
+      "item": "https://errorledger.com/blog"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "DeepSeek Harness Architecture",
+      "item": "https://errorledger.com/blog/deepseek-harness-agent-runtime-architecture"
+    }
+  ]
+}
+</script>
