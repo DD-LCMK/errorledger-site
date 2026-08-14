@@ -237,7 +237,7 @@ This assessment will be revised if Meta transitions its core monetization formul
 ### Further Reading
 - [ErrorLedger: Meta 567M Judgment - Algorithmic Engagement Optimization Failure](https://errorledger.com/blog/meta-567m-judgment-algorithmic-engagement-optimization-failure)
 - [ErrorLedger: Everything You Do Is Being Recorded - Surveillance Architecture](https://errorledger.com/blog/everything-you-do-is-being-recorded-surveillance-architecture)
-- [ErrorLedger: Compression is Prediction - Architecture of Generative AI Lossy Encodings](https://errorledger.com/blog/compression-is-prediction-architecture-of-generative-ai-lossy-encodings)
+- [ErrorLedger: Compression is Prediction - Architecture of Generative AI Lossy Encodings](https://errorledger.com/blog/compression-is-prediction)
 
 ---
 

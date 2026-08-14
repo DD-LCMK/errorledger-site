@@ -145,7 +145,7 @@ Cold exposure can function as a controlled physiological stressor when exposure 
 2. **Individual Sleep & Autonomic Sensitivity:** Timing relative to sleep remains individual. Evening cold exposure alters skin and core temperature kinetics, but controlled crossover trials in trained male cyclists (*Robey et al., 2013*, $n=11$) showed no significant alterations in total sleep time, sleep efficiency, sleep onset latency, or melatonin. Individuals sensitive to noradrenergic arousal may still prefer scheduling cold sessions earlier in the day.
 3. **Excessive Duration & Hypothermia Risk:** Prolonged immersion in very cold water shifts the stimulus from controlled neuroendocrine activation to severe physical hypothermia, triggering prolonged shivering thermogenesis and unnecessary physical strain.
 
-For a broader evaluation of how cold water immersion affects athletic recovery pathways and skeletal muscle signaling, see our companion analysis on [cold water immersion recovery and hypertrophy trade-offs](/blog/cold-water-immersion-limits).
+For a broader evaluation of how cold water immersion affects athletic recovery pathways and skeletal muscle signaling, see our companion analysis on [cold water immersion recovery and hypertrophy trade-offs](https://errorledger.com/blog/cold-water-immersion-dopamine-hypertrophy-limits).
 
 ## Adherence & Behavioral Friction
 
