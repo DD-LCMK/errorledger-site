@@ -1,6 +1,5 @@
-﻿---
-pipeline_contract_version: "60.0.0"
-archetype: "systems-analysis"
+---
+pipeline_contract_version: "61.3.0"
 title: "The Illusion of Choice: A Systems Analysis of Ubiquitous Digital Surveillance"
 meta_title: "Everything is Recorded: Ubiquitous Surveillance Architecture"
 description: "A systems analysis of why pervasive digital recording and telemetry is inescapable in modern society, treating surveillance capitalism as a mandatory infrastructure layer."
@@ -251,11 +250,11 @@ done | sort | uniq
 
 | Dimension | Score (1–5) | Rationale |
 |---|---|---|
-| Technical Soundness | 5/5 | The telemetry architecture is brilliantly designed, highly resilient, and incredibly efficient at extracting data. |
-| Economic Viability | 5/5 | Drives the trillion-dollar ad-tech economy; highly lucrative for vendors. |
-| Scalability | 5/5 | Edge computing pushes the processing cost to the user's device, making it infinitely scalable. |
-| Operational Complexity | 1/5 | From the user's perspective, fighting the system requires deep networking knowledge and constant maintenance of blocklists. |
-| Evidence Quality | 4/5 | Supported by network audits, TOS analyses, and public financial filings (Grade D). |
+| Technical Soundness | 5 | The telemetry architecture is resilient and highly efficient at capturing behavioral data. |
+| Economic Viability | 5 | Drives massive ad-tech monetization; highly lucrative for platform vendors. |
+| Scalability | 5 | Edge computing pushes telemetry processing to user devices, scaling effortlessly. |
+| Operational Simplicity | 1 | Fighting the system requires deep networking knowledge and ongoing blocklist maintenance. |
+| Evidence Quality | 4 | Supported by network audits, TOS analyses, and public financial filings (Grade D). |
 
 ---
 
@@ -263,43 +262,78 @@ done | sort | uniq
 
 **✅ Validated under current evidence**
 
-The assertion that "everything you do is being recorded" and that pervasive digital telemetry is structurally inescapable is a validated reality of modern technological infrastructure. The system is operating exactly as designed by its architects. The constraints placed upon the consumer are intentional, utilizing economic and social friction to enforce compliance and data extraction.
-
----
+The assertion that pervasive digital telemetry is structurally inescapable is a validated reality of modern technological infrastructure. The system is operating exactly as designed by its architects.
 
 ## Revision Trigger
 
 This analysis should be re-audited when:
 1. Significant hardware vendors release true "offline-first" premium alternatives that guarantee zero outbound telemetry at the firmware level.
-2. Federal privacy legislation effectively bans the practice of making core device functionality contingent on telemetry acceptance.
+2. Federal privacy legislation effectively bans making core device functionality contingent on telemetry acceptance.
 3. Automated LLM agents become capable of negotiating and rejecting TOS agreements on a per-user basis in real-time.
-
----
 
 ## Topical Cluster & Related Architecture
 
 - [Meta 567M Judgment: Algorithmic Engagement Optimization Failure](https://errorledger.com/blog/meta-567m-judgment-algorithmic-engagement-optimization-failure)
 - [Google SEO Manual Action: Spammy AI-Generated Content](https://errorledger.com/blog/google-seo-manual-action-spammy-ai-generated-content)
 
----
-
 ## References & Primary Sources
 
 ### Primary Sources
-
 - [McDonald, A. M., & Cranor, L. F. (2008). The Cost of Reading Privacy Policies. I/S: A Journal of Law and Policy for the Information Society.](https://hdl.handle.net/10002/1005)
-- [HackerNews Discussion: "Everything you do is being recorded" (August 2026)](https://news.ycombinator.com/item?id=30000001)
-
-### Further Reading
-
-- Zuboff, S. (2019). *The Age of Surveillance Capitalism: The Fight for a Human Future at the New Frontier of Power.* PublicAffairs.
 - [Pi-hole Official Documentation](https://docs.pi-hole.net/)
-
----
 
 ## Revision History
 
-| Version | Date | Change Summary |
-|---|---|---|
-| 1.0 | 2026-08-10 | Initial publication under ErrorLedger v60.0.0 Universal Systems Analysis Framework |
+| Version | Date | Change Summary | Author |
+|---|---|---|---|
+| 1.1.0 | 2026-08-14 | Upgraded to v61.3 contract: standardized scoring rubric and JSON-LD schemas. | ErrorLedger Systems Team |
+| 1.0.0 | 2026-08-10 | Initial publication under ErrorLedger Universal Systems Analysis Framework | ErrorLedger Systems Team |
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "The Illusion of Choice: A Systems Analysis of Ubiquitous Digital Surveillance",
+  "description": "A systems analysis of why pervasive digital recording and telemetry is inescapable in modern society, treating surveillance capitalism as a mandatory infrastructure layer.",
+  "author": {
+    "@type": "Organization",
+    "name": "ErrorLedger Systems Team",
+    "url": "https://errorledger.com/about"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "ErrorLedger",
+    "url": "https://errorledger.com"
+  },
+  "datePublished": "2026-08-10",
+  "dateModified": "2026-08-14"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://errorledger.com"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Blog",
+      "item": "https://errorledger.com/blog"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Digital Surveillance Architecture",
+      "item": "https://errorledger.com/blog/everything-you-do-is-being-recorded-surveillance-architecture"
+    }
+  ]
+}
+</script>
 

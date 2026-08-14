@@ -1,15 +1,14 @@
-﻿---
-pipeline_contract_version: "61.0.0"
-archetype: "systems-analysis"
+---
+pipeline_contract_version: "61.3.0"
 title: "Social Graph Incentive Misalignment: How Meta's Monetization Engine Funds Controversial Actors"
 meta_title: "Meta's Token Economics: Social Graph Incentive Misalignment"
 description: "An architectural teardown of how Meta's engagement-based monetization models structurally misalign with community guidelines, inadvertently funding controversial actors."
 pubDate: "2026-08-13"
 incidentDate: "2026-08-10"
-tags: ["systems-analysis", "architecture", "social-graph", "algorithm-failure"]
+tags: ["systems-analysis", "architecture-review", "social-graph", "algorithm-failure"]
 slug: "meta-monetization-programs-controversial-creators-incentive-misalignment"
 shortenedSlug: "meta-monetization-programs-controversial-creators-incentive-misalignment"
-target_systems: "Algorithmic Ad Revenue Distribution Systems"
+target_systems: "Algorithmic Ad Revenue Distribution Systems, Recommendation Models"
 read_time_minutes: 11
 difficulty_level: "Analytical"
 heroImage: "/images/hero-meta-monetization-programs-controversial-creators-incentive-misalignment.png"
@@ -204,20 +203,21 @@ For diagnosing API payloads that may contain obfuscated abusive content, you can
 
 ## Standardized System Scoring
 
-| Evaluation Vector | Score (1-10) | Systems Rationale |
-|---|---|---|
-| **Architectural Alignment** | 2.5 | Massive disconnect between stated policy and mathematical execution. |
-| **Operational Scaling** | 9.0 | Automated payout algorithms scale effortlessly. |
-| **Integrity Controls** | 3.0 | Heavy reliance on lagging, asynchronous manual review. |
-| **Incentive Structure** | 1.5 | Financially rewards the exact behavior the platform claims to prohibit. |
+| Dimension | Score (1-5) | Justification |
+| :--- | :--- | :--- |
+| **Technical Soundness** | 1 | Disconnect between semantic safety policies and mathematical payout optimization. |
+| **Economic Viability** | 2 | Drives immediate ad engagement but creates catastrophic brand and regulatory liabilities. |
+| **Scalability** | 4 | Automated payout algorithms scale effortlessly, but safety moderation cannot keep pace. |
+| **Operational Simplicity** | 2 | Heavy reliance on asynchronous manual review creates operational friction. |
+| **Evidence Quality** | 4 | Documented in journalistic investigations and verified ad revenue distribution mechanics. |
 
 ---
 
 ## Final System Classification
 
-**❌ Misaligned Token Architecture (Structural Conflict)**
+**❌ Structurally unstable / High Risk**
 
-The system exhibits a fatal architectural flaw: it attempts to govern a hyper-optimized mathematical engine (engagement monetization) using slow, semantic rules (community guidelines). Until sentiment analysis acts as a synchronous, mathematical penalty variable within the payout calculation itself, the system will continue to inadvertently fund controversial actors.
+The system exhibits a fatal architectural flaw: attempting to govern a hyper-optimized mathematical payout engine using slow, semantic natural language guidelines. Until semantic safety checks act as synchronous, mathematical penalty variables within the payout calculation itself, the architecture remains structurally vulnerable.
 
 ---
 

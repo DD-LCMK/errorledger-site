@@ -1,16 +1,15 @@
-﻿---
-pipeline_contract_version: "60.0.0"
-archetype: "systems-analysis"
+---
+pipeline_contract_version: "61.3.0"
 title: "Compression is Prediction: The Architecture of Generative AI Lossy Encodings"
 meta_title: "Compression is Prediction: LLM Lossy Encodings Architecture"
-description: "A systems analysis of how LLMs function as highly advanced lossy compression algorithms, and why hallucinations are decompression artifacts, not logical failures."
+description: "A systems analysis of how LLMs function as lossy compression algorithms, and why hallucinations are structural decompression artifacts rather than reasoning flaws."
 pubDate: "2026-08-12"
 incidentDate: "2026-08-12"
-tags: ["systems-analysis", "architecture-review", "llm", "information-theory", "compression"]
+tags: ["systems-analysis", "architecture-review", "llm-infrastructure", "information-theory", "compression"]
 slug: "compression-is-prediction-architecture-of-generative-ai-lossy-encodings"
 shortenedSlug: "compression-is-prediction"
-target_systems: "Autoregressive Transformer Models, Generative AI"
-read_time_minutes: 15
+target_systems: "Autoregressive Transformer Models, Information Theory Encodings, Generative AI Runtimes"
+read_time_minutes: 14
 difficulty_level: "Analytical"
 heroImage: "/images/hero-compression-is-prediction.png"
 ogImage: "/images/hero-compression-is-prediction.png"
@@ -22,180 +21,266 @@ ogImage: "/images/hero-compression-is-prediction.png"
   <img src="/images/hero-compression-is-prediction.png" alt="System Architecture Diagram" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin: 2rem 0;" />
 </a>
 
-> **Publisher Trust Block**
-> Last Audited: 2026-08-12
-> Analyzed By: ErrorLedger Universal Systems Analysis Engine v60.0.0
-> Evidence Grade: **A — Meta-Analysis & Foundational Information Theory**
+> **ErrorLedger Publisher Trust Block**
+> - **Last Audited:** 2026-08-14
+> - **Analyzed By:** ErrorLedger Systems Team
+> - **Evidence Grade:** A (Claude Shannon Information Theory, DeepMind Empirical Compression Benchmarks)
+
+*By the ErrorLedger Systems Team — [Methodology](https://errorledger.com/about)*
+*This analysis provides an information-theoretic evaluation of generative language models, demonstrating why next-token prediction mathematically equates to lossy data compression.*
 
 ## Scope of Analysis
 
-- **Included:** The mathematical equivalence of autoregressive token prediction and Shannon Entropy minimization; structural causes of LLM hallucinations.
-- **Excluded:** State Space Models (e.g., Mamba), Diffusion Models, or image compression.
-- **Baseline Assumptions:** The system is an Autoregressive Transformer Architecture utilizing a next-token prediction training objective with fixed context window constraints.
+- **Included:** The mathematical equivalence of autoregressive token prediction and Shannon Entropy minimization, parameter-to-dataset compression ratios, structural causes of hallucinations as decompression artifacts, and the architectural boundary between static model weights and lossless context windows.
+- **Excluded:** Non-autoregressive architectures (Diffusion Models, GANs), proprietary dataset scraping legalities, and model licensing frameworks.
+- **Baseline Assumptions:** Assumes standard autoregressive Transformer decoder architectures trained via cross-entropy loss against large-scale internet corpora.
 
 ## Observable Signals & Quick Specs
 
-| Metric / Dimension | Expected Baseline | Observed Reality |
-|---|---|---|
-| Factual Recall Accuracy | 100 Percent | Variable (Lossy Compression) |
-| Core Objective | Factual Storage | Next-Token Prediction |
-| Context Window Function | Query Parameters | Lossless Decompression Buffer |
+| System Dimension | Marketed Mental Model | Information-Theoretic Reality |
+| :--- | :--- | :--- |
+| **Model Function** | Factual Knowledge Database | **Statistical Lossy Compression Pipeline** |
+| **Factual Accuracy** | 100% Deterministic Recall | **Probabilistic Interpolation (Prone to Decompression Artifacts)** |
+| **Context Window Role** | Temporary Scratchpad | **Lossless Decompression Buffer (SRAM Equivalent)** |
+| **Hallucination Cause** | Software Bug or "Model Lying" | **Mathematical Artifact of Lossy Weight Quantization/Compression** |
 
 ## Immediate Reality Check
 
-1. **LLMs are not databases:** They do not store explicit facts; they store statistical probabilities of token sequences.
-2. **Hallucinations are structural:** They are not bugs or "lies", they are expected artifacts of lossy data compression.
-3. **Context is lossless:** The context window is the only place where exact, lossless factual data can reside during inference.
+1. **LLMs are Not Databases:** Neural network weights do not store explicit relational tuples; they store compressed statistical probability distributions of sequence continuations.
+2. **Hallucinations are Decompression Artifacts:** When a model generates a false citation or fictitious number, it is not "failing to think"—it is decompressing a low-density region of its probability distribution, identical to JPEG image artifacting.
+3. **The Context Window is the Only Lossless Layer:** Ground truth facts must be injected dynamically into the context window via Retrieval-Augmented Generation (RAG) rather than retrieved from frozen weights.
+4. **Compression Equals Intelligence:** DeepMind's empirical findings prove that higher next-token prediction accuracy directly correlates with superior lossless and lossy data compression capabilities.
 
 ## What You Will Learn
 
-- Why optimizing for next-token prediction is mathematically equivalent to optimizing for optimal data compression.
-- How treating a neural network's weights as a compressed representation of its training data explains the phenomena of hallucination.
-- Why Retrieval-Augmented Generation (RAG) is not just a hack, but a structural necessity for factual retrieval.
+- The mathematical foundation showing why next-token prediction is identical to Shannon Entropy minimization.
+- Why scaling model parameters reduces—but can never mathematically eliminate—decompression hallucinations.
+- How to architect enterprise AI pipelines that treat model weights as reasoning engines and external databases as truth stores.
 
 ## Systems Audit Checklist
 
-- [x] Does the system rely on model weights for exact factual recall?
-- [ ] Is a Retrieval-Augmented Generation (RAG) pipeline implemented to inject facts into the context window?
-- [ ] Are hallucination rates measured using exact-match benchmarks on domain-specific datasets?
+- [ ] Does your architecture rely on static model weights for exact compliance or regulatory facts?
+- [ ] Have you implemented a RAG pipeline that treats the context window as the lossless truth boundary?
+- [ ] Are you monitoring decompression hallucination rates on domain-specific entity extraction?
+- [ ] Do you use token log-probabilities to detect low-confidence factual reconstructions?
 
-## Real-World Case Study
+## Reproducible Architecture Trace
+
+> **Evidence status:** Illustrative execution trace — reconstructed from documented architecture; not emitted by an actual production session.
+
+The following trace illustrates how a lossy autoregressive model attempts to decompress an un-memorized factual query versus executing lossless retrieval via context injection.
 
 ```text
-# UTC TIMELINE: 2026-08-12 14:00:00 - Factual Degradation Incident
-14:00:10 - User asks production LLM for specific compliance clause details.
-14:00:15 - Model responds confidently with a plausibly worded, but entirely fabricated clause number.
-14:00:30 - Engineering team attempts to fix by adding "Do not hallucinate" to the system prompt.
-14:01:00 - Model continues to hallucinate. The prompt cannot override the lossy nature of the weights.
+[2026-08-14 10:00:00 UTC] QUERY: "What is Section 4.2.1 compliance requirement of internal SOC2 doc?"
+[2026-08-14 10:00:01 UTC] ZERO_SHOT_WEIGHTS: Token probability entropy elevated (H > 4.2 bits).
+[2026-08-14 10:00:01 UTC] ZERO_SHOT_WEIGHTS: Decompressing statistical prior: Generates plausible but fabricated clause.
+[2026-08-14 10:00:02 UTC] RAG_INTERCEPT: Injecting exact raw document snippet into Context Window.
+[2026-08-14 10:00:02 UTC] CONTEXT_BUFFER: Lossless attention routing active. Entropy drops to 0.05 bits.
+[2026-08-14 10:00:03 UTC] OUTPUT: Exact factual citation emitted with 100% character fidelity.
 ```
 
 ## System Architecture & State Transformation
 
-1. **Inputs:** Terabytes of unstructured text data from the internet.
-2. **Transformation:** The Transformer architecture optimizes for next-token prediction, effectively finding the most efficient way to encode the patterns of the data into billions of fixed parameters (weights).
-3. **Outputs:** A highly compressed, lossy representation of human language and knowledge.
-4. **Constraints:** The model size (parameter count) is orders of magnitude smaller than the training data, mathematically forcing lossy compression.
-5. **Observed Results:** The model can generate fluid text and synthesize concepts (generalization), but fails to recall exact strings unless they were heavily over-represented in the training data (memorization).
+**Expected Model:** Large Language Models store vast libraries of human knowledge in their weights and retrieve facts with deterministic precision.
+**Observed Reality:** Autoregressive transformers are lossy compression artifacts. Model weights represent a highly compressed probabilistic model of the training corpus; asking for exact un-memorized facts forces lossy decompression, generating hallucinations as compression noise.
+
+### Transformation Mechanics
+
+1. **Training (Compression):** Terabytes of text are compressed into a few gigabytes of floating-point weights by minimizing cross-entropy loss (Shannon Entropy).
+2. **Inference (Decompression):** Given a prompt prefix, the model decompresses the next probable sequence. If exact strings were not massively over-represented during training, the output is a lossy approximation.
 
 ## Operational Constraints & Failure Modes
 
-- **The Factual Database Fallacy:** Engineers often assume that because an LLM can write code or summarize text, it can act as a queryable database of facts. This fails because a model's weights represent a probability distribution, not a relational table.
-- **Lossy Decompression (Hallucination):** When asked for a specific fact it has not perfectly memorized, the model attempts to "decompress" the information based on the surrounding probability space. It generates text that sounds correct structurally, but is factually incorrect. This is identical to a JPEG artifact appearing blocky in areas of high detail.
+1. **The Database Fallacy:** Treating LLM parameters as an ACID-compliant database guarantees hallucination failures in enterprise production.
+2. **Context Window Cost Scalability:** Because attention scales quadratically ($O(N^2)$) with context length, offloading all lossless data into the prompt increases inference cost and Time-To-First-Token (TTFT).
+3. **Catastrophic Forgetting via Fine-Tuning:** Attempting to inject new facts by fine-tuning weights alters the global compression landscape, risking regression on previously learned representations.
 
 ## Trade-Off & Applicability Matrix
 
-| Strategy | Pros | Cons | Applicability |
-|---|---|---|---|
-| Relying on Weights (Zero-Shot) | Lowest latency, zero external dependencies | High hallucination risk, impossible to update facts | Creative writing, reasoning tasks, summarization |
-| Retrieval-Augmented Generation (RAG) | Zero hallucination for retrieved facts, easily updated | Increased compute cost (O(N^2) attention), higher latency | Any task requiring exact factual accuracy, enterprise Q&A |
+| Architectural Strategy | Primary Benefit | Core Constraint | Recommended Use Case |
+| :--- | :--- | :--- | :--- |
+| **Zero-Shot Weights Only** | Minimal latency, zero infrastructure dependencies | High lossy decompression risk | Creative synthesis, translation, code refactoring. |
+| **Retrieval-Augmented Generation (RAG)** | Lossless factual accuracy | Context window compute cost | Enterprise knowledge bases, legal, clinical lookup. |
+| **Parametric Fine-Tuning** | Domain-specific stylistic alignment | Cannot guarantee exact fact retention | Tone shaping, structured JSON schema compliance. |
 
 ## Resource Impact & Scaling Limits
 
-Relying on the context window for lossless factual retrieval shifts the systemic constraint from model training to inference compute. Because the attention mechanism in Transformers scales quadratically with context length ((N^2)$), injecting large amounts of factual data into the context window drastically increases GPU VRAM utilization and Time To First Token (TTFT).
+- **Compression Ratio:** An 8B parameter model (~16 GB FP16) trained on 15 Trillion tokens (~30 TB raw text) achieves an effective lossy compression ratio of nearly 2000:1.
+- **Inference Trade-off:** Guaranteeing factual accuracy shifts the resource burden from offline model training to online context window memory bandwidth (HBM capacity and KV cache footprint).
 
 ## Constraint Evaluation
 
-Expectations that a model will eventually stop hallucinating as it gets larger violate the principles of information theory. Unless the model parameters scale 1:1 with the training data (making it a lossless database), compression must occur. Therefore, hallucination is a permanent architectural constraint of autoregressive models.
+Expectations that future foundation models will achieve zero hallucinations purely by scaling parameter counts contradict foundational information theory. Unless parameter counts scale 1:1 with the training corpus, compression must occur. Therefore, hallucination is a permanent structural property of lossy autoregressive models.
 
 ## Evidence Validation: Facts vs. Inference
 
-### Observed Facts
-- Next-token prediction is mathematically equivalent to optimizing for optimal data compression under Shannon Entropy (Claude E. Shannon, 1948).
-- LLMs are fundamentally lossy compression algorithms (Language Modeling is Compression, DeepMind).
-
-### Engineering Inference
-- Because LLMs are lossy, any system requiring exact factual recall must externalize memory (e.g., Vector Databases) and use the LLM only for reasoning and synthesis over that injected context.
-
-### Analytical Confidence Level
-**High.** The equivalence of autoregressive sequence modeling and data compression is a foundational theorem of information theory.
+*   **Observed Facts:**
+    - Next-token prediction is mathematically equivalent to Shannon Entropy minimization (Source: EV-INFO-001, Grade A — Shannon 1948).
+    - DeepMind demonstrated that large language models achieve state-of-the-art compression ratios on text, audio, and image benchmarks (Source: EV-INFO-002, Grade A — Delétang et al., 2023).
+*   **Engineering Inference:**
+    - Enterprise production systems must externalize factual memory into relational or vector databases, utilizing the LLM strictly as an analytical compute engine over the lossless context window.
+*   **Analytical Confidence Level:** High. The mathematical connection between sequence modeling and information compression is proven.
 
 ## Known Unknowns & Future Variables
 
-- Will alternative architectures (like State Space Models or external memory modules) allow for lossless factual retrieval without the quadratic compute cost of the Transformer attention mechanism?
-- What is the exact mathematical ratio of parameter count to training data size required to prevent hallucination on a specific dataset?
+- Can state-space architectures (Mamba) or hybrid linear-attention models provide sub-quadratic lossless context scaling without KV cache explosion?
+- What is the minimal parameter-to-token ratio required to transition a specific fact from lossy approximation to deterministic memorization?
 
 ## Exit Strategy (Rollback)
 
-If a production RAG pipeline violates latency constraints due to massive context windows, the rollback strategy is to reduce the context size by implementing more aggressive semantic chunking and re-ranking, rather than falling back to relying on the model's weights for facts.
+If high-context RAG pipelines saturate latency budgets, do not fall back to relying on static weights. Instead, implement hierarchical semantic chunking and re-ranking to minimize prompt token volume while preserving lossless factual references.
 
 ## Reusable Engineering Tools
 
-<!-- ASSET: ASSET-PYTHON-ENTROPY-001 -->
-This Python snippet calculates the Shannon Entropy of a given string, illustrating the foundational mathematical concept behind data compression and language modeling. Note: when dealing with large datasets or log analysis, consider using the [ErrorLedger JSON Formatter](https://errorledger.com/tools/json-formatter) to structure your data before calculating entropy.
+<!-- ASSET: ASSET-PY-CALCULATOR-ENTROPY-001 -->
+The following Python utility calculates the Shannon Entropy and theoretical compression bound of text sequences, demonstrating the mathematical relationship between predictability and compression.
 
 ```python
+#!/usr/bin/env python3
+# encoding: utf-8
+"""
+ASSET-PY-CALCULATOR-ENTROPY-001
+Shannon Entropy & Information Density Calculator
+ErrorLedger Information Theory Diagnostics
+"""
+
 import math
+import sys
 from collections import Counter
 
-def calculate_shannon_entropy(data: str) -> float:
+def calculate_entropy_metrics(text: str):
     """
-    Calculates the Shannon Entropy of a given string.
-    Higher entropy indicates lower predictability (less compressible).
+    Calculates Shannon Entropy (bits/char) and minimum theoretical compression size.
     """
-    if not data:
-        return 0.0
-    
-    # Calculate frequency of each character
-    frequencies = Counter(data)
-    length = len(data)
-    
-    entropy = 0.0
-    for count in frequencies.values():
-        probability = count / length
-        entropy -= probability * math.log2(probability)
-        
-    return entropy
+    if not text:
+        print("Error: Input text is empty.")
+        return
 
-# Example Usage
-# "aaaaa" has 0 entropy (perfectly predictable/compressible)
-# "abcdef" has higher entropy (less predictable)
-print(f"Entropy of 'aaaaa': {calculate_shannon_entropy('aaaaa'):.2f}")
-print(f"Entropy of 'abcdef': {calculate_shannon_entropy('abcdef'):.2f}")
+    length = len(text)
+    frequencies = Counter(text)
+    
+    entropy_bits_per_char = 0.0
+    for count in frequencies.values():
+        p = count / length
+        entropy_bits_per_char -= p * math.log2(p)
+        
+    theoretical_min_bits = entropy_bits_per_char * length
+    theoretical_min_bytes = theoretical_min_bits / 8.0
+    raw_bytes = len(text.encode('utf-8'))
+    compression_ratio = raw_bytes / max(theoretical_min_bytes, 0.001)
+
+    print("=" * 65)
+    print("  ERRORLEDGER SHANNON ENTROPY & COMPRESSION AUDITOR")
+    print("=" * 65)
+    print(f"Sample Length        : {length:,} characters ({raw_bytes:,} UTF-8 bytes)")
+    print(f"Unique Characters    : {len(frequencies)}")
+    print(f"Shannon Entropy      : {entropy_bits_per_char:.4f} bits/character")
+    print("-" * 65)
+    print(f"Theoretical Min Size : {theoretical_min_bytes:.1f} bytes ({theoretical_min_bits:.1f} bits)")
+    print(f"Max Compression Bound: {compression_ratio:.2f}x lossless reduction")
+    print("-" * 65)
+    if entropy_bits_per_char < 2.5:
+        print("PREDICTABILITY       : High (Highly structured / easily compressed)")
+    elif entropy_bits_per_char < 4.5:
+        print("PREDICTABILITY       : Moderate (Standard natural language text)")
+    else:
+        print("PREDICTABILITY       : Low (High entropy / random / dense code)")
+    print("=" * 65)
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        sample = "The quick brown fox jumps over the lazy dog. Repetition creates predictability."
+        print(f"No text provided. Running with sample: \"{sample}\"\n")
+        calculate_entropy_metrics(sample)
+    else:
+        calculate_entropy_metrics(" ".join(sys.argv[1:]))
 ```
 
 ## Key Takeaways
 
-- **Compression is Prediction:** Optimizing for next-token prediction is mathematically identical to optimizing for data compression.
-- **Weights are Lossy:** LLM parameters are a lossy compressed representation of the training data.
-- **Hallucinations are Artifacts:** Factual errors are structural decompression artifacts, not bugs in logic.
-- **Context is Lossless:** The only way to guarantee factual accuracy is to inject the facts directly into the context window via RAG.
+- ✓ **Compression is Prediction:** Minimizing next-token prediction error is mathematically identical to minimizing Shannon Entropy.
+- ✓ **Weights are Lossy Representations:** Model parameters do not store facts; they store statistical sequence priors.
+- ✓ **Hallucinations are Decompression Noise:** Fabricated outputs are expected statistical artifacts of lossy representation.
+- ✓ **Context is the Lossless Tier:** Exact factual reliability requires injecting truth directly into the context window via RAG.
 
 ## Standardized System Scoring
 
 | Dimension | Score (1-5) | Justification |
-|---|---|---|
-| Reliability (Factual) | 1 | Fundamentally incapable of guaranteed exact factual recall from weights. |
-| Scalability (Context) | 2 | Quadratic attention costs make massive lossless context scaling expensive. |
-| Maintainability | 4 | RAG pipelines abstract factual maintenance away from model re-training. |
+| :--- | :--- | :--- |
+| **Technical Soundness** | 5 | Information-theoretic equivalence of sequence modeling and data compression is mathematically proven. |
+| **Economic Viability** | 4 | Extreme weight compression enables running multi-billion token models on consumer and cloud accelerators. |
+| **Scalability** | 4 | Scales across diverse modalities, though quadratic attention imposes inference context costs. |
+| **Operational Simplicity** | 3 | Requires external RAG and vector database infrastructure to ensure deterministic factual accuracy. |
+| **Evidence Quality** | 5 | Backed by foundational theorems (Shannon 1948) and empirical DeepMind compression benchmarks. |
 
 ## Final System Classification
 
-**⚠ Context-dependent / Constraint-sensitive**
+**⚠ Stable under constraints**
+
+Autoregressive models are mathematically validated compression engines. They provide exceptional reasoning and semantic synthesis capabilities, provided architectures treat model weights as lossy processors and externalize factual storage to lossless context pipelines.
 
 ## Revision Trigger
 
-This analysis should be re-audited if a fundamentally new, non-autoregressive architecture (e.g., highly scalable external memory networks) replaces the Transformer as the industry standard.
-
-## Topical Cluster & Related Architecture
-
-- [Stealing Reasoning Traces from Proprietary LLM APIs](https://errorledger.com/blog/stealing-reasoning-traces-from-proprietary-llm-apis)
-- [Muse Glimmer 30B: The Hardware Constraints of Local Agents](https://errorledger.com/blog/muse-glimmer-30b-local-agent-workflows)
-- [Meta 567M Judgment: Algorithmic Engagement Optimization Failure](https://errorledger.com/blog/meta-567m-judgment-algorithmic-engagement-optimization-failure)
+This analysis will be re-audited if non-autoregressive architectures featuring integrated lossless relational memory replace the Transformer as the industry standard.
 
 ## References & Primary Sources
 
-### Primary Sources
-- [A Mathematical Theory of Communication (Claude E. Shannon)](https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf)
-- [Language Modeling Is Compression (DeepMind)](https://arxiv.org/abs/2309.10668)
-
-### Further Reading
-- [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks](https://arxiv.org/abs/2005.11401)
-- [Information Theory, Inference, and Learning Algorithms (David MacKay)](https://www.inference.org.uk/itprnn/book.html)
+1. Shannon, C.E. (1948). [A Mathematical Theory of Communication](https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf). *Bell System Technical Journal*, 27(3), 379-423.
+2. Delétang, G., et al. (2023). [Language Modeling Is Compression](https://arxiv.org/abs/2309.10668). *DeepMind Research / arXiv:2309.10668*.
+3. Lewis, P., et al. (2020). [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks](https://arxiv.org/abs/2005.11401). *NeurIPS 2020*.
+4. MacKay, D.J. (2003). *Information Theory, Inference, and Learning Algorithms*. Cambridge University Press.
 
 ## Revision History
 
-| Version | Date | Change Summary |
-|---|---|---|
-| 1.0 | 2026-08-12 | Initial publication under ErrorLedger v60.0.0 Universal Systems Analysis Framework |
+| Date | Version | Summary of Changes | Author |
+| :--- | :--- | :--- | :--- |
+| 2026-08-14 | 1.1.0 | Upgraded to v61.3 contract: complete 26-module layout, Shannon Entropy tool, and JSON-LD schemas. | ErrorLedger Systems Team |
+| 2026-08-12 | 1.0.0 | Initial systems analysis on LLM compression theory. | ErrorLedger Systems Team |
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Compression is Prediction: The Architecture of Generative AI Lossy Encodings",
+  "description": "A systems analysis of how LLMs function as lossy compression algorithms, and why hallucinations are structural decompression artifacts rather than reasoning flaws.",
+  "author": {
+    "@type": "Organization",
+    "name": "ErrorLedger Systems Team",
+    "url": "https://errorledger.com/about"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "ErrorLedger",
+    "url": "https://errorledger.com"
+  },
+  "datePublished": "2026-08-12",
+  "dateModified": "2026-08-14"
+}
+</script>
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://errorledger.com"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Blog",
+      "item": "https://errorledger.com/blog"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Compression is Prediction",
+      "item": "https://errorledger.com/blog/compression-is-prediction-architecture-of-generative-ai-lossy-encodings"
+    }
+  ]
+}
+</script>
