@@ -57,7 +57,7 @@ Controlled physiological measurements reveal a more nuanced and constrained biol
 | :--- | :--- | :--- |
 | **Dopamine Response** | Permanent baseline dopamine upregulation | **Acute ~250% transient spike** (documented in 1-hour immersion at 14°C; decays over hours) |
 | **Resistance Training Adaptation** | Faster muscle repair and accelerated growth | **Significantly blunts muscle hypertrophy and strength gains** when done immediately post-lifting |
-| **Muscle Soreness (DOMS)** | Completely eliminates post-workout inflammation | **Modest reduction in perceived soreness during first 24h-48h** (evidence remains limited and heterogeneous) |
+| **Muscle Soreness (DOMS)** | Purported complete elimination of soreness | **Modest reduction in perceived soreness during first 24h-48h** (evidence remains limited and heterogeneous) |
 | **Cardiovascular Impact** | Universal cardiovascular conditioner | **Triggers acute sympathetic activation, vasoconstriction, and elevated cardiac workload** |
 
 ## Immediate Reality Check
