@@ -2,8 +2,8 @@
 pipeline_contract_version: "61.3.0"
 archetype: "lifestyle-systems"
 pipeline_type: "lifestyle"
-title: "Cold Plunge Cortisol Spike in Women: Biological Mechanisms, HPA Habituation, and Endocrine Constraints"
-meta_title: "Cold Plunge Cortisol in Women: HPA Habituation & Hormone Claims"
+title: "Cold Plunge Cortisol in Women: Acute Stress, HPA Adaptation, and the \"Progesterone Steal\" Claim"
+meta_title: "Cold Plunge Cortisol in Women: HPA Adaptation & Hormone Claims"
 description: "A systems audit of cold exposure in women: evaluating acute cortisol spikes, HPA habituation, menstrual cycle interactions, and pregnenolone steal claims."
 pubDate: "2026-08-14"
 incidentDate: "2026-08-14"
@@ -18,7 +18,7 @@ heroImage: "/images/hero-cold-plunge-cortisol-women.png"
 ogImage: "/images/hero-cold-plunge-cortisol-women.png"
 ---
 
-# Cold Plunge Cortisol Spike in Women: Biological Mechanisms, HPA Habituation, and Endocrine Constraints
+# Cold Plunge Cortisol in Women: Acute Stress, HPA Adaptation, and the "Progesterone Steal" Claim
 
 > **ErrorLedger Publisher Trust Block**
 > - **Last Audited:** 2026-08-14
@@ -55,25 +55,25 @@ Proponents of the warning narrative assert that cold shock over-activates the hy
 
 Controlled physiological trials and enzymatic pathway mapping demonstrate a distinct, constrained reality that contradicts both maximalist narratives:
 
-1. **Acute HPA Activation Is a Variable Hormetic Response:** Cold exposure can activate sympathetic and HPA-axis pathways, but the magnitude and direction of ACTH and cortisol changes depend strongly on exposure temperature, duration, timing, and acclimatization status. Cutaneous cold thermoreceptors stimulate sympathetic nerve terminals and hypothalamic corticotropin-releasing hormone (CRH), prompting anterior pituitary ACTH secretion and adrenal cortisol release under acute novel stress.
-2. **Longitudinal Adaptation Induces HPA Habituation:** In a prospective 12-week controlled human trial in healthy females (*Leppäluoto et al., 2008*, $n=20$; 10 winter swimmers at 0°C–2°C for 20s and 10 cryotherapy subjects at −110°C for 2 min, 3x/week), post-exposure plasma ACTH and cortisol concentrations measured 35 minutes following cold exposure were significantly lower at weeks 4 to 12 compared to initial baseline exposures at week 1. This finding is consistent with habituation of the HPA response rather than progressive adrenal exhaustion.
-3. **Repeated Acute Norepinephrine Response:** While cortisol and ACTH habituated over repeated sessions, repeated cold exposures continued to produce a substantial acute 2-fold to 3-fold plasma norepinephrine increase across all 12 weeks of the female intervention (*Leppäluoto et al., 2008*), demonstrating ongoing sympathetic alertness and local vasoconstrictor tone without progressive adrenocortical burnout.
-4. **Steroidogenesis Is Compartmentalized:** The popular "pregnenolone steal" model is not supported as a demonstrated systemic mechanism in humans. As established in clinical endocrinology (*Cadegiani & Kater, 2016*), steroidogenesis is enzymatically compartmentalized within specific tissue zones and cellular organelles. There is no established evidence that acute adrenal cortisol production directly depletes ovarian progesterone through a shared, depletable precursor pool.
+1. **Acute HPA Activation Is a Variable Response:** Cold exposure can activate sympathetic and HPA-axis pathways, but the magnitude and direction of ACTH and cortisol changes depend strongly on exposure temperature, duration, timing, and acclimatization status. Cutaneous cold thermoreceptors stimulate sympathetic nerve terminals and hypothalamic corticotropin-releasing hormone (CRH), prompting anterior pituitary ACTH secretion and adrenal cortisol release under acute novel stress.
+2. **Attenuation of Measured HPA Response Over Time:** In a prospective 12-week controlled human trial in healthy females (*Leppäluoto et al., 2008*, $n=20$; 10 winter swimmers at 0°C–2°C for 20s and 10 cryotherapy subjects at −110°C for 2 min, 3x/week), post-exposure plasma ACTH and cortisol concentrations measured 35 minutes following cold exposure were significantly lower at weeks 4 to 12 compared to initial baseline exposures at week 1. Repeated exposure was associated with attenuation of the measured post-exposure ACTH and cortisol response, consistent with HPA-axis habituation rather than progressive adrenal exhaustion.
+3. **Repeated Acute Norepinephrine Response:** While cortisol and ACTH responses attenuated across later trial intervals, repeated cold exposures continued to produce a substantial acute 2-fold to 3-fold plasma norepinephrine increase across all 12 weeks of the female intervention (*Leppäluoto et al., 2008*), demonstrating ongoing acute sympathoadrenal stimulation without progressive adrenocortical burnout.
+4. **Steroidogenesis Is Compartmentalized:** The popular "pregnenolone steal" model is not supported as a demonstrated systemic mechanism in humans. As established in clinical endocrinology (*Cadegiani & Kater, 2016*), steroidogenesis is regulated by tissue-specific enzyme expression, cellular compartmentalization, and endocrine signaling. There is no established human evidence that an acute increase in adrenal cortisol synthesis diverts sufficient pregnenolone or other steroidogenic substrate to measurably deplete ovarian progesterone production.
 
 ## Observable Signals & Quick Specs
 
 | Physiological Parameter | Proponent Claim / Warning | Measured Clinical & Biological Reality |
 | :--- | :--- | :--- |
 | **Acute Cortisol Response** | Destructive, prolonged toxic cortisol surge | **Variable acute response**; magnitude and direction depend on temperature, duration, and individual acclimatization |
-| **Chronic HPA Adaptation** | Progressively worsens adrenal burnout | **Associated with HPA habituation**; significantly attenuated post-exposure ACTH and cortisol at weeks 4–12 in female trial (*Leppäluoto et al., 2008*, $n=20$) |
+| **Chronic HPA Adaptation** | Progressively worsens adrenal burnout | **Associated with attenuation of post-exposure ACTH and cortisol** across later weeks (*Leppäluoto et al., 2008*, $n=20$) |
 | **Norepinephrine Surge** | Suppressed over time due to adrenal fatigue | **Substantial acute 2x–3x post-exposure surge** maintained across repeated sessions in female cohorts |
-| **Progesterone Steal Mechanism** | Cortisol synthesis drains ovarian progesterone pools | **Not established as a systemic mechanism**; steroidogenesis is enzymatically compartmentalized across adrenal and ovarian tissues |
-| **Menstrual Phase Influence** | Cold plunge destroys the luteal phase entirely | **Subtle thermoregulatory threshold shifts** during mid-luteal phase due to higher core temperature; autonomic cold-defense and thermal sensation differences remain modest and mixed |
+| **Progesterone Steal Mechanism** | Cortisol synthesis drains ovarian progesterone pools | **Not established as a systemic mechanism**; steroidogenesis is regulated by tissue-specific cellular compartmentalization |
+| **Menstrual Phase Influence** | Cold plunge destroys the luteal phase entirely | **Subtle thermoregulatory set-point shifts** during mid-luteal phase; available evidence does not establish large or clinically universal differences in cold tolerance |
 
 ## Immediate Reality Check
 
-1. **Acute response is not chronic dysfunction:** An acute surge in cortisol during cold exposure is a normal adaptive physiological response to thermal stress, fundamentally distinct from chronic psychological stress or systemic hypercortisolemia.
-2. **The HPA axis adapts through habituation:** Controlled data confirm that healthy females performing regular cold exposure experience a dampened cortisol response over 4 to 12 weeks, consistent with habituation rather than adrenal exhaustion.
+1. **Acute response is not chronic dysfunction:** An acute surge in cortisol during cold exposure is an adaptive physiological response to thermal stress, fundamentally distinct from chronic psychological stress or systemic hypercortisolemia.
+2. **Attenuation of measured stress response:** Controlled data in healthy females indicate that repeated cold exposures are associated with dampened post-exposure cortisol surges across later trial weeks, consistent with adaptation rather than adrenal collapse.
 3. **Steroidogenesis does not "steal" progesterone:** Adrenal glands and ovaries produce steroid hormones independently through distinct intracellular enzyme systems; cortisol synthesis does not directly drain ovarian progesterone stores.
 4. **Allostatic load context matters:** While cold water exposure does not inherently damage female hormones, adding extreme thermal shock on top of severe caloric restriction, sleep debt, and high training volume can increase cumulative neuroendocrine stress.
 
@@ -100,9 +100,9 @@ The physiological response to cold exposure operates through coupled neuroendocr
         │                         ┌────────┴────────────────────────┐
         │                         ▼                                 ▼
         │                  [Initial Exposures]             [Repeated Exposures]
-        │                  (Acute ACTH/Cortisol Peak)      (4–12 Weeks Habituation)
+        │                  (Acute ACTH/Cortisol Peak)      (4–12 Weeks Attenuation)
         ▼                                                           │
-[Alertness & Vasoconstriction                                       ▼
+[Acute Noradrenergic Response                                       ▼
  Maintained Across Weeks]                                  [Attenuated Post-Exposure
                                                             ACTH & Cortisol Surge]
 ```
@@ -116,9 +116,9 @@ The evidence base evaluating cold exposure, cortisol dynamics, and female endocr
 - **Prospective Controlled Endocrine Trials (Grade B−):** *Leppäluoto et al. (2008)* evaluated healthy females ($n=20$) across a 12-week longitudinal protocol (winter swimming at 0°C–2°C for 20s vs. whole-body cryotherapy at −110°C for 2 min, 3x/week), tracking plasma ACTH, cortisol, epinephrine, norepinephrine, and beta-endorphin at pre-exposure, 5-minute, and 35-minute post-immersion marks. This trial provides direct evidence for long-term HPA habituation in females under extreme cold protocols.
 - **Acute Catecholamine Kinetics in Males (Grade B):** *Šrámek et al. (2000)* evaluated 1-hour water immersion at 14°C, 20°C, and 32°C in healthy young men ($n=10$), demonstrating pronounced noradrenergic increases without an increase in cortisol (cortisol trended downward during prolonged immersion). Because this study was conducted exclusively in young men under 1-hour immersion conditions, it should not be treated as female-specific evidence for brief recreational cold plunges.
 - **Cross-Sectional Observational Cohort Surveys (Grade C):** *Pound, Massey, Harper et al. (2024)* surveyed $n=1,114$ cold-water swimming females (ages 16–80, mean age 49) regarding perceived impacts on menstrual and perimenopausal symptoms. While 46.7% reported perceived improvements in menstrual anxiety and 46.9% reported perceived reductions in perimenopausal anxiety, the observational design captures perceived subjective changes rather than blinded hormonal biomarker outcomes.
-- **Thermoregulatory & Menstrual Cycle Studies (Grade C):** Laboratory investigations show that although progesterone elevates baseline core body temperature (~0.3°C–0.5°C) during the mid-luteal phase, measured autonomic cold-defense responses and subjective thermal sensation do not consistently differ between cycle phases.
+- **Thermoregulatory & Menstrual Cycle Studies (Grade C):** Laboratory reviews (*Charkoudian & Stachenfeld, 2014*) show that progesterone elevates basal core body temperature (~0.3°C–0.5°C) and modifies some thermoregulatory thresholds during the mid-luteal phase; however, available evidence does not establish a large or clinically universal difference in cold tolerance across cycle phases.
 - **Adrenal Fatigue Systematic Review (Grade A–B):** *Cadegiani & Kater (2016)* systematically reviewed 58 clinical studies evaluating adrenal exhaustion claims, confirming that "adrenal fatigue" lacks a scientifically established diagnostic basis in medical endocrinology.
-- **Steroidogenic Pathway Compartmentalization (Endocrine Physiology):** Steroidogenic enzyme pathways ($CYP11B1$, $CYP17A1$, $CYP21A2$) are tissue- and organelle-specific, demonstrating that adrenal cortisol synthesis operates within distinct intracellular compartments from ovarian steroidogenesis.
+- **Steroidogenic Pathway Regulation (Endocrine Physiology):** Steroidogenesis is governed by tissue-specific enzyme expression and cellular compartmentalization. This organization does not support the simplified hypothesis in which an acute adrenal cortisol demand automatically drains ovarian progesterone production.
 
 ## Evidence Validation: Facts vs. Inference
 
@@ -129,17 +129,17 @@ The evidence base evaluating cold exposure, cortisol dynamics, and female endocr
 - Human steroid hormone synthesis is enzymatically compartmentalized across adrenal and gonadal tissues rather than drawn from a shared, depletable circulating substrate pool (*EV-LIFESTYLE-005*, Systematic Review).
 
 ### Systemic Inference
-- The observed attenuation in post-exposure ACTH and cortisol indicates that the human central nervous system classifies regular cold exposure as a familiar environmental input, dampening acute adrenocortical reactivity over time.
+- The reduced ACTH and cortisol response observed across later trial intervals is consistent with habituation to the repeated cold stimulus.
 - The luteal phase raises baseline core temperature and can modify some thermoregulatory thresholds, but available evidence does not establish a universal, clinically meaningful increase in cold intolerance across cycle phases.
 
 ### Analytical Confidence Level
-- **High Confidence:** High confidence that the popular "pregnenolone steal" narrative is not established as a demonstrated systemic mechanism in humans, and that the female HPA axis exhibits habituation over repeated extreme cold exposures.
+- **Moderate-to-High Confidence:** Repeated extreme-cold exposure was associated with attenuation of the measured post-exposure ACTH/cortisol response in the available female longitudinal study, and there is high confidence that the popular "pregnenolone steal" narrative is not established as a demonstrated systemic mechanism in humans.
 - **Medium Confidence:** Generalizability of 0°C–2°C winter swimming habituation data to 10°C–15°C recreational plunge protocols, and specific magnitude of menstrual cycle phase modulation on cold tolerance.
 - **Low / Observational Confidence:** Causal endocrine mechanism behind self-reported menstrual and perimenopausal symptom improvements in survey cohorts.
 
 ## Operational Constraints & Failure Modes
 
-Cold water exposure functions as a hormetic stimulus only when physiological recovery capacity accommodates the applied thermal stress:
+Cold exposure can function as a controlled physiological stressor when exposure intensity remains within an individual's recovery capacity:
 
 1. **Cumulative Allostatic Stress Overload:** In individuals experiencing low energy availability (caloric restriction), chronic sleep debt, and high training volume, cold shock acts as an additive stressor. Under severe chronic energy deficiency, cumulative neuroendocrine strain can suppress hypothalamic GnRH pulsatility, potentially contributing to Functional Hypothalamic Amenorrhea (FHA).
 2. **Individual Sleep & Autonomic Sensitivity:** Timing relative to sleep remains individual. Evening cold exposure alters skin and core temperature kinetics, but controlled crossover trials in trained male cyclists (*Robey et al., 2013*, $n=11$) showed no significant alterations in total sleep time, sleep efficiency, sleep onset latency, or melatonin. Individuals sensitive to noradrenergic arousal may still prefer scheduling cold sessions earlier in the day.
@@ -155,6 +155,7 @@ For a broader evaluation of how cold water immersion affects athletic recovery p
 
 ## Safety Constraints & Medical Considerations
 
+- **Initial Cold-Shock Response:** The initial cold-shock response can produce involuntary hyperventilation, tachycardia, and rapid peripheral vasoconstriction; uncontrolled breathing during entry is a particular concern in unsupervised immersion.
 - **Cardiovascular Considerations:** Cold water exposure produces immediate peripheral vasoconstriction and transient elevations in blood pressure and cardiac workload. Individuals with diagnosed coronary artery disease, uncontrolled hypertension, or cardiac arrhythmias should seek medical advice before beginning cold immersion protocols.
 - **Peripheral Vascular Conditions:** Individuals diagnosed with Raynaud's phenomenon, cryoglobulinemia, or cold urticaria should consult a qualified physician, as extreme cold exposure can precipitate acute digital ischemia or severe histaminergic reactions.
 - **Athletic Recovery Objectives:** Avoid routine immediate post-resistance-training cold water immersion when skeletal muscle hypertrophy is the primary goal; if CWI is used, separating it from resistance training is a conservative strategy because the strongest interference evidence concerns immediate post-exercise application.
@@ -163,7 +164,7 @@ For a broader evaluation of how cold water immersion affects athletic recovery p
 
 | Reader Scenario / Primary Objective | Practical Guidance | Physiological Rationale & Trade-Off |
 | :--- | :--- | :--- |
-| **Healthy Female Seeking Mood & Alertness** | **Reasonable / Evidence limited** (Common recreational range: brief exposures 2–4x/week) | Delivers robust acute norepinephrine response; HPA axis habituates over repeated exposures, dampening post-cold cortisol reactivity. Observational survey data indicates perceived mood improvements. |
+| **Healthy Female Seeking Mood & Alertness** | **Reasonable / Evidence limited** (Common recreational range: brief exposures 2–4x/week) | Produces a reproducible acute sympathetic/noradrenergic response. Self-reported mood benefits have been observed in cold-water swimming cohorts, but causal evidence remains limited. |
 | **Maximizing Skeletal Muscle Hypertrophy** | **Avoid immediate post-lifting immersion** | Rapid cooling attenuates acute anabolic signaling; if CWI is used, separating it from resistance training is a conservative strategy. |
 | **High Allostatic Stress & Caloric Deficit** | **Use with caution / Reduce frequency** | Additive physical stressors can increase cumulative neuroendocrine strain; prioritize energy availability and sleep first. |
 | **Mid-Luteal Menstrual Phase** | **Calibrate to individual comfort** | Higher baseline core temperature slightly alters thermal set points; adjust exposure duration according to personal thermal tolerance. |
@@ -171,8 +172,8 @@ For a broader evaluation of how cold water immersion affects athletic recovery p
 
 ## Resource Impact & Implementation Cost
 
-- **Financial Investment:** Ranges from minimal expense (domestic cold showers or ice in a bathtub) to substantial capital outlay (dedicated chiller systems and insulated tubs at $2,500–$8,000).
-- **Time Commitment:** Approximately 15 to 25 minutes total per session, including preparation, 1 to 3 minutes of immersion, and gradual natural rewarming.
+- **Financial Investment:** Dedicated chiller-and-tub systems can require substantially greater upfront investment than domestic cold-water setups.
+- **Time Commitment:** Total time depends on preparation, immersion duration, and individual rewarming rates.
 - **Biological Demands:** Relies on intact thermoregulatory and metabolic pathways for non-shivering and shivering thermogenesis.
 
 ## Effect Size & Practical Significance
@@ -256,21 +257,17 @@ class SubjectTracker:
             )
 
         # Habituation context based on Leppäluoto et al. (2008) timeline
-        if self.total_weeks_active >= 12:
+        if self.total_weeks_active >= 4:
             habituation_note = (
-                "12+ weeks of repeated exposure: the available female longitudinal "
-                "study observed attenuated post-exposure ACTH/cortisol responses."
-            )
-        elif self.total_weeks_active >= 4:
-            habituation_note = (
-                "4-11 weeks of repeated exposure: the available female longitudinal "
-                "study observed attenuation of post-exposure ACTH/cortisol responses "
-                "during this interval."
+                "Repeated-exposure duration overlaps with the later sampling period "
+                "of the available female study, but study-specific cold protocols "
+                "cannot be used to predict individual physiological adaptation."
             )
         else:
             habituation_note = (
-                "0-3 weeks: early exposure phase; acute cold responses may be more "
-                "pronounced before habituation develops."
+                "Exposure duration is shorter than the later sampling period in "
+                "the available female longitudinal study; individual adaptation "
+                "cannot be inferred."
             )
 
         return {
@@ -312,7 +309,7 @@ This logging tool provides structured protocol tracking without calculating ungr
 ## Key Takeaways
 
 - ✓ **Acute neuroendocrine response is variable and condition-dependent:** Cold exposure can activate sympathetic and HPA-axis responses, but the magnitude and direction of ACTH and cortisol changes depend strongly on exposure conditions, timing, and acclimatization; norepinephrine responses are more consistently pronounced.
-- ✓ **Evidence supports HPA habituation:** Controlled human trials demonstrate that repeated cold exposures over 4 to 12 weeks significantly attenuate post-exposure ACTH and cortisol spikes in healthy females while maintaining noradrenergic alertness.
+- ✓ **Evidence is consistent with attenuation of the measured post-exposure HPA response:** Controlled human trials demonstrate that repeated cold exposures over 4 to 12 weeks significantly attenuate post-exposure ACTH and cortisol spikes in healthy females while maintaining noradrenergic alertness.
 - ✓ **The "pregnenolone steal" hypothesis is unsupported:** Steroidogenesis is enzymatically compartmentalized across adrenal and ovarian tissues; there is no established evidence that cortisol synthesis siphons off ovarian progesterone.
 - ✓ **Cumulative allostatic stress requires management:** While cold exposure does not inherently damage female hormones, combining extreme thermal stress with chronic caloric restriction, high training volume, and sleep debt can increase total neuroendocrine strain.
 - ✓ **Goal-based timing matters for athletes:** Cold water immersion immediately post-lifting attenuates muscle hypertrophy signaling; if CWI is used, separating it from resistance training is a conservative strategy because the strongest interference evidence concerns immediate post-exercise application.
@@ -323,7 +320,7 @@ This logging tool provides structured protocol tracking without calculating ungr
 | :--- | :---: | :--- |
 | **1. Biological Plausibility** | **4 / 5** | Well-characterized neuroendocrine pathway (cutaneous cold sensation → CRH/ACTH → adrenal cortisol & noradrenergic surge). |
 | **2. Evidence Quality** | **3.5 / 5** | Controlled trials support HPA habituation (*Leppäluoto et al., 2008*); however, studies feature small cohorts ($n=20$) and specific cold protocols (winter swimming/cryotherapy). |
-| **3. Effect Magnitude** | **3 / 5** | Acute catecholamine elevation is robust (2x–3x); chronic basal hormone shifts are modest due to rapid HPA habituation. |
+| **3. Effect Magnitude** | **3 / 5** | Acute catecholamine elevation is robust (2x–3x); chronic basal hormone shifts are not established by the available female cold-exposure evidence. |
 | **4. Sustainability** | **3 / 5** | Initial thermal friction and cold shock distress require deliberate acclimatization and routine consistency. |
 | **5. Implementation Cost** | **3 / 5** | Low for basic cold showers or ice in domestic tubs; moderate to high for dedicated commercial chillers. |
 | **6. Risk Profile** | **4 / 5** | Low risk for healthy non-pregnant cohorts; elevated risk in diagnosed cardiovascular disease or severe energy deficiency. |
@@ -332,7 +329,7 @@ This logging tool provides structured protocol tracking without calculating ungr
 
 **⚠ Conditionally effective**
 
-*Cold water exposure produces a robust acute catecholamine surge and is associated with HPA-axis habituation over repeated exposure in the available 12-week female study. Available evidence does not support the claim of universal endocrine disruption, and no established human evidence demonstrates the proposed systemic "progesterone steal" mechanism. However, its utility remains conditional upon respecting total allostatic stress budgets and separating exposure from post-resistance hypertrophy training.*
+*Cold water exposure produces a robust acute catecholamine surge and is associated with attenuation of the measured post-exposure ACTH/cortisol response over repeated exposure in the available 12-week female study. Available evidence does not support the claim of universal endocrine disruption, and no established human evidence demonstrates the proposed systemic "progesterone steal" mechanism. However, its utility remains conditional upon respecting total allostatic stress budgets and separating exposure from post-resistance hypertrophy training.*
 
 ## Revision Trigger
 
@@ -345,7 +342,7 @@ This analysis will be formally revised if:
 - [Leppäluoto J, et al. (2008) — *Effects of long-term whole-body cold exposures on plasma concentrations of ACTH, beta-endorphin, cortisol, catecholamines and cytokines in healthy females*. Scand J Clin Lab Invest.](https://doi.org/10.1080/00365510701516350)
 - [Pound M, Massey H, Harper JC, et al. (2024) — *How do women feel cold water swimming affects their menstrual and perimenopausal symptoms?* Post Reproductive Health.](https://doi.org/10.1177/20533691241227100)
 - [Šrámek P, et al. (2000) — *Human physiological responses to immersion into water of different temperatures*. Eur J Appl Physiol.](https://doi.org/10.1007/s004210050065)
-- [Robey E, et al. (2013) — *Post-exercise cold water immersion does not alter subsequent sleep architecture or melatonin in trained cyclists*. J Sports Sci.](https://doi.org/10.1080/02640414.2013.805237)
+- [Robey E, Dawson B, Halson S, Gregson W, King S, Goodman C, Eastwood P. (2013) — *Effect of evening postexercise cold water immersion on subsequent sleep*. Med Sci Sports Exerc.](https://doi.org/10.1249/MSS.0b013e318287f321)
 - [Bleakley C, et al. (2012) — *Cold water immersion for preventing and treating muscle soreness after exercise*. Cochrane Database of Systematic Reviews.](https://doi.org/10.1002/14651858.CD008262.pub2)
 - [Charkoudian N, Stachenfeld NS. (2014) — *Sex hormone effects on autonomic mechanisms of thermoregulation in humans*. Comprehensive Physiology.](https://doi.org/10.1002/cphy.c130029)
 - [Cadegiani FA, Kater CE. (2016) — *Adrenal fatigue does not exist: a systematic review*. BMC Endocrine Disorders.](https://doi.org/10.1186/s12902-016-0128-4)
@@ -354,7 +351,7 @@ This analysis will be formally revised if:
 {
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": "Cold Plunge Cortisol Spike in Women: Biological Mechanisms, HPA Habituation, and Endocrine Constraints",
+  "headline": "Cold Plunge Cortisol in Women: Acute Stress, HPA Adaptation, and the \"Progesterone Steal\" Claim",
   "description": "A systems audit of cold exposure in women: evaluating acute cortisol spikes, HPA habituation, menstrual cycle interactions, and pregnenolone steal claims.",
   "datePublished": "2026-08-14",
   "dateModified": "2026-08-14",
@@ -395,7 +392,7 @@ This analysis will be formally revised if:
     {
       "@type": "ListItem",
       "position": 3,
-      "name": "Cold Plunge Cortisol Spike in Women",
+      "name": "Cold Plunge Cortisol in Women",
       "item": "https://errorledger.com/blog/cold-plunge-cortisol-women-hpa-axis-endocrine-reality"
     }
   ]
