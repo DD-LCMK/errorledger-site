@@ -4,38 +4,41 @@ import Layout from '../layouts/BlogPost.astro';
 
 <Layout
 	title="Research Methodology"
-	meta_title="Research Methodology: How ErrorLedger Compiles Data"
-	description="Understand the zero-trust data gathering standards, sourcing hierarchy, and editorial process behind the ErrorLedger incident database."
-	pubDate={new Date('July 20, 2026')}
+	meta_title="Research Methodology: How ErrorLedger Verifies Evidence"
+	description="Understand the zero-trust data gathering standards, primary sourcing hierarchy, and evidence grading framework behind ErrorLedger."
+	pubDate={new Date('August 14, 2026')}
 	tags={["meta", "methodology", "research"]}
 >
-	<h2>The Editorial Framework</h2>
+	<h2>The Zero-Trust Editorial Mandate</h2>
 	<p>
-		The <strong>ErrorLedger Editorial Team</strong> enforces a strict, zero-trust framework for compiling our engineering database. We do not aggregate generic news articles or summarize press releases. Our mandate is to extract actionable, structural lessons from production failures by analyzing the lowest-level technical documentation available.
+		The <strong>ErrorLedger Editorial Team</strong> enforces a strict, zero-trust framework for compiling our analysis database. We do not aggregate generic blog posts or rewrite press releases. Our mandate is to extract actionable, structural truths by analyzing the lowest-level primary documentation available.
 	</p>
 
 	<h2>The Primary Sourcing Hierarchy</h2>
 	<p>
-		To prevent inaccuracy and speculation, every incident teardown and architectural analysis in our database is compiled using a rigid primary-source authentication hierarchy:
+		To prevent speculation and misinformation, every analysis in our database is graded on a rigid primary-source hierarchy:
 	</p>
 	<ul>
-		<li><strong>Tier 1 — Official Root Cause Analyses (RCAs):</strong> Post-mortem documents, CVE security advisories, and service health reports issued directly by the affected platforms (e.g., AWS, Cloudflare, Microsoft, GitLab).</li>
-		<li><strong>Tier 2 — Code & Commit Forensics:</strong> We analyze open-source GitHub repositories, pull request diffs, and developer mailing lists to trace the origin of software defects and configuration panics.</li>
-		<li><strong>Tier 3 — Telemetry Logs:</strong> Public network route announcements (BGP), DNS records, kernel crash dumps, and transaction ledger states.</li>
+		<li><strong>Grade A — Systematic Reviews & Meta-Analyses:</strong> Cochrane Reviews, PRISMA-compliant meta-analyses, and multi-study syntheses with quantified effect sizes and confidence intervals.</li>
+		<li><strong>Grade B — Controlled Empirical Evidence & Primary Specs:</strong> Peer-reviewed Randomized Controlled Trials (RCTs in <em>The Journal of Physiology</em>, <em>Nature</em>, <em>Lancet</em>), official vendor post-mortems (RCAs), and primary RFC/architecture specifications.</li>
+		<li><strong>Grade C — Documented Architecture & Public Disclosures:</strong> Open-source repository architecture documentation, SEC filings, and audited security CVE reports.</li>
+		<li><strong>Grade D/E — Benchmarks & Industry Telemetry:</strong> Large-scale reproducible benchmarks (>1,000 runs/subjects) and verified telemetry datasets.</li>
 	</ul>
 
-	<h2>Our Structural Teardown Process</h2>
+	<h2>Our Systems Audit Pipeline</h2>
 	<p>
-		We process raw technical data through a defined, three-step editorial pipeline designed to deliver practical outcomes for infrastructure engineers:
+		We process raw technical and physiological data through a multi-stage editorial convergence pipeline:
 	</p>
 	<ol>
-		<li><strong>Architectural Context:</strong> We first establish the baseline design of the system (e.g., how a specific memory controller or reverse proxy operates under normal conditions).</li>
-		<li><strong>The Failure Vector:</strong> We isolate the precise mechanism of failure—stripping away symptoms to expose the core deadlock, memory leak, or un-bounded API call.</li>
-		<li><strong>Operational Mitigations:</strong> We extract tangible, copy-pasteable engineering artifacts (diagnostic CLI commands, Prometheus alerting rules, configuration circuit breakers) so our readers can immediately harden their own environments.</li>
+		<li><strong>Scope & Baseline Definition:</strong> We establish the exact operating environment, target population, and time horizons under review.</li>
+		<li><strong>Mechanism vs. Reality Extraction:</strong> We isolate the claimed mechanism and evaluate it against physical or biological laws to expose core failure modes, race conditions, or anabolic signaling trade-offs.</li>
+		<li><strong>Facts vs. Inference Demarcation:</strong> Every statement is explicitly labeled as an <em>Observed Fact</em>, <em>Documented Specification</em>, or <em>Engineering/Systemic Inference</em>.</li>
+		<li><strong>Operational Diagnostic Tools:</strong> We package validated diagnostic tools (Python calculators, Prometheus alerting rules, and log parsers) for instant practical utility.</li>
+		<li><strong>Automated Self-Healing QA Audit:</strong> Before publication, our automated audit engine scans the draft for linguistic absolutes, pseudo-exact generalizations, and evidentiary integrity.</li>
 	</ol>
 
-	<h2>No "Quick Fixes" or Unverified Code</h2>
+	<h2>Zero Absolutes Policy</h2>
 	<p>
-		Unlike typical programming forums, ErrorLedger does not publish temporary API workarounds or localized configuration hacks. We focus strictly on system-level behaviors—such as BGP routing cascades, out-of-bounds memory accesses in kernel space, or garbage collection deadlocks—to expose core trust boundary vulnerabilities. 
+		ErrorLedger strictly prohibits dogmatic assertions. We never publish claims that a tool or intervention "always works" or "completely eliminates failure." Instead, we provide probabilistic, constraint-aware evaluations so engineers, researchers, and practitioners can make informed decisions.
 	</p>
 </Layout>

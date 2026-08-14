@@ -21,10 +21,10 @@ ogImage: "/images/hero-cold-water-immersion-limits.png"
 
 > **ErrorLedger Publisher Trust Block**
 > - **Last Audited:** 2026-08-14
-> - **Analyzed By:** ErrorLedger Human Systems & Physiology Team
+> - **Analyzed By:** ErrorLedger Systems & Physiology Team
 > - **Evidence Grade:** A (Cochrane Systematic Reviews, Randomized Controlled Trials in *The Journal of Physiology*, and Peer-Reviewed Physiological Interventions)
 
-*By the ErrorLedger Human Systems Team — [Methodology](https://errorledger.com/about)*
+*By the ErrorLedger Systems Team — [Methodology](https://errorledger.com/about)*
 *This analysis provides a constraint-grounded evaluation of cold water immersion protocols, synthesizing randomized controlled trials to isolate validated physiological adaptations from unverified lifestyle claims.*
 
 ## Scope & Baseline
@@ -249,7 +249,7 @@ This systems analysis must be re-audited upon the publication of multi-week rand
   "description": "A clinical systems audit of cold water immersion: evaluating catecholamine surges, acute recovery perception, cardiovascular load, and muscle hypertrophy blunting.",
   "author": {
     "@type": "Organization",
-    "name": "ErrorLedger Human Systems Team",
+    "name": "ErrorLedger Systems Team",
     "url": "https://errorledger.com/about"
   },
   "publisher": {
