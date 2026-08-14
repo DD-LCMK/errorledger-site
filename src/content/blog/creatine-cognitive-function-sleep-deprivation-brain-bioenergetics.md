@@ -2,7 +2,7 @@
 pipeline_contract_version: "61.3.0"
 archetype: "lifestyle-systems"
 pipeline_type: "lifestyle"
-title: "Creatine for Cognitive Function and Sleep Deprivation: Brain Bioenergetics, Phosphocreatine Buffering, and Limits of Acute Cognitive Fatigue"
+title: "Creatine for Cognitive Function and Sleep Deprivation: Brain Bioenergetics, Phosphocreatine Buffering, and Limits of Cognitive Resilience"
 meta_title: "Creatine for Brain & Sleep Deprivation: Bioenergetic Limits"
 description: "A systems audit of creatine for brain function: analyzing cerebral bioenergetics, 31P-MRS imaging, acute sleep deprivation trials, and BBB transport limits."
 pubDate: "2026-08-15"
@@ -18,25 +18,33 @@ heroImage: "/images/hero-creatine-cognitive-function-sleep-deprivation.png"
 ogImage: "/images/hero-creatine-cognitive-function-sleep-deprivation.png"
 ---
 
-# Creatine for Cognitive Function and Sleep Deprivation: Brain Bioenergetics, Phosphocreatine Buffering, and Limits of Acute Cognitive Fatigue
+# Creatine for Cognitive Function and Sleep Deprivation: Brain Bioenergetics, Phosphocreatine Buffering, and Limits of Cognitive Resilience
 
 > **ErrorLedger Publisher Trust Block**
 > - **Last Audited:** 2026-08-15
 > - **Analyzed By:** ErrorLedger Editorial & Systems Analysis Team
-> - **Evidence Grade:** B (ErrorLedger Editorial Assessment: Moderate overall confidence; strongest evidence concerns acute experimental sleep-deprivation cognitive models, while long-term cerebral accumulation, domain-specific effects, and quantitative meta-analytic estimates remain constrained by methodological limitations)
+> - **Evidence Grade:** B (ErrorLedger Editorial Assessment: Experimental proof-of-concept; moderate confidence in acute laboratory sleep-deprivation models, while long-term cerebral accumulation, domain-specific efficacy, and practical translation remain constrained)
 
 *By the ErrorLedger Editorial & Systems Analysis Team — [Methodology](https://errorledger.com/about)*
 *This analysis provides a constraint-grounded physiological systems audit of creatine monohydrate supplementation for cognitive function and acute sleep deprivation, synthesizing magnetic resonance spectroscopy neuroimaging, randomized clinical trials, and regulatory evidence evaluations to evaluate cellular bioenergetic buffering against popular nootropic claims.*
 
-> **Clinical Context & Evidence Scope:** This analysis is an evidence review of neurochemical and cognitive literature, not individualized medical advice. Creatine monohydrate is a dietary supplement that influences cellular bioenergetics. Creatine supplementation can increase serum creatinine concentrations without necessarily indicating a corresponding decline in glomerular filtration rate (GFR), which can complicate interpretation of routine creatinine-based kidney function estimates. Individuals with pre-existing renal disease or metabolic disorders should consult a qualified healthcare professional before initiating supplementation protocols.
+> **Clinical Context & Evidence Scope:** This analysis is an evidence review of neurochemical and cognitive literature, not individualized medical advice. Creatine monohydrate is a dietary supplement that influences cellular bioenergetics. Creatine supplementation can increase serum creatinine concentrations without necessarily indicating a corresponding decline in glomerular filtration rate (GFR), which can complicate interpretation of routine creatinine-based kidney function estimates. Individuals with pre-existing kidney disease should discuss creatine supplementation, particularly high-dose protocols, with their treating clinician before use.
 
 ## Scope & Baseline
 
-- **Included:** Cerebral bioenergetics, neuronal phosphocreatine (PCr) / adenosine triphosphate (ATP) resynthesis kinetics via brain creatine kinase ($BB\text{-CK}$), constraints on cerebral creatine availability and transport ($SLC6A8$ / $CRT1$), endogenous neural synthesis ($AGAT$ and $GAMT$ enzymes), experimental acute single-dose research protocols ($0.35\text{ g/kg}$ in sleep deprivation paradigms) versus multi-day loading ($20\text{ g/day}$ for 7 days or chronic daily intake), cognitive domain stratification (complex central-executive function, processing capacity, and short-term working memory versus simple psychomotor reaction time), acute sleep deprivation experimental models (distinguishing ~21h, 24h, and 36h protocols), dietary baseline status (exploratory evaluations of vegetarian cohorts and lower habitual intake versus omnivores), and gastrointestinal tolerability considerations.
+- **Included:** Cerebral bioenergetics, neuronal phosphocreatine (PCr) / adenosine triphosphate (ATP) resynthesis kinetics via brain creatine kinase ($BB\text{-CK}$), constraints on cerebral creatine availability and transport ($SLC6A8$ / $CRT1$), endogenous neural synthesis ($AGAT$ and $GAMT$ enzymes), experimental acute single-dose research protocols ($0.35\text{ g/kg}$ in sleep deprivation paradigms) versus multi-day loading ($20\text{ g/day}$ for 7 days or chronic daily intake), cognitive domain stratification (complex central-executive function, processing capacity, and short-term memory versus simple psychomotor reaction time), acute sleep deprivation experimental models (distinguishing ~21h, 24h, and 36h protocols), dietary baseline status (exploratory evaluations of vegetarian cohorts and lower habitual intake versus omnivores), and gastrointestinal tolerability considerations.
 - **Excluded:** Skeletal muscle hypertrophy, powerlifting, and athletic physical performance protocols; acute neurotrauma or traumatic brain injury (TBI) critical care management; pediatric genetic inborn errors of creatine metabolism ($GAMT$, $AGAT$, or $SLC6A8$ mutations); and clinical neurodegenerative disease therapeutic trials (Huntington's disease, Parkinson's disease, ALS).
-- **Target Population & Evidence Base:** Literature examined spans double-blind placebo-controlled human crossover trials in healthy young adults ($n=15$ to $n=20$) across standardized acute sleep loss intervals (~21h, 24h, and 36h) with phosphorus-31 and proton magnetic resonance spectroscopy ($^{31}\text{P-MRS}$ and $^{1}\text{H-MRS}$) neuroimaging, systematic reviews and meta-analyses of randomized controlled trials (including a 16-RCT systematic review, an 8-RCT memory meta-analysis of 225 participants, and an early 6-RCT review), independent regulatory evaluations by the European Food Safety Authority (EFSA NDA Panel, 2024), a 2026 systematic review of renal safety in randomized trials ($n=20$ trials), and mechanistic reviews of cerebral transport and endogenous synthesis.
+- **Target Population & Evidence Base:** Literature examined spans double-blind placebo-controlled human crossover trials in healthy young adults ($n=15$ to $n=19$ analyzed) across standardized acute sleep loss intervals (~21h, 24h, and 36h) with phosphorus-31 and proton magnetic resonance spectroscopy ($^{31}\text{P-MRS}$ and $^{1}\text{H-MRS}$) neuroimaging, systematic reviews and meta-analyses of randomized controlled trials (including a 16-RCT systematic review, an 8-RCT memory meta-analysis of 225 participants, and an early 6-RCT review), independent regulatory evaluations by the European Food Safety Authority (EFSA NDA Panel, 2024), a 2026 systematic review of renal safety in randomized trials ($n=20$ trials), and mechanistic reviews of cerebral transport and endogenous synthesis.
 - **Baseline Assumptions:** Assumes non-pregnant adult human cohorts with intact renal function consuming reputable creatine monohydrate products with appropriate quality-control documentation.
 - **Time Horizon:** Acute single-dose physiological and neurocognitive response window (approximately $0$ to $8\text{ hours}$ post-ingestion) versus multi-week chronic administration ($2$ to $6\text{ weeks}$).
+
+## The Core Evidence Questions
+
+A rigorous systems audit of creatine for brain function must separate three distinct evidentiary questions:
+
+1. **Does supplemental creatine reach the brain?** Yes, to a measurable but constrained extent; cerebral accumulation is smaller and slower than skeletal muscle accumulation.
+2. **Can creatine enhance cognitive function in rested adults?** Inconsistent and domain-dependent; some meta-analyses report small positive point estimates for memory, but overall cognition and executive function show no statistically significant pooled improvements, and regulatory evaluations (EFSA 2024) conclude that a cause-and-effect relationship has not been established.
+3. **Can creatine partially protect cognition during acute sleep deprivation?** This is where the strongest experimental proof-of-concept evidence exists; small laboratory trials demonstrate partial attenuation of selected cognitive deficits and alteration of cerebral high-energy phosphate measures during controlled sleep loss.
 
 ## The Absolute Claim
 
@@ -56,27 +64,27 @@ Human neuroimaging, enzymatic mapping, double-blind crossover trials, and indepe
 
 1. **The Cerebral Phosphocreatine Energy Shuttle:** The human brain represents approximately 2% of total body mass yet accounts for roughly 20% of resting basal energy consumption, driven largely by neuronal action potential repolarization via $Na^+/K^+\text{-ATPase}$ pumps. The cytosolic and mitochondrial brain-type creatine kinase ($BB\text{-CK}$ and $uMt\text{-CK}$) network buffers rapid microdomain fluctuations in local ADP/ATP ratios by transferring high-energy phosphate groups between phosphocreatine (PCr) and ADP:
    $$\text{PCr} + \text{ADP} + \text{H}^+ \rightleftharpoons \text{Creatine} + \text{ATP}$$
-   *Mechanistic Interpretation:* Under prolonged wakefulness or sustained high-load executive processing, increased neuronal metabolic demand may place localized strain on cellular energy buffering, shifting the balance of high-energy phosphates. Creatine supplementation is hypothesized to support cellular energy buffering via the creatine kinase system during such metabolic challenges.
-2. **Constraints on Cerebral Creatine Availability:** Skeletal muscle relies predominantly on circulating creatine uptake via sodium- and chloride-dependent creatine transporters ($SLC6A8$); muscle creatine stores generally respond more readily and substantially to supplementation than cerebral creatine stores. In contrast, the central nervous system contains endogenous creatine synthesis pathways involving arginine:glycine amidinotransferase ($AGAT$) and guanidinoacetate N-methyltransferase ($GAMT$), reducing its dependence on circulating creatine compared with skeletal muscle. Brain uptake appears more constrained than skeletal-muscle uptake, with endogenous synthesis and regulated transporter-mediated uptake ($SLC6A8$) among the proposed contributing factors (*Roschel et al., 2021*; *Forbes et al., 2022*).
-3. **Acute Sleep Deprivation Experimental Evidence:** In a randomized, double-blind, placebo-controlled crossover trial ($n=15$ healthy young adults, 8 female / 7 male, mean age ~23), *Gordji-Nejad et al. (2024)* investigated a single high research dose of creatine monohydrate ($0.35\text{ g/kg}$, mean dose $\approx 25\text{g}$) during approximately 21 hours of continuous sleep deprivation. Utilizing $^{31}\text{P-MRS}$ and $^{1}\text{H-MRS}$, the investigators demonstrated that acute creatine intake was associated with attenuation of sleep-deprivation-related deterioration in short-term memory and cognitive processing tasks (e.g., Word Memory Test, processing speed), while altering cerebral high-energy phosphate measures (preventing the drop in $\text{PCr}/\text{P}_\text{i}$ ratio and brain pH, and showing an approximate 4% pooled $\text{tCr}/\text{tNAA}$ elevation in the measured medial-parietal region). Distinct multi-day protocols by *McMorris et al.* examined different paradigms: 7 days of $20\text{ g/day}$ loading showed evidence of preservation on selected complex executive tasks after 24 hours of sleep loss with exercise (2006, $n=20$), while in a 36-hour sleep deprivation protocol with exercise (2007, $n=19$), performance improved on a complex central-executive random-number-generation task, with several other measured cognitive, psychomotor, mood, and effort outcomes showing no significant between-group differences.
-4. **Differential Sensitivity Based on Baseline Status & Task Demand:** Evidence indicates that the cognitive impact of creatine is condition-dependent. In healthy adults, evidence for meaningful cognitive enhancement under rested baseline conditions is inconsistent across domains. Some trials and subgroup analyses suggest that individuals with lower habitual dietary creatine intake, including vegetarian participants, may experience larger cognitive responses, though this exploratory effect modifier remains subject to ongoing investigation (*Avgerinos et al., 2018*; *Forbes et al., 2022*).
+   *Mechanistic Interpretation:* Under prolonged wakefulness or sustained high-load executive processing, increased neuronal metabolic demand may place localized strain on cellular energy buffering, shifting the balance of high-energy phosphates. The findings from experimental studies are consistent with the hypothesis that increased creatine availability can modify cerebral high-energy phosphate buffering during sleep deprivation, but available trials do not establish that altered phosphocreatine buffering is the sole or direct causal mechanism underlying observed cognitive effects.
+2. **Constraints on Cerebral Creatine Availability:** Cerebral creatine accumulation is substantially smaller and slower than skeletal-muscle accumulation. Skeletal muscle relies predominantly on circulating creatine uptake via sodium- and chloride-dependent creatine transporters ($SLC6A8$). In contrast, the central nervous system contains endogenous creatine synthesis pathways involving arginine:glycine amidinotransferase ($AGAT$) and guanidinoacetate N-methyltransferase ($GAMT$). Endogenous CNS synthesis and regulated $SLC6A8$-mediated transport are likely contributors to this constraint, but the relative contribution of these mechanisms to supplementation resistance remains incompletely resolved (*Roschel et al., 2021*; *Forbes et al., 2022*).
+3. **Acute Sleep Deprivation Experimental Evidence:** In a randomized, double-blind, placebo-controlled crossover trial ($n=15$ healthy young adults, 8 female / 7 male, mean age ~23), *Gordji-Nejad et al. (2024)* investigated an acute single research dose of creatine monohydrate ($0.35\text{ g/kg}$, mean dose $\approx 25\text{g}$) during approximately 21 hours of continuous sleep deprivation. Utilizing $^{31}\text{P-MRS}$ and $^{1}\text{H-MRS}$, the investigators demonstrated that acute creatine intake was associated with attenuation of sleep-deprivation-related deterioration in selected short-term memory and cognitive processing tasks (e.g., Word Memory Test, processing speed) and subjective fatigue, while altering cerebral high-energy phosphate measures (preventing the drop in $\text{PCr}/\text{P}_\text{i}$ ratio and brain pH, and showing an approximately 4% increase in the measured $\text{tCr}/\text{tNAA}$ ratio in the medial-parietal region). **This ratio change in a single measured voxel should not be interpreted as a 4% whole-brain increase in creatine concentration.** Distinct multi-day protocols by *McMorris et al.* examined different paradigms: 7 days of $20\text{ g/day}$ loading attenuated deterioration on selected complex central-executive and psychomotor measures after 24 hours of sleep loss with exercise (2006, $n=19$ analyzed, 20 enrolled), while in a 36-hour sleep deprivation protocol with exercise (2007, $n=19$ analyzed, 20 enrolled), performance improved on a complex central-executive random-number-generation task, with the significant between-group difference occurring at 36 hours rather than consistently across the deprivation period (other measured cognitive, psychomotor, mood, and effort outcomes did not show significant between-group differences).
+4. **Differential Sensitivity Based on Baseline Status & Task Demand:** Evidence indicates that the cognitive impact of creatine is condition-dependent. In healthy adults, evidence for meaningful cognitive enhancement under rested baseline conditions is inconsistent across domains. Some trials and exploratory subgroup analyses suggest that individuals with lower habitual dietary creatine intake, including vegetarian participants, may experience larger memory responses, though findings across other cognitive domains remain conflicting and this exploratory effect modifier remains subject to ongoing investigation (*Avgerinos et al., 2018*; *Forbes et al., 2022*).
 
 ## Observable Signals & Quick Specs
 
 | Parameter / Feature | Proponent Claim / Warning | Measured Clinical & Biological Reality |
 | :--- | :--- | :--- |
 | **Brain Tissue Uptake Rate** | Instantaneous, high-volume brain flooding | **Regulated & modest relative to muscle**; brain uptake appears more constrained than skeletal muscle, with endogenous synthesis and regulated transport kinetics (*Roschel et al., 2021*) |
-| **Brain Creatine Elevation** | Doubles cerebral energy capacity (+100%) | **Regionally modest shifts observed in neuroimaging**; acute trial reported ~4% pooled $\text{tCr}/\text{tNAA}$ elevation in the measured medial-parietal region (*Gordji-Nejad et al., 2024*) |
-| **Acute Sleep Deprivation Effect** | Supposedly erases fatigue and replaces sleep | **Associated with attenuation of selected deficits**; improves specific processing capacity and complex executive tasks in small trials across ~21h, 24h, and 36h sleep loss paradigms |
+| **Brain Creatine Elevation** | Doubles cerebral energy capacity (+100%) | **Regionally modest shifts observed in neuroimaging**; acute trial reported ~4% increase in measured $\text{tCr}/\text{tNAA}$ ratio in the medial-parietal region (*Gordji-Nejad et al., 2024*), not a 4% whole-brain increase |
+| **Acute Sleep Deprivation Effect** | Supposedly erases fatigue and replaces sleep | **Associated with attenuation of selected deficits**; partially protects specific processing capacity and complex executive tasks in small trials across ~21h, 24h, and 36h sleep loss paradigms |
 | **Well-Rested Baseline Performance** | Universal massive boost in IQ and mental speed | **Inconsistent across adult cohorts**; across heterogeneous populations, meta-analyses find no statistically significant pooled improvements in overall cognition or executive function |
 | **Dietary Baseline Disparity** | Same effect regardless of diet or lifestyle | **Exploratory effect modifier**; some subgroup analyses suggest larger memory responses in cohorts with lower baseline meat intake (*Avgerinos et al., 2018*), though data across other domains are conflicting |
 | **Biological Sleep Replacement** | Overrides adenosine and eliminates sleep need | **Does not replace biological sleep**; trials demonstrate partial preservation of selected cognitive measures during sleep loss, not restoration of normal sleep physiology |
 
 ## Immediate Reality Check
 
-1. **Creatine is a bioenergetic buffer, not a neurological stimulant:** Creatine is not pharmacologically classified as a CNS stimulant like caffeine or modafinil. Its proposed cognitive mechanism primarily involves cellular creatine/phosphocreatine bioenergetics rather than direct receptor-level stimulation or catecholaminergic release.
-2. **Brain uptake is constrained compared to muscle:** Brain uptake appears more constrained than skeletal-muscle uptake, with endogenous synthesis ($AGAT$/$GAMT$) and regulated transporter-mediated uptake ($SLC6A8$) among the proposed contributing factors.
-3. **Cognitive effects are condition- and domain-dependent:** In healthy, well-rested adults performing non-demanding tasks, additional phosphocreatine buffering confers little observable performance advantage. Across heterogeneous adult populations, meta-analyses demonstrate no significant pooled effect on overall cognition or executive function in un-stressed states.
+1. **Creatine is a bioenergetic buffer, not a neurological stimulant:** Creatine is not pharmacologically classified as a CNS stimulant like caffeine or modafinil. Its proposed cognitive mechanism primarily involves cellular creatine/phosphocreatine bioenergetics rather than direct receptor-level stimulation or catecholaminergic release. No human evidence reviewed here demonstrates that creatine suppresses or overrides adenosine-mediated sleep pressure.
+2. **Brain uptake is constrained compared to muscle:** Cerebral creatine accumulation is substantially smaller and slower than skeletal-muscle accumulation. Endogenous CNS synthesis and regulated $SLC6A8$-mediated transport are likely contributors, but the relative contribution of these mechanisms to supplementation resistance remains incompletely resolved.
+3. **Cognitive effects are condition- and domain-dependent:** In healthy, well-rested adults performing non-demanding tasks, additional phosphocreatine buffering confers little observable performance advantage. Across heterogeneous adult populations, meta-analyses demonstrate no significant pooled effect on overall cognitive function or executive function in un-stressed states.
 4. **Sleep pressure and recovery requirements remain intact:** While creatine attenuates selected performance deficits during experimental sleep loss, it does not restore normal sleep architecture, clear homeostatic sleep pressure, or eliminate the biological requirement for recovery sleep.
 
 ## System Architecture & State Transformation
@@ -107,20 +115,20 @@ The conceptual relationship between dietary intake, cerebral availability, and c
 [Well-Rested Baseline State]             [Acute Sleep Deprivation State]
 • Basal energy demands stable            • Continuous synaptic activity
 • Cellular PCr buffering intact          • Local PCr/Pi balance shifts
-• Supplemental effect: Inconsistent      • High single research dose (~25g in ~21h trial)
+• Supplemental effect: Inconsistent      • Single research dose (~25g in ~21h trial)
   across domains in healthy cohorts        attenuates selected cognitive decline
 ```
 
-Under well-rested baseline conditions, basal endogenous synthesis combined with habitual dietary intake satisfies routine neuronal ATP requirements. When extended wakefulness forces prolonged synaptic transmission, cellular high-energy phosphate measures shift. In experimental sleep-deprivation paradigms, supplemental creatine provides additional substrate for brain creatine kinase, attenuating the rate of cognitive fatigue.
+Under well-rested baseline conditions, basal endogenous synthesis combined with habitual dietary intake satisfies routine neuronal ATP requirements. When extended wakefulness forces prolonged synaptic transmission, cellular high-energy phosphate measures shift. The available evidence is consistent with the hypothesis that supplemental creatine can modify cerebral high-energy phosphate buffering during sleep deprivation, but the studies do not establish that altered phosphocreatine buffering is the sole or direct causal mechanism underlying observed cognitive differences.
 
 ## Evidence Quality & Study Design
 
 The scientific literature evaluating creatine for cognitive performance and sleep deprivation comprises double-blind crossover trials, advanced spectroscopy neuroimaging, systematic reviews, and regulatory evaluations:
 
-- **Human Spectroscopy Neuroimaging in Sleep Deprivation (Grade B):** *Gordji-Nejad et al. (2024)* conducted a randomized, double-blind, placebo-controlled crossover trial ($n=15$ healthy young adults, 8 female / 7 male, mean age ~23) evaluating a single high research dose of creatine monohydrate ($0.35\text{ g/kg}$, mean dose $\approx 25\text{g}$) during approximately 21 hours of continuous sleep deprivation. Utilizing $^{31}\text{P-MRS}$ and $^{1}\text{H-MRS}$ at baseline, 3h, 4h, and 7.5h post-ingestion, the study found that creatine intake altered cerebral high-energy phosphate measures (preventing the drop in $\text{PCr}/\text{P}_\text{i}$ ratio and brain pH, with an approximate 4% pooled $\text{tCr}/\text{tNAA}$ increase in the medial-parietal region) and was associated with attenuation of sleep-loss-induced deterioration in cognitive processing capacity and short-term memory tasks.
-- **Controlled Sleep Deprivation & Psychomotor Trials (Grade B):** *McMorris et al. (2006)* evaluated $n=20$ participants following 24 hours of sleep deprivation with mild exercise, randomized to 7 days of creatine loading ($20\text{ g/day}$) or placebo. Creatine showed evidence of preservation on complex executive tasks, with minimal effect on simple psychomotor reaction time. A separate trial (*McMorris et al., 2007*, $n=19$) tested 36 hours of sleep deprivation with exercise, demonstrating improved performance on a complex central-executive random-number-generation task without altering circadian salivary cortisol or melatonin rhythms (other measured cognitive, psychomotor, mood, and effort outcomes did not show significant between-group differences).
-- **Systematic Review & Meta-Analysis of Memory Performance (Grade B):** *Prokopidis et al. (2023)* conducted a systematic review identifying 10 eligible RCTs (225 participants total), of which 8 RCTs were included in the quantitative meta-analysis. The authors reported a small overall improvement in memory performance ($\text{SMD } 0.29, 95\%\text{ CI } 0.04-0.53$). A subgroup interaction by age was noted: older adults ($66-76\text{ years}$, $\text{SMD } 0.88$) demonstrated larger improvements, whereas younger adults ($11-31\text{ years}$, $\text{SMD } 0.03$) showed no statistically significant memory benefit. However, the subgroup estimate is based on a limited evidence base and should not be interpreted as proof of an age-specific clinical effect.
-- **Systematic Review Across Cognitive Domains (Grade B/C — Exploratory with Methodological Caveats):** *Xu et al. (2024)* conducted a systematic review and meta-analysis of 16 randomized controlled trials ($n=492$ participants), reporting statistically significant improvements for memory, attention time, and processing speed, but no statistically significant effects for overall cognitive performance or executive function in adult populations.
+- **Human Spectroscopy Neuroimaging in Sleep Deprivation (Grade B — Experimental Proof-of-Concept):** *Gordji-Nejad et al. (2024)* conducted a randomized, double-blind, placebo-controlled crossover trial ($n=15$ healthy young adults, 8 female / 7 male, mean age ~23) evaluating a single high research dose of creatine monohydrate ($0.35\text{ g/kg}$, mean dose $\approx 25\text{g}$) during approximately 21 hours of continuous sleep deprivation. Utilizing $^{31}\text{P-MRS}$ and $^{1}\text{H-MRS}$ at baseline, 3h, 4h, and 7.5h post-ingestion, the study found that creatine intake altered cerebral high-energy phosphate measures (preventing the drop in $\text{PCr}/\text{P}_\text{i}$ ratio and brain pH, with an approximate 4% increase in the measured $\text{tCr}/\text{tNAA}$ ratio in the medial-parietal region) and was associated with attenuation of sleep-loss-induced deterioration in cognitive processing capacity, short-term memory tasks, and subjective fatigue.
+- **Controlled Sleep Deprivation & Psychomotor Trials (Grade B/C):** *McMorris et al. (2006)* evaluated participants following 24 hours of sleep deprivation with mild exercise, randomized to 7 days of creatine loading ($20\text{ g/day}$) or placebo ($n=19$ analyzed, 20 enrolled). Creatine attenuated deterioration on selected complex central-executive and psychomotor measures, with minimal effect on simple choice reaction time. A separate trial (*McMorris et al., 2007*, $n=19$ analyzed, 20 enrolled) tested 36 hours of sleep deprivation with exercise, demonstrating improved performance on a complex central-executive random-number-generation task at 36 hours without altering circadian salivary cortisol or melatonin rhythms (other measured cognitive, psychomotor, mood, and effort outcomes did not show significant between-group differences).
+- **Systematic Review & Meta-Analysis of Memory Performance (Grade B/C):** *Prokopidis et al. (2023)* conducted a systematic review identifying 10 eligible RCTs (225 participants total), of which 8 RCTs were included in the quantitative meta-analysis. The authors reported a small overall improvement in memory performance ($\text{SMD } 0.29, 95\%\text{ CI } 0.04-0.53$). The older-adult subgroup produced a large point estimate ($66-76\text{ years}$, $\text{SMD } 0.88$), whereas younger adults ($11-31\text{ years}$, $\text{SMD } 0.03$) showed no statistically significant memory benefit. However, this estimate derives from a limited subgroup evidence base with substantial heterogeneity ($I^2 = 66\%$) and should not be interpreted as establishing a reliable age-specific treatment effect.
+- **Systematic Review Across Cognitive Domains (Grade B/C — Exploratory with Methodological Caveats):** *Xu et al. (2024)* conducted a systematic review and meta-analysis of 16 randomized controlled trials ($n=492$ participants), reporting statistically significant pooled improvements for memory, attention time, and processing speed, but no statistically significant effects for overall cognitive performance or executive function in adult populations.
 - **Historical Cognitive Systematic Review (Grade B/C):** *Avgerinos et al. (2018)* systematically reviewed 6 randomized controlled trials ($n=281$ healthy participants), providing early evidence suggesting potential improvements in short-term memory and intelligence/reasoning tasks, while evidence for other cognitive domains was mixed or conflicting.
 - **Mechanistic Reviews of Cerebral Transport & Bioenergetics (Grade B):** *Roschel et al. (2021)* and *Forbes et al. (2022)* synthesized cellular, animal, and human magnetic resonance spectroscopy data, describing the role of endogenous synthesis ($AGAT$/$GAMT$), the kinetics of blood-brain barrier $SLC6A8$ transporters, and the requirement for higher or longer dosing strategies to achieve measurable cerebral creatine accumulation compared to skeletal muscle.
 
@@ -131,8 +139,8 @@ The 2024 *Xu et al.* meta-analysis should not be treated as definitive evidence 
 ## Evidence Validation: Facts vs. Inference
 
 ### Observed Facts (Ground Truth)
-- An acute single research dose of creatine monohydrate ($0.35\text{ g/kg}$) prevented the decline in cerebral $\text{PCr}/\text{P}_\text{i}$ ratio, stabilized brain pH, produced an approximate 4% pooled $\text{tCr}/\text{tNAA}$ increase in the medial-parietal region, and was associated with attenuation of deterioration in cognitive processing capacity and short-term memory tasks across ~21 hours of sleep deprivation (*EV-LIFESTYLE-010*, Double-Blind Placebo-Controlled Crossover Trial, $n=15$).
-- Seven days of creatine loading ($20\text{ g/day}$) attenuated performance decline on complex executive tasks after 24 hours of sleep loss with exercise, and improved performance on a complex central-executive/random-number-generation task after 36 hours of sleep loss with exercise, while other measured outcomes did not show significant between-group differences (*EV-LIFESTYLE-011*, *EV-LIFESTYLE-012*, Controlled Trials, $n=19-20$).
+- An acute single research dose of creatine monohydrate ($0.35\text{ g/kg}$) prevented the decline in cerebral $\text{PCr}/\text{P}_\text{i}$ ratio, stabilized brain pH, produced an approximate 4% increase in the measured $\text{tCr}/\text{tNAA}$ ratio in the medial-parietal region, and was associated with attenuation of deterioration in cognitive processing capacity, short-term memory tasks, and subjective fatigue across ~21 hours of sleep deprivation (*EV-LIFESTYLE-010*, Double-Blind Placebo-Controlled Crossover Trial, $n=15$).
+- Seven days of creatine loading ($20\text{ g/day}$) attenuated performance decline on selected complex executive tasks after 24 hours of sleep loss with exercise, and improved performance on a complex central-executive/random-number-generation task at 36 hours of sleep loss with exercise, while other measured outcomes did not show significant between-group differences (*EV-LIFESTYLE-011*, *EV-LIFESTYLE-012*, Controlled Trials, $n=19$ analyzed).
 - A systematic review and meta-analysis of 8 RCTs ($n=225$) demonstrated a small overall memory improvement ($\text{SMD } 0.29$), with larger point estimates in older adults and non-significant effects in younger participants (*EV-LIFESTYLE-016*, Meta-Analysis).
 - Independent scientific evaluation by EFSA (2024) concluded that available pooled meta-analyses double-counted related outcomes from single trials and do not establish a proven cause-and-effect relationship for general cognitive claims (*EV-LIFESTYLE-018*, Regulatory Scientific Opinion).
 - A 2026 meta-analysis of 19 RCTs and 1 crossover study demonstrated that creatine supplementation increases serum creatinine concentrations without producing a statistically significant difference in estimated GFR or blood urea nitrogen in studied healthy cohorts (*EV-LIFESTYLE-017*, Systematic Review & Meta-Analysis).
@@ -140,26 +148,31 @@ The 2024 *Xu et al.* meta-analysis should not be treated as definitive evidence 
 
 ### Engineering & Physiological Inference
 - Supplemental creatine is inferred to act as an exogenous metabolic buffer that may support high-energy phosphate availability in neural networks engaged during sustained cognitive demand. While MRS neuroimaging demonstrates altered cerebral high-energy phosphate measures, these findings do not by themselves establish that increased phosphocreatine buffering is the sole or direct causal driver of observed cognitive differences.
-- Because routine psychomotor tasks place lower demands on cellular bioenergetic reserves than sustained complex executive challenges, supplemental creatine produces negligible improvements in basic reaction time in well-rested subjects.
+- The available trials do not show consistent improvements in simple psychomotor reaction-time measures, whereas some effects have been observed on more complex executive tasks; the physiological reason for this domain difference remains incompletely established.
 
 ### Analytical Confidence & Evidence Grading
 
 | Specific Technical Claim | Evidence Grade | Clinical / Scientific Status |
 | :--- | :---: | :--- |
-| **Creatine participates in cerebral PCr/ATP buffering** | **A** | Demonstrated biochemical pathway ($BB\text{-CK}$ reaction and phosphate shuttle) |
+| **Creatine/PCr is a genuine cerebral bioenergetic system** | **A** | Demonstrated biochemical pathway ($BB\text{-CK}$ reaction and phosphate shuttle) |
 | **Oral creatine can alter brain high-energy phosphate measures** | **B** | Supported by human $^{31}\text{P-MRS}$ and $^{1}\text{H-MRS}$ imaging trials |
-| **Acute single research dose ($0.35\text{ g/kg}$) attenuates fatigue during ~21h sleep loss** | **B** | Supported by double-blind crossover trial (*Gordji-Nejad et al., 2024*, $n=15$) |
-| **Creatine selectively improves memory performance in older adults** | **B/C** | Supported by 8-RCT meta-analysis (*Prokopidis et al., 2023*); subgroup heterogeneity remains |
-| **Creatine universally enhances overall cognition or executive function in healthy adults** | **C** | Inconclusive / Not significant in meta-analyses; challenged by EFSA (2024) |
-| **Vegetarian participants show reliably larger cognitive responses** | **B/C** | Exploratory effect modifier suggested in subgroup analyses; conflicting across non-memory domains |
+| **Single high-dose creatine alters cerebral energetics during experimental sleep loss** | **B** | Supported by double-blind crossover trial (*Gordji-Nejad et al., 2024*, $n=15$) |
+| **Single high-dose creatine partially protects selected cognitive measures during ~21h sleep loss** | **B** | Supported by double-blind crossover trial (*Gordji-Nejad et al., 2024*, $n=15$) |
+| **7-day loading may preserve selected executive performance during severe sleep deprivation** | **B/C** | Supported by small controlled trials (*McMorris et al., 2006, 2007*, $n=19$ analyzed) |
+| **Creatine improves memory performance in healthy adults** | **B/C** | Supported by 8-RCT meta-analysis (*Prokopidis et al., 2023*); heterogeneity remains |
+| **Creatine reliably improves cognition in rested adults** | **C** | Inconclusive / Not significant in meta-analyses; challenged by EFSA (2024) |
+| **Creatine is particularly effective in older adults** | **C** | Exploratory subgroup analysis with high heterogeneity ($I^2=66\%$) |
+| **Vegetarians show reliably larger cognitive responses** | **C** | Exploratory effect modifier suggested in subgroup analyses; conflicting across non-memory domains |
+| **3–5 g/day is a validated cognitive-performance protocol** | **Not Established** | Widely used for muscle saturation, but not validated for acute sleep-loss cognitive mitigation |
 | **A creatine-associated serum creatinine increase necessarily indicates renal injury** | **F** | Contradicted by 2026 meta-analysis showing unchanged eGFR/urea (*Tsiaras et al., 2026*) |
 | **Exogenous creatine replaces biological sleep architecture** | **F** | Unsupported; homeostatic sleep pressure and restorative physiology require sleep |
+| **Creatine universally improves executive function in healthy adults** | **F** | Unsupported by pooled meta-analytic evidence across general populations |
 
 ## Operational Constraints & Failure Modes
 
 When evaluating creatine for cognitive support and sleep loss resilience, several physiological and logistical constraints govern its utility:
 
-1. **Experimental High Doses vs. Practical Dosing Regimens:** The $\approx 25\text{g}$ acute dose ($0.35\text{ g/kg}$) evaluated in sleep deprivation research was an experimental protocol, not an established or recommended daily cognitive regimen. Ingesting large single acute boluses introduces a substantial osmotic load into the gastrointestinal tract, which can produce acute gastrointestinal discomfort, cramping, or diarrhea in individuals unaccustomed to high-dose intake.
+1. **Experimental High Doses vs. Practical Dosing Regimens:** The $\approx 25\text{g}$ acute dose ($0.35\text{ g/kg}$) evaluated in sleep deprivation research was an experimental research intervention, not an established or recommended daily cognitive regimen. Ingesting large single acute boluses introduces a substantial osmotic load into the gastrointestinal tract, which can produce acute gastrointestinal discomfort, cramping, or diarrhea in individuals unaccustomed to high-dose intake. Although $3-5\text{ g/day}$ is commonly used as a maintenance supplementation regimen in sports nutrition, the cognitive literature does not establish this dose as an evidence-based treatment for sleep-deprivation-related impairment.
 2. **The Sleep Replacement Fallacy:** The available human trials demonstrate attenuation of selected cognitive and cerebral metabolic measures during experimental sleep loss; they do not establish restoration of normal sleep architecture, clearance of homeostatic sleep pressure, or elimination of the biological requirement for recovery sleep. Relying on creatine to perpetually postpone sleep leads to cumulative neurocognitive debt.
 3. **Domain and Baseline Heterogeneity:** Cognitive benefits are not uniform across domains or populations. Across heterogeneous adult populations, trials demonstrate that healthy young omnivores performing standard non-demanding tasks generally experience minimal observable changes in mental clarity, with effects concentrated in memory tasks, older cohorts, or under acute metabolic strain.
 4. **Constraints on Cerebral Accumulation:** Cerebral creatine accumulation appears substantially more constrained and variable than skeletal-muscle loading, reflecting endogenous neural synthesis and regulated transport kinetics.
@@ -174,7 +187,7 @@ For a companion analysis exploring autonomic and hormonal stress responses durin
 ## Safety Constraints & Medical Considerations
 
 - **Renal Biomarkers & Serum Creatinine Interpretation:** A 2026 systematic review and meta-analysis of randomized trials (*Tsiaras et al., 2026*; 19 RCTs and 1 randomized crossover trial) found that creatine supplementation increased serum creatinine concentrations but did not produce a statistically significant difference in estimated GFR ($\text{eGFR}$) or blood urea nitrogen in studied healthy cohorts. This supports the interpretation that serum creatinine can rise without necessarily reflecting a genuine reduction in renal filtration capacity. Available randomized evidence has not demonstrated a significant deterioration in eGFR in studied healthy populations, although longer-duration randomized safety data beyond one year remain less complete. Creatinine-based renal function estimates should therefore be interpreted in the context of active supplementation.
-- **Pre-Existing Renal Conditions:** While clinical trials demonstrate that creatine supplementation does not adversely affect kidney function in healthy individuals, high-dose protocols are not recommended for individuals with pre-existing renal disease without specialist medical supervision.
+- **Pre-Existing Renal Conditions:** While clinical trials demonstrate that creatine supplementation does not adversely affect kidney function in healthy individuals, individuals with pre-existing kidney disease should discuss creatine supplementation, particularly high-dose protocols, with their treating clinician before use.
 - **Product Quality & Purity:** Use reputable creatine monohydrate products with appropriate third-party quality-control documentation to ensure freedom from chemical contaminants.
 
 ## Trade-Off & Applicability Matrix
@@ -182,7 +195,7 @@ For a companion analysis exploring autonomic and hormonal stress responses durin
 | Reader Scenario / Primary Objective | Evidence Assessment | Physiological Context & Constraints |
 | :--- | :--- | :--- |
 | **Acute Sleep Loss (Experimental Paradigms: ~21h, 24h, 36h)** | **Conditionally supported in small trials** (Single research dose $0.35\text{ g/kg}$ or 7-day loading in trials) | Associated with attenuation of performance decline on selected processing and complex central-executive tasks across distinct sleep-loss protocols (*Gordji-Nejad 2024*; *McMorris 2006, 2007*). |
-| **Memory Support in Older Adults** | **Evidence-supported in meta-analyses** (Chronic daily supplementation) | Meta-analysis of 8 RCTs reports small to moderate memory improvements in older cohorts ($\text{SMD } 0.88$), with non-significant effects in young healthy adults (*Prokopidis et al., 2023*). |
+| **Memory Support in Older Adults** | **Evidence-supported in meta-analyses (Exploratory subgroup)** (Chronic daily supplementation) | Meta-analysis of 8 RCTs reports small to moderate memory improvements in older cohorts ($\text{SMD } 0.88$), with non-significant effects in young healthy adults (*Prokopidis et al., 2023*). |
 | **Vegetarian / Lower Habitual Dietary Intake** | **Conditionally supported (Exploratory)** (Chronic daily supplementation) | Lower baseline dietary intake is associated in some subgroup analyses with more noticeable memory and reasoning responses (*Avgerinos et al., 2018*), though non-memory domains remain inconsistent. |
 | **Well-Rested Young Adult Seeking Nootropic Boost** | **Reasonable / Evidence limited** (Routine daily intake) | Evidence for meaningful cognitive enhancement is inconsistent; meta-analyses find no significant improvement in overall cognition or executive function in healthy rested adults (*Xu et al., 2024*; *EFSA, 2024*). |
 | **Chronic Partial Sleep Debt (Sleep Substitute)** | **Not supported by evidence** | Creatine alters cerebral bioenergetic measures during acute sleep loss, but does not restore normal sleep physiology or eliminate sleep debt. |
@@ -210,7 +223,7 @@ Does oral creatine meaningfully alter human cognitive performance?
 ## Reusable Engineering Tools
 
 <!-- ASSET: ASSET-PY-CREATINE-PROTOCOL-REGISTRY-001 -->
-The following production-ready Python tool provides a structured **Creatine Evidence & Protocol Registry**. Rather than generating prescriptive clinical advice or individual dosing formulas, it systematically registers and compares published experimental sleep-deprivation studies, meta-analyses, and regulatory evaluations (*Gordji-Nejad et al. 2024*, *McMorris et al. 2006/2007*, *Prokopidis et al. 2023*, *Xu et al. 2024*, *EFSA 2024*, and *Avgerinos et al. 2018*), displaying study parameters, measured endpoints, evidence grades, and analytical generalizability limits.
+The following production-ready Python tool provides a structured **Creatine Evidence & Protocol Registry**. Rather than generating prescriptive clinical advice or individual dosing formulas, it systematically registers and compares published experimental sleep-deprivation studies, meta-analyses, and regulatory evaluations (*Gordji-Nejad et al. 2024*, *McMorris et al. 2006/2007*, *Prokopidis et al. 2023*, *Xu et al. 2024*, *EFSA 2024*, and *Avgerinos et al. 2018*), distinguishing between enrolled sample sizes ($N_{\text{enrolled}}$) and analyzed sample sizes ($n_{\text{analyzed}}$), and tabulating study parameters, measured endpoints, evidence grades, and analytical generalizability limits.
 
 ```python
 """
@@ -228,14 +241,15 @@ from typing import Literal, Optional
 @dataclass(frozen=True)
 class ExperimentalStudyRecord:
     citation: str
-    sample_size: int
+    sample_size: int  # Analyzed sample size
+    enrolled_sample_size: Optional[int]  # Enrolled sample size prior to attrition
     study_design: str
     sleep_deprivation_hours: Optional[float]
     creatine_dosing_regimen: str
     timing_interval: str
     cognitive_endpoints_measured: list[str]
     spectroscopy_endpoints: list[str]
-    evidence_grade: Literal["A", "B", "B/C", "C", "D", "F"]
+    evidence_grade: Literal["A", "B", "B/C", "C", "D", "F", "Not Established"]
     primary_outcome_finding: str
     generalizability_limitations: list[str]
 
@@ -251,6 +265,7 @@ class CreatineEvidenceProtocolRegistry:
             "gordji_nejad_2024": ExperimentalStudyRecord(
                 citation="Gordji-Nejad et al. (2024) Sci Rep (DOI: 10.1038/s41598-024-54249-9)",
                 sample_size=15,
+                enrolled_sample_size=15,
                 study_design="Double-blind, randomized, placebo-controlled crossover trial (8 female / 7 male)",
                 sleep_deprivation_hours=21.0,
                 creatine_dosing_regimen="Acute single research dose: 0.35 g/kg body mass (~25g average)",
@@ -258,16 +273,18 @@ class CreatineEvidenceProtocolRegistry:
                 cognitive_endpoints_measured=[
                     "Word Memory Test (short-term memory)",
                     "Cognitive processing capacity and reaction time (PVT)",
-                    "Spatial 3-back working memory"
+                    "Spatial 3-back working memory",
+                    "Subjective fatigue ratings"
                 ],
                 spectroscopy_endpoints=[
                     "31P-MRS: Cerebral PCr/Pi ratio preserved vs placebo",
-                    "1H-MRS: Brain pH stabilized; ~4% pooled tCr/tNAA elevation in medial-parietal region"
+                    "1H-MRS: Brain pH stabilized; ~4% increase in measured tCr/tNAA ratio in medial-parietal region"
                 ],
                 evidence_grade="B",
                 primary_outcome_finding=(
                     "Acute single high research dose creatine was associated with attenuation of sleep-loss-induced deterioration "
-                    "in short-term memory and processing speed, while altering cerebral high-energy phosphate measures during 21h wakefulness."
+                    "in short-term memory, processing speed, and subjective fatigue, while altering cerebral high-energy phosphate "
+                    "measures during 21h wakefulness. Ratio change does not imply 4% whole-brain increase."
                 ),
                 generalizability_limitations=[
                     "Small sample size (n=15 healthy young adults, mean age ~23).",
@@ -277,31 +294,33 @@ class CreatineEvidenceProtocolRegistry:
             ),
             "mcmorris_2006": ExperimentalStudyRecord(
                 citation="McMorris et al. (2006) Psychopharmacology (DOI: 10.1007/s00213-005-0269-z)",
-                sample_size=20,
-                study_design="Double-blind, randomized, placebo-controlled trial",
+                sample_size=19,
+                enrolled_sample_size=20,
+                study_design="Double-blind, randomized, placebo-controlled trial (19 analyzed: 10 creatine, 9 placebo)",
                 sleep_deprivation_hours=24.0,
                 creatine_dosing_regimen="Multi-day loading: 20 g/day (4 x 5g) for 7 consecutive days",
                 timing_interval="Administered across 7 days prior to 24h sleep loss protocol",
                 cognitive_endpoints_measured=[
-                    "Random number generation (executive function)",
+                    "Random movement generation (executive function)",
                     "Spatial memory recall",
-                    "Simple psychomotor reaction time"
+                    "Choice reaction time and balance"
                 ],
                 spectroscopy_endpoints=["No MRS neuroimaging; plasma catecholamines & cortisol tracked"],
-                evidence_grade="B",
+                evidence_grade="B/C",
                 primary_outcome_finding=(
-                    "Mitigated performance decline on complex executive tasks following 24h sleep deprivation "
-                    "with exercise, with minimal effect observed on simple psychomotor reaction time."
+                    "Creatine attenuated deterioration on selected complex central-executive and psychomotor measures "
+                    "after 24 hours of sleep deprivation with exercise, while effects were not uniform across the cognitive battery."
                 ),
                 generalizability_limitations=[
                     "Tested 7-day loading protocol; does not establish single-dose acute kinetics.",
-                    "Included intermittent mild exercise during the sleep deprivation period."
+                    "Analyzed cohort n=19; included intermittent mild exercise during the sleep deprivation period."
                 ]
             ),
             "mcmorris_2007": ExperimentalStudyRecord(
                 citation="McMorris et al. (2007) Physiol Behav (DOI: 10.1016/j.physbeh.2006.08.024)",
                 sample_size=19,
-                study_design="Double-blind, randomized, placebo-controlled trial",
+                enrolled_sample_size=20,
+                study_design="Double-blind, randomized, placebo-controlled trial (19 analyzed men)",
                 sleep_deprivation_hours=36.0,
                 creatine_dosing_regimen="Multi-day loading: 20 g/day for 7 consecutive days",
                 timing_interval="Administered across 7 days prior to 36h sleep loss protocol",
@@ -311,21 +330,22 @@ class CreatineEvidenceProtocolRegistry:
                     "Mood state and effort outcomes"
                 ],
                 spectroscopy_endpoints=["No MRS neuroimaging; salivary cortisol and melatonin tracked"],
-                evidence_grade="B",
+                evidence_grade="B/C",
                 primary_outcome_finding=(
                     "Creatine improved performance on the complex central-executive random-number-generation "
-                    "task at 36h of sleep deprivation; other measured cognitive, psychomotor, mood, and effort "
-                    "outcomes did not show significant between-group differences."
+                    "task at 36 hours of sleep deprivation; other measured cognitive, psychomotor, mood, and effort "
+                    "outcomes did not show significant between-group differences across earlier intervals."
                 ),
                 generalizability_limitations=[
                     "Tested 7-day loading protocol; does not establish single-dose acute kinetics.",
-                    "Healthy young men; included intermittent moderate-intensity exercise.",
-                    "Findings concentrated on a single complex executive task rather than broad cognitive preservation."
+                    "Analyzed cohort n=19 healthy young men; included intermittent moderate-intensity exercise.",
+                    "Significant between-group difference concentrated at 36 hours rather than consistently throughout."
                 ]
             ),
             "prokopidis_2023": ExperimentalStudyRecord(
                 citation="Prokopidis et al. (2023) Nutr Rev (DOI: 10.1093/nutrit/nuac064)",
                 sample_size=225,
+                enrolled_sample_size=None,
                 study_design="Systematic review of 10 RCTs; quantitative meta-analysis of 8 RCTs (225 participants)",
                 sleep_deprivation_hours=None,
                 creatine_dosing_regimen="Varied across trials (2.2g/day to 20g/day for 1 to 24 weeks)",
@@ -339,12 +359,13 @@ class CreatineEvidenceProtocolRegistry:
                 ),
                 generalizability_limitations=[
                     "Selective to memory endpoints; does not evaluate executive function or reaction time.",
-                    "Age subgroup findings represent exploratory stratified analyses with limited total cohort size."
+                    "Age subgroup findings represent exploratory stratified analyses with high heterogeneity (I² = 66%)."
                 ]
             ),
             "xu_2024": ExperimentalStudyRecord(
                 citation="Xu et al. (2024) Front Nutr (DOI: 10.3389/fnut.2024.1424972)",
                 sample_size=492,
+                enrolled_sample_size=None,
                 study_design="Systematic review and meta-analysis of 16 randomized controlled trials",
                 sleep_deprivation_hours=None,
                 creatine_dosing_regimen="Varied across trials (2.2g/day to 20g/day for 5 days to 24 weeks)",
@@ -369,6 +390,7 @@ class CreatineEvidenceProtocolRegistry:
             "efsa_2024": ExperimentalStudyRecord(
                 citation="EFSA NDA Panel (2024) EFSA Journal (DOI: 10.2903/j.efsa.2024.9100)",
                 sample_size=492,
+                enrolled_sample_size=None,
                 study_design="Independent regulatory scientific evaluation of cognitive health claim evidence",
                 sleep_deprivation_hours=None,
                 creatine_dosing_regimen="Evaluation of submitted literature and meta-analyses",
@@ -388,6 +410,7 @@ class CreatineEvidenceProtocolRegistry:
             "avgerinos_2018": ExperimentalStudyRecord(
                 citation="Avgerinos et al. (2018) Exp Gerontol (DOI: 10.1016/j.exger.2018.04.013)",
                 sample_size=281,
+                enrolled_sample_size=None,
                 study_design="Historical systematic review and meta-analysis of 6 randomized controlled trials",
                 sleep_deprivation_hours=None,
                 creatine_dosing_regimen="Varied across trials (5g/day to 20g/day for 1 to 6 weeks)",
@@ -424,8 +447,9 @@ class CreatineEvidenceProtocolRegistry:
         ]
         for key, study in self._studies.items():
             paradigm = f"{study.sleep_deprivation_hours}h Sleep Loss" if study.sleep_deprivation_hours else "Cognitive Meta-Analysis / Review"
+            enrolled_str = f" ($n={study.sample_size}$, $N_{{enr}}={study.enrolled_sample_size}$)" if study.enrolled_sample_size else f" ($n={study.sample_size}$)"
             lines.append(
-                f"| **{key.replace('_', ' ').title()}** | {study.study_design} ($n={study.sample_size}$) | "
+                f"| **{key.replace('_', ' ').title()}** | {study.study_design}{enrolled_str} | "
                 f"{paradigm} | {study.creatine_dosing_regimen} | {study.primary_outcome_finding[:85]}... | "
                 f"{study.generalizability_limitations[0]} |"
             )
@@ -457,8 +481,8 @@ This engineering tool models published experimental parameters and analytical co
 
 ## Key Takeaways
 
-- ✓ **Creatine functions as an energy buffer, not a stimulant:** Creatine is not classified as a CNS stimulant; it supports cellular ATP resynthesis via phosphocreatine donation rather than direct receptor stimulation.
-- ✓ **Evidence indicates cognitive attenuation during acute sleep loss:** Small double-blind trials with $^{31}\text{P-MRS}$ neuroimaging demonstrate that an acute single research dose ($0.35\text{ g/kg}$) was associated with attenuation of decline in short-term memory and processing tasks across ~21 hours of sleep deprivation.
+- ✓ **Creatine functions as an energy buffer, not a stimulant:** Creatine is not classified as a CNS stimulant; it supports cellular ATP resynthesis via phosphocreatine donation rather than direct receptor stimulation or catecholaminergic release.
+- ✓ **Evidence indicates cognitive attenuation during acute sleep loss:** Small double-blind trials with $^{31}\text{P-MRS}$ neuroimaging demonstrate that an acute single research dose ($0.35\text{ g/kg}$) was associated with attenuation of decline in short-term memory, processing tasks, and subjective fatigue across ~21 hours of sleep deprivation.
 - ✓ **Cerebral accumulation is constrained relative to muscle:** Due to endogenous synthesis and regulated transport kinetics, changes in brain creatine are smaller and slower than skeletal muscle accumulation, with exact regulatory mechanisms remaining under active study.
 - ✓ **Effects in rested adults are domain-specific and methodologically contested:** Meta-analyses report small point improvements in memory performance, but overall cognitive function and executive control show no statistically significant improvements, and pooled estimates have been challenged by regulatory evaluations (EFSA 2024) due to outcome double-counting.
 - ✓ **Creatine does not replace biological sleep:** While creatine attenuates selected performance deficits during acute sleep loss, it does not restore normal sleep architecture or eliminate the physiological requirement for recovery sleep.
@@ -480,7 +504,7 @@ This engineering tool models published experimental parameters and analytical co
 
 **⚠ Conditionally effective**
 
-*Creatine monohydrate is a well-established component of the cellular phosphocreatine energy-buffering system. Small randomized human studies provide evidence that a high experimental research dose can attenuate selected cognitive and cerebral metabolic changes during acute sleep deprivation. Meta-analyses also report small improvements in selected cognitive domains, particularly memory, but confidence in these pooled cognitive effects is limited by heterogeneity and methodological concerns regarding some analyses. Creatine has not been shown to restore normal sleep physiology or replace recovery sleep.*
+*Creatine monohydrate is a well-established component of cellular phosphocreatine energy buffering. A small randomized crossover study provides experimental evidence that a single high research dose can alter cerebral high-energy phosphate measures and partially attenuate selected cognitive and subjective-fatigue effects during approximately 21 hours of sleep deprivation. Earlier small trials using 7-day loading protocols also reported preservation of selected complex cognitive measures during 24–36 hours of sleep loss. However, these findings do not establish a general cognitive-enhancement effect, do not validate acute high-dose use as a practical nootropic protocol, and do not demonstrate replacement of biological sleep.*
 
 ## Revision Trigger
 
@@ -505,7 +529,7 @@ Examples of future evidence that would materially alter this systems assessment 
 {
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": "Creatine for Cognitive Function and Sleep Deprivation: Brain Bioenergetics, Phosphocreatine Buffering, and Limits of Acute Cognitive Fatigue",
+  "headline": "Creatine for Cognitive Function and Sleep Deprivation: Brain Bioenergetics, Phosphocreatine Buffering, and Limits of Cognitive Resilience",
   "description": "A systems audit of creatine for brain function: analyzing cerebral bioenergetics, 31P-MRS imaging, acute sleep deprivation trials, and BBB transport limits.",
   "datePublished": "2026-08-15",
   "dateModified": "2026-08-15",
