@@ -7,10 +7,11 @@ const blog = defineCollection({
 		// Versioning & Contract
 		pipeline_contract_version: z.string().optional(),
 
-		// Editorial Archetype — used to split blog archive into two sections
+		// Editorial Archetype — used to split blog archive into three sections
 		// 'incident-forensics' = SRE runbooks, post-mortems, cloud outages
-		// 'systems-analysis' = economics, algorithms, AI, social systems
-		archetype: z.enum(['incident-forensics', 'systems-analysis']).optional(),
+		// 'systems-analysis' = economics, algorithms, AI, hardware architecture
+		// 'lifestyle-systems' = biological protocols, recovery, behavioral constraints
+		archetype: z.enum(['incident-forensics', 'systems-analysis', 'lifestyle-systems']).optional(),
 
 		// Core SEO & Header Metadata
 		title: z.string().optional(),
@@ -117,7 +118,14 @@ const blog = defineCollection({
 				'crash': 'Service Outage',
 				'bgp': 'BGP',
 				'routing': 'BGP',
-				'post-mortem': 'Incident Analysis'
+				'post-mortem': 'Incident Analysis',
+				'lifestyle': 'Lifestyle Systems',
+				'recovery': 'Physiology & Recovery',
+				'dopamine': 'Neurophysiology',
+				'immersion': 'Physiology & Recovery',
+				'hypertrophy': 'Physiology & Recovery',
+				'fasting': 'Metabolic Systems',
+				'sleep': 'Circadian Systems'
 			};
 
 			Object.entries(ecosystemMap)

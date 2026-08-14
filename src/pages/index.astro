@@ -16,26 +16,40 @@ const posts = allPosts.sort((a, b) => {
 });
 
 // 2. Pillar bucketing using tag identifiers
+const lifestylePosts = posts.filter(p =>
+	p.data.archetype === 'lifestyle-systems' ||
+	p.data.tags.some((t: string) =>
+		['lifestyle-systems', 'evidence-check', 'physiology', 'recovery', 'dopamine', 'fasting', 'sleep', 'nutrition', 'biohack'].includes(t.toLowerCase())
+	)
+).slice(0, 3);
+
 const aiEvolutions = posts.filter(p => 
+	!lifestylePosts.some(lp => lp.id === p.id) &&
 	p.data.tags.some((t: string) => 
-		['engineering-evolution', 'ai-infrastructure', 'openai', 'responses-api', 'mcp-protocol', 'anthropic'].includes(t.toLowerCase())
+		['systems-analysis', 'hardware', 'dram', 'hbm', 'engineering-evolution', 'ai-infrastructure', 'openai', 'deepseek', 'mcp-protocol', 'anthropic'].includes(t.toLowerCase())
 	)
 ).slice(0, 3);
 
 const architecturePosts = posts.filter(p => 
+	!lifestylePosts.some(lp => lp.id === p.id) &&
+	!aiEvolutions.some(ap => ap.id === p.id) &&
 	p.data.tags.some((t: string) => 
-		['architecture-explainer', 'protocol', 'database', 'cache', 'mcp-protocol'].includes(t.toLowerCase())
+		['architecture-explainer', 'architecture-review', 'protocol', 'database', 'cache', 'mcp-protocol'].includes(t.toLowerCase())
 	)
 ).slice(0, 3);
 
 const incidentPosts = posts.filter(p => 
+	!lifestylePosts.some(lp => lp.id === p.id) &&
+	!aiEvolutions.some(ap => ap.id === p.id) &&
+	!architecturePosts.some(arch => arch.id === p.id) &&
 	p.data.tags.some((t: string) => 
 		['sre-postmortem', 'service-outage', 'incident-analysis', 'infrastructure-failure', 'outage'].includes(t.toLowerCase())
 	)
 ).slice(0, 3);
 
-// 3. Catch-All Safety Net: Identify posts that did not fit into the top 3 pillars
+// 3. Catch-All Safety Net
 const featuredIds = new Set([
+	...lifestylePosts.map(p => p.id),
 	...aiEvolutions.map(p => p.id),
 	...architecturePosts.map(p => p.id),
 	...incidentPosts.map(p => p.id)
@@ -56,7 +70,7 @@ allPosts.forEach(post => {
 const topTags = Object.entries(tagCounts)
 	.sort((a, b) => b[1] - a[1])
 	.map(entry => entry[0])
-	.slice(0, 5);
+	.slice(0, 6);
 
 // Sort 3 latest technical insights posts
 const recentInsights = allInsights
@@ -77,7 +91,7 @@ const recentInsights = allInsights
 			"@type": "WebSite",
 			"name": "ErrorLedger",
 			"url": "https://errorledger.com",
-			"description": "Engineering analysis of real-world systems — where expected models meet actual constraints. Incident forensics, systems economics, AI infrastructure, and architectural failure teardowns.",
+			"description": "Engineering & evidence-based analysis of real-world systems — where expected models meet actual constraints. Incident forensics, systems economics, AI architecture, and biological protocols.",
 			"potentialAction": {
 				"@type": "SearchAction",
 				"target": {
@@ -94,11 +108,11 @@ const recentInsights = allInsights
 			"name": "ErrorLedger",
 			"url": "https://errorledger.com",
 			"logo": "https://errorledger.com/favicon.svg",
-			"description": "Engineering analysis of real-world systems — where expected models meet actual constraints. Incident forensics, systems economics, AI infrastructure, and architectural failure teardowns.",
+			"description": "Engineering & evidence-based analysis of real-world systems — where expected models meet actual constraints. Incident forensics, systems economics, AI architecture, and biological protocols.",
 			"founder": {
 				"@type": "Person",
 				"name": "Chang Kim",
-				"jobTitle": "Independent Software Engineer"
+				"jobTitle": "Independent Systems & Software Engineer"
 			},
 			"sameAs": [
 				"https://github.com/DD-LCMK"
@@ -166,6 +180,21 @@ const recentInsights = allInsights
 			ul.post-list li a:hover .title { color: #ef4444; }
 			.description { margin: 0 0 1rem 0; color: #4a5568; font-size: 0.95rem; line-height: 1.5; }
 
+			.badge-pill {
+				display: inline-block;
+				padding: 0.15rem 0.5rem;
+				border-radius: 4px;
+				font-size: 0.72rem;
+				font-weight: 700;
+				text-transform: uppercase;
+				letter-spacing: 0.025em;
+			}
+			.badge-pillar-lifestyle { background: #ecfdf5; color: #047857; }
+			.badge-pillar-ai { background: #eff6ff; color: #2563eb; }
+			.badge-pillar-arch { background: #f0fdf4; color: #16a34a; }
+			.badge-pillar-incident { background: #fef2f2; color: #dc2626; }
+			.badge-pillar-neutral { background: #f1f5f9; color: #475569; }
+
 			.view-all-container { text-align: center; margin-top: 2.5rem; }
 			.view-all-btn {
 				display: inline-block;
@@ -221,6 +250,7 @@ const recentInsights = allInsights
 			:global(html.dark) ul.post-list li { background: #1e293b; border-color: #334155; }
 			:global(html.dark) .title { color: #f8fafc; }
 			:global(html.dark) .description { color: #cbd5e1; }
+			:global(html.dark) .badge-pillar-lifestyle { background: #064e3b; color: #6ee7b7; }
 			:global(html.dark) .view-all-btn { background: #1e293b; border: 1px solid #334155; }
 			:global(html.dark) .view-all-btn:hover { background: #ef4444; border-color: #ef4444; }
 
@@ -240,14 +270,14 @@ const recentInsights = allInsights
 		<main>
 			<section class="hero" style="margin-top: 1.5rem;">
 				<h1>Real-World Systems.<br/><span>Real Constraints.</span></h1>
-				<p>Engineering analysis of where expected models meet actual reality. We take complex systems, claims and failures apart to understand what actually happens under constraints.</p>
+				<p>Engineering & evidence-based analysis of where expected models meet actual reality. We take complex software architectures, hardware limits, and biological protocols apart to map what actually happens under constraints.</p>
 				
 				<form action="/search" method="GET" class="search-form">
 					<input 
 						type="text" 
 						name="q" 
 						class="search-input"
-						placeholder="Filter by platform, protocol, vector, or root cause..." 
+						placeholder="Filter by architecture, protocol, biological system, or root cause..." 
 						autocomplete="off"
 					/>
 				</form>
@@ -290,10 +320,34 @@ const recentInsights = allInsights
 				</div>
 			</section>
 
-			<!-- Pillar 1: AI Platform Evolutions & SDK Shifts -->
+			<!-- Pillar 1: Lifestyle & Biological Systems -->
+			{lifestylePosts.length > 0 && (
+				<section style="margin-bottom: 3.5rem;">
+					<h3 class="feed-title"><span style="color: #059669;">&#9650;</span> Lifestyle & Biological Systems</h3>
+					<ul class="post-list">
+						{lifestylePosts.map((post) => (
+							<li>
+								<a href={`/blog/${post.data.shortenedSlug || post.slug}`}>
+									<div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+										{post.data.tags.map((tag: string) => (
+											<span class="badge-pill badge-pillar-lifestyle">
+												#{tag}
+											</span>
+										))}
+									</div>
+									<h4 class="title">{post.data.title}</h4>
+									<p class="description">{post.data.description}</p>
+								</a>
+							</li>
+						))}
+					</ul>
+				</section>
+			)}
+
+			<!-- Pillar 2: Systems Analysis & AI Platforms -->
 			{aiEvolutions.length > 0 && (
 				<section style="margin-bottom: 3.5rem;">
-					<h3 class="feed-title"><span style="color: #3b82f6;">&#9650;</span> Latest Systems Analyses</h3>
+					<h3 class="feed-title"><span style="color: #3b82f6;">&#9650;</span> Systems Architecture & Hardware Limits</h3>
 					<ul class="post-list">
 						{aiEvolutions.map((post) => (
 							<li>
@@ -314,7 +368,7 @@ const recentInsights = allInsights
 				</section>
 			)}
 
-			<!-- Pillar 2: Architecture & Protocol Mechanics -->
+			<!-- Pillar 3: Architecture & Protocol Mechanics -->
 			{architecturePosts.length > 0 && (
 				<section style="margin-bottom: 3.5rem;">
 					<h3 class="feed-title"><span style="color: #10b981;">&#9650;</span> Architecture & Protocol Mechanics</h3>
@@ -338,7 +392,7 @@ const recentInsights = allInsights
 				</section>
 			)}
 
-			<!-- Pillar 3: System Failures & Incident Post-Mortems -->
+			<!-- Pillar 4: System Failures & Incident Post-Mortems -->
 			{incidentPosts.length > 0 && (
 				<section style="margin-bottom: 3.5rem;">
 					<h3 class="feed-title"><span style="color: #ef4444;">&#9650;</span> Incident Forensics</h3>
@@ -362,7 +416,7 @@ const recentInsights = allInsights
 				</section>
 			)}
 
-			<!-- Catch-All Safety Bucket for Uncategorized / General Engineering Analysis -->
+			<!-- Catch-All Safety Bucket -->
 			{uncategorizedPosts.length > 0 && (
 				<section style="margin-bottom: 3.5rem;">
 					<h3 class="feed-title"><span style="color: #64748b;">&#9650;</span> Systems Economics & Engineering Analysis</h3>
@@ -415,14 +469,14 @@ const recentInsights = allInsights
 				</div>
 			</section>
 
-			<!-- E-E-A-T Editorial Standards Box (Moved to Bottom) -->
+			<!-- E-E-A-T Editorial Standards Box -->
 			<section class="editorial-manifesto">
 				<div class="manifesto-box">
-					<p><strong>The ErrorLedger Methodology:</strong> We find a system, identify its intended behavior, isolate hidden constraints, trace failure or inefficiency, quantify consequences, and derive engineering lessons. Primary evidence first. Engineering interpretation second.</p>
+					<p><strong>The ErrorLedger Methodology:</strong> We find a system, identify its intended behavior, isolate hidden constraints, trace failure or inefficiency, quantify consequences, and derive actionable lessons. Primary evidence first. Technical and biological interpretation second.</p>
 					<ul class="manifesto-list">
-						<li>&#10003; Primary Evidence First — Official RCAs, post-mortems, and primary source documentation</li>
-						<li>&#10003; Systems Model — Expected behavior versus observed reality under constraints</li>
-						<li>&#10003; Quantified Consequences — Blast radius, recovery cost, and systemic risk</li>
+						<li>&#10003; Primary Evidence First — Official RCAs, JEDEC/CXL specifications, and PubMed RCTs</li>
+						<li>&#10003; Systems Model — Expected behavior versus observed reality under physical and biological constraints</li>
+						<li>&#10003; Quantified Consequences — Blast radius, recovery cost, and behavioral adherence friction</li>
 					</ul>
 					<a href="/methodology" class="methodology-link">Read our full Systems Analysis Methodology &#8594;</a>
 				</div>
