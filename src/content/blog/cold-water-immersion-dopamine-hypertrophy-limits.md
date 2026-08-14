@@ -25,8 +25,10 @@ ogImage: "/images/hero-cold-water-immersion-limits.png"
 > - **Analyzed By:** ErrorLedger Systems & Physiology Team
 > - **Evidence Grade:** A (Cochrane Systematic Reviews, Randomized Controlled Trials in *The Journal of Physiology*, and Peer-Reviewed Physiological Interventions)
 
-*By the ErrorLedger Systems Team — [Methodology](https://errorledger.com/about)*
+*By the ErrorLedger Editorial & Systems Analysis Team — [Methodology](https://errorledger.com/about)*
 *This analysis provides a constraint-grounded evaluation of cold water immersion protocols, synthesizing randomized controlled trials to isolate validated physiological adaptations from unverified lifestyle claims.*
+
+> **Clinical Context & Evidence Scope:** This analysis is an evidence review of exercise and thermal physiology literature, not individualized medical advice. Cold water immersion produces acute cardiovascular stress and peripheral vasoconstriction. Individuals with cardiovascular conditions or vascular disorders should consult a qualified clinician before initiating cold immersion protocols.
 
 ## Scope & Baseline
 
