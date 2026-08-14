@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "systems-analysis"
 title: "System Architecture: Mario Meets Pareto and Multi-Objective Optimization"
 meta_title: "Mario Meets Pareto: Multi-Objective Optimization Analysis"
 description: "Analyze the systemic trade-offs of Mario Kart 8 build optimization using the Pareto frontier, and how it applies to cloud infrastructure provisioning."
 pubDate: "2026-08-08"
 incidentDate: "2026-08-08"
-tags: ["systems-analysis", "architecture-review", "optimization", "pareto", "game-design"]
+tags: ["systems-analysis", "optimization-theory", "pareto-frontier", "multi-objective-optimization", "game-mechanics", "algorithmic-tradeoffs"]
 slug: "mario-meets-pareto-multi-objective-optimization-system-architecture"
 shortenedSlug: "mario-meets-pareto"
 target_systems: "Systems Architecture, Multi-Objective Optimization, Cloud Provisioning, Game Design"

@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "systems-analysis"
 title: "Gemini 3.7 Flash Architecture: KV Cache Quantization and the Memory Bandwidth Bottleneck"
 meta_title: "Gemini 3.7 Flash Architecture: KV Cache and Memory Bandwidth"
 description: "A systems analysis of how Gemini 3.7 Flash achieves ultrafast inference by structurally trading dense long-context retrieval for aggressive KV cache quantization."
 pubDate: "2026-08-14"
 incidentDate: "2026-08-14"
-tags: ["systems-analysis", "architecture-review", "ai-infrastructure", "memory-bandwidth", "llm-inference"]
+tags: ["systems-analysis", "gemini-3-7-flash", "llm-inference", "kv-cache", "memory-bandwidth", "tpu-architecture", "attention-mechanisms"]
 slug: "gemini-3-7-flash-architecture-kv-cache-and-memory-bandwidth"
 shortenedSlug: "gemini-3-7-flash-architecture-kv-cache-and-memory-bandwidth"
 target_systems: "Google TPU v5e/v6 Clusters, Large Language Model Inference Runtimes, KV Cache Memory Hierarchy"

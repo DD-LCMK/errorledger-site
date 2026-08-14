@@ -6,7 +6,7 @@ meta_title: "Windows 11 Weather App RAM Bloat: WebView2 Analysis"
 description: "A ruthlessly objective systems audit on why Windows 11's built-in Weather app consumes over 1GB of RAM — analyzing the WebView2 architectural decision, its cascading costs, and the systemic consequences."
 pubDate: "2026-08-10"
 incidentDate: "2026-08-10"
-tags: ["systems-analysis", "architecture-review", "windows-11", "webview2", "memory-management", "chromium"]
+tags: ["systems-analysis", "windows-11", "webview2", "memory-bloat", "electron-architecture", "ram-optimization", "desktop-runtimes"]
 slug: "windows-11-weather-app-ram-bloat-electron-web-view"
 shortenedSlug: "windows-11-weather-app-ram-bloat"
 target_systems: "Windows 11, Microsoft WebView2, Electron, Chromium-based Desktop Apps"

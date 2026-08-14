@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "incident-forensics"
 title: "Kubernetes OOMKilled Exit Code 137: cgroup v2 Memory Max Fix & Page Cache Tuning"
 meta_title: "Kubernetes OOMKilled Exit Code 137: cgroup v2 Fix"
 description: "Root cause analysis and resolution playbook for Kubernetes container OOMKilled crashes, Exit Code 137, cgroup v2 memory.max accounting, and page cache leaks."
 pubDate: "2026-07-27"
 incidentDate: "2026-07-27"
-tags: ["systems-analysis", "architecture-review", "kubernetes", "cgroups", "linux-kernel", "memory-management"]
+tags: ["incident-forensics", "sre-postmortem", "kubernetes", "oomkilled", "exit-code-137", "cgroup-v2", "memory-limits", "linux-kernel-oom"]
 slug: "kubernetes-oomkilled-exit-code-137-cgroup-v2-memory-max-fix"
 shortenedSlug: "kubernetes-oomkilled-exit-code-137-cgroup"
 target_systems: "Kubernetes 1.26+, Kubernetes 1.28+, Linux Kernel 5.15+, containerd v1.7+"

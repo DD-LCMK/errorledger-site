@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "incident-forensics"
 title: "Cassandra Chaos Engineering: stress-ng Freezes & QUORUM WriteTimeoutException"
 meta_title: "Cassandra Chaos Testing: Fix stress-ng JVM Freezes"
 description: "Root cause analysis and resolution playbook for Apache Cassandra WriteTimeoutExceptions triggered by stress-ng memory faults and cgroup v2 container isolation."
 pubDate: "2026-08-06"
 incidentDate: "2026-08-06"
-tags: ["systems-analysis", "architecture-review", "cassandra", "chaos-engineering", "jvm", "cgroups"]
+tags: ["incident-forensics", "sre-postmortem", "cassandra", "chaos-engineering", "stress-ng", "cgroups", "quorum-consistency", "distributed-systems"]
 slug: "cassandra-chaos-engineering-stress-ng-quorum-writetimeoutexception"
 shortenedSlug: "cassandra-chaos-engineering-stress-ng-quorum-writetimeoutexception"
 target_systems: "Apache Cassandra 4.x / 5.x, Chaos Mesh, stress-ng, Linux cgroup v2"

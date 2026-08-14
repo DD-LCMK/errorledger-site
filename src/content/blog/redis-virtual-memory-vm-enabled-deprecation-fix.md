@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "incident-forensics"
 title: "Redis Virtual Memory Deprecation: VM-Enabled Configuration Fix"
 meta_title: "Redis Virtual Memory Deprecation: VM-Enabled Fix"
 description: "Production guide for resolving Redis virtual memory deprecation, vm-enabled removal errors, swap thrashing, and migrating to memory-mapped memory limits."
 pubDate: "2026-08-07"
 incidentDate: "2026-08-07"
-tags: ["systems-analysis", "architecture-review", "redis", "virtual-memory", "memory-management", "database-migration"]
+tags: ["incident-forensics", "sre-postmortem", "redis", "vm-enabled", "virtual-memory-deprecation", "swap-thrashing", "database-upgrade", "memory-management"]
 slug: "redis-virtual-memory-vm-enabled-deprecation-fix"
 shortenedSlug: "redis-virtual-memory-vm-enabled-deprecation-fix"
 target_systems: "Redis 2.4+, Redis 6.x / 7.x, KeyDB, Linux Kernel cgroups"

@@ -6,7 +6,7 @@ meta_title: "Tailscale Traces Database Corruption to SQLite WAL-Reset Bug"
 description: "How Tailscale used deterministic testing to uncover a 16-year-old race condition in SQLite's Write-Ahead Logging (WAL) reset mechanism that caused silent database corruption."
 pubDate: "2026-08-12"
 incidentDate: "2026-08-12"
-tags: ["incident-forensics", "sqlite", "database", "concurrency"]
+tags: ["incident-forensics", "sre-postmortem", "tailscale", "sqlite", "wal-reset", "race-condition", "database-corruption", "concurrency-bug"]
 slug: "tailscale-sqlite-wal-reset-race-condition-database-corruption-bug"
 shortenedSlug: "tailscale-sqlite-wal-reset-race-condition"
 target_systems: "SQLite Write-Ahead Logging (WAL)"

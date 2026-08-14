@@ -1,12 +1,13 @@
 ---
 pipeline_contract_version: "61.1.0"
+archetype: "lifestyle-systems"
 pipeline_type: "lifestyle"
 title: "Cold Water Immersion Protocol: Dopamine Spikes, Vasoconstriction Limits, and Hypertrophy Blunting"
 meta_title: "Cold Water Immersion: Dopamine vs Hypertrophy Blunting"
 description: "A clinical systems audit of cold water immersion: evaluating catecholamine surges, acute recovery perception, cardiovascular load, and muscle hypertrophy blunting."
 pubDate: "2026-08-14"
 incidentDate: "2026-08-14"
-tags: ["lifestyle-systems", "evidence-check", "physiology", "recovery", "dopamine"]
+tags: ["lifestyle-systems", "evidence-check", "cold-water-immersion", "dopamine-regulation", "hypertrophy-blunting", "exercise-physiology", "recovery-protocols"]
 slug: "cold-water-immersion-dopamine-hypertrophy-limits"
 shortenedSlug: "cold-water-immersion-limits"
 target_systems: "Human Autonomic Nervous System & Skeletal Muscle Signaling"

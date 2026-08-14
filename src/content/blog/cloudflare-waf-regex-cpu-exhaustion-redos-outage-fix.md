@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "incident-forensics"
 title: "Cloudflare WAF Regex CPU Exhaustion: ReDoS Outage Fix & Backtracking Prevention"
 meta_title: "Cloudflare WAF Regex CPU Exhaustion: ReDoS Fix"
 description: "Root cause analysis and resolution playbook for Web Application Firewall (WAF) ReDoS outages, catastrophic NFA backtracking, and DFA linear-time regex engine migration."
 pubDate: "2026-07-28"
 incidentDate: "2026-07-28"
-tags: ["systems-analysis", "architecture-review", "cloudflare", "security", "regex", "waf", "edge-computing"]
+tags: ["incident-forensics", "sre-postmortem", "cloudflare", "redos", "regex-cpu-exhaustion", "waf", "edge-computing", "service-outage"]
 slug: "cloudflare-waf-regex-cpu-exhaustion-redos-outage-fix"
 shortenedSlug: "cloudflare-waf-regex-cpu-exhaustion-redos"
 target_systems: "Cloudflare WAF Engine, Nginx / OpenResty, Rust Regex 1.x, PCRE2 10.x, Hyperscan 5.x"

@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "incident-forensics"
 title: "MongoDB Socket Exception: Connection Reset by Peer & maxPoolSize Fix"
 meta_title: "MongoDB Socket Exception Connection Reset Fix"
 description: "Root cause analysis and resolution playbook for MongoDB Socket Exception Reading From Socket, Connection Reset by Peer errors, and connection pool tuning."
 pubDate: "2026-07-30"
 incidentDate: "2026-07-30"
-tags: ["systems-analysis", "architecture-review", "mongodb", "database-performance", "connection-pooling", "networking"]
+tags: ["incident-forensics", "sre-postmortem", "mongodb", "socketexception", "connection-reset", "maxpoolsize", "connection-pooling", "database-reliability"]
 slug: "mongodb-socket-exception-connection-reset-maxpoolsize-fix"
 shortenedSlug: "mongodb-socket-exception-connection-reset-maxpoolsize"
 target_systems: "MongoDB 6.0.x, MongoDB 7.0.x, PyMongo, Mongoose / Node.js, Linux Kernel 5.15+"

@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "incident-forensics"
 title: "Kafka Consumer Rebalance Loop: max.poll.interval.ms Fix & Static Membership"
 meta_title: "Kafka Consumer Rebalance Loop: max.poll.interval.ms Fix"
 description: "Root cause analysis and step-by-step resolution playbook for Kafka consumer group rebalance loops, max.poll.interval.ms breaches, and CommitFailedException errors."
 pubDate: "2026-07-27"
 incidentDate: "2026-07-27"
-tags: ["systems-analysis", "architecture-review", "kafka", "distributed-systems", "java", "event-streaming"]
+tags: ["incident-forensics", "sre-postmortem", "kafka", "consumer-rebalance-loop", "max-poll-interval-ms", "heartbeat-thread", "event-streaming", "distributed-systems"]
 slug: "kafka-consumer-rebalance-loop-max-poll-interval-ms-fix"
 shortenedSlug: "kafka-consumer-rebalance-loop-max-poll"
 target_systems: "Apache Kafka 2.8+, Apache Kafka 3.x, Confluent Platform 7.x, JDK 17/21"

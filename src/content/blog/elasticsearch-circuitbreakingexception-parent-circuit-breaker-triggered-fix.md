@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "incident-forensics"
 title: "Elasticsearch CircuitBreakingException: Parent Circuit Breaker Triggered & Heap Fix"
 meta_title: "Elasticsearch CircuitBreaker Fix: Heap Tuning"
 description: "Root cause analysis and resolution playbook for Elasticsearch CircuitBreakingException parent circuit breaker trips, JVM heap allocation, and real memory tracking."
 pubDate: "2026-07-28"
 incidentDate: "2026-07-28"
-tags: ["systems-analysis", "architecture-review", "elasticsearch", "opensearch", "jvm-performance", "database-tuning"]
+tags: ["incident-forensics", "sre-postmortem", "elasticsearch", "opensearch", "circuitbreakingexception", "fielddata-cache", "jvm-heap", "cluster-stability"]
 slug: "elasticsearch-circuitbreakingexception-parent-circuit-breaker-triggered-fix"
 shortenedSlug: "elasticsearch-circuitbreakingexception-parent-circuit-breaker-triggered"
 target_systems: "Elasticsearch 7.x, Elasticsearch 8.x, OpenSearch 2.x, JVM 17/21 (G1GC)"

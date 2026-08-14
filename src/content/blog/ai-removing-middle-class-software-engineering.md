@@ -6,7 +6,7 @@ meta_title: "AI is Removing the Middle Class of Software Engineering"
 description: "An architectural teardown of how AI code generation collapses syntax creation costs, hollowing out mid-level software engineering roles and shifting value to verification."
 pubDate: "2026-08-12"
 incidentDate: "2026-08-12"
-tags: ["systems-analysis", "architecture-review", "labor-economics", "architecture", "dev-ops"]
+tags: ["systems-analysis", "software-engineering", "labor-economics", "ai-productivity", "developer-market", "career-automation"]
 slug: "ai-removing-middle-class-software-engineering"
 shortenedSlug: "ai-removing-middle-class-software-engineering"
 target_systems: "Software Engineering Labor Market & DevEx Tooling"

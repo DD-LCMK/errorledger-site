@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "incident-forensics"
 title: "Istio Envoy 503 Service Unavailable: Upstream Connect Reset & idle_timeout Fix"
 meta_title: "Istio Envoy 503 Upstream Connect Reset Fix"
 description: "Root cause analysis and resolution playbook for Istio Envoy 503 Service Unavailable errors, upstream connect reset log failures, and DestinationRule idleTimeout tuning."
 pubDate: "2026-08-05"
 incidentDate: "2026-08-05"
-tags: ["systems-analysis", "architecture-review", "istio", "envoy", "kubernetes", "service-mesh"]
+tags: ["incident-forensics", "sre-postmortem", "istio", "envoy", "503-service-unavailable", "upstream-connect-error", "service-mesh", "kubernetes-networking"]
 slug: "istio-envoy-503-service-unavailable-upstream-connect-error-fix"
 shortenedSlug: "istio-envoy-503-service-unavailable-upstream"
 target_systems: "Istio 1.18+, Istio 1.20+, Envoy Proxy 1.26+, Kubernetes 1.27+"

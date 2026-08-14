@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.1.0"
+archetype: "systems-analysis"
 title: "DRAM Scaling Limits: The Memory Wall and Interconnect Latency Architecture"
 meta_title: "DRAM Scaling Limits & The Memory Wall Architecture"
 description: "A clinical engineering analysis of DRAM cell scaling limits, RC charge stagnation, HBM bus width tradeoffs, and CXL fabric latency bottlenecks."
 pubDate: "2026-08-14"
 incidentDate: "2026-08-14"
-tags: ["systems-analysis", "architecture-review", "hardware", "dram", "hbm"]
+tags: ["systems-analysis", "hardware-architecture", "dram", "hbm3e", "memory-wall", "latency-scaling", "semiconductor"]
 slug: "dram-scaling-limits-memory-wall-latency-architecture"
 shortenedSlug: "dram-scaling-limits"
 target_systems: "DRAM Subsystems, High-Bandwidth Memory (HBM), CXL Fabrics"

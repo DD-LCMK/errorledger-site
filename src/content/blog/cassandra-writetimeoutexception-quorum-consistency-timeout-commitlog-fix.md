@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "incident-forensics"
 title: "Cassandra WriteTimeoutException: QUORUM Consistency Timeout & commitlog Fix"
 meta_title: "Cassandra WriteTimeoutException QUORUM Fix"
 description: "Root cause analysis and resolution playbook for Apache Cassandra WriteTimeoutException errors, QUORUM consistency timeouts, and commitlog disk I/O tuning."
 pubDate: "2026-07-30"
 incidentDate: "2026-07-30"
-tags: ["systems-analysis", "architecture-review", "cassandra", "database-performance", "distributed-systems", "storage-engine"]
+tags: ["incident-forensics", "sre-postmortem", "cassandra", "writetimeoutexception", "commitlog", "quorum-consistency", "storage-engine", "database-tuning"]
 slug: "cassandra-writetimeoutexception-quorum-consistency-timeout-commitlog-fix"
 shortenedSlug: "cassandra-writetimeoutexception-quorum-consistency-timeout-commitlog"
 target_systems: "Apache Cassandra 4.0.x, Apache Cassandra 4.1.x, Cassandra 5.0, JVM 11/17"

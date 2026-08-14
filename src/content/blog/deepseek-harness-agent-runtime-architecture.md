@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.1.0"
+archetype: "systems-analysis"
 title: "DeepSeek Harness Architecture: Where the Agent Control Plane Ends and the Sandbox Begins"
 meta_title: "DeepSeek Harness Architecture & Cordis Sandboxing Limits"
 description: "A clinical engineering analysis of DeepSeek Harness: evaluating the Cordis plugin event bus, spatiotemporal composability, and sandbox security constraints."
 pubDate: "2026-08-14"
 incidentDate: "2026-08-14"
-tags: ["systems-analysis", "architecture-review", "ai-agents", "deepseek", "cordis"]
+tags: ["systems-analysis", "ai-agents", "deepseek", "cordis", "agent-runtime", "llm-orchestration", "tool-calling"]
 slug: "deepseek-harness-agent-runtime-architecture"
 shortenedSlug: "deepseek-harness-architecture"
 target_systems: "LLM Agent Runtimes, DeepSeek Infrastructure, Cordis Event Bus"

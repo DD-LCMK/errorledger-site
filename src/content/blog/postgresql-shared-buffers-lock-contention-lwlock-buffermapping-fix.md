@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "incident-forensics"
 title: "PostgreSQL Shared Buffers Lock Contention: LWLock BufferMapping Fix & bgwriter Tuning"
 meta_title: "PostgreSQL Shared Buffers Lock Contention: LWLock Fix"
 description: "Root cause analysis and resolution playbook for PostgreSQL shared_buffers lock contention, LWLock:BufferMapping spinlocks, and background writer tuning."
 pubDate: "2026-07-27"
 incidentDate: "2026-07-27"
-tags: ["systems-analysis", "architecture-review", "postgresql", "database-performance", "memory-management", "linux-kernel"]
+tags: ["incident-forensics", "sre-postmortem", "postgresql", "shared-buffers", "lock-contention", "lwlock-buffermapping", "database-performance", "dirty-buffers"]
 slug: "postgresql-shared-buffers-lock-contention-lwlock-buffermapping-fix"
 shortenedSlug: "postgresql-shared-buffers-lock-contention-lwlock"
 target_systems: "PostgreSQL 14.x, PostgreSQL 15.x, PostgreSQL 16.x, Linux Kernel 5.15+"

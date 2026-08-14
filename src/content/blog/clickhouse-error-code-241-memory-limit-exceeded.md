@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "incident-forensics"
 title: "ClickHouse Error Code 241: Memory limit (for query) exceeded Fix"
 meta_title: "ClickHouse Code 241: Memory Limit Exceeded Fix"
 description: "Root cause analysis and resolution playbook for ClickHouse Code 241 memory limit errors, max_memory_usage tuning, and external aggregation configurations."
 pubDate: "2026-08-07"
 incidentDate: "2026-08-07"
-tags: ["systems-analysis", "architecture-review", "clickhouse", "database-performance", "olap", "memory-management"]
+tags: ["incident-forensics", "sre-postmortem", "clickhouse", "error-code-241", "memory-limit-exceeded", "olap", "query-optimization", "database-tuning"]
 slug: "clickhouse-error-code-241-memory-limit-exceeded"
 shortenedSlug: "clickhouse-error-code-241-memory-limit-exceeded"
 target_systems: "ClickHouse 23.x / 24.x Columnar DBMS"

@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "systems-analysis"
 title: "System Architecture: Meta's $567M Penalty and Unbounded Optimization"
 meta_title: "Meta's $567M Penalty: The Failure of Unbounded Algorithmic Optimization"
 description: "Analyze the systems architecture failure of Meta's recommendation algorithms. Discover why unbounded engagement optimization treats psychological harm as a zero-cost externality."
 pubDate: "2026-08-08"
 incidentDate: "2026-08-08"
-tags: ["systems-analysis", "architecture-review", "machine-learning", "algorithms", "failure-mode"]
+tags: ["systems-analysis", "algorithmic-governance", "recommender-systems", "engagement-optimization", "platform-liability", "content-moderation"]
 slug: "meta-567m-judgment-algorithmic-engagement-optimization-failure"
 shortenedSlug: "meta-algorithmic-failure"
 target_systems: "Recommendation Engines, Machine Learning, Systems Architecture, Algorithmic Safety"

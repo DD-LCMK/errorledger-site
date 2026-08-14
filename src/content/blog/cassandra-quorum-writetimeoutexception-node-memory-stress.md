@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "incident-forensics"
 title: "Apache Cassandra QUORUM WriteTimeoutException: Node Memory Stress & JVM GC Freezes"
 meta_title: "Cassandra QUORUM WriteTimeoutException & GC Freeze Fix"
 description: "Root cause analysis and resolution playbook for Apache Cassandra WriteTimeoutException during QUORUM operations caused by JVM GC Stop-The-World pauses and Linux kernel memory stress."
 pubDate: "2026-08-05"
 incidentDate: "2026-08-05"
-tags: ["systems-analysis", "architecture-review", "cassandra", "jvm", "garbage-collection", "nosql"]
+tags: ["incident-forensics", "sre-postmortem", "cassandra", "jvm-tuning", "garbage-collection", "memory-stress", "writetimeoutexception", "nosql"]
 slug: "cassandra-quorum-writetimeoutexception-node-memory-stress"
 shortenedSlug: "cassandra-quorum-writetimeoutexception-node-memory-stress"
 target_systems: "Apache Cassandra 4.x / 5.x, Java 11 / Java 17, Linux Kernel 5.15+"

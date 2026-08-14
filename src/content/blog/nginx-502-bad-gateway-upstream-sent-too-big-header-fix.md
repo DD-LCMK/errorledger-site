@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "incident-forensics"
 title: "Nginx 502 Bad Gateway: Upstream Sent Too Big Header & proxy_buffer_size Fix"
 meta_title: "Nginx 502 Upstream Too Big Header Fix"
 description: "Root cause analysis and resolution playbook for Nginx 502 Bad Gateway errors, upstream sent too big header log failures, and proxy_buffer_size tuning."
 pubDate: "2026-07-29"
 incidentDate: "2026-07-29"
-tags: ["systems-analysis", "architecture-review", "nginx", "reverse-proxy", "http-headers", "devops"]
+tags: ["incident-forensics", "sre-postmortem", "nginx", "502-bad-gateway", "upstream-sent-too-big-header", "proxy-buffer-size", "reverse-proxy", "http-headers"]
 slug: "nginx-502-bad-gateway-upstream-sent-too-big-header-fix"
 shortenedSlug: "nginx-502-bad-gateway-upstream-sent"
 target_systems: "Nginx 1.22.x, Nginx 1.24.x, OpenResty 1.21.x, OAuth2 / JWT Headers"

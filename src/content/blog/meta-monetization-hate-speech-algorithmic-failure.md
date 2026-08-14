@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "systems-analysis"
 title: "Meta’s Content Monetization System: An Algorithmic Enforcement Failure"
 meta_title: "Meta’s Content Monetization System: An Algorithmic Enforcement Failure"
 description: "A systems analysis of how Meta's performance-based engagement algorithms financially rewarded hate speech, exposing the vulnerability of layering static safety policies over dynamic optimization models."
 pubDate: "2026-08-14"
 incidentDate: "2026-08-10"
-tags: ["systems-analysis", "architecture-review", "machine-learning", "algorithms", "algorithmic-governance"]
+tags: ["systems-analysis", "content-monetization", "automated-enforcement", "hate-speech-classification", "false-positives", "recommender-systems"]
 slug: "meta-s-content-monetization-system-an-algorithmic-enforcement-failure"
 shortenedSlug: "meta-monetization-enforcement-failure"
 target_systems: "Algorithmic Monetization Pipelines, Social Graph Recommendation Models, Content Moderation Systems"

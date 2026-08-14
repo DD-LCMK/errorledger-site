@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "systems-analysis"
 title: "Stealing Reasoning Traces: The Architecture of LLM API Distillation"
 meta_title: "Stealing Reasoning Traces from Proprietary LLM APIs"
 description: "A systems analysis of how competitors extract hidden Chain of Thought reasoning traces from proprietary LLMs to bypass inference-time compute research costs."
 pubDate: "2026-08-12"
 incidentDate: "2026-08-12"
-tags: ["systems-analysis", "architecture-review", "llm-infrastructure", "synthetic-data", "model-distillation"]
+tags: ["systems-analysis", "llm-security", "reasoning-traces", "model-distillation", "synthetic-data", "api-reverse-engineering", "chain-of-thought"]
 slug: "stealing-reasoning-traces-from-proprietary-llm-apis"
 shortenedSlug: "stealing-reasoning-traces"
 target_systems: "Proprietary LLM APIs, Inference-Time Compute Models, Synthetic Data Pipelines"

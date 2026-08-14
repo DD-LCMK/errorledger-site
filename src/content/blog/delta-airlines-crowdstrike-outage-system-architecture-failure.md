@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "incident-forensics"
 title: "Delta Air Lines & CrowdStrike: The Architecture of a Week-Long Outage"
 meta_title: "Delta Air Lines CrowdStrike Outage: Application State Failure"
 description: "A systems analysis of why Delta Air Lines failed to recover from the CrowdStrike outage, exposing the gap between infrastructure recovery and application state reconciliation."
 pubDate: "2026-08-14"
 incidentDate: "2024-07-19"
-tags: ["systems-analysis", "architecture-review", "sre-postmortem", "incident-analysis", "disaster-recovery", "state-reconciliation"]
+tags: ["incident-forensics", "sre-postmortem", "crowdstrike-outage", "delta-airlines", "disaster-recovery", "state-reconciliation", "service-outage", "crew-scheduling"]
 slug: "delta-air-lines-crowdstrike-outage-application-state-failure"
 shortenedSlug: "delta-air-lines-crowdstrike-outage-application-state-failure"
 target_systems: "Enterprise Crew Scheduling Systems, Event-Driven State Machines, Windows Server Infrastructure"

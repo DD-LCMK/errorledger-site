@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "systems-analysis"
 title: "Social Graph Incentive Misalignment: How Meta's Monetization Engine Funds Controversial Actors"
 meta_title: "Meta's Token Economics: Social Graph Incentive Misalignment"
 description: "An architectural teardown of how Meta's engagement-based monetization models structurally misalign with community guidelines, inadvertently funding controversial actors."
 pubDate: "2026-08-13"
 incidentDate: "2026-08-10"
-tags: ["systems-analysis", "architecture-review", "social-graph", "algorithm-failure"]
+tags: ["systems-analysis", "creator-economy", "incentive-design", "virality-mechanics", "platform-economics", "social-graph"]
 slug: "meta-monetization-programs-controversial-creators-incentive-misalignment"
 shortenedSlug: "meta-monetization-programs-controversial-creators-incentive-misalignment"
 target_systems: "Algorithmic Ad Revenue Distribution Systems, Recommendation Models"

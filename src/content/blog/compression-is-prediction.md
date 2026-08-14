@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "systems-analysis"
 title: "Compression is Prediction: The Architecture of Generative AI Lossy Encodings"
 meta_title: "Compression is Prediction: LLM Lossy Encodings Architecture"
 description: "A systems analysis of how LLMs function as lossy compression algorithms, and why hallucinations are structural decompression artifacts rather than reasoning flaws."
 pubDate: "2026-08-12"
 incidentDate: "2026-08-12"
-tags: ["systems-analysis", "architecture-review", "llm-infrastructure", "information-theory", "compression"]
+tags: ["systems-analysis", "information-theory", "compression", "llm-foundations", "shannon-entropy", "neural-scaling"]
 slug: "compression-is-prediction-architecture-of-generative-ai-lossy-encodings"
 shortenedSlug: "compression-is-prediction"
 target_systems: "Autoregressive Transformer Models, Information Theory Encodings, Generative AI Runtimes"

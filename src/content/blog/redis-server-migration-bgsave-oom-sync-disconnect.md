@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "incident-forensics"
 title: "Redis Server Migration: Preventing BGSAVE OOM and SYNC Disconnects"
 meta_title: "Redis Migration: Fix BGSAVE OOM & SYNC Disconnects"
 description: "Root cause analysis and resolution playbook for Redis migration failures caused by BGSAVE fork memory limits (OOM Killer) and replica SYNC buffer disconnects."
 pubDate: "2026-08-06"
 incidentDate: "2026-08-06"
-tags: ["systems-analysis", "architecture-review", "redis", "database-migration", "oom-killer", "replication"]
+tags: ["incident-forensics", "sre-postmortem", "redis", "bgsave", "copy-on-write-oom", "database-migration", "replication-buffer", "overcommit-memory"]
 slug: "redis-server-migration-bgsave-oom-sync-disconnect"
 shortenedSlug: "redis-server-migration-bgsave-oom-sync-disconnect"
 target_systems: "Redis 6.x / 7.x, Linux Kernel 5.15+"

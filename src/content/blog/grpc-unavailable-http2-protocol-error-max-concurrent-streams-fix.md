@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "incident-forensics"
 title: "gRPC Unavailable Status: HTTP/2 PROTOCOL_ERROR & max_concurrent_streams Fix"
 meta_title: "gRPC HTTP/2 PROTOCOL_ERROR Fix"
 description: "Root cause analysis and resolution playbook for gRPC Unavailable status errors, HTTP/2 PROTOCOL_ERROR stream resets, and max_concurrent_streams tuning."
 pubDate: "2026-08-05"
 incidentDate: "2026-08-05"
-tags: ["systems-analysis", "architecture-review", "grpc", "http2", "envoy", "microservices"]
+tags: ["incident-forensics", "sre-postmortem", "grpc", "http2", "max-concurrent-streams", "envoy", "protocol-error", "microservices-networking"]
 slug: "grpc-unavailable-http2-protocol-error-max-concurrent-streams-fix"
 shortenedSlug: "grpc-unavailable-http2-protocol-error-max"
 target_systems: "gRPC Core 1.54+, gRPC-Go 1.55+, Envoy Proxy 1.26+, HTTP/2 Multiplexing"

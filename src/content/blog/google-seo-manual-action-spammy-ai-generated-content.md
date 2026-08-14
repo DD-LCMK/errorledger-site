@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "systems-analysis"
 title: "Google SEO Manual Action: Spammy AI-Generated Content Penalty Fix"
 meta_title: "Google SEO Manual Action: AI-Generated Content Penalty Fix"
 description: "Root cause analysis and mitigation playbook for recovering from Google's 'Spammy automatically generated content' manual actions on LLM-driven publishing pipelines."
 pubDate: "2026-08-07"
 incidentDate: "2026-08-07"
-tags: ["systems-analysis", "architecture-review", "seo", "llm", "content-architecture", "rag"]
+tags: ["systems-analysis", "seo-architecture", "google-search-policy", "manual-action", "ai-generated-content", "eeat", "information-gain"]
 slug: "google-seo-manual-action-spammy-ai-generated-content"
 shortenedSlug: "google-seo-manual-action-spammy-ai-generated-content"
 target_systems: "Google Search Console, LLM Pipelines (ChatGPT, Claude), Programmatic SEO"

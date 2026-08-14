@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "incident-forensics"
 title: "Redis Master-Replica Sync Disconnect: Client Output Buffer Exceeded & repl-backlog Fix"
 meta_title: "Redis Replica Sync Disconnect: Client Output Buffer Fix"
 description: "Root cause analysis and resolution playbook for primary Redis memory exhaustion, client-output-buffer-limit breaches, and replica disconnection loops."
 pubDate: "2026-07-28"
 incidentDate: "2026-07-28"
-tags: ["systems-analysis", "architecture-review", "redis", "database-performance", "memory-management", "replication"]
+tags: ["incident-forensics", "sre-postmortem", "redis", "replica-sync-disconnect", "client-output-buffer-limit", "psync", "replication-lag", "in-memory-cache"]
 slug: "redis-replica-sync-disconnect-client-output-buffer-fix"
 shortenedSlug: "redis-replica-sync-disconnect-client-output"
 target_systems: "Redis 6.2.x, Redis 7.0.x, Redis 7.2.x, Redis 7.4.x, Linux Kernel 5.15+"

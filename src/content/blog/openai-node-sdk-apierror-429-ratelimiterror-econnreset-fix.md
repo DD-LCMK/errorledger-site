@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "incident-forensics"
 title: "OpenAI Node.js SDK: APIError 429 RateLimitError & Stream ECONNRESET Fix"
 meta_title: "OpenAI Node.js SDK 429 & ECONNRESET Fix"
 description: "Root cause analysis and resolution playbook for OpenAI Node.js SDK 429 RateLimitError exceptions, streaming ECONNRESET drops, and client configuration."
 pubDate: "2026-08-05"
 incidentDate: "2026-08-05"
-tags: ["systems-analysis", "architecture-review", "openai", "nodejs", "typescript", "api-error"]
+tags: ["incident-forensics", "sre-postmortem", "openai-sdk", "429-ratelimiterror", "econnreset", "exponential-backoff", "connection-pooling", "api-resilience"]
 slug: "openai-node-sdk-apierror-429-ratelimiterror-econnreset-fix"
 shortenedSlug: "openai-node-sdk-apierror-429-ratelimiterror"
 target_systems: "OpenAI Node.js SDK v4.x (openai 4.28+), Node.js 18 LTS / 20 LTS / 22 LTS, TypeScript 5.x"

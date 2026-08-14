@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "systems-analysis"
 title: "The Illusion of Choice: A Systems Analysis of Ubiquitous Digital Surveillance"
 meta_title: "Everything is Recorded: Ubiquitous Surveillance Architecture"
 description: "A systems analysis of why pervasive digital recording and telemetry is inescapable in modern society, treating surveillance capitalism as a mandatory infrastructure layer."
 pubDate: "2026-08-10"
 incidentDate: "2026-08-09"
-tags: ["systems-analysis", "architecture-review", "telemetry", "privacy", "surveillance"]
+tags: ["systems-analysis", "surveillance-architecture", "telemetry", "data-harvesting", "privacy-engineering", "device-fingerprinting"]
 slug: "everything-you-do-is-being-recorded-surveillance-architecture"
 shortenedSlug: "ubiquitous-digital-surveillance-architecture"
 target_systems: "Consumer Hardware, SaaS Ecosystems, Edge Recording Devices, Mobile OS"

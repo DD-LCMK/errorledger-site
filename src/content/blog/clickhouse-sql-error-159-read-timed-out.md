@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "incident-forensics"
 title: "ClickHouse SQL Error 159: Read timed out during DBeaver Queries"
 meta_title: "ClickHouse SQL Error 159: Read Timed Out Fix"
 description: "Root cause analysis and resolution playbook for ClickHouse SQL Error 159 timeouts in DBeaver, JDBC socket configuration, and max_execution_time tuning."
 pubDate: "2026-08-06"
 incidentDate: "2026-08-06"
-tags: ["systems-analysis", "architecture-review", "clickhouse", "dbeaver", "database-performance", "olap"]
+tags: ["incident-forensics", "sre-postmortem", "clickhouse", "error-code-159", "read-timed-out", "dbeaver", "http-timeouts", "olap-performance"]
 slug: "clickhouse-sql-error-159-read-timed-out"
 shortenedSlug: "clickhouse-sql-error-159-read-timed-out"
 target_systems: "ClickHouse 23.x / 24.x Columnar DBMS, DBeaver 23+, ClickHouse JDBC Driver"

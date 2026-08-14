@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "systems-analysis"
 title: "Muse Glimmer 30B: The Hardware Constraints of Always-On Local Agents"
 meta_title: "Muse Glimmer 30B Local Agent: Hardware Limits & VRAM"
 description: "A systems analysis of running the Muse Glimmer 30B model as an always-on local agent, evaluating the VRAM constraints, context growth OOM crashes, and hardware scaling limits."
 pubDate: "2026-08-10"
 incidentDate: "2026-08-10"
-tags: ["systems-analysis", "architecture-review", "local-llm", "ai-agents", "hardware-constraints"]
+tags: ["systems-analysis", "local-llm", "ai-agents", "muse-glimmer", "quantization", "edge-inference", "memory-footprint"]
 slug: "muse-glimmer-30b-local-agent-workflows"
 shortenedSlug: "muse-glimmer-30b-local-agent"
 target_systems: "Local Inference Hardware, Apple Silicon, Nvidia RTX Workstations"

@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "incident-forensics"
 title: "RabbitMQ Socket Desynchronization: PRECONDITION_FAILED Channel Closure & x-max-priority Fix"
 meta_title: "RabbitMQ PRECONDITION_FAILED Channel Closure Fix"
 description: "Root cause analysis and resolution playbook for RabbitMQ AMQP 406 PRECONDITION_FAILED channel closures, x-max-priority mismatches, and socket desynchronization."
 pubDate: "2026-07-29"
 incidentDate: "2026-07-29"
-tags: ["systems-analysis", "architecture-review", "rabbitmq", "amqp", "messaging", "distributed-systems"]
+tags: ["incident-forensics", "sre-postmortem", "rabbitmq", "precondition-failed", "channel-closure", "x-max-priority", "amqp", "message-broker"]
 slug: "rabbitmq-precondition-failed-channel-closure-x-max-priority-fix"
 shortenedSlug: "rabbitmq-precondition-failed-channel-closure-x"
 target_systems: "RabbitMQ 3.11.x, RabbitMQ 3.12.x, RabbitMQ 3.13.x, Erlang/OTP 25/26"

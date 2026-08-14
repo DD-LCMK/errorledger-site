@@ -1,11 +1,12 @@
 ---
 pipeline_contract_version: "61.3.0"
+archetype: "incident-forensics"
 title: "Docker Daemon Deadlock: containerd Container Did Not Exit in Time & overlay2 Fix"
 meta_title: "Docker Daemon Container Did Not Exit Fix"
 description: "Root cause analysis and resolution playbook for Docker daemon deadlocks, containerd container did not exit in time errors, and overlay2 storage driver locks."
 pubDate: "2026-07-30"
 incidentDate: "2026-07-30"
-tags: ["systems-analysis", "architecture-review", "docker", "containerd", "containers", "storage-drivers"]
+tags: ["incident-forensics", "sre-postmortem", "docker", "containerd", "deadlock", "shim-process", "container-exit-timeout", "overlay2"]
 slug: "docker-daemon-deadlock-containerd-container-did-not-exit-in-time-fix"
 shortenedSlug: "docker-daemon-deadlock-containerd-container-did"
 target_systems: "Docker Engine 24.x, Docker Engine 26.x, containerd 1.6/1.7, Linux Kernel 5.15+ / 6.x (overlay2)"
