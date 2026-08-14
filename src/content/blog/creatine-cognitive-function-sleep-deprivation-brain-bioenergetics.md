@@ -23,7 +23,7 @@ ogImage: "/images/hero-creatine-cognitive-function-sleep-deprivation.png"
 > **ErrorLedger Publisher Trust Block**
 > - **Last Audited:** 2026-08-15
 > - **Analyzed By:** ErrorLedger Editorial & Systems Analysis Team
-> - **Evidence Grade:** B (Moderate overall confidence; strongest evidence concerns acute sleep-deprivation cognitive effects, while long-term cerebral accumulation, domain-specific effects, and mechanistic transport kinetics remain less certain)
+> - **Evidence Grade:** B (ErrorLedger Editorial Assessment: Moderate overall confidence; strongest evidence concerns acute sleep-deprivation cognitive effects, while long-term cerebral accumulation, domain-specific effects, and mechanistic transport kinetics remain less certain)
 
 *By the ErrorLedger Editorial & Systems Analysis Team — [Methodology](https://errorledger.com/about)*
 *This analysis provides a constraint-grounded physiological systems audit of creatine monohydrate supplementation for cognitive function and acute sleep deprivation, synthesizing magnetic resonance spectroscopy neuroimaging and randomized clinical trials to evaluate cellular bioenergetic buffering against popular nootropic claims.*
@@ -137,7 +137,7 @@ Subsequent meta-analyses have reinforced that creatine does not act as a univers
 - A 2026 meta-analysis of 19 RCTs and 1 crossover study demonstrated that creatine supplementation increases serum creatinine concentrations without producing a statistically significant difference in estimated GFR or blood urea nitrogen (*EV-LIFESTYLE-017*, Systematic Review & Meta-Analysis).
 - Cerebral creatine uptake from systemic circulation is constrained relative to skeletal muscle, resulting in smaller and slower changes in brain creatine concentration (*EV-LIFESTYLE-014*, *EV-LIFESTYLE-015*, Systematic Neuroimaging Reviews).
 
-### Mechanistic Inference
+### Engineering & Physiological Inference
 - Supplemental creatine is inferred to act as an exogenous metabolic buffer that may support high-energy phosphate availability in neural networks engaged during sustained cognitive demand. While MRS neuroimaging demonstrates altered cerebral high-energy phosphate measures, these findings do not by themselves establish that increased phosphocreatine buffering is the sole or direct causal driver of observed cognitive differences.
 - Because routine psychomotor tasks place lower demands on cellular bioenergetic reserves than sustained complex executive challenges, supplemental creatine produces negligible improvements in basic reaction time in well-rested subjects.
 
@@ -444,6 +444,8 @@ This engineering tool models published experimental parameters and analytical co
 - ✓ **Creatine does not replace biological sleep:** While creatine attenuates selected performance deficits during acute sleep loss, it does not restore normal sleep architecture or eliminate the physiological requirement for recovery sleep.
 
 ## Standardized System Scoring
+
+*Note: The following rubric scores represent ErrorLedger's structured editorial assessment synthesizing currently available primary human trials and meta-analyses, not an automated or universal clinical index.*
 
 | Evaluation Dimension | Score (1–5) | Operational Justification |
 | :--- | :---: | :--- |
