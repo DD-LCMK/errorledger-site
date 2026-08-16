@@ -43,7 +43,7 @@ The title is deliberately provocative: the evidence does not demonstrate that RI
 - The base integer architecture (RV64I) and standard unprivileged extensions (M, A, F, D, C, B, V, Ztso).
 - Microarchitectural techniques utilized in high-performance implementations, specifically **macro-op fusion** and **compressed instruction decoding (RVC)**.
 - Front-end fetch, variable-length decode alignment, and register rename trade-offs in superscalar out-of-order (OoO) cores.
-- The role of standardized **RVA22** and **RVA23** application profiles in addressing software binary fragmentation.
+- The role of standardized **RVA22** and **RVA23** application profiles (including `RVA23U64` and `RVA23S64`) in addressing software binary fragmentation.
 - Memory consistency considerations (RVWMO vs. TSO) in native execution and dynamic binary translation.
 
 **Excluded:**
@@ -56,24 +56,24 @@ The title is deliberately provocative: the evidence does not demonstrate that RI
 
 ## Observable Signals & Quick Specs
 
-The table below contrasts the architectural goals of minimal ISA design against the observed implementation characteristics across different design layers.
+The table below contrasts the architectural goals of minimal ISA design against the observed implementation characteristics across orthogonal design dimensions.
 
 | System Dimension | Architectural Design Principle | Microarchitectural & System Reality |
 | :--- | :--- | :--- |
 | **Instruction Granularity** | Minimalist 32-bit base operations eliminate complex addressing modes and condition codes. | Multi-instruction idioms required for constant/address materialization and control-flow sequences (`LUI + ADDI`, `AUIPC + ADDI`, `AUIPC + JALR`), increasing raw architectural instruction count for some common operations. |
-| **Code Density** | RVC mixed 16-bit/32-bit instructions achieve compact binary size competitive with x86-64. | 16-bit/32-bit mix creates 2-byte alignment boundaries, requiring front-end steering across potential instruction start positions. |
-| **Pipeline Front-End** | Simple, regular instruction formats simplify individual decoder units. | High-performance out-of-order cores selectively implement multi-instruction pattern matchers (macro-op fusion) to reduce internal operation pressure. |
-| **Ecosystem Portability** | Modular extensions allow tailored hardware configurations. | General-purpose operating systems target standardized profiles (RVA22/RVA23) to establish predictable binary targets. |
+| **Code Density** | RVC mixed 16-bit/32-bit instructions achieve compact binary size competitive with x86-64. | 16-bit/32-bit mix creates 2-byte alignment boundaries, creating up to 16 possible 16-bit-aligned instruction-start positions within a 32-byte fetch window that front-ends may need to classify. |
+| **Pipeline Front-End** | Simple, regular instruction formats simplify individual decoder units. | High-performance out-of-order cores selectively implement multi-instruction pattern matchers (macro-op fusion) to reduce front-end and downstream operation-tracking pressure. |
+| **Ecosystem Portability** | Modular extensions allow tailored hardware configurations. | General-purpose operating systems target standardized profiles (`RVA22`, `RVA23U64`, `RVA23S64`) to establish predictable binary targets. |
 | **Memory Consistency** | Weak memory ordering (RVWMO) permits a weaker ordering contract for memory operations. | Software fence insertion can introduce overhead in x86/SPARC binary translation unless the optional hardware extension (`Ztso`) is implemented. |
 
 ## Immediate Reality Check
 
 1. **Relocation of Optimization Policy:** Omitting complex instructions from the ISA does not remove computational requirements; it relocates optimization decisions from the fixed architectural contract into optional microarchitectural implementations and compiler back-ends.
-2. **Macro-Op Fusion as a Selective Performance Tool:** In the 2016 Berkeley SPEC CINT2006 evaluation, Celio et al. estimated that exploiting macro-op fusion could reduce RISC-V's effective dynamic instruction count by an average of **5.4% across evaluated SPEC CINT2006 workloads**, potentially reducing front-end decode, allocation, and retirement bandwidth.
-3. **Specification-Supported Fusion Conventions:** Importantly, macro-op fusion is not merely an external microarchitectural workaround. The RISC-V ISA specification deliberately defines register-use conventions for `JALR` (where the link register `ra`/`x1` or `t0`/`x5` is used for both destination and source) that facilitate hardware detection of common `LUI/JALR` and `AUIPC/JALR` pairs.
-4. **Variable-Length Decoding Demands Boundary Steering:** While RVC is commonly associated with roughly 25% to 30% static code-size reduction relative to uncompressed RISC-V code, a 32-byte fetch buffer contains up to 16 potential 16-bit-aligned instruction start positions, requiring wide superscalar front-ends to resolve variable-length instruction boundaries.
-5. **Profiles Substantially Reduce Ecosystem Fragmentation:** Ratified application profiles (**RVA22** and the modern **RVA23** standard) establish standardized architectural baselines intended to give operating systems, compilers, libraries, and application ecosystems a predictable target.
-6. **Memory Translation Trade-Offs:** Emulating software written with Total Store Ordering assumptions on native RVWMO silicon can require software-inserted memory barriers; the ratified `Ztso` extension provides an architectural RVTSO execution model that can eliminate many of the additional ordering operations otherwise required when reproducing TSO semantics.
+2. **Macro-Op Fusion as a Selective Performance Tool:** In the 2016 Berkeley SPEC CINT2006 evaluation, Celio et al. estimated that exploiting common RISC-V multi-instruction idioms through macro-op fusion could reduce the effective dynamic instruction count by **5.4% on average across the evaluated SPEC CINT2006 workloads**, potentially reducing front-end decode, allocation, and retirement bandwidth.
+3. **Specification-Supported Fusion Conventions:** Importantly, macro-op fusion is not merely an external microarchitectural workaround. The RISC-V ISA specification uses register conventions that explicitly facilitate hardware detection of common `LUI/JALR` and `AUIPC/JALR` pairs when using the standard link register `x1/ra` or alternate link register `x5/t0`.
+4. **Variable-Length Decoding Demands Boundary Steering:** While RVC is commonly associated with roughly 25% to 30% static code-size reduction relative to uncompressed RISC-V code, a 32-byte fetch buffer creates up to 16 possible 16-bit-aligned instruction-start positions within the 32-byte window that the front-end may need to classify.
+5. **Profiles Substantially Reduce Ecosystem Fragmentation:** Ratified application profiles (**RVA22** and the modern **RVA23** standard, covering `RVA23U64` and `RVA23S64`) establish standardized architectural baselines intended to give operating systems, compilers, libraries, and application ecosystems a predictable target.
+6. **Memory Translation Trade-Offs:** Emulating software written with Total Store Ordering assumptions on native RVWMO silicon can require software-inserted memory barriers; the ratified `Ztso` extension provides an architectural RVTSO execution model that can reduce the need for many additional ordering operations required to reproduce TSO semantics.
 
 ## What You Will Learn
 
@@ -87,7 +87,7 @@ The table below contrasts the architectural goals of minimal ISA design against 
 
 When evaluating RISC-V application-class processors for high-performance server, client, or accelerator deployments, examine these architectural criteria:
 
-- [ ] **Application Profile Compliance:** For new application-class silicon, evaluate **RVA23** first; retain **RVA22** as a reference baseline where required by existing software stacks.
+- [ ] **Application Profile Compliance:** For new 64-bit application-class silicon, evaluate the relevant **RVA23U64 / RVA23S64** profile requirements first; retain **RVA22** as a reference baseline where required by existing software stacks.
 - [ ] **Macro-Op Fusion Capabilities:** What specific multi-instruction idioms (`AUIPC + JALR`, `LUI + ADDIW`, load-address pairs) does the decode stage fuse into single internal operations?
 - [ ] **Vector Extension Version:** Does the vector implementation adhere to ratified **RVV 1.0** rather than legacy pre-ratification drafts (e.g., 0.7.1)?
 - [ ] **Unaligned Memory Handling:** Are misaligned memory accesses handled efficiently in hardware without trapping to supervisor firmware?
@@ -114,9 +114,9 @@ The trace below illustrates how an out-of-order superscalar front-end conceptual
 
 [CYCLE 003] PATTERN MATCHING & MACRO-OP FUSION:
             Candidate Pair: [Inst 0: AUIPC ra, 0] + [Inst 1: JALR ra, 0(ra)]
-            Dependency Check: Inst 1 consumes Inst 0 result. rd == rs1 == x1 (ra). Intermediate architectural destination is also the link register.
+            Dependency Check: Inst 1 consumes Inst 0 result. rd == rs1 == x1 (ra). Destination matches standard link register.
             Fusion Decision: MATCH -> SPECIFICATION-FACILITATED FUSION CANDIDATE
-            Target Calculation: AUIPC PC-relative immediate + JALR offset immediate; Link Register: ra
+            Target Calculation: AUIPC PC-relative immediate + JALR offset immediate; Link Register: ra (x1)
             Internal Representation: 1 fused front-end operation emitted at decode
 
 [CYCLE 004] REGISTER RENAME & ALLOCATION:
@@ -135,7 +135,7 @@ The trace below illustrates how an out-of-order superscalar front-end conceptual
 
 **Expected Model:** The RISC-V ISA design hypothesis posits that an ultra-lean, modular instruction set (RV64I + standard extensions) avoids legacy architectural bloat while providing implementation freedom for high-end microarchitectures to selectively implement optimizations (such as macro-op fusion and compressed instruction decoding) without burdening low-end cores.
 
-**Observed Reality:** While low-end in-order cores benefit from minimal silicon area, high-performance superscalar out-of-order processors must selectively spend microarchitectural complexity on multi-instruction pattern matching, wide variable-length decode steering, and memory consistency barriers to achieve competitive IPC on general-purpose workloads.
+**Observed Reality:** While low-end in-order cores benefit from minimal silicon area, high-performance superscalar out-of-order processors must selectively spend microarchitectural complexity on multi-instruction pattern matching and wide variable-length decode steering to achieve competitive IPC on general-purpose workloads.
 
 ```
 +-----------------------------------------------------------------------------------------------+
@@ -159,7 +159,7 @@ The trace below illustrates how an out-of-order superscalar front-end conceptual
 +-----------------------------------------------------------------------------------------------+
 ```
 
-The relationship between the RISC-V ISA specification and hardware implementation is characterized by deliberate architectural minimalism. By omitting complex addressing modes (such as base-plus-scaled-index) and complex condition codes from the base ISA, the architecture contract remains small and regular.
+The relationship between the RISC-V ISA specification and hardware implementation is characterized by deliberate architectural minimalism. The base RISC-V ISA does not provide x86-style base-plus-scaled-index addressing modes or an architecturally visible condition-code register.
 
 In high-performance out-of-order processors, compilers emit sequences of simple instructions to perform compound operations. To prevent these multi-instruction sequences from consuming excessive front-end and allocation bandwidth, high-end microarchitectures can deploy **macro-op fusion** to combine adjacent instructions into a single internal operation at the decode stage.
 
@@ -170,8 +170,8 @@ The table below delineates the distribution of complexity across the ISA specifi
 | Feature / Extension | ISA Specification Complexity | Decoder Microarchitecture Complexity | Compiler Toolchain Complexity | Primary System Benefit |
 | :--- | :--- | :--- | :--- | :--- |
 | **RV64I (Base Integer)** | Low | Low | Medium | Minimalist base architecture; portable across all implementation tiers. |
-| **RVC (Compressed)** | Medium | Medium–High (variable-length steering) | Low–Medium | 25% to 30% static code size reduction; lower instruction-cache miss rates. |
-| **Macro-Op Fusion** | None (ISA-transparent, hinted via JALR) | High (pattern matchers, port allocation) | Low (idiom scheduling) | Reduces internal operation pressure on decode, allocation, and retirement. |
+| **RVC (Compressed)** | Medium | Medium–High (variable-length steering) | Low–Medium | Roughly 25% to 30% static code size reduction; lower instruction-cache miss rates. |
+| **Macro-Op Fusion** | None (ISA-transparent, hinted via JALR) | High (pattern matchers, port allocation) | Low (idiom scheduling) | Reduces front-end and, depending on implementation, downstream operation-tracking pressure. |
 | **Vector Extension (RVV 1.0)** | High | High | High (auto-vectorization) | Scalable vector-length agnostic SIMD/data-parallel compute. |
 | **Ztso (Total Store Ordering)** | Medium | Low–Medium (hardware TSO ordering) | Low | Facilitates porting and high-performance translation of x86/SPARC software. |
 
@@ -183,7 +183,7 @@ Macro-op fusion pairs adjacent instructions in the decode buffer and emits a sin
 - **Fetch Boundary Constraints:** When two fusible instructions cross a fetch block boundary, the fusion logic cannot pair them unless an instruction staging buffer or pre-decode queue is maintained.
 - **Operand Routing & Port Requirements:** Supporting complex fused operations (such as shift-and-add or indexed loads) can create additional operand-routing, rename, scheduling, and execution-resource requirements; implementations may instead restrict the supported fusion patterns or split the fused operation later in the backend.
 - **Backend Decomposition:** As noted in microarchitectural literature, a processor may fuse instructions at the front end to conserve allocation bandwidth, but decompose them into separate operations for execution across distinct functional units. The extent to which backend structures like the Reorder Buffer or issue queues benefit is implementation-dependent.
-- **Specification Conventions:** The RISC-V specification deliberately specifies JALR register-use conventions (e.g., where the link register `ra`/`x1` or `t0`/`x5` is used for both destination and source) to facilitate hardware detection of fusion pairs such as `LUI + JALR` and `AUIPC + JALR`.
+- **Specification Conventions:** The RISC-V specification uses register conventions that explicitly facilitate hardware detection of fusion pairs such as `LUI + JALR` and `AUIPC + JALR` when using the standard link register `x1/ra` or alternate link register `x5/t0`.
 
 ### 2. Variable-Length Compressed Instruction (RVC) Alignment
 The RVC extension allows 16-bit compressed instructions to interleave with 32-bit standard instructions, achieving compact binary footprints. In the Berkeley study, RV64GC fetched **8% fewer dynamic instruction bytes** than x86-64 across evaluated SPEC CINT2006 workloads.
@@ -192,7 +192,7 @@ In wide-issue superscalar front-ends, mixed 16-bit and 32-bit instructions intro
 
 $$N_{\text{align\_slots}} = \frac{W_{\text{fetch\_bytes}}}{S_{\text{min\_inst}}} = \frac{32 \text{ bytes}}{2 \text{ bytes}} = 16 \text{ maximum 16-bit-aligned start offsets}$$
 
-A 32-byte fetch buffer contains 16 possible 16-bit-aligned instruction start positions. The front end must determine instruction boundaries across this variable-length stream, although physical implementations may deploy parallel pre-decoding, instruction queues, or alignment networks rather than literally evaluating 16 independent decoder candidates.
+A 32-byte fetch buffer creates up to 16 possible 16-bit-aligned instruction-start positions within the 32-byte window that the front end may need to classify, although physical implementations may deploy parallel pre-decoding, instruction queues, or alignment networks rather than literally evaluating 16 independent decoder candidates.
 
 ### 3. Memory Consistency Models: RVWMO vs. Ztso
 RISC-V defines a Weak Memory Ordering model (**RVWMO**) as its default memory consistency specification. RVWMO permits hardware to reorder loads and stores to different memory locations unless explicit memory ordering constraints are applied.
@@ -200,13 +200,13 @@ RISC-V defines a Weak Memory Ordering model (**RVWMO**) as its default memory co
 - **Weaker Ordering Contract:** RVWMO permits a weaker ordering contract for memory operations, giving implementations greater freedom in how memory operations are ordered, pipelined, and synchronized across multi-core fabrics.
 - **Ordering Mechanisms:** The standard A extension provides `.aq` / `.rl` annotations on atomic instructions, while newer extensions such as `Zalasr` add dedicated acquire/release load and store instructions.
 - **Binary Translation Considerations:** For software whose correctness depends on Total Store Ordering (TSO), translating from x86/SPARC semantics onto RVWMO may require additional ordering mechanisms depending on the translation strategy, which can introduce runtime overhead.
-- **The `Ztso` Extension:** RISC-V International ratified the `Ztso` extension to provide an architectural RVTSO execution model, eliminating many of the additional ordering operations otherwise required when reproducing TSO semantics.
+- **The `Ztso` Extension:** RISC-V International ratified the `Ztso` extension to provide an architectural RVTSO execution model, reducing the need for many additional ordering operations required to reproduce TSO semantics.
 
 ## Trade-Off & Applicability Matrix
 
 | Architectural Scenario | Implementation Strategy | Key Trade-Off & System Constraint | Applicability Assessment |
 | :--- | :--- | :--- | :--- |
-| **High-Throughput Application Core (Linux Server)** | RVA23-compliant RV64 application core with superscalar out-of-order pipeline and selective Macro-Op Fusion | Invests front-end silicon area in fusion pattern matchers to improve IPC; standardized on modern RVA23 profile. | **Supported / Recommended** |
+| **High-Throughput Application Core (Linux Server)** | RVA23-compliant RV64 application core (`RVA23U64/RVA23S64`) with superscalar out-of-order pipeline and selective Macro-Op Fusion | Invests front-end silicon area in fusion pattern matchers to improve IPC; standardized on modern RVA23 profile. | **Supported / Recommended** |
 | **Cross-Architecture x86/SPARC Software Porting** | RV64 core featuring hardware `Ztso` support | Requires implementation support for stronger RVTSO ordering semantics; simplifies migration of TSO-dependent codebases. | **Supported** |
 | **Resource-Constrained In-Order Microcontroller (IoT)** | RV32EC (16 registers, compressed base) | Minimizes gate count and power consumption; unsuited for high-throughput superscalar application workloads. | **Supported** |
 | **Custom Non-Profile Silicon for General Linux** | Ad-hoc extension subsets without RVA compliance | Risks software binary incompatibility with standard distribution packages; requires custom toolchain maintenance. | **High Risk / Not Recommended** |
@@ -215,18 +215,18 @@ RISC-V defines a Weak Memory Ordering model (**RVWMO**) as its default memory co
 
 ### Macro-Op Fusion Internal Operation Reduction Model
 
-The theoretical reduction in internal operations dispatched via macro-op fusion can be modeled based on the fraction of instructions participating in fusible idioms:
+The theoretical reduction in internal operations dispatched via macro-op fusion can be modeled based on the fraction of dynamic instructions participating in fusible pairs:
 
-$$I_{\text{modeled\_ops}} = I_{\text{fetched}} \times \left(1 - f_{\text{fusible}} \times r_{\text{pair\_collapse}}\right)$$
+$$I_{\text{modeled\_ops}} = I_{\text{fetched}} \times \left(1 - f_{\text{pair\_participation}} \times r_{\text{pair\_collapse}}\right)$$
 
 Where:
-- **Metric Name:** `f_fusible` (Fusible Instruction Fraction)
+- **Metric Name:** `f_pair_participation` (Fused-Participating Instruction Fraction)
   - *Numerator:* Dynamic count of architectural instructions successfully participating in valid two-instruction fusion pairs.
   - *Denominator:* Total dynamic architectural instructions fetched ($I_{\text{fetched}}$).
-  - *Empirical Literature Baseline:* In the 2016 UC Berkeley study (Celio et al.), exploiting macro-op fusion was estimated to reduce effective dynamic instruction count by an average of **5.4% across evaluated SPEC CINT2006 workloads**.
+  - *Empirical Literature Baseline:* In the 2016 UC Berkeley study (Celio et al.), exploiting macro-op fusion was estimated to reduce effective dynamic instruction count by an average of **5.4% across evaluated SPEC CINT2006 workloads** (corresponding to $f_{\text{pair\_participation}} \approx 0.108$).
 - **Pair Collapse Factor ($r_{\text{pair\_collapse}}$):** $0.50$ (bookkeeping parameter for a two-instructions-to-one-modeled-operation abstraction; not a measured physical hardware reduction factor).
 
-For an illustrative educational scenario where $I_{\text{fetched}} = 1,000,000$ instructions with an assumed $f_{\text{fusible}} = 0.18$ (180,000 instructions participating in 90,000 fusion events):
+For an illustrative educational scenario where $I_{\text{fetched}} = 1,000,000$ instructions with an assumed $f_{\text{pair\_participation}} = 0.18$ (180,000 instructions participating in 90,000 fusion events):
 
 $$I_{\text{modeled\_ops}} = 1,000,000 \times \left(1 - 0.18 \times 0.50\right) = 1,000,000 \times 0.910 = 910,000 \text{ modeled internal operations}$$
 
@@ -234,10 +234,10 @@ This calculation illustrates a **9.0% modeled reduction in internal operations**
 
 ```
 +-----------------------------------------------------------------------------------------------+
-|             INTERNAL OPERATION REDUCTION VS FUSIBLE INSTRUCTION FRACTION                      |
+|             INTERNAL OPERATION REDUCTION VS FUSED-PARTICIPATING INSTRUCTION FRACTION          |
 |             (Illustrative educational model — not a measured hardware result)                 |
 +-----------------------------------------------------------------------------------------------+
-| Fusible Instruction Fraction (f_fusible) | Modeled Internal Ops / Million | Modeled Reduction  |
+| Fused-Participating Fraction (f_pair)    | Modeled Internal Ops / Million | Modeled Reduction  |
 |------------------------------------------|--------------------------------|--------------------|
 | 0.00 (No Fusion Implemented)             | 1,000,000                      | Baseline (0.0%)    |
 | 0.108 (Celio 2016 SPEC CINT2006 Est: 5.4%)| 946,000                      | 5.4% modeled red.  |
@@ -264,7 +264,7 @@ The evidence indicates that RISC-V does not eliminate complexity, nor does it su
 ### Observed Facts
 - **[EV-RISCV-001]** Peer-reviewed research from UC Berkeley (Celio et al., 2016) estimated that macro-op fusion of standard idioms could reduce effective dynamic instruction count by an average of $5.4\%$ across evaluated SPEC CINT2006 benchmarks. (Evidence Grade: B, Empirical Benchmark).
 - **[EV-RISCV-002]** The official RISC-V Unprivileged ISA Specification confirms that the base integer architecture (RV64I) omits condition-code registers, base-plus-scaled-index addressing modes, and multi-register load/store operations, while defining JALR register-use hints to facilitate macro-op fusion. (Evidence Grade: A, Specification).
-- **[EV-RISCV-004]** RISC-V International ratified the RVA22 and RVA23 Application Profiles to define standardized sets of unprivileged and privileged extensions for application-class silicon. (Evidence Grade: A, Specification).
+- **[EV-RISCV-004]** RISC-V International ratified the RVA22 and RVA23 Application Profiles (`RVA23U64`/`RVA23S64`) to define standardized sets of unprivileged and privileged extensions for application-class silicon. (Evidence Grade: A, Specification).
 - **[EV-RISCV-005]** The default memory model for RISC-V is RVWMO (Weak Memory Ordering), with Total Store Ordering defined as an optional architectural extension (`Ztso`). (Evidence Grade: A, Specification).
 
 ### Engineering & Systemic Inference
@@ -278,20 +278,20 @@ The evidence indicates that RISC-V does not eliminate complexity, nor does it su
 
 1. **Micro-Op Cache Prevalence:** Will high-performance commercial RISC-V cores standardize on decoupled $\mu\text{op}$ caches to bypass RVC pre-decoding on iterative loops, similar to modern x86 and ARM implementations?
 2. **Distribution Profile Baselines:** How rapidly will major enterprise Linux distributions (RHEL, Ubuntu, Debian) transition to RVA23 as a default packaging baseline?
-3. **Advanced Matrix Standard Ratification:** How will the forthcoming RISC-V Matrix (RVM) extension integrate with the existing vector register architecture in datacenter silicon?
+3. **Advanced Matrix Standard Ratification:** How will future RISC-V matrix extensions integrate with the existing vector register architecture in datacenter silicon?
 
 ## Exit Strategy (Rollback & Guidelines)
 
 For engineering teams evaluating RISC-V processor IP or system deployments:
 
-1. **Prioritize RVA23 Compliance:** For new application-class silicon, evaluate **RVA23** first; retain **RVA22** as a compatibility/reference baseline where required by existing software ecosystems.
+1. **Prioritize RVA23 Compliance:** For new 64-bit application-class silicon, evaluate the relevant **RVA23U64 / RVA23S64** profile requirements first; retain **RVA22** as a compatibility/reference baseline where required by existing software ecosystems.
 2. **Utilize Fusion-Aware Toolchains:** Verify that production compilers (GCC / LLVM) are configured with architecture target flags matching the specific core's macro-op fusion scheduling rules.
 3. **Evaluate Memory Consistency Requirements:** If deploying binary translation software or porting x86/SPARC codebases, determine whether target silicon incorporates hardware `Ztso` support.
 4. **Target Portable Vector Libraries:** Ensure data-parallel algorithms are implemented using standard RVV 1.0 intrinsics rather than non-standard pre-ratification vector drafts.
 
 ## Reusable Engineering Tools
 
-The Python simulator below models instruction stream analysis, detects candidate fusible RISC-V idioms (distinguishing specification-facilitated JALR conventions from implementation-dependent patterns), computes decode alignment start offsets, and calculates modeled internal operation reductions.
+The Python simulator below models instruction stream analysis, detects candidate fusible RISC-V idioms (distinguishing specification-facilitated JALR conventions using standard/alternate link registers from implementation-dependent patterns), computes decode alignment start offsets, and calculates modeled internal operation reductions.
 
 <!-- ASSET: ASSET-PY-RISCV-FUSION-SIMULATOR-001 -->
 
@@ -301,7 +301,7 @@ The Python simulator below models instruction stream analysis, detects candidate
 #!/usr/bin/env python3
 """
 ASSET-PY-RISCV-FUSION-SIMULATOR-001
-RISC-V Front-End Fusion Modeling Simulator
+RISC-V Front-End Fusion Candidate Modeling Simulator
 Educational model: Evaluates RVC alignment start offsets and candidate fusion reductions.
 
 DISCLAIMER: This is an educational candidate fusion detector modeling commonly discussed
@@ -334,7 +334,7 @@ class RISCVDecoderSimulator:
     def detect_macro_op_fusion(self, instructions: List[Instruction]) -> List[Dict]:
         """
         Demonstrates candidate fusible idiom detection in an educational model:
-        - Specification-facilitated candidates: AUIPC ra + JALR ra, offset(ra)
+        - Specification-facilitated candidates: AUIPC ra + JALR ra, offset(ra) (using standard link x1/ra or alternate link x5/t0)
         - Implementation-dependent candidates: AUIPC a0 + JALR ra(a0), LUI + ADDI, SLLI + ADD
         """
         fused_operations = []
@@ -345,7 +345,8 @@ class RISCVDecoderSimulator:
             
             # Category 1: Specification-Facilitated Candidate (AUIPC ra + JALR ra, offset(ra))
             # The RISC-V specification explicitly defines JALR register-use conventions
-            # where the link register (ra / x1 or t0 / x5) is used for both destination and source.
+            # where the standard link register (ra / x1) or alternate link register (t0 / x5)
+            # is used for both destination and source.
             if curr.mnemonic == "auipc" and nxt.mnemonic == "jalr":
                 if curr.rd == nxt.rs1 and curr.rd == nxt.rd and curr.rd in {"ra", "x1", "x5", "t0"}:
                     fused_operations.append({
@@ -450,7 +451,7 @@ if __name__ == "__main__":
     metrics = sim.compute_efficiency_metrics(test_stream)
     
     print("=" * 65)
-    print("  RISC-V FRONT-END FUSION MODELING SIMULATOR REPORT")
+    print("  RISC-V FRONT-END FUSION CANDIDATE MODELING SIMULATOR REPORT")
     print("=" * 65)
     print(f"  Fetch Buffer Width           : {metrics['fetch_width_bytes']} bytes")
     print(f"  Max 16-bit Alignment Offsets : {metrics['potential_start_positions']} offsets")
@@ -474,23 +475,23 @@ if __name__ == "__main__":
 
 - **Relocation of Optimization Policy:** RISC-V moves compound instruction optimization from the fixed architectural contract into optional microarchitectural implementations, preserving low-power efficiency for embedded cores while enabling high-end cores to selectively deploy fusion.
 - **Macro-Op Fusion as a Selective Recovery Tool:** Decode-stage macro-op fusion collapses common multi-instruction idioms into single internal operations (estimated to reduce effective dynamic instruction count by ~5.4% on average in the 2016 Berkeley SPEC CINT2006 study).
-- **RVC Steering Considerations:** The 16-bit compressed instruction extension reduces code size by roughly 25% to 30% relative to uncompressed code, while requiring wide superscalar front-ends to resolve variable-length boundaries across up to 16 candidate start positions in a 32-byte fetch window.
-- **Profiles Provide Baseline Standardization:** Standardized application profiles (RVA22 and the modern RVA23 standard) establish guaranteed extension baselines that substantially reduce binary-target fragmentation.
-- **Memory Model Trade-Offs:** The native RVWMO memory model permits a weaker ordering contract for memory operations, while the ratified `Ztso` extension provides an architectural RVTSO model to simplify porting and translation of TSO-dependent software.
+- **RVC Steering Considerations:** The 16-bit compressed instruction extension reduces code size by roughly 25% to 30% relative to uncompressed code, creating up to 16 possible 16-bit-aligned instruction-start positions within a 32-byte fetch window that front-ends may need to classify.
+- **Profiles Provide Baseline Standardization:** Standardized application profiles (RVA22 and the modern RVA23 standard, covering `RVA23U64` and `RVA23S64`) establish guaranteed extension baselines intended to reduce binary-target fragmentation.
+- **Memory Model Trade-Offs:** The native RVWMO memory model permits a weaker ordering contract for memory operations, while the ratified `Ztso` extension provides an architectural RVTSO model to reduce the need for additional software memory barriers when porting or translating TSO-dependent software.
 
 ## Standardized System Scoring
 
 | Dimension | Score (1-5) | Justification |
 | :--- | :--- | :--- |
 | **Technical Soundness** | 4.4 | The clean, modular ISA design avoids legacy bloat; allows high-end implementations to selectively invest microarchitectural complexity where justified. |
-| **Economic Viability** | 4.8 | Open specification with zero licensing royalties provides strong long-term commercial and architectural flexibility. |
-| **Scalability** | 4.2 | Scales effectively from microcontrollers to server cores, though high-IPC implementations require front-end investment in fusion and variable-length decode steering. |
+| **Economic Viability** | 4.5 | Open and royalty-free ISA specification lowers architectural licensing barriers, although commercial core IP, implementation, verification, and support can still carry costs. |
+| **Scalability** | 4.2 | Scales effectively from microcontrollers to server cores, though high-IPC implementations require substantial front-end microarchitectural investment in fusion, variable-length decode handling, and branch prediction. |
 | **Operational Simplicity** | 3.8 | Significantly improved under RVA22/RVA23 standardized profiles, substantially reducing early extension subset fragmentation. |
 | **Evidence Quality** | 4.6 | Thoroughly documented by ratified RISC-V International specifications, open-source processor implementations (BOOM, XiangShan), and peer-reviewed literature. |
 
 ## Final System Classification
 
-**⚠ Stable under constraints:** RISC-V provides an open, highly capable foundation for embedded microcontrollers, custom accelerators, and standardized application cores (RVA22/RVA23). Achieving competitive performance in high-IPC superscalar computing requires deliberate microarchitectural investment in macro-op fusion, variable-length decode handling, and hardware-assisted memory ordering where appropriate.
+**⚠ Stable under constraints:** RISC-V provides an open, highly capable foundation for embedded microcontrollers, custom accelerators, and standardized application cores (`RVA23U64`/`RVA23S64`). Achieving competitive performance in high-IPC superscalar computing requires substantial microarchitectural investment, with macro-op fusion being one potential technique for recovering front-end efficiency.
 
 ## Revision Trigger
 
@@ -516,6 +517,7 @@ This systems analysis should be re-evaluated when:
 | **v1.1.0** | 2026-08-16 | Calibrated central thesis to Berkeley implementation freedom model, clarified macro-op fusion SPECint findings (5.4%), corrected RVC start positions vs physical pre-decoders, added ISA vs Implementation Complexity Matrix, and integrated counterargument analysis. | ErrorLedger Systems Architecture Review Pipeline |
 | **v1.2.0** | 2026-08-16 | Forensic epistemic calibration: refined 5.4% dynamic instruction wording, separated specification-defined JALR fusion hints from candidate idioms, removed Thumb-2 comparison, adjusted RVWMO/Ztso framing, updated RVA23 profile status for 2026, and renamed simulator metrics to modeled internal operations. | ErrorLedger Systems Architecture Review Pipeline |
 | **v1.3.0** | 2026-08-16 | P0/P1 forensic precision patch: corrected AUIPC+JALR link-register invariant (ra/x1), tightened Python simulator branch predicates with full model result disclaimer, qualified trace commit semantics, disambiguated static vs dynamic code size metrics, and aligned title nuance. | ErrorLedger Systems Architecture Review Pipeline |
+| **v1.4.0** | 2026-08-16 | Forensic precision release: decoupled orthogonal architectural axes, framed macro-op fusion as an optional technique rather than a universal mandate, qualified standard x1/ra vs alternate x5/t0 link registers, refined quantitative variable nomenclature (f_pair_participation), and calibrated economic scoring. | ErrorLedger Systems Architecture Review Pipeline |
 
 <script type="application/ld+json">
 {
@@ -527,7 +529,7 @@ This systems analysis should be re-evaluated when:
   "dateModified": "2026-08-16",
   "author": {
     "@type": "Organization",
-    "name": "ErrorLedger Systems Architecture Review Pipeline",
+    "name": "ErrorLedger",
     "url": "https://errorledger.com/about"
   },
   "publisher": {
