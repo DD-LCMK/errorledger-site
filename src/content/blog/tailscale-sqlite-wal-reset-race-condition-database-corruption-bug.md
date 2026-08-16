@@ -130,14 +130,16 @@ PRAGMA journal_mode;
 
 ## Standardized System Scoring
 
-| Category | Score (1-5) | Justification |
+| Dimension | Score (1-5) | Justification |
 |---|---|---|
-| Reliability (Pre-patch) | 2 | Subject to silent corruption under concurrent load. |
-| Maintainability | 4 | Vendor released a patch quickly after discovery. |
-| Performance | 5 | WAL mode is generally highly performant. |
+| Technical Soundness | 3 | Prior to SQLite 3.53, concurrent WAL reset logic contained an un-serialized index race condition. |
+| Economic Viability | 5 | Free open-source database engine; patch remediates issue with zero licensing cost. |
+| Scalability | 4 | WAL mode supports high concurrency, but require SQLite 3.53+ to avoid corrupt state under scale. |
+| Operational Simplicity | 4 | Standard embedded database operation with automatic checkpointing. |
+| Evidence Quality | 4 | Backed by Tailscale production post-mortem and SQLite official release log. |
 
 ## Final System Classification
-**⚠ Context-dependent / Constraint-sensitive:** Prior to version 3.53, SQLite WAL mode under high concurrency carries a non-zero risk of corruption.
+**⚠ Stable under constraints:** Prior to version 3.53, SQLite WAL mode under high concurrency carries a non-zero risk of corruption; resolved in 3.53+.
 
 ## Revision Trigger
 This analysis should be re-audited if further race conditions are discovered in the SQLite 3.53+ WAL implementation.

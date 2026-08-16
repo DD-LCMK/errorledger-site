@@ -1,5 +1,5 @@
 ---
-pipeline_contract_version: "61.3.0"
+pipeline_contract_version: "62.0.0"
 archetype: "systems-analysis"
 title: "AI Working Memory vs. Human Brain: The Context Window Capacity Illusion and KV Cache Bottlenecks"
 meta_title: "AI Working Memory vs Human Brain: Context Window Limits"
@@ -468,7 +468,7 @@ This analysis should be revisited when:
 
 ## References & Primary Sources
 
-- [The magical number 4 in short-term memory: A reconsideration of mental storage capacity (Cowan, 2001)](https://www.cambridge.org/core/journals/behavioral-and-brain-sciences)
+- [The magical number 4 in short-term memory: A reconsideration of mental storage capacity (Cowan, 2001)](https://pubmed.ncbi.nlm.nih.gov/11515286/)
 - [Lost in the Middle: How Language Models Use Long Contexts (Liu et al., Stanford/TACL 2024)](https://direct.mit.edu/tacl)
 - [RULER: What's the Real Context Size of Your Long-Context Language Models? (Hsieh et al., NVIDIA/NeurIPS 2024)](https://arxiv.org/abs/2404.06654)
 - [DeepSeek-V2: A Strong, Economical, and Efficient Mixture-of-Experts Language Model (DeepSeek-AI, 2024)](https://arxiv.org/abs/2405.04434)
