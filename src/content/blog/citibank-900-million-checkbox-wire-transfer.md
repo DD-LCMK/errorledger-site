@@ -13,6 +13,11 @@ provenance_source: "US District Court SDNY (20-CV-6539) & 2nd Circuit Appeals Re
 read_time_minutes: 6
 heroImage: "/images/stories/hero-citibank-wire.png"
 ogImage: "/images/stories/hero-citibank-wire.png"
+executive_summary: "On August 11, 2020, Citibank attempted to wire a routine $7.8 million interest payment on behalf of Revlon. Instead, due to a counterintuitive checkbox combination in its legacy Oracle Flexcube loan processing software, Citibank accidentally wired $893,934,008.07 of its own balance sheet funds directly to syndicate lenders and hostile hedge funds."
+summary_points:
+  context: "Citibank was tasked with routing $7.8M in interest while parking $886M in principal inside an internal holding ledger known as a wash account."
+  trigger: "Suppressing principal required manually selecting FRONT, FUND, and PRINCIPAL. Operators checked only PRINCIPAL, commanding the software to wire the full principal."
+  fallout: "Ten hedge funds refused to return $501M, winning a shock federal court victory before a 2-year appellate battle forced Wall Street to create 'Revlon clauses'."
 archivist_summary: "The failure was not leaving two boxes unchecked. The failure was designing a financial system where sending nearly a billion dollars of unbudgeted capital depended on cryptic abbreviations in a 1990s modal window with zero safety interlocks."
 verdict_question: "Who bears the greatest responsibility for the $900M wire disaster?"
 verdict_source: "Aggregated from 3,485 financial discussions and legal post-mortems across Hacker News, Bloomberg & Reddit (r/wallstreetbets)"

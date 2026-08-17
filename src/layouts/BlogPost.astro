@@ -27,6 +27,12 @@ interface Props {
 	provenance_label?: string;
 	provenance_source?: string;
 	archivist_summary?: string;
+	executive_summary?: string;
+	summary_points?: {
+		context: string;
+		trigger: string;
+		fallout: string;
+	};
 	verdict_question?: string;
 	verdict_source?: string;
 	verdict_options?: Array<{ id: string; label: string; votes?: number }>;
@@ -49,6 +55,8 @@ const {
 	provenance_label = "Documented Incident",
 	provenance_source = "Court Filings & Public Records",
 	archivist_summary,
+	executive_summary,
+	summary_points,
 	verdict_question = "Who was primarily responsible for this disaster?",
 	verdict_source,
 	verdict_options = [
@@ -595,57 +603,98 @@ const rankedCases = isKorean ? [
 				background: #fb7185;
 			}
 
-			/* Executive Summary Card */
+			/* Executive Incident Briefing Card */
 			.executive-summary-card {
 				background: #141414;
 				border: 1px solid #262626;
-				border-left: 3px solid #f43f5e;
-				border-radius: 10px;
-				padding: 1.15rem 1.35rem;
-				margin: 1.5rem 0 2rem 0;
+				border-left: 4px solid #f43f5e;
+				border-radius: 12px;
+				padding: 1.25rem 1.45rem;
+				margin: 1.75rem 0 2.25rem 0;
+				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
 			}
 			.summary-header-row {
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
-				margin-bottom: 0.65rem;
+				margin-bottom: 0.85rem;
 				flex-wrap: wrap;
 				gap: 0.5rem;
 			}
 			.summary-badge {
 				font-family: ui-monospace, monospace;
 				font-size: 0.72rem;
-				font-weight: 700;
+				font-weight: 800;
 				text-transform: uppercase;
 				color: #fb7185;
-				background: rgba(244, 63, 94, 0.1);
-				padding: 0.15rem 0.45rem;
+				background: rgba(244, 63, 94, 0.12);
+				padding: 0.2rem 0.55rem;
 				border-radius: 4px;
-				border: 1px solid rgba(244, 63, 94, 0.25);
+				border: 1px solid rgba(244, 63, 94, 0.28);
+				letter-spacing: 0.03em;
 			}
 			.summary-audio-indicator {
-				font-size: 0.7rem;
+				font-size: 0.72rem;
 				font-family: ui-monospace, monospace;
 				color: #737373;
 			}
-			.executive-summary-content {
+			.summary-lead-text {
 				font-size: 0.95rem;
-				line-height: 1.6;
+				line-height: 1.65;
+				color: #e5e5e5;
+				margin: 0 0 0.85rem 0 !important;
+				font-weight: 500;
+			}
+			.summary-keypoints-grid {
+				display: grid;
+				grid-template-columns: 1fr;
+				gap: 0.75rem;
+				margin-top: 0.85rem;
+				padding-top: 0.85rem;
+				border-top: 1px dashed #262626;
+			}
+			@media (min-width: 768px) {
+				.summary-keypoints-grid {
+					grid-template-columns: repeat(3, 1fr);
+				}
+			}
+			.summary-point-item {
+				background: #0d0d0d;
+				border: 1px solid #262626;
+				border-radius: 8px;
+				padding: 0.75rem 0.85rem;
+				display: flex;
+				flex-direction: column;
+				gap: 0.35rem;
+			}
+			.point-label {
+				font-family: ui-monospace, monospace;
+				font-size: 0.7rem;
+				font-weight: 700;
+				color: #fb7185;
+				text-transform: uppercase;
+			}
+			.point-text {
+				font-size: 0.83rem;
 				color: #d4d4d4;
-				margin: 0 !important;
-				font-style: italic;
+				line-height: 1.45;
 			}
 
 			:global(html:not(.dark)) .executive-summary-card {
 				background: #f8fafc !important;
 				border-color: #e2e8f0 !important;
 				border-left-color: #f43f5e !important;
+				box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04) !important;
 			}
-			:global(html:not(.dark)) .executive-summary-content {
+			:global(html:not(.dark)) .summary-lead-text {
+				color: #1e293b !important;
+			}
+			:global(html:not(.dark)) .summary-point-item {
+				background: #ffffff !important;
+				border-color: #cbd5e1 !important;
+			}
+			:global(html:not(.dark)) .point-text {
 				color: #334155 !important;
-			}
-			:global(html:not(.dark)) .summary-audio-indicator {
-				color: #64748b !important;
 			}
 
 			/* High-Contrast Light Mode */
@@ -756,16 +805,34 @@ const rankedCases = isKorean ? [
 								<!-- Simulated Audio Dispatch Player -->
 								<AudioDispatch title={title} duration={`${displayReadTime - 2 || 3}:45`} lang={lang} slug={cleanSlug} audioUrl={`/audio/${lang}/${cleanSlug}.mp3`} />
 
-								<!-- 60-Second Incident Executive Summary Box -->
-								{(archivist_summary || description) && (
+								<!-- Detailed Incident Executive Briefing Box -->
+								{(executive_summary || archivist_summary || description) && (
 									<div class="executive-summary-card">
 										<div class="summary-header-row">
-											<span class="summary-badge">⚡ {isKorean ? "60초 사건 핵심 브리핑" : "60-Second Executive Summary"}</span>
-											<span class="summary-audio-indicator">🎙️ {isKorean ? "오디오 브리핑 스크립트" : "Audio Dispatch Script"}</span>
+											<span class="summary-badge">⚡ {isKorean ? "사건 핵심 브리핑" : "Executive Incident Briefing"}</span>
+											<span class="summary-audio-indicator">🎙️ {isKorean ? "오디오 브리핑 동기화" : "Synced with Audio Dispatch"}</span>
 										</div>
-										<p class="executive-summary-content">
-											{archivist_summary || description}
-										</p>
+										<div class="executive-summary-content">
+											<p class="summary-lead-text">
+												{executive_summary || archivist_summary || description}
+											</p>
+											{summary_points && (
+												<div class="summary-keypoints-grid">
+													<div class="summary-point-item">
+														<span class="point-label">{isKorean ? "📌 배경 & 목표" : "📌 The Context"}</span>
+														<span class="point-text">{summary_points.context}</span>
+													</div>
+													<div class="summary-point-item">
+														<span class="point-label">{isKorean ? "⚠️ 치명적 트리거" : "⚠️ The Trigger"}</span>
+														<span class="point-text">{summary_points.trigger}</span>
+													</div>
+													<div class="summary-point-item">
+														<span class="point-label">{isKorean ? "💥 피해 & 결과" : "💥 The Fallout"}</span>
+														<span class="point-text">{summary_points.fallout}</span>
+													</div>
+												</div>
+											)}
+										</div>
 									</div>
 								)}
 							</>

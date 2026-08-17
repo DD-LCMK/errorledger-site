@@ -13,6 +13,11 @@ provenance_source: "CrowdStrike RCA & Microsoft Post-Mortem"
 read_time_minutes: 6
 heroImage: "/images/stories/hero-crowdstrike-blackout.png"
 ogImage: "/images/stories/hero-crowdstrike-blackout.png"
+executive_summary: "On July 19, 2024, cybersecurity giant CrowdStrike released a routine 40KB Channel File 291 configuration update to its Falcon sensor on Windows machines worldwide. Within minutes, 8.5 million machines crashed into unbootable blue screens, grounding global airlines, knocking out 911 dispatch centers, and halting hospital operations."
+summary_points:
+  context: "CrowdStrike Falcon runs at Windows Ring 0 (kernel level) to detect cyber threats across Fortune 500 enterprises and critical infrastructure."
+  trigger: "A configuration file containing 21 input fields was passed to a parser expecting only 20, triggering an out-of-bounds memory read (PAGE_FAULT_IN_NONPAGED_AREA) in csagent.sys."
+  fallout: "8.5 million machines were bricked globally, inflicting over $5.4 billion in direct enterprise losses and exposing the extreme vulnerability of global IT monoculture."
 archivist_summary: "The mistake was not the malformed pointer. The mistake was building a global IT monoculture where a single vendor holds the keys to the kernel."
 verdict_question: "Who bears the greatest systemic responsibility for the incident?"
 verdict_source: "Aggregated from 1,421 public discussions across Reddit (r/sysadmin), Hacker News & X"

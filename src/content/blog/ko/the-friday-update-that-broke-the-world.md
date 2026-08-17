@@ -16,6 +16,11 @@ provenance_source: "CrowdStrike Preliminary PIR & SEC 8-K 공시"
 read_time_minutes: 6
 heroImage: "/images/stories/hero-crowdstrike-blackout.png"
 ogImage: "/images/stories/hero-crowdstrike-blackout.png"
+executive_summary: "2024년 7월 19일, 글로벌 보안 기업 크라우드스트라이크가 윈도우용 보안 센서에 일상적인 Channel File 291 설정 업데이트를 배포했습니다. 그러나 유효성 검증을 건너뛴 이 파일은 배포 수 분 만에 전 세계 850만 대의 컴퓨터를 블루스크린(BSOD) 재부팅 루프에 빠뜨리며 글로벌 항공, 병원, 911 응급망을 마비시켰습니다."
+summary_points:
+  context: "크라우드스트라이크 팰컨 센서는 전 세계 주요 기업 및 핵심 인프라의 윈도우 Ring 0(커널 최상위 권한)에서 실행되는 보안 엔진입니다."
+  trigger: "20개의 입력값만 검증하도록 설계된 커널 파서에 21개의 필드가 포함된 파일이 전달되며 csagent.sys 드라이버에서 메모리 경계 초과 읽기(Out-of-bounds Read) 예외가 발생했습니다."
+  fallout: "전 세계 850만 대의 PC가 일제히 먹통이 되며 54억 달러(약 7조 4,000억 원) 이상의 직간접 피해가 발생했고, 글로벌 IT 단일 실패점(SPOF)의 위험성을 입증했습니다."
 archivist_summary: "진짜 실수는 파서의 메모리 버그가 아니었습니다. 전 세계 주요 인프라가 단 하나의 보안 소프트웨어 업체에 무제한 커널 권한과 단계적 배포 없는 자동 배포를 허용한 단일 실패 지점(SPOF) 구조가 진짜 실패였습니다."
 verdict_question: "이 글로벌 대란의 가장 큰 시스템적 책임은 어디에 있는가?"
 verdict_source: "Reddit(r/sysadmin), 해커뉴스 및 업계 분석 등 1,421건의 공개 여론 분석 데이터 기반"

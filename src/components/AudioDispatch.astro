@@ -74,81 +74,165 @@ const isKorean = lang === 'ko';
     let speed = 1.0;
     let useNeuralAudio = true;
     let currentUtterance = null;
+    let timerInterval = null;
+    let elapsedSeconds = 0;
+    let totalEstSeconds = 60;
 
     // Set initial audio volume
     if (audioElem) {
-      audioElem.volume = 0.70; // Comfortable volume
+      audioElem.volume = 0.75;
     }
 
-    // Check if neural MP3 is loaded
+    function formatTime(secs) {
+      const m = Math.floor(secs / 60);
+      const s = Math.floor(secs % 60);
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    function getDispatchSpeechText() {
+      // Prioritize the detailed Executive Incident Briefing
+      const summaryCard = document.querySelector('.executive-summary-card');
+      if (summaryCard) {
+        const lead = summaryCard.querySelector('.summary-lead-text')?.innerText || '';
+        const pointItems = Array.from(summaryCard.querySelectorAll('.summary-point-item'));
+        const pointsText = pointItems.map(item => {
+          const label = item.querySelector('.point-label')?.innerText || '';
+          const text = item.querySelector('.point-text')?.innerText || '';
+          return `${label.replace(/[^a-zA-Z가-힣\s]/g, '')}: ${text}`;
+        }).join('. ');
+        const fullBrief = `${lead} ${pointsText}`.trim();
+        if (fullBrief.length > 20) return fullBrief;
+      }
+
+      const article = document.querySelector('article .prose');
+      if (!article) return '';
+      const elements = Array.from(article.querySelectorAll('h1, h2, p:not(.article-subtitle)'))
+        .filter(el => !el.closest('#verdict-anchor') && !el.closest('.provenance-badge-box'))
+        .slice(0, 3);
+      return elements.map(el => el.innerText.trim()).filter(Boolean).join('. ');
+    }
+
+    function cleanTextForSpeech(raw) {
+      return raw
+        .replace(/[*_#`~]/g, '')
+        .replace(/\$([0-9,.]+)\s*(million|billion|M|B)?/gi, (match, num, unit) => {
+          if (isKo) {
+            return `${num} 달러 ${unit || ''}`;
+          }
+          return `${num} ${unit || ''} dollars`;
+        })
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function calculateDynamicDuration() {
+      const rawText = getDispatchSpeechText();
+      if (!rawText) return;
+      if (isKo) {
+        const charCount = rawText.replace(/\s+/g, '').length;
+        totalEstSeconds = Math.max(20, Math.ceil(charCount / 5.2));
+      } else {
+        const wordCount = rawText.split(/\s+/).length;
+        totalEstSeconds = Math.max(20, Math.ceil((wordCount / 135) * 60));
+      }
+      if (timer && (!audioElem || !audioElem.duration || isNaN(audioElem.duration))) {
+        timer.innerText = formatTime(totalEstSeconds);
+      }
+    }
+
+    // Initialize estimated duration on page load
+    setTimeout(calculateDynamicDuration, 150);
+
+    // Audio tag metadata handler if neural MP3 exists
     audioElem?.addEventListener('loadedmetadata', () => {
       if (audioElem.duration && !isNaN(audioElem.duration)) {
-        const mins = Math.floor(audioElem.duration / 60);
-        const secs = Math.floor(audioElem.duration % 60);
-        if (timer) timer.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        totalEstSeconds = Math.floor(audioElem.duration);
+        if (timer) timer.innerText = formatTime(totalEstSeconds);
       }
     });
 
     audioElem?.addEventListener('timeupdate', () => {
       if (audioElem.currentTime && timer) {
-        const mins = Math.floor(audioElem.currentTime / 60);
-        const secs = Math.floor(audioElem.currentTime % 60);
-        timer.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        timer.innerText = formatTime(Math.floor(audioElem.currentTime));
       }
     });
 
     audioElem?.addEventListener('ended', () => {
       stopPlaying();
-      if (audioElem.duration) {
-        const mins = Math.floor(audioElem.duration / 60);
-        const secs = Math.floor(audioElem.duration % 60);
-        if (timer) timer.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-      }
+      if (timer) timer.innerText = formatTime(totalEstSeconds);
     });
 
     audioElem?.addEventListener('error', () => {
-      // Fallback to Web Speech Synthesis if MP3 is missing
       useNeuralAudio = false;
       if (qualityBadge) {
-        qualityBadge.innerText = isKo ? "AI 음성 내레이션" : "Device TTS Narration";
+        qualityBadge.innerText = isKo ? "🎙️ 자연스러운 AI 보이스" : "🎙️ Natural Neural Voice";
       }
     });
 
-    function getArticleText() {
-      // Prioritize the concise 60-Second Executive Summary
-      const summaryBox = document.querySelector('.executive-summary-content');
-      if (summaryBox && summaryBox.innerText.trim().length > 10) {
-        return summaryBox.innerText.trim();
+    function getBestNaturalVoice() {
+      const voices = window.speechSynthesis.getVoices();
+      if (!voices || voices.length === 0) return null;
+
+      if (isKo) {
+        // High quality Korean neural/natural voice priority
+        const koPriorities = ['InJoon', 'SunHi', 'Yuna', 'Heami', 'Google 한국어', 'Korean'];
+        for (const pref of koPriorities) {
+          const match = voices.find(v => v.lang.includes('ko') && v.name.includes(pref));
+          if (match) return match;
+        }
+        return voices.find(v => v.lang.includes('ko')) || null;
+      } else {
+        // High quality English natural voice priority
+        const enPriorities = ['Natural', 'Christopher', 'Guy', 'Jenny', 'Google US English', 'Google UK English Male', 'Daniel', 'Samantha', 'en-US'];
+        for (const pref of enPriorities) {
+          const match = voices.find(v => v.lang.startsWith('en') && v.name.includes(pref));
+          if (match) return match;
+        }
+        return voices.find(v => v.lang.startsWith('en')) || null;
       }
-      const article = document.querySelector('article .prose');
-      if (!article) return '';
-      const elements = Array.from(article.querySelectorAll('h1, h2, p:not(.article-subtitle)'))
-        .filter(el => !el.closest('#verdict-anchor') && !el.closest('.provenance-badge-box'))
-        .slice(0, 4);
-      return elements.map(el => el.innerText.trim()).filter(Boolean).join('. ');
     }
 
     function startSpeakingFallback() {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
-        const text = getArticleText();
-        currentUtterance = new SpeechSynthesisUtterance(text);
-        currentUtterance.rate = speed;
-        currentUtterance.volume = 0.65;
+        clearInterval(timerInterval);
 
-        const voices = window.speechSynthesis.getVoices();
-        if (isKo) {
-          currentUtterance.lang = 'ko-KR';
-          const koVoice = voices.find(v => v.lang.includes('ko') || v.name.includes('Korean') || v.name.includes('Yuna') || v.name.includes('Heami'));
-          if (koVoice) currentUtterance.voice = koVoice;
-        } else {
-          currentUtterance.lang = 'en-US';
-          const enVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Daniel')));
-          if (enVoice) currentUtterance.voice = enVoice;
+        const rawText = getDispatchSpeechText();
+        const speechText = cleanTextForSpeech(rawText);
+        currentUtterance = new SpeechSynthesisUtterance(speechText);
+        currentUtterance.rate = speed * 0.95; // Warm, confident journalistic pacing
+        currentUtterance.pitch = 1.0;
+        currentUtterance.volume = 0.85;
+
+        const bestVoice = getBestNaturalVoice();
+        if (bestVoice) {
+          currentUtterance.voice = bestVoice;
+          if (qualityBadge) {
+            qualityBadge.innerText = isKo ? "🎙️ 자연스러운 AI 보이스" : "🎙️ Natural Studio Voice";
+          }
         }
 
-        currentUtterance.onend = stopPlaying;
-        currentUtterance.onerror = stopPlaying;
+        elapsedSeconds = 0;
+        timerInterval = setInterval(() => {
+          if (isPlaying) {
+            elapsedSeconds += 1;
+            if (timer) {
+              timer.innerText = formatTime(elapsedSeconds);
+            }
+          }
+        }, 1000);
+
+        currentUtterance.onend = () => {
+          clearInterval(timerInterval);
+          stopPlaying();
+          if (timer) timer.innerText = formatTime(totalEstSeconds);
+        };
+
+        currentUtterance.onerror = () => {
+          clearInterval(timerInterval);
+          stopPlaying();
+        };
+
         window.speechSynthesis.speak(currentUtterance);
       }
     }
@@ -159,7 +243,7 @@ const isKorean = lang === 'ko';
       pauseIcon?.classList.remove('hidden');
       waveBars.forEach(bar => bar.classList.add('playing'));
 
-      if (useNeuralAudio && audioElem && audioElem.src) {
+      if (useNeuralAudio && audioElem && audioElem.src && !audioElem.error) {
         audioElem.playbackRate = speed;
         audioElem.play().catch(() => {
           useNeuralAudio = false;
@@ -175,6 +259,7 @@ const isKorean = lang === 'ko';
       playIcon?.classList.remove('hidden');
       pauseIcon?.classList.add('hidden');
       waveBars.forEach(bar => bar.classList.remove('playing'));
+      clearInterval(timerInterval);
 
       if (audioElem) {
         audioElem.pause();
@@ -201,6 +286,16 @@ const isKorean = lang === 'ko';
         startSpeakingFallback();
       }
     });
+
+    // Populate voices when ready
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        const v = getBestNaturalVoice();
+        if (v && qualityBadge) {
+          qualityBadge.innerText = isKo ? "🎙️ 자연스러운 AI 보이스" : "🎙️ Natural Studio Voice";
+        }
+      };
+    }
 
     window.addEventListener('beforeunload', () => {
       stopPlaying();

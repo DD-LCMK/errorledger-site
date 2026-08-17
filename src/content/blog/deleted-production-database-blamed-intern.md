@@ -13,6 +13,11 @@ provenance_source: "Documented Tech Submissions & Engineering Post-Mortems"
 read_time_minutes: 5
 heroImage: "/images/stories/hero-deleted-database.png"
 ogImage: "/images/stories/hero-deleted-database.png"
+executive_summary: "On a Friday night in April 2023, a lead architect at a Series B FinTech startup attempted a manual maintenance cleanup on an unindexed PostgreSQL replica. Distracted, he opened a terminal tab connected directly to the primary cluster and ran an unprompted DROP DATABASE command, erasing three years of client financial records. Rather than confessing in a blame-heavy engineering culture, management and senior staff allowed an unpaid summer intern to be blamed and dismissed."
+summary_points:
+  context: "A fast-growing FinTech startup operated with unlogged root SSH access and unverified automated nightly S3 backups."
+  trigger: "A tired senior lead ran DROP DATABASE on production instead of staging, only to discover that the automated snapshot scripts had been failing silently for 6 months."
+  fallout: "36 hours of critical records were permanently lost, an innocent intern was fired to protect senior stock options, and the coverup created a toxic culture of silence."
 archivist_summary: "The moral failure was not executing the terminal command. The moral failure was working in an organization where confessing to a technical mistake carried a higher penalty than letting a junior engineer's career be destroyed."
 verdict_question: "Who was most morally reprehensible in this incident?"
 verdict_source: "Aggregated from 2,890 engineer comments on Reddit (r/cscareerquestions & r/devops)"

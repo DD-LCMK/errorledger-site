@@ -16,6 +16,11 @@ provenance_source: "실제 개발자 익명 제보 및 기업 사후 분석 종�
 read_time_minutes: 5
 heroImage: "/images/stories/hero-deleted-database.png"
 ogImage: "/images/stories/hero-deleted-database.png"
+executive_summary: "2023년 4월의 어느 금요일 밤, 시리즈 B 핀테크 스타트업의 수석 아키텍트가 터미널 탭을 착각해 프로덕션 메인 데이터베이스에 확인 절차 없이 DROP DATABASE 명령어를 실행했습니다. 3년 치 고객 금융 데이터가 순식간에 증발했고 백업마저 작동하지 않자, 징벌적 사내 문화 속에서 경영진과 수석 엔지니어는 죄 없는 대학생 인턴에게 모든 책임을 덮어씌우고 해고했습니다."
+summary_points:
+  context: "급성장하던 핀테크 기업에서 접근 로그가 남지 않는 root SSH 권한을 남발하며 운영하고 있었습니다."
+  trigger: "스테이징 환경 대신 운영 서버에서 DB 삭제 명령을 실행했으며, 6개월 동안 자동 S3 백업 스크립트가 조용히 실패하고 있었다는 사실이 뒤늦게 밝혀졌습니다."
+  fallout: "고객 데이터 일부가 영구 소실되었고, 수석 엔지니어의 스톡옵션과 평판을 지키기 위해 무고한 인턴을 희생양으로 삼은 비극적인 기업 침묵의 카르텔이 형성되었습니다."
 archivist_summary: "도덕적 실패는 터미널 명령어를 잘못 친 순간이 아니었습니다. 기술적 실수를 솔직히 고백하는 것이 무고한 주니어의 인생을 파괴하는 것보다 더 무거운 처벌을 받는 조직 문화에서 일하고 있었다는 사실이 진짜 도덕적 실패였습니다."
 verdict_question: "이 사건에서 가장 비도덕적이고 비난받아야 할 대상은 누구인가?"
 verdict_source: "Reddit 개발자 커뮤니티(r/cscareerquestions) 2,890건의 토론 분석 데이터 기반"
