@@ -32,7 +32,7 @@ verdict_options:
   - id: "systemic_monoculture"
     label: "업계 모노컬처 (단일 보안 벤더에 대한 과도한 의존)"
     votes: 101
-tags: ["corporate-disasters", "crowdstrike", "global-outage", "systemic-failure"]
+tags: ["기업재난", "크라우드스트라이크", "글로벌장애", "블루스크린", "시스템실패"]
 ---
 
 ## 무슨 일이 일어났는가

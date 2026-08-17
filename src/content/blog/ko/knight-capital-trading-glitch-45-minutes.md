@@ -32,7 +32,7 @@ verdict_options:
   - id: "hft_system"
     label: "초단타 매매 시스템 (인간의 통제 속도를 넘어선 시장 복잡성)"
     votes: 405
-tags: ["financial-disasters", "trading-glitch", "wall-street", "dead-code", "devops-failure"]
+tags: ["금융재난", "월스트리트", "알고리즘오류", "유령코드", "데브옵스실패"]
 ---
 
 ## 45분 만에 6,000억 원이 사라지다

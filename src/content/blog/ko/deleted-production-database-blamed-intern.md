@@ -32,7 +32,7 @@ verdict_options:
   - id: "company_culture"
     label: "조직 전체 (정직함보다 자기보신과 사내정치를 보상하는 문화)"
     votes: 203
-tags: ["workplace-disasters", "career", "scapegoat", "database-deletion", "toxic-culture"]
+tags: ["직장생활", "커리어", "희생양", "DB삭제", "사내정치", "조직문화"]
 ---
 
 ## 무슨 일이 일어났는가

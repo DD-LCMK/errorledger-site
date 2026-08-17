@@ -63,6 +63,17 @@ const seoTitle = meta_title || `${title} | ${SITE_TITLE}`;
 const cleanSlug = slug.replace(/^ko\//, '');
 const displayReadTime = read_time_minutes || 6;
 
+const categoryMap: Record<string, string> = {
+	corporate: isKorean ? "기업 & 인프라" : "Corporate",
+	money: isKorean ? "금융 & 경제" : "Finance",
+	work: isKorean ? "직장 & 커리어" : "Workplace",
+	ai: isKorean ? "AI & 자동화" : "AI Disasters",
+	internet: isKorean ? "인터넷 & 사회" : "Internet",
+	human: isKorean ? "심리 & 편향" : "Psychology",
+	relationships: isKorean ? "인간관계" : "Relationships"
+};
+const displayCategory = categoryMap[category] || category;
+
 const cleanUrl = isKorean ? `https://errorledger.com/ko/blog/${cleanSlug}` : `https://errorledger.com/blog/${cleanSlug}`;
 const alternateUrl = isKorean ? `/blog/${cleanSlug}` : `/ko/blog/${cleanSlug}`;
 const alternateLabel = isKorean ? '🇺🇸 English' : '🇰🇷 한국어';
@@ -663,7 +674,7 @@ const rankedCases = isKorean ? [
 								<div class="meta-wrapper">
 									<div class="date-info">
 										<span class="category-badge">
-											{category}
+											{displayCategory}
 										</span>
 										<span>•</span>
 										{pubDate && (
