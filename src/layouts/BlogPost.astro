@@ -1,79 +1,86 @@
 ---
-import type { CollectionEntry } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import ProvenanceBadge from '../components/ProvenanceBadge.astro';
-import ReaderVerdict from '../components/ReaderVerdict.astro';
 import AudioDispatch from '../components/AudioDispatch.astro';
 import ThematicDossier from '../components/ThematicDossier.astro';
+import ReaderVerdict from '../components/ReaderVerdict.astro';
+import { SITE_TITLE } from '../consts';
 import { getCollection } from 'astro:content';
 
-type Props = CollectionEntry<'blog'>['data'] & { body?: string };
+interface Props {
+	title: string;
+	subtitle?: string;
+	description: string;
+	pubDate?: Date;
+	updatedDate?: Date;
+	heroImage?: string;
+	category?: string;
+	lang?: string;
+	slug?: string;
+	tags?: string[];
+	read_time_minutes?: number;
+	meta_title?: string;
+	provenance_tier?: number;
+	provenance_label?: string;
+	provenance_source?: string;
+	archivist_summary?: string;
+	verdict_question?: string;
+	verdict_options?: Array<{ id: string; label: string }>;
+	archetype?: string;
+}
 
 const {
 	title,
 	subtitle,
-	meta_title,
 	description,
-	lang = 'en',
-	translationSlug,
 	pubDate,
-	incidentDate,
+	heroImage = "/blog-placeholder-about.jpg",
+	category = "corporate",
+	lang = "en",
+	slug = "",
 	tags = [],
-	category = 'corporate',
-	archetype = 'the-incident',
+	read_time_minutes = 6,
+	meta_title,
 	provenance_tier = 1,
-	provenance_label,
-	provenance_source,
-	archivist_summary,
-	verdict_question,
-	verdict_options,
-	read_time_minutes,
-	heroImage,
-	slug = "entry"
+	provenance_label = "Documented Incident",
+	provenance_source = "Court Filings & Public Records",
+	verdict_question = "Who was primarily responsible for this disaster?",
+	verdict_options = [
+		{ id: "option_a", label: "Executive Leadership (Flawed Culture & Cost-Cutting)" },
+		{ id: "option_b", label: "Engineering & QA (Inadequate Testing & Oversight)" },
+		{ id: "option_c", label: "Systemic Complexity (No Single Actor to Blame)" },
+		{ id: "option_d", label: "Shared Responsibility Across the Entire Organization" }
+	]
 } = Astro.props;
 
-const rawContent = Astro.props.body || '';
-const wordCount = rawContent.split(/\s+/).filter(Boolean).length;
-const calculatedReadTime = Math.max(1, Math.ceil(wordCount / 200));
-const displayReadTime = read_time_minutes || calculatedReadTime;
-
 const isKorean = lang === 'ko';
+const seoTitle = meta_title || `${title} | ${SITE_TITLE}`;
 const cleanSlug = slug.replace(/^ko\//, '');
-const targetTranslationSlug = (translationSlug || cleanSlug).replace(/^ko\//, '');
-const alternateUrl = isKorean ? `/blog/${targetTranslationSlug}` : `/ko/blog/${targetTranslationSlug}`;
-const alternateLabel = isKorean ? "🇺🇸 Read in English →" : "🇰🇷 한국어 버전으로 읽기 →";
+const displayReadTime = read_time_minutes || 6;
 
-const seoTitle = meta_title || title;
-const cleanPathname = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '');
-const cleanUrl = new URL(cleanPathname || '/', Astro.site).href;
+const cleanUrl = isKorean ? `https://errorledger.com/ko/blog/${cleanSlug}` : `https://errorledger.com/blog/${cleanSlug}`;
+const alternateUrl = isKorean ? `/blog/${cleanSlug}` : `/ko/blog/${cleanSlug}`;
+const alternateLabel = isKorean ? '🇺🇸 English' : '🇰🇷 한국어';
 
 const schemaData = {
 	"@context": "https://schema.org",
 	"@type": "NewsArticle",
 	"headline": title,
 	"description": description,
-	"inLanguage": lang,
-	"datePublished": pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
-	"dateModified": pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
-	"url": cleanUrl,
-	"wordCount": wordCount,
-	"timeRequired": `PT${displayReadTime}M`,
-	"articleSection": category,
-	"image": [
-		new URL(heroImage || '/images/default-social-card.png', Astro.site).href
-	],
-	"author": {
+	"image": [heroImage],
+	"datePublished": pubDate ? pubDate.toISOString() : new Date().toISOString(),
+	"author": [{
 		"@type": "Person",
-		"name": isKorean ? "아키비스트" : "The Archivist",
-		"url": isKorean ? "https://errorledger.com/about" : "https://errorledger.com/about"
-	},
+		"name": "The Archivist",
+		"jobTitle": "Lead Investigative Editor",
+		"url": "https://errorledger.com/about"
+	}],
 	"publisher": {
 		"@type": "Organization",
 		"name": "ErrorLedger",
-		"url": "https://errorledger.com",
 		"logo": {
 			"@type": "ImageObject",
 			"url": "https://errorledger.com/favicon.svg"
@@ -110,7 +117,29 @@ const isStaticPage =
 	title.toLowerCase().includes('about') ||
 	title.toLowerCase().includes('contact');
 
-const showSidebar = !isStaticPage && (nextPost || prevPost);
+const showSidebar = !isStaticPage;
+
+const categoryCounts: Record<string, number> = {
+	all: sameLangPosts.length,
+	corporate: sameLangPosts.filter(p => p.data.category === 'corporate').length,
+	money: sameLangPosts.filter(p => p.data.category === 'money').length,
+	work: sameLangPosts.filter(p => p.data.category === 'work').length,
+	ai: sameLangPosts.filter(p => p.data.category === 'ai').length,
+	internet: sameLangPosts.filter(p => p.data.category === 'internet').length,
+	relationships: sameLangPosts.filter(p => p.data.category === 'relationships').length,
+	human: sameLangPosts.filter(p => p.data.category === 'human').length,
+};
+
+const categories = [
+	{ id: "all", label: isKorean ? "전체 사건 목록" : "All Incidents", icon: "⚡" },
+	{ id: "corporate", label: isKorean ? "기업 & 인프라" : "Corporate & Systems", icon: "🏢" },
+	{ id: "money", label: isKorean ? "금융 & 경제" : "Money & Finance", icon: "💰" },
+	{ id: "work", label: isKorean ? "직장 & 커리어" : "Work & Career", icon: "🧑‍💻" },
+	{ id: "ai", label: isKorean ? "AI & 자동화" : "AI & Automation", icon: "🤖" },
+	{ id: "internet", label: isKorean ? "인터넷 & 사회" : "Internet & Social", icon: "🌐" },
+	{ id: "relationships", label: isKorean ? "인간관계" : "Relationships", icon: "❤️" },
+	{ id: "human", label: isKorean ? "심리 & 인지 편향" : "Human Psychology", icon: "🧠" },
+];
 ---
 
 <html lang={lang} class="dark">
@@ -118,24 +147,24 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 		<BaseHead title={seoTitle} description={description} image={heroImage} type="article" breadcrumb={postBreadcrumb} />
 		<script type="application/ld+json" set:html={JSON.stringify(schemaData)} />
 		<style>
-			main { width: calc(100% - 2rem); max-width: 900px; margin: 0 auto; padding: 2em 1rem 6rem 1rem; }
+			main { width: 1180px; max-width: calc(100% - 2rem); margin: 0 auto; padding: 2em 1rem 6rem 1rem; }
 			
 			.post-layout-grid {
 				display: grid;
 				grid-template-columns: 1fr;
-				gap: 3rem;
+				gap: 2.5rem;
 				align-items: start;
+				width: 100%;
+				min-width: 0;
 			}
 
 			@media (min-width: 1024px) {
 				.post-layout-grid.has-sidebar {
-					grid-template-columns: 1fr 260px;
-				}
-				.post-layout-grid.has-sidebar > article {
-					min-width: 0;
+					grid-template-columns: 250px minmax(0, 1fr);
 				}
 			}
 
+			/* Left Sticky Navigation Rail */
 			.sidebar-wrapper {
 				display: none;
 			}
@@ -149,8 +178,10 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 					overflow-y: auto;
 					background: #171717;
 					border: 1px solid #262626;
-					border-radius: 12px;
+					border-radius: 16px;
 					padding: 1.25rem;
+					min-width: 0;
+					box-sizing: border-box;
 				}
 			}
 
@@ -160,40 +191,118 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 				font-weight: 700;
 				text-transform: uppercase;
 				color: #a3a3a3;
-				margin-bottom: 1rem;
-				padding-bottom: 0.5rem;
+				letter-spacing: 0.05em;
+				margin-bottom: 0.85rem;
+				padding-bottom: 0.4rem;
 				border-bottom: 1px solid #262626;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+
+			.trajectory-box {
+				margin-bottom: 1.5rem;
+				display: flex;
+				flex-direction: column;
+				gap: 0.75rem;
 			}
 
 			.nav-node-link {
 				display: block;
 				text-decoration: none;
+				padding: 0.5rem 0.65rem;
+				border-radius: 8px;
+				background: #0a0a0a;
+				border: 1px solid #262626;
+				transition: all 0.15s ease;
 			}
-			.nav-node-link:not(:last-child) {
-				margin-bottom: 1.25rem;
+			.nav-node-link:hover {
+				border-color: #f43f5e;
+				background: #262626;
 			}
+
 			.nav-node-label {
 				display: block;
 				font-family: ui-monospace, monospace;
 				font-size: 0.68rem;
 				font-weight: 700;
-				color: #a3a3a3;
+				color: #f43f5e;
 				text-transform: uppercase;
-				margin-bottom: 0.25rem;
+				margin-bottom: 0.2rem;
 				letter-spacing: 0.025em;
 			}
 			.nav-node-title {
 				display: block;
-				font-size: 0.85rem;
+				font-size: 0.82rem;
 				color: #e5e5e5;
-				line-height: 1.4;
+				line-height: 1.35;
 				font-weight: 600;
 				transition: color 0.15s ease;
 			}
-			.nav-node-link:hover .nav-node-title { color: #f43f5e !important; }
+			.nav-node-link:hover .nav-node-title { color: #ffffff; }
 
-			.prose { color: #d4d4d4; line-height: 1.85; font-size: 1.15rem; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif; }
-			.prose h1 { font-size: 2.3em; margin-top: 0; margin-bottom: 0.4em; color: #f5f5f5; line-height: 1.25; font-weight: 800; letter-spacing: -0.025em; }
+			.sidebar-cat-list {
+				display: flex;
+				flex-direction: column;
+				gap: 0.3rem;
+				margin-bottom: 1.5rem;
+			}
+
+			.sidebar-cat-link {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 0.4rem 0.6rem;
+				border-radius: 6px;
+				font-size: 0.82rem;
+				font-weight: 600;
+				color: #d4d4d4;
+				text-decoration: none;
+				transition: all 0.15s ease;
+			}
+			.sidebar-cat-link:hover {
+				background: #262626;
+				color: #ffffff;
+			}
+			.sidebar-cat-link.active-cat {
+				background: rgba(244, 63, 94, 0.12);
+				color: #fb7185;
+			}
+
+			.sidebar-cat-count {
+				font-family: ui-monospace, monospace;
+				font-size: 0.7rem;
+				background: #0a0a0a;
+				color: #737373;
+				padding: 0.05rem 0.4rem;
+				border-radius: 9999px;
+				border: 1px solid #262626;
+			}
+
+			.sidebar-dossiers {
+				padding-top: 1rem;
+				border-top: 1px solid #262626;
+			}
+			.dossier-rail-link {
+				display: block;
+				font-size: 0.8rem;
+				color: #a3a3a3;
+				text-decoration: none;
+				padding: 0.3rem 0;
+				transition: color 0.15s ease;
+			}
+			.dossier-rail-link:hover {
+				color: #f59e0b;
+			}
+
+			/* Right Article Column */
+			.article-container {
+				min-width: 0;
+				width: 100%;
+			}
+
+			.prose { color: #d4d4d4; line-height: 1.85; font-size: 1.15rem; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif; min-width: 0; }
+			.prose h1 { font-size: 2.3em; margin-top: 0; margin-bottom: 0.4em; color: #f5f5f5; line-height: 1.25; font-weight: 800; letter-spacing: -0.025em; overflow-wrap: break-word; }
 			.article-subtitle { font-size: 1.25rem; color: #a3a3a3; line-height: 1.5; margin-bottom: 1.5rem; font-weight: 400; }
 			.prose h2 { font-size: 1.6em; margin-top: 2em; margin-bottom: 0.75em; color: #fafafa; font-weight: 700; border-bottom: 1px solid #262626; padding-bottom: 0.4em; letter-spacing: -0.015em; }
 			.prose :global(h3) { font-size: 1.3em; margin-top: 1.5em; margin-bottom: 0.5em; color: #f5f5f5; font-weight: 700; }
@@ -213,7 +322,7 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 			.date-info { color: #a3a3a3; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-family: ui-monospace, monospace; }
 			.category-badge { padding: 0.15rem 0.5rem; border-radius: 4px; background: rgba(244, 63, 94, 0.1); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.25); text-transform: uppercase; font-size: 0.75rem; font-weight: 700; }
 			
-			.share-actions { display: flex; gap: 0.5rem; align-items: center; }
+			.share-actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
 			.lang-switch-pill {
 				background: rgba(245, 158, 11, 0.12);
 				border: 1px solid rgba(245, 158, 11, 0.3);
@@ -262,6 +371,8 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 				flex-direction: column;
 				gap: 0.35rem;
 				transition: all 0.15s ease;
+				min-width: 0;
+				box-sizing: border-box;
 			}
 			.incident-nav-card:hover {
 				border-color: #f43f5e;
@@ -366,14 +477,36 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 				color: #64748b !important;
 				border-bottom-color: #e2e8f0 !important;
 			}
-			:global(html:not(.dark)) .nav-node-label {
-				color: #f43f5e !important;
+			:global(html:not(.dark)) .nav-node-link {
+				background: #f8fafc !important;
+				border-color: #e2e8f0 !important;
+			}
+			:global(html:not(.dark)) .nav-node-link:hover {
+				background: #ffffff !important;
 			}
 			:global(html:not(.dark)) .nav-node-title {
 				color: #0f172a !important;
 			}
 			:global(html:not(.dark)) .nav-node-link:hover .nav-node-title {
 				color: #f43f5e !important;
+			}
+			:global(html:not(.dark)) .sidebar-cat-link {
+				color: #334155 !important;
+			}
+			:global(html:not(.dark)) .sidebar-cat-link:hover {
+				background: #f1f5f9 !important;
+				color: #0f172a !important;
+			}
+			:global(html:not(.dark)) .sidebar-cat-count {
+				background: #ffffff !important;
+				border-color: #cbd5e1 !important;
+				color: #475569 !important;
+			}
+			:global(html:not(.dark)) .dossier-rail-link {
+				color: #475569 !important;
+			}
+			:global(html:not(.dark)) .dossier-rail-link:hover {
+				color: #d97706 !important;
 			}
 			:global(html:not(.dark)) .incident-nav-card {
 				background: #ffffff !important;
@@ -416,7 +549,65 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 		<Header />
 		<main>
 			<div class={showSidebar ? "post-layout-grid has-sidebar" : "post-layout-grid"}>
-				<article>
+				<!-- Left Sticky Rail -->
+				{showSidebar && (
+					<aside class="sidebar-wrapper">
+						<!-- Incident Trajectory -->
+						<div class="sidebar-heading">
+							<span>{isKorean ? "사건 궤적" : "Trajectory"}</span>
+						</div>
+						<div class="trajectory-box">
+							{nextPost && (
+								<a href={`/${isKorean ? 'ko/blog' : 'blog'}/${nextPost.data.slug.replace(/^ko\//, '')}`} class="nav-node-link">
+									<span class="nav-node-label">&larr; {isKorean ? "다음 사건" : "Next Case"}</span>
+									<span class="nav-node-title">{nextPost.data.title}</span>
+								</a>
+							)}
+							{prevPost && (
+								<a href={`/${isKorean ? 'ko/blog' : 'blog'}/${prevPost.data.slug.replace(/^ko\//, '')}`} class="nav-node-link">
+									<span class="nav-node-label">{isKorean ? "이전 사건" : "Previous Case"} &rarr;</span>
+									<span class="nav-node-title">{prevPost.data.title}</span>
+								</a>
+							)}
+						</div>
+
+						<!-- Categories Navigation -->
+						<div class="sidebar-heading">
+							<span>{isKorean ? "카테고리" : "Categories"}</span>
+							<span>{sameLangPosts.length}</span>
+						</div>
+						<div class="sidebar-cat-list">
+							{categories.map((cat) => (
+								<a 
+									href={`/${isKorean ? 'ko/blog' : 'blog'}`} 
+									class={`sidebar-cat-link ${category === cat.id ? 'active-cat' : ''}`}
+								>
+									<span>{cat.icon} {cat.label}</span>
+									<span class="sidebar-cat-count">{categoryCounts[cat.id] || 0}</span>
+								</a>
+							))}
+						</div>
+
+						<!-- Curated Dossiers -->
+						<div class="sidebar-dossiers">
+							<div class="sidebar-heading" style="border: none; margin-bottom: 0.35rem; padding-bottom: 0;">
+								<span>{isKorean ? "테마별 도시에" : "Curated Dossiers"}</span>
+							</div>
+							<a href={`/${isKorean ? 'ko/blog' : 'blog'}/deleted-production-database-blamed-intern`} class="dossier-rail-link">
+								📂 {isKorean ? "사내 희생양 모음집" : "The Scapegoat Collection"}
+							</a>
+							<a href={`/${isKorean ? 'ko/blog' : 'blog'}/knight-capital-trading-glitch-45-minutes`} class="dossier-rail-link">
+								⚡ {isKorean ? "45분 만의 파산" : "45-Minute Fast Crashes"}
+							</a>
+							<a href={`/${isKorean ? 'ko/blog' : 'blog'}/the-friday-update-that-broke-the-world`} class="dossier-rail-link">
+								🌋 {isKorean ? "클라우드 마비 사건" : "Cloud Monoculture Failures"}
+							</a>
+						</div>
+					</aside>
+				)}
+
+				<!-- Right Article Column -->
+				<article class="article-container">
 					<div class="prose">
 						{!isStaticPage && (
 							<>
@@ -507,39 +698,15 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 						)}
 					</div>
 				</article>
-
-				{showSidebar && (
-					<aside class="sidebar-wrapper">
-						<div class="sidebar-heading">
-							{isKorean ? "사건 탐색 아카이브" : "Archive Trajectory"}
-						</div>
-						{nextPost && (
-							<a href={`/${isKorean ? 'ko/blog' : 'blog'}/${nextPost.data.slug.replace(/^ko\//, '')}`} class="nav-node-link">
-								<span class="nav-node-label">&larr; {isKorean ? "다음 기록" : "Next Record"}</span>
-								<span class="nav-node-title">{nextPost.data.title}</span>
-							</a>
-						)}
-						
-						{prevPost && (
-							<a href={`/${isKorean ? 'ko/blog' : 'blog'}/${prevPost.data.slug.replace(/^ko\//, '')}`} class="nav-node-link">
-								<span class="nav-node-label">{isKorean ? "이전 기록" : "Previous Record"} &rarr;</span>
-								<span class="nav-node-title">{prevPost.data.title}</span>
-							</a>
-						)}
-					</aside>
-				)}
 			</div>
 		</main>
 
-		<!-- Interactive Feature 7: Floating Smart Action Bar -->
+		<!-- Interactive Feature: Focused Floating Smart Action Bar -->
 		{!isStaticPage && (
 			<div id="floating-bar" class="floating-action-bar">
 				<a href="#verdict-anchor" class="float-btn float-btn-primary">
 					<span>🗳️</span> {isKorean ? "판결 투표" : "Cast Vote"}
 				</a>
-				<button id="float-random-btn" class="float-btn">
-					<span>🎲</span> {isKorean ? "랜덤 사건" : "Next Case"}
-				</button>
 				<button id="float-share-btn" class="float-btn">
 					<span>🔗</span> {isKorean ? "공유" : "Share"}
 				</button>
