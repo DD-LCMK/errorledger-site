@@ -4,10 +4,8 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 
 export async function GET(context) {
 	const blog = await getCollection('blog');
-	const insights = await getCollection('insights');
 	
-	// Merge streams and order chronologically by ErrorLedger publication date
-	const allPosts = [...blog, ...insights].sort(
+	const allPosts = blog.sort(
 		(a, b) => new Date(b.data.pubDate).valueOf() - new Date(a.data.pubDate).valueOf()
 	);
 
@@ -31,7 +29,7 @@ export async function GET(context) {
 				description: post.data.description,
 				pubDate: new Date(post.data.pubDate),
 				// Clean URL output without trailing slashes matching canonical site routing
-				link: `/${post.collection}/${post.data.shortenedSlug || post.slug}`,
+				link: `/blog/${post.data.shortenedSlug || post.slug}`,
 				// Expose tags as RSS categories for topic-based aggregator pickup
 				categories: post.data.tags || [],
 				// Adds image thumbnail for RSS readers that support media:content

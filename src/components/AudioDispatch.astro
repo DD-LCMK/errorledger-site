@@ -12,14 +12,14 @@ const {
 
 <div class="audio-dispatch-player">
   <div class="dispatch-left">
-    <button id="dispatch-play-btn" class="dispatch-play-circle" aria-label="Play dispatch">
+    <button id="dispatch-play-btn" class="dispatch-play-circle" aria-label="Play dispatch audio">
       <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
       <svg id="pause-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
     </button>
     <div class="dispatch-meta">
       <div class="dispatch-tag-row">
         <span class="dispatch-tag">The Archivist's Audio Dispatch</span>
-        <span class="dispatch-voice-tag">AI Voice</span>
+        <span class="dispatch-voice-tag">AI Voice Narration</span>
       </div>
       <div class="dispatch-title">{title}</div>
     </div>
@@ -38,7 +38,7 @@ const {
 
     <span id="dispatch-timer" class="dispatch-timer-text">{duration}</span>
 
-    <button id="dispatch-speed-btn" class="speed-toggle-btn">
+    <button id="dispatch-speed-btn" class="speed-toggle-btn" title="Toggle narration speed">
       1.0x
     </button>
   </div>
@@ -57,28 +57,81 @@ const {
     let currentSeconds = 0;
     let timerInterval = null;
     let speed = 1.0;
+    let currentUtterance = null;
+
+    function getArticleText() {
+      const article = document.querySelector('article .prose');
+      if (!article) return '';
+      // Get title and first few paragraphs
+      const paragraphs = Array.from(article.querySelectorAll('p, h2, h3'))
+        .slice(0, 8)
+        .map(p => p.innerText)
+        .join('. ');
+      return paragraphs;
+    }
+
+    function startSpeaking() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel(); // Stop any ongoing speech
+        const text = getArticleText();
+        currentUtterance = new SpeechSynthesisUtterance(text);
+        currentUtterance.rate = speed;
+        currentUtterance.pitch = 0.95; // Slightly deeper, archival tone
+
+        // Pick a natural English voice if available
+        const voices = window.speechSynthesis.getVoices();
+        const preferredVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Daniel') || v.name.includes('Arthur')));
+        if (preferredVoice) {
+          currentUtterance.voice = preferredVoice;
+        }
+
+        currentUtterance.onend = function() {
+          stopPlaying();
+        };
+        currentUtterance.onerror = function() {
+          stopPlaying();
+        };
+
+        window.speechSynthesis.speak(currentUtterance);
+      }
+    }
+
+    function stopSpeaking() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    function startPlaying() {
+      isPlaying = true;
+      playIcon?.classList.add('hidden');
+      pauseIcon?.classList.remove('hidden');
+      waveBars.forEach(bar => bar.classList.add('playing'));
+      
+      timerInterval = setInterval(() => {
+        currentSeconds++;
+        const mins = Math.floor(currentSeconds / 60);
+        const secs = currentSeconds % 60;
+        if (timer) timer.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+      }, 1000);
+
+      startSpeaking();
+    }
+
+    function stopPlaying() {
+      isPlaying = false;
+      playIcon?.classList.remove('hidden');
+      pauseIcon?.classList.add('hidden');
+      waveBars.forEach(bar => bar.classList.remove('playing'));
+      if (timerInterval) clearInterval(timerInterval);
+      stopSpeaking();
+    }
 
     playBtn?.addEventListener('click', () => {
-      isPlaying = !isPlaying;
       if (isPlaying) {
-        playIcon?.classList.add('hidden');
-        pauseIcon?.classList.remove('hidden');
-        waveBars.forEach(bar => {
-          bar.classList.add('playing');
-        });
-        timerInterval = setInterval(() => {
-          currentSeconds++;
-          const mins = Math.floor(currentSeconds / 60);
-          const secs = currentSeconds % 60;
-          if (timer) timer.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        }, 1000 / speed);
+        stopPlaying();
       } else {
-        playIcon?.classList.remove('hidden');
-        pauseIcon?.classList.add('hidden');
-        waveBars.forEach(bar => {
-          bar.classList.remove('playing');
-        });
-        clearInterval(timerInterval);
+        startPlaying();
       }
     });
 
@@ -86,14 +139,14 @@ const {
       speed = speed === 1.0 ? 1.5 : speed === 1.5 ? 2.0 : 1.0;
       if (speedBtn) speedBtn.innerText = `${speed.toFixed(1)}x`;
       if (isPlaying) {
-        clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-          currentSeconds++;
-          const mins = Math.floor(currentSeconds / 60);
-          const secs = currentSeconds % 60;
-          if (timer) timer.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        }, 1000 / speed);
+        stopSpeaking();
+        startSpeaking();
       }
+    });
+
+    // Cleanup when leaving page
+    window.addEventListener('beforeunload', () => {
+      stopSpeaking();
     });
   })();
 </script>
@@ -248,4 +301,14 @@ const {
   .hidden {
     display: none !important;
   }
+
+  /* Light mode styles */
+  :global(html:not(.dark)) .audio-dispatch-player {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #0f172a;
+  }
+  :global(html:not(.dark)) .dispatch-title { color: #0f172a; }
+  :global(html:not(.dark)) .dispatch-voice-tag { background: #e2e8f0; color: #475569; }
+  :global(html:not(.dark)) .speed-toggle-btn { background: #e2e8f0; border-color: #cbd5e1; color: #0f172a; }
 </style>

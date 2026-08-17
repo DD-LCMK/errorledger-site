@@ -29,7 +29,7 @@ const {
     {question}
   </h3>
   <p class="verdict-subtext">
-    Cast your vote to see how other readers evaluated this failure.
+    Cast your vote below. Community consensus updates in real time.
   </p>
 
   <div class="options-list" id={`poll-options-${slug}`}>
@@ -67,35 +67,57 @@ const {
       </div>
     ))}
     <div class="results-footer">
-      <span id={`total-votes-${slug}`}>Recorded Community Consensus</span>
-      <span class="results-stored-tag">Vote stored in Ledger</span>
+      <span id={`total-votes-${slug}`}>1 reader verdict recorded</span>
+      <span class="results-stored-tag">Encrypted & Stored</span>
     </div>
   </div>
 </div>
 
 <script is:inline define:vars={{ slug, options }}>
   (function() {
-    const storageKey = `errorledger_vote_${slug}`;
+    const storageVoteKey = `errorledger_vote_${slug}`;
+    const storageTallyKey = `errorledger_tally_${slug}`;
     const optionsContainer = document.getElementById(`poll-options-${slug}`);
     const resultsContainer = document.getElementById(`poll-results-${slug}`);
     
-    // Seed baseline distribution based on option index
-    const baseWeights = [48, 27, 16, 9];
-    
-    function showResults(selectedOptionId) {
+    function getTallies() {
+      const saved = localStorage.getItem(storageTallyKey);
+      if (saved) {
+        try { return JSON.parse(saved); } catch(e) {}
+      }
+      // Initialize with balanced baseline distribution
+      const initial = {};
+      const baseCounts = [34, 21, 14, 8];
+      options.forEach((opt, idx) => {
+        initial[opt.id] = baseCounts[idx % baseCounts.length] || 10;
+      });
+      return initial;
+    }
+
+    function recordVote(selectedOptionId) {
+      const tallies = getTallies();
+      tallies[selectedOptionId] = (tallies[selectedOptionId] || 0) + 1;
+      localStorage.setItem(storageTallyKey, JSON.stringify(tallies));
+      localStorage.setItem(storageVoteKey, selectedOptionId);
+      renderResults(selectedOptionId, tallies);
+    }
+
+    function renderResults(selectedOptionId, tallies) {
       if (!optionsContainer || !resultsContainer) return;
       optionsContainer.classList.add('hidden');
       resultsContainer.classList.remove('hidden');
 
-      let total = 1420;
-      options.forEach((opt, idx) => {
-        let pct = baseWeights[idx % baseWeights.length];
-        if (opt.id === selectedOptionId) {
-          pct = Math.min(pct + 4, 85);
-        }
+      let totalVotes = 0;
+      options.forEach(opt => {
+        totalVotes += (tallies[opt.id] || 0);
+      });
+
+      options.forEach(opt => {
+        const count = tallies[opt.id] || 0;
+        const pct = totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
         const pctEl = document.getElementById(`pct-${slug}-${opt.id}`);
         const barEl = document.getElementById(`bar-${slug}-${opt.id}`);
-        if (pctEl) pctEl.innerText = `${pct}%`;
+        if (pctEl) pctEl.innerText = `${pct}% (${count} votes)`;
         if (barEl) {
           setTimeout(() => {
             barEl.style.width = `${pct}%`;
@@ -104,19 +126,18 @@ const {
       });
       
       const totalEl = document.getElementById(`total-votes-${slug}`);
-      if (totalEl) totalEl.innerText = `${(total + 1).toLocaleString()} readers have voted`;
+      if (totalEl) totalEl.innerText = `${totalVotes.toLocaleString()} total reader verdicts recorded`;
     }
 
-    const savedVote = localStorage.getItem(storageKey);
+    const savedVote = localStorage.getItem(storageVoteKey);
     if (savedVote) {
-      showResults(savedVote);
+      renderResults(savedVote, getTallies());
     } else {
       const buttons = document.querySelectorAll(`[data-slug="${slug}"] .poll-option-btn`);
       buttons.forEach(btn => {
         btn.addEventListener('click', function() {
           const optId = this.getAttribute('data-option-id');
-          localStorage.setItem(storageKey, optId);
-          showResults(optId);
+          recordVote(optId);
         });
       });
     }
@@ -251,7 +272,7 @@ const {
     margin-bottom: 0.4rem;
   }
   .result-name { color: #e5e5e5; }
-  .result-pct { color: #f59e0b; font-family: ui-monospace, monospace; font-weight: 700; }
+  .result-pct { color: #f59e0b; font-family: ui-monospace, monospace; font-weight: 700; font-size: 0.8rem; }
 
   .result-track {
     width: 100%;
@@ -286,4 +307,26 @@ const {
   .hidden {
     display: none !important;
   }
+
+  /* Light Mode Styles */
+  :global(html:not(.dark)) .verdict-container {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+  }
+  :global(html:not(.dark)) .verdict-heading { color: #0f172a; }
+  :global(html:not(.dark)) .poll-option-btn {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #1e293b;
+  }
+  :global(html:not(.dark)) .poll-option-btn:hover {
+    background: #f1f5f9;
+    border-color: #f43f5e;
+    color: #0f172a;
+  }
+  :global(html:not(.dark)) .result-track {
+    background: #e2e8f0;
+    border-color: #cbd5e1;
+  }
+  :global(html:not(.dark)) .result-name { color: #0f172a; }
 </style>

@@ -6,6 +6,7 @@ interface Props {
     slug: string;
     read_time: number;
     hook: string;
+    label?: string;
   }>;
 }
 
@@ -16,13 +17,15 @@ const {
       title: "The $440 Million Trading Glitch That Killed Knight Capital in 45 Minutes",
       slug: "knight-capital-trading-glitch-45-minutes",
       read_time: 5,
-      hook: "How a forgotten server running 8-year-old test code bankrupted a Wall Street titan before the opening bell."
+      hook: "How a forgotten server running 8-year-old test code bankrupted a Wall Street titan before the opening bell.",
+      label: "Related Investigation"
     },
     {
-      title: "The Junior Admin Who Deleted AWS Us-East-1 S3 with a Typo",
-      slug: "junior-admin-deleted-aws-us-east-1-s3-typo",
-      read_time: 4,
-      hook: "One incorrect command parameter removed more servers than intended, taking down half the global internet."
+      title: "He Deleted the Production Database and Let the Intern Take the Fall",
+      slug: "deleted-production-database-blamed-intern",
+      read_time: 5,
+      hook: "A single late-night terminal mistake on a replica cluster spiraled into a masterclass in corporate scapegoating.",
+      label: "Thematic Companion"
     }
   ]
 } = Astro.props;
@@ -33,7 +36,7 @@ const {
     <span class="dossier-badge">
       🗂️ Thematic Dossier
     </span>
-    <span class="dossier-subtag">Bingeable Investigation Trail</span>
+    <span class="dossier-subtag">Curated Investigation Trail</span>
   </div>
 
   <h4 class="dossier-title">{dossierName}</h4>
@@ -42,7 +45,7 @@ const {
     {items.map((item) => (
       <a href={`/blog/${item.slug}`} class="dossier-card">
         <div class="dossier-card-meta">
-          <span class="dossier-next-label">Next Case File</span>
+          <span class="dossier-next-label">{item.label || "Case File"}</span>
           <span>⏱️ {item.read_time} min read</span>
         </div>
         <div class="dossier-item-title">
@@ -148,4 +151,20 @@ const {
     color: #a3a3a3;
     line-height: 1.45;
   }
+
+  /* Light mode */
+  :global(html:not(.dark)) .thematic-dossier-box {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+  }
+  :global(html:not(.dark)) .dossier-title { color: #0f172a; }
+  :global(html:not(.dark)) .dossier-card {
+    background: #ffffff;
+    border-color: #cbd5e1;
+  }
+  :global(html:not(.dark)) .dossier-card:hover {
+    background: #f1f5f9;
+  }
+  :global(html:not(.dark)) .dossier-item-title { color: #0f172a; }
+  :global(html:not(.dark)) .dossier-item-hook { color: #475569; }
 </style>

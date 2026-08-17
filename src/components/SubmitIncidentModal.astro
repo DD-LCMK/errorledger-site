@@ -90,50 +90,54 @@
 
 <script is:inline>
   (function() {
-    const modal = document.getElementById('submit-incident-modal');
-    const closeBtn = document.getElementById('close-modal-btn');
-    const form = document.getElementById('incident-form');
-    const successView = document.getElementById('form-success-view');
-    const closeSuccessBtn = document.getElementById('close-success-btn');
+    function getModal() {
+      return document.getElementById('submit-incident-modal');
+    }
 
     function openModal() {
-      if (modal) {
-        modal.style.display = 'flex';
-      }
-    }
-    function closeModal() {
-      if (modal) {
-        modal.style.display = 'none';
-      }
+      const modal = getModal();
+      if (modal) modal.style.display = 'flex';
     }
 
-    document.querySelectorAll('[data-open-submit-modal]').forEach(el => {
-      el.addEventListener('click', (e) => {
+    function closeModal() {
+      const modal = getModal();
+      if (modal) modal.style.display = 'none';
+    }
+
+    // Global event delegation for all submit triggers across the entire page
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('[data-open-submit-modal]')) {
         e.preventDefault();
         openModal();
-      });
+      }
+      if (e.target.closest('#close-modal-btn') || e.target.closest('#close-success-btn')) {
+        e.preventDefault();
+        closeModal();
+      }
+      const modal = getModal();
+      if (e.target === modal) {
+        closeModal();
+      }
     });
 
-    closeBtn?.addEventListener('click', closeModal);
-    closeSuccessBtn?.addEventListener('click', closeModal);
-    modal?.addEventListener('click', (e) => {
-      if (e.target === modal) closeModal();
-    });
+    document.addEventListener('submit', function(e) {
+      if (e.target && e.target.id === 'incident-form') {
+        e.preventDefault();
+        const title = document.getElementById('inc-title')?.value || '';
+        const cat = document.getElementById('inc-cat')?.value || 'work';
+        const damage = document.getElementById('inc-damage')?.value || 'minor';
+        const body = document.getElementById('inc-body')?.value || '';
 
-    form?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const title = document.getElementById('inc-title').value;
-      const cat = document.getElementById('inc-cat').value;
-      const damage = document.getElementById('inc-damage').value;
-      const body = document.getElementById('inc-body').value;
+        const submission = { title, cat, damage, body, date: new Date().toISOString() };
+        const existing = JSON.parse(localStorage.getItem('errorledger_submissions') || '[]');
+        existing.push(submission);
+        localStorage.setItem('errorledger_submissions', JSON.stringify(existing));
 
-      const submission = { title, cat, damage, body, date: new Date().toISOString() };
-      const existing = JSON.parse(localStorage.getItem('errorledger_submissions') || '[]');
-      existing.push(submission);
-      localStorage.setItem('errorledger_submissions', JSON.stringify(existing));
-
-      if (form) form.classList.add('hidden');
-      if (successView) successView.classList.remove('hidden');
+        const form = document.getElementById('incident-form');
+        const successView = document.getElementById('form-success-view');
+        if (form) form.classList.add('hidden');
+        if (successView) successView.classList.remove('hidden');
+      }
     });
   })();
 </script>
@@ -145,10 +149,10 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.82);
+    background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    z-index: 9999;
+    z-index: 99999;
     display: none;
     align-items: center;
     justify-content: center;
@@ -158,13 +162,13 @@
 
   .modal-card {
     background: #171717;
-    border: 1px solid #262626;
+    border: 1px solid #333333;
     border-radius: 16px;
     width: 100%;
     max-width: 540px;
     padding: 2rem;
     position: relative;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
     color: #f5f5f5;
     box-sizing: border-box;
     overflow: hidden;
@@ -186,7 +190,7 @@
     background: transparent;
     border: none;
     color: #a3a3a3;
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     cursor: pointer;
     line-height: 1;
     padding: 0.25rem;

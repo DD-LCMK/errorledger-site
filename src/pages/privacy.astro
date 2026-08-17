@@ -4,44 +4,45 @@ import Layout from '../layouts/BlogPost.astro';
 
 <Layout
 	title="Privacy Policy"
-	meta_title="Privacy Policy & Telemetry | ErrorLedger"
-	description="Data telemetry, privacy constraints, and user rollback rights for ErrorLedger."
-	pubDate={new Date('July 15, 2026')}
+	meta_title="Privacy Policy & Data Transparency | ErrorLedger"
+	description="Data telemetry, cookie policies, AdSense disclosures, and user rights for ErrorLedger."
+	pubDate={new Date('August 17, 2026')}
 	tags={["legal", "privacy", "compliance"]}
 >
-	<p><em>Last Audited: August 8, 2026</em></p>
+	<p><em>Last Updated: August 17, 2026</em></p>
 
-	<p>At ErrorLedger, we approach data privacy with the same strict constraints as our engineering analyses. This document outlines the system inputs (data we collect), transformations (how we use it), and your rollback rights (how to opt out).</p>
+	<p>At ErrorLedger, we value transparency and privacy. This Privacy Policy explains how information is collected, used, and protected when you access the ErrorLedger platform.</p>
 
-	<h2>1. System Inputs (Data Collection)</h2>
-	<p>When you access ErrorLedger, our architecture automatically logs standard operational telemetry via log files to ensure site stability and performance[cite: 5]. This includes:</p>
+	<h2>1. Information We Collect</h2>
+	<p>When you visit ErrorLedger, we collect standard server telemetry to ensure uptime, security, and performance:</p>
 	<ul>
-		<li><strong>Passive Telemetry:</strong> Internet Protocol (IP) addresses, browser type, Internet Service Provider (ISP), timestamp of access, and referring/exit pages[cite: 5].</li>
-		<li><strong>State Management (Cookies):</strong> We use cookies to maintain session state, optimize site rendering, and serve relevant content based on visitor preferences[cite: 5].</li>
+		<li><strong>Log File Telemetry:</strong> Internet Protocol (IP) addresses, browser type, Internet Service Provider (ISP), date/time stamps, referring/exit pages, and click paths.</li>
+		<li><strong>Local Browser Storage (localStorage):</strong> We use client-side storage solely to record your Reader Verdict poll votes, dark/light theme preference, and anonymous incident intake drafts on your own device.</li>
 	</ul>
 
-	<h2>2. External Dependencies (Third-Party Services)</h2>
-	<p>ErrorLedger relies on specific third-party ecosystems to monetize and analyze our platform's performance. These vendors may set their own cookies and collect telemetry based on their distinct privacy frameworks:</p>
+	<h2>2. Advertising & Third-Party Cookies (Google AdSense)</h2>
+	<p>ErrorLedger partners with third-party vendors, including Google, to serve advertisements when you visit our website:</p>
 	<ul>
-		<li><strong>Google DoubleClick DART Cookie:</strong> Google is a third-party vendor on our site[cite: 5]. It uses DART cookies to serve ads to our site visitors based upon their visit to our domain and other sites on the internet[cite: 5].</li>
-		<li><strong>External Post-Mortems:</strong> Our analyses contain hyperlinks leading to official vendor sites, public data, and research papers[cite: 5]. ErrorLedger does not control, administer, or assume liability for the data collection and privacy policies of these external platforms[cite: 5].</li>
+		<li>Google uses cookies (such as the DoubleClick DART cookie) to serve ads to users based on their visits to this site and other sites on the internet.</li>
+		<li>Users may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer">Google Ads Settings</a> or through the <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer">Digital Advertising Alliance Consumer Choice page</a>.</li>
 	</ul>
 
-	<h2>3. System Transformation (How We Use Data)</h2>
-	<p>The data ingested by our systems is utilized strictly within the following parameters:</p>
+	<h2>3. Anonymous Incident Submissions</h2>
+	<p>
+		When you submit an incident via our intake portal:
+	</p>
 	<ul>
-		<li>To monitor site uptime, debug routing errors, and improve architectural performance.</li>
-		<li>To personalize the advertising ecosystem and ensure relevant ad delivery.</li>
-		<li>To analyze aggregate traffic patterns to determine which systems analyses are most requested by our user base.</li>
+		<li>We do not require you to provide your name, phone number, or employer identification.</li>
+		<li>All submitted text is reviewed under our Whistleblower Protection standard to scrub sensitive identifiers prior to editorial publication.</li>
 	</ul>
 
-	<h2>4. User Rollback Rights (Your Choices)</h2>
-	<p>You maintain full administrative control over your local state and data footprint:</p>
-	<ul>
-		<li><strong>Cookie Purge:</strong> You may disable cookies entirely through your browser's vendor settings, though this may cause friction in certain site functionalities.</li>
-		<li><strong>Ad Personalization Opt-Out:</strong> Visitors can opt out of personalized advertising (including DART cookies) by visiting Google's Ads Settings[cite: 5].</li>
-	</ul>
+	<h2>4. External Links</h2>
+	<p>
+		Our investigative case files contain links to public court records, news archives, and regulatory disclosures. ErrorLedger is not responsible for the privacy practices or content of these external domains.
+	</p>
 
-	<h2>5. Operational Scope and Revisions</h2>
-	<p>Because ErrorLedger functions purely as a read-only research library, we do not utilize account registrations or collect personal identifiers, email addresses, database passwords, or private source code[cite: 5]. This privacy architecture is subject to change based on new regulatory constraints or architectural updates. Any updates to our data handling procedures will be logged and deployed to this page immediately.</p>
+	<h2>5. Contact Information</h2>
+	<p>
+		For any questions or privacy inquiries, contact us at <a href="mailto:privacy@errorledger.com">privacy@errorledger.com</a>.
+	</p>
 </Layout>

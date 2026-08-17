@@ -143,6 +143,17 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 				}
 			}
 
+			.sidebar-heading {
+				font-family: ui-monospace, monospace;
+				font-size: 0.75rem;
+				font-weight: 700;
+				text-transform: uppercase;
+				color: #a3a3a3;
+				margin-bottom: 1rem;
+				padding-bottom: 0.5rem;
+				border-bottom: 1px solid #262626;
+			}
+
 			.nav-node-link {
 				display: block;
 				text-decoration: none;
@@ -188,14 +199,63 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 			}
 
 			.meta-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px dashed #262626; flex-wrap: wrap; gap: 1rem; }
-			.date-info { color: #a3a3a3; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+			.date-info { color: #a3a3a3; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-family: ui-monospace, monospace; }
+			.category-badge { padding: 0.15rem 0.5rem; border-radius: 4px; background: rgba(244, 63, 94, 0.1); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.25); text-transform: uppercase; font-size: 0.75rem; font-weight: 700; }
+			
 			.share-actions { display: flex; gap: 0.5rem; }
-			.share-btn { background: #171717; border: 1px solid #262626; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; color: #d4d4d4; text-decoration: none; font-weight: 500; }
+			.share-btn { background: #171717; border: 1px solid #262626; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; color: #d4d4d4; text-decoration: none; font-weight: 500; transition: all 0.15s ease; }
 			.share-btn:hover { background: #262626; color: #ffffff; }
 
-			.tag-container { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
-			.badge-tag { background: #171717; border: 1px solid #262626; color: #a3a3a3; font-size: 0.75rem; padding: 0.25rem 0.65rem; border-radius: 6px; text-decoration: none; font-family: ui-monospace, monospace; }
+			.tag-container { display: flex; gap: 0.5rem; margin-top: 2rem; margin-bottom: 2rem; padding-top: 1.5rem; border-top: 1px solid #262626; flex-wrap: wrap; }
+			.badge-tag { background: #171717; border: 1px solid #262626; color: #a3a3a3; font-size: 0.75rem; padding: 0.25rem 0.65rem; border-radius: 6px; text-decoration: none; font-family: ui-monospace, monospace; transition: all 0.15s ease; }
 			.badge-tag:hover { color: #f43f5e; border-color: #f43f5e; }
+
+			/* Bottom Adjacent Incident Navigation */
+			.bottom-incident-nav {
+				display: grid;
+				grid-template-columns: 1fr;
+				gap: 1rem;
+				margin: 3rem 0;
+				padding-top: 2rem;
+				border-top: 1px solid #262626;
+			}
+			@media (min-width: 640px) {
+				.bottom-incident-nav {
+					grid-template-columns: 1fr 1fr;
+				}
+			}
+			.incident-nav-card {
+				background: #171717;
+				border: 1px solid #262626;
+				border-radius: 12px;
+				padding: 1.25rem;
+				text-decoration: none;
+				display: flex;
+				flex-direction: column;
+				gap: 0.35rem;
+				transition: all 0.15s ease;
+			}
+			.incident-nav-card:hover {
+				border-color: #f43f5e;
+				background: #1e1e1e;
+				transform: translateY(-2px);
+			}
+			.incident-nav-dir {
+				font-family: ui-monospace, monospace;
+				font-size: 0.72rem;
+				font-weight: 700;
+				text-transform: uppercase;
+				color: #fb7185;
+			}
+			.incident-nav-title {
+				font-size: 0.95rem;
+				font-weight: 700;
+				color: #e5e5e5;
+				line-height: 1.35;
+			}
+			.incident-nav-card:hover .incident-nav-title {
+				color: #ffffff;
+			}
 
 			/* Floating Action Bar */
 			.floating-action-bar {
@@ -245,6 +305,64 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 			.float-btn-primary:hover {
 				background: #fb7185;
 			}
+
+			/* Light Mode Global Styles */
+			:global(html:not(.dark)) body {
+				background: #ffffff;
+				color: #1e293b;
+			}
+			:global(html:not(.dark)) .prose {
+				color: #334155;
+			}
+			:global(html:not(.dark)) .prose h1,
+			:global(html:not(.dark)) .prose h2,
+			:global(html:not(.dark)) .prose :global(h3) {
+				color: #0f172a;
+			}
+			:global(html:not(.dark)) .article-subtitle {
+				color: #64748b;
+			}
+			:global(html:not(.dark)) .prose :global(blockquote) {
+				background: #f8fafc;
+				border-left-color: #f43f5e;
+				color: #1e293b;
+			}
+			:global(html:not(.dark)) .sidebar-wrapper,
+			:global(html:not(.dark)) .incident-nav-card {
+				background: #f8fafc;
+				border-color: #e2e8f0;
+			}
+			:global(html:not(.dark)) .nav-node-title,
+			:global(html:not(.dark)) .incident-nav-title {
+				color: #0f172a;
+			}
+			:global(html:not(.dark)) .share-btn,
+			:global(html:not(.dark)) .badge-tag {
+				background: #f8fafc;
+				border-color: #cbd5e1;
+				color: #475569;
+			}
+			:global(html:not(.dark)) .share-btn:hover,
+			:global(html:not(.dark)) .badge-tag:hover {
+				background: #e2e8f0;
+				color: #0f172a;
+			}
+			:global(html:not(.dark)) .floating-action-bar {
+				background: rgba(255, 255, 255, 0.95);
+				border-color: #cbd5e1;
+				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+			}
+			:global(html:not(.dark)) .float-btn {
+				color: #334155;
+			}
+			:global(html:not(.dark)) .float-btn:hover {
+				background: #f1f5f9;
+				color: #0f172a;
+			}
+			:global(html:not(.dark)) .float-btn-primary {
+				background: #f43f5e;
+				color: #ffffff;
+			}
 		</style>
 	</head>
 
@@ -257,8 +375,8 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 						{!isStaticPage && (
 							<>
 								<div class="meta-wrapper">
-									<div class="date-info font-mono">
-										<span class="px-2 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20 uppercase text-xs font-bold">
+									<div class="date-info">
+										<span class="category-badge">
 											{category}
 										</span>
 										<span>•</span>
@@ -306,11 +424,27 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 									/>
 								</div>
 
+								<!-- Bottom Post Navigation: Previous & Next Incident -->
+								<nav class="bottom-incident-nav">
+									{prevPost && (
+										<a href={`/blog/${prevPost.data.shortenedSlug || prevPost.slug}`} class="incident-nav-card">
+											<span class="incident-nav-dir">&larr; Previous Incident</span>
+											<span class="incident-nav-title">{prevPost.data.title}</span>
+										</a>
+									)}
+									{nextPost && (
+										<a href={`/blog/${nextPost.data.shortenedSlug || nextPost.slug}`} class="incident-nav-card" style={!prevPost ? "grid-column: 1 / -1;" : ""}>
+											<span class="incident-nav-dir">Next Incident &rarr;</span>
+											<span class="incident-nav-title">{nextPost.data.title}</span>
+										</a>
+									)}
+								</nav>
+
 								<!-- Interactive Feature 4: Thematic Dossier Clusters -->
 								<ThematicDossier />
 
 								{tags.length > 0 && (
-									<div class="tag-container mt-8 pt-6 border-t border-neutral-800">
+									<div class="tag-container">
 										{tags.map((tag) => (
 											<a href={`/search?q=${encodeURIComponent(tag.toLowerCase())}`} class="badge-tag">
 												#{tag}
@@ -325,19 +459,19 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 
 				{showSidebar && (
 					<aside class="sidebar-wrapper">
-						<div class="text-xs font-mono font-bold uppercase text-neutral-400 mb-4 pb-2 border-b border-neutral-800">
+						<div class="sidebar-heading">
 							Archive Trajectory
 						</div>
 						{nextPost && (
 							<a href={`/blog/${nextPost.data.shortenedSlug || nextPost.slug}`} class="nav-node-link">
-								<span class="nav-node-label">← Next Record</span>
+								<span class="nav-node-label">&larr; Next Record</span>
 								<span class="nav-node-title">{nextPost.data.title}</span>
 							</a>
 						)}
 						
 						{prevPost && (
 							<a href={`/blog/${prevPost.data.shortenedSlug || prevPost.slug}`} class="nav-node-link">
-								<span class="nav-node-label">Previous Record →</span>
+								<span class="nav-node-label">Previous Record &rarr;</span>
 								<span class="nav-node-title">{prevPost.data.title}</span>
 							</a>
 						)}
@@ -367,7 +501,6 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 			const copyBtn = document.getElementById('copy-link-btn');
 			const floatShareBtn = document.getElementById('float-share-btn');
 			const floatBar = document.getElementById('floating-bar');
-			const floatRandomBtn = document.getElementById('float-random-btn');
 
 			function copyCurrentUrl() {
 				navigator.clipboard.writeText(window.location.href);
@@ -376,10 +509,6 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 
 			copyBtn?.addEventListener('click', copyCurrentUrl);
 			floatShareBtn?.addEventListener('click', copyCurrentUrl);
-
-			floatRandomBtn?.addEventListener('click', () => {
-				window.location.href = '/blog';
-			});
 
 			window.addEventListener('scroll', () => {
 				const scrollY = window.scrollY;

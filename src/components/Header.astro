@@ -2,6 +2,10 @@
 import HeaderLink from './HeaderLink.astro';
 import SubmitIncidentModal from './SubmitIncidentModal.astro';
 import { SITE_TITLE } from '../consts';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog');
+const allSlugs = allPosts.map(p => `/blog/${p.data.shortenedSlug || p.slug}`);
 ---
 
 <header>
@@ -28,6 +32,7 @@ import { SITE_TITLE } from '../consts';
 		<div class="internal-links">
 			<HeaderLink href="/">Ledger</HeaderLink>
 			<HeaderLink href="/blog">Archive</HeaderLink>
+			<HeaderLink href="/about">About</HeaderLink>
 			
 			<!-- Interactive Feature 1: Failure Roulette -->
 			<button id="random-failure-btn" class="nav-action-btn random-btn" title="Open a random incident from the ledger">
@@ -55,7 +60,9 @@ import { SITE_TITLE } from '../consts';
 	<SubmitIncidentModal />
 </header>
 
-<script>
+<script is:inline define:vars={{ allSlugs }}>
+	window.__ERRORLEDGER_SLUGS__ = allSlugs || ['/blog'];
+
 	const themeToggleBtn = document.getElementById('theme-toggle');
 	const darkIcon = document.getElementById('theme-toggle-dark-icon');
 	const lightIcon = document.getElementById('theme-toggle-light-icon');
@@ -83,18 +90,15 @@ import { SITE_TITLE } from '../consts';
 		updateIcons();
 	});
 
-	// Random Failure Engine
-	const randomBtn = document.getElementById('random-failure-btn');
-	randomBtn?.addEventListener('click', async () => {
-		try {
-			// Fallback list of known slugs or fetch sitemap/rss
-			const sampleSlugs = [
-				'/blog/the-friday-update-that-broke-the-world'
-			];
-			const randomTarget = sampleSlugs[Math.floor(Math.random() * sampleSlugs.length)];
+	// Global Random Failure Engine across all buttons
+	document.addEventListener('click', function(e) {
+		if (e.target.closest('#random-failure-btn') || e.target.closest('#float-random-btn')) {
+			e.preventDefault();
+			const slugs = window.__ERRORLEDGER_SLUGS__ && window.__ERRORLEDGER_SLUGS__.length > 0 
+				? window.__ERRORLEDGER_SLUGS__ 
+				: ['/blog'];
+			const randomTarget = slugs[Math.floor(Math.random() * slugs.length)];
 			window.location.href = randomTarget;
-		} catch (err) {
-			window.location.href = '/blog';
 		}
 	});
 
@@ -117,7 +121,7 @@ import { SITE_TITLE } from '../consts';
 		z-index: 100;
 		margin: 0;
 		padding: 0 1.5rem;
-		background: rgba(10, 10, 10, 0.85);
+		background: rgba(10, 10, 10, 0.88);
 		backdrop-filter: blur(12px);
 		-webkit-backdrop-filter: blur(12px);
 		border-bottom: 1px solid #262626;
@@ -256,4 +260,23 @@ import { SITE_TITLE } from '../consts';
 		transition: width 0.05s ease-out;
 	}
 	.hidden { display: none !important; }
+
+	/* Light mode styles */
+	:global(html:not(.dark)) header {
+		background: rgba(255, 255, 255, 0.92);
+		border-bottom-color: #e2e8f0;
+	}
+	:global(html:not(.dark)) .logo-text-main { color: #0f172a; }
+	:global(html:not(.dark)) .internal-links a { color: #475569; }
+	:global(html:not(.dark)) .internal-links a:hover { color: #0f172a; }
+	:global(html:not(.dark)) .header-search-input {
+		background: #f8fafc;
+		border-color: #cbd5e1;
+		color: #0f172a;
+	}
+	:global(html:not(.dark)) .nav-action-btn {
+		background: #f8fafc;
+		border-color: #cbd5e1;
+		color: #334155;
+	}
 </style>

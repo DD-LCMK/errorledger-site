@@ -3,27 +3,35 @@ import Layout from '../layouts/BlogPost.astro';
 ---
 
 <Layout
-	title="Contact & System Inquiries"
-	meta_title="Submit Forensic Telemetry & Research Inquiries | ErrorLedger"
-	description="Submit technical root cause analyses, forensic telemetry logs, or empirical research inquiries to the ErrorLedger Editorial Team."
-	pubDate={new Date('August 14, 2026')}
+	title="Contact & Incident Intake"
+	meta_title="Submit Incidents, Confessions & Tips | ErrorLedger"
+	description="Submit confidential incident reports, career confessions, or editorial inquiries to The Archivist."
+	pubDate={new Date('August 17, 2026')}
 	tags={["meta", "contact", "submissions"]}
 >
-	<h2>Data & Evidence Ingestion Portal</h2>
+	<h2>The Intake Desk</h2>
 	<p>
-		ErrorLedger functions as an independent, evidence-grounded systems analysis engine. If you are an engineer, researcher, or systems practitioner with verified telemetry, controlled study data, or post-mortem documentation, we accept submissions.
+		ErrorLedger investigates real human, corporate, and systemic failures. If you were involved in a notable disaster, witnessed a bizarre operational blunder, or have access to verifiable public records, we invite your tip.
 	</p>
 
-	<h3>Sourcing Verification Standard</h3>
-	<p>
-		To maintain analysis integrity, all external submissions must provide verifiable primary sources. This includes official post-mortems, kernel logs, commit histories, peer-reviewed study DOIs, or clinical trial registry entries.
-	</p>
-
-	<h3>Submit a Record for Investigation</h3>
-	<p>
-		To propose a system failure for forensic analysis, or to submit verified telemetry and evidence datasets, contact our editorial team:
-	</p>
+	<h2>Submission Channels</h2>
 	<ul>
-		<li><strong>Communication Node:</strong> contact@errorledger.com</li>
+		<li>
+			<strong>Confidential Incident Inquiries & Tips:</strong><br/>
+			<a href="mailto:editor@errorledger.com">editor@errorledger.com</a>
+		</li>
+		<li>
+			<strong>Anonymous Quick Intake:</strong><br/>
+			Use our interactive on-site intake form by clicking <a href="#" data-open-submit-modal><strong>+ Submit an Incident</strong></a> from any page. Submissions are scrubbed of identifying credentials before review.
+		</li>
+		<li>
+			<strong>Factual Corrections & Rights Inquiries:</strong><br/>
+			<a href="mailto:corrections@errorledger.com">corrections@errorledger.com</a>
+		</li>
 	</ul>
+
+	<h2>Whistleblower Protection Standard</h2>
+	<p>
+		When reviewing Tier 2 submissions, ErrorLedger scrubs names, corporate identifiers, localized database credentials, and internal hostnames unless the incident is already a matter of public legal or regulatory record (Tier 1). We do not disclose confidential sources.
+	</p>
 </Layout>
