@@ -435,7 +435,7 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 								/>
 
 								<!-- Interactive Feature 3: Simulated Audio Dispatch Player -->
-								<AudioDispatch title={title} duration={`${displayReadTime - 2 || 3}:45`} lang={lang} />
+								<AudioDispatch title={title} duration={`${displayReadTime - 2 || 3}:45`} lang={lang} slug={cleanSlug} audioUrl={`/audio/${lang}/${cleanSlug}.mp3`} />
 							</>
 						)}
 

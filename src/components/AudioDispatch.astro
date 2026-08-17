@@ -3,27 +3,34 @@ interface Props {
   duration?: string;
   title?: string;
   lang?: string;
+  slug?: string;
+  audioUrl?: string;
 }
 
 const {
-  duration = "3:45",
+  duration = "2:30",
   title = "Incident Dispatch Overview",
-  lang = "en"
+  lang = "en",
+  slug = "",
+  audioUrl = `/audio/${lang}/${slug}.mp3`
 } = Astro.props;
 
 const isKorean = lang === 'ko';
 ---
 
-<div class="audio-dispatch-player" data-lang={lang}>
+<div class="audio-dispatch-player" data-lang={lang} data-audio-src={audioUrl}>
+  <!-- Native Audio Tag for Studio Neural Quality -->
+  <audio id="neural-audio-elem" src={audioUrl} preload="metadata"></audio>
+
   <div class="dispatch-left">
-    <button id="dispatch-play-btn" class="dispatch-play-circle" aria-label={isKorean ? "오디오 요약 재생" : "Play dispatch audio"}>
+    <button id="dispatch-play-btn" class="dispatch-play-circle" aria-label={isKorean ? "오디오 브리핑 재생" : "Play dispatch audio"}>
       <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
       <svg id="pause-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
     </button>
     <div class="dispatch-meta">
       <div class="dispatch-tag-row">
         <span class="dispatch-tag">{isKorean ? "아키비스트의 오디오 브리핑" : "The Archivist's Audio Dispatch"}</span>
-        <span class="dispatch-voice-tag">{isKorean ? "AI 음성 내레이션" : "AI Voice Narration"}</span>
+        <span class="dispatch-voice-tag" id="dispatch-quality-badge">{isKorean ? "🎙️ 스튜디오 AI 보이스" : "🎙️ Studio Neural Voice"}</span>
       </div>
       <div class="dispatch-title">{title}</div>
     </div>
@@ -51,6 +58,7 @@ const isKorean = lang === 'ko';
 <script is:inline>
   (function() {
     const playerEl = document.querySelector('.audio-dispatch-player');
+    const audioElem = document.getElementById('neural-audio-elem');
     const pageLang = playerEl?.getAttribute('data-lang') || document.documentElement.lang || 'en';
     const isKo = pageLang === 'ko';
 
@@ -60,53 +68,83 @@ const isKorean = lang === 'ko';
     const waveBars = document.querySelectorAll('.wave-bar');
     const speedBtn = document.getElementById('dispatch-speed-btn');
     const timer = document.getElementById('dispatch-timer');
+    const qualityBadge = document.getElementById('dispatch-quality-badge');
 
     let isPlaying = false;
-    let currentSeconds = 0;
-    let timerInterval = null;
     let speed = 1.0;
+    let useNeuralAudio = true;
     let currentUtterance = null;
+
+    // Set initial audio volume
+    if (audioElem) {
+      audioElem.volume = 0.70; // Comfortable volume
+    }
+
+    // Check if neural MP3 is loaded
+    audioElem?.addEventListener('loadedmetadata', () => {
+      if (audioElem.duration && !isNaN(audioElem.duration)) {
+        const mins = Math.floor(audioElem.duration / 60);
+        const secs = Math.floor(audioElem.duration % 60);
+        if (timer) timer.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+      }
+    });
+
+    audioElem?.addEventListener('timeupdate', () => {
+      if (audioElem.currentTime && timer) {
+        const mins = Math.floor(audioElem.currentTime / 60);
+        const secs = Math.floor(audioElem.currentTime % 60);
+        timer.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+      }
+    });
+
+    audioElem?.addEventListener('ended', () => {
+      stopPlaying();
+      if (audioElem.duration) {
+        const mins = Math.floor(audioElem.duration / 60);
+        const secs = Math.floor(audioElem.duration % 60);
+        if (timer) timer.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+      }
+    });
+
+    audioElem?.addEventListener('error', () => {
+      // Fallback to Web Speech Synthesis if MP3 is missing
+      useNeuralAudio = false;
+      if (qualityBadge) {
+        qualityBadge.innerText = isKo ? "AI 음성 내레이션" : "Device TTS Narration";
+      }
+    });
 
     function getArticleText() {
       const article = document.querySelector('article .prose');
       if (!article) return '';
-      // Extract main narrative paragraphs, exclude code blocks and polls
       const elements = Array.from(article.querySelectorAll('h1, h2, p:not(.article-subtitle)'))
         .filter(el => !el.closest('#verdict-anchor') && !el.closest('.provenance-badge-box'))
         .slice(0, 7);
       return elements.map(el => el.innerText.trim()).filter(Boolean).join('. ');
     }
 
-    function startSpeaking() {
+    function startSpeakingFallback() {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         const text = getArticleText();
         currentUtterance = new SpeechSynthesisUtterance(text);
         currentUtterance.rate = speed;
-        currentUtterance.pitch = isKo ? 1.0 : 0.95;
-        currentUtterance.volume = 0.65; // Pleasant, non-jarring volume
+        currentUtterance.volume = 0.65;
 
         const voices = window.speechSynthesis.getVoices();
         if (isKo) {
           currentUtterance.lang = 'ko-KR';
-          const koVoice = voices.find(v => v.lang.includes('ko') || v.lang.includes('KO') || v.name.includes('Korean') || v.name.includes('Yuna') || v.name.includes('Heami') || v.name.includes('Google 한국어'));
+          const koVoice = voices.find(v => v.lang.includes('ko') || v.name.includes('Korean') || v.name.includes('Yuna') || v.name.includes('Heami'));
           if (koVoice) currentUtterance.voice = koVoice;
         } else {
           currentUtterance.lang = 'en-US';
-          const enVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Daniel') || v.name.includes('Arthur')));
+          const enVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Daniel')));
           if (enVoice) currentUtterance.voice = enVoice;
         }
 
-        currentUtterance.onend = function() { stopPlaying(); };
-        currentUtterance.onerror = function() { stopPlaying(); };
-
+        currentUtterance.onend = stopPlaying;
+        currentUtterance.onerror = stopPlaying;
         window.speechSynthesis.speak(currentUtterance);
-      }
-    }
-
-    function stopSpeaking() {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
       }
     }
 
@@ -115,15 +153,16 @@ const isKorean = lang === 'ko';
       playIcon?.classList.add('hidden');
       pauseIcon?.classList.remove('hidden');
       waveBars.forEach(bar => bar.classList.add('playing'));
-      
-      timerInterval = setInterval(() => {
-        currentSeconds++;
-        const mins = Math.floor(currentSeconds / 60);
-        const secs = currentSeconds % 60;
-        if (timer) timer.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-      }, 1000);
 
-      startSpeaking();
+      if (useNeuralAudio && audioElem && audioElem.src) {
+        audioElem.playbackRate = speed;
+        audioElem.play().catch(() => {
+          useNeuralAudio = false;
+          startSpeakingFallback();
+        });
+      } else {
+        startSpeakingFallback();
+      }
     }
 
     function stopPlaying() {
@@ -131,8 +170,13 @@ const isKorean = lang === 'ko';
       playIcon?.classList.remove('hidden');
       pauseIcon?.classList.add('hidden');
       waveBars.forEach(bar => bar.classList.remove('playing'));
-      if (timerInterval) clearInterval(timerInterval);
-      stopSpeaking();
+
+      if (audioElem) {
+        audioElem.pause();
+      }
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
     }
 
     playBtn?.addEventListener('click', () => {
@@ -144,21 +188,17 @@ const isKorean = lang === 'ko';
     });
 
     speedBtn?.addEventListener('click', () => {
-      speed = speed === 1.0 ? 1.5 : speed === 1.5 ? 2.0 : 1.0;
-      if (speedBtn) speedBtn.innerText = `${speed.toFixed(1)}x`;
-      if (isPlaying) {
-        stopSpeaking();
-        startSpeaking();
+      speed = speed === 1.0 ? 1.25 : speed === 1.25 ? 1.5 : 1.0;
+      if (speedBtn) speedBtn.innerText = `${speed.toFixed(2).replace(/\.?0+$/, '')}x`;
+      if (audioElem) audioElem.playbackRate = speed;
+      if (!useNeuralAudio && isPlaying) {
+        window.speechSynthesis.cancel();
+        startSpeakingFallback();
       }
     });
 
-    // Ensure voices are loaded asynchronously in Chrome
-    if ('speechSynthesis' in window && window.speechSynthesis.onvoiceschanged !== undefined) {
-      window.speechSynthesis.onvoiceschanged = () => {};
-    }
-
     window.addEventListener('beforeunload', () => {
-      stopSpeaking();
+      stopPlaying();
     });
   })();
 </script>
@@ -225,10 +265,12 @@ const isKorean = lang === 'ko';
   .dispatch-voice-tag {
     font-size: 0.65rem;
     font-family: ui-monospace, monospace;
-    background: #262626;
-    color: #a3a3a3;
+    background: rgba(244, 63, 94, 0.12);
+    border: 1px solid rgba(244, 63, 94, 0.25);
+    color: #fb7185;
     padding: 0.1rem 0.35rem;
     border-radius: 4px;
+    font-weight: 600;
   }
   .dispatch-title {
     font-size: 0.9rem;
@@ -321,6 +363,6 @@ const isKorean = lang === 'ko';
     color: #0f172a;
   }
   :global(html:not(.dark)) .dispatch-title { color: #0f172a; }
-  :global(html:not(.dark)) .dispatch-voice-tag { background: #e2e8f0; color: #475569; }
+  :global(html:not(.dark)) .dispatch-voice-tag { background: #fee2e2; border-color: #fca5a5; color: #e11d48; }
   :global(html:not(.dark)) .speed-toggle-btn { background: #e2e8f0; border-color: #cbd5e1; color: #0f172a; }
 </style>
