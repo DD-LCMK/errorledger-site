@@ -39,9 +39,9 @@ const privacyUrl = isKorean ? '/ko/privacy' : '/privacy';
 
 		<nav class="footer-nav-col" aria-label="Developer tools navigation">
 			<h4 class="footer-col-title">{isKorean ? "유틸리티" : "Utilities"}</h4>
-			<a href={isKorean ? "/ko/tools/epoch-converter" : "/tools/epoch-converter"} class="footer-link">Epoch Converter</a>
-			<a href={isKorean ? "/ko/tools/json-formatter" : "/tools/json-formatter"} class="footer-link">JSON Formatter</a>
-			<a href={isKorean ? "/ko/tools/jwt-decoder" : "/tools/jwt-decoder"} class="footer-link">JWT Decoder</a>
+			<a href={isKorean ? "/ko/tools/epoch-converter" : "/tools/epoch-converter"} class="footer-link">{isKorean ? "Epoch 시간 변환기" : "Epoch Converter"}</a>
+			<a href={isKorean ? "/ko/tools/json-formatter" : "/tools/json-formatter"} class="footer-link">{isKorean ? "JSON 포맷터" : "JSON Formatter"}</a>
+			<a href={isKorean ? "/ko/tools/jwt-decoder" : "/tools/jwt-decoder"} class="footer-link">{isKorean ? "JWT 토큰 디코더" : "JWT Decoder"}</a>
 			<a href={isKorean ? "/ko/tools" : "/tools"} class="footer-link">{isKorean ? "전체 도구 →" : "All Utilities →"}</a>
 		</nav>
 
