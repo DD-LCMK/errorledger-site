@@ -30,7 +30,7 @@ body {
   word-wrap: break-word;
   overflow-wrap: break-word;
   overflow-x: hidden;
-  color: rgb(var(--gray-dark));
+  color: #1e293b !important;
   font-size: 20px;
   line-height: 1.7;
   min-height: 100vh;
@@ -38,6 +38,24 @@ body {
   background-color: #f8fafc !important;
   background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px) !important;
   background-size: 24px 24px !important;
+}
+
+html:not(.dark) body {
+  background-color: #f8fafc !important;
+  color: #1e293b !important;
+}
+
+html:not(.dark) h1,
+html:not(.dark) h2,
+html:not(.dark) h3,
+html:not(.dark) h4,
+html:not(.dark) h5,
+html:not(.dark) h6 {
+  color: #0f172a !important;
+}
+
+html:not(.dark) p {
+  color: #334155 !important;
 }
 
 /* --- DARK MODE CANVAS: High-Contrast Solid Slate Dots Fix --- */
@@ -61,7 +79,7 @@ h4,
 h5,
 h6 {
 	margin: 0 0 0.5rem 0;
-	color: rgb(var(--black));
+	color: #0f172a;
 	line-height: 1.2;
 }
 h1 {

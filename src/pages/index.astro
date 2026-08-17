@@ -398,6 +398,68 @@ const topDebates = [
 					grid-template-columns: 1fr 1fr 1fr;
 				}
 			}
+
+			/* Light mode styles */
+			:global(html:not(.dark)) .hero h1 { color: #0f172a !important; }
+			:global(html:not(.dark)) .hero p { color: #475569 !important; }
+			:global(html:not(.dark)) .hero-archive-link {
+				background: #ffffff !important;
+				border-color: #cbd5e1 !important;
+				color: #1e293b !important;
+			}
+			:global(html:not(.dark)) .hero-archive-link:hover {
+				background: #f1f5f9 !important;
+				color: #0f172a !important;
+			}
+			:global(html:not(.dark)) .section-title {
+				color: #0f172a !important;
+			}
+			:global(html:not(.dark)) .section-header {
+				border-bottom-color: #e2e8f0 !important;
+			}
+			:global(html:not(.dark)) .featured-box,
+			:global(html:not(.dark)) .debate-card,
+			:global(html:not(.dark)) .card-post,
+			:global(html:not(.dark)) .manifesto-box {
+				background: #ffffff !important;
+				border-color: #e2e8f0 !important;
+				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
+			}
+			:global(html:not(.dark)) .featured-title,
+			:global(html:not(.dark)) .debate-card-title,
+			:global(html:not(.dark)) .card-title,
+			:global(html:not(.dark)) .manifesto-title {
+				color: #0f172a !important;
+			}
+			:global(html:not(.dark)) .featured-subtitle,
+			:global(html:not(.dark)) .featured-desc,
+			:global(html:not(.dark)) .card-desc,
+			:global(html:not(.dark)) .manifesto-desc {
+				color: #475569 !important;
+			}
+			:global(html:not(.dark)) .featured-footer,
+			:global(html:not(.dark)) .debate-split-box,
+			:global(html:not(.dark)) .card-footer,
+			:global(html:not(.dark)) .manifesto-grid {
+				border-top-color: #e2e8f0 !important;
+			}
+			:global(html:not(.dark)) .featured-footer {
+				color: #64748b !important;
+			}
+			:global(html:not(.dark)) .debate-split-label {
+				color: #64748b !important;
+			}
+			:global(html:not(.dark)) .debate-split-val {
+				color: #0f172a !important;
+			}
+			:global(html:not(.dark)) .card-cat-pill {
+				background: #f8fafc !important;
+				border-color: #cbd5e1 !important;
+				color: #334155 !important;
+			}
+			:global(html:not(.dark)) .manifesto-grid {
+				color: #334155 !important;
+			}
 		</style>
 	</head>
 	<body class="bg-neutral-950 text-neutral-200 antialiased min-h-screen">
