@@ -104,9 +104,9 @@ slug: "citibank-900-million-checkbox-wire-transfer"
 
 이 사건 이후 월스트리트의 모든 신디케이트 론 계약서에는 오송금 발생 시 무조건 반환해야 한다는 이른바 **'레블론 방지 조항(Revlon Clause)'**이 의무적으로 삽입되었습니다.
 
-## The Archivist's Verdict
+## 아키비스트의 판결
 
-> **The Archivist's Assessment:**  
+> **아키비스트의 분석:**  
 > 사건 이후 씨티은행의 사후 분석 보고서는 언제나처럼 '외주 직원의 매뉴얼 미숙지'라는 개인적 실수로 결론을 몰아가려 했습니다.
 >
 > 하지만 그것은 기업의 비겁한 자기기만입니다.
