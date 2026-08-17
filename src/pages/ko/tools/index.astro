@@ -1,0 +1,64 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+---
+
+<html lang="ko">
+	<head>
+		<BaseHead title="개발자 유틸리티 & 디버깅 도구 모음 | ErrorLedger" description="Unix Epoch 타임스탬프 변환기, JWT 토큰 디코더, Base64 변환기, JSON 포맷터, Cron 표현식 파서, 정규표현식 테스터 등 100% 브라우저 기반 무료 개발 도구." />
+		<style>
+			main { width: 960px; max-width: calc(100% - 2rem); margin: 0 auto; padding: 3em 1rem; }
+			h1 { font-size: 2.25rem; margin-bottom: 0.5rem; color: #1a202c; }
+			p.subtitle { color: #475569; margin-bottom: 2.5rem; font-size: 1.1rem; }
+			
+			.tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+			.tool-card { display: block; text-decoration: none; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.5rem; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+			.tool-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); border-color: #ef4444; }
+			.tool-title { display: block; font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem; }
+			.tool-desc { display: block; font-size: 0.9rem; color: #475569; line-height: 1.5; }
+
+			/* Dark Mode */
+			:global(html.dark) h1 { color: #f8fafc; }
+			:global(html.dark) .subtitle { color: #cbd5e1; }
+			:global(html.dark) .tool-card { background: #1e293b; border-color: #334155; }
+			:global(html.dark) .tool-title { color: #f8fafc; }
+			:global(html.dark) .tool-desc { color: #cbd5e1; }
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>개발자 유틸리티 도구 모음</h1>
+			<p class="subtitle">서버 전송 없이 100% 브라우저(클라이언트) 내부에서 안전하게 실행되는 경량 디버깅 도구 컬렉션입니다.</p>
+
+			<div class="tools-grid">
+				<a href="/ko/tools/epoch-converter" class="tool-card">
+					<span class="tool-title">⏱️ Unix Epoch 시간 변환기</span>
+					<span class="tool-desc">원시 타임스탬프 숫자를 사람이 읽기 쉬운 UTC 및 한국 표준시(KST)로 변환하고 시간 오프셋을 계산합니다.</span>
+				</a>
+				<a href="/ko/tools/jwt-decoder" class="tool-card">
+					<span class="tool-title">🔐 JWT 토큰 디코더</span>
+					<span class="tool-desc">JWT(JSON Web Token)를 브라우저에서 안전하게 디코딩하여 헤더, 페이로드 클레임, 만료 시간을 즉시 확인합니다.</span>
+				</a>
+				<a href="/ko/tools/base64-converter" class="tool-card">
+					<span class="tool-title">📦 Base64 인코더 / 디코더</span>
+					<span class="tool-desc">일반 텍스트를 Base64 문자열로 인코딩하거나, 인증 헤더 및 웹훅 페이로드를 안전하게 디코딩합니다.</span>
+				</a>
+				<a href="/ko/tools/json-formatter" class="tool-card">
+					<span class="tool-title">🧹 JSON 포맷터 & 압축기</span>
+					<span class="tool-desc">복잡하고 읽기 어려운 JSON 데이터를 검증하고, 계층형 트리로 정렬(Prettify)하거나 공백을 제거하여 압축(Minify)합니다.</span>
+				</a>
+				<a href="/ko/tools/cron-parser" class="tool-card">
+					<span class="tool-title">⏰ Cron 표현식 파서</span>
+					<span class="tool-desc">복잡한 Cron 스케줄 표현식을 자연어로 번역하고 다음 작업 실행 주기를 계산합니다.</span>
+				</a>
+				<a href="/ko/tools/regex-tester" class="tool-card">
+					<span class="tool-title">🔍 정규표현식(Regex) 테스터</span>
+					<span class="tool-desc">정규표현식 패턴과 플래그를 실시간 문자열에 매칭하고 백트래킹 취약점을 검증합니다.</span>
+				</a>
+			</div>
+		</main>
+		<Footer />
+	</body>
+</html>

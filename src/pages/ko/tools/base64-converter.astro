@@ -1,0 +1,120 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+---
+
+<html lang="ko">
+	<head>
+		<BaseHead title="Base64 인코더 / 디코더 | ErrorLedger" description="텍스트를 Base64 문자열로 인코딩하거나 Base64를 일반 텍스트로 안전하게 디코딩하는 무료 클라이언트 도구." />
+		<style>
+			main { width: 720px; max-width: calc(100% - 2rem); margin: 0 auto; padding: 3em 1rem; }
+			h1 { font-size: 2.25rem; margin-bottom: 0.5rem; color: #1a202c; }
+			p.subtitle { color: #475569; margin-bottom: 2rem; }
+			
+			.tool-box { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.75rem; margin-bottom: 2rem; }
+			
+			.input-group { margin-bottom: 1.5rem; }
+			label { display: block; font-size: 0.9rem; font-weight: 600; color: #334155; margin-bottom: 0.5rem; }
+			textarea { width: 100%; height: 120px; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-family: monospace; font-size: 0.95rem; outline: none; background: #ffffff; color: #1e293b; resize: vertical; }
+			textarea:focus { border-color: #ef4444; }
+			
+			.action-row { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+			button { background: #0f172a; color: white; border: none; padding: 0.65rem 1.25rem; border-radius: 6px; font-weight: 600; cursor: pointer; }
+			button:hover { background: #ef4444; }
+			.btn-secondary { background: #64748b; }
+			.btn-secondary:hover { background: #475569; }
+
+			.error-display { background: #fef2f2; border: 1px solid #fee2e2; color: #b91c1c; border-radius: 6px; padding: 0.75rem; margin-bottom: 1.5rem; display: none; font-size: 0.9rem; }
+
+			/* Dark Mode */
+			:global(html.dark) h1 { color: #f8fafc; }
+			:global(html.dark) .tool-box { background: #1e293b; border-color: #334155; }
+			:global(html.dark) label { color: #cbd5e1; }
+			:global(html.dark) textarea { background: #0f172a; border-color: #334155; color: #f8fafc; }
+			:global(html.dark) button { background: #334155; }
+			:global(html.dark) button:hover { background: #ef4444; }
+			:global(html.dark) .btn-secondary { background: #475569; }
+			:global(html.dark) .btn-secondary:hover { background: #334155; }
+			:global(html.dark) .error-display { background: #451a03; border-color: #78350f; color: #fef3c7; }
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>Base64 인코더 / 디코더</h1>
+			<p class="subtitle">일반 텍스트를 Base64 포맷으로 변환하거나, Base64 데이터를 읽기 쉬운 텍스트로 안전하게 디코딩합니다.</p>
+
+			<div class="tool-box">
+				<div class="input-group">
+					<label for="input-text">입력 데이터</label>
+					<textarea id="input-text" placeholder="텍스트를 입력하거나 Base64 데이터를 여기에 붙여넣으세요..."></textarea>
+				</div>
+
+				<div class="action-row">
+					<button id="btn-encode">🔒 Base64로 인코딩</button>
+					<button id="btn-decode" class="btn-secondary">🔓 Base64 디코딩</button>
+				</div>
+
+				<div class="error-display" id="converter-error"></div>
+
+				<div class="input-group">
+					<label for="output-text">변환 결과</label>
+					<textarea id="output-text" placeholder="결과가 여기에 표시됩니다..." readonly></textarea>
+				</div>
+			</div>
+		</main>
+		<Footer />
+
+		<script>
+			const inputArea = document.getElementById('input-text') as HTMLTextAreaElement;
+			const outputArea = document.getElementById('output-text') as HTMLTextAreaElement;
+			const errorDiv = document.getElementById('converter-error');
+
+			function showError(msg: string) {
+				if (!errorDiv) return;
+				errorDiv.textContent = msg;
+				errorDiv.style.display = 'block';
+			}
+
+			function clearError() {
+				if (errorDiv) errorDiv.style.display = 'none';
+			}
+
+			// Safe UTF-8 encoding (prevents crashes with Korean/emojis/special characters)
+			document.getElementById('btn-encode')?.addEventListener('click', () => {
+				clearError();
+				const rawText = inputArea.value;
+				if (!rawText) {
+					outputArea.value = '';
+					return;
+				}
+				try {
+					const bytes = new TextEncoder().encode(rawText);
+					const binString = Array.from(bytes, (byte) => String.fromCharCode(byte)).join('');
+					outputArea.value = btoa(binString);
+				} catch (e) {
+					showError('❌ Base64 인코딩 중 오류가 발생했습니다.');
+				}
+			});
+
+			// Safe UTF-8 decoding
+			document.getElementById('btn-decode')?.addEventListener('click', () => {
+				clearError();
+				const base64Text = inputArea.value.trim();
+				if (!base64Text) {
+					outputArea.value = '';
+					return;
+				}
+				try {
+					const binString = atob(base64Text);
+					const bytes = Uint8Array.from(binString, (m) => m.charCodeAt(0));
+					outputArea.value = new TextDecoder().decode(bytes);
+				} catch (e) {
+					showError('❌ 유효하지 않은 Base64 문자열 형식입니다. 입력 데이터에 잘못된 문자가 없는지 확인하세요.');
+					outputArea.value = '';
+				}
+			});
+		</script>
+	</body>
+</html>

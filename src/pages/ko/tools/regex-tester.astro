@@ -1,0 +1,203 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+---
+
+<html lang="ko">
+	<head>
+		<BaseHead title="정규표현식 (Regex) 테스터 & 샌드박스 | ErrorLedger" description="브라우저에서 정규식 패턴과 플래그를 실시간 텍스트와 매칭하고 백트래킹 취약점을 검증하는 무료 클라이언트 도구." />
+		<style>
+			main { width: 960px; max-width: calc(100% - 2rem); margin: 0 auto; padding: 3em 1rem; min-height: 65vh; }
+			h1 { font-size: 2.25rem; margin-bottom: 0.5rem; color: #1a202c; }
+			p.subtitle { color: #475569; margin-bottom: 2.5rem; font-size: 1.1rem; }
+			
+			.tool-container {
+				background: #ffffff;
+				border: 1px solid #e2e8f0;
+				border-radius: 8px;
+				padding: 2rem;
+				box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+			}
+
+			.input-group { margin-bottom: 1.5rem; }
+			label { display: block; font-weight: 700; color: #334155; margin-bottom: 0.5rem; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; }
+			
+			.regex-wrapper {
+				display: flex;
+				align-items: center;
+				background: #f8fafc;
+				border: 1px solid #cbd5e1;
+				border-radius: 6px;
+				padding: 0.5rem 1rem;
+			}
+			.regex-slash { color: #94a3b8; font-weight: 700; font-size: 1.25rem; font-family: monospace; }
+			
+			input[type="text"] {
+				flex: 1;
+				padding: 0.5rem;
+				font-family: ui-monospace, monospace;
+				font-size: 1.1rem;
+				color: #0f172a;
+				background: transparent;
+				border: none;
+				outline: none;
+			}
+			input[type="text"].flags-input {
+				width: 40px;
+				flex: none;
+				text-align: center;
+				color: #3b82f6;
+			}
+
+			textarea {
+				width: 100%;
+				padding: 1rem;
+				font-family: ui-monospace, monospace;
+				font-size: 1rem;
+				color: #0f172a;
+				background: #f8fafc;
+				border: 1px solid #cbd5e1;
+				border-radius: 6px;
+				outline: none;
+				resize: vertical;
+				min-height: 120px;
+			}
+			textarea:focus, .regex-wrapper:focus-within { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+
+			.result-box {
+				background: #f1f5f9;
+				border: 1px solid #cbd5e1;
+				border-radius: 6px;
+				padding: 1.5rem;
+				margin-top: 1.5rem;
+			}
+			.result-header { font-size: 1rem; font-weight: 700; color: #334155; margin-top: 0; margin-bottom: 1rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; }
+			
+			.match-pill {
+				display: inline-block;
+				background: #dcfce7;
+				color: #065f46;
+				border: 1px solid #34d399;
+				padding: 0.25rem 0.5rem;
+				border-radius: 4px;
+				font-family: monospace;
+				margin: 0.25rem;
+				word-break: break-all;
+			}
+			.no-match { color: #64748b; font-style: italic; }
+			.error-text { color: #ef4444; font-weight: 600; }
+
+			/* Dark Mode */
+			:global(html.dark) h1 { color: #f8fafc; }
+			:global(html.dark) .subtitle { color: #cbd5e1; }
+			:global(html.dark) .tool-container { background: #1e293b; border-color: #334155; }
+			:global(html.dark) label { color: #94a3b8; }
+			:global(html.dark) .regex-wrapper { background: #0f172a; border-color: #334155; }
+			:global(html.dark) input[type="text"], :global(html.dark) textarea { color: #f8fafc; background: #0f172a; border-color: #334155; }
+			:global(html.dark) .regex-wrapper:focus-within, :global(html.dark) textarea:focus { border-color: #3b82f6; }
+			:global(html.dark) .result-box { background: #0f172a; border-color: #334155; }
+			:global(html.dark) .result-header { color: #cbd5e1; border-bottom-color: #334155; }
+			:global(html.dark) .match-pill { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border-color: rgba(52, 211, 153, 0.4); }
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>정규표현식 (Regex) 테스터</h1>
+			<p class="subtitle">정규표현식 패턴을 대상 문자열과 실시간으로 매칭하여 일치 항목을 즉시 시각화합니다. 100% 브라우저에서 실행됩니다.</p>
+
+			<div class="tool-container">
+				<div class="input-group">
+					<label>정규표현식 패턴 및 플래그</label>
+					<div class="regex-wrapper">
+						<span class="regex-slash">/</span>
+						<input type="text" id="regex-input" value="오류(?:코드)?|경고(?:메시지)?" placeholder="정규표현식 패턴 입력..." />
+						<span class="regex-slash">/</span>
+						<input type="text" id="flags-input" class="flags-input" value="g" placeholder="gmi" />
+					</div>
+				</div>
+
+				<div class="input-group">
+					<label>테스트할 대상 문자열</label>
+					<textarea id="test-string">부팅 중 심각한 오류코드가 기록되었으며, 이후 경고메시지가 발생했습니다. 다른 오류 이벤트는 없습니다.</textarea>
+				</div>
+
+				<div class="result-box">
+					<p class="result-header">일치하는 매칭 결과 (Matches Found)</p>
+					<div id="match-results">
+						<span class="no-match">입력을 기다리는 중...</span>
+					</div>
+				</div>
+			</div>
+		</main>
+		<Footer />
+
+		<script>
+			const regexInput = document.getElementById('regex-input') as HTMLInputElement;
+			const flagsInput = document.getElementById('flags-input') as HTMLInputElement;
+			const testString = document.getElementById('test-string') as HTMLTextAreaElement;
+			const matchResults = document.getElementById('match-results');
+
+			function testRegex() {
+				if (!matchResults) return;
+
+				const pattern = regexInput.value;
+				const flags = flagsInput.value;
+				const text = testString.value;
+
+				if (!pattern) {
+					matchResults.innerHTML = '<span class="no-match">매칭할 패턴을 입력하세요.</span>';
+					return;
+				}
+
+				try {
+					const re = new RegExp(pattern, flags);
+					
+					// Prevent infinite loop on empty string matches
+					if (re.test("")) {
+						matchResults.innerHTML = '<span class="error-text">경고: 패턴이 빈 문자열과 일치합니다. 무한 루프를 방지하기 위해 중단되었습니다.</span>';
+						return;
+					}
+
+					let matches: string[] = [];
+					
+					if (flags.includes('g')) {
+						const allMatches = text.match(re);
+						matches = allMatches ? Array.from(allMatches) : [];
+					} else {
+						const match = text.match(re);
+						if (match) matches.push(match[0]);
+					}
+
+					if (matches.length === 0) {
+						matchResults.innerHTML = '<span class="no-match">일치하는 항목이 없습니다.</span>';
+					} else {
+						matchResults.innerHTML = matches.map(m => `<span class="match-pill">${escapeHTML(m)}</span>`).join(' ');
+					}
+				} catch (e: any) {
+					matchResults.innerHTML = `<span class="error-text">유효하지 않은 정규표현식입니다: ${e.message}</span>`;
+				}
+			}
+
+			function escapeHTML(str: string) {
+				return str.replace(/[&<>'"]/g, 
+					tag => ({
+						'&': '&amp;',
+						'<': '&lt;',
+						'>': '&gt;',
+						"'": '&#39;',
+						'"': '&quot;'
+					}[tag] || tag)
+				);
+			}
+
+			if (regexInput) regexInput.addEventListener('input', testRegex);
+			if (flagsInput) flagsInput.addEventListener('input', testRegex);
+			if (testString) testString.addEventListener('input', testRegex);
+
+			// Initial evaluation
+			window.addEventListener('DOMContentLoaded', testRegex);
+		</script>
+	</body>
+</html>
