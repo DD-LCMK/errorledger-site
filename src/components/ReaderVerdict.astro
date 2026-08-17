@@ -17,60 +17,58 @@ const {
 } = Astro.props;
 ---
 
-<div class="verdict-container my-12 p-6 md:p-8 rounded-2xl bg-neutral-900/90 border border-neutral-800 shadow-2xl relative overflow-hidden" data-slug={slug}>
-  <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 via-red-500 to-rose-600"></div>
+<div class="verdict-container" data-slug={slug}>
+  <div class="verdict-top-accent"></div>
 
-  <div class="flex items-center gap-3 mb-4">
-    <span class="px-2.5 py-1 text-xs font-mono font-bold uppercase tracking-wider bg-red-500/10 text-red-400 rounded-md border border-red-500/20">
-      Reader Judgment
-    </span>
-    <span class="text-xs text-neutral-400 font-mono">The Ledger Poll</span>
+  <div class="verdict-badge-row">
+    <span class="verdict-badge">Reader Judgment</span>
+    <span class="verdict-badge-sub">The Ledger Poll</span>
   </div>
 
-  <h3 class="text-xl md:text-2xl font-bold text-neutral-100 mb-2">
+  <h3 class="verdict-heading">
     {question}
   </h3>
-  <p class="text-sm text-neutral-400 mb-6">
+  <p class="verdict-subtext">
     Cast your vote to see how other readers evaluated this failure.
   </p>
 
-  <div class="options-list space-y-3" id={`poll-options-${slug}`}>
+  <div class="options-list" id={`poll-options-${slug}`}>
     {options.map((opt, index) => (
       <button
         type="button"
-        class="poll-option-btn w-full text-left p-4 rounded-xl border border-neutral-800 bg-neutral-950/60 hover:bg-neutral-800/60 hover:border-neutral-700 transition-all flex items-center justify-between group cursor-pointer"
+        class="poll-option-btn"
         data-option-id={opt.id}
         data-index={index}
       >
-        <span class="text-sm md:text-base text-neutral-200 group-hover:text-white font-medium">
+        <span class="poll-option-label">
           {opt.label}
         </span>
-        <span class="w-5 h-5 rounded-full border border-neutral-600 flex items-center justify-center group-hover:border-red-400 transition-colors">
-          <span class="w-2.5 h-2.5 rounded-full bg-red-500 opacity-0 group-hover:opacity-50 transition-opacity"></span>
+        <span class="poll-radio-circle">
+          <span class="poll-radio-dot"></span>
         </span>
       </button>
     ))}
   </div>
 
-  <div class="results-view hidden space-y-4" id={`poll-results-${slug}`}>
-    {options.map((opt, index) => (
+  <div class="results-view hidden" id={`poll-results-${slug}`}>
+    {options.map((opt) => (
       <div class="result-bar-wrapper">
-        <div class="flex justify-between text-sm mb-1.5 font-medium">
-          <span class="text-neutral-300">{opt.label}</span>
-          <span class="text-amber-400 font-mono font-bold" id={`pct-${slug}-${opt.id}`}>0%</span>
+        <div class="result-label-row">
+          <span class="result-name">{opt.label}</span>
+          <span class="result-pct" id={`pct-${slug}-${opt.id}`}>0%</span>
         </div>
-        <div class="w-full h-3 bg-neutral-950 rounded-full overflow-hidden border border-neutral-800">
+        <div class="result-track">
           <div
-            class="h-full bg-gradient-to-r from-amber-500 to-red-500 rounded-full transition-all duration-1000 ease-out result-bar"
+            class="result-fill"
             id={`bar-${slug}-${opt.id}`}
             style="width: 0%"
           ></div>
         </div>
       </div>
     ))}
-    <div class="mt-6 pt-4 border-t border-neutral-800/80 flex items-center justify-between text-xs text-neutral-400 font-mono">
+    <div class="results-footer">
       <span id={`total-votes-${slug}`}>Recorded Community Consensus</span>
-      <span class="text-neutral-500">Vote stored in Ledger</span>
+      <span class="results-stored-tag">Vote stored in Ledger</span>
     </div>
   </div>
 </div>
@@ -124,3 +122,168 @@ const {
     }
   })();
 </script>
+
+<style>
+  .verdict-container {
+    margin: 3rem 0;
+    padding: 2rem;
+    border-radius: 16px;
+    background: #171717;
+    border: 1px solid #262626;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .verdict-top-accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #f59e0b, #f43f5e, #e11d48);
+  }
+
+  .verdict-badge-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  .verdict-badge {
+    padding: 0.2rem 0.6rem;
+    font-size: 0.72rem;
+    font-family: ui-monospace, monospace;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: rgba(244, 63, 94, 0.12);
+    color: #fb7185;
+    border-radius: 6px;
+    border: 1px solid rgba(244, 63, 94, 0.25);
+  }
+  .verdict-badge-sub {
+    font-size: 0.75rem;
+    color: #737373;
+    font-family: ui-monospace, monospace;
+  }
+
+  .verdict-heading {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #f5f5f5;
+    margin: 0 0 0.4rem 0;
+    letter-spacing: -0.015em;
+  }
+  .verdict-subtext {
+    font-size: 0.85rem;
+    color: #a3a3a3;
+    margin: 0 0 1.5rem 0;
+  }
+
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .poll-option-btn {
+    width: 100%;
+    text-align: left;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    border: 1px solid #262626;
+    background: #0a0a0a;
+    color: #e5e5e5;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.15s ease;
+  }
+  .poll-option-btn:hover {
+    background: #262626;
+    border-color: #f43f5e;
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+
+  .poll-radio-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid #525252;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-left: 0.75rem;
+  }
+  .poll-option-btn:hover .poll-radio-circle {
+    border-color: #f43f5e;
+  }
+  .poll-radio-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #f43f5e;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+  .poll-option-btn:hover .poll-radio-dot {
+    opacity: 0.7;
+  }
+
+  .results-view {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .result-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+  .result-name { color: #e5e5e5; }
+  .result-pct { color: #f59e0b; font-family: ui-monospace, monospace; font-weight: 700; }
+
+  .result-track {
+    width: 100%;
+    height: 12px;
+    background: #0a0a0a;
+    border: 1px solid #262626;
+    border-radius: 9999px;
+    overflow: hidden;
+  }
+  .result-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #f59e0b, #f43f5e);
+    border-radius: 9999px;
+    transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .results-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    font-family: ui-monospace, monospace;
+    color: #a3a3a3;
+    padding-top: 1rem;
+    margin-top: 0.75rem;
+    border-top: 1px solid #262626;
+  }
+  .results-stored-tag {
+    color: #737373;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+</style>

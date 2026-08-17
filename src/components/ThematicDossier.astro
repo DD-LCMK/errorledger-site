@@ -28,30 +28,124 @@ const {
 } = Astro.props;
 ---
 
-<div class="thematic-dossier-box my-12 p-6 rounded-2xl bg-neutral-900/60 border border-neutral-800 text-neutral-100">
-  <div class="flex items-center gap-2 mb-3">
-    <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">
+<div class="thematic-dossier-box">
+  <div class="dossier-header-row">
+    <span class="dossier-badge">
       🗂️ Thematic Dossier
     </span>
-    <span class="text-xs text-neutral-500 font-mono">Bingeable Investigation Trail</span>
+    <span class="dossier-subtag">Bingeable Investigation Trail</span>
   </div>
 
-  <h4 class="text-lg font-bold text-neutral-100 mb-4">{dossierName}</h4>
+  <h4 class="dossier-title">{dossierName}</h4>
 
-  <div class="space-y-3">
+  <div class="dossier-items-list">
     {items.map((item) => (
-      <a href={`/blog/${item.slug}`} class="block p-3.5 rounded-xl bg-neutral-950/70 border border-neutral-800/80 hover:border-rose-500/50 hover:bg-neutral-900 transition-all group no-underline">
-        <div class="flex items-center justify-between text-xs font-mono text-neutral-500 mb-1">
-          <span class="text-rose-400/80 group-hover:text-rose-400">Next Case File</span>
+      <a href={`/blog/${item.slug}`} class="dossier-card">
+        <div class="dossier-card-meta">
+          <span class="dossier-next-label">Next Case File</span>
           <span>⏱️ {item.read_time} min read</span>
         </div>
-        <div class="text-sm font-bold text-neutral-200 group-hover:text-white mb-1">
+        <div class="dossier-item-title">
           {item.title}
         </div>
-        <div class="text-xs text-neutral-400 leading-relaxed line-clamp-2">
+        <div class="dossier-item-hook">
           {item.hook}
         </div>
       </a>
     ))}
   </div>
 </div>
+
+<style>
+  .thematic-dossier-box {
+    margin: 3rem 0;
+    padding: 1.75rem;
+    border-radius: 16px;
+    background: #171717;
+    border: 1px solid #262626;
+    color: #f5f5f5;
+  }
+
+  .dossier-header-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  .dossier-badge {
+    font-size: 0.72rem;
+    font-family: ui-monospace, monospace;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.12);
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+  }
+  .dossier-subtag {
+    font-size: 0.75rem;
+    color: #737373;
+    font-family: ui-monospace, monospace;
+  }
+
+  .dossier-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 1.25rem 0;
+  }
+
+  .dossier-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .dossier-card {
+    display: block;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    background: #0a0a0a;
+    border: 1px solid #262626;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+  .dossier-card:hover {
+    border-color: #f43f5e;
+    background: #1e1e1e;
+    transform: translateY(-1px);
+  }
+
+  .dossier-card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    font-family: ui-monospace, monospace;
+    color: #737373;
+    margin-bottom: 0.35rem;
+  }
+  .dossier-next-label {
+    color: #fb7185;
+    font-weight: 700;
+  }
+
+  .dossier-item-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #e5e5e5;
+    margin-bottom: 0.25rem;
+    line-height: 1.35;
+  }
+  .dossier-card:hover .dossier-item-title {
+    color: #ffffff;
+  }
+
+  .dossier-item-hook {
+    font-size: 0.82rem;
+    color: #a3a3a3;
+    line-height: 1.45;
+  }
+</style>

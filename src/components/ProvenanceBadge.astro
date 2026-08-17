@@ -13,22 +13,22 @@ const {
 
 const tierConfig: Record<number, { color: string; badge: string; desc: string }> = {
   1: {
-    color: "emerald",
+    color: "#10b981",
     badge: "Tier 1 — Documented Incident",
     desc: "Verified through official records, public filings, primary post-mortems, or corroborated journalism. Zero invented facts."
   },
   2: {
-    color: "amber",
+    color: "#f59e0b",
     badge: "Tier 2 — Direct Submission",
     desc: "First-person account submitted by a participant. Identifying details scrubbed; underlying core events unverified independently."
   },
   3: {
-    color: "indigo",
+    color: "#6366f1",
     badge: "Tier 3 — Editorial Reconstruction",
     desc: "Synthesized from multiple verified accounts. Transitions and non-essential dialogue reconstructed for narrative clarity."
   },
   4: {
-    color: "rose",
+    color: "#f43f5e",
     badge: "Tier 4 — The Fiction Ledger",
     desc: "Speculative dramatization exploring psychological and systemic failure modes in a fictional setting."
   }
@@ -37,21 +37,79 @@ const tierConfig: Record<number, { color: string; badge: string; desc: string }>
 const current = tierConfig[tier] || tierConfig[1];
 ---
 
-<div class="provenance-badge-box mb-8 p-4 rounded-xl bg-neutral-900/60 border border-neutral-800 text-sm">
-  <div class="flex items-center justify-between gap-2 mb-2 flex-wrap">
-    <div class="flex items-center gap-2">
-      <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-      <span class="font-mono text-xs uppercase font-bold text-neutral-200 tracking-wider">
+<div class="provenance-badge-box">
+  <div class="provenance-header-row">
+    <div class="provenance-left">
+      <span class="provenance-indicator" style={`background-color: ${current.color};`}></span>
+      <span class="provenance-title-text">
         {label || current.badge}
       </span>
     </div>
     {source && (
-      <span class="text-xs font-mono text-neutral-400 bg-neutral-950 px-2 py-0.5 rounded border border-neutral-800">
+      <span class="provenance-source-tag">
         Source: {source}
       </span>
     )}
   </div>
-  <p class="text-xs text-neutral-400 leading-relaxed">
+  <p class="provenance-desc">
     {current.desc}
   </p>
 </div>
+
+<style>
+  .provenance-badge-box {
+    margin: 1.5rem 0 2rem 0;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    background: #171717;
+    border: 1px solid #262626;
+  }
+
+  .provenance-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .provenance-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .provenance-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .provenance-title-text {
+    font-family: ui-monospace, monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #e5e5e5;
+    letter-spacing: 0.05em;
+  }
+
+  .provenance-source-tag {
+    font-family: ui-monospace, monospace;
+    font-size: 0.72rem;
+    color: #a3a3a3;
+    background: #0a0a0a;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid #262626;
+  }
+
+  .provenance-desc {
+    font-size: 0.82rem;
+    color: #a3a3a3;
+    margin: 0;
+    line-height: 1.5;
+  }
+</style>

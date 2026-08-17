@@ -75,9 +75,63 @@ const topDebates = [
 			main { width: 1000px; max-width: calc(100% - 2rem); margin: 0 auto; padding: 2em 1rem; }
 			
 			.hero { text-align: center; margin-bottom: 3.5rem; padding: 2rem 0; }
-			.hero h1 { font-size: 3rem; margin-bottom: 0.75rem; letter-spacing: -0.03em; color: #f5f5f5; font-weight: 800; line-height: 1.15; }
+			.hero-pill {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				padding: 0.3rem 0.75rem;
+				border-radius: 9999px;
+				background: rgba(244, 63, 94, 0.1);
+				border: 1px solid rgba(244, 63, 94, 0.25);
+				color: #fb7185;
+				font-size: 0.75rem;
+				font-family: ui-monospace, monospace;
+				font-weight: 700;
+				text-transform: uppercase;
+				letter-spacing: 0.05em;
+				margin-bottom: 1rem;
+			}
+			.hero h1 { font-size: 3rem; margin: 0 0 0.75rem 0; letter-spacing: -0.03em; color: #f5f5f5; font-weight: 800; line-height: 1.15; }
 			.hero h1 span { background: linear-gradient(135deg, #f43f5e, #fb7185); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-			.hero p { font-size: 1.25rem; color: #a3a3a3; max-width: 680px; margin: 0 auto 2rem auto; line-height: 1.6; }
+			.hero p { font-size: 1.2rem; color: #a3a3a3; max-width: 680px; margin: 0 auto 2rem auto; line-height: 1.6; }
+			
+			.hero-btn-row {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 0.85rem;
+				flex-wrap: wrap;
+			}
+			.hero-submit-btn {
+				padding: 0.65rem 1.35rem;
+				border-radius: 12px;
+				background: linear-gradient(135deg, #f43f5e, #e11d48);
+				color: #ffffff;
+				font-weight: 700;
+				font-size: 0.9rem;
+				border: none;
+				box-shadow: 0 4px 15px rgba(244, 63, 94, 0.35);
+				cursor: pointer;
+				transition: transform 0.15s ease;
+			}
+			.hero-submit-btn:hover {
+				transform: translateY(-1px);
+			}
+			.hero-archive-link {
+				padding: 0.65rem 1.35rem;
+				border-radius: 12px;
+				background: #171717;
+				border: 1px solid #262626;
+				color: #d4d4d4;
+				font-weight: 700;
+				font-size: 0.9rem;
+				text-decoration: none;
+				transition: all 0.15s ease;
+			}
+			.hero-archive-link:hover {
+				background: #262626;
+				color: #ffffff;
+			}
 
 			.featured-box {
 				background: #171717;
@@ -92,50 +146,84 @@ const topDebates = [
 				border-color: #f43f5e;
 				transform: translateY(-2px);
 			}
+			.featured-meta-row {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				margin-bottom: 0.75rem;
+			}
+			.category-tag {
+				padding: 0.2rem 0.6rem;
+				border-radius: 6px;
+				background: rgba(244, 63, 94, 0.1);
+				color: #fb7185;
+				border: 1px solid rgba(244, 63, 94, 0.25);
+				font-size: 0.75rem;
+				font-family: ui-monospace, monospace;
+				font-weight: 700;
+				text-transform: uppercase;
+			}
+			.read-time-tag {
+				font-size: 0.75rem;
+				font-family: ui-monospace, monospace;
+				color: #a3a3a3;
+			}
+			.featured-title {
+				font-size: 1.85rem;
+				font-weight: 800;
+				color: #f5f5f5;
+				margin: 0 0 0.5rem 0;
+				line-height: 1.25;
+				transition: color 0.15s ease;
+			}
+			.featured-box:hover .featured-title { color: #fb7185; }
+			.featured-subtitle {
+				color: #a3a3a3;
+				font-size: 1rem;
+				margin: 0 0 1rem 0;
+				line-height: 1.5;
+			}
+			.featured-desc {
+				color: #d4d4d4;
+				font-size: 0.95rem;
+				line-height: 1.6;
+				margin: 0 0 1.5rem 0;
+			}
+			.featured-footer {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding-top: 1rem;
+				border-top: 1px solid #262626;
+				font-size: 0.75rem;
+				font-family: ui-monospace, monospace;
+				color: #a3a3a3;
+			}
+			.open-file-link {
+				color: #fb7185;
+				font-weight: 700;
+			}
 
 			.section-header {
 				display: flex;
 				justify-content: space-between;
 				align-items: center;
-				margin-bottom: 1.75rem;
+				margin-bottom: 1.5rem;
 				padding-bottom: 0.75rem;
 				border-bottom: 1px solid #262626;
 			}
 			.section-title {
-				font-size: 1.25rem;
+				font-size: 1.15rem;
 				font-weight: 800;
 				color: #f5f5f5;
 				text-transform: uppercase;
 				letter-spacing: 0.05em;
 				font-family: ui-monospace, monospace;
 			}
-
-			.grid-posts {
-				display: grid;
-				grid-template-columns: 1fr;
-				gap: 1.5rem;
-			}
-			@media (min-width: 768px) {
-				.grid-posts {
-					grid-template-columns: 1fr 1fr;
-				}
-			}
-
-			.card-post {
-				background: #171717;
-				border: 1px solid #262626;
-				border-radius: 12px;
-				padding: 1.5rem;
-				display: flex;
-				flex-direction: column;
-				justify-content: space-between;
-				text-decoration: none;
-				transition: all 0.2s ease;
-			}
-			.card-post:hover {
-				border-color: #f43f5e;
-				transform: translateY(-2px);
-				box-shadow: 0 4px 20px rgba(244, 63, 94, 0.1);
+			.section-sub {
+				font-size: 0.75rem;
+				font-family: ui-monospace, monospace;
+				color: #f59e0b;
 			}
 
 			.debates-grid {
@@ -164,6 +252,106 @@ const topDebates = [
 				border-color: #f59e0b;
 				transform: translateY(-2px);
 			}
+			.debate-card-header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				font-size: 0.75rem;
+				font-family: ui-monospace, monospace;
+				color: #737373;
+				margin-bottom: 0.5rem;
+			}
+			.debate-cat { color: #f59e0b; font-weight: 700; text-transform: uppercase; }
+			.debate-card-title {
+				font-size: 0.95rem;
+				font-weight: 700;
+				color: #f5f5f5;
+				margin: 0 0 1rem 0;
+				line-height: 1.35;
+			}
+			.debate-split-box {
+				padding-top: 0.75rem;
+				border-top: 1px solid #262626;
+				font-size: 0.75rem;
+				font-family: ui-monospace, monospace;
+			}
+			.debate-split-label { color: #737373; margin-bottom: 0.2rem; font-size: 0.7rem; }
+			.debate-split-val { color: #e5e5e5; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+			.grid-posts {
+				display: grid;
+				grid-template-columns: 1fr;
+				gap: 1.25rem;
+				margin-bottom: 3.5rem;
+			}
+			@media (min-width: 768px) {
+				.grid-posts {
+					grid-template-columns: 1fr 1fr;
+				}
+			}
+
+			.card-post {
+				background: #171717;
+				border: 1px solid #262626;
+				border-radius: 12px;
+				padding: 1.5rem;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				text-decoration: none;
+				transition: all 0.2s ease;
+			}
+			.card-post:hover {
+				border-color: #f43f5e;
+				transform: translateY(-2px);
+				box-shadow: 0 4px 20px rgba(244, 63, 94, 0.15);
+			}
+			.card-meta-top {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				margin-bottom: 0.6rem;
+			}
+			.card-cat-pill {
+				padding: 0.15rem 0.5rem;
+				border-radius: 4px;
+				background: #0a0a0a;
+				color: #d4d4d4;
+				border: 1px solid #262626;
+				font-size: 0.72rem;
+				font-family: ui-monospace, monospace;
+				font-weight: 600;
+			}
+			.card-readtime {
+				font-size: 0.72rem;
+				font-family: ui-monospace, monospace;
+				color: #737373;
+			}
+			.card-title {
+				font-size: 1.15rem;
+				font-weight: 700;
+				color: #f5f5f5;
+				margin: 0 0 0.5rem 0;
+				line-height: 1.35;
+			}
+			.card-post:hover .card-title { color: #fb7185; }
+			.card-desc {
+				font-size: 0.85rem;
+				color: #a3a3a3;
+				line-height: 1.5;
+				margin: 0 0 1rem 0;
+			}
+			.card-footer {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding-top: 0.75rem;
+				border-top: 1px solid #262626;
+				font-size: 0.75rem;
+				font-family: ui-monospace, monospace;
+				color: #737373;
+			}
+			.card-readlink { color: #fb7185; }
 
 			.manifesto-box {
 				background: #171717;
@@ -173,24 +361,60 @@ const topDebates = [
 				padding: 2rem;
 				margin-top: 4rem;
 			}
+			.manifesto-tag {
+				font-family: ui-monospace, monospace;
+				font-size: 0.75rem;
+				color: #fb7185;
+				font-weight: 700;
+				text-transform: uppercase;
+				letter-spacing: 0.05em;
+				margin-bottom: 0.5rem;
+			}
+			.manifesto-title {
+				font-size: 1.35rem;
+				font-weight: 800;
+				color: #ffffff;
+				margin: 0 0 0.75rem 0;
+			}
+			.manifesto-desc {
+				font-size: 0.9rem;
+				color: #a3a3a3;
+				line-height: 1.6;
+				margin: 0 0 1.5rem 0;
+			}
+			.manifesto-grid {
+				display: grid;
+				grid-template-columns: 1fr;
+				gap: 1rem;
+				padding-top: 1rem;
+				border-top: 1px solid #262626;
+				font-size: 0.75rem;
+				font-family: ui-monospace, monospace;
+				color: #d4d4d4;
+			}
+			@media (min-width: 768px) {
+				.manifesto-grid {
+					grid-template-columns: 1fr 1fr 1fr;
+				}
+			}
 		</style>
 	</head>
 	<body class="bg-neutral-950 text-neutral-200 antialiased min-h-screen">
 		<Header />
 		<main>
 			<section class="hero">
-				<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-mono font-bold uppercase tracking-wider mb-4">
+				<div class="hero-pill">
 					The Human Failure Engine
 				</div>
 				<h1>Every Mistake<br/><span>Leaves a Story.</span></h1>
 				<p>Real failures. Strange decisions. Unbelievable consequences. An investigative archive exploring what happens when human psychology and complex systems collide.</p>
 				
-				<div class="flex items-center justify-center gap-3 flex-wrap">
-					<button class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-sm shadow-lg shadow-rose-600/30 transition-all cursor-pointer" data-open-submit-modal>
+				<div class="hero-btn-row">
+					<button class="hero-submit-btn" data-open-submit-modal>
 						+ Submit an Incident
 					</button>
-					<a href="/blog" class="px-5 py-2.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-neutral-300 font-bold text-sm transition-all no-underline">
-						Explore Full Archive →
+					<a href="/blog" class="hero-archive-link">
+						Explore Full Archive &rarr;
 					</a>
 				</div>
 			</section>
@@ -200,31 +424,30 @@ const topDebates = [
 				<section>
 					<div class="section-header">
 						<span class="section-title">⚡ The Lead Investigation</span>
-						<span class="text-xs font-mono text-neutral-400">Featured Case File</span>
+						<span class="section-sub">Featured Case File</span>
 					</div>
-					<a href={`/blog/${featuredPost.data.shortenedSlug || featuredPost.slug}`} class="block no-underline">
+					<a href={`/blog/${featuredPost.data.shortenedSlug || featuredPost.slug}`} style="text-decoration: none;">
 						<div class="featured-box">
-							<div class="flex items-center gap-2 mb-3">
-								<span class="px-2.5 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20 text-xs font-mono font-bold uppercase">
+							<div class="featured-meta-row">
+								<span class="category-tag">
 									{categoryIcons[featuredPost.data.category] || featuredPost.data.category}
 								</span>
-								<span class="text-neutral-500 text-xs font-mono">•</span>
-								<span class="text-xs font-mono text-neutral-400">⏱️ {featuredPost.data.read_time_minutes || 6} min read</span>
+								<span class="read-time-tag">⏱️ {featuredPost.data.read_time_minutes || 6} min read</span>
 							</div>
-							<h2 class="text-2xl md:text-3xl font-extrabold text-neutral-100 mb-3 hover:text-rose-400 transition-colors">
+							<h2 class="featured-title">
 								{featuredPost.data.title}
 							</h2>
 							{featuredPost.data.subtitle && (
-								<p class="text-neutral-400 text-base mb-4 font-normal">
+								<p class="featured-subtitle">
 									{featuredPost.data.subtitle}
 								</p>
 							)}
-							<p class="text-neutral-300 text-sm leading-relaxed mb-6">
+							<p class="featured-desc">
 								{featuredPost.data.description}
 							</p>
-							<div class="flex items-center justify-between pt-4 border-t border-neutral-800 text-xs font-mono text-neutral-400">
+							<div class="featured-footer">
 								<span>Verified: {featuredPost.data.provenance_label || "Documented Incident"}</span>
-								<span class="text-rose-400 font-bold">Open Incident File →</span>
+								<span class="open-file-link">Open Incident File &rarr;</span>
 							</div>
 						</div>
 					</a>
@@ -235,23 +458,23 @@ const topDebates = [
 			<section>
 				<div class="section-header">
 					<span class="section-title">⚖️ Most Debated Verdicts</span>
-					<span class="text-xs font-mono text-amber-400">Divided Community Consensus</span>
+					<span class="section-sub">Divided Community Consensus</span>
 				</div>
 				<div class="debates-grid">
 					{topDebates.map((item) => (
 						<a href={`/blog/${item.slug}`} class="debate-card">
 							<div>
-								<div class="flex items-center justify-between text-xs font-mono text-neutral-500 mb-2">
-									<span class="uppercase font-bold text-amber-400">{item.category}</span>
+								<div class="debate-card-header">
+									<span class="debate-cat">{item.category}</span>
 									<span>{item.votes}</span>
 								</div>
-								<h4 class="text-sm font-bold text-neutral-100 mb-3 leading-snug hover:text-amber-400 transition-colors">
+								<h4 class="debate-card-title">
 									{item.title}
 								</h4>
 							</div>
-							<div class="pt-3 border-t border-neutral-800 text-xs font-mono text-neutral-400">
-								<div class="text-[11px] text-neutral-500 mb-1">Current Split:</div>
-								<div class="text-neutral-300 font-semibold truncate">{item.split}</div>
+							<div class="debate-split-box">
+								<div class="debate-split-label">Current Split:</div>
+								<div class="debate-split-val">{item.split}</div>
 							</div>
 						</a>
 					))}
@@ -260,31 +483,31 @@ const topDebates = [
 
 			<!-- The Ledger Grid -->
 			{recentPosts.length > 0 && (
-				<section class="mb-16">
+				<section>
 					<div class="section-header">
 						<span class="section-title">📂 The Ledger Archive</span>
-						<span class="text-xs font-mono text-neutral-400">{posts.length} Documented Records</span>
+						<span class="section-sub">{posts.length} Documented Records</span>
 					</div>
 					<div class="grid-posts">
 						{recentPosts.map((post) => (
 							<a href={`/blog/${post.data.shortenedSlug || post.slug}`} class="card-post">
 								<div>
-									<div class="flex items-center gap-2 mb-2">
-										<span class="px-2 py-0.5 rounded bg-neutral-900 text-neutral-300 border border-neutral-800 text-xs font-mono font-medium">
+									<div class="card-meta-top">
+										<span class="card-cat-pill">
 											{categoryIcons[post.data.category] || post.data.category}
 										</span>
-										<span class="text-xs font-mono text-neutral-500">⏱️ {post.data.read_time_minutes || 5}m</span>
+										<span class="card-readtime">⏱️ {post.data.read_time_minutes || 5}m</span>
 									</div>
-									<h3 class="text-lg font-bold text-neutral-100 mb-2 leading-snug hover:text-rose-400 transition-colors">
+									<h3 class="card-title">
 										{post.data.title}
 									</h3>
-									<p class="text-xs text-neutral-400 line-clamp-3 mb-4 leading-relaxed">
+									<p class="card-desc">
 										{post.data.description}
 									</p>
 								</div>
-								<div class="flex items-center justify-between pt-3 border-t border-neutral-800/80 text-xs font-mono text-neutral-500">
+								<div class="card-footer">
 									<FormattedDate date={post.data.pubDate || new Date()} />
-									<span class="text-rose-400">Read Story →</span>
+									<span class="card-readlink">Read Story &rarr;</span>
 								</div>
 							</a>
 						))}
@@ -293,17 +516,15 @@ const topDebates = [
 			)}
 
 			<section class="manifesto-box">
-				<div class="flex items-center gap-2 text-xs font-mono text-rose-400 font-bold uppercase tracking-wider mb-2">
-					<span>The ErrorLedger Ethos</span>
-				</div>
-				<h3 class="text-xl font-bold text-neutral-100 mb-3">AI answers questions. We tell you what happened.</h3>
-				<p class="text-sm text-neutral-400 leading-relaxed mb-4">
+				<div class="manifesto-tag">The ErrorLedger Ethos</div>
+				<h3 class="manifesto-title">AI answers questions. We tell you what happened.</h3>
+				<p class="manifesto-desc">
 					Every entry in the Ledger is an investigation into the real mechanics of failure. We deconstruct the psychology of bad decisions, the systemic traps of corporate bureaucracy, and the moments where human rationalization met catastrophic reality.
 				</p>
-				<div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-neutral-800 text-xs font-mono text-neutral-300">
-					<div>✓ <strong>Strict Provenance:</strong> Clear demarcation between documented records and reconstructions.</div>
-					<div>✓ <strong>The Archivist’s Verdict:</strong> Systemic root-cause analysis beyond superficial blame.</div>
-					<div>✓ <strong>Reader Judgment:</strong> Real community voting on moral and operational responsibility.</div>
+				<div class="manifesto-grid">
+					<div>&#10003; <strong>Strict Provenance:</strong> Clear demarcation between documented records and reconstructions.</div>
+					<div>&#10003; <strong>The Archivist’s Verdict:</strong> Systemic root-cause analysis beyond superficial blame.</div>
+					<div>&#10003; <strong>Reader Judgment:</strong> Real community voting on moral and operational responsibility.</div>
 				</div>
 			</section>
 		</main>
