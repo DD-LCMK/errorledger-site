@@ -394,3 +394,22 @@ html.dark .incident-summary-box li {
 html.dark .incident-summary-box li strong {
 	color: #f8fafc !important;
 }
+
+/* --- Global Scrollbar Suppression for Navigation & Sidebars --- */
+.category-subnav-container,
+.category-subnav-inner,
+.article-right-sidebar,
+.portal-right-sidebar,
+.archive-right-sidebar {
+	scrollbar-width: none !important;
+	-ms-overflow-style: none !important;
+}
+.category-subnav-container::-webkit-scrollbar,
+.category-subnav-inner::-webkit-scrollbar,
+.article-right-sidebar::-webkit-scrollbar,
+.portal-right-sidebar::-webkit-scrollbar,
+.archive-right-sidebar::-webkit-scrollbar {
+	display: none !important;
+	width: 0 !important;
+	height: 0 !important;
+}

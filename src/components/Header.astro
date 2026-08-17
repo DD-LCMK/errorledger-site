@@ -336,11 +336,13 @@ const categories = [
 		padding: 0.35rem 0 0.6rem 0;
 		border-top: 1px solid #1f1f1f;
 		overflow-x: auto;
-		scrollbar-width: none;
-		-ms-overflow-style: none;
+		scrollbar-width: none !important;
+		-ms-overflow-style: none !important;
 	}
 	.category-subnav-container::-webkit-scrollbar {
-		display: none;
+		display: none !important;
+		width: 0 !important;
+		height: 0 !important;
 	}
 	.category-subnav-inner {
 		display: flex;

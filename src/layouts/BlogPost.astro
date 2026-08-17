@@ -415,6 +415,13 @@ const rankedCases = isKorean ? [
 					top: 5.5rem;
 					max-height: calc(100vh - 7rem);
 					overflow-y: auto;
+					scrollbar-width: none !important;
+					-ms-overflow-style: none !important;
+				}
+				.article-right-sidebar::-webkit-scrollbar {
+					display: none !important;
+					width: 0 !important;
+					height: 0 !important;
 				}
 			}
 
