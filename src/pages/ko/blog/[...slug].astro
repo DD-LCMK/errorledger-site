@@ -20,6 +20,6 @@ const post = Astro.props;
 const { Content } = await render(post);
 ---
 
-<BlogPost {...post.data}>
+<BlogPost {...post.data} lang="ko" slug={`ko/${post.data.slug || post.id}`}>
 	<Content />
 </BlogPost>

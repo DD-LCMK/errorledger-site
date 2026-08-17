@@ -8,7 +8,7 @@ interface Props {
 }
 
 const {
-  duration = "2:30",
+  duration = "1:15",
   title = "Incident Dispatch Overview",
   lang = "en",
   slug = "",
@@ -29,7 +29,7 @@ const isKorean = lang === 'ko';
     </button>
     <div class="dispatch-meta">
       <div class="dispatch-tag-row">
-        <span class="dispatch-tag">{isKorean ? "아키비스트의 오디오 브리핑" : "The Archivist's Audio Dispatch"}</span>
+        <span class="dispatch-tag">{isKorean ? "60초 오디오 브리핑" : "60-Second Audio Brief"}</span>
         <span class="dispatch-voice-tag" id="dispatch-quality-badge">{isKorean ? "🎙️ 스튜디오 AI 보이스" : "🎙️ Studio Neural Voice"}</span>
       </div>
       <div class="dispatch-title">{title}</div>
@@ -115,11 +115,16 @@ const isKorean = lang === 'ko';
     });
 
     function getArticleText() {
+      // Prioritize the concise 60-Second Executive Summary
+      const summaryBox = document.querySelector('.executive-summary-content');
+      if (summaryBox && summaryBox.innerText.trim().length > 10) {
+        return summaryBox.innerText.trim();
+      }
       const article = document.querySelector('article .prose');
       if (!article) return '';
       const elements = Array.from(article.querySelectorAll('h1, h2, p:not(.article-subtitle)'))
         .filter(el => !el.closest('#verdict-anchor') && !el.closest('.provenance-badge-box'))
-        .slice(0, 7);
+        .slice(0, 4);
       return elements.map(el => el.innerText.trim()).filter(Boolean).join('. ');
     }
 

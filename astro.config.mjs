@@ -3,8 +3,6 @@
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig, fontProviders } from 'astro/config';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
 
 // https://astro.build/config
 export default defineConfig({
@@ -17,10 +15,6 @@ export default defineConfig({
 	// RESOLVES P0 ISSUE: Redirects legacy crawlers to the correct Astro sitemap index
 	redirects: {
 		'/sitemap.xml': '/sitemap-index.xml'
-	},
-	markdown: {
-		remarkPlugins: [remarkMath],
-		rehypePlugins: [rehypeKatex],
 	},
 	integrations: [
 		mdx(), 

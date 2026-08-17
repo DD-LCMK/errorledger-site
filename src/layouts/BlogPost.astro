@@ -48,6 +48,7 @@ const {
 	provenance_tier = 1,
 	provenance_label = "Documented Incident",
 	provenance_source = "Court Filings & Public Records",
+	archivist_summary,
 	verdict_question = "Who was primarily responsible for this disaster?",
 	verdict_source,
 	verdict_options = [
@@ -58,7 +59,7 @@ const {
 	]
 } = Astro.props;
 
-const isKorean = lang === 'ko';
+const isKorean = lang === 'ko' || slug.startsWith('ko/') || (Astro.url ? Astro.url.pathname.startsWith('/ko') : false);
 const seoTitle = meta_title || `${title} | ${SITE_TITLE}`;
 const cleanSlug = slug.replace(/^ko\//, '');
 const displayReadTime = read_time_minutes || 6;
@@ -594,6 +595,59 @@ const rankedCases = isKorean ? [
 				background: #fb7185;
 			}
 
+			/* Executive Summary Card */
+			.executive-summary-card {
+				background: #141414;
+				border: 1px solid #262626;
+				border-left: 3px solid #f43f5e;
+				border-radius: 10px;
+				padding: 1.15rem 1.35rem;
+				margin: 1.5rem 0 2rem 0;
+			}
+			.summary-header-row {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				margin-bottom: 0.65rem;
+				flex-wrap: wrap;
+				gap: 0.5rem;
+			}
+			.summary-badge {
+				font-family: ui-monospace, monospace;
+				font-size: 0.72rem;
+				font-weight: 700;
+				text-transform: uppercase;
+				color: #fb7185;
+				background: rgba(244, 63, 94, 0.1);
+				padding: 0.15rem 0.45rem;
+				border-radius: 4px;
+				border: 1px solid rgba(244, 63, 94, 0.25);
+			}
+			.summary-audio-indicator {
+				font-size: 0.7rem;
+				font-family: ui-monospace, monospace;
+				color: #737373;
+			}
+			.executive-summary-content {
+				font-size: 0.95rem;
+				line-height: 1.6;
+				color: #d4d4d4;
+				margin: 0 !important;
+				font-style: italic;
+			}
+
+			:global(html:not(.dark)) .executive-summary-card {
+				background: #f8fafc !important;
+				border-color: #e2e8f0 !important;
+				border-left-color: #f43f5e !important;
+			}
+			:global(html:not(.dark)) .executive-summary-content {
+				color: #334155 !important;
+			}
+			:global(html:not(.dark)) .summary-audio-indicator {
+				color: #64748b !important;
+			}
+
 			/* High-Contrast Light Mode */
 			:global(html:not(.dark)) body {
 				background: #ffffff;
@@ -701,6 +755,19 @@ const rankedCases = isKorean ? [
 
 								<!-- Simulated Audio Dispatch Player -->
 								<AudioDispatch title={title} duration={`${displayReadTime - 2 || 3}:45`} lang={lang} slug={cleanSlug} audioUrl={`/audio/${lang}/${cleanSlug}.mp3`} />
+
+								<!-- 60-Second Incident Executive Summary Box -->
+								{(archivist_summary || description) && (
+									<div class="executive-summary-card">
+										<div class="summary-header-row">
+											<span class="summary-badge">⚡ {isKorean ? "60초 사건 핵심 브리핑" : "60-Second Executive Summary"}</span>
+											<span class="summary-audio-indicator">🎙️ {isKorean ? "오디오 브리핑 스크립트" : "Audio Dispatch Script"}</span>
+										</div>
+										<p class="executive-summary-content">
+											{archivist_summary || description}
+										</p>
+									</div>
+								)}
 							</>
 						)}
 
