@@ -40,31 +40,37 @@ verdict_options:
 tags: ["financial-disaster", "fat-finger", "ghost-shares", "wall-street", "systemic-failure"]
 ---
 
-At 9:30 AM on Friday, April 6, 2018, an employee at Samsung Securities sat down at their workstation in Seoul's financial district to execute what should have been an entirely unremarkable administrative batch job.
+At 9:31 AM on Friday, April 6, 2018, ordinary office workers across Seoul’s financial district opened their mobile trading apps and discovered personal account balances worth tens of millions of dollars.
 
-The task was simple: pay out the annual dividend of **1,000 South Korean won** (approximately $0.93 USD) per share to 2,018 employee shareholders under the company’s Employee Stock Ownership Plan. The total cash payout was supposed to be approximately **2.8 billion won** ($2.6 million USD).
+The money wasn’t real.
 
-Instead, the clerk clicked the wrong item in a drop-down field, selecting **"shares"** instead of **"cash (won)"**.
+The shares weren’t real either.
 
-With a single confirmation click, the system did not route 2.8 billion won to employee bank accounts. It credited **2,811,077,000 new shares of Samsung Securities common stock** directly into employee brokerage accounts.
+The system just hadn’t noticed yet.
+
+Minutes earlier, an administrative clerk at Samsung Securities had sat down to execute what should have been an entirely unremarkable quarterly batch job: distributing annual dividends of **1,000 South Korean won** (approximately $0.93 USD) per share to 2,018 employee shareholders under the company’s Employee Stock Ownership Plan. The total planned cash payout was **2.8 billion won** ($2.6 million USD).
+
+Instead, the clerk clicked the wrong item in a drop-down menu, selecting **"shares"** instead of **"cash (won)"**.
+
+With a single confirmation click, the internal trading software did not route $2.6 million in cash. It instantly credited **2,811,077,000 newly minted shares of Samsung Securities common stock** directly into employee brokerage accounts.
 
 At that morning’s market price, those phantom shares were worth **112.4 trillion won—approximately $105 billion USD**.
 
-Samsung Securities only had 89.3 million total shares in existence. A routine spreadsheet typo had just multiplied the company’s entire circulating share count by **31 times over**, conjuring an asset pool equal to roughly 6% of South Korea’s entire annual GDP out of pure digital vapor.
+Samsung Securities only had 89.3 million real shares in total existence. A routine spreadsheet typo had multiplied the company’s circulating share count by **31 times over**, conjuring an asset pool equal to roughly 6% of South Korea’s entire annual GDP out of pure digital vapor.
 
 ---
 
 ## The System That Believed in Miracles
 
-In any modern banking or financial platform, attempting to create assets that do not exist is supposed to trigger immediate database constraint violations. If a vault contains $10 million, the ledger cannot deliver $100 billion without an inventory reconciliation failure.
+In any modern banking platform, attempting to disburse assets that do not exist is supposed to trigger immediate database constraint violations. If a vault holds $10 million, the ledger cannot deliver $100 billion without an inventory reconciliation failure.
 
-At Samsung Securities, however, the employee stock settlement module had no connection to actual share registry verification.
+At Samsung Securities, however, the employee stock settlement module had no connection to actual share registry verification. The system had no way to ask the simplest possible question:
 
-The software accepted the numerical input, assumed the shares were valid, and instantaneously updated the internal ledger balances of 2,018 employees. Within seconds, rank-and-file employees, managers, and junior traders logged into their mobile brokerage apps and saw balances exceeding **$50 million to $100 million USD** sitting in their personal trading accounts.
+> *"Do these shares actually exist?"*
 
-For a few fleeting minutes, ordinary office workers were on paper among the richest individuals on the Korean peninsula.
+The software accepted the numerical input, assumed the shares were valid, and instantaneously updated the internal ledger balances of 2,018 employees. Within seconds, junior traders, office assistants, and managers saw balances exceeding **$50 million to $100 million USD** sitting live in their personal trading windows.
 
-Then the human instinct took over.
+The evidence does not record what was said in those office cubicles at that exact second. It records what happened five minutes later.
 
 ---
 
