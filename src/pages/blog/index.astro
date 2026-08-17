@@ -7,7 +7,7 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
 import { getCollection } from 'astro:content';
 
 const allPosts = await getCollection('blog');
-const enPosts = allPosts.filter(p => !p.id.startsWith('ko/') && (p.data.lang || 'en') === 'en');
+const enPosts = allPosts.filter(p => !p.id.startsWith('ko/') && p.data.lang !== 'ko');
 
 const posts = enPosts.sort((a, b) => {
 	const dateA = a.data.pubDate ? new Date(a.data.pubDate).valueOf() : 0;

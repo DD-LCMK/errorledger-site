@@ -7,7 +7,7 @@ import { SITE_TITLE } from '../../consts';
 import { getCollection } from 'astro:content';
 
 const allPosts = await getCollection('blog');
-const koPosts = allPosts.filter(p => p.data.lang === 'ko');
+const koPosts = allPosts.filter(p => p.id.startsWith('ko/') || p.data.lang === 'ko');
 
 // Sort by date (newest first)
 const posts = koPosts.sort((a, b) => {
@@ -47,36 +47,6 @@ const topRankedPosts = [
 		reads: "29.4k 조회",
 		votes: "2,890표",
 		tag: "⚖️ 논쟁중"
-	}
-];
-
-const topDebates = [
-	{
-		title: "금요일 아침, 전 세계 850만 대의 컴퓨터를 멈춘 14KB짜리 업데이트",
-		slug: "the-friday-update-that-broke-the-world",
-		split: "48% 크라우드스트라이크 vs 32% 마이크로소프트 구조",
-		votes: "1,421표",
-		category: "기업재난",
-		splitPctA: 48,
-		splitPctB: 32
-	},
-	{
-		title: "프로덕션 DB를 날리고 인턴에게 뒤집어씌운 시니어 개발자",
-		slug: "deleted-production-database-blamed-intern",
-		split: "54% 악의적 은폐 vs 46% 회사의 구조적 문제",
-		votes: "2,890표",
-		category: "직장참사",
-		splitPctA: 54,
-		splitPctB: 46
-	},
-	{
-		title: "나이트 캐피털의 6,000억 원짜리 버그: 45분 만에 끝난 월스트리트의 비극",
-		slug: "knight-capital-trading-glitch-45-minutes",
-		split: "61% QA 검증 부실 vs 39% 방치된 레거시 코드",
-		votes: "3,110표",
-		category: "금융재난",
-		splitPctA: 61,
-		splitPctB: 39
 	}
 ];
 
@@ -739,40 +709,12 @@ const categoryIcons: Record<string, string> = {
 						</section>
 					)}
 
-					<!-- Debate Arena (Live Poll Splits) -->
-					<section id="debates-section">
-						<div class="stream-section-header">
-							<span class="section-title-bold">⚖️ 독자 판결 논쟁실</span>
-							<span class="section-subtitle-tag">팽팽하게 갈린 독자 여론</span>
-						</div>
-						<div class="debates-stream-grid">
-							{topDebates.map((item) => (
-								<a href={`/ko/blog/${item.slug}`} class="debate-portal-card">
-									<div>
-										<div class="debate-card-top">
-											<span class="debate-cat-label">{item.category}</span>
-											<span>{item.votes}</span>
-										</div>
-										<h4 class="debate-card-title">{item.title}</h4>
-									</div>
-									<div class="debate-bar-wrapper">
-										<div class="debate-split-desc">{item.split}</div>
-										<div class="debate-visual-bar">
-											<div class="bar-fill-a" style={`width: ${item.splitPctA}%`}></div>
-											<div class="bar-fill-b" style={`width: ${item.splitPctB}%`}></div>
-										</div>
-									</div>
-								</a>
-							))}
-						</div>
-					</section>
-
 					<!-- Chronological Ledger Incidents -->
 					{recentPosts.length > 0 && (
 						<section>
 							<div class="stream-section-header">
 								<span class="section-title-bold">📂 전체 사건 보관소</span>
-								<span class="section-subtitle-tag">{posts.length}개 공식 문서 기록</span>
+								<span class="section-subtitle-tag">{posts.length}개 공식 문서 기록 ({recentPosts.length}개 보관)</span>
 							</div>
 							<div class="ledger-posts-grid">
 								{recentPosts.map((post) => (

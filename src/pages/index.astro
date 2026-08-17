@@ -7,7 +7,7 @@ import { SITE_TITLE } from '../consts';
 import { getCollection } from 'astro:content';
 
 const allPosts = await getCollection('blog');
-const enPosts = allPosts.filter(p => (p.data.lang || 'en') === 'en');
+const enPosts = allPosts.filter(p => !p.id.startsWith('ko/') && p.data.lang !== 'ko');
 
 // Sort by date (newest first)
 const posts = enPosts.sort((a, b) => {
@@ -47,36 +47,6 @@ const topRankedPosts = [
 		reads: "29.4k reads",
 		votes: "2,890 votes",
 		tag: "⚖️ Debated"
-	}
-];
-
-const topDebates = [
-	{
-		title: "The Friday Morning Update That Took Down 8.5 Million Computers",
-		slug: "the-friday-update-that-broke-the-world",
-		split: "48% CrowdStrike vs 32% Microsoft OS Architecture",
-		votes: "1,421 votes",
-		category: "Corporate",
-		splitPctA: 48,
-		splitPctB: 32
-	},
-	{
-		title: "He Deleted the Production Database and Let the Intern Take the Fall",
-		slug: "deleted-production-database-blamed-intern",
-		split: "54% Malicious Sabotage vs 46% Systemic Culture",
-		votes: "2,890 votes",
-		category: "Workplace",
-		splitPctA: 54,
-		splitPctB: 46
-	},
-	{
-		title: "The $440M Knight Capital Trading Glitch: 45 Minutes of Algorithmic Ruin",
-		slug: "knight-capital-trading-glitch-45-minutes",
-		split: "61% QA Oversight vs 39% Rogue Legacy Code",
-		votes: "3,110 votes",
-		category: "Finance",
-		splitPctA: 61,
-		splitPctB: 39
 	}
 ];
 ---
@@ -733,40 +703,12 @@ const topDebates = [
 						</section>
 					)}
 
-					<!-- Debate Arena (Live Poll Splits) -->
-					<section id="debates-section">
-						<div class="stream-section-header">
-							<span class="section-title-bold">⚖️ Reader Verdict Debates</span>
-							<span class="section-subtitle-tag">Divided Community Consensus</span>
-						</div>
-						<div class="debates-stream-grid">
-							{topDebates.map((item) => (
-								<a href={`/blog/${item.slug}`} class="debate-portal-card">
-									<div>
-										<div class="debate-card-top">
-											<span class="debate-cat-label">{item.category}</span>
-											<span>{item.votes}</span>
-										</div>
-										<h4 class="debate-card-title">{item.title}</h4>
-									</div>
-									<div class="debate-bar-wrapper">
-										<div class="debate-split-desc">{item.split}</div>
-										<div class="debate-visual-bar">
-											<div class="bar-fill-a" style={`width: ${item.splitPctA}%`}></div>
-											<div class="bar-fill-b" style={`width: ${item.splitPctB}%`}></div>
-										</div>
-									</div>
-								</a>
-							))}
-						</div>
-					</section>
-
 					<!-- Chronological Ledger Incidents -->
 					{recentPosts.length > 0 && (
 						<section>
 							<div class="stream-section-header">
 								<span class="section-title-bold">📂 The Ledger Case Files</span>
-								<span class="section-subtitle-tag">{posts.length} Documented Records</span>
+								<span class="section-subtitle-tag">{posts.length} Documented Records ({recentPosts.length} in Archive)</span>
 							</div>
 							<div class="ledger-posts-grid">
 								{recentPosts.map((post) => (
