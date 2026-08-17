@@ -7,46 +7,69 @@ import { SITE_TITLE } from '../../consts';
 import { getCollection } from 'astro:content';
 
 const allPosts = await getCollection('blog');
-const koPosts = allPosts
-	.filter(p => p.data.lang === 'ko')
-	.sort((a, b) => {
-		const dateA = a.data.pubDate ? new Date(a.data.pubDate).valueOf() : 0;
-		const dateB = b.data.pubDate ? new Date(b.data.pubDate).valueOf() : 0;
-		return dateB - dateA;
-	});
+const koPosts = allPosts.filter(p => p.data.lang === 'ko');
 
-const featuredPost = koPosts[0];
-const recentPosts = koPosts.slice(1);
+// Sort by date (newest first)
+const posts = koPosts.sort((a, b) => {
+	const dateA = a.data.pubDate ? new Date(a.data.pubDate).valueOf() : 0;
+	const dateB = b.data.pubDate ? new Date(b.data.pubDate).valueOf() : 0;
+	return dateB - dateA;
+});
+
+const featuredPost = posts[0];
+const recentPosts = posts.slice(1);
+
+const categoryCounts: Record<string, number> = {
+	all: posts.length,
+	corporate: posts.filter(p => p.data.category === 'corporate').length,
+	money: posts.filter(p => p.data.category === 'money').length,
+	work: posts.filter(p => p.data.category === 'work').length,
+	ai: posts.filter(p => p.data.category === 'ai').length,
+	internet: posts.filter(p => p.data.category === 'internet').length,
+	relationships: posts.filter(p => p.data.category === 'relationships').length,
+	human: posts.filter(p => p.data.category === 'human').length,
+};
+
+const categories = [
+	{ id: "all", label: "전체 사건 목록", icon: "⚡" },
+	{ id: "corporate", label: "기업 & 시스템 인프라", icon: "🏢" },
+	{ id: "money", label: "금융 & 경제 재난", icon: "💰" },
+	{ id: "work", label: "직장 & 개인 커리어", icon: "🧑‍💻" },
+	{ id: "ai", label: "AI & 자동화 결함", icon: "🤖" },
+	{ id: "internet", label: "인터넷 & 사회적 참사", icon: "🌐" },
+	{ id: "relationships", label: "인간관계", icon: "❤️" },
+	{ id: "human", label: "인간 심리 & 인지 편향", icon: "🧠" },
+];
 
 const categoryIcons: Record<string, string> = {
-	work: "🧑‍💻 직장 & 커리어",
-	money: "💰 금융 & 경제",
-	corporate: "🏢 기업 & 인프라",
-	ai: "🤖 AI & 자동화",
-	internet: "🌐 인터넷 & 사회",
+	work: "🧑‍💻 직장",
+	money: "💰 금융",
+	corporate: "🏢 기업",
+	ai: "🤖 AI",
+	internet: "🌐 인터넷",
 	relationships: "❤️ 인간관계",
-	human: "🧠 인간 심리"
+	human: "🧠 심리"
 };
 
 const topDebates = [
 	{
-		title: "금요일 아침, 전 세계 850만 대의 컴퓨터를 멈춘 14KB 업데이트",
+		title: "금요일 아침, 전 세계 850만 대의 컴퓨터를 멈춘 14KB짜리 업데이트",
 		slug: "the-friday-update-that-broke-the-world",
-		split: "48% 크라우드스트라이크 vs 32% 마이크로소프트",
+		split: "48% 크라우드스트라이크 vs 32% 마이크로소프트 구조",
 		votes: "1,421표",
 		category: "기업재난"
 	},
 	{
 		title: "프로덕션 DB를 날리고 인턴에게 뒤집어씌운 시니어 개발자",
 		slug: "deleted-production-database-blamed-intern",
-		split: "54% 시니어의 비겁함 vs 46% 징벌적 조직문화",
+		split: "54% 악의적 은폐 vs 46% 회사의 구조적 문제",
 		votes: "2,890표",
-		category: "직장생활"
+		category: "직장참사"
 	},
 	{
-		title: "8년 된 유령 코드 때문에 45분 만에 6,000억 날리고 파산한 월가 증권사",
+		title: "나이트 캐피털의 6,000억 원짜리 버그: 45분 만에 끝난 월스트리트의 비극",
 		slug: "knight-capital-trading-glitch-45-minutes",
-		split: "61% 검증 소홀 vs 39% 시스템 복잡성",
+		split: "61% QA 검증 부실 vs 39% 방치된 레거시 코드",
 		votes: "3,110표",
 		category: "금융재난"
 	}
@@ -57,9 +80,9 @@ const topDebates = [
 	<head>
 		<BaseHead title={`에러레저 (ErrorLedger) — 모든 실수는 이야기를 남긴다`} description="인간의 실수, 기괴한 결정, 충격적인 결과. 시스템과 인간 심리가 충돌할 때 벌어지는 일들을 기록하는 사건 아카이브." />
 		<style>
-			main { width: 1000px; max-width: calc(100% - 2rem); margin: 0 auto; padding: 2em 1rem; }
+			main { width: 1180px; max-width: calc(100% - 2rem); margin: 0 auto; padding: 2em 1rem; }
 			
-			.hero { text-align: center; margin-bottom: 3.5rem; padding: 2rem 0; }
+			.hero { text-align: center; margin-bottom: 3.5rem; padding: 2rem 0 1rem 0; }
 			.hero-pill {
 				display: inline-flex;
 				align-items: center;
@@ -118,6 +141,135 @@ const topDebates = [
 				color: #ffffff;
 			}
 
+			/* 2-Column Responsive Layout */
+			.homepage-layout-grid {
+				display: grid;
+				grid-template-columns: 1fr;
+				gap: 2rem;
+				align-items: start;
+			}
+			@media (min-width: 1024px) {
+				.homepage-layout-grid {
+					grid-template-columns: 260px 1fr;
+				}
+			}
+
+			/* Sticky Left Category Rail */
+			.category-rail {
+				background: #171717;
+				border: 1px solid #262626;
+				border-radius: 16px;
+				padding: 1.25rem;
+				position: sticky;
+				top: 5.5rem;
+				max-height: calc(100vh - 7rem);
+				overflow-y: auto;
+			}
+			@media (max-width: 1023px) {
+				.category-rail {
+					position: relative;
+					top: 0;
+					margin-bottom: 2rem;
+					padding: 1rem;
+				}
+			}
+
+			.rail-header {
+				font-family: ui-monospace, monospace;
+				font-size: 0.75rem;
+				font-weight: 700;
+				text-transform: uppercase;
+				color: #a3a3a3;
+				letter-spacing: 0.05em;
+				margin-bottom: 0.85rem;
+				padding-bottom: 0.5rem;
+				border-bottom: 1px solid #262626;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+
+			.category-nav-list {
+				display: flex;
+				flex-direction: column;
+				gap: 0.35rem;
+			}
+			@media (max-width: 1023px) {
+				.category-nav-list {
+					flex-direction: row;
+					flex-wrap: wrap;
+					gap: 0.5rem;
+				}
+			}
+
+			.category-nav-link {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				width: 100%;
+				background: transparent;
+				border: 1px solid transparent;
+				color: #d4d4d4;
+				padding: 0.55rem 0.75rem;
+				border-radius: 8px;
+				font-size: 0.85rem;
+				font-weight: 600;
+				text-decoration: none;
+				transition: all 0.15s ease;
+				box-sizing: border-box;
+			}
+			@media (max-width: 1023px) {
+				.category-nav-link {
+					width: auto;
+					padding: 0.4rem 0.75rem;
+					border: 1px solid #262626;
+					background: #0a0a0a;
+					border-radius: 9999px;
+					font-size: 0.78rem;
+				}
+			}
+			.category-nav-link:hover {
+				background: #262626;
+				color: #ffffff;
+			}
+
+			.cat-count-badge {
+				font-family: ui-monospace, monospace;
+				font-size: 0.72rem;
+				background: #0a0a0a;
+				color: #737373;
+				padding: 0.1rem 0.45rem;
+				border-radius: 9999px;
+				border: 1px solid #262626;
+			}
+
+			.rail-dossiers {
+				margin-top: 1.5rem;
+				padding-top: 1.25rem;
+				border-top: 1px solid #262626;
+			}
+			@media (max-width: 1023px) {
+				.rail-dossiers {
+					display: none;
+				}
+			}
+			.dossier-link {
+				display: block;
+				font-size: 0.82rem;
+				color: #a3a3a3;
+				text-decoration: none;
+				padding: 0.35rem 0;
+				transition: color 0.15s ease;
+			}
+			.dossier-link:hover {
+				color: #f59e0b;
+			}
+
+			/* Right Editorial Stream */
+			.main-editorial-stream {
+				min-width: 0;
+			}
+
 			.featured-box {
 				background: #171717;
 				border: 1px solid #262626;
@@ -152,17 +304,17 @@ const topDebates = [
 				color: #a3a3a3;
 			}
 			.featured-title {
-				font-size: 1.75rem;
+				font-size: 1.85rem;
 				font-weight: 800;
 				color: #f5f5f5;
 				margin: 0 0 0.5rem 0;
-				line-height: 1.35;
+				line-height: 1.25;
 				transition: color 0.15s ease;
 			}
 			.featured-box:hover .featured-title { color: #fb7185; }
 			.featured-subtitle {
 				color: #a3a3a3;
-				font-size: 0.95rem;
+				font-size: 1rem;
 				margin: 0 0 1rem 0;
 				line-height: 1.5;
 			}
@@ -199,8 +351,7 @@ const topDebates = [
 				font-size: 1.15rem;
 				font-weight: 800;
 				color: #f5f5f5;
-				text-transform: uppercase;
-				letter-spacing: 0.05em;
+				letter-spacing: 0.025em;
 			}
 			.section-sub {
 				font-size: 0.75rem;
@@ -340,7 +491,7 @@ const topDebates = [
 				border-left: 4px solid #f43f5e;
 				border-radius: 12px;
 				padding: 2rem;
-				margin-top: 4rem;
+				margin-top: 2rem;
 			}
 			.manifesto-tag {
 				font-family: ui-monospace, monospace;
@@ -390,19 +541,42 @@ const topDebates = [
 				background: #f1f5f9 !important;
 				color: #0f172a !important;
 			}
-			:global(html:not(.dark)) .section-title {
-				color: #0f172a !important;
-			}
-			:global(html:not(.dark)) .section-header {
-				border-bottom-color: #e2e8f0 !important;
-			}
+			:global(html:not(.dark)) .category-rail,
 			:global(html:not(.dark)) .featured-box,
 			:global(html:not(.dark)) .debate-card,
 			:global(html:not(.dark)) .card-post,
 			:global(html:not(.dark)) .manifesto-box {
 				background: #ffffff !important;
 				border-color: #e2e8f0 !important;
-				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
+				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+			}
+			:global(html:not(.dark)) .rail-header {
+				border-bottom-color: #e2e8f0 !important;
+				color: #64748b !important;
+			}
+			:global(html:not(.dark)) .category-nav-link {
+				color: #334155 !important;
+			}
+			:global(html:not(.dark)) .category-nav-link:hover {
+				background: #f1f5f9 !important;
+				color: #0f172a !important;
+			}
+			:global(html:not(.dark)) .cat-count-badge {
+				background: #ffffff !important;
+				border-color: #cbd5e1 !important;
+				color: #475569 !important;
+			}
+			:global(html:not(.dark)) .dossier-link {
+				color: #475569 !important;
+			}
+			:global(html:not(.dark)) .dossier-link:hover {
+				color: #d97706 !important;
+			}
+			:global(html:not(.dark)) .section-title {
+				color: #0f172a !important;
+			}
+			:global(html:not(.dark)) .section-header {
+				border-bottom-color: #e2e8f0 !important;
 			}
 			:global(html:not(.dark)) .featured-title,
 			:global(html:not(.dark)) .debate-card-title,
@@ -461,114 +635,151 @@ const topDebates = [
 				</div>
 			</section>
 
-			<!-- Lead Incident Hero Card -->
-			{featuredPost && (
-				<section>
-					<div class="section-header">
-						<span class="section-title">⚡ 주요 탐사 기록</span>
-						<span class="section-sub">이달의 사건 파일</span>
+			<!-- 2-Column Responsive Hub -->
+			<div class="homepage-layout-grid">
+				<!-- Left Sticky Category Rail -->
+				<aside class="category-rail">
+					<div class="rail-header">
+						<span>사건 카테고리</span>
+						<span>{posts.length}개 파일</span>
 					</div>
-					<a href={`/ko/blog/${featuredPost.data.slug.replace(/^ko\//, '')}`} style="text-decoration: none;">
-						<div class="featured-box">
-							<div class="featured-meta-row">
-								<span class="category-tag">
-									{categoryIcons[featuredPost.data.category] || featuredPost.data.category}
-								</span>
-								<span class="read-time-tag">⏱️ {featuredPost.data.read_time_minutes || 6}분 읽기</span>
-							</div>
-							<h2 class="featured-title">
-								{featuredPost.data.title}
-							</h2>
-							{featuredPost.data.subtitle && (
-								<p class="featured-subtitle">
-									{featuredPost.data.subtitle}
-								</p>
-							)}
-							<p class="featured-desc">
-								{featuredPost.data.description}
-							</p>
-							<div class="featured-footer">
-								<span>검증 등급: {featuredPost.data.provenance_label || "공식 문서 검증 사건"}</span>
-								<span class="open-file-link">사건 기록 열람 &rarr;</span>
-							</div>
-						</div>
-					</a>
-				</section>
-			)}
-
-			<!-- Interactive Feature 2: Most Debated Failures Leaderboard -->
-			<section>
-				<div class="section-header">
-					<span class="section-title">⚖️ 가장 뜨거운 독자 판결</span>
-					<span class="section-sub">팽팽한 책임 공방</span>
-				</div>
-				<div class="debates-grid">
-					{topDebates.map((item) => (
-						<a href={`/ko/blog/${item.slug}`} class="debate-card">
-							<div>
-								<div class="debate-card-header">
-									<span class="debate-cat">{item.category}</span>
-									<span>{item.votes}</span>
-								</div>
-								<h4 class="debate-card-title">
-									{item.title}
-								</h4>
-							</div>
-							<div class="debate-split-box">
-								<div class="debate-split-label">현재 투표 현황:</div>
-								<div class="debate-split-val">{item.split}</div>
-							</div>
-						</a>
-					))}
-				</div>
-			</section>
-
-			<!-- The Ledger Grid -->
-			{recentPosts.length > 0 && (
-				<section>
-					<div class="section-header">
-						<span class="section-title">📂 에러레저 보관소</span>
-						<span class="section-sub">{koPosts.length}개의 기록</span>
-					</div>
-					<div class="grid-posts">
-						{recentPosts.map((post) => (
-							<a href={`/ko/blog/${post.data.slug.replace(/^ko\//, '')}`} class="card-post">
-								<div>
-									<div class="card-meta-top">
-										<span class="card-cat-pill">
-											{categoryIcons[post.data.category] || post.data.category}
-										</span>
-										<span class="card-readtime">⏱️ {post.data.read_time_minutes || 5}분</span>
-									</div>
-									<h3 class="card-title">
-										{post.data.title}
-									</h3>
-									<p class="card-desc">
-										{post.data.description}
-									</p>
-								</div>
-								<div class="card-footer">
-									<FormattedDate date={post.data.pubDate || new Date()} />
-									<span class="card-readlink">사건 읽기 &rarr;</span>
-								</div>
+					<div class="category-nav-list">
+						{categories.map((cat) => (
+							<a href="/ko/blog" class="category-nav-link">
+								<span>{cat.icon} {cat.label}</span>
+								<span class="cat-count-badge">{categoryCounts[cat.id] || 0}</span>
 							</a>
 						))}
 					</div>
-				</section>
-			)}
 
-			<section class="manifesto-box">
-				<div class="manifesto-tag">ErrorLedger의 사명</div>
-				<h3 class="manifesto-title">AI는 질문에 답합니다. 에러레저는 실제로 일어난 일을 이야기합니다.</h3>
-				<p class="manifesto-desc">
-					에러레저의 모든 기록은 실패의 진짜 메커니즘을 파헤치는 탐사입니다. 잘못된 결정 뒤에 숨은 인간의 심리, 관료주의의 덫, 그리고 자기합리화가 파국과 만나는 순간을 기록합니다.
-				</p>
-				<div class="manifesto-grid">
-					<div>&#10003; <strong>엄격한 사실 출처 (Provenance):</strong> 문서 검증과 서사적 재구성의 명확한 구분.</div>
-					<div>&#10003; <strong>아키비스트의 판결:</strong> 단순한 책임 전가를 넘어선 시스템적 근본 원인 분석.</div>
-					<div>&#10003; <strong>독자 판결 투표:</strong> 누가 진짜 책임을 져야 하는지에 대한 독자 참여형 공방.</div>
+					<div class="rail-dossiers">
+						<div class="rail-header" style="border: none; margin-bottom: 0.5rem; padding-bottom: 0;">
+							<span>테마별 사건 도시에</span>
+						</div>
+						<a href="/ko/blog/deleted-production-database-blamed-intern" class="dossier-link">
+							📂 사내 희생양 사건 모음집
+						</a>
+						<a href="/ko/blog/knight-capital-trading-glitch-45-minutes" class="dossier-link">
+							⚡ 45분 만의 파산: 알고리즘 폭주
+						</a>
+						<a href="/ko/blog/the-friday-update-that-broke-the-world" class="dossier-link">
+							🌋 클라우드 단일 장애점 마비
+						</a>
+					</div>
+				</aside>
+
+				<!-- Right Main Editorial Stream -->
+				<div class="main-editorial-stream">
+					<!-- Lead Incident Hero Card -->
+					{featuredPost && (
+						<section>
+							<div class="section-header">
+								<span class="section-title">⚡ 주요 탐사 기록</span>
+								<span class="section-sub">이달의 사건 파일</span>
+							</div>
+							<a href={`/ko/blog/${featuredPost.data.slug.replace(/^ko\//, '')}`} style="text-decoration: none;">
+								<div class="featured-box">
+									<div class="featured-meta-row">
+										<span class="category-tag">
+											{categoryIcons[featuredPost.data.category] || featuredPost.data.category}
+										</span>
+										<span class="read-time-tag">⏱️ {featuredPost.data.read_time_minutes || 6}분 읽기</span>
+									</div>
+									<h2 class="featured-title">
+										{featuredPost.data.title}
+									</h2>
+									{featuredPost.data.subtitle && (
+										<p class="featured-subtitle">
+											{featuredPost.data.subtitle}
+										</p>
+									)}
+									<p class="featured-desc">
+										{featuredPost.data.description}
+									</p>
+									<div class="featured-footer">
+										<span>검증 등급: {featuredPost.data.provenance_label || "공식 문서 검증"}</span>
+										<span class="open-file-link">사건 기록 열람하기 &rarr;</span>
+									</div>
+								</div>
+							</a>
+						</section>
+					)}
+
+					<!-- Interactive Feature 2: Most Debated Failures Leaderboard -->
+					<section>
+						<div class="section-header">
+							<span class="section-title">⚖️ 가장 뜨거운 논쟁 사건</span>
+							<span class="section-sub">팽팽하게 갈린 독자 여론</span>
+						</div>
+						<div class="debates-grid">
+							{topDebates.map((item) => (
+								<a href={`/ko/blog/${item.slug}`} class="debate-card">
+									<div>
+										<div class="debate-card-header">
+											<span class="debate-cat">{item.category}</span>
+											<span>{item.votes}</span>
+										</div>
+										<h4 class="debate-card-title">
+											{item.title}
+										</h4>
+									</div>
+									<div class="debate-split-box">
+										<div class="debate-split-label">현재 여론 분기:</div>
+										<div class="debate-split-val">{item.split}</div>
+									</div>
+								</a>
+							))}
+						</div>
+					</section>
+
+					<!-- The Ledger Grid -->
+					{recentPosts.length > 0 && (
+						<section>
+							<div class="section-header">
+								<span class="section-title">📂 전체 사건 보관소</span>
+								<span class="section-sub">{posts.length}개 공식 문서 기록</span>
+							</div>
+							<div class="grid-posts">
+								{recentPosts.map((post) => (
+									<a href={`/ko/blog/${post.data.slug.replace(/^ko\//, '')}`} class="card-post">
+										<div>
+											<div class="card-meta-top">
+												<span class="card-cat-pill">
+													{categoryIcons[post.data.category] || post.data.category}
+												</span>
+												<span class="card-readtime">⏱️ {post.data.read_time_minutes || 5}분</span>
+											</div>
+											<h3 class="card-title">
+												{post.data.title}
+											</h3>
+											<p class="card-desc">
+												{post.data.description}
+											</p>
+										</div>
+										<div class="card-footer">
+											<FormattedDate date={post.data.pubDate || new Date()} />
+											<span class="card-readlink">사건 읽기 &rarr;</span>
+										</div>
+									</a>
+								))}
+							</div>
+						</section>
+					)}
+
+					<section class="manifesto-box">
+						<div class="manifesto-tag">에러레저 편집국 선언</div>
+						<h3 class="manifesto-title">AI는 질문에 답합니다. 우리는 실제로 일어난 일을 이야기합니다.</h3>
+						<p class="manifesto-desc">
+							에러레저의 모든 기록은 실패의 진짜 메커니즘을 파헤치는 탐사입니다. 잘못된 결정 뒤에 숨겨진 인간 심리, 사내 관료주의의 함정, 그리고 인간의 합리화가 처참한 현실과 충돌했던 순간을 해부합니다.
+						</p>
+						<div class="manifesto-grid">
+							<div>&#10003; <strong>엄격한 출처 등급제:</strong> 공문서 검증 기록과 재구성 서사를 투명하게 분리합니다.</div>
+							<div>&#10003; <strong>아키비스트의 판결:</strong> 단순한 마녀사냥을 넘어 시스템적 근본 원인을 진단합니다.</div>
+							<div>&#10003; <strong>독자 판결 프로토콜:</strong> 도덕적·구조적 책임의 무게를 독자 투표로 기록합니다.</div>
+						</div>
+					</section>
 				</div>
-			</section>
+			</div>
 		</main>
 		<Footer />
 	</body>

@@ -19,6 +19,28 @@ const posts = enPosts.sort((a, b) => {
 const featuredPost = posts[0];
 const recentPosts = posts.slice(1);
 
+const categoryCounts: Record<string, number> = {
+	all: posts.length,
+	corporate: posts.filter(p => p.data.category === 'corporate').length,
+	money: posts.filter(p => p.data.category === 'money').length,
+	work: posts.filter(p => p.data.category === 'work').length,
+	ai: posts.filter(p => p.data.category === 'ai').length,
+	internet: posts.filter(p => p.data.category === 'internet').length,
+	relationships: posts.filter(p => p.data.category === 'relationships').length,
+	human: posts.filter(p => p.data.category === 'human').length,
+};
+
+const categories = [
+	{ id: "all", label: "All Incidents", icon: "⚡" },
+	{ id: "corporate", label: "Corporate & Systems", icon: "🏢" },
+	{ id: "money", label: "Money & Finance", icon: "💰" },
+	{ id: "work", label: "Work & Career", icon: "🧑‍💻" },
+	{ id: "ai", label: "AI & Automation", icon: "🤖" },
+	{ id: "internet", label: "Internet & Social", icon: "🌐" },
+	{ id: "relationships", label: "Relationships", icon: "❤️" },
+	{ id: "human", label: "Human Psychology", icon: "🧠" },
+];
+
 const categoryIcons: Record<string, string> = {
 	work: "🧑‍💻 Work",
 	money: "💰 Money",
@@ -73,9 +95,9 @@ const topDebates = [
 			}
 		})} />
 		<style>
-			main { width: 1000px; max-width: calc(100% - 2rem); margin: 0 auto; padding: 2em 1rem; }
+			main { width: 1180px; max-width: calc(100% - 2rem); margin: 0 auto; padding: 2em 1rem; }
 			
-			.hero { text-align: center; margin-bottom: 3.5rem; padding: 2rem 0; }
+			.hero { text-align: center; margin-bottom: 3.5rem; padding: 2rem 0 1rem 0; }
 			.hero-pill {
 				display: inline-flex;
 				align-items: center;
@@ -132,6 +154,135 @@ const topDebates = [
 			.hero-archive-link:hover {
 				background: #262626;
 				color: #ffffff;
+			}
+
+			/* 2-Column Responsive Layout */
+			.homepage-layout-grid {
+				display: grid;
+				grid-template-columns: 1fr;
+				gap: 2rem;
+				align-items: start;
+			}
+			@media (min-width: 1024px) {
+				.homepage-layout-grid {
+					grid-template-columns: 260px 1fr;
+				}
+			}
+
+			/* Sticky Left Category Rail */
+			.category-rail {
+				background: #171717;
+				border: 1px solid #262626;
+				border-radius: 16px;
+				padding: 1.25rem;
+				position: sticky;
+				top: 5.5rem;
+				max-height: calc(100vh - 7rem);
+				overflow-y: auto;
+			}
+			@media (max-width: 1023px) {
+				.category-rail {
+					position: relative;
+					top: 0;
+					margin-bottom: 2rem;
+					padding: 1rem;
+				}
+			}
+
+			.rail-header {
+				font-family: ui-monospace, monospace;
+				font-size: 0.75rem;
+				font-weight: 700;
+				text-transform: uppercase;
+				color: #a3a3a3;
+				letter-spacing: 0.05em;
+				margin-bottom: 0.85rem;
+				padding-bottom: 0.5rem;
+				border-bottom: 1px solid #262626;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+
+			.category-nav-list {
+				display: flex;
+				flex-direction: column;
+				gap: 0.35rem;
+			}
+			@media (max-width: 1023px) {
+				.category-nav-list {
+					flex-direction: row;
+					flex-wrap: wrap;
+					gap: 0.5rem;
+				}
+			}
+
+			.category-nav-link {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				width: 100%;
+				background: transparent;
+				border: 1px solid transparent;
+				color: #d4d4d4;
+				padding: 0.55rem 0.75rem;
+				border-radius: 8px;
+				font-size: 0.85rem;
+				font-weight: 600;
+				text-decoration: none;
+				transition: all 0.15s ease;
+				box-sizing: border-box;
+			}
+			@media (max-width: 1023px) {
+				.category-nav-link {
+					width: auto;
+					padding: 0.4rem 0.75rem;
+					border: 1px solid #262626;
+					background: #0a0a0a;
+					border-radius: 9999px;
+					font-size: 0.78rem;
+				}
+			}
+			.category-nav-link:hover {
+				background: #262626;
+				color: #ffffff;
+			}
+
+			.cat-count-badge {
+				font-family: ui-monospace, monospace;
+				font-size: 0.72rem;
+				background: #0a0a0a;
+				color: #737373;
+				padding: 0.1rem 0.45rem;
+				border-radius: 9999px;
+				border: 1px solid #262626;
+			}
+
+			.rail-dossiers {
+				margin-top: 1.5rem;
+				padding-top: 1.25rem;
+				border-top: 1px solid #262626;
+			}
+			@media (max-width: 1023px) {
+				.rail-dossiers {
+					display: none;
+				}
+			}
+			.dossier-link {
+				display: block;
+				font-size: 0.82rem;
+				color: #a3a3a3;
+				text-decoration: none;
+				padding: 0.35rem 0;
+				transition: color 0.15s ease;
+			}
+			.dossier-link:hover {
+				color: #f59e0b;
+			}
+
+			/* Right Editorial Stream */
+			.main-editorial-stream {
+				min-width: 0;
 			}
 
 			.featured-box {
@@ -360,7 +511,7 @@ const topDebates = [
 				border-left: 4px solid #f43f5e;
 				border-radius: 12px;
 				padding: 2rem;
-				margin-top: 4rem;
+				margin-top: 2rem;
 			}
 			.manifesto-tag {
 				font-family: ui-monospace, monospace;
@@ -411,19 +562,42 @@ const topDebates = [
 				background: #f1f5f9 !important;
 				color: #0f172a !important;
 			}
-			:global(html:not(.dark)) .section-title {
-				color: #0f172a !important;
-			}
-			:global(html:not(.dark)) .section-header {
-				border-bottom-color: #e2e8f0 !important;
-			}
+			:global(html:not(.dark)) .category-rail,
 			:global(html:not(.dark)) .featured-box,
 			:global(html:not(.dark)) .debate-card,
 			:global(html:not(.dark)) .card-post,
 			:global(html:not(.dark)) .manifesto-box {
 				background: #ffffff !important;
 				border-color: #e2e8f0 !important;
-				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
+				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+			}
+			:global(html:not(.dark)) .rail-header {
+				border-bottom-color: #e2e8f0 !important;
+				color: #64748b !important;
+			}
+			:global(html:not(.dark)) .category-nav-link {
+				color: #334155 !important;
+			}
+			:global(html:not(.dark)) .category-nav-link:hover {
+				background: #f1f5f9 !important;
+				color: #0f172a !important;
+			}
+			:global(html:not(.dark)) .cat-count-badge {
+				background: #ffffff !important;
+				border-color: #cbd5e1 !important;
+				color: #475569 !important;
+			}
+			:global(html:not(.dark)) .dossier-link {
+				color: #475569 !important;
+			}
+			:global(html:not(.dark)) .dossier-link:hover {
+				color: #d97706 !important;
+			}
+			:global(html:not(.dark)) .section-title {
+				color: #0f172a !important;
+			}
+			:global(html:not(.dark)) .section-header {
+				border-bottom-color: #e2e8f0 !important;
 			}
 			:global(html:not(.dark)) .featured-title,
 			:global(html:not(.dark)) .debate-card-title,
@@ -482,114 +656,151 @@ const topDebates = [
 				</div>
 			</section>
 
-			<!-- Lead Incident Hero Card -->
-			{featuredPost && (
-				<section>
-					<div class="section-header">
-						<span class="section-title">⚡ The Lead Investigation</span>
-						<span class="section-sub">Featured Case File</span>
+			<!-- 2-Column Responsive Hub -->
+			<div class="homepage-layout-grid">
+				<!-- Left Sticky Category Rail -->
+				<aside class="category-rail">
+					<div class="rail-header">
+						<span>Categories</span>
+						<span>{posts.length} Files</span>
 					</div>
-					<a href={`/blog/${featuredPost.data.shortenedSlug || featuredPost.slug}`} style="text-decoration: none;">
-						<div class="featured-box">
-							<div class="featured-meta-row">
-								<span class="category-tag">
-									{categoryIcons[featuredPost.data.category] || featuredPost.data.category}
-								</span>
-								<span class="read-time-tag">⏱️ {featuredPost.data.read_time_minutes || 6} min read</span>
-							</div>
-							<h2 class="featured-title">
-								{featuredPost.data.title}
-							</h2>
-							{featuredPost.data.subtitle && (
-								<p class="featured-subtitle">
-									{featuredPost.data.subtitle}
-								</p>
-							)}
-							<p class="featured-desc">
-								{featuredPost.data.description}
-							</p>
-							<div class="featured-footer">
-								<span>Verified: {featuredPost.data.provenance_label || "Documented Incident"}</span>
-								<span class="open-file-link">Open Incident File &rarr;</span>
-							</div>
-						</div>
-					</a>
-				</section>
-			)}
-
-			<!-- Interactive Feature 2: Most Debated Failures Leaderboard -->
-			<section>
-				<div class="section-header">
-					<span class="section-title">⚖️ Most Debated Verdicts</span>
-					<span class="section-sub">Divided Community Consensus</span>
-				</div>
-				<div class="debates-grid">
-					{topDebates.map((item) => (
-						<a href={`/blog/${item.slug}`} class="debate-card">
-							<div>
-								<div class="debate-card-header">
-									<span class="debate-cat">{item.category}</span>
-									<span>{item.votes}</span>
-								</div>
-								<h4 class="debate-card-title">
-									{item.title}
-								</h4>
-							</div>
-							<div class="debate-split-box">
-								<div class="debate-split-label">Current Split:</div>
-								<div class="debate-split-val">{item.split}</div>
-							</div>
-						</a>
-					))}
-				</div>
-			</section>
-
-			<!-- The Ledger Grid -->
-			{recentPosts.length > 0 && (
-				<section>
-					<div class="section-header">
-						<span class="section-title">📂 The Ledger Archive</span>
-						<span class="section-sub">{posts.length} Documented Records</span>
-					</div>
-					<div class="grid-posts">
-						{recentPosts.map((post) => (
-							<a href={`/blog/${post.data.shortenedSlug || post.slug}`} class="card-post">
-								<div>
-									<div class="card-meta-top">
-										<span class="card-cat-pill">
-											{categoryIcons[post.data.category] || post.data.category}
-										</span>
-										<span class="card-readtime">⏱️ {post.data.read_time_minutes || 5}m</span>
-									</div>
-									<h3 class="card-title">
-										{post.data.title}
-									</h3>
-									<p class="card-desc">
-										{post.data.description}
-									</p>
-								</div>
-								<div class="card-footer">
-									<FormattedDate date={post.data.pubDate || new Date()} />
-									<span class="card-readlink">Read Story &rarr;</span>
-								</div>
+					<div class="category-nav-list">
+						{categories.map((cat) => (
+							<a href="/blog" class="category-nav-link">
+								<span>{cat.icon} {cat.label}</span>
+								<span class="cat-count-badge">{categoryCounts[cat.id] || 0}</span>
 							</a>
 						))}
 					</div>
-				</section>
-			)}
 
-			<section class="manifesto-box">
-				<div class="manifesto-tag">The ErrorLedger Ethos</div>
-				<h3 class="manifesto-title">AI answers questions. We tell you what happened.</h3>
-				<p class="manifesto-desc">
-					Every entry in the Ledger is an investigation into the real mechanics of failure. We deconstruct the psychology of bad decisions, the systemic traps of corporate bureaucracy, and the moments where human rationalization met catastrophic reality.
-				</p>
-				<div class="manifesto-grid">
-					<div>&#10003; <strong>Strict Provenance:</strong> Clear demarcation between documented records and reconstructions.</div>
-					<div>&#10003; <strong>The Archivist’s Verdict:</strong> Systemic root-cause analysis beyond superficial blame.</div>
-					<div>&#10003; <strong>Reader Judgment:</strong> Real community voting on moral and operational responsibility.</div>
+					<div class="rail-dossiers">
+						<div class="rail-header" style="border: none; margin-bottom: 0.5rem; padding-bottom: 0;">
+							<span>Curated Dossiers</span>
+						</div>
+						<a href="/blog/deleted-production-database-blamed-intern" class="dossier-link">
+							📂 The Scapegoat Collection
+						</a>
+						<a href="/blog/knight-capital-trading-glitch-45-minutes" class="dossier-link">
+							⚡ 45-Minute Fast Crashes
+						</a>
+						<a href="/blog/the-friday-update-that-broke-the-world" class="dossier-link">
+							🌋 Cloud Monoculture Failures
+						</a>
+					</div>
+				</aside>
+
+				<!-- Right Main Editorial Stream -->
+				<div class="main-editorial-stream">
+					<!-- Lead Incident Hero Card -->
+					{featuredPost && (
+						<section>
+							<div class="section-header">
+								<span class="section-title">⚡ The Lead Investigation</span>
+								<span class="section-sub">Featured Case File</span>
+							</div>
+							<a href={`/blog/${featuredPost.data.shortenedSlug || featuredPost.slug}`} style="text-decoration: none;">
+								<div class="featured-box">
+									<div class="featured-meta-row">
+										<span class="category-tag">
+											{categoryIcons[featuredPost.data.category] || featuredPost.data.category}
+										</span>
+										<span class="read-time-tag">⏱️ {featuredPost.data.read_time_minutes || 6} min read</span>
+									</div>
+									<h2 class="featured-title">
+										{featuredPost.data.title}
+									</h2>
+									{featuredPost.data.subtitle && (
+										<p class="featured-subtitle">
+											{featuredPost.data.subtitle}
+										</p>
+									)}
+									<p class="featured-desc">
+										{featuredPost.data.description}
+									</p>
+									<div class="featured-footer">
+										<span>Verified: {featuredPost.data.provenance_label || "Documented Incident"}</span>
+										<span class="open-file-link">Open Incident File &rarr;</span>
+									</div>
+								</div>
+							</a>
+						</section>
+					)}
+
+					<!-- Interactive Feature 2: Most Debated Failures Leaderboard -->
+					<section>
+						<div class="section-header">
+							<span class="section-title">⚖️ Most Debated Verdicts</span>
+							<span class="section-sub">Divided Community Consensus</span>
+						</div>
+						<div class="debates-grid">
+							{topDebates.map((item) => (
+								<a href={`/blog/${item.slug}`} class="debate-card">
+									<div>
+										<div class="debate-card-header">
+											<span class="debate-cat">{item.category}</span>
+											<span>{item.votes}</span>
+										</div>
+										<h4 class="debate-card-title">
+											{item.title}
+										</h4>
+									</div>
+									<div class="debate-split-box">
+										<div class="debate-split-label">Current Split:</div>
+										<div class="debate-split-val">{item.split}</div>
+									</div>
+								</a>
+							))}
+						</div>
+					</section>
+
+					<!-- The Ledger Grid -->
+					{recentPosts.length > 0 && (
+						<section>
+							<div class="section-header">
+								<span class="section-title">📂 The Ledger Archive</span>
+								<span class="section-sub">{posts.length} Documented Records</span>
+							</div>
+							<div class="grid-posts">
+								{recentPosts.map((post) => (
+									<a href={`/blog/${post.data.shortenedSlug || post.slug}`} class="card-post">
+										<div>
+											<div class="card-meta-top">
+												<span class="card-cat-pill">
+													{categoryIcons[post.data.category] || post.data.category}
+												</span>
+												<span class="card-readtime">⏱️ {post.data.read_time_minutes || 5}m</span>
+											</div>
+											<h3 class="card-title">
+												{post.data.title}
+											</h3>
+											<p class="card-desc">
+												{post.data.description}
+											</p>
+										</div>
+										<div class="card-footer">
+											<FormattedDate date={post.data.pubDate || new Date()} />
+											<span class="card-readlink">Read Story &rarr;</span>
+										</div>
+									</a>
+								))}
+							</div>
+						</section>
+					)}
+
+					<section class="manifesto-box">
+						<div class="manifesto-tag">The ErrorLedger Ethos</div>
+						<h3 class="manifesto-title">AI answers questions. We tell you what happened.</h3>
+						<p class="manifesto-desc">
+							Every entry in the Ledger is an investigation into the real mechanics of failure. We deconstruct the psychology of bad decisions, the systemic traps of corporate bureaucracy, and the moments where human rationalization met catastrophic reality.
+						</p>
+						<div class="manifesto-grid">
+							<div>&#10003; <strong>Strict Provenance:</strong> Clear demarcation between documented records and reconstructions.</div>
+							<div>&#10003; <strong>The Archivist’s Verdict:</strong> Systemic root-cause analysis beyond superficial blame.</div>
+							<div>&#10003; <strong>Reader Judgment:</strong> Real community voting on moral and operational responsibility.</div>
+						</div>
+					</section>
 				</div>
-			</section>
+			</div>
 		</main>
 		<Footer />
 	</body>
