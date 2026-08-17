@@ -545,7 +545,7 @@ This systems analysis should be re-evaluated when:
 
 ## References & Primary Sources
 
-- [Claude System Prompts & Release Notes (Anthropic Documentation)](https://docs.anthropic.com/en/docs/resources/system-prompts)
+- [Claude System Prompts & Context Engineering (Anthropic Documentation)](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/system-prompts)
 - [Prompt Caching: Optimize Latency and Costs (Anthropic Platform Docs)](https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching)
 - [Constitutional AI: Harmlessness from AI Feedback (Bai et al., Anthropic Research)](https://arxiv.org/abs/2212.08073)
 - [Lost in the Middle: How Language Models Use Long Contexts (Liu et al., TACL / arXiv:2307.03172)](https://arxiv.org/abs/2307.03172)
