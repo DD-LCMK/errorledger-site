@@ -13,107 +13,94 @@ const posts = allPosts.sort((a, b) => {
 	const dateB = b.data.pubDate ? new Date(b.data.pubDate).valueOf() : 0;
 	return dateB - dateA;
 });
-
-// Split by archetype / domain classification into 3 distinct E-E-A-T silos:
-// 1. Lifestyle & Biological Systems
-const lifestylePosts = posts.filter(p =>
-	p.data.archetype === 'lifestyle-systems' ||
-	p.data.tags?.some((t: string) =>
-		['lifestyle-systems', 'evidence-check', 'physiology', 'recovery', 'dopamine', 'fasting', 'sleep', 'nutrition', 'biohack'].includes(t.toLowerCase())
-	)
-);
-
-// 2. Systems Analysis (AI, Hardware Architecture, Systems Economics)
-const systemsAnalysisPosts = posts.filter(p =>
-	!lifestylePosts.includes(p) && (
-		p.data.archetype === 'systems-analysis' ||
-		p.data.tags?.some((t: string) =>
-			['systems-analysis', 'architecture-review', 'hardware', 'dram', 'hbm', 'algorithm-failure', 'social-graph', 'engineering-evolution',
-			 'surveillance-architecture', 'ai-infrastructure', 'economics'].includes(t.toLowerCase())
-		)
-	)
-);
-
-// 3. Incident Forensics (SRE Post-mortems, Database/Cloud Outages)
-const incidentForensicsPosts = posts.filter(p =>
-	!lifestylePosts.includes(p) && !systemsAnalysisPosts.includes(p)
-);
 ---
 
-<html lang="en">
+<html lang="en" class="dark">
 	<head>
-		<BaseHead title={`Knowledge Archive | ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+		<BaseHead title={`The Failure Ledger Archive | ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
 		<style>
-			main { width: 960px; max-width: calc(100% - 2rem); margin: 0 auto; padding: 3em 1rem; }
+			main { width: 1000px; max-width: calc(100% - 2rem); margin: 0 auto; padding: 3em 1rem; }
 
 			.archive-header {
 				margin-bottom: 2.5rem;
+				border-bottom: 1px solid #262626;
+				padding-bottom: 1.5rem;
 			}
 			.archive-header h1 {
-				font-size: 2rem;
+				font-size: 2.5rem;
 				font-weight: 800;
-				color: #0f172a;
+				color: #f5f5f5;
 				margin: 0 0 0.5rem 0;
-				letter-spacing: -0.025em;
+				letter-spacing: -0.03em;
 			}
 			.archive-header p {
-				color: #475569;
-				font-size: 1rem;
+				color: #a3a3a3;
+				font-size: 1.1rem;
 				margin: 0;
 				line-height: 1.6;
 			}
 
-			.section-divider {
-				margin: 3rem 0 2rem 0;
+			.filter-controls {
 				display: flex;
+				flex-wrap: wrap;
+				gap: 0.75rem;
+				margin-bottom: 2rem;
 				align-items: center;
-				gap: 1rem;
-			}
-			.section-divider h2 {
-				font-size: 0.78rem;
-				font-weight: 800;
-				letter-spacing: 0.1em;
-				text-transform: uppercase;
-				margin: 0;
-				white-space: nowrap;
-			}
-			.section-divider h2.lifestyle { color: #059669; }
-			.section-divider h2.systems { color: #3b82f6; }
-			.section-divider h2.incidents { color: #ef4444; }
-			.divider-line {
-				flex: 1;
-				height: 1px;
-				background: #e2e8f0;
-			}
-			.section-description {
-				font-size: 0.85rem;
-				color: #64748b;
-				margin: 0 0 1.5rem 0;
-				line-height: 1.5;
+				justify-content: space-between;
 			}
 
-			ul { display: flex; flex-direction: column; gap: 1.25rem; list-style-type: none; margin: 0; padding: 0; }
-			ul li {
-				background: #ffffff;
-				border: 1px solid #e2e8f0;
+			.pill-btn {
+				background: #171717;
+				border: 1px solid #262626;
+				color: #a3a3a3;
+				font-size: 0.8rem;
+				font-weight: 600;
+				padding: 0.45rem 0.9rem;
+				border-radius: 9999px;
+				cursor: pointer;
+				font-family: ui-monospace, monospace;
+				transition: all 0.15s ease;
+			}
+			.pill-btn:hover, .pill-btn.active {
+				background: #f43f5e;
+				color: #ffffff;
+				border-color: #f43f5e;
+			}
+
+			.live-filter-input {
+				background: #171717;
+				border: 1px solid #262626;
+				color: #f5f5f5;
+				font-size: 0.85rem;
+				padding: 0.45rem 0.85rem;
 				border-radius: 8px;
+				outline: none;
+				width: 100%;
+				max-width: 260px;
+			}
+			.live-filter-input:focus {
+				border-color: #f43f5e;
+			}
+
+			.grid-archive {
+				display: grid;
+				grid-template-columns: 1fr;
+				gap: 1.25rem;
+			}
+
+			.archive-card {
+				background: #171717;
+				border: 1px solid #262626;
+				border-radius: 12px;
 				padding: 1.5rem;
-				transition: transform 0.2s ease, box-shadow 0.2s ease;
+				transition: transform 0.2s ease, border-color 0.2s ease;
+				text-decoration: none;
+				display: block;
 			}
-			ul li:hover {
+			.archive-card:hover {
 				transform: translateY(-2px);
-				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-				border-color: #cbd5e1;
+				border-color: #f43f5e;
 			}
-			.title { margin: 0 0 0.5rem 0; font-size: 1.25rem; color: #1a202c; line-height: 1.3; font-weight: 700; }
-			ul li a { text-decoration: none; }
-			ul li.lifestyle-card:hover { border-color: #10b981; }
-			ul li.lifestyle-card:hover .title { color: #059669; }
-			ul li.systems-card:hover { border-color: #3b82f6; }
-			ul li.systems-card:hover .title { color: #3b82f6; }
-			ul li.incident-card:hover { border-color: #ef4444; }
-			ul li.incident-card:hover .title { color: #ef4444; }
-			.description { margin: 0 0 1rem 0; color: #4a5568; font-size: 0.92rem; line-height: 1.6; }
 
 			.card-meta {
 				display: flex;
@@ -121,145 +108,122 @@ const incidentForensicsPosts = posts.filter(p =>
 				gap: 0.75rem;
 				margin-bottom: 0.6rem;
 				font-size: 0.8rem;
-				color: #64748b;
+				color: #737373;
+				font-family: ui-monospace, monospace;
 			}
-			.tag-row {
-				display: flex;
-				gap: 0.4rem;
-				flex-wrap: wrap;
-			}
-			.card-tag {
-				font-size: 0.7rem;
-				font-weight: 700;
-				background: #f1f5f9;
-				color: #475569;
-				padding: 0.15rem 0.45rem;
-				border-radius: 4px;
-				text-transform: uppercase;
-				letter-spacing: 0.025em;
-			}
-			.card-tag.lifestyle-tag { background: #ecfdf5; color: #047857; }
-			.card-tag.systems-tag { background: #eff6ff; color: #2563eb; }
-			.card-tag.incident-tag { background: #fef2f2; color: #dc2626; }
-
-			:global(html.dark) ul li { background: #1e293b; border-color: #334155; }
-			:global(html.dark) .title { color: #f8fafc; }
-			:global(html.dark) .description { color: #cbd5e1; }
-			:global(html.dark) .card-tag { background: #334155 !important; color: #cbd5e1 !important; }
-			:global(html.dark) .card-tag.lifestyle-tag { background: #064e3b !important; color: #6ee7b7 !important; }
-			:global(html.dark) .card-meta { color: #94a3b8; }
-			:global(html.dark) .archive-header h1 { color: #f8fafc; }
-			:global(html.dark) .divider-line { background: #334155; }
-			:global(html.dark) .section-description { color: #94a3b8; }
 		</style>
 	</head>
-	<body>
+	<body class="bg-neutral-950 text-neutral-200 antialiased min-h-screen">
 		<Header />
 		<main>
 			<div class="archive-header">
-				<h1>Knowledge Archive</h1>
-				<p>All published analyses — from hardware and software engineering to biological and lifestyle systems. Primary evidence first.</p>
+				<h1>The Failure Ledger Archive</h1>
+				<p>Investigative records of human error, corporate negligence, and systemic breakdowns. Filter by financial blast radius or keyword.</p>
 			</div>
 
-			<!-- Section 1: Lifestyle & Biological Systems -->
-			{lifestylePosts.length > 0 && (
-				<div>
-					<div class="section-divider">
-						<h2 class="lifestyle">&#9650; Lifestyle & Biological Systems</h2>
-						<div class="divider-line"></div>
-					</div>
-					<p class="section-description">
-						Evidence-based audits of diets, recovery protocols, productivity habits, and human physiology examined under biological, behavioral, and adherence constraints.
-					</p>
-					<ul>
-						{lifestylePosts.map((post) => (
-							<li class="lifestyle-card">
-								<a href={`/blog/${post.data.shortenedSlug}`}>
-									<div class="card-meta">
-										{post.data.pubDate && <FormattedDate date={post.data.pubDate} />}
-										{post.data.tags && post.data.tags.length > 0 && (
-											<div class="tag-row">
-												{post.data.tags.map((tag: string) => (
-													<span class="card-tag lifestyle-tag">{tag}</span>
-												))}
-											</div>
-										)}
-									</div>
-									<h4 class="title">{post.data.title}</h4>
-									<p class="description">{post.data.description}</p>
-								</a>
-							</li>
-						))}
-					</ul>
+			<!-- Interactive Feature 6: Blast Radius & Live Filter -->
+			<div class="filter-controls">
+				<div class="flex items-center gap-2 flex-wrap" id="radius-filter-pills">
+					<button class="pill-btn active" data-radius="all">All Blast Radii</button>
+					<button class="pill-btn" data-radius="corporate">🏢 Org-Wide ($100k - $10M)</button>
+					<button class="pill-btn" data-radius="work">🧑‍💻 Career & Personal</button>
+					<button class="pill-btn" data-radius="global">🌋 Global (> $1B)</button>
 				</div>
-			)}
+				<input 
+					type="text" 
+					id="archive-search" 
+					class="live-filter-input" 
+					placeholder="Instant filter by title..." 
+					autocomplete="off"
+				/>
+			</div>
 
-			<!-- Section 2: Systems Analysis -->
-			{systemsAnalysisPosts.length > 0 && (
-				<div>
-					<div class="section-divider">
-						<h2 class="systems">&#9650; Systems Analysis & Architecture</h2>
-						<div class="divider-line"></div>
-					</div>
-					<p class="section-description">
-						Expected model vs. observed reality. Hardware memory walls, distributed algorithms, AI agent control planes, and software economics examined under physical constraints.
-					</p>
-					<ul>
-						{systemsAnalysisPosts.map((post) => (
-							<li class="systems-card">
-								<a href={`/blog/${post.data.shortenedSlug}`}>
-									<div class="card-meta">
-										{post.data.pubDate && <FormattedDate date={post.data.pubDate} />}
-										{post.data.tags && post.data.tags.length > 0 && (
-											<div class="tag-row">
-												{post.data.tags.map((tag: string) => (
-													<span class="card-tag systems-tag">{tag}</span>
-												))}
-											</div>
-										)}
-									</div>
-									<h4 class="title">{post.data.title}</h4>
-									<p class="description">{post.data.description}</p>
-								</a>
-							</li>
-						))}
-					</ul>
-				</div>
-			)}
+			<div class="grid-archive" id="archive-grid">
+				{posts.map((post) => (
+					<a 
+						href={`/blog/${post.data.shortenedSlug || post.slug}`} 
+						class="archive-card" 
+						data-category={post.data.category}
+						data-title={post.data.title.toLowerCase()}
+					>
+						<div class="card-meta">
+							<span class="px-2 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-neutral-300 font-bold uppercase text-xs">
+								{post.data.category}
+							</span>
+							<span>•</span>
+							<FormattedDate date={post.data.pubDate || new Date()} />
+							<span>•</span>
+							<span>⏱️ {post.data.read_time_minutes || 6}m</span>
+							<span>•</span>
+							<span class="text-rose-400">{post.data.provenance_label || "Documented Incident"}</span>
+						</div>
+						<h3 class="text-xl font-bold text-neutral-100 mb-2 leading-snug hover:text-rose-400 transition-colors">
+							{post.data.title}
+						</h3>
+						<p class="text-sm text-neutral-400 leading-relaxed mb-1 line-clamp-2">
+							{post.data.description}
+						</p>
+					</a>
+				))}
+			</div>
 
-			<!-- Section 3: Incident Forensics -->
-			{incidentForensicsPosts.length > 0 && (
-				<div>
-					<div class="section-divider">
-						<h2 class="incidents">&#9650; Incident Forensics</h2>
-						<div class="divider-line"></div>
-					</div>
-					<p class="section-description">
-						Real incidents, root causes, architecture teardowns. AWS, Cloudflare, Kafka, PostgreSQL, Redis, Cassandra — what broke, why it broke, and how to prevent it.
-					</p>
-					<ul>
-						{incidentForensicsPosts.map((post) => (
-							<li class="incident-card">
-								<a href={`/blog/${post.data.shortenedSlug}`}>
-									<div class="card-meta">
-										{post.data.pubDate && <FormattedDate date={post.data.pubDate} />}
-										{post.data.tags && post.data.tags.length > 0 && (
-											<div class="tag-row">
-												{post.data.tags.map((tag: string) => (
-													<span class="card-tag incident-tag">{tag}</span>
-												))}
-											</div>
-										)}
-									</div>
-									<h4 class="title">{post.data.title}</h4>
-									<p class="description">{post.data.description}</p>
-								</a>
-							</li>
-						))}
-					</ul>
-				</div>
-			)}
+			<div id="no-results" class="hidden text-center py-16 text-neutral-500 font-mono text-sm">
+				No records matched the current blast radius filter.
+			</div>
 		</main>
 		<Footer />
+
+		<script is:inline>
+			(function() {
+				const pills = document.querySelectorAll('#radius-filter-pills .pill-btn');
+				const searchInput = document.getElementById('archive-search');
+				const cards = document.querySelectorAll('.archive-card');
+				const noResults = document.getElementById('no-results');
+
+				let activeRadius = 'all';
+				let searchQuery = '';
+
+				function applyFilters() {
+					let visibleCount = 0;
+					cards.forEach(card => {
+						const cat = card.getAttribute('data-category');
+						const title = card.getAttribute('data-title') || '';
+
+						const matchesRadius = (activeRadius === 'all') || 
+							(activeRadius === 'corporate' && cat === 'corporate') ||
+							(activeRadius === 'work' && cat === 'work') ||
+							(activeRadius === 'global' && (cat === 'corporate' || cat === 'money'));
+
+						const matchesSearch = !searchQuery || title.includes(searchQuery.toLowerCase());
+
+						if (matchesRadius && matchesSearch) {
+							card.style.display = 'block';
+							visibleCount++;
+						} else {
+							card.style.display = 'none';
+						}
+					});
+
+					if (noResults) {
+						if (visibleCount === 0) noResults.classList.remove('hidden');
+						else noResults.classList.add('hidden');
+					}
+				}
+
+				pills.forEach(pill => {
+					pill.addEventListener('click', function() {
+						pills.forEach(p => p.classList.remove('active'));
+						this.classList.add('active');
+						activeRadius = this.getAttribute('data-radius');
+						applyFilters();
+					});
+				});
+
+				searchInput?.addEventListener('input', function() {
+					searchQuery = this.value.trim();
+					applyFilters();
+				});
+			})();
+		</script>
 	</body>
 </html>

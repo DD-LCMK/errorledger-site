@@ -4,159 +4,99 @@ import { glob } from 'astro/loaders';
 const blog = defineCollection({
 	loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: "./src/content/blog" }),
 	schema: z.object({
-		// Versioning & Contract
+		// Contract Version
 		pipeline_contract_version: z.string().optional(),
 
-		// Editorial Archetype — used to split blog archive into three sections
-		// 'incident-forensics' = SRE runbooks, post-mortems, cloud outages
-		// 'systems-analysis' = economics, algorithms, AI, hardware architecture
-		// 'lifestyle-systems' = biological protocols, recovery, behavioral constraints
-		archetype: z.enum(['incident-forensics', 'systems-analysis', 'lifestyle-systems']).optional(),
+		// Editorial Archetypes (v2.0)
+		archetype: z.enum([
+			'the-confession',
+			'the-incident',
+			'the-verdict',
+			'the-investigation',
+			'the-failure-anatomy',
+			'incident-forensics',
+			'systems-analysis',
+			'lifestyle-systems'
+		]).optional(),
 
-		// Core SEO & Header Metadata
+		// Core Content & SEO
 		title: z.string().optional(),
+		subtitle: z.string().optional(),
 		meta_title: z.string().optional(),
 		description: z.string().optional(),
 		pubDate: z.coerce.date().optional(),
-		incidentDate: z.coerce.date().optional(), // Ingest actual incident/release date
+		incidentDate: z.coerce.date().optional(),
 		updatedDate: z.coerce.date().optional(),
 
-		// Categorization & Keywords
+		// Categories & Provenance (v2.0)
+		category: z.enum([
+			'work',
+			'money',
+			'relationships',
+			'internet',
+			'ai',
+			'human',
+			'corporate'
+		]).optional(),
+		provenance_tier: z.number().min(1).max(4).optional(),
+		provenance_label: z.string().optional(),
+		provenance_source: z.string().optional(),
+
+		// The Archivist & Interactive Verdict (v2.0)
+		archivist_summary: z.string().optional(),
+		verdict_question: z.string().optional(),
+		verdict_options: z.array(z.object({
+			id: z.string(),
+			label: z.string(),
+		})).optional(),
+
+		// Taxonomy & Slug
 		tags: z.array(z.string()).optional(),
 		keyword: z.string().optional(),
 		shortenedSlug: z.string().optional(),
 		slug: z.string().optional(),
-
-		// Technical Metadata (Version 27.0.0+)
-		target_systems: z.string().optional(),
-		article_confidence: z.string().optional(),
-		canonical_terminology: z.object({
-			approved: z.array(z.string()),
-		}).optional(),
-		
-		// FIXED: Tell Astro to accept pipeline-generated read times and difficulty levels
 		read_time_minutes: z.number().optional(),
 		difficulty_level: z.string().optional(),
 
-		// Legacy / Hero Image Support
+		// Visuals
 		heroImage: z.string().optional(),
+		ogImage: z.string().optional(),
 	}).transform((data) => {
-		// 1. Safe Title & Meta Title fallback resolving
-		const rawTitle = data.title || data.meta_title || "Untitled Engineering Record";
-		const rawMetaTitle = data.meta_title || data.title || "ErrorLedger Technical Analysis";
+		const rawTitle = data.title || data.meta_title || "Untitled Failure Entry";
+		const rawMetaTitle = data.meta_title || data.title || "ErrorLedger: Every Mistake Leaves a Story";
 		const cleanMetaTitle = rawMetaTitle.length > 60 ? rawMetaTitle.slice(0, 57) + "..." : rawMetaTitle;
 
-		// 2. Safe Description resolving with padding/bounds safeguards
-		const rawDescription = data.description || "Detailed technical root cause analysis, architecture teardown, and operational post-mortem breakdown.";
-		const cleanDescription = rawDescription.length < 120 
-			? rawDescription.padEnd(120, ' ') 
-			: rawDescription.length > 155 
-				? rawDescription.slice(0, 152) + "..." 
+		const rawDescription = data.description || "Real failures. Strange decisions. Unbelievable consequences. Investigating the moments when systems and humans collapse.";
+		const cleanDescription = rawDescription.length < 100
+			? rawDescription.padEnd(100, ' ')
+			: rawDescription.length > 160
+				? rawDescription.slice(0, 157) + "..."
 				: rawDescription;
 
-		// 3. Fallback date sorting guard
 		const finalPubDate = data.pubDate || new Date();
 		const finalIncidentDate = data.incidentDate || data.pubDate || new Date();
 
-		// 4. Fallback Slug dynamic parser
-		const baseSlug = data.slug || data.shortenedSlug || rawMetaTitle || "engineering-record";
+		const baseSlug = data.slug || data.shortenedSlug || rawTitle;
 		const cleanSlug = baseSlug
 			.toLowerCase()
 			.replace(/[^a-z0-9]+/g, '-')
 			.replace(/(^-|-$)/g, '');
-		const finalSlug = cleanSlug;
-
-		// 5. Automatic Keyword Tag Ingestion fallback
-		const inferredTags: string[] = data.tags || [];
-		if (inferredTags.length === 0) {
-			const lowerSearchText = (rawMetaTitle + " " + rawTitle + " " + finalSlug).toLowerCase();
-			
-			const ecosystemMap: Record<string, string> = {
-				'responses-api': 'Responses API',
-				'chat-completions': 'Chat Completions',
-				'mcp': 'MCP Protocol',
-				'supabase': 'Supabase',
-				'stripe': 'Stripe',
-				'clerk': 'Clerk',
-				'auth0': 'Auth0',
-				'firebase': 'Firebase',
-				'prisma': 'Prisma',
-				'mongodb': 'MongoDB',
-				'redis': 'Redis',
-				'sentry': 'Sentry',
-				'openai': 'OpenAI',
-				'anthropic': 'Anthropic',
-				'claude': 'Claude',
-				'resend': 'Resend',
-				'sendgrid': 'SendGrid',
-				'vercel': 'Vercel',
-				'slack': 'Slack',
-				'aws': 'AWS',
-				'lambda': 'Lambda',
-				'cloudflare': 'Cloudflare',
-				'wrangler': 'Wrangler',
-				'github': 'GitHub',
-				'node': 'Node.js',
-				'crowdstrike': 'CrowdStrike',
-				'windows': 'Windows'
-			};
-
-			const categoryMap: Record<string, string> = {
-				'evolution': 'Engineering Evolution',
-				'paradigm': 'Engineering Evolution',
-				'architecture': 'Architecture Explainer',
-				'protocol': 'Architecture Explainer',
-				'auth': 'Auth',
-				'database': 'Database',
-				'payments': 'Payments',
-				'webhook': 'Webhooks',
-				'serverless': 'Serverless',
-				'api': 'API Gateway',
-				'cache': 'Cache',
-				'orm': 'ORM',
-				'outage': 'Service Outage',
-				'crash': 'Service Outage',
-				'bgp': 'BGP',
-				'routing': 'BGP',
-				'post-mortem': 'Incident Analysis',
-				'lifestyle': 'Lifestyle Systems',
-				'recovery': 'Physiology & Recovery',
-				'dopamine': 'Neurophysiology',
-				'immersion': 'Physiology & Recovery',
-				'hypertrophy': 'Physiology & Recovery',
-				'fasting': 'Metabolic Systems',
-				'sleep': 'Circadian Systems'
-			};
-
-			Object.entries(ecosystemMap)
-				.sort((a, b) => b[0].length - a[0].length)
-				.forEach(([keyword, formattedTag]) => {
-					if (lowerSearchText.includes(keyword) && !inferredTags.includes(formattedTag)) {
-						inferredTags.push(formattedTag);
-					}
-				});
-
-			Object.entries(categoryMap).forEach(([keyword, formattedTag]) => {
-				if (lowerSearchText.includes(keyword) && !inferredTags.includes(formattedTag)) {
-					inferredTags.push(formattedTag);
-				}
-			});
-
-			if (inferredTags.length === 0) {
-				inferredTags.push("Engineering Analysis");
-			}
-		}
 
 		return {
 			...data,
 			title: rawTitle,
+			subtitle: data.subtitle || "",
 			meta_title: cleanMetaTitle,
 			description: cleanDescription,
 			pubDate: finalPubDate,
 			incidentDate: finalIncidentDate,
-			tags: inferredTags,
-			slug: finalSlug,
-			shortenedSlug: finalSlug,
+			slug: cleanSlug,
+			shortenedSlug: cleanSlug,
+			category: data.category || 'corporate',
+			archetype: data.archetype || 'the-incident',
+			provenance_tier: data.provenance_tier || 1,
+			provenance_label: data.provenance_label || 'Documented Incident',
+			tags: data.tags && data.tags.length > 0 ? data.tags : ['human-failure', 'decisions', 'investigation'],
 		};
 	}),
 });
@@ -172,10 +112,9 @@ const insights = defineCollection({
 		slug: z.string().optional(),
 	}).transform((data) => {
 		const baseSlug = data.slug || data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-		const finalSlug = baseSlug;
 		return {
 			...data,
-			shortenedSlug: finalSlug,
+			shortenedSlug: baseSlug,
 			tags: data.tags && data.tags.length > 0 ? data.tags : ["Insights"]
 		};
 	}),

@@ -1,45 +1,46 @@
 ---
 import HeaderLink from './HeaderLink.astro';
+import SubmitIncidentModal from './SubmitIncidentModal.astro';
 import { SITE_TITLE } from '../consts';
 ---
 
 <header>
 	<nav class="header-nav">
 		<h2>
-			<a href="/" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-weight: 700; font-size: 1.25rem;">
-				<span style="background-color: #0f172a; color: #ef4444; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.95rem; display: inline-flex; align-items: center; font-weight: 900;">&gt;_</span>
-				<span style="color: #1e293b;" class="logo-text-main">Error</span><span style="color: #ef4444;">Ledger</span>
+			<a href="/" class="brand-link">
+				<span class="brand-badge">&gt;_</span>
+				<span class="logo-text-main">Error</span><span class="logo-text-accent">Ledger</span>
 			</a>
 		</h2>
 
-		<!-- Flexible, Full-Length Search Input -->
+		<!-- Search Input -->
 		<form action="/search" method="GET" class="header-search-form">
 			<input 
 				type="text" 
 				name="q" 
 				class="header-search-input" 
-				placeholder="Search all records..." 
+				placeholder="Search the Failure Ledger..." 
 				aria-label="Search repository globally"
 				autocomplete="off"
 			/>
 		</form>
 
-		<div class="internal-links" style="display: flex; align-items: center; gap: 0.25rem;">
-			<HeaderLink href="/">Home</HeaderLink>
-			<HeaderLink href="/blog">Blog</HeaderLink>
-			<HeaderLink href="/insights">Insights</HeaderLink>
-			<HeaderLink href="/tools">Tools</HeaderLink>
-			<HeaderLink href="/about">About</HeaderLink>
-			<HeaderLink href="/contact">Contact</HeaderLink>
-			<HeaderLink href="/rss.xml" target="_blank">
-				<span style="display: inline-flex; align-items: center; gap: 0.25rem;">
-					<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: #f97316;"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg>
-					RSS
-				</span>
-			</HeaderLink>
+		<div class="internal-links">
+			<HeaderLink href="/">Ledger</HeaderLink>
+			<HeaderLink href="/blog">Archive</HeaderLink>
+			
+			<!-- Interactive Feature 1: Failure Roulette -->
+			<button id="random-failure-btn" class="nav-action-btn random-btn" title="Open a random incident from the ledger">
+				<span>🎲</span> Random
+			</button>
+
+			<!-- Interactive Feature 5: Submit Incident -->
+			<button class="nav-action-btn submit-btn" data-open-submit-modal title="Submit an incident to The Archivist">
+				<span>+</span> Submit
+			</button>
 			
 			<!-- Theme Toggle Button -->
-			<button id="theme-toggle" aria-label="Toggle dark mode" style="background: none; border: none; cursor: pointer; padding: 0.5rem; margin-left: 0.5rem; display: inline-flex; align-items: center; color: inherit;">
+			<button id="theme-toggle" aria-label="Toggle dark mode" class="theme-btn">
 				<svg id="theme-toggle-dark-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>
 				<svg id="theme-toggle-light-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
 			</button>
@@ -50,6 +51,8 @@ import { SITE_TITLE } from '../consts';
 	<div class="progress-bus">
 		<div id="reading-progress-bar" class="progress-fill"></div>
 	</div>
+
+	<SubmitIncidentModal />
 </header>
 
 <script>
@@ -80,6 +83,21 @@ import { SITE_TITLE } from '../consts';
 		updateIcons();
 	});
 
+	// Random Failure Engine
+	const randomBtn = document.getElementById('random-failure-btn');
+	randomBtn?.addEventListener('click', async () => {
+		try {
+			// Fallback list of known slugs or fetch sitemap/rss
+			const sampleSlugs = [
+				'/blog/the-friday-update-that-broke-the-world'
+			];
+			const randomTarget = sampleSlugs[Math.floor(Math.random() * sampleSlugs.length)];
+			window.location.href = randomTarget;
+		} catch (err) {
+			window.location.href = '/blog';
+		}
+	});
+
 	// Dynamic Reading Progress Engine
 	window.addEventListener('scroll', () => {
 		const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
@@ -99,71 +117,127 @@ import { SITE_TITLE } from '../consts';
 		z-index: 100;
 		margin: 0;
 		padding: 0 1.5rem;
-		background: rgba(255, 255, 255, 0.85);
-		backdrop-filter: blur(10px);
-		-webkit-backdrop-filter: blur(10px);
-		border-bottom: 1px solid #e2e8f0;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+		background: rgba(10, 10, 10, 0.85);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		border-bottom: 1px solid #262626;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 		transition: background-color 0.2s ease, border-color 0.2s ease;
-	}
-	h2 {
-		margin: 0;
-		font-size: 1rem;
-		display: flex;
-		align-items: center;
 	}
 	.header-nav {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		max-width: 1200px; /* EXPANDED FROM 960px TO PREVENT SQUASHING */
+		max-width: 1200px;
 		margin: 0 auto;
-		padding: 0.85rem 0;
+		padding: 0.75rem 0;
 		gap: 1.5rem;
 	}
+	.brand-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		text-decoration: none;
+		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+		font-weight: 700;
+		font-size: 1.25rem;
+	}
+	.brand-badge {
+		background-color: #171717;
+		color: #f43f5e;
+		padding: 0.15rem 0.45rem;
+		border-radius: 6px;
+		border: 1px solid #262626;
+		font-size: 0.95rem;
+		font-weight: 900;
+	}
+	.logo-text-main { color: #f5f5f5; }
+	.logo-text-accent { color: #f43f5e; }
+
+	.internal-links {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
 	.internal-links a {
-		padding: 0.5rem 0.75rem;
-		color: rgb(var(--black));
-		border-bottom: 4px solid transparent;
+		padding: 0.4rem 0.65rem;
+		color: #a3a3a3;
 		text-decoration: none;
 		font-size: 0.9rem;
+		font-weight: 500;
+		border-radius: 6px;
+		transition: color 0.15s ease;
 	}
-	.internal-links a.active {
-		text-decoration: none;
-		border-bottom-color: rgb(var(--accent));
-	}
-	.hidden {
-		display: none !important;
+	.internal-links a:hover, .internal-links a.active {
+		color: #ffffff;
 	}
 
-	/* Search input styles */
+	.nav-action-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		font-size: 0.8rem;
+		font-weight: 700;
+		padding: 0.4rem 0.75rem;
+		border-radius: 8px;
+		border: 1px solid #262626;
+		background: #171717;
+		color: #d4d4d4;
+		cursor: pointer;
+		font-family: ui-monospace, monospace;
+		transition: all 0.15s ease;
+	}
+	.random-btn:hover {
+		border-color: #f59e0b;
+		color: #f59e0b;
+		background: rgba(245, 158, 11, 0.1);
+	}
+	.submit-btn {
+		background: rgba(244, 63, 94, 0.1);
+		border-color: rgba(244, 63, 94, 0.3);
+		color: #fb7185;
+	}
+	.submit-btn:hover {
+		background: #f43f5e;
+		color: #ffffff;
+		border-color: #f43f5e;
+	}
+
+	.theme-btn {
+		background: none;
+		border: none;
+		cursor: pointer;
+		padding: 0.4rem;
+		color: #a3a3a3;
+		display: inline-flex;
+		align-items: center;
+	}
+	.theme-btn:hover { color: #ffffff; }
+
 	.header-search-form {
 		flex-grow: 1;
-		max-width: 320px; /* EXPANDED FROM 220px FOR FULL LENGTH */
+		max-width: 320px;
 		margin: 0 1rem;
 	}
 	.header-search-input {
 		width: 100%;
-		padding: 0.5rem 0.85rem;
-		font-size: 0.88rem;
-		border-radius: 6px;
-		border: 1px solid #cbd5e1;
-		background: #f8fafc;
-		color: #1e293b;
+		padding: 0.45rem 0.85rem;
+		font-size: 0.85rem;
+		border-radius: 8px;
+		border: 1px solid #262626;
+		background: #171717;
+		color: #f5f5f5;
 		outline: none;
 		font-family: inherit;
 		transition: all 0.15s ease;
 	}
 	.header-search-input:focus {
-		border-color: #ef4444;
-		background: #ffffff;
-		box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+		border-color: #f43f5e;
+		box-shadow: 0 0 0 2px rgba(244, 63, 94, 0.2);
 	}
 
 	@media (max-width: 850px) {
-		.header-search-form {
-			display: none;
-		}
+		.header-search-form { display: none; }
 	}
 
 	.progress-bus {
@@ -177,26 +251,9 @@ import { SITE_TITLE } from '../consts';
 	.progress-fill {
 		height: 100%;
 		width: 0%;
-		background: #ef4444;
-		box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+		background: linear-gradient(to r, #f59e0b, #f43f5e);
+		box-shadow: 0 0 8px rgba(244, 63, 94, 0.6);
 		transition: width 0.05s ease-out;
 	}
-
-	:global(html.dark) header {
-		background: rgba(15, 23, 42, 0.88);
-		border-bottom-color: #1e293b;
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-	}
-	:global(html.dark) .logo-text-main { color: #f8fafc !important; }
-	:global(html.dark) .internal-links a { color: #cbd5e1; }
-	:global(html.dark) .internal-links a.active { color: #f8fafc; }
-	:global(html.dark) .header-search-input {
-		background: #1e293b;
-		border-color: #334155;
-		color: #f8fafc;
-	}
-	:global(html.dark) .header-search-input:focus {
-		background: #0f172a;
-		border-color: #ef4444;
-	}
+	.hidden { display: none !important; }
 </style>

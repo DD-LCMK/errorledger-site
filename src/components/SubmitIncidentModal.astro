@@ -1,0 +1,140 @@
+---
+// SubmitIncidentModal.astro
+---
+
+<div id="submit-incident-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md hidden transition-opacity duration-200 p-4">
+  <div class="bg-neutral-900 border border-neutral-800 w-full max-w-lg rounded-2xl p-6 md:p-8 shadow-2xl relative text-neutral-100 overflow-hidden">
+    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 via-rose-500 to-red-600"></div>
+
+    <button id="close-modal-btn" class="absolute top-4 right-4 text-neutral-400 hover:text-white p-2 rounded-lg hover:bg-neutral-800 transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+
+    <!-- Header -->
+    <div class="mb-6">
+      <div class="flex items-center gap-2 mb-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+        <span class="text-xs font-mono font-bold uppercase tracking-widest text-emerald-400">Anonymous Encrypted Intake</span>
+      </div>
+      <h3 class="text-xl md:text-2xl font-bold">Submit an Incident to the Ledger</h3>
+      <p class="text-xs text-neutral-400 mt-1">Every mistake leaves a story. All identifying names and credentials are scrubbed prior to archival review.</p>
+    </div>
+
+    <!-- Multi-Step Form -->
+    <form id="incident-form" class="space-y-4">
+      <div>
+        <label class="block text-xs font-mono text-neutral-300 uppercase mb-1.5 font-bold">1. Incident Headline</label>
+        <input 
+          type="text" 
+          id="inc-title" 
+          required 
+          placeholder="e.g. I sent a compensation spreadsheet to the whole office"
+          class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3.5 py-2.5 text-sm text-neutral-100 focus:outline-none focus:border-rose-500 transition-colors"
+        />
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-mono text-neutral-300 uppercase mb-1.5 font-bold">2. Category</label>
+          <select id="inc-cat" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-2.5 text-sm text-neutral-100 focus:outline-none focus:border-rose-500">
+            <option value="work">🧑‍💻 Work & Career</option>
+            <option value="money">💰 Money & Finance</option>
+            <option value="corporate">🏢 Corporate & Infrastructure</option>
+            <option value="ai">🤖 AI & Automation</option>
+            <option value="internet">🌐 Internet & Social</option>
+            <option value="relationships">❤️ Relationships</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-mono text-neutral-300 uppercase mb-1.5 font-bold">3. Blast Radius</label>
+          <select id="inc-damage" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-2.5 text-sm text-neutral-100 focus:outline-none focus:border-rose-500">
+            <option value="minor">Minor Embarrassment (< $10k)</option>
+            <option value="serious">Org-Wide Fallout ($10k - $1M)</option>
+            <option value="catastrophic">Existential Crisis (> $1M)</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-mono text-neutral-300 uppercase mb-1.5 font-bold">4. What Actually Happened?</label>
+        <textarea 
+          id="inc-body" 
+          rows="4" 
+          required 
+          placeholder="Describe the initial decision, the moment of realization, and who took the blame..."
+          class="w-full bg-neutral-950 border border-neutral-800 rounded-lg p-3 text-sm text-neutral-100 focus:outline-none focus:border-rose-500 transition-colors"
+        ></textarea>
+      </div>
+
+      <div class="pt-2 flex items-center justify-between">
+        <span class="text-[11px] font-mono text-neutral-500">🔒 Tier 2 Submission Protocol</span>
+        <button 
+          type="submit" 
+          class="bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white text-sm font-bold px-5 py-2.5 rounded-lg shadow-lg transition-all"
+        >
+          Submit to Archivist →
+        </button>
+      </div>
+    </form>
+
+    <!-- Success Confirmation View -->
+    <div id="form-success-view" class="hidden text-center py-8 space-y-4">
+      <div class="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto text-xl">
+        ✓
+      </div>
+      <h4 class="text-xl font-bold text-neutral-100">Incident Recorded in Intake Queue</h4>
+      <p class="text-sm text-neutral-400 max-w-sm mx-auto">
+        Your submission has been sealed. The Archivist reviews incoming leads for Tier 2 narrative reconstruction.
+      </p>
+      <button id="close-success-btn" class="text-xs font-mono text-rose-400 hover:underline pt-2">
+        Return to the Ledger
+      </button>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function() {
+    const modal = document.getElementById('submit-incident-modal');
+    const closeBtn = document.getElementById('close-modal-btn');
+    const form = document.getElementById('incident-form');
+    const successView = document.getElementById('form-success-view');
+    const closeSuccessBtn = document.getElementById('close-success-btn');
+
+    function openModal() {
+      if (modal) modal.classList.remove('hidden');
+    }
+    function closeModal() {
+      if (modal) modal.classList.add('hidden');
+    }
+
+    document.querySelectorAll('[data-open-submit-modal]').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        openModal();
+      });
+    });
+
+    closeBtn?.addEventListener('click', closeModal);
+    closeSuccessBtn?.addEventListener('click', closeModal);
+    modal?.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    form?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = document.getElementById('inc-title').value;
+      const cat = document.getElementById('inc-cat').value;
+      const damage = document.getElementById('inc-damage').value;
+      const body = document.getElementById('inc-body').value;
+
+      const submission = { title, cat, damage, body, date: new Date().toISOString() };
+      const existing = JSON.parse(localStorage.getItem('errorledger_submissions') || '[]');
+      existing.push(submission);
+      localStorage.setItem('errorledger_submissions', JSON.stringify(existing));
+
+      form.classList.add('hidden');
+      successView.classList.remove('hidden');
+    });
+  })();
+</script>

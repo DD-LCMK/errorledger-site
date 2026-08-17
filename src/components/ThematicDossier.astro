@@ -1,0 +1,57 @@
+---
+interface Props {
+  dossierName?: string;
+  items?: Array<{
+    title: string;
+    slug: string;
+    read_time: number;
+    hook: string;
+  }>;
+}
+
+const {
+  dossierName = "The Corporate Scapegoat & Cloud Monoculture Dossier",
+  items = [
+    {
+      title: "The $440 Million Trading Glitch That Killed Knight Capital in 45 Minutes",
+      slug: "knight-capital-trading-glitch-45-minutes",
+      read_time: 5,
+      hook: "How a forgotten server running 8-year-old test code bankrupted a Wall Street titan before the opening bell."
+    },
+    {
+      title: "The Junior Admin Who Deleted AWS Us-East-1 S3 with a Typo",
+      slug: "junior-admin-deleted-aws-us-east-1-s3-typo",
+      read_time: 4,
+      hook: "One incorrect command parameter removed more servers than intended, taking down half the global internet."
+    }
+  ]
+} = Astro.props;
+---
+
+<div class="thematic-dossier-box my-12 p-6 rounded-2xl bg-neutral-900/60 border border-neutral-800 text-neutral-100">
+  <div class="flex items-center gap-2 mb-3">
+    <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">
+      🗂️ Thematic Dossier
+    </span>
+    <span class="text-xs text-neutral-500 font-mono">Bingeable Investigation Trail</span>
+  </div>
+
+  <h4 class="text-lg font-bold text-neutral-100 mb-4">{dossierName}</h4>
+
+  <div class="space-y-3">
+    {items.map((item) => (
+      <a href={`/blog/${item.slug}`} class="block p-3.5 rounded-xl bg-neutral-950/70 border border-neutral-800/80 hover:border-rose-500/50 hover:bg-neutral-900 transition-all group no-underline">
+        <div class="flex items-center justify-between text-xs font-mono text-neutral-500 mb-1">
+          <span class="text-rose-400/80 group-hover:text-rose-400">Next Case File</span>
+          <span>⏱️ {item.read_time} min read</span>
+        </div>
+        <div class="text-sm font-bold text-neutral-200 group-hover:text-white mb-1">
+          {item.title}
+        </div>
+        <div class="text-xs text-neutral-400 leading-relaxed line-clamp-2">
+          {item.hook}
+        </div>
+      </a>
+    ))}
+  </div>
+</div>

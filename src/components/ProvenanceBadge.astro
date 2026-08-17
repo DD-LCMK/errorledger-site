@@ -1,0 +1,57 @@
+---
+interface Props {
+  tier?: number;
+  label?: string;
+  source?: string;
+}
+
+const {
+  tier = 1,
+  label = "Documented Incident",
+  source = "Public Records & Technical Disclosures"
+} = Astro.props;
+
+const tierConfig: Record<number, { color: string; badge: string; desc: string }> = {
+  1: {
+    color: "emerald",
+    badge: "Tier 1 — Documented Incident",
+    desc: "Verified through official records, public filings, primary post-mortems, or corroborated journalism. Zero invented facts."
+  },
+  2: {
+    color: "amber",
+    badge: "Tier 2 — Direct Submission",
+    desc: "First-person account submitted by a participant. Identifying details scrubbed; underlying core events unverified independently."
+  },
+  3: {
+    color: "indigo",
+    badge: "Tier 3 — Editorial Reconstruction",
+    desc: "Synthesized from multiple verified accounts. Transitions and non-essential dialogue reconstructed for narrative clarity."
+  },
+  4: {
+    color: "rose",
+    badge: "Tier 4 — The Fiction Ledger",
+    desc: "Speculative dramatization exploring psychological and systemic failure modes in a fictional setting."
+  }
+};
+
+const current = tierConfig[tier] || tierConfig[1];
+---
+
+<div class="provenance-badge-box mb-8 p-4 rounded-xl bg-neutral-900/60 border border-neutral-800 text-sm">
+  <div class="flex items-center justify-between gap-2 mb-2 flex-wrap">
+    <div class="flex items-center gap-2">
+      <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+      <span class="font-mono text-xs uppercase font-bold text-neutral-200 tracking-wider">
+        {label || current.badge}
+      </span>
+    </div>
+    {source && (
+      <span class="text-xs font-mono text-neutral-400 bg-neutral-950 px-2 py-0.5 rounded border border-neutral-800">
+        Source: {source}
+      </span>
+    )}
+  </div>
+  <p class="text-xs text-neutral-400 leading-relaxed">
+    {current.desc}
+  </p>
+</div>

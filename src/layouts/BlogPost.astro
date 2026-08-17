@@ -4,34 +4,47 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
+import ProvenanceBadge from '../components/ProvenanceBadge.astro';
+import ReaderVerdict from '../components/ReaderVerdict.astro';
+import AudioDispatch from '../components/AudioDispatch.astro';
+import ThematicDossier from '../components/ThematicDossier.astro';
 import { getCollection } from 'astro:content';
 
 type Props = CollectionEntry<'blog'>['data'] & { body?: string };
 
-// FIXED: Destructure read_time_minutes and heroImage directly from the frontmatter props
-const { title, meta_title, description, pubDate, tags = [], article_confidence, read_time_minutes, heroImage } = Astro.props;
+const {
+	title,
+	subtitle,
+	meta_title,
+	description,
+	pubDate,
+	incidentDate,
+	tags = [],
+	category = 'corporate',
+	archetype = 'the-incident',
+	provenance_tier = 1,
+	provenance_label,
+	provenance_source,
+	archivist_summary,
+	verdict_question,
+	verdict_options,
+	read_time_minutes,
+	heroImage,
+	slug = "entry"
+} = Astro.props;
 
-// Calculate Reading Time Fallback (Used only if frontmatter doesn't have it)
 const rawContent = Astro.props.body || '';
 const wordCount = rawContent.split(/\s+/).filter(Boolean).length;
 const calculatedReadTime = Math.max(1, Math.ceil(wordCount / 200));
-
-// FIXED: Prioritize the frontmatter value over the manual calculation
 const displayReadTime = read_time_minutes || calculatedReadTime;
 
 const seoTitle = meta_title || title;
-
-// Derive article section from first tag for schema categorization
-const articleSection = tags.length > 0 ? tags[0] : 'Engineering Analysis';
-
-// Compute clean canonical URL (strips .html extension and trailing slashes)
 const cleanPathname = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '');
 const cleanUrl = new URL(cleanPathname || '/', Astro.site).href;
 
-// Dynamically generate Google JSON-LD TechArticle schema from post frontmatter
 const schemaData = {
 	"@context": "https://schema.org",
-	"@type": "TechArticle",
+	"@type": "NewsArticle",
 	"headline": title,
 	"description": description,
 	"datePublished": pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
@@ -39,14 +52,13 @@ const schemaData = {
 	"url": cleanUrl,
 	"wordCount": wordCount,
 	"timeRequired": `PT${displayReadTime}M`,
-	"articleSection": articleSection,
-	// RESOLVES P1 ISSUE: Injects dynamic hero image into JSON-LD for rich Google snippets
+	"articleSection": category,
 	"image": [
 		new URL(heroImage || '/images/default-social-card.png', Astro.site).href
 	],
 	"author": {
-		"@type": "Organization",
-		"name": "ErrorLedger Editorial Team",
+		"@type": "Person",
+		"name": "The Archivist",
 		"url": "https://errorledger.com/about"
 	},
 	"publisher": {
@@ -56,23 +68,16 @@ const schemaData = {
 		"logo": {
 			"@type": "ImageObject",
 			"url": "https://errorledger.com/favicon.svg"
-		},
-		"founder": {
-			"@type": "Person",
-			"name": "Chang Kim",
-			"jobTitle": "Independent Software Engineer"
 		}
 	}
 };
 
-// Dynamic breadcrumb: Home > Blog > [Post Title]
 const postBreadcrumb = [
 	{ name: 'Home', url: 'https://errorledger.com' },
-	{ name: 'Blog', url: 'https://errorledger.com/blog' },
+	{ name: 'Ledger', url: 'https://errorledger.com/blog' },
 	{ name: seoTitle }
 ];
 
-// 1. Fetch and sort collection to establish relative document paths
 const allPosts = await getCollection('blog');
 const sortedPosts = allPosts.sort((a, b) => {
 	const dateA = a.data.pubDate ? new Date(a.data.pubDate).valueOf() : 0;
@@ -80,36 +85,29 @@ const sortedPosts = allPosts.sort((a, b) => {
 	return dateB - dateA;
 });
 
-// 2. Identify neighbors based on the current document title match
 const currentIndex = sortedPosts.findIndex(post => post.data.title === title);
 const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
 const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
 
-// 3. Robust routing match to flag utility layout views (hides tag bars and date info)
 const lowercaseTags = tags.map((tag: string) => tag.toLowerCase());
 const isStaticPage = 
 	lowercaseTags.includes('meta') || 
 	lowercaseTags.includes('contact') || 
 	lowercaseTags.includes('privacy') || 
 	lowercaseTags.includes('about') ||
-	lowercaseTags.includes('methodology') ||
 	title.toLowerCase().includes('privacy') ||
 	title.toLowerCase().includes('about') ||
-	title.toLowerCase().includes('contact') ||
-	title.toLowerCase().includes('methodology');
+	title.toLowerCase().includes('contact');
 
 const showSidebar = !isStaticPage && (nextPost || prevPost);
 ---
 
-<html lang="en">
+<html lang="en" class="dark">
 	<head>
-		<!-- RESOLVES P1 ISSUE: Pass dynamic heroImage, article type, and breadcrumb to meta tags -->
 		<BaseHead title={seoTitle} description={description} image={heroImage} type="article" breadcrumb={postBreadcrumb} />
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-		<!-- Automated Google JSON-LD Structured Data Injection -->
 		<script type="application/ld+json" set:html={JSON.stringify(schemaData)} />
 		<style>
-			main { width: calc(100% - 2rem); max-width: 960px; margin: 0 auto; padding: 2em 1rem; }
+			main { width: calc(100% - 2rem); max-width: 900px; margin: 0 auto; padding: 2em 1rem 6rem 1rem; }
 			
 			.post-layout-grid {
 				display: grid;
@@ -138,9 +136,9 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 					height: fit-content;
 					max-height: calc(100vh - 7rem);
 					overflow-y: auto;
-					background: #f8fafc;
-					border: 1px solid #e2e8f0;
-					border-radius: 8px;
+					background: #171717;
+					border: 1px solid #262626;
+					border-radius: 12px;
 					padding: 1.25rem;
 				}
 			}
@@ -157,176 +155,179 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 				font-family: ui-monospace, monospace;
 				font-size: 0.68rem;
 				font-weight: 700;
-				color: #94a3b8;
+				color: #a3a3a3;
 				text-transform: uppercase;
 				margin-bottom: 0.25rem;
 				letter-spacing: 0.025em;
 			}
 			.nav-node-title {
 				display: block;
-				font-size: 0.82rem;
-				color: #475569;
-				line-height: 1.35;
+				font-size: 0.85rem;
+				color: #e5e5e5;
+				line-height: 1.4;
 				font-weight: 600;
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
 				transition: color 0.15s ease;
 			}
-			.nav-node-link:hover .nav-node-title { color: #ef4444 !important; }
+			.nav-node-link:hover .nav-node-title { color: #f43f5e !important; }
 
-			.prose { color: #2d3748; line-height: 1.75; font-size: 1.1rem; }
-			.prose h1 { font-size: 2.25em; margin-top: 0; margin-bottom: 0.8em; color: #1a202c; line-height: 1.2; }
-			.prose h2 { font-size: 1.5em; margin-top: 1.5em; margin-bottom: 0.5em; color: #2d3748; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.3em; scroll-margin-top: 6.5rem; }
-			.prose :global(h3) { font-size: 1.2em; margin-top: 1.3em; margin-bottom: 0.4em; color: #2d3748; font-weight: 700; scroll-margin-top: 6.5rem; }
+			.prose { color: #d4d4d4; line-height: 1.85; font-size: 1.15rem; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+			.prose h1 { font-size: 2.3em; margin-top: 0; margin-bottom: 0.4em; color: #f5f5f5; line-height: 1.2; font-weight: 800; letter-spacing: -0.025em; }
+			.article-subtitle { font-size: 1.25rem; color: #a3a3a3; line-height: 1.5; margin-bottom: 1.5rem; font-weight: 400; }
+			.prose h2 { font-size: 1.6em; margin-top: 2em; margin-bottom: 0.75em; color: #fafafa; font-weight: 700; border-bottom: 1px solid #262626; padding-bottom: 0.4em; letter-spacing: -0.015em; }
+			.prose :global(h3) { font-size: 1.3em; margin-top: 1.5em; margin-bottom: 0.5em; color: #f5f5f5; font-weight: 700; }
+			.prose :global(p) { margin-bottom: 1.5rem; }
 			
-			.prose :global(pre) { position: relative !important; padding: 2.75rem 1rem 1.25rem 1rem !important; border-radius: 8px !important; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important; }
-			.prose :global(code) { background-color: #f7fafc; padding: 0.2em 0.4em; border-radius: 4px; font-size: 0.9em; color: #e53e3e; font-family: monospace; }
-			.prose :global(pre code) { background-color: transparent !important; padding: 0 !important; color: inherit !important; font-size: inherit !important; }
-			
-			.prose :global(.code-copy-btn) {
-				position: absolute !important;
-				top: 0.75rem !important;
-				right: 0.75rem !important;
-				background: #ffffff !important;
-				border: 1px solid #e2e8f0 !important;
-				padding: 0.35rem 0.65rem !important;
-				border-radius: 6px !important;
-				font-size: 0.75rem !important;
-				font-family: system-ui, -apple-system, sans-serif !important;
-				cursor: pointer !important;
-				color: #475569 !important;
-				font-weight: 600 !important;
-				transition: all 0.15s ease-in-out !important;
-				opacity: 0;
-				box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-				z-index: 10 !important;
+			.prose :global(blockquote) {
+				background: #171717;
+				border-left: 4px solid #f43f5e;
+				border-radius: 8px;
+				padding: 1.5rem;
+				margin: 2rem 0;
+				color: #e5e5e5;
+				font-style: normal;
 			}
-			.prose :global(pre:hover .code-copy-btn) { opacity: 1 !important; }
-			.prose :global(.code-copy-btn:hover) { background: #f8fafc !important; border-color: #cbd5e1 !important; color: #0f172a !important; transform: translateY(-1px); }
 
-			.prose :global(table) { width: 100%; margin: 2em 0; border-collapse: collapse; }
-			.prose :global(th) { background-color: #f7fafc; padding: 10px; border-bottom: 2px solid #edf2f7; text-align: left; }
-			.prose :global(td) { padding: 10px; border-bottom: 1px solid #edf2f7; }
-			
-			.meta-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px dashed #e2e8f0; flex-wrap: wrap; gap: 1rem; }
-			.date-info { color: #718096; font-size: 0.88rem; display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+			.meta-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px dashed #262626; flex-wrap: wrap; gap: 1rem; }
+			.date-info { color: #a3a3a3; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 			.share-actions { display: flex; gap: 0.5rem; }
-			.share-btn { background: #ffffff; border: 1px solid #cbd5e1; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; color: #334155; text-decoration: none; font-weight: 500; }
-			.share-btn:hover { background: #f8fafc; border-color: #94a3b8; color: #0f172a; }
+			.share-btn { background: #171717; border: 1px solid #262626; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; color: #d4d4d4; text-decoration: none; font-weight: 500; }
+			.share-btn:hover { background: #262626; color: #ffffff; }
 
 			.tag-container { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+			.badge-tag { background: #171717; border: 1px solid #262626; color: #a3a3a3; font-size: 0.75rem; padding: 0.25rem 0.65rem; border-radius: 6px; text-decoration: none; font-family: ui-monospace, monospace; }
+			.badge-tag:hover { color: #f43f5e; border-color: #f43f5e; }
 
-			/* --- E-E-A-T AUTHOR BYLINE --- */
-			.author-byline {
-				background: #f8fafc;
-				border: 1px solid #e2e8f0;
-				border-left: 4px solid #ef4444;
-				border-radius: 6px;
-				padding: 1.25rem;
-				margin-bottom: 2rem;
+			/* Floating Action Bar */
+			.floating-action-bar {
+				position: fixed;
+				bottom: 1.5rem;
+				left: 50%;
+				transform: translateX(-50%) translateY(100px);
+				z-index: 40;
+				background: rgba(23, 23, 23, 0.9);
+				backdrop-filter: blur(16px);
+				-webkit-backdrop-filter: blur(16px);
+				border: 1px solid #333333;
+				box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+				border-radius: 9999px;
+				padding: 0.4rem 0.75rem;
 				display: flex;
-				flex-direction: column;
+				align-items: center;
+				gap: 0.5rem;
+				transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+			}
+			.floating-action-bar.visible {
+				transform: translateX(-50%) translateY(0);
+			}
+			.float-btn {
+				background: transparent;
+				border: none;
+				color: #e5e5e5;
+				font-size: 0.82rem;
+				font-weight: 600;
+				padding: 0.4rem 0.85rem;
+				border-radius: 9999px;
+				cursor: pointer;
+				display: inline-flex;
+				align-items: center;
 				gap: 0.35rem;
+				transition: all 0.15s ease;
+				text-decoration: none;
 			}
-			.author-name { font-weight: 800; color: #0f172a; font-size: 1.05rem; }
-			.author-title { color: #475569; font-size: 0.9rem; font-family: ui-monospace, monospace; }
-			.author-reviewed { color: #64748b; font-size: 0.85rem; margin-top: 0.25rem; display: flex; align-items: center; gap: 0.35rem; }
-			.author-reviewed-icon { color: #10b981; }
-
-			/* --- STRICT DARK MODE OVERRIDES --- */
-			:global(html.dark) .prose { color: #cbd5e1; }
-			:global(html.dark) .prose h1, :global(html.dark) .prose h2, :global(html.dark) .prose :global(h3) { color: #f8fafc; }
-			:global(html.dark) .prose :global(th) { background-color: #1e293b; border-bottom-color: #334155; }
-			:global(html.dark) .prose :global(td) { border-bottom-color: #334155; }
-			:global(html.dark) .meta-wrapper { border-bottom-color: #334155; }
-			:global(html.dark) .share-btn { background: #1e293b; border-color: #334155; color: #cbd5e1; }
-			:global(html.dark) .share-btn:hover { background: #273549; border-color: #475569; color: #f8fafc; }
-
-			:global(html.dark) .author-byline { background: #1e293b; border-color: #334155; border-left-color: #ef4444; }
-			:global(html.dark) .author-name { color: #f8fafc; }
-			:global(html.dark) .author-title { color: #94a3b8; }
-			:global(html.dark) .author-reviewed { color: #94a3b8; }
-
-			:global(html.dark) .post-layout-grid.has-sidebar .sidebar-wrapper {
-				background: #1e293b !important;
-				border: 1px solid #334155 !important;
-				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+			.float-btn:hover {
+				background: #262626;
+				color: #ffffff;
 			}
-			:global(html.dark) .nav-node-title { color: #cbd5e1 !important; }
-			:global(html.dark) .nav-node-link:hover .nav-node-title { color: #ef4444 !important; }
-			:global(html.dark) .nav-node-label { color: #64748b !important; }
-
-			:global(html.dark) .prose :global(.code-copy-btn) { background: #1e293b !important; border-color: #334155 !important; color: #cbd5e1 !important; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important; }
-			:global(html.dark) .prose :global(.code-copy-btn:hover) { background: #273549 !important; border-color: #475569 !important; color: #f8fafc !important; }
-			:global(html.dark) .prose :global(pre) { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important; }
+			.float-btn-primary {
+				background: #f43f5e;
+				color: #ffffff;
+			}
+			.float-btn-primary:hover {
+				background: #fb7185;
+			}
 		</style>
 	</head>
 
-	<body>
+	<body class="bg-neutral-950 text-neutral-200 antialiased min-h-screen">
 		<Header />
 		<main>
 			<div class={showSidebar ? "post-layout-grid has-sidebar" : "post-layout-grid"}>
-				<!-- Main Content Panel -->
 				<article>
 					<div class="prose">
 						{!isStaticPage && (
-							<div class="meta-wrapper">
-								<div class="date-info font-mono-tech">
-									{pubDate && (
-										<span>Published on <FormattedDate date={pubDate} /></span>
-									)}
-									<span>•</span>
-									<span>⏱️ {displayReadTime} min read</span>
-									
-									{article_confidence && (
-										<>
-											<span>•</span>
-											<span class="badge-pill badge-pillar-arch" style="font-size: 0.68rem;">
-												{article_confidence}
-											</span>
-										</>
-									)}
+							<>
+								<div class="meta-wrapper">
+									<div class="date-info font-mono">
+										<span class="px-2 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20 uppercase text-xs font-bold">
+											{category}
+										</span>
+										<span>•</span>
+										{pubDate && (
+											<span><FormattedDate date={pubDate} /></span>
+										)}
+										<span>•</span>
+										<span>⏱️ {displayReadTime} min read</span>
+									</div>
+
+									<div class="share-actions">
+										<a href={`https://x.com/intent/tweet?url=${encodeURIComponent(cleanUrl)}&text=${encodeURIComponent(title)}`} target="_blank" rel="noopener noreferrer" class="share-btn">
+											Share on X
+										</a>
+										<button id="copy-link-btn" class="share-btn">
+											Copy Link
+										</button>
+									</div>
 								</div>
 
-								<div class="share-actions">
-									<a href={`https://x.com/intent/tweet?url=${encodeURIComponent(cleanUrl)}&text=${encodeURIComponent(title)}`} target="_blank" rel="noopener noreferrer" class="share-btn">
-										Share on X
-									</a>
-									<button id="copy-link-btn" class="share-btn">
-										Copy Link
-									</button>
-								</div>
-							</div>
-						)}
+								<h1>{title}</h1>
+								{subtitle && <p class="article-subtitle">{subtitle}</p>}
 
-						{!isStaticPage && (
-							<div class="author-byline">
-								<span class="author-name">Written by: The ErrorLedger Editorial Team</span>
-								<span class="author-title">Database Developers, Python Architects & Infrastructure Engineers</span>
-								<span class="author-reviewed">
-									<span class="author-reviewed-icon">✓</span> 
-									Fact-Checked & Verified: {pubDate ? new Date(pubDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'Recently'}
-								</span>
-							</div>
-						)}
+								<ProvenanceBadge
+									tier={provenance_tier}
+									label={provenance_label}
+									source={provenance_source}
+								/>
 
-						{!isStaticPage && tags.length > 0 && (
-							<div class="tag-container">
-								{tags.map((tag) => (
-									<a href={`/search?q=${encodeURIComponent(tag.toLowerCase())}`} class="badge-pill badge-pillar-neutral">
-										#{tag}
-									</a>
-								))}
-							</div>
+								<!-- Interactive Feature 3: Simulated Audio Dispatch Player -->
+								<AudioDispatch title={title} duration={`${displayReadTime - 2 || 3}:45`} />
+							</>
 						)}
 
 						<slot />
+
+						{!isStaticPage && (
+							<>
+								<!-- Interactive Feature 7: Reader Verdict Poll -->
+								<div id="verdict-anchor">
+									<ReaderVerdict
+										question={verdict_question}
+										options={verdict_options}
+										slug={slug}
+									/>
+								</div>
+
+								<!-- Interactive Feature 4: Thematic Dossier Clusters -->
+								<ThematicDossier />
+
+								{tags.length > 0 && (
+									<div class="tag-container mt-8 pt-6 border-t border-neutral-800">
+										{tags.map((tag) => (
+											<a href={`/search?q=${encodeURIComponent(tag.toLowerCase())}`} class="badge-tag">
+												#{tag}
+											</a>
+										))}
+									</div>
+								)}
+							</>
+						)}
 					</div>
 				</article>
 
 				{showSidebar && (
 					<aside class="sidebar-wrapper">
+						<div class="text-xs font-mono font-bold uppercase text-neutral-400 mb-4 pb-2 border-b border-neutral-800">
+							Archive Trajectory
+						</div>
 						{nextPost && (
 							<a href={`/blog/${nextPost.data.shortenedSlug || nextPost.slug}`} class="nav-node-link">
 								<span class="nav-node-label">← Next Record</span>
@@ -344,66 +345,50 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 				)}
 			</div>
 		</main>
+
+		<!-- Interactive Feature 7: Floating Smart Action Bar -->
+		{!isStaticPage && (
+			<div id="floating-bar" class="floating-action-bar">
+				<a href="#verdict-anchor" class="float-btn float-btn-primary">
+					<span>🗳️</span> Cast Vote
+				</a>
+				<button id="float-random-btn" class="float-btn">
+					<span>🎲</span> Next Case
+				</button>
+				<button id="float-share-btn" class="float-btn">
+					<span>🔗</span> Share
+				</button>
+			</div>
+		)}
+
 		<Footer />
 
 		<script>
 			const copyBtn = document.getElementById('copy-link-btn');
-			if (copyBtn) {
-				copyBtn.addEventListener('click', () => {
-					navigator.clipboard.writeText(window.location.href);
-					const originalText = copyBtn.textContent;
-					copyBtn.textContent = 'Copied!';
-					setTimeout(() => {
-						copyBtn.textContent = originalText;
-					}, 2000);
-				});
+			const floatShareBtn = document.getElementById('float-share-btn');
+			const floatBar = document.getElementById('floating-bar');
+			const floatRandomBtn = document.getElementById('float-random-btn');
+
+			function copyCurrentUrl() {
+				navigator.clipboard.writeText(window.location.href);
+				alert('Receipt link copied to clipboard!');
 			}
 
-			const codeBlocks = document.querySelectorAll('.prose pre');
-			codeBlocks.forEach((block) => {
-				const button = document.createElement('button');
-				button.className = 'code-copy-btn';
-				button.textContent = 'Copy';
-				block.appendChild(button);
+			copyBtn?.addEventListener('click', copyCurrentUrl);
+			floatShareBtn?.addEventListener('click', copyCurrentUrl);
 
-				button.addEventListener('click', async () => {
-					const codeElement = block.querySelector('code');
-					const textToCopy = codeElement ? codeElement.innerText : (block as HTMLElement).innerText;
-					
-					try {
-						await navigator.clipboard.writeText(textToCopy);
-						button.textContent = 'Copied!';
-						setTimeout(() => {
-							button.textContent = 'Copy';
-						}, 2000);
-					} catch (err) {
-						console.error('Failed to copy code snippet text: ', err);
-					}
-				});
+			floatRandomBtn?.addEventListener('click', () => {
+				window.location.href = '/blog';
 			});
 
-			document.addEventListener('astro:page-load', () => {
-				const postLinks = document.querySelectorAll('.prose a');
-				postLinks.forEach((link) => {
-					const href = link.getAttribute('href');
-					
-					if (href && href.startsWith('http') && !href.includes('web.archive.org') && !href.includes(window.location.host)) {
-						if (link.nextElementSibling && link.nextElementSibling.classList.contains('wayback-fallback')) return;
-
-						const archiveLink = document.createElement('a');
-						archiveLink.href = `https://web.archive.org/web/${href}`;
-						archiveLink.target = '_blank';
-						archiveLink.rel = 'noopener noreferrer';
-						archiveLink.className = 'wayback-fallback';
-						archiveLink.style.fontSize = '0.78em';
-						archiveLink.style.marginLeft = '0.4rem';
-						archiveLink.style.color = '#64748b';
-						archiveLink.style.fontFamily = 'ui-monospace, monospace';
-						archiveLink.textContent = '[archive]';
-						
-						link.parentNode?.insertBefore(archiveLink, link.nextSibling);
-					}
-				});
+			window.addEventListener('scroll', () => {
+				const scrollY = window.scrollY;
+				const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+				if (docHeight > 0 && scrollY / docHeight > 0.25) {
+					floatBar?.classList.add('visible');
+				} else {
+					floatBar?.classList.remove('visible');
+				}
 			});
 		</script>
 	</body>
