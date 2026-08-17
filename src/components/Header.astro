@@ -10,23 +10,24 @@ const allSlugs = allPosts.map(p => {
 	return `${prefix}${p.data.slug.replace(/^ko\//, '')}`;
 });
 
-const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
-const isKorean = currentPath === '/ko' || currentPath.startsWith('/ko/');
+const rawPath = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+const isKorean = rawPath === '/ko' || rawPath.startsWith('/ko/');
+
 const homeUrl = isKorean ? '/ko' : '/';
 const archiveUrl = isKorean ? '/ko/blog' : '/blog';
 const aboutUrl = isKorean ? '/ko/about' : '/about';
 const searchUrl = isKorean ? '/ko/search' : '/search';
 
-// Precise Language Switcher target calculation
+// Calculate target URL to switch between languages
 let langTargetUrl = '/';
 if (isKorean) {
-	const stripped = currentPath.replace(/^\/ko/, '');
+	const stripped = rawPath.replace(/^\/ko/, '');
 	langTargetUrl = stripped || '/';
 } else {
-	if (currentPath === '/') {
+	if (rawPath === '/') {
 		langTargetUrl = '/ko';
 	} else {
-		langTargetUrl = `/ko${currentPath}`;
+		langTargetUrl = `/ko${rawPath}`;
 	}
 }
 const langSwitchLabel = isKorean ? '🇺🇸 English' : '🇰🇷 한국어';
@@ -59,7 +60,7 @@ const langSwitchLabel = isKorean ? '🇺🇸 English' : '🇰🇷 한국어';
 			<HeaderLink href={aboutUrl}>{isKorean ? "소개" : "About"}</HeaderLink>
 			
 			<!-- Language Switcher Button -->
-			<a href={langTargetUrl} class="nav-action-btn lang-btn" title="Switch language">
+			<a href={langTargetUrl} id="lang-toggle-btn" class="nav-action-btn lang-btn" title="Switch language">
 				{langSwitchLabel}
 			</a>
 
@@ -119,11 +120,35 @@ const langSwitchLabel = isKorean ? '🇺🇸 English' : '🇰🇷 한국어';
 		updateIcons();
 	});
 
+	// Dynamic, bulletproof client-side Language Switcher
+	const langToggleBtn = document.getElementById('lang-toggle-btn');
+	if (langToggleBtn) {
+		// Update label dynamically if mismatch exists
+		const path = window.location.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+		const isClientKo = path === '/ko' || path.startsWith('/ko/');
+		langToggleBtn.innerText = isClientKo ? '🇺🇸 English' : '🇰🇷 한국어';
+
+		langToggleBtn.addEventListener('click', function(e) {
+			e.preventDefault();
+			const cur = window.location.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+			const isKo = cur === '/ko' || cur.startsWith('/ko/');
+			let destination = '/';
+			if (isKo) {
+				destination = cur.replace(/^\/ko/, '') || '/';
+			} else {
+				destination = cur === '/' ? '/ko' : `/ko${cur}`;
+			}
+			window.location.href = destination;
+		});
+	}
+
 	// Global Random Failure Engine across all buttons (respects current language)
 	document.addEventListener('click', function(e) {
 		if (e.target.closest('#random-failure-btn') || e.target.closest('#float-random-btn')) {
 			e.preventDefault();
-			const slugs = (window.__ERRORLEDGER_SLUGS__ || []).filter(s => isKorean ? s.startsWith('/ko/blog') : !s.startsWith('/ko/blog'));
+			const cur = window.location.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+			const isKo = cur === '/ko' || cur.startsWith('/ko/');
+			const slugs = (window.__ERRORLEDGER_SLUGS__ || []).filter(s => isKo ? s.startsWith('/ko/blog') : !s.startsWith('/ko/blog'));
 			const pool = slugs.length > 0 ? slugs : window.__ERRORLEDGER_SLUGS__;
 			const randomTarget = pool[Math.floor(Math.random() * pool.length)];
 			window.location.href = randomTarget;
