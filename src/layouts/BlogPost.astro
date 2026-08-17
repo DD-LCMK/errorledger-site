@@ -344,48 +344,70 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 			}
 			:global(html:not(.dark)) .prose h1,
 			:global(html:not(.dark)) .prose h2,
-			:global(html:not(.dark)) .prose :global(h3) {
-				color: #0f172a;
+			:global(html:not(.dark)) .prose :global(h3),
+			:global(html:not(.dark)) .prose :global(h4) {
+				color: #0f172a !important;
 			}
 			:global(html:not(.dark)) .article-subtitle {
-				color: #64748b;
+				color: #64748b !important;
 			}
 			:global(html:not(.dark)) .prose :global(blockquote) {
-				background: #f8fafc;
-				border-left-color: #f43f5e;
-				color: #1e293b;
+				background: #f8fafc !important;
+				border-left-color: #f43f5e !important;
+				color: #1e293b !important;
 			}
-			:global(html:not(.dark)) .sidebar-wrapper,
+			:global(html:not(.dark)) .post-layout-grid.has-sidebar .sidebar-wrapper,
+			:global(html:not(.dark)) .sidebar-wrapper {
+				background: #ffffff !important;
+				border-color: #e2e8f0 !important;
+				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+			}
+			:global(html:not(.dark)) .sidebar-heading {
+				color: #64748b !important;
+				border-bottom-color: #e2e8f0 !important;
+			}
+			:global(html:not(.dark)) .nav-node-label {
+				color: #f43f5e !important;
+			}
+			:global(html:not(.dark)) .nav-node-title {
+				color: #0f172a !important;
+			}
+			:global(html:not(.dark)) .nav-node-link:hover .nav-node-title {
+				color: #f43f5e !important;
+			}
 			:global(html:not(.dark)) .incident-nav-card {
-				background: #f8fafc;
-				border-color: #e2e8f0;
+				background: #ffffff !important;
+				border-color: #e2e8f0 !important;
+				box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04) !important;
 			}
-			:global(html:not(.dark)) .nav-node-title,
 			:global(html:not(.dark)) .incident-nav-title {
-				color: #0f172a;
+				color: #0f172a !important;
+			}
+			:global(html:not(.dark)) .incident-nav-card:hover {
+				background: #f1f5f9 !important;
 			}
 			:global(html:not(.dark)) .share-btn,
 			:global(html:not(.dark)) .badge-tag {
-				background: #f8fafc;
-				border-color: #cbd5e1;
-				color: #475569;
+				background: #f8fafc !important;
+				border-color: #cbd5e1 !important;
+				color: #475569 !important;
 			}
 			:global(html:not(.dark)) .share-btn:hover,
 			:global(html:not(.dark)) .badge-tag:hover {
-				background: #e2e8f0;
-				color: #0f172a;
+				background: #e2e8f0 !important;
+				color: #0f172a !important;
 			}
 			:global(html:not(.dark)) .floating-action-bar {
-				background: rgba(255, 255, 255, 0.95);
-				border-color: #cbd5e1;
-				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+				background: rgba(255, 255, 255, 0.95) !important;
+				border-color: #cbd5e1 !important;
+				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
 			}
 			:global(html:not(.dark)) .float-btn {
-				color: #334155;
+				color: #334155 !important;
 			}
 			:global(html:not(.dark)) .float-btn:hover {
-				background: #f1f5f9;
-				color: #0f172a;
+				background: #f1f5f9 !important;
+				color: #0f172a !important;
 			}
 		</style>
 	</head>
