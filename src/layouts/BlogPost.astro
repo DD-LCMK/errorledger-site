@@ -4,7 +4,6 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import ProvenanceBadge from '../components/ProvenanceBadge.astro';
-import AudioDispatch from '../components/AudioDispatch.astro';
 import ThematicDossier from '../components/ThematicDossier.astro';
 import ReaderVerdict from '../components/ReaderVerdict.astro';
 import { SITE_TITLE } from '../consts';
@@ -802,15 +801,12 @@ const rankedCases = isKorean ? [
 									lang={lang}
 								/>
 
-								<!-- Simulated Audio Dispatch Player -->
-								<AudioDispatch title={title} duration={`${displayReadTime - 2 || 3}:45`} lang={lang} slug={cleanSlug} audioUrl={`/audio/${lang}/${cleanSlug}.mp3`} />
-
 								<!-- Detailed Incident Executive Briefing Box -->
 								{(executive_summary || archivist_summary || description) && (
 									<div class="executive-summary-card">
 										<div class="summary-header-row">
 											<span class="summary-badge">⚡ {isKorean ? "사건 핵심 브리핑" : "Executive Incident Briefing"}</span>
-											<span class="summary-audio-indicator">🎙️ {isKorean ? "오디오 브리핑 동기화" : "Synced with Audio Dispatch"}</span>
+											<span class="summary-audio-indicator">📖 {isKorean ? "60초 핵심 요약" : "60-Second Brief"}</span>
 										</div>
 										<div class="executive-summary-content">
 											<p class="summary-lead-text">
