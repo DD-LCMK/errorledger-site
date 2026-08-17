@@ -1,0 +1,73 @@
+---
+import Layout from '../../layouts/BlogPost.astro';
+---
+
+<Layout
+	title="탐사 및 사실 검증 방법론"
+	meta_title="에러레저 탐사 방법론: 4단계 사실 출처와 Claim Firewall"
+	description="에러레저의 4단계 출처 등급제(Provenance), 사실 조작 금지 원칙(Claim Firewall), 그리고 10단계 편집 라이프사이클을 안내합니다."
+	lang="ko"
+	pubDate={new Date('August 17, 2026')}
+	tags={["meta", "methodology", "research"]}
+>
+	<h2>출처 검증 표준: 철저한 증거 투명성</h2>
+	<p>
+		독자의 신뢰를 보호하고 신뢰성 있는 아카이브를 구축하기 위해, 에러레저의 모든 사건 기록은 4가지 엄격한 <strong>출처 검증 등급(Provenance Tier)</strong> 중 하나로 분류되어 기사 상단에 표시됩니다:
+	</p>
+
+	<ul>
+		<li>
+			<strong>Tier 1 — 공식 문서 검증 사건 (Documented Incident):</strong>
+			<br/>
+			법원 판결문, 금융감독원/SEC 공시, 공식 사후 분석 보고서(RCA), 복수의 언론 보도로 검증된 실제 사건.
+			<em>핵심 원칙: 날조 0% (Absolute Zero Invention). 모든 수치, 인물, 타임라인, 기술적 결함은 1차 공식 기록에 근거합니다.</em>
+		</li>
+		<li>
+			<strong>Tier 2 — 당사자 직접 제보 (Direct Submission):</strong>
+			<br/>
+			사건 당사자가 직접 제보했거나 검증된 엔지니어링 커뮤니티에서 발굴된 실제 경험담. 개인 및 기업 식별 정보는 철저히 가명 처리되지만, 사건의 핵심 전개와 인과관계는 온전히 보존됩니다.
+		</li>
+		<li>
+			<strong>Tier 3 — 편집진 재구성 사건 (Editorial Reconstruction):</strong>
+			<br/>
+			다수의 증언과 기록을 바탕으로 한 서사적 재구성. 핵심 사실관계와 원인은 철저히 검증하되, 부차적인 대화와 전환부는 몰입감 있는 서사를 위해 재구성됩니다.
+		</li>
+		<li>
+			<strong>Tier 4 — 픽션 레저 (The Fiction Ledger):</strong>
+			<br/>
+			가상의 환경에서 인간의 심리와 시스템 붕괴 메커니즘을 탐구하는 드라마. 반드시 픽션 배지가 부여됩니다.
+		</li>
+	</ul>
+
+	<h2>Claim Firewall: 3대 날조 방지 원칙</h2>
+	<p>
+		에러레저 편집국은 사실 왜곡을 방지하기 위해 세 가지 엄격한 방화벽 규칙을 적용합니다:
+	</p>
+	<ol>
+		<li><strong>심리 상태 추측 금지:</strong> 공판 진술서나 인터뷰 등 1차 증거가 없는 한, 당사자의 내면 심리나 비밀스러운 동기를 기정사실로 단정하지 않습니다.</li>
+		<li><strong>진짜 독자 투표만 반영:</strong> 독자 판결 투표는 실제 유저의 참여 데이터만 기록하며, 조작된 가짜 여론 수치를 표시하지 않습니다.</li>
+		<li><strong>AI 양산형 문체(AI-Slop) 영구 퇴출:</strong> 천편일률적인 AI 클리셰와 무의미한 분량 채우기를 엄격히 금지합니다. 모든 문장은 갈등을 전개하거나 시스템의 모순을 드러내야 합니다.</li>
+	</ol>
+
+	<h2>10단계 탐사 라이프사이클</h2>
+	<p>
+		에러레저의 모든 콘텐츠는 10단계의 엄격한 파이프라인을 거쳐 발행됩니다:
+	</p>
+	<ol>
+		<li><strong>정보 수집:</strong> 공문서, 소송 기록, 원인 분석 보고서 수집.</li>
+		<li><strong>타임라인 그래프 구축:</strong> 모순 없는 절대 시간대별 사건 전개도 작성.</li>
+		<li><strong>인간 심리 및 실패 메커니즘 분석:</strong> 합리적 타협이 어떻게 참사로 이어졌는지 진단.</li>
+		<li><strong>장면 및 서사 설계:</strong> 극적 긴장감과 반전 포인트 구성.</li>
+		<li><strong>아키비스트의 집필:</strong> 위트와 통찰을 담은 초고 완성.</li>
+		<li><strong>적대적 팩트체크 QA:</strong> 사실 관계 왜곡 및 과장 여부 교차 검증.</li>
+		<li><strong>가독성 및 문체 감사:</strong> 지루한 구간 제거 및 템포 조절.</li>
+		<li><strong>패키징:</strong> 정직하면서도 호기심을 자극하는 제목과 썸네일 설계.</li>
+		<li><strong>SEO 및 구조화 데이터:</strong> 검색 엔진 표준에 맞춘 뉴스 아티클 스키마 적용.</li>
+		<li><strong>최종 배포 게이트:</strong> 정적 빌드 및 무결성 검증 후 발행.</li>
+	</ol>
+
+	<h2>정정 보도 및 문의</h2>
+	<p>
+		사건 당사자이시거나 추가적인 1차 증빙 자료를 보유하고 계신 경우, <a href="/ko/contact">편집국 문의 채널</a>을 통해 정정을 요청하실 수 있습니다. 확인된 모든 사실 정정은 투명하게 기사 하단에 업데이트됩니다.
+	</p>
+</Layout>

@@ -1,47 +1,61 @@
 ---
 const today = new Date();
+const currentPath = Astro.url.pathname;
+const isKorean = currentPath === '/ko' || currentPath.startsWith('/ko/');
+
+const homeUrl = isKorean ? '/ko' : '/';
+const archiveUrl = isKorean ? '/ko/blog' : '/blog';
+const searchUrl = isKorean ? '/ko/search' : '/search';
+const aboutUrl = isKorean ? '/ko/about' : '/about';
+const methodologyUrl = isKorean ? '/ko/methodology' : '/methodology';
+const contactUrl = isKorean ? '/ko/contact' : '/contact';
+const privacyUrl = isKorean ? '/ko/privacy' : '/privacy';
 ---
 
 <footer>
 	<div class="footer-grid">
 		<div class="footer-brand">
-			<a href="/" class="footer-logo">
+			<a href={homeUrl} class="footer-logo">
 				<span class="logo-badge">&gt;_</span>
 				<span>Error<span class="logo-red">Ledger</span></span>
 			</a>
-			<p class="footer-tagline">Real failures. Strange decisions. Unbelievable consequences. An archive of human and systemic disasters.</p>
+			<p class="footer-tagline">
+				{isKorean 
+					? "실제 실패. 기괴한 결정. 충격적인 결과. 인간과 시스템의 재난을 기록하는 아카이브." 
+					: "Real failures. Strange decisions. Unbelievable consequences. An archive of human and systemic disasters."}
+			</p>
 			<a href="/rss.xml" class="rss-link" target="_blank" rel="noopener noreferrer">
 				<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: #f43f5e; vertical-align: middle;"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg>
-				Subscribe via RSS
+				{isKorean ? "RSS 구독" : "Subscribe via RSS"}
 			</a>
 		</div>
 
 		<nav class="footer-nav-col" aria-label="Archive navigation">
-			<h4 class="footer-col-title">Archive</h4>
-			<a href="/blog" class="footer-link">All Incidents</a>
-			<a href="/search" class="footer-link">Search Ledger</a>
-			<a href="#" class="footer-link" data-open-submit-modal>+ Submit Incident</a>
+			<h4 class="footer-col-title">{isKorean ? "아카이브" : "Archive"}</h4>
+			<a href={archiveUrl} class="footer-link">{isKorean ? "전체 사건 목록" : "All Incidents"}</a>
+			<a href={searchUrl} class="footer-link">{isKorean ? "사건 검색" : "Search Ledger"}</a>
+			<a href="#" class="footer-link" data-open-submit-modal>+ {isKorean ? "사건 제보" : "Submit Incident"}</a>
 		</nav>
 
 		<nav class="footer-nav-col" aria-label="Developer tools navigation">
-			<h4 class="footer-col-title">Utilities</h4>
+			<h4 class="footer-col-title">{isKorean ? "유틸리티" : "Utilities"}</h4>
 			<a href="/tools/epoch-converter" class="footer-link">Epoch Converter</a>
 			<a href="/tools/json-formatter" class="footer-link">JSON Formatter</a>
 			<a href="/tools/jwt-decoder" class="footer-link">JWT Decoder</a>
-			<a href="/tools" class="footer-link">All Utilities &rarr;</a>
+			<a href="/tools" class="footer-link">{isKorean ? "전체 도구 →" : "All Utilities →"}</a>
 		</nav>
 
 		<nav class="footer-nav-col" aria-label="Site information">
-			<h4 class="footer-col-title">Editorial</h4>
-			<a href="/about" class="footer-link">About ErrorLedger</a>
-			<a href="/methodology" class="footer-link">Research Methodology</a>
-			<a href="/contact" class="footer-link">Contact & Tips</a>
-			<a href="/privacy" class="footer-link">Privacy Policy</a>
+			<h4 class="footer-col-title">{isKorean ? "편집국" : "Editorial"}</h4>
+			<a href={aboutUrl} class="footer-link">{isKorean ? "소개 (About)" : "About ErrorLedger"}</a>
+			<a href={methodologyUrl} class="footer-link">{isKorean ? "탐사 방법론" : "Research Methodology"}</a>
+			<a href={contactUrl} class="footer-link">{isKorean ? "제보 및 문의" : "Contact & Tips"}</a>
+			<a href={privacyUrl} class="footer-link">{isKorean ? "개인정보처리방침" : "Privacy Policy"}</a>
 		</nav>
 	</div>
 
 	<div class="footer-bottom">
-		<span>&copy; {today.getFullYear()} ErrorLedger. Every mistake leaves a story. All rights reserved.</span>
+		<span>&copy; {today.getFullYear()} ErrorLedger. {isKorean ? "모든 실수는 이야기를 남긴다." : "Every mistake leaves a story."} All rights reserved.</span>
 	</div>
 
 	<style>

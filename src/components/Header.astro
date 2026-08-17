@@ -10,17 +10,26 @@ const allSlugs = allPosts.map(p => {
 	return `${prefix}${p.data.slug.replace(/^ko\//, '')}`;
 });
 
-const currentPath = Astro.url.pathname;
-const isKorean = currentPath.startsWith('/ko');
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isKorean = currentPath === '/ko' || currentPath.startsWith('/ko/');
 const homeUrl = isKorean ? '/ko' : '/';
 const archiveUrl = isKorean ? '/ko/blog' : '/blog';
-const aboutUrl = isKorean ? '/about' : '/about';
+const aboutUrl = isKorean ? '/ko/about' : '/about';
+const searchUrl = isKorean ? '/ko/search' : '/search';
 
-// Toggle target
-const langTargetUrl = isKorean 
-	? currentPath.replace(/^\/ko/, '') || '/'
-	: `/ko${currentPath}`;
-const langSwitchLabel = isKorean ? '🇺🇸 EN' : '🇰🇷 한국어';
+// Precise Language Switcher target calculation
+let langTargetUrl = '/';
+if (isKorean) {
+	const stripped = currentPath.replace(/^\/ko/, '');
+	langTargetUrl = stripped || '/';
+} else {
+	if (currentPath === '/') {
+		langTargetUrl = '/ko';
+	} else {
+		langTargetUrl = `/ko${currentPath}`;
+	}
+}
+const langSwitchLabel = isKorean ? '🇺🇸 English' : '🇰🇷 한국어';
 ---
 
 <header>
@@ -33,7 +42,7 @@ const langSwitchLabel = isKorean ? '🇺🇸 EN' : '🇰🇷 한국어';
 		</h2>
 
 		<!-- Search Input -->
-		<form action="/search" method="GET" class="header-search-form">
+		<form action={searchUrl} method="GET" class="header-search-form">
 			<input 
 				type="text" 
 				name="q" 
