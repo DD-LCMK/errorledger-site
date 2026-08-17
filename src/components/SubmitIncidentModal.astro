@@ -14,16 +14,16 @@
     <div class="modal-header">
       <div class="intake-badge">
         <span class="intake-dot"></span>
-        <span class="intake-badge-text">Anonymous Encrypted Intake</span>
+        <span class="intake-badge-text" id="modal-intake-badge-text">Anonymous Encrypted Intake</span>
       </div>
-      <h3 class="modal-title">Submit an Incident to the Ledger</h3>
-      <p class="modal-subtitle">Every mistake leaves a story. All identifying names and credentials are scrubbed prior to archival review.</p>
+      <h3 class="modal-title" id="modal-title-text">Submit an Incident to the Ledger</h3>
+      <p class="modal-subtitle" id="modal-subtitle-text">Every mistake leaves a story. All identifying names and credentials are scrubbed prior to archival review.</p>
     </div>
 
     <!-- Multi-Step Form -->
     <form id="incident-form" class="modal-form">
       <div class="form-group">
-        <label class="form-label" for="inc-title">1. Incident Headline</label>
+        <label class="form-label" for="inc-title" id="lbl-inc-title">1. Incident Headline</label>
         <input 
           type="text" 
           id="inc-title" 
@@ -35,7 +35,7 @@
 
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label" for="inc-cat">2. Category</label>
+          <label class="form-label" for="inc-cat" id="lbl-inc-cat">2. Category</label>
           <select id="inc-cat" class="form-select">
             <option value="work">🧑‍💻 Work & Career</option>
             <option value="money">💰 Money & Finance</option>
@@ -46,7 +46,7 @@
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label" for="inc-damage">3. Blast Radius</label>
+          <label class="form-label" for="inc-damage" id="lbl-inc-damage">3. Blast Radius</label>
           <select id="inc-damage" class="form-select">
             <option value="minor">Minor Embarrassment (&lt; $10k)</option>
             <option value="serious">Org-Wide Fallout ($10k - $1M)</option>
@@ -56,7 +56,7 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="inc-body">4. What Actually Happened?</label>
+        <label class="form-label" for="inc-body" id="lbl-inc-body">4. What Actually Happened?</label>
         <textarea 
           id="inc-body" 
           rows="4" 
@@ -67,8 +67,8 @@
       </div>
 
       <div class="form-footer">
-        <span class="protocol-tag">🔒 Tier 2 Submission Protocol</span>
-        <button type="submit" class="submit-action-btn">
+        <span class="protocol-tag" id="modal-protocol-tag">🔒 Tier 2 Submission Protocol</span>
+        <button type="submit" class="submit-action-btn" id="modal-submit-btn">
           Submit to Archivist &rarr;
         </button>
       </div>
@@ -77,11 +77,11 @@
     <!-- Success Confirmation View -->
     <div id="form-success-view" class="success-view hidden">
       <div class="success-icon">&check;</div>
-      <h4 class="success-title">Incident Recorded in Intake Queue</h4>
-      <p class="success-desc">
+      <h4 class="success-title" id="modal-success-title">Incident Recorded in Intake Queue</h4>
+      <p class="success-desc" id="modal-success-desc">
         Your submission has been sealed. The Archivist reviews incoming leads for Tier 2 narrative reconstruction.
       </p>
-      <button id="close-success-btn" class="return-btn">
+      <button id="close-success-btn" class="return-btn" id="modal-return-btn">
         Return to the Ledger
       </button>
     </div>
@@ -94,7 +94,72 @@
       return document.getElementById('submit-incident-modal');
     }
 
+    function localizeModal() {
+      const isKo = document.documentElement.lang === 'ko' || window.location.pathname.startsWith('/ko');
+      if (!isKo) return;
+
+      const badgeText = document.getElementById('modal-intake-badge-text');
+      if (badgeText) badgeText.innerText = "익명 암호화 제보 창구";
+
+      const titleText = document.getElementById('modal-title-text');
+      if (titleText) titleText.innerText = "에러레저 사건 제보하기";
+
+      const subText = document.getElementById('modal-subtitle-text');
+      if (subText) subText.innerText = "모든 실수는 이야기를 남깁니다. 모든 개인 식별 정보는 편집진 검토 전 안전하게 가명 처리됩니다.";
+
+      const lblTitle = document.getElementById('lbl-inc-title');
+      if (lblTitle) lblTitle.innerText = "1. 사건 한 줄 요약 (헤드라인)";
+      const inputTitle = document.getElementById('inc-title');
+      if (inputTitle) inputTitle.placeholder = "예: 전체 사내 메일로 연봉 협상 엑셀 파일을 잘못 전송했습니다";
+
+      const lblCat = document.getElementById('lbl-inc-cat');
+      if (lblCat) lblCat.innerText = "2. 카테고리";
+      const selectCat = document.getElementById('inc-cat');
+      if (selectCat) {
+        selectCat.innerHTML = `
+          <option value="work">🧑‍💻 직장 & 커리어</option>
+          <option value="money">💰 금융 & 경제</option>
+          <option value="corporate">🏢 기업 & 인프라</option>
+          <option value="ai">🤖 AI & 자동화</option>
+          <option value="internet">🌐 인터넷 & 사회</option>
+          <option value="relationships">❤️ 인간관계</option>
+        `;
+      }
+
+      const lblDamage = document.getElementById('lbl-inc-damage');
+      if (lblDamage) lblDamage.innerText = "3. 피해 규모";
+      const selectDamage = document.getElementById('inc-damage');
+      if (selectDamage) {
+        selectDamage.innerHTML = `
+          <option value="minor">사소한 해프닝 (< 1,000만원)</option>
+          <option value="serious">조직/부서 마비 (1천만원 ~ 10억원)</option>
+          <option value="catastrophic">전사적 파탄 위기 (> 10억원)</option>
+        `;
+      }
+
+      const lblBody = document.getElementById('lbl-inc-body');
+      if (lblBody) lblBody.innerText = "4. 실제로 무슨 일이 일어났습니까?";
+      const inputBody = document.getElementById('inc-body');
+      if (inputBody) inputBody.placeholder = "처음 내린 결정, 실수를 깨달은 순간, 그리고 누가 책임을 졌는지 적어주세요...";
+
+      const protocolTag = document.getElementById('modal-protocol-tag');
+      if (protocolTag) protocolTag.innerText = "🔒 Tier 2 제보자 보호 프로토콜";
+
+      const submitBtn = document.getElementById('modal-submit-btn');
+      if (submitBtn) submitBtn.innerText = "아키비스트에게 제보하기 →";
+
+      const succTitle = document.getElementById('modal-success-title');
+      if (succTitle) succTitle.innerText = "제보가 안전하게 인테이크 큐에 봉인되었습니다";
+
+      const succDesc = document.getElementById('modal-success-desc');
+      if (succDesc) succDesc.innerText = "제보해 주셔서 감사합니다. 아키비스트가 검토 후 Tier 2 서사적 재구성 작업을 진행합니다.";
+
+      const returnBtn = document.getElementById('close-success-btn');
+      if (returnBtn) returnBtn.innerText = "에러레저로 돌아가기";
+    }
+
     function openModal() {
+      localizeModal();
       const modal = getModal();
       if (modal) modal.style.display = 'flex';
     }

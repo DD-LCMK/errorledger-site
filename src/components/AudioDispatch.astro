@@ -2,24 +2,28 @@
 interface Props {
   duration?: string;
   title?: string;
+  lang?: string;
 }
 
 const {
   duration = "3:45",
-  title = "Incident Dispatch Overview"
+  title = "Incident Dispatch Overview",
+  lang = "en"
 } = Astro.props;
+
+const isKorean = lang === 'ko';
 ---
 
-<div class="audio-dispatch-player">
+<div class="audio-dispatch-player" data-lang={lang}>
   <div class="dispatch-left">
-    <button id="dispatch-play-btn" class="dispatch-play-circle" aria-label="Play dispatch audio">
+    <button id="dispatch-play-btn" class="dispatch-play-circle" aria-label={isKorean ? "오디오 요약 재생" : "Play dispatch audio"}>
       <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
       <svg id="pause-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
     </button>
     <div class="dispatch-meta">
       <div class="dispatch-tag-row">
-        <span class="dispatch-tag">The Archivist's Audio Dispatch</span>
-        <span class="dispatch-voice-tag">AI Voice Narration</span>
+        <span class="dispatch-tag">{isKorean ? "아키비스트의 오디오 브리핑" : "The Archivist's Audio Dispatch"}</span>
+        <span class="dispatch-voice-tag">{isKorean ? "AI 음성 내레이션" : "AI Voice Narration"}</span>
       </div>
       <div class="dispatch-title">{title}</div>
     </div>
@@ -38,7 +42,7 @@ const {
 
     <span id="dispatch-timer" class="dispatch-timer-text">{duration}</span>
 
-    <button id="dispatch-speed-btn" class="speed-toggle-btn" title="Toggle narration speed">
+    <button id="dispatch-speed-btn" class="speed-toggle-btn" title={isKorean ? "재생 속도 조절" : "Toggle narration speed"}>
       1.0x
     </button>
   </div>
@@ -46,6 +50,10 @@ const {
 
 <script is:inline>
   (function() {
+    const playerEl = document.querySelector('.audio-dispatch-player');
+    const pageLang = playerEl?.getAttribute('data-lang') || document.documentElement.lang || 'en';
+    const isKo = pageLang === 'ko';
+
     const playBtn = document.getElementById('dispatch-play-btn');
     const playIcon = document.getElementById('play-icon');
     const pauseIcon = document.getElementById('pause-icon');
@@ -62,35 +70,35 @@ const {
     function getArticleText() {
       const article = document.querySelector('article .prose');
       if (!article) return '';
-      // Get title and first few paragraphs
-      const paragraphs = Array.from(article.querySelectorAll('p, h2, h3'))
-        .slice(0, 8)
-        .map(p => p.innerText)
-        .join('. ');
-      return paragraphs;
+      // Extract main narrative paragraphs, exclude code blocks and polls
+      const elements = Array.from(article.querySelectorAll('h1, h2, p:not(.article-subtitle)'))
+        .filter(el => !el.closest('#verdict-anchor') && !el.closest('.provenance-badge-box'))
+        .slice(0, 7);
+      return elements.map(el => el.innerText.trim()).filter(Boolean).join('. ');
     }
 
     function startSpeaking() {
       if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel(); // Stop any ongoing speech
+        window.speechSynthesis.cancel();
         const text = getArticleText();
         currentUtterance = new SpeechSynthesisUtterance(text);
         currentUtterance.rate = speed;
-        currentUtterance.pitch = 0.95; // Slightly deeper, archival tone
+        currentUtterance.pitch = isKo ? 1.0 : 0.95;
+        currentUtterance.volume = 0.65; // Pleasant, non-jarring volume
 
-        // Pick a natural English voice if available
         const voices = window.speechSynthesis.getVoices();
-        const preferredVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Daniel') || v.name.includes('Arthur')));
-        if (preferredVoice) {
-          currentUtterance.voice = preferredVoice;
+        if (isKo) {
+          currentUtterance.lang = 'ko-KR';
+          const koVoice = voices.find(v => v.lang.includes('ko') || v.lang.includes('KO') || v.name.includes('Korean') || v.name.includes('Yuna') || v.name.includes('Heami') || v.name.includes('Google 한국어'));
+          if (koVoice) currentUtterance.voice = koVoice;
+        } else {
+          currentUtterance.lang = 'en-US';
+          const enVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Daniel') || v.name.includes('Arthur')));
+          if (enVoice) currentUtterance.voice = enVoice;
         }
 
-        currentUtterance.onend = function() {
-          stopPlaying();
-        };
-        currentUtterance.onerror = function() {
-          stopPlaying();
-        };
+        currentUtterance.onend = function() { stopPlaying(); };
+        currentUtterance.onerror = function() { stopPlaying(); };
 
         window.speechSynthesis.speak(currentUtterance);
       }
@@ -144,7 +152,11 @@ const {
       }
     });
 
-    // Cleanup when leaving page
+    // Ensure voices are loaded asynchronously in Chrome
+    if ('speechSynthesis' in window && window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.onvoiceschanged = () => {};
+    }
+
     window.addEventListener('beforeunload', () => {
       stopSpeaking();
     });

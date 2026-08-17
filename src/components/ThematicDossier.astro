@@ -1,6 +1,7 @@
 ---
 interface Props {
   dossierName?: string;
+  lang?: string;
   items?: Array<{
     title: string;
     slug: string;
@@ -11,42 +12,71 @@ interface Props {
 }
 
 const {
-  dossierName = "The Corporate Scapegoat & Cloud Monoculture Dossier",
-  items = [
-    {
-      title: "The $440 Million Trading Glitch That Killed Knight Capital in 45 Minutes",
-      slug: "knight-capital-trading-glitch-45-minutes",
-      read_time: 5,
-      hook: "How a forgotten server running 8-year-old test code bankrupted a Wall Street titan before the opening bell.",
-      label: "Related Investigation"
-    },
-    {
-      title: "He Deleted the Production Database and Let the Intern Take the Fall",
-      slug: "deleted-production-database-blamed-intern",
-      read_time: 5,
-      hook: "A single late-night terminal mistake on a replica cluster spiraled into a masterclass in corporate scapegoating.",
-      label: "Thematic Companion"
-    }
-  ]
+  lang = "en",
+  dossierName,
+  items
 } = Astro.props;
+
+const isKorean = lang === 'ko';
+
+const defaultDossierName = isKorean 
+  ? "🏢 기업 내 희생양과 클라우드 모노컬처 도시에" 
+  : "The Corporate Scapegoat & Cloud Monoculture Dossier";
+
+const defaultItemsEn = [
+  {
+    title: "The $440 Million Trading Glitch That Killed Knight Capital in 45 Minutes",
+    slug: "knight-capital-trading-glitch-45-minutes",
+    read_time: 5,
+    hook: "How a forgotten server running 8-year-old test code bankrupted a Wall Street titan before the opening bell.",
+    label: "Related Investigation"
+  },
+  {
+    title: "He Deleted the Production Database and Let the Intern Take the Fall",
+    slug: "deleted-production-database-blamed-intern",
+    read_time: 5,
+    hook: "A single late-night terminal mistake on a replica cluster spiraled into a masterclass in corporate scapegoating.",
+    label: "Thematic Companion"
+  }
+];
+
+const defaultItemsKo = [
+  {
+    title: "8년 된 유령 코드 때문에 45분 만에 6,000억 날리고 파산한 월가 증권사",
+    slug: "knight-capital-trading-glitch-45-minutes",
+    read_time: 5,
+    hook: "서버 8대 중 1대에 배포 누락된 8년 전 테스트 코드가 월스트리트 거물을 45분 만에 무너뜨린 전말.",
+    label: "관련 탐사 기록"
+  },
+  {
+    title: "프로덕션 DB를 날리고 인턴에게 뒤집어씌운 시니어 개발자",
+    slug: "deleted-production-database-blamed-intern",
+    read_time: 5,
+    hook: "새벽 야근 중 실수로 날린 데이터베이스. 그리고 시작된 직장 내 희생양 몰이의 잔혹한 기록.",
+    label: "주제별 연계 사건"
+  }
+];
+
+const finalDossierName = dossierName || defaultDossierName;
+const finalItems = items || (isKorean ? defaultItemsKo : defaultItemsEn);
 ---
 
 <div class="thematic-dossier-box">
   <div class="dossier-header-row">
     <span class="dossier-badge">
-      🗂️ Thematic Dossier
+      {isKorean ? "🗂️ 테마별 사건 모음집" : "🗂️ Thematic Dossier"}
     </span>
-    <span class="dossier-subtag">Curated Investigation Trail</span>
+    <span class="dossier-subtag">{isKorean ? "편집국 큐레이션 탐사 트레일" : "Curated Investigation Trail"}</span>
   </div>
 
-  <h4 class="dossier-title">{dossierName}</h4>
+  <h4 class="dossier-title">{finalDossierName}</h4>
 
   <div class="dossier-items-list">
-    {items.map((item) => (
-      <a href={`/blog/${item.slug}`} class="dossier-card">
+    {finalItems.map((item) => (
+      <a href={`/${isKorean ? 'ko/blog' : 'blog'}/${item.slug}`} class="dossier-card">
         <div class="dossier-card-meta">
-          <span class="dossier-next-label">{item.label || "Case File"}</span>
-          <span>⏱️ {item.read_time} min read</span>
+          <span class="dossier-next-label">{item.label || (isKorean ? "사건 파일" : "Case File")}</span>
+          <span>⏱️ {item.read_time}{isKorean ? "분 읽기" : " min read"}</span>
         </div>
         <div class="dossier-item-title">
           {item.title}

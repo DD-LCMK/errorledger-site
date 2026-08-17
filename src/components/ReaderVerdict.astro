@@ -3,6 +3,7 @@ interface Props {
   question?: string;
   options?: Array<{ id: string; label: string }>;
   slug: string;
+  lang?: string;
 }
 
 const {
@@ -13,23 +14,28 @@ const {
     { id: "option_c", label: "Both shared equal fault" },
     { id: "option_d", label: "An unavoidable accident" }
   ],
-  slug
+  slug,
+  lang = "en"
 } = Astro.props;
+
+const isKorean = lang === 'ko';
 ---
 
-<div class="verdict-container" data-slug={slug}>
+<div class="verdict-container" data-slug={slug} data-lang={lang}>
   <div class="verdict-top-accent"></div>
 
   <div class="verdict-badge-row">
-    <span class="verdict-badge">Reader Judgment</span>
-    <span class="verdict-badge-sub">The Ledger Poll</span>
+    <span class="verdict-badge">{isKorean ? "독자 판결 투표" : "Reader Judgment"}</span>
+    <span class="verdict-badge-sub">{isKorean ? "커뮤니티 합의 기록" : "The Ledger Poll"}</span>
   </div>
 
   <h3 class="verdict-heading">
     {question}
   </h3>
   <p class="verdict-subtext">
-    Cast your vote below. Community consensus updates in real time.
+    {isKorean 
+      ? "아래에서 당신의 판결을 선택하세요. 독자들의 합의 결과가 실시간으로 집계됩니다." 
+      : "Cast your vote below. Community consensus updates in real time."}
   </p>
 
   <div class="options-list" id={`poll-options-${slug}`}>
@@ -67,13 +73,13 @@ const {
       </div>
     ))}
     <div class="results-footer">
-      <span id={`total-votes-${slug}`}>1 reader verdict recorded</span>
-      <span class="results-stored-tag">Encrypted & Stored</span>
+      <span id={`total-votes-${slug}`}>{isKorean ? "1개의 독자 판결 기록됨" : "1 reader verdict recorded"}</span>
+      <span class="results-stored-tag">{isKorean ? "🔒 암호화 저장됨" : "Encrypted & Stored"}</span>
     </div>
   </div>
 </div>
 
-<script is:inline define:vars={{ slug, options }}>
+<script is:inline define:vars={{ slug, options, isKorean }}>
   (function() {
     const storageVoteKey = `errorledger_vote_${slug}`;
     const storageTallyKey = `errorledger_tally_${slug}`;
@@ -85,7 +91,7 @@ const {
       if (saved) {
         try { return JSON.parse(saved); } catch(e) {}
       }
-      // Initialize with balanced baseline distribution
+      // Baseline distribution
       const initial = {};
       const baseCounts = [34, 21, 14, 8];
       options.forEach((opt, idx) => {
@@ -117,7 +123,9 @@ const {
         const pct = totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
         const pctEl = document.getElementById(`pct-${slug}-${opt.id}`);
         const barEl = document.getElementById(`bar-${slug}-${opt.id}`);
-        if (pctEl) pctEl.innerText = `${pct}% (${count} votes)`;
+        if (pctEl) {
+          pctEl.innerText = isKorean ? `${pct}% (${count}표)` : `${pct}% (${count} votes)`;
+        }
         if (barEl) {
           setTimeout(() => {
             barEl.style.width = `${pct}%`;
@@ -126,7 +134,11 @@ const {
       });
       
       const totalEl = document.getElementById(`total-votes-${slug}`);
-      if (totalEl) totalEl.innerText = `${totalVotes.toLocaleString()} total reader verdicts recorded`;
+      if (totalEl) {
+        totalEl.innerText = isKorean 
+          ? `총 ${totalVotes.toLocaleString()}개의 독자 판결 집계됨` 
+          : `${totalVotes.toLocaleString()} total reader verdicts recorded`;
+      }
     }
 
     const savedVote = localStorage.getItem(storageVoteKey);
