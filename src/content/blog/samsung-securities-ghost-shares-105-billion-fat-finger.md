@@ -115,10 +115,10 @@ The aftermath was swift and merciless:
 ## The Archivist's Verdict
 
 > **The Archivist's Assessment:**  
-> The financial press loved the headline of the "fat-finger typo" and the greed of the 16 traders who tried to cash out a digital lottery ticket.
->
-> But framing this as a story of human greed misses the terrifying structural truth.
->
-> The real disaster was that Samsung Securities' trading engine possessed the architectural power to **create $105 billion in unbacked equities with zero inventory verification**. The system trusted the input without checking the vault.
->
-> When a financial architecture allows a single keyboard keystroke to print 30 times the company’s circulating capitalization, the failure is not the clerk’s tired hand. The failure is the illusion that digital ledgers represent real assets when they are, in fact, only as stable as the checkboxes guarding them.
+> 
+> 1. **What looked like the mistake:** A tired clerk selecting "shares" instead of "won" from a drop-down menu during a routine quarterly dividend payout.
+> 2. **What actually failed:** A multi-billion-dollar brokerage architecture that permitted an internal interface to mint $105 billion in unbacked equity with zero real-time inventory verification against actual vault holdings or the central depository.
+> 3. **Why reasonable people allowed it to happen:** Financial engineering teams treated internal employee stock distribution as harmless back-office plumbing, assuming human checks would always catch anomalies before orders hit the Korea Exchange.
+> 4. **The point of no return:** The instant the batch job committed the unbacked 2.81 billion shares into employee trading accounts without dual-key authorization or market-cap sanity limits.
+> 5. **Who ultimately carried responsibility:** While 16 rogue traders received criminal convictions for computerized embezzlement, the Supreme Court of Korea ultimately held Samsung Securities vicariously liable for systemic institutional damages.
+> 6. **The uncomfortable lesson:** Modern financial markets do not trade physical assets; they trade trust in digital ledger constraints. When software trusts user input without verifying real-world inventory, the entire economy is only one unvalidated drop-down menu away from systemic collapse.
