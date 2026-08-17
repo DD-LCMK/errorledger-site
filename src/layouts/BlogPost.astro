@@ -119,26 +119,51 @@ const isStaticPage =
 
 const showSidebar = !isStaticPage;
 
-const categoryCounts: Record<string, number> = {
-	all: sameLangPosts.length,
-	corporate: sameLangPosts.filter(p => p.data.category === 'corporate').length,
-	money: sameLangPosts.filter(p => p.data.category === 'money').length,
-	work: sameLangPosts.filter(p => p.data.category === 'work').length,
-	ai: sameLangPosts.filter(p => p.data.category === 'ai').length,
-	internet: sameLangPosts.filter(p => p.data.category === 'internet').length,
-	relationships: sameLangPosts.filter(p => p.data.category === 'relationships').length,
-	human: sameLangPosts.filter(p => p.data.category === 'human').length,
-};
-
-const categories = [
-	{ id: "all", label: isKorean ? "전체 사건 목록" : "All Incidents", icon: "⚡" },
-	{ id: "corporate", label: isKorean ? "기업 & 인프라" : "Corporate & Systems", icon: "🏢" },
-	{ id: "money", label: isKorean ? "금융 & 경제" : "Money & Finance", icon: "💰" },
-	{ id: "work", label: isKorean ? "직장 & 커리어" : "Work & Career", icon: "🧑‍💻" },
-	{ id: "ai", label: isKorean ? "AI & 자동화" : "AI & Automation", icon: "🤖" },
-	{ id: "internet", label: isKorean ? "인터넷 & 사회" : "Internet & Social", icon: "🌐" },
-	{ id: "relationships", label: isKorean ? "인간관계" : "Relationships", icon: "❤️" },
-	{ id: "human", label: isKorean ? "심리 & 인지 편향" : "Human Psychology", icon: "🧠" },
+// Top Ranked Failures on Right Rail
+const rankedCases = isKorean ? [
+	{
+		rank: 1,
+		title: "금요일 아침, 전 세계 850만 대의 컴퓨터를 멈춘 14KB짜리 업데이트",
+		slug: "the-friday-update-that-broke-the-world",
+		category: "기업재난",
+		votes: "1,421표"
+	},
+	{
+		rank: 2,
+		title: "나이트 캐피털의 6,000억 원짜리 버그: 45분 만에 끝난 월스트리트의 비극",
+		slug: "knight-capital-trading-glitch-45-minutes",
+		category: "금융재난",
+		votes: "3,110표"
+	},
+	{
+		rank: 3,
+		title: "프로덕션 DB를 날리고 인턴에게 뒤집어씌운 시니어 개발자",
+		slug: "deleted-production-database-blamed-intern",
+		category: "직장참사",
+		votes: "2,890표"
+	}
+] : [
+	{
+		rank: 1,
+		title: "The Friday Morning Update That Took Down 8.5 Million Computers",
+		slug: "the-friday-update-that-broke-the-world",
+		category: "Corporate",
+		votes: "1,421 votes"
+	},
+	{
+		rank: 2,
+		title: "The $440M Knight Capital Trading Glitch: 45 Minutes of Algorithmic Ruin",
+		slug: "knight-capital-trading-glitch-45-minutes",
+		category: "Finance",
+		votes: "3,110 votes"
+	},
+	{
+		rank: 3,
+		title: "He Deleted the Production Database and Let the Intern Take the Fall",
+		slug: "deleted-production-database-blamed-intern",
+		category: "Workplace",
+		votes: "2,890 votes"
+	}
 ];
 ---
 
@@ -147,9 +172,14 @@ const categories = [
 		<BaseHead title={seoTitle} description={description} image={heroImage} type="article" breadcrumb={postBreadcrumb} />
 		<script type="application/ld+json" set:html={JSON.stringify(schemaData)} />
 		<style>
-			main { width: 1180px; max-width: calc(100% - 2rem); margin: 0 auto; padding: 2em 1rem 6rem 1rem; }
+			main {
+				width: 1200px;
+				max-width: calc(100% - 2rem);
+				margin: 0 auto;
+				padding: 2rem 1rem 6rem 1rem;
+			}
 			
-			.post-layout-grid {
+			.article-layout-grid {
 				display: grid;
 				grid-template-columns: 1fr;
 				gap: 2.5rem;
@@ -159,154 +189,61 @@ const categories = [
 			}
 
 			@media (min-width: 1024px) {
-				.post-layout-grid.has-sidebar {
-					grid-template-columns: 250px minmax(0, 1fr);
+				.article-layout-grid.has-sidebar {
+					grid-template-columns: minmax(0, 1fr) 320px;
 				}
 			}
 
-			/* Left Sticky Navigation Rail */
-			.sidebar-wrapper {
-				display: none;
-			}
-			@media (min-width: 1024px) {
-				.post-layout-grid.has-sidebar .sidebar-wrapper {
-					display: block;
-					position: sticky;
-					top: 5.5rem;
-					height: fit-content;
-					max-height: calc(100vh - 7rem);
-					overflow-y: auto;
-					background: #171717;
-					border: 1px solid #262626;
-					border-radius: 16px;
-					padding: 1.25rem;
-					min-width: 0;
-					box-sizing: border-box;
-				}
-			}
-
-			.sidebar-heading {
-				font-family: ui-monospace, monospace;
-				font-size: 0.75rem;
-				font-weight: 700;
-				text-transform: uppercase;
-				color: #a3a3a3;
-				letter-spacing: 0.05em;
-				margin-bottom: 0.85rem;
-				padding-bottom: 0.4rem;
-				border-bottom: 1px solid #262626;
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-			}
-
-			.trajectory-box {
-				margin-bottom: 1.5rem;
-				display: flex;
-				flex-direction: column;
-				gap: 0.75rem;
-			}
-
-			.nav-node-link {
-				display: block;
-				text-decoration: none;
-				padding: 0.5rem 0.65rem;
-				border-radius: 8px;
-				background: #0a0a0a;
-				border: 1px solid #262626;
-				transition: all 0.15s ease;
-			}
-			.nav-node-link:hover {
-				border-color: #f43f5e;
-				background: #262626;
-			}
-
-			.nav-node-label {
-				display: block;
-				font-family: ui-monospace, monospace;
-				font-size: 0.68rem;
-				font-weight: 700;
-				color: #f43f5e;
-				text-transform: uppercase;
-				margin-bottom: 0.2rem;
-				letter-spacing: 0.025em;
-			}
-			.nav-node-title {
-				display: block;
-				font-size: 0.82rem;
-				color: #e5e5e5;
-				line-height: 1.35;
-				font-weight: 600;
-				transition: color 0.15s ease;
-			}
-			.nav-node-link:hover .nav-node-title { color: #ffffff; }
-
-			.sidebar-cat-list {
-				display: flex;
-				flex-direction: column;
-				gap: 0.3rem;
-				margin-bottom: 1.5rem;
-			}
-
-			.sidebar-cat-link {
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				padding: 0.4rem 0.6rem;
-				border-radius: 6px;
-				font-size: 0.82rem;
-				font-weight: 600;
-				color: #d4d4d4;
-				text-decoration: none;
-				transition: all 0.15s ease;
-			}
-			.sidebar-cat-link:hover {
-				background: #262626;
-				color: #ffffff;
-			}
-			.sidebar-cat-link.active-cat {
-				background: rgba(244, 63, 94, 0.12);
-				color: #fb7185;
-			}
-
-			.sidebar-cat-count {
-				font-family: ui-monospace, monospace;
-				font-size: 0.7rem;
-				background: #0a0a0a;
-				color: #737373;
-				padding: 0.05rem 0.4rem;
-				border-radius: 9999px;
-				border: 1px solid #262626;
-			}
-
-			.sidebar-dossiers {
-				padding-top: 1rem;
-				border-top: 1px solid #262626;
-			}
-			.dossier-rail-link {
-				display: block;
-				font-size: 0.8rem;
-				color: #a3a3a3;
-				text-decoration: none;
-				padding: 0.3rem 0;
-				transition: color 0.15s ease;
-			}
-			.dossier-rail-link:hover {
-				color: #f59e0b;
-			}
-
-			/* Right Article Column */
-			.article-container {
+			/* Left Main Reading Area */
+			.article-main-stream {
 				min-width: 0;
 				width: 100%;
 			}
 
-			.prose { color: #d4d4d4; line-height: 1.85; font-size: 1.15rem; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif; min-width: 0; }
-			.prose h1 { font-size: 2.3em; margin-top: 0; margin-bottom: 0.4em; color: #f5f5f5; line-height: 1.25; font-weight: 800; letter-spacing: -0.025em; overflow-wrap: break-word; }
-			.article-subtitle { font-size: 1.25rem; color: #a3a3a3; line-height: 1.5; margin-bottom: 1.5rem; font-weight: 400; }
-			.prose h2 { font-size: 1.6em; margin-top: 2em; margin-bottom: 0.75em; color: #fafafa; font-weight: 700; border-bottom: 1px solid #262626; padding-bottom: 0.4em; letter-spacing: -0.015em; }
-			.prose :global(h3) { font-size: 1.3em; margin-top: 1.5em; margin-bottom: 0.5em; color: #f5f5f5; font-weight: 700; }
-			.prose :global(p) { margin-bottom: 1.5rem; }
+			.prose {
+				color: #d4d4d4;
+				line-height: 1.85;
+				font-size: 1.15rem;
+				font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+				min-width: 0;
+			}
+			.prose h1 {
+				font-size: 2.3em;
+				margin-top: 0;
+				margin-bottom: 0.4em;
+				color: #f5f5f5;
+				line-height: 1.25;
+				font-weight: 800;
+				letter-spacing: -0.025em;
+				overflow-wrap: break-word;
+			}
+			.article-subtitle {
+				font-size: 1.2rem;
+				color: #a3a3a3;
+				line-height: 1.5;
+				margin-bottom: 1.5rem;
+				font-weight: 400;
+			}
+			.prose h2 {
+				font-size: 1.55em;
+				margin-top: 2em;
+				margin-bottom: 0.75em;
+				color: #fafafa;
+				font-weight: 700;
+				border-bottom: 1px solid #262626;
+				padding-bottom: 0.4em;
+				letter-spacing: -0.015em;
+			}
+			.prose :global(h3) {
+				font-size: 1.25em;
+				margin-top: 1.5em;
+				margin-bottom: 0.5em;
+				color: #f5f5f5;
+				font-weight: 700;
+			}
+			.prose :global(p) {
+				margin-bottom: 1.5rem;
+			}
 			
 			.prose :global(blockquote) {
 				background: #171717;
@@ -318,11 +255,42 @@ const categories = [
 				font-style: normal;
 			}
 
-			.meta-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px dashed #262626; flex-wrap: wrap; gap: 1rem; }
-			.date-info { color: #a3a3a3; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-family: ui-monospace, monospace; }
-			.category-badge { padding: 0.15rem 0.5rem; border-radius: 4px; background: rgba(244, 63, 94, 0.1); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.25); text-transform: uppercase; font-size: 0.75rem; font-weight: 700; }
+			.meta-wrapper {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				margin-bottom: 1.5rem;
+				padding-bottom: 1rem;
+				border-bottom: 1px dashed #262626;
+				flex-wrap: wrap;
+				gap: 1rem;
+			}
+			.date-info {
+				color: #a3a3a3;
+				font-size: 0.85rem;
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				flex-wrap: wrap;
+				font-family: ui-monospace, monospace;
+			}
+			.category-badge {
+				padding: 0.15rem 0.5rem;
+				border-radius: 4px;
+				background: rgba(244, 63, 94, 0.1);
+				color: #fb7185;
+				border: 1px solid rgba(244, 63, 94, 0.25);
+				text-transform: uppercase;
+				font-size: 0.75rem;
+				font-weight: 700;
+			}
 			
-			.share-actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+			.share-actions {
+				display: flex;
+				gap: 0.5rem;
+				align-items: center;
+				flex-wrap: wrap;
+			}
 			.lang-switch-pill {
 				background: rgba(245, 158, 11, 0.12);
 				border: 1px solid rgba(245, 158, 11, 0.3);
@@ -340,12 +308,50 @@ const categories = [
 				color: #000000;
 			}
 
-			.share-btn { background: #171717; border: 1px solid #262626; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; color: #d4d4d4; text-decoration: none; font-weight: 500; transition: all 0.15s ease; }
-			.share-btn:hover { background: #262626; color: #ffffff; }
+			.share-btn {
+				background: #171717;
+				border: 1px solid #262626;
+				padding: 0.4rem 0.75rem;
+				border-radius: 6px;
+				font-size: 0.85rem;
+				cursor: pointer;
+				display: inline-flex;
+				align-items: center;
+				gap: 0.25rem;
+				color: #d4d4d4;
+				text-decoration: none;
+				font-weight: 500;
+				transition: all 0.15s ease;
+			}
+			.share-btn:hover {
+				background: #262626;
+				color: #ffffff;
+			}
 
-			.tag-container { display: flex; gap: 0.5rem; margin-top: 2rem; margin-bottom: 2rem; padding-top: 1.5rem; border-top: 1px solid #262626; flex-wrap: wrap; }
-			.badge-tag { background: #171717; border: 1px solid #262626; color: #a3a3a3; font-size: 0.75rem; padding: 0.25rem 0.65rem; border-radius: 6px; text-decoration: none; font-family: ui-monospace, monospace; transition: all 0.15s ease; }
-			.badge-tag:hover { color: #f43f5e; border-color: #f43f5e; }
+			.tag-container {
+				display: flex;
+				gap: 0.5rem;
+				margin-top: 2rem;
+				margin-bottom: 2rem;
+				padding-top: 1.5rem;
+				border-top: 1px solid #262626;
+				flex-wrap: wrap;
+			}
+			.badge-tag {
+				background: #171717;
+				border: 1px solid #262626;
+				color: #a3a3a3;
+				font-size: 0.75rem;
+				padding: 0.25rem 0.65rem;
+				border-radius: 6px;
+				text-decoration: none;
+				font-family: ui-monospace, monospace;
+				transition: all 0.15s ease;
+			}
+			.badge-tag:hover {
+				color: #f43f5e;
+				border-color: #f43f5e;
+			}
 
 			/* Bottom Adjacent Incident Navigation */
 			.bottom-incident-nav {
@@ -394,6 +400,137 @@ const categories = [
 			}
 			.incident-nav-card:hover .incident-nav-title {
 				color: #ffffff;
+			}
+
+			/* Right Sticky Sidebar */
+			.article-right-sidebar {
+				min-width: 0;
+				width: 100%;
+			}
+			@media (min-width: 1024px) {
+				.article-right-sidebar {
+					position: sticky;
+					top: 5.5rem;
+					max-height: calc(100vh - 7rem);
+					overflow-y: auto;
+				}
+			}
+
+			.sidebar-card-widget {
+				background: #171717;
+				border: 1px solid #262626;
+				border-radius: 16px;
+				padding: 1.25rem;
+				margin-bottom: 1.5rem;
+				box-sizing: border-box;
+			}
+			.sidebar-widget-title-row {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding-bottom: 0.5rem;
+				border-bottom: 1px solid #262626;
+				margin-bottom: 0.85rem;
+			}
+			.sidebar-widget-title {
+				font-size: 0.88rem;
+				font-weight: 800;
+				color: #f5f5f5;
+				display: flex;
+				align-items: center;
+				gap: 0.35rem;
+			}
+			.sidebar-widget-tag {
+				font-family: ui-monospace, monospace;
+				font-size: 0.68rem;
+				color: #f43f5e;
+				font-weight: 700;
+			}
+
+			/* Right Rail Top 3 Ranked List */
+			.side-ranked-list {
+				display: flex;
+				flex-direction: column;
+				gap: 0.75rem;
+			}
+			.side-ranked-item {
+				display: flex;
+				align-items: flex-start;
+				gap: 0.65rem;
+				text-decoration: none;
+				padding-bottom: 0.75rem;
+				border-bottom: 1px dashed #262626;
+				transition: transform 0.15s ease;
+			}
+			.side-ranked-item:last-child {
+				border-bottom: none;
+				padding-bottom: 0;
+			}
+			.side-ranked-item:hover {
+				transform: translateX(2px);
+			}
+			.side-rank-num {
+				font-size: 1.15rem;
+				font-weight: 900;
+				font-family: ui-monospace, monospace;
+				line-height: 1;
+				color: #f43f5e;
+				min-width: 1.25rem;
+			}
+			.side-rank-body {
+				flex-grow: 1;
+				min-width: 0;
+			}
+			.side-rank-title {
+				font-size: 0.82rem;
+				font-weight: 700;
+				color: #e5e5e5;
+				line-height: 1.3;
+				margin: 0 0 0.25rem 0;
+				transition: color 0.15s ease;
+			}
+			.side-ranked-item:hover .side-rank-title {
+				color: #fb7185;
+			}
+			.side-rank-meta {
+				font-size: 0.68rem;
+				font-family: ui-monospace, monospace;
+				color: #737373;
+			}
+
+			/* Adjacent Trajectory Box on Right Rail */
+			.trajectory-item-link {
+				display: block;
+				text-decoration: none;
+				padding: 0.5rem 0.65rem;
+				border-radius: 8px;
+				background: #111111;
+				border: 1px solid #262626;
+				margin-bottom: 0.5rem;
+				transition: all 0.15s ease;
+			}
+			.trajectory-item-link:last-child {
+				margin-bottom: 0;
+			}
+			.trajectory-item-link:hover {
+				border-color: #f43f5e;
+				background: #262626;
+			}
+			.trajectory-dir-tag {
+				display: block;
+				font-family: ui-monospace, monospace;
+				font-size: 0.65rem;
+				font-weight: 700;
+				color: #f43f5e;
+				text-transform: uppercase;
+				margin-bottom: 0.15rem;
+			}
+			.trajectory-item-title {
+				display: block;
+				font-size: 0.8rem;
+				color: #e5e5e5;
+				line-height: 1.3;
+				font-weight: 600;
 			}
 
 			/* Floating Action Bar */
@@ -445,7 +582,7 @@ const categories = [
 				background: #fb7185;
 			}
 
-			/* Light Mode Global Styles */
+			/* High-Contrast Light Mode */
 			:global(html:not(.dark)) body {
 				background: #ffffff;
 				color: #1e293b;
@@ -455,8 +592,7 @@ const categories = [
 			}
 			:global(html:not(.dark)) .prose h1,
 			:global(html:not(.dark)) .prose h2,
-			:global(html:not(.dark)) .prose :global(h3),
-			:global(html:not(.dark)) .prose :global(h4) {
+			:global(html:not(.dark)) .prose :global(h3) {
 				color: #0f172a !important;
 			}
 			:global(html:not(.dark)) .article-subtitle {
@@ -467,68 +603,33 @@ const categories = [
 				border-left-color: #f43f5e !important;
 				color: #1e293b !important;
 			}
-			:global(html:not(.dark)) .post-layout-grid.has-sidebar .sidebar-wrapper,
-			:global(html:not(.dark)) .sidebar-wrapper {
-				background: #ffffff !important;
-				border-color: #e2e8f0 !important;
-				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
-			}
-			:global(html:not(.dark)) .sidebar-heading {
-				color: #64748b !important;
-				border-bottom-color: #e2e8f0 !important;
-			}
-			:global(html:not(.dark)) .nav-node-link {
-				background: #f8fafc !important;
-				border-color: #e2e8f0 !important;
-			}
-			:global(html:not(.dark)) .nav-node-link:hover {
-				background: #ffffff !important;
-			}
-			:global(html:not(.dark)) .nav-node-title {
-				color: #0f172a !important;
-			}
-			:global(html:not(.dark)) .nav-node-link:hover .nav-node-title {
-				color: #f43f5e !important;
-			}
-			:global(html:not(.dark)) .sidebar-cat-link {
-				color: #334155 !important;
-			}
-			:global(html:not(.dark)) .sidebar-cat-link:hover {
-				background: #f1f5f9 !important;
-				color: #0f172a !important;
-			}
-			:global(html:not(.dark)) .sidebar-cat-count {
-				background: #ffffff !important;
-				border-color: #cbd5e1 !important;
-				color: #475569 !important;
-			}
-			:global(html:not(.dark)) .dossier-rail-link {
-				color: #475569 !important;
-			}
-			:global(html:not(.dark)) .dossier-rail-link:hover {
-				color: #d97706 !important;
-			}
+			:global(html:not(.dark)) .sidebar-card-widget,
 			:global(html:not(.dark)) .incident-nav-card {
 				background: #ffffff !important;
 				border-color: #e2e8f0 !important;
-				box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04) !important;
+				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
 			}
+			:global(html:not(.dark)) .sidebar-widget-title,
+			:global(html:not(.dark)) .side-rank-title,
+			:global(html:not(.dark)) .trajectory-item-title,
 			:global(html:not(.dark)) .incident-nav-title {
 				color: #0f172a !important;
 			}
-			:global(html:not(.dark)) .incident-nav-card:hover {
-				background: #f1f5f9 !important;
+			:global(html:not(.dark)) .sidebar-widget-title-row,
+			:global(html:not(.dark)) .side-ranked-item,
+			:global(html:not(.dark)) .bottom-incident-nav {
+				border-bottom-color: #e2e8f0 !important;
+				border-top-color: #e2e8f0 !important;
+			}
+			:global(html:not(.dark)) .trajectory-item-link {
+				background: #f8fafc !important;
+				border-color: #cbd5e1 !important;
 			}
 			:global(html:not(.dark)) .share-btn,
 			:global(html:not(.dark)) .badge-tag {
 				background: #f8fafc !important;
 				border-color: #cbd5e1 !important;
 				color: #475569 !important;
-			}
-			:global(html:not(.dark)) .share-btn:hover,
-			:global(html:not(.dark)) .badge-tag:hover {
-				background: #e2e8f0 !important;
-				color: #0f172a !important;
 			}
 			:global(html:not(.dark)) .floating-action-bar {
 				background: rgba(255, 255, 255, 0.95) !important;
@@ -538,76 +639,15 @@ const categories = [
 			:global(html:not(.dark)) .float-btn {
 				color: #334155 !important;
 			}
-			:global(html:not(.dark)) .float-btn:hover {
-				background: #f1f5f9 !important;
-				color: #0f172a !important;
-			}
 		</style>
 	</head>
 
 	<body class="bg-neutral-950 text-neutral-200 antialiased min-h-screen">
 		<Header />
 		<main>
-			<div class={showSidebar ? "post-layout-grid has-sidebar" : "post-layout-grid"}>
-				<!-- Left Sticky Rail -->
-				{showSidebar && (
-					<aside class="sidebar-wrapper">
-						<!-- Incident Trajectory -->
-						<div class="sidebar-heading">
-							<span>{isKorean ? "사건 궤적" : "Trajectory"}</span>
-						</div>
-						<div class="trajectory-box">
-							{nextPost && (
-								<a href={`/${isKorean ? 'ko/blog' : 'blog'}/${nextPost.data.slug.replace(/^ko\//, '')}`} class="nav-node-link">
-									<span class="nav-node-label">&larr; {isKorean ? "다음 사건" : "Next Case"}</span>
-									<span class="nav-node-title">{nextPost.data.title}</span>
-								</a>
-							)}
-							{prevPost && (
-								<a href={`/${isKorean ? 'ko/blog' : 'blog'}/${prevPost.data.slug.replace(/^ko\//, '')}`} class="nav-node-link">
-									<span class="nav-node-label">{isKorean ? "이전 사건" : "Previous Case"} &rarr;</span>
-									<span class="nav-node-title">{prevPost.data.title}</span>
-								</a>
-							)}
-						</div>
-
-						<!-- Categories Navigation -->
-						<div class="sidebar-heading">
-							<span>{isKorean ? "카테고리" : "Categories"}</span>
-							<span>{sameLangPosts.length}</span>
-						</div>
-						<div class="sidebar-cat-list">
-							{categories.map((cat) => (
-								<a 
-									href={`/${isKorean ? 'ko/blog' : 'blog'}`} 
-									class={`sidebar-cat-link ${category === cat.id ? 'active-cat' : ''}`}
-								>
-									<span>{cat.icon} {cat.label}</span>
-									<span class="sidebar-cat-count">{categoryCounts[cat.id] || 0}</span>
-								</a>
-							))}
-						</div>
-
-						<!-- Curated Dossiers -->
-						<div class="sidebar-dossiers">
-							<div class="sidebar-heading" style="border: none; margin-bottom: 0.35rem; padding-bottom: 0;">
-								<span>{isKorean ? "테마별 도시에" : "Curated Dossiers"}</span>
-							</div>
-							<a href={`/${isKorean ? 'ko/blog' : 'blog'}/deleted-production-database-blamed-intern`} class="dossier-rail-link">
-								📂 {isKorean ? "사내 희생양 모음집" : "The Scapegoat Collection"}
-							</a>
-							<a href={`/${isKorean ? 'ko/blog' : 'blog'}/knight-capital-trading-glitch-45-minutes`} class="dossier-rail-link">
-								⚡ {isKorean ? "45분 만의 파산" : "45-Minute Fast Crashes"}
-							</a>
-							<a href={`/${isKorean ? 'ko/blog' : 'blog'}/the-friday-update-that-broke-the-world`} class="dossier-rail-link">
-								🌋 {isKorean ? "클라우드 마비 사건" : "Cloud Monoculture Failures"}
-							</a>
-						</div>
-					</aside>
-				)}
-
-				<!-- Right Article Column -->
-				<article class="article-container">
+			<div class={showSidebar ? "article-layout-grid has-sidebar" : "article-layout-grid"}>
+				<!-- Left Main Reading Area (~72%) -->
+				<article class="article-main-stream">
 					<div class="prose">
 						{!isStaticPage && (
 							<>
@@ -647,7 +687,7 @@ const categories = [
 									lang={lang}
 								/>
 
-								<!-- Interactive Feature 3: Simulated Audio Dispatch Player -->
+								<!-- Simulated Audio Dispatch Player -->
 								<AudioDispatch title={title} duration={`${displayReadTime - 2 || 3}:45`} lang={lang} slug={cleanSlug} audioUrl={`/audio/${lang}/${cleanSlug}.mp3`} />
 							</>
 						)}
@@ -698,10 +738,72 @@ const categories = [
 						)}
 					</div>
 				</article>
+
+				<!-- Right Sticky Sidebar (~28%) -->
+				{showSidebar && (
+					<aside class="article-right-sidebar">
+						<!-- Top 3 Most Read Failures -->
+						<div class="sidebar-card-widget">
+							<div class="sidebar-widget-title-row">
+								<span class="sidebar-widget-title">🔥 {isKorean ? "많이 본 사건" : "Most Read"}</span>
+								<span class="sidebar-widget-tag">RANKING</span>
+							</div>
+							<div class="side-ranked-list">
+								{rankedCases.map((item) => (
+									<a href={`/${isKorean ? 'ko/blog' : 'blog'}/${item.slug}`} class="side-ranked-item">
+										<div class="side-rank-num">{item.rank}</div>
+										<div class="side-rank-body">
+											<h5 class="side-rank-title">{item.title}</h5>
+											<div class="side-rank-meta">
+												<span>{item.category}</span>
+												<span>•</span>
+												<span>{item.votes}</span>
+											</div>
+										</div>
+									</a>
+								))}
+							</div>
+						</div>
+
+						<!-- Incident Trajectory -->
+						{(nextPost || prevPost) && (
+							<div class="sidebar-card-widget">
+								<div class="sidebar-widget-title-row">
+									<span class="sidebar-widget-title">⚡ {isKorean ? "사건 탐색 궤적" : "Incident Trajectory"}</span>
+								</div>
+								{nextPost && (
+									<a href={`/${isKorean ? 'ko/blog' : 'blog'}/${nextPost.data.slug.replace(/^ko\//, '')}`} class="trajectory-item-link">
+										<span class="trajectory-dir-tag">&larr; {isKorean ? "다음 사건" : "Next Incident"}</span>
+										<span class="trajectory-item-title">{nextPost.data.title}</span>
+									</a>
+								)}
+								{prevPost && (
+									<a href={`/${isKorean ? 'ko/blog' : 'blog'}/${prevPost.data.slug.replace(/^ko\//, '')}`} class="trajectory-item-link">
+										<span class="trajectory-dir-tag">{isKorean ? "이전 사건" : "Previous Incident"} &rarr;</span>
+										<span class="trajectory-item-title">{prevPost.data.title}</span>
+									</a>
+								)}
+							</div>
+						)}
+
+						<!-- Whistleblower Prompt -->
+						<div class="sidebar-card-widget" style="background: rgba(244, 63, 94, 0.06); border-color: rgba(244, 63, 94, 0.25);">
+							<div class="sidebar-widget-title-row" style="border-bottom-color: rgba(244, 63, 94, 0.2);">
+								<span class="sidebar-widget-title" style="color: #fb7185;">✉️ {isKorean ? "익명 제보하기" : "Whistleblower"}</span>
+							</div>
+							<p style="font-size: 0.78rem; color: #a3a3a3; line-height: 1.45; margin: 0 0 0.85rem 0;">
+								{isKorean ? "사내 은폐 사건, 커리어의 실수, 시스템 참사의 전말을 제보하세요." : "Have documentation on an untold corporate disaster or career mistake?"}
+							</p>
+							<button class="share-btn" data-open-submit-modal style="width: 100%; justify-content: center; background: #f43f5e; color: #ffffff; border: none; font-weight: 700;">
+								+ {isKorean ? "사건 제보하기" : "Submit Case"}
+							</button>
+						</div>
+					</aside>
+				)}
 			</div>
 		</main>
 
-		<!-- Interactive Feature: Focused Floating Smart Action Bar -->
+		<!-- Focused Floating Smart Action Bar -->
 		{!isStaticPage && (
 			<div id="floating-bar" class="floating-action-bar">
 				<a href="#verdict-anchor" class="float-btn float-btn-primary">

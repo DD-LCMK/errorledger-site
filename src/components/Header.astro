@@ -31,6 +31,17 @@ if (isKorean) {
 	}
 }
 const langSwitchLabel = isKorean ? '🇺🇸 English' : '🇰🇷 한국어';
+
+const categories = [
+	{ id: "all", label: isKorean ? "전체 사건" : "All", icon: "⚡", href: archiveUrl },
+	{ id: "corporate", label: isKorean ? "기업 & 인프라" : "Corporate", icon: "🏢", href: `${searchUrl}?q=corporate` },
+	{ id: "money", label: isKorean ? "금융 & 경제" : "Finance", icon: "💰", href: `${searchUrl}?q=money` },
+	{ id: "work", label: isKorean ? "직장 & 커리어" : "Workplace", icon: "🧑‍💻", href: `${searchUrl}?q=work` },
+	{ id: "ai", label: isKorean ? "AI & 자동화" : "AI Disasters", icon: "🤖", href: `${searchUrl}?q=ai` },
+	{ id: "internet", label: isKorean ? "인터넷 & 사회" : "Internet", icon: "🌐", href: `${searchUrl}?q=internet` },
+	{ id: "human", label: isKorean ? "심리 & 편향" : "Psychology", icon: "🧠", href: `${searchUrl}?q=human` },
+	{ id: "debates", label: isKorean ? "실시간 논쟁" : "Top Debates", icon: "⚖️", href: `${homeUrl}#debates-section` },
+];
 ---
 
 <header>
@@ -82,6 +93,18 @@ const langSwitchLabel = isKorean ? '🇺🇸 English' : '🇰🇷 한국어';
 		</div>
 	</nav>
 
+	<!-- Naver-Style Horizontal Category Sub-Navigation Bar -->
+	<div class="category-subnav-container">
+		<div class="category-subnav-inner">
+			{categories.map((cat) => (
+				<a href={cat.href} class="subnav-chip">
+					<span class="subnav-chip-icon">{cat.icon}</span>
+					<span class="subnav-chip-label">{cat.label}</span>
+				</a>
+			))}
+		</div>
+	</div>
+
 	<!-- Telemetry Reading Progress Bar -->
 	<div class="progress-bus">
 		<div id="reading-progress-bar" class="progress-fill"></div>
@@ -123,7 +146,6 @@ const langSwitchLabel = isKorean ? '🇺🇸 English' : '🇰🇷 한국어';
 	// Dynamic, bulletproof client-side Language Switcher
 	const langToggleBtn = document.getElementById('lang-toggle-btn');
 	if (langToggleBtn) {
-		// Update label dynamically if mismatch exists
 		const path = window.location.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
 		const isClientKo = path === '/ko' || path.startsWith('/ko/');
 		langToggleBtn.innerText = isClientKo ? '🇺🇸 English' : '🇰🇷 한국어';
@@ -142,7 +164,7 @@ const langSwitchLabel = isKorean ? '🇺🇸 English' : '🇰🇷 한국어';
 		});
 	}
 
-	// Global Random Failure Engine across all buttons (respects current language)
+	// Global Random Failure Engine
 	document.addEventListener('click', function(e) {
 		if (e.target.closest('#random-failure-btn') || e.target.closest('#float-random-btn')) {
 			e.preventDefault();
@@ -174,11 +196,11 @@ const langSwitchLabel = isKorean ? '🇺🇸 English' : '🇰🇷 한국어';
 		z-index: 100;
 		margin: 0;
 		padding: 0 1.5rem;
-		background: rgba(10, 10, 10, 0.88);
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
+		background: rgba(10, 10, 10, 0.92);
+		backdrop-filter: blur(14px);
+		-webkit-backdrop-filter: blur(14px);
 		border-bottom: 1px solid #262626;
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+		box-shadow: 0 4px 25px rgba(0, 0, 0, 0.45);
 		transition: background-color 0.2s ease, border-color 0.2s ease;
 	}
 	.header-nav {
@@ -187,7 +209,7 @@ const langSwitchLabel = isKorean ? '🇺🇸 English' : '🇰🇷 한국어';
 		justify-content: space-between;
 		max-width: 1200px;
 		margin: 0 auto;
-		padding: 0.75rem 0;
+		padding: 0.75rem 0 0.5rem 0;
 		gap: 1.5rem;
 	}
 	.brand-link {
@@ -307,6 +329,49 @@ const langSwitchLabel = isKorean ? '🇺🇸 English' : '🇰🇷 한국어';
 		.header-search-form { display: none; }
 	}
 
+	/* Naver-Style Horizontal Category Sub-Navigation Bar */
+	.category-subnav-container {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 0.35rem 0 0.6rem 0;
+		border-top: 1px solid #1f1f1f;
+		overflow-x: auto;
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+	.category-subnav-container::-webkit-scrollbar {
+		display: none;
+	}
+	.category-subnav-inner {
+		display: flex;
+		align-items: center;
+		gap: 0.45rem;
+		white-space: nowrap;
+	}
+	.subnav-chip {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		padding: 0.3rem 0.75rem;
+		border-radius: 9999px;
+		background: #141414;
+		border: 1px solid #262626;
+		color: #a3a3a3;
+		font-size: 0.8rem;
+		font-weight: 600;
+		text-decoration: none;
+		transition: all 0.15s ease;
+		flex-shrink: 0;
+	}
+	.subnav-chip:hover {
+		background: #262626;
+		color: #ffffff;
+		border-color: #404040;
+	}
+	.subnav-chip-icon {
+		font-size: 0.85rem;
+	}
+
 	.progress-bus {
 		position: absolute;
 		bottom: -1px;
@@ -326,7 +391,7 @@ const langSwitchLabel = isKorean ? '🇺🇸 English' : '🇰🇷 한국어';
 
 	/* Light mode styles */
 	:global(html:not(.dark)) header {
-		background: rgba(255, 255, 255, 0.92);
+		background: rgba(255, 255, 255, 0.94);
 		border-bottom-color: #e2e8f0;
 	}
 	:global(html:not(.dark)) .logo-text-main { color: #0f172a; }
@@ -341,5 +406,18 @@ const langSwitchLabel = isKorean ? '🇺🇸 English' : '🇰🇷 한국어';
 		background: #f8fafc;
 		border-color: #cbd5e1;
 		color: #334155;
+	}
+	:global(html:not(.dark)) .category-subnav-container {
+		border-top-color: #e2e8f0;
+	}
+	:global(html:not(.dark)) .subnav-chip {
+		background: #f8fafc;
+		border-color: #cbd5e1;
+		color: #475569;
+	}
+	:global(html:not(.dark)) .subnav-chip:hover {
+		background: #f1f5f9;
+		color: #0f172a;
+		border-color: #94a3b8;
 	}
 </style>

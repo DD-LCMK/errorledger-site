@@ -15,26 +15,28 @@ const posts = enPosts.sort((a, b) => {
 	return dateB - dateA;
 });
 
-const categoryCounts: Record<string, number> = {
-	all: posts.length,
-	corporate: posts.filter(p => p.data.category === 'corporate').length,
-	money: posts.filter(p => p.data.category === 'money').length,
-	work: posts.filter(p => p.data.category === 'work').length,
-	ai: posts.filter(p => p.data.category === 'ai').length,
-	internet: posts.filter(p => p.data.category === 'internet').length,
-	relationships: posts.filter(p => p.data.category === 'relationships').length,
-	human: posts.filter(p => p.data.category === 'human').length,
-};
-
-const categories = [
-	{ id: "all", label: "⚡ All Incidents", icon: "⚡" },
-	{ id: "corporate", label: "🏢 Corporate & Systems", icon: "🏢" },
-	{ id: "money", label: "💰 Money & Finance", icon: "💰" },
-	{ id: "work", label: "🧑‍💻 Work & Career", icon: "🧑‍💻" },
-	{ id: "ai", label: "🤖 AI & Automation", icon: "🤖" },
-	{ id: "internet", label: "🌐 Internet & Social", icon: "🌐" },
-	{ id: "relationships", label: "❤️ Relationships", icon: "❤️" },
-	{ id: "human", label: "🧠 Human Psychology", icon: "🧠" },
+const topRankedPosts = [
+	{
+		rank: 1,
+		title: "The Friday Morning Update That Took Down 8.5 Million Computers",
+		slug: "the-friday-update-that-broke-the-world",
+		category: "Corporate",
+		votes: "1,421 votes"
+	},
+	{
+		rank: 2,
+		title: "The $440M Knight Capital Trading Glitch: 45 Minutes of Algorithmic Ruin",
+		slug: "knight-capital-trading-glitch-45-minutes",
+		category: "Finance",
+		votes: "3,110 votes"
+	},
+	{
+		rank: 3,
+		title: "He Deleted the Production Database and Let the Intern Take the Fall",
+		slug: "deleted-production-database-blamed-intern",
+		category: "Workplace",
+		votes: "2,890 votes"
+	}
 ];
 ---
 
@@ -42,323 +44,327 @@ const categories = [
 	<head>
 		<BaseHead title={`The Failure Ledger Archive | ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
 		<style>
-			main { width: 1160px; max-width: calc(100% - 2rem); margin: 0 auto; padding: 3em 1rem; }
+			main {
+				width: 1200px;
+				max-width: calc(100% - 2rem);
+				margin: 0 auto;
+				padding: 2.5rem 1rem 5rem 1rem;
+			}
 
 			.archive-header {
 				margin-bottom: 2.5rem;
 				border-bottom: 1px solid #262626;
 				padding-bottom: 1.5rem;
+				display: flex;
+				justify-content: space-between;
+				align-items: flex-end;
+				flex-wrap: wrap;
+				gap: 1rem;
 			}
 			.archive-header h1 {
-				font-size: 2.5rem;
+				font-size: 2.3rem;
 				font-weight: 800;
 				color: #f5f5f5;
-				margin: 0 0 0.5rem 0;
-				letter-spacing: -0.03em;
+				margin: 0 0 0.4rem 0;
+				letter-spacing: -0.025em;
 			}
 			.archive-header p {
 				color: #a3a3a3;
-				font-size: 1.1rem;
+				font-size: 1rem;
 				margin: 0;
-				line-height: 1.6;
+				line-height: 1.5;
 			}
 
-			/* 2-Column Responsive Archive Layout */
-			.archive-layout-grid {
+			/* Portal Grid */
+			.archive-portal-grid {
 				display: grid;
 				grid-template-columns: 1fr;
-				gap: 2rem;
+				gap: 2.5rem;
 				align-items: start;
+				min-width: 0;
+				width: 100%;
 			}
 			@media (min-width: 1024px) {
-				.archive-layout-grid {
-					grid-template-columns: 280px 1fr;
+				.archive-portal-grid {
+					grid-template-columns: minmax(0, 1fr) 340px;
 				}
 			}
 
-			/* Left Sticky Category Rail */
-			.category-rail {
+			.archive-stream {
+				min-width: 0;
+				width: 100%;
+			}
+
+			/* Search & Live Filter Bar */
+			.archive-filter-bar {
+				margin-bottom: 2rem;
+				display: flex;
+				gap: 1rem;
+				align-items: center;
+				flex-wrap: wrap;
+			}
+			.search-box-input {
+				flex-grow: 1;
 				background: #171717;
 				border: 1px solid #262626;
-				border-radius: 16px;
-				padding: 1.25rem;
-				position: sticky;
-				top: 5.5rem;
-				max-height: calc(100vh - 7rem);
-				overflow-y: auto;
+				border-radius: 10px;
+				padding: 0.65rem 1rem;
+				color: #f5f5f5;
+				font-size: 0.9rem;
+				outline: none;
+				transition: border-color 0.15s ease;
 			}
-			@media (max-width: 1023px) {
-				.category-rail {
-					position: relative;
-					top: 0;
-					margin-bottom: 1.5rem;
-					padding: 1rem;
-				}
+			.search-box-input:focus {
+				border-color: #f43f5e;
 			}
 
-			.rail-header {
-				font-family: ui-monospace, monospace;
-				font-size: 0.75rem;
-				font-weight: 700;
-				text-transform: uppercase;
+			.filter-chip-row {
+				display: flex;
+				gap: 0.5rem;
+				flex-wrap: wrap;
+			}
+			.filter-btn {
+				background: #171717;
+				border: 1px solid #262626;
 				color: #a3a3a3;
-				letter-spacing: 0.05em;
-				margin-bottom: 0.85rem;
-				padding-bottom: 0.5rem;
-				border-bottom: 1px solid #262626;
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-			}
-
-			.category-nav-list {
-				display: flex;
-				flex-direction: column;
-				gap: 0.4rem;
-			}
-			@media (max-width: 1023px) {
-				.category-nav-list {
-					flex-direction: row;
-					flex-wrap: wrap;
-					gap: 0.5rem;
-				}
-			}
-
-			.category-nav-btn {
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				width: 100%;
-				background: transparent;
-				border: 1px solid transparent;
-				color: #d4d4d4;
-				padding: 0.6rem 0.85rem;
-				border-radius: 8px;
-				font-size: 0.88rem;
+				padding: 0.35rem 0.75rem;
+				border-radius: 9999px;
+				font-size: 0.78rem;
 				font-weight: 600;
 				cursor: pointer;
-				text-align: left;
 				transition: all 0.15s ease;
-				box-sizing: border-box;
-				font-family: inherit;
 			}
-			@media (max-width: 1023px) {
-				.category-nav-btn {
-					width: auto;
-					padding: 0.45rem 0.8rem;
-					border: 1px solid #262626;
-					background: #0a0a0a;
-					border-radius: 9999px;
-					font-size: 0.8rem;
-				}
-			}
-			.category-nav-btn:hover {
-				background: #262626;
-				color: #ffffff;
-			}
-			.category-nav-btn.active {
-				background: rgba(244, 63, 94, 0.12);
-				border-color: rgba(244, 63, 94, 0.3);
-				color: #fb7185;
-			}
-
-			.cat-count-badge {
-				font-family: ui-monospace, monospace;
-				font-size: 0.72rem;
-				background: #0a0a0a;
-				color: #737373;
-				padding: 0.1rem 0.45rem;
-				border-radius: 9999px;
-				border: 1px solid #262626;
-			}
-			.category-nav-btn.active .cat-count-badge {
+			.filter-btn:hover, .filter-btn.active {
 				background: #f43f5e;
 				color: #ffffff;
 				border-color: #f43f5e;
 			}
 
-			.rail-dossiers {
-				margin-top: 1.5rem;
-				padding-top: 1.25rem;
-				border-top: 1px solid #262626;
-			}
-			@media (max-width: 1023px) {
-				.rail-dossiers {
-					display: none;
-				}
-			}
-			.dossier-link {
-				display: block;
-				font-size: 0.82rem;
-				color: #a3a3a3;
-				text-decoration: none;
-				padding: 0.35rem 0;
-				transition: color 0.15s ease;
-			}
-			.dossier-link:hover {
-				color: #f59e0b;
-			}
-
-			/* Right Incident Stream & Search */
-			.stream-controls {
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				margin-bottom: 1.5rem;
-				gap: 1rem;
-				flex-wrap: wrap;
-			}
-			.stream-heading {
-				font-size: 1.1rem;
-				font-weight: 800;
-				color: #f5f5f5;
-				text-transform: uppercase;
-				letter-spacing: 0.025em;
-			}
-
-			.live-filter-input {
-				background: #171717;
-				border: 1px solid #262626;
-				color: #f5f5f5;
-				font-size: 0.85rem;
-				padding: 0.5rem 0.85rem;
-				border-radius: 8px;
-				outline: none;
-				width: 100%;
-				max-width: 320px;
-				font-family: inherit;
-				transition: border-color 0.15s ease;
-			}
-			.live-filter-input:focus {
-				border-color: #f43f5e;
-			}
-
-			.grid-archive {
+			/* Cards Grid */
+			.archive-cards-list {
 				display: grid;
 				grid-template-columns: 1fr;
 				gap: 1.25rem;
 			}
+			@media (min-width: 640px) {
+				.archive-cards-list {
+					grid-template-columns: 1fr 1fr;
+				}
+			}
 
-			.archive-card {
+			.archive-post-card {
 				background: #171717;
 				border: 1px solid #262626;
-				border-radius: 12px;
+				border-radius: 14px;
 				padding: 1.5rem;
-				transition: transform 0.2s ease, border-color 0.2s ease;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
 				text-decoration: none;
-				display: block;
+				transition: all 0.2s ease;
+				min-width: 0;
+				box-sizing: border-box;
 			}
-			.archive-card:hover {
-				transform: translateY(-2px);
+			.archive-post-card:hover {
 				border-color: #f43f5e;
+				transform: translateY(-2px);
+				box-shadow: 0 4px 20px rgba(244, 63, 94, 0.15);
 			}
-
-			.card-meta {
+			.card-meta-header {
 				display: flex;
 				align-items: center;
-				gap: 0.6rem;
+				gap: 0.5rem;
 				margin-bottom: 0.6rem;
-				font-size: 0.75rem;
-				color: #737373;
-				font-family: ui-monospace, monospace;
-				flex-wrap: wrap;
 			}
-			.card-cat-tag {
+			.cat-badge {
 				padding: 0.15rem 0.5rem;
 				border-radius: 4px;
 				background: #0a0a0a;
-				border: 1px solid #262626;
-				color: #d4d4d4;
+				color: #fb7185;
+				border: 1px solid rgba(244, 63, 94, 0.25);
+				font-size: 0.72rem;
 				font-weight: 700;
 				text-transform: uppercase;
+				font-family: ui-monospace, monospace;
 			}
-			.card-archive-title {
-				font-size: 1.25rem;
+			.readtime-txt {
+				font-size: 0.72rem;
+				font-family: ui-monospace, monospace;
+				color: #737373;
+			}
+			.card-title-txt {
+				font-size: 1.15rem;
 				font-weight: 700;
 				color: #f5f5f5;
 				margin: 0 0 0.5rem 0;
 				line-height: 1.35;
-				transition: color 0.15s ease;
 			}
-			.archive-card:hover .card-archive-title {
+			.archive-post-card:hover .card-title-txt {
 				color: #fb7185;
 			}
-			.card-archive-desc {
+			.card-desc-txt {
 				font-size: 0.88rem;
 				color: #a3a3a3;
-				line-height: 1.5;
-				margin: 0;
+				line-height: 1.55;
+				margin: 0 0 1.25rem 0;
+			}
+			.card-footer-meta {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding-top: 0.85rem;
+				border-top: 1px solid #262626;
+				font-size: 0.75rem;
+				font-family: ui-monospace, monospace;
+				color: #737373;
+			}
+			.card-action-link {
+				color: #fb7185;
+				font-weight: 600;
 			}
 
-			.hidden { display: none !important; }
+			/* Right Sidebar */
+			.archive-right-sidebar {
+				min-width: 0;
+				width: 100%;
+			}
+			.sidebar-widget-box {
+				background: #171717;
+				border: 1px solid #262626;
+				border-radius: 16px;
+				padding: 1.25rem;
+				margin-bottom: 2rem;
+				box-sizing: border-box;
+			}
+			.widget-head-row {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding-bottom: 0.6rem;
+				border-bottom: 1px solid #262626;
+				margin-bottom: 1rem;
+			}
+			.widget-head-title {
+				font-size: 0.95rem;
+				font-weight: 800;
+				color: #f5f5f5;
+				display: flex;
+				align-items: center;
+				gap: 0.4rem;
+			}
+			.widget-head-tag {
+				font-family: ui-monospace, monospace;
+				font-size: 0.68rem;
+				color: #f43f5e;
+				font-weight: 700;
+			}
 
-			/* Light mode styles */
-			:global(html:not(.dark)) .archive-header {
-				border-bottom-color: #e2e8f0;
+			.ranked-post-link {
+				display: flex;
+				align-items: flex-start;
+				gap: 0.75rem;
+				text-decoration: none;
+				padding-bottom: 0.85rem;
+				border-bottom: 1px dashed #262626;
+				margin-bottom: 0.85rem;
+				transition: transform 0.15s ease;
 			}
-			:global(html:not(.dark)) .archive-header h1 {
-				color: #0f172a;
+			.ranked-post-link:last-child {
+				border-bottom: none;
+				margin-bottom: 0;
+				padding-bottom: 0;
 			}
-			:global(html:not(.dark)) .archive-header p {
-				color: #64748b;
+			.ranked-post-link:hover {
+				transform: translateX(2px);
 			}
-			:global(html:not(.dark)) .category-rail,
-			:global(html:not(.dark)) .archive-card {
+			.rank-digit {
+				font-size: 1.25rem;
+				font-weight: 900;
+				font-family: ui-monospace, monospace;
+				line-height: 1;
+				color: #f43f5e;
+				min-width: 1.5rem;
+			}
+			.rank-headline {
+				font-size: 0.85rem;
+				font-weight: 700;
+				color: #e5e5e5;
+				line-height: 1.35;
+				margin: 0 0 0.3rem 0;
+			}
+			.ranked-post-link:hover .rank-headline {
+				color: #fb7185;
+			}
+			.rank-extra-meta {
+				font-size: 0.7rem;
+				font-family: ui-monospace, monospace;
+				color: #737373;
+			}
+
+			.dossier-nav-item {
+				display: block;
+				padding: 0.5rem 0.65rem;
+				background: #111111;
+				border: 1px solid #262626;
+				border-radius: 8px;
+				text-decoration: none;
+				color: #d4d4d4;
+				font-size: 0.82rem;
+				font-weight: 600;
+				margin-bottom: 0.5rem;
+				transition: all 0.15s ease;
+			}
+			.dossier-nav-item:last-child { margin-bottom: 0; }
+			.dossier-nav-item:hover {
+				background: #262626;
+				color: #f59e0b;
+				border-color: #f59e0b;
+			}
+
+			/* High-Contrast Light Mode */
+			:global(html:not(.dark)) .archive-header h1 { color: #0f172a !important; }
+			:global(html:not(.dark)) .archive-header p { color: #475569 !important; }
+			:global(html:not(.dark)) .search-box-input {
+				background: #ffffff !important;
+				border-color: #cbd5e1 !important;
+				color: #0f172a !important;
+			}
+			:global(html:not(.dark)) .filter-btn {
+				background: #ffffff !important;
+				border-color: #cbd5e1 !important;
+				color: #475569 !important;
+			}
+			:global(html:not(.dark)) .filter-btn.active {
+				background: #f43f5e !important;
+				color: #ffffff !important;
+			}
+			:global(html:not(.dark)) .archive-post-card,
+			:global(html:not(.dark)) .sidebar-widget-box {
 				background: #ffffff !important;
 				border-color: #e2e8f0 !important;
-				box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04) !important;
+				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
 			}
-			:global(html:not(.dark)) .rail-header {
-				border-bottom-color: #e2e8f0 !important;
-				color: #64748b !important;
-			}
-			:global(html:not(.dark)) .category-nav-btn {
-				color: #334155 !important;
-			}
-			:global(html:not(.dark)) .category-nav-btn:hover {
-				background: #f1f5f9 !important;
+			:global(html:not(.dark)) .card-title-txt,
+			:global(html:not(.dark)) .widget-head-title,
+			:global(html:not(.dark)) .rank-headline {
 				color: #0f172a !important;
 			}
-			:global(html:not(.dark)) .category-nav-btn.active {
-				background: #fee2e2 !important;
-				border-color: #fca5a5 !important;
-				color: #e11d48 !important;
-			}
-			:global(html:not(.dark)) .cat-count-badge {
-				background: #ffffff !important;
-				border-color: #cbd5e1 !important;
+			:global(html:not(.dark)) .card-desc-txt {
 				color: #475569 !important;
 			}
-			:global(html:not(.dark)) .stream-heading {
-				color: #0f172a !important;
+			:global(html:not(.dark)) .archive-header,
+			:global(html:not(.dark)) .widget-head-row,
+			:global(html:not(.dark)) .card-footer-meta {
+				border-color: #e2e8f0 !important;
 			}
-			:global(html:not(.dark)) .live-filter-input {
+			:global(html:not(.dark)) .dossier-nav-item {
 				background: #f8fafc !important;
 				border-color: #cbd5e1 !important;
-				color: #0f172a !important;
+				color: #334155 !important;
 			}
-			:global(html:not(.dark)) .archive-card:hover {
-				background: #ffffff;
-			}
-			:global(html:not(.dark)) .card-archive-title {
-				color: #0f172a;
-			}
-			:global(html:not(.dark)) .card-archive-desc {
-				color: #475569;
-			}
-			:global(html:not(.dark)) .card-cat-tag {
-				background: #ffffff;
-				border-color: #cbd5e1;
-				color: #334155;
-			}
-			:global(html:not(.dark)) .dossier-link {
-				color: #475569 !important;
-			}
-			:global(html:not(.dark)) .dossier-link:hover {
+			:global(html:not(.dark)) .dossier-nav-item:hover {
+				background: #f1f5f9 !important;
 				color: #d97706 !important;
-			}
-			:global(html:not(.dark)) .card-meta {
-				color: #64748b !important;
 			}
 		</style>
 	</head>
@@ -366,150 +372,120 @@ const categories = [
 		<Header />
 		<main>
 			<div class="archive-header">
-				<h1>The Failure Ledger Archive</h1>
-				<p>Investigative records of human error, corporate negligence, and systemic breakdowns. Select a category on the left to filter the ledger.</p>
+				<div>
+					<h1>The Failure Ledger Archive</h1>
+					<p>Investigative documentation of corporate blunders, career mistakes, and systemic crashes.</p>
+				</div>
+				<div style="font-family: ui-monospace, monospace; font-size: 0.85rem; color: #f43f5e; font-weight: 700;">
+					{posts.length} Documented Case Files
+				</div>
 			</div>
 
-			<div class="archive-layout-grid">
-				<!-- Left Sticky Category Rail -->
-				<aside class="category-rail">
-					<div class="rail-header">
-						<span>Categories</span>
-						<span>{posts.length} Files</span>
-					</div>
-					<div class="category-nav-list" id="category-filter-list">
-						{categories.map((cat) => (
-							<button 
-								class={`category-nav-btn ${cat.id === 'all' ? 'active' : ''}`}
-								data-category-filter={cat.id}
-							>
-								<span>{cat.label}</span>
-								<span class="cat-count-badge">{categoryCounts[cat.id] || 0}</span>
-							</button>
-						))}
-					</div>
-
-					<div class="rail-dossiers">
-						<div class="rail-header" style="border: none; margin-bottom: 0.5rem; padding-bottom: 0;">
-							<span>Curated Dossiers</span>
-						</div>
-						<a href="/blog/deleted-production-database-blamed-intern" class="dossier-link">
-							📂 The Scapegoat Collection
-						</a>
-						<a href="/blog/knight-capital-trading-glitch-45-minutes" class="dossier-link">
-							⚡ 45-Minute Fast Crashes
-						</a>
-						<a href="/blog/the-friday-update-that-broke-the-world" class="dossier-link">
-							🌋 Cloud Monoculture Failures
-						</a>
-					</div>
-				</aside>
-
-				<!-- Right Incident Stream -->
-				<section class="archive-stream">
-					<div class="stream-controls">
-						<div class="stream-heading" id="current-filter-title">
-							All Incidents
-						</div>
+			<div class="archive-portal-grid">
+				<!-- Main Stream (~70%) -->
+				<div class="archive-stream">
+					<!-- Filter Controls -->
+					<div class="archive-filter-bar">
 						<input 
 							type="text" 
-							id="archive-search" 
-							class="live-filter-input" 
-							placeholder="Search by title or keywords..." 
+							id="archive-search-input" 
+							class="search-box-input" 
+							placeholder="Filter case files by keyword, entity, or actor..."
 							autocomplete="off"
 						/>
 					</div>
 
-					<div class="grid-archive" id="archive-grid">
+					<div class="archive-cards-list" id="archive-grid">
 						{posts.map((post) => (
 							<a 
-								href={`/blog/${post.data.shortenedSlug || post.slug}`} 
-								class="archive-card" 
-								data-category={post.data.category}
+								href={`/blog/${post.data.slug.replace(/^ko\//, '')}`} 
+								class="archive-post-card"
 								data-title={post.data.title.toLowerCase()}
+								data-desc={post.data.description.toLowerCase()}
+								data-category={post.data.category}
 							>
-								<div class="card-meta">
-									<span class="card-cat-tag">
-										{post.data.category}
-									</span>
-									<span>•</span>
-									<FormattedDate date={post.data.pubDate || new Date()} />
-									<span>•</span>
-									<span>⏱️ {post.data.read_time_minutes || 6}m read</span>
-									<span>•</span>
-									<span style="color: #fb7185;">{post.data.provenance_label || "Documented Incident"}</span>
+								<div>
+									<div class="card-meta-header">
+										<span class="cat-badge">{post.data.category}</span>
+										<span class="readtime-txt">⏱️ {post.data.read_time_minutes || 5} min</span>
+									</div>
+									<h3 class="card-title-txt">{post.data.title}</h3>
+									<p class="card-desc-txt">{post.data.description}</p>
 								</div>
-								<h3 class="card-archive-title">
-									{post.data.title}
-								</h3>
-								<p class="card-archive-desc">
-									{post.data.description}
-								</p>
+								<div class="card-footer-meta">
+									<FormattedDate date={post.data.pubDate || new Date()} />
+									<span class="card-action-link">Open Case &rarr;</span>
+								</div>
 							</a>
 						))}
 					</div>
+				</div>
 
-					<div id="no-results" class="hidden" style="text-align: center; padding: 4rem 0; color: #737373; font-family: ui-monospace, monospace; font-size: 0.9rem;">
-						No case files found matching this filter.
+				<!-- Right Sidebar (~30%) -->
+				<aside class="archive-right-sidebar">
+					<!-- Top 3 Ranked -->
+					<div class="sidebar-widget-box">
+						<div class="widget-head-row">
+							<span class="widget-head-title">🔥 Top Ranked Incidents</span>
+							<span class="widget-head-tag">MOST READ</span>
+						</div>
+						<div>
+							{topRankedPosts.map((item) => (
+								<a href={`/blog/${item.slug}`} class="ranked-post-link">
+									<div class="rank-digit">{item.rank}</div>
+									<div>
+										<h4 class="rank-headline">{item.title}</h4>
+										<div class="rank-extra-meta">
+											<span>{item.category}</span>
+											<span>•</span>
+											<span>{item.votes}</span>
+										</div>
+									</div>
+								</a>
+							))}
+						</div>
 					</div>
-				</section>
+
+					<!-- Themed Dossiers -->
+					<div class="sidebar-widget-box">
+						<div class="widget-head-row">
+							<span class="widget-head-title">📂 Thematic Dossiers</span>
+							<span class="widget-head-tag">CURATED</span>
+						</div>
+						<div>
+							<a href="/blog/deleted-production-database-blamed-intern" class="dossier-nav-item">
+								📁 The Scapegoat Collection
+							</a>
+							<a href="/blog/knight-capital-trading-glitch-45-minutes" class="dossier-nav-item">
+								⚡ 45-Minute Fast Crashes
+							</a>
+							<a href="/blog/the-friday-update-that-broke-the-world" class="dossier-nav-item">
+								🌋 Cloud Monoculture Failures
+							</a>
+						</div>
+					</div>
+				</aside>
 			</div>
 		</main>
 		<Footer />
 
 		<script is:inline>
-			(function() {
-				const catButtons = document.querySelectorAll('[data-category-filter]');
-				const searchInput = document.getElementById('archive-search');
-				const cards = document.querySelectorAll('.archive-card');
-				const noResults = document.getElementById('no-results');
-				const streamTitle = document.getElementById('current-filter-title');
+			const searchInput = document.getElementById('archive-search-input');
+			const cards = document.querySelectorAll('.archive-post-card');
 
-				let activeCategory = 'all';
-				let searchQuery = '';
-
-				function applyFilters() {
-					let visibleCount = 0;
-					cards.forEach(card => {
-						const cat = card.getAttribute('data-category');
-						const title = card.getAttribute('data-title') || '';
-
-						const matchesCategory = (activeCategory === 'all') || (cat === activeCategory);
-						const matchesSearch = !searchQuery || title.includes(searchQuery.toLowerCase());
-
-						if (matchesCategory && matchesSearch) {
-							card.style.display = 'block';
-							visibleCount++;
-						} else {
-							card.style.display = 'none';
-						}
-					});
-
-					if (noResults) {
-						if (visibleCount === 0) noResults.classList.remove('hidden');
-						else noResults.classList.add('hidden');
+			searchInput?.addEventListener('input', (e) => {
+				const query = e.target.value.toLowerCase().trim();
+				cards.forEach(card => {
+					const title = card.getAttribute('data-title') || '';
+					const desc = card.getAttribute('data-desc') || '';
+					const cat = card.getAttribute('data-category') || '';
+					if (title.includes(query) || desc.includes(query) || cat.includes(query)) {
+						card.style.display = 'flex';
+					} else {
+						card.style.display = 'none';
 					}
-				}
-
-				catButtons.forEach(btn => {
-					btn.addEventListener('click', function() {
-						catButtons.forEach(b => b.classList.remove('active'));
-						this.classList.add('active');
-						activeCategory = this.getAttribute('data-category-filter') || 'all';
-						
-						if (streamTitle) {
-							const label = this.querySelector('span:first-child')?.innerText || 'All Incidents';
-							streamTitle.innerText = label;
-						}
-						applyFilters();
-					});
 				});
-
-				searchInput?.addEventListener('input', function() {
-					searchQuery = this.value.trim();
-					applyFilters();
-				});
-			})();
+			});
 		</script>
 	</body>
 </html>

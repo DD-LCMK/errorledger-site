@@ -19,26 +19,65 @@ const posts = koPosts.sort((a, b) => {
 const featuredPost = posts[0];
 const recentPosts = posts.slice(1);
 
-const categoryCounts: Record<string, number> = {
-	all: posts.length,
-	corporate: posts.filter(p => p.data.category === 'corporate').length,
-	money: posts.filter(p => p.data.category === 'money').length,
-	work: posts.filter(p => p.data.category === 'work').length,
-	ai: posts.filter(p => p.data.category === 'ai').length,
-	internet: posts.filter(p => p.data.category === 'internet').length,
-	relationships: posts.filter(p => p.data.category === 'relationships').length,
-	human: posts.filter(p => p.data.category === 'human').length,
-};
+// Curated Top 5 Most Read / Top Ranked Failures (Naver "많이 본 뉴스" Style)
+const topRankedPosts = [
+	{
+		rank: 1,
+		title: "금요일 아침, 전 세계 850만 대의 컴퓨터를 멈춘 14KB짜리 업데이트",
+		slug: "the-friday-update-that-broke-the-world",
+		category: "기업재난",
+		reads: "42.8k 조회",
+		votes: "1,421표",
+		tag: "🔥 1위 인기"
+	},
+	{
+		rank: 2,
+		title: "나이트 캐피털의 6,000억 원짜리 버그: 45분 만에 끝난 월스트리트의 비극",
+		slug: "knight-capital-trading-glitch-45-minutes",
+		category: "금융재난",
+		reads: "38.1k 조회",
+		votes: "3,110표",
+		tag: "⚡ 대참사"
+	},
+	{
+		rank: 3,
+		title: "프로덕션 DB를 날리고 인턴에게 뒤집어씌운 시니어 개발자",
+		slug: "deleted-production-database-blamed-intern",
+		category: "직장참사",
+		reads: "29.4k 조회",
+		votes: "2,890표",
+		tag: "⚖️ 논쟁중"
+	}
+];
 
-const categories = [
-	{ id: "all", label: "전체 사건 목록", icon: "⚡" },
-	{ id: "corporate", label: "기업 & 시스템 인프라", icon: "🏢" },
-	{ id: "money", label: "금융 & 경제 재난", icon: "💰" },
-	{ id: "work", label: "직장 & 개인 커리어", icon: "🧑‍💻" },
-	{ id: "ai", label: "AI & 자동화 결함", icon: "🤖" },
-	{ id: "internet", label: "인터넷 & 사회적 참사", icon: "🌐" },
-	{ id: "relationships", label: "인간관계", icon: "❤️" },
-	{ id: "human", label: "인간 심리 & 인지 편향", icon: "🧠" },
+const topDebates = [
+	{
+		title: "금요일 아침, 전 세계 850만 대의 컴퓨터를 멈춘 14KB짜리 업데이트",
+		slug: "the-friday-update-that-broke-the-world",
+		split: "48% 크라우드스트라이크 vs 32% 마이크로소프트 구조",
+		votes: "1,421표",
+		category: "기업재난",
+		splitPctA: 48,
+		splitPctB: 32
+	},
+	{
+		title: "프로덕션 DB를 날리고 인턴에게 뒤집어씌운 시니어 개발자",
+		slug: "deleted-production-database-blamed-intern",
+		split: "54% 악의적 은폐 vs 46% 회사의 구조적 문제",
+		votes: "2,890표",
+		category: "직장참사",
+		splitPctA: 54,
+		splitPctB: 46
+	},
+	{
+		title: "나이트 캐피털의 6,000억 원짜리 버그: 45분 만에 끝난 월스트리트의 비극",
+		slug: "knight-capital-trading-glitch-45-minutes",
+		split: "61% QA 검증 부실 vs 39% 방치된 레거시 코드",
+		votes: "3,110표",
+		category: "금융재난",
+		splitPctA: 61,
+		splitPctB: 39
+	}
 ];
 
 const categoryIcons: Record<string, string> = {
@@ -50,259 +89,161 @@ const categoryIcons: Record<string, string> = {
 	relationships: "❤️ 인간관계",
 	human: "🧠 심리"
 };
-
-const topDebates = [
-	{
-		title: "금요일 아침, 전 세계 850만 대의 컴퓨터를 멈춘 14KB짜리 업데이트",
-		slug: "the-friday-update-that-broke-the-world",
-		split: "48% 크라우드스트라이크 vs 32% 마이크로소프트 구조",
-		votes: "1,421표",
-		category: "기업재난"
-	},
-	{
-		title: "프로덕션 DB를 날리고 인턴에게 뒤집어씌운 시니어 개발자",
-		slug: "deleted-production-database-blamed-intern",
-		split: "54% 악의적 은폐 vs 46% 회사의 구조적 문제",
-		votes: "2,890표",
-		category: "직장참사"
-	},
-	{
-		title: "나이트 캐피털의 6,000억 원짜리 버그: 45분 만에 끝난 월스트리트의 비극",
-		slug: "knight-capital-trading-glitch-45-minutes",
-		split: "61% QA 검증 부실 vs 39% 방치된 레거시 코드",
-		votes: "3,110표",
-		category: "금융재난"
-	}
-];
 ---
 
 <html lang="ko" class="dark">
 	<head>
 		<BaseHead title={`에러레저 (ErrorLedger) — 모든 실수는 이야기를 남긴다`} description="인간의 실수, 기괴한 결정, 충격적인 결과. 시스템과 인간 심리가 충돌할 때 벌어지는 일들을 기록하는 사건 아카이브." />
 		<style>
-			main { width: 1180px; max-width: calc(100% - 2rem); margin: 0 auto; padding: 2em 1rem; }
-			
-			.hero { text-align: center; margin-bottom: 3.5rem; padding: 2rem 0 1rem 0; }
+			main {
+				width: 1200px;
+				max-width: calc(100% - 2rem);
+				margin: 0 auto;
+				padding: 2rem 1rem 5rem 1rem;
+			}
+
+			/* Hero Banner */
+			.hero-banner {
+				margin-bottom: 2.5rem;
+				padding-bottom: 1.5rem;
+				border-bottom: 1px solid #262626;
+				display: flex;
+				justify-content: space-between;
+				align-items: flex-end;
+				flex-wrap: wrap;
+				gap: 1.5rem;
+			}
+			.hero-left {
+				max-width: 650px;
+			}
 			.hero-pill {
 				display: inline-flex;
 				align-items: center;
 				gap: 0.5rem;
-				padding: 0.3rem 0.75rem;
+				padding: 0.25rem 0.65rem;
 				border-radius: 9999px;
 				background: rgba(244, 63, 94, 0.1);
 				border: 1px solid rgba(244, 63, 94, 0.25);
 				color: #fb7185;
-				font-size: 0.75rem;
+				font-size: 0.72rem;
 				font-family: ui-monospace, monospace;
 				font-weight: 700;
 				text-transform: uppercase;
 				letter-spacing: 0.05em;
-				margin-bottom: 1rem;
+				margin-bottom: 0.75rem;
 			}
-			.hero h1 { font-size: 2.8rem; margin: 0 0 0.75rem 0; letter-spacing: -0.03em; color: #f5f5f5; font-weight: 800; line-height: 1.25; }
-			.hero h1 span { background: linear-gradient(135deg, #f43f5e, #fb7185); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-			.hero p { font-size: 1.15rem; color: #a3a3a3; max-width: 680px; margin: 0 auto 2rem auto; line-height: 1.6; }
-			
-			.hero-btn-row {
+			.hero-banner h1 {
+				font-size: 2.4rem;
+				font-weight: 800;
+				margin: 0 0 0.5rem 0;
+				color: #f5f5f5;
+				letter-spacing: -0.025em;
+				line-height: 1.25;
+			}
+			.hero-banner h1 span {
+				background: linear-gradient(135deg, #f43f5e, #fb7185);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+			}
+			.hero-banner p {
+				font-size: 1rem;
+				color: #a3a3a3;
+				margin: 0;
+				line-height: 1.6;
+			}
+			.hero-actions {
 				display: flex;
 				align-items: center;
-				justify-content: center;
-				gap: 0.85rem;
-				flex-wrap: wrap;
+				gap: 0.75rem;
 			}
 			.hero-submit-btn {
-				padding: 0.65rem 1.35rem;
-				border-radius: 12px;
+				padding: 0.6rem 1.25rem;
+				border-radius: 10px;
 				background: linear-gradient(135deg, #f43f5e, #e11d48);
 				color: #ffffff;
 				font-weight: 700;
-				font-size: 0.9rem;
+				font-size: 0.85rem;
 				border: none;
-				box-shadow: 0 4px 15px rgba(244, 63, 94, 0.35);
+				box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);
 				cursor: pointer;
 				transition: transform 0.15s ease;
 			}
-			.hero-submit-btn:hover {
-				transform: translateY(-1px);
-			}
-			.hero-archive-link {
-				padding: 0.65rem 1.35rem;
-				border-radius: 12px;
-				background: #171717;
-				border: 1px solid #262626;
-				color: #d4d4d4;
-				font-weight: 700;
-				font-size: 0.9rem;
-				text-decoration: none;
-				transition: all 0.15s ease;
-			}
-			.hero-archive-link:hover {
-				background: #262626;
-				color: #ffffff;
-			}
+			.hero-submit-btn:hover { transform: translateY(-1px); }
 
-			/* 2-Column Responsive Layout */
-			.homepage-layout-grid {
+			/* Naver-Style 2-Column Portal Grid */
+			.portal-layout-grid {
 				display: grid;
 				grid-template-columns: 1fr;
-				gap: 1.75rem;
+				gap: 2.5rem;
 				align-items: start;
-				width: 100%;
 				min-width: 0;
+				width: 100%;
 			}
 			@media (min-width: 1024px) {
-				.homepage-layout-grid {
-					grid-template-columns: 240px minmax(0, 1fr);
+				.portal-layout-grid {
+					grid-template-columns: minmax(0, 1fr) 340px;
 				}
 			}
 
-			/* Sticky Left Category Rail */
-			.category-rail {
-				background: #171717;
-				border: 1px solid #262626;
-				border-radius: 16px;
-				padding: 1.25rem;
-				position: sticky;
-				top: 5.5rem;
-				max-height: calc(100vh - 7rem);
-				overflow-y: auto;
+			/* Left Main Editorial Stream */
+			.editorial-stream {
 				min-width: 0;
-				box-sizing: border-box;
-			}
-			@media (max-width: 1023px) {
-				.category-rail {
-					position: relative;
-					top: 0;
-					margin-bottom: 2rem;
-					padding: 1rem;
-				}
+				width: 100%;
 			}
 
-			.rail-header {
+			/* Section Headers */
+			.stream-section-header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding-bottom: 0.6rem;
+				border-bottom: 2px solid #262626;
+				margin-bottom: 1.5rem;
+			}
+			.section-title-bold {
+				font-size: 1.15rem;
+				font-weight: 800;
+				color: #f5f5f5;
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+			}
+			.section-subtitle-tag {
 				font-family: ui-monospace, monospace;
 				font-size: 0.75rem;
-				font-weight: 700;
-				text-transform: uppercase;
-				color: #a3a3a3;
-				letter-spacing: 0.05em;
-				margin-bottom: 0.85rem;
-				padding-bottom: 0.5rem;
-				border-bottom: 1px solid #262626;
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-			}
-
-			.category-nav-list {
-				display: flex;
-				flex-direction: column;
-				gap: 0.35rem;
-			}
-			@media (max-width: 1023px) {
-				.category-nav-list {
-					flex-direction: row;
-					flex-wrap: wrap;
-					gap: 0.5rem;
-				}
-			}
-
-			.category-nav-link {
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				width: 100%;
-				background: transparent;
-				border: 1px solid transparent;
-				color: #d4d4d4;
-				padding: 0.55rem 0.75rem;
-				border-radius: 8px;
-				font-size: 0.85rem;
-				font-weight: 600;
-				text-decoration: none;
-				transition: all 0.15s ease;
-				box-sizing: border-box;
-			}
-			@media (max-width: 1023px) {
-				.category-nav-link {
-					width: auto;
-					padding: 0.4rem 0.75rem;
-					border: 1px solid #262626;
-					background: #0a0a0a;
-					border-radius: 9999px;
-					font-size: 0.78rem;
-				}
-			}
-			.category-nav-link:hover {
-				background: #262626;
-				color: #ffffff;
-			}
-
-			.cat-count-badge {
-				font-family: ui-monospace, monospace;
-				font-size: 0.72rem;
-				background: #0a0a0a;
-				color: #737373;
-				padding: 0.1rem 0.45rem;
-				border-radius: 9999px;
-				border: 1px solid #262626;
-			}
-
-			.rail-dossiers {
-				margin-top: 1.5rem;
-				padding-top: 1.25rem;
-				border-top: 1px solid #262626;
-			}
-			@media (max-width: 1023px) {
-				.rail-dossiers {
-					display: none;
-				}
-			}
-			.dossier-link {
-				display: block;
-				font-size: 0.82rem;
-				color: #a3a3a3;
-				text-decoration: none;
-				padding: 0.35rem 0;
-				transition: color 0.15s ease;
-			}
-			.dossier-link:hover {
 				color: #f59e0b;
 			}
 
-			/* Right Editorial Stream */
-			.main-editorial-stream {
-				min-width: 0;
-				width: 100%;
-			}
-
-			.featured-box {
+			/* Lead Featured Investigation Card */
+			.lead-card {
 				background: #171717;
 				border: 1px solid #262626;
 				border-radius: 16px;
-				padding: 2rem;
-				margin-bottom: 3.5rem;
+				padding: 1.75rem;
+				margin-bottom: 3rem;
 				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 				transition: border-color 0.2s ease, transform 0.2s ease;
 				min-width: 0;
 				box-sizing: border-box;
 			}
-			.featured-box:hover {
+			.lead-card:hover {
 				border-color: #f43f5e;
 				transform: translateY(-2px);
 			}
-			.featured-meta-row {
+			.lead-meta {
 				display: flex;
 				align-items: center;
 				gap: 0.5rem;
 				margin-bottom: 0.75rem;
+				flex-wrap: wrap;
 			}
 			.category-tag {
-				padding: 0.2rem 0.6rem;
+				padding: 0.2rem 0.55rem;
 				border-radius: 6px;
 				background: rgba(244, 63, 94, 0.1);
 				color: #fb7185;
 				border: 1px solid rgba(244, 63, 94, 0.25);
-				font-size: 0.75rem;
+				font-size: 0.72rem;
 				font-weight: 700;
 			}
 			.read-time-tag {
@@ -310,29 +251,29 @@ const topDebates = [
 				font-family: ui-monospace, monospace;
 				color: #a3a3a3;
 			}
-			.featured-title {
-				font-size: 1.85rem;
+			.lead-title {
+				font-size: 1.75rem;
 				font-weight: 800;
 				color: #f5f5f5;
 				margin: 0 0 0.5rem 0;
-				line-height: 1.25;
+				line-height: 1.3;
 				transition: color 0.15s ease;
 				overflow-wrap: break-word;
 			}
-			.featured-box:hover .featured-title { color: #fb7185; }
-			.featured-subtitle {
+			.lead-card:hover .lead-title { color: #fb7185; }
+			.lead-subtitle {
 				color: #a3a3a3;
-				font-size: 1rem;
+				font-size: 0.95rem;
 				margin: 0 0 1rem 0;
 				line-height: 1.5;
 			}
-			.featured-desc {
+			.lead-desc {
 				color: #d4d4d4;
-				font-size: 0.95rem;
+				font-size: 0.92rem;
 				line-height: 1.6;
-				margin: 0 0 1.5rem 0;
+				margin: 0 0 1.25rem 0;
 			}
-			.featured-footer {
+			.lead-footer {
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
@@ -344,138 +285,114 @@ const topDebates = [
 				flex-wrap: wrap;
 				gap: 0.5rem;
 			}
-			.open-file-link {
+			.open-lead-btn {
 				color: #fb7185;
 				font-weight: 700;
 			}
 
-			.section-header {
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				margin-bottom: 1.5rem;
-				padding-bottom: 0.75rem;
-				border-bottom: 1px solid #262626;
-				gap: 0.5rem;
-				flex-wrap: wrap;
-			}
-			.section-title {
-				font-size: 1.15rem;
-				font-weight: 800;
-				color: #f5f5f5;
-				letter-spacing: 0.025em;
-			}
-			.section-sub {
-				font-size: 0.75rem;
-				font-family: ui-monospace, monospace;
-				color: #f59e0b;
-			}
-
-			.debates-grid {
+			/* Debate Grid (Naver News Multi-Column Voting Split) */
+			.debates-stream-grid {
 				display: grid;
 				grid-template-columns: 1fr;
-				gap: 1rem;
-				margin-bottom: 3.5rem;
-				min-width: 0;
-				width: 100%;
+				gap: 1.25rem;
+				margin-bottom: 3rem;
 			}
-			@media (min-width: 640px) and (max-width: 1023px) {
-				.debates-grid {
-					grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+			@media (min-width: 640px) {
+				.debates-stream-grid {
+					grid-template-columns: 1fr 1fr;
 				}
 			}
-			@media (min-width: 1024px) and (max-width: 1279px) {
-				.debates-grid {
-					grid-template-columns: repeat(2, minmax(0, 1fr));
-				}
-			}
-			@media (min-width: 1280px) {
-				.debates-grid {
-					grid-template-columns: repeat(3, minmax(0, 1fr));
-				}
-			}
-			.debate-card {
+			.debate-portal-card {
 				background: #171717;
 				border: 1px solid #262626;
 				border-radius: 12px;
 				padding: 1.25rem;
+				text-decoration: none;
 				display: flex;
 				flex-direction: column;
 				justify-content: space-between;
-				text-decoration: none;
 				transition: all 0.2s ease;
 				min-width: 0;
 				box-sizing: border-box;
 			}
-			.debate-card:hover {
+			.debate-portal-card:hover {
 				border-color: #f59e0b;
 				transform: translateY(-2px);
 			}
-			.debate-card-header {
+			.debate-card-top {
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
-				font-size: 0.75rem;
+				font-size: 0.72rem;
 				font-family: ui-monospace, monospace;
 				color: #737373;
 				margin-bottom: 0.5rem;
 			}
-			.debate-cat { color: #f59e0b; font-weight: 700; }
+			.debate-cat-label { color: #f59e0b; font-weight: 700; }
 			.debate-card-title {
 				font-size: 0.95rem;
 				font-weight: 700;
 				color: #f5f5f5;
+				line-height: 1.4;
 				margin: 0 0 1rem 0;
-				line-height: 1.35;
 			}
-			.debate-split-box {
+			.debate-bar-wrapper {
 				padding-top: 0.75rem;
 				border-top: 1px solid #262626;
-				font-size: 0.75rem;
-				font-family: ui-monospace, monospace;
 			}
-			.debate-split-label { color: #737373; margin-bottom: 0.2rem; font-size: 0.7rem; }
-			.debate-split-val { color: #e5e5e5; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+			.debate-split-desc {
+				font-size: 0.72rem;
+				font-family: ui-monospace, monospace;
+				color: #a3a3a3;
+				margin-bottom: 0.4rem;
+			}
+			.debate-visual-bar {
+				height: 6px;
+				background: #262626;
+				border-radius: 9999px;
+				overflow: hidden;
+				display: flex;
+			}
+			.bar-fill-a { background: #f43f5e; height: 100%; }
+			.bar-fill-b { background: #3b82f6; height: 100%; }
 
-			.grid-posts {
+			/* Incident Cards Grid */
+			.ledger-posts-grid {
 				display: grid;
 				grid-template-columns: 1fr;
 				gap: 1.25rem;
-				margin-bottom: 3.5rem;
-				min-width: 0;
-				width: 100%;
+				margin-bottom: 3rem;
 			}
 			@media (min-width: 640px) {
-				.grid-posts {
-					grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+				.ledger-posts-grid {
+					grid-template-columns: 1fr 1fr;
 				}
 			}
-
-			.card-post {
+			.ledger-incident-card {
 				background: #171717;
 				border: 1px solid #262626;
 				border-radius: 12px;
-				padding: 1.5rem;
+				padding: 1.35rem;
+				text-decoration: none;
 				display: flex;
 				flex-direction: column;
 				justify-content: space-between;
-				text-decoration: none;
 				transition: all 0.2s ease;
 				min-width: 0;
 				box-sizing: border-box;
 			}
-			.card-post:hover {
+			.ledger-incident-card:hover {
 				border-color: #f43f5e;
 				transform: translateY(-2px);
 				box-shadow: 0 4px 20px rgba(244, 63, 94, 0.15);
 			}
-			.card-meta-top {
+			.card-meta-row {
 				display: flex;
 				align-items: center;
 				gap: 0.5rem;
 				margin-bottom: 0.6rem;
 			}
-			.card-cat-pill {
+			.card-cat-badge {
 				padding: 0.15rem 0.5rem;
 				border-radius: 4px;
 				background: #0a0a0a;
@@ -484,165 +401,290 @@ const topDebates = [
 				font-size: 0.72rem;
 				font-weight: 600;
 			}
-			.card-readtime {
+			.card-readtime-txt {
 				font-size: 0.72rem;
 				font-family: ui-monospace, monospace;
 				color: #737373;
 			}
-			.card-title {
-				font-size: 1.15rem;
+			.card-headline {
+				font-size: 1.05rem;
 				font-weight: 700;
 				color: #f5f5f5;
 				margin: 0 0 0.5rem 0;
 				line-height: 1.35;
 			}
-			.card-post:hover .card-title { color: #fb7185; }
-			.card-desc {
+			.ledger-incident-card:hover .card-headline { color: #fb7185; }
+			.card-summary-txt {
 				font-size: 0.85rem;
 				color: #a3a3a3;
 				line-height: 1.5;
 				margin: 0 0 1rem 0;
 			}
-			.card-footer {
+			.card-foot-row {
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
 				padding-top: 0.75rem;
 				border-top: 1px solid #262626;
-				font-size: 0.75rem;
+				font-size: 0.72rem;
 				font-family: ui-monospace, monospace;
 				color: #737373;
 			}
-			.card-readlink { color: #fb7185; }
+			.card-action-txt { color: #fb7185; font-weight: 600; }
 
+			/* Right Sidebar (Naver News "많이 본 뉴스 / 랭킹" Style) */
+			.portal-right-sidebar {
+				min-width: 0;
+				width: 100%;
+			}
+			.sidebar-widget {
+				background: #171717;
+				border: 1px solid #262626;
+				border-radius: 16px;
+				padding: 1.25rem;
+				margin-bottom: 2rem;
+				box-sizing: border-box;
+			}
+			.widget-header-row {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding-bottom: 0.65rem;
+				border-bottom: 1px solid #262626;
+				margin-bottom: 1rem;
+			}
+			.widget-title {
+				font-size: 0.95rem;
+				font-weight: 800;
+				color: #f5f5f5;
+				display: flex;
+				align-items: center;
+				gap: 0.4rem;
+			}
+			.widget-badge {
+				font-family: ui-monospace, monospace;
+				font-size: 0.7rem;
+				color: #f43f5e;
+				font-weight: 700;
+			}
+
+			/* Top 5 Ranked List */
+			.ranked-list {
+				display: flex;
+				flex-direction: column;
+				gap: 0.85rem;
+			}
+			.ranked-item {
+				display: flex;
+				align-items: flex-start;
+				gap: 0.75rem;
+				text-decoration: none;
+				padding-bottom: 0.85rem;
+				border-bottom: 1px dashed #262626;
+				transition: transform 0.15s ease;
+			}
+			.ranked-item:last-child {
+				border-bottom: none;
+				padding-bottom: 0;
+			}
+			.ranked-item:hover {
+				transform: translateX(2px);
+			}
+			.rank-num {
+				font-size: 1.25rem;
+				font-weight: 900;
+				font-family: ui-monospace, monospace;
+				line-height: 1;
+				color: #f43f5e;
+				min-width: 1.5rem;
+			}
+			.rank-content {
+				flex-grow: 1;
+				min-width: 0;
+			}
+			.rank-title {
+				font-size: 0.85rem;
+				font-weight: 700;
+				color: #e5e5e5;
+				line-height: 1.35;
+				margin: 0 0 0.35rem 0;
+				transition: color 0.15s ease;
+			}
+			.ranked-item:hover .rank-title {
+				color: #fb7185;
+			}
+			.rank-sub-meta {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				font-size: 0.7rem;
+				font-family: ui-monospace, monospace;
+				color: #737373;
+			}
+
+			/* Curated Dossiers List */
+			.dossier-list-box {
+				display: flex;
+				flex-direction: column;
+				gap: 0.5rem;
+			}
+			.dossier-item-link {
+				display: block;
+				padding: 0.5rem 0.65rem;
+				background: #111111;
+				border: 1px solid #262626;
+				border-radius: 8px;
+				text-decoration: none;
+				color: #d4d4d4;
+				font-size: 0.82rem;
+				font-weight: 600;
+				transition: all 0.15s ease;
+			}
+			.dossier-item-link:hover {
+				background: #262626;
+				color: #f59e0b;
+				border-color: #f59e0b;
+			}
+
+			/* Whistleblower CTA Widget */
+			.whistleblower-box {
+				background: linear-gradient(135deg, rgba(244, 63, 94, 0.08), rgba(244, 63, 94, 0.02));
+				border: 1px solid rgba(244, 63, 94, 0.25);
+				border-radius: 16px;
+				padding: 1.25rem;
+				text-align: center;
+			}
+			.wb-title {
+				font-size: 0.95rem;
+				font-weight: 800;
+				color: #ffffff;
+				margin: 0 0 0.35rem 0;
+			}
+			.wb-desc {
+				font-size: 0.8rem;
+				color: #a3a3a3;
+				line-height: 1.45;
+				margin: 0 0 1rem 0;
+			}
+			.wb-btn {
+				display: block;
+				width: 100%;
+				padding: 0.55rem 0;
+				border-radius: 8px;
+				background: #f43f5e;
+				color: #ffffff;
+				font-weight: 700;
+				font-size: 0.82rem;
+				border: none;
+				cursor: pointer;
+				transition: background 0.15s ease;
+			}
+			.wb-btn:hover {
+				background: #fb7185;
+			}
+
+			/* Manifesto Box */
 			.manifesto-box {
 				background: #171717;
 				border: 1px solid #262626;
 				border-left: 4px solid #f43f5e;
 				border-radius: 12px;
-				padding: 2rem;
-				margin-top: 2rem;
+				padding: 1.75rem;
+				margin-top: 1rem;
 				min-width: 0;
 				box-sizing: border-box;
 			}
 			.manifesto-tag {
 				font-family: ui-monospace, monospace;
-				font-size: 0.75rem;
+				font-size: 0.72rem;
 				color: #fb7185;
 				font-weight: 700;
 				text-transform: uppercase;
 				letter-spacing: 0.05em;
-				margin-bottom: 0.5rem;
+				margin-bottom: 0.35rem;
 			}
 			.manifesto-title {
-				font-size: 1.35rem;
+				font-size: 1.25rem;
 				font-weight: 800;
 				color: #ffffff;
-				margin: 0 0 0.75rem 0;
+				margin: 0 0 0.6rem 0;
 			}
 			.manifesto-desc {
-				font-size: 0.9rem;
+				font-size: 0.88rem;
 				color: #a3a3a3;
 				line-height: 1.6;
-				margin: 0 0 1.5rem 0;
+				margin: 0 0 1.25rem 0;
 			}
 			.manifesto-grid {
 				display: grid;
 				grid-template-columns: 1fr;
-				gap: 1rem;
+				gap: 0.85rem;
 				padding-top: 1rem;
 				border-top: 1px solid #262626;
-				font-size: 0.82rem;
+				font-size: 0.8rem;
 				color: #d4d4d4;
 			}
-			@media (min-width: 768px) {
+			@media (min-width: 640px) {
 				.manifesto-grid {
 					grid-template-columns: 1fr 1fr 1fr;
 				}
 			}
 
-			/* Light mode styles */
-			:global(html:not(.dark)) .hero h1 { color: #0f172a !important; }
-			:global(html:not(.dark)) .hero p { color: #475569 !important; }
-			:global(html:not(.dark)) .hero-archive-link {
-				background: #ffffff !important;
-				border-color: #cbd5e1 !important;
-				color: #1e293b !important;
-			}
-			:global(html:not(.dark)) .hero-archive-link:hover {
-				background: #f1f5f9 !important;
-				color: #0f172a !important;
-			}
-			:global(html:not(.dark)) .category-rail,
-			:global(html:not(.dark)) .featured-box,
-			:global(html:not(.dark)) .debate-card,
-			:global(html:not(.dark)) .card-post,
+			/* High-Contrast Light Mode */
+			:global(html:not(.dark)) .hero-banner h1 { color: #0f172a !important; }
+			:global(html:not(.dark)) .hero-banner p { color: #475569 !important; }
+			:global(html:not(.dark)) .lead-card,
+			:global(html:not(.dark)) .debate-portal-card,
+			:global(html:not(.dark)) .ledger-incident-card,
+			:global(html:not(.dark)) .sidebar-widget,
 			:global(html:not(.dark)) .manifesto-box {
 				background: #ffffff !important;
 				border-color: #e2e8f0 !important;
-				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
 			}
-			:global(html:not(.dark)) .rail-header {
-				border-bottom-color: #e2e8f0 !important;
-				color: #64748b !important;
-			}
-			:global(html:not(.dark)) .category-nav-link {
-				color: #334155 !important;
-			}
-			:global(html:not(.dark)) .category-nav-link:hover {
-				background: #f1f5f9 !important;
-				color: #0f172a !important;
-			}
-			:global(html:not(.dark)) .cat-count-badge {
-				background: #ffffff !important;
-				border-color: #cbd5e1 !important;
-				color: #475569 !important;
-			}
-			:global(html:not(.dark)) .dossier-link {
-				color: #475569 !important;
-			}
-			:global(html:not(.dark)) .dossier-link:hover {
-				color: #d97706 !important;
-			}
-			:global(html:not(.dark)) .section-title {
-				color: #0f172a !important;
-			}
-			:global(html:not(.dark)) .section-header {
-				border-bottom-color: #e2e8f0 !important;
-			}
-			:global(html:not(.dark)) .featured-title,
+			:global(html:not(.dark)) .section-title-bold,
+			:global(html:not(.dark)) .lead-title,
 			:global(html:not(.dark)) .debate-card-title,
-			:global(html:not(.dark)) .card-title,
+			:global(html:not(.dark)) .card-headline,
+			:global(html:not(.dark)) .widget-title,
+			:global(html:not(.dark)) .rank-title,
+			:global(html:not(.dark)) .wb-title,
 			:global(html:not(.dark)) .manifesto-title {
 				color: #0f172a !important;
 			}
-			:global(html:not(.dark)) .featured-subtitle,
-			:global(html:not(.dark)) .featured-desc,
-			:global(html:not(.dark)) .card-desc,
+			:global(html:not(.dark)) .lead-subtitle,
+			:global(html:not(.dark)) .lead-desc,
+			:global(html:not(.dark)) .card-summary-txt,
+			:global(html:not(.dark)) .wb-desc,
 			:global(html:not(.dark)) .manifesto-desc {
 				color: #475569 !important;
 			}
-			:global(html:not(.dark)) .featured-footer,
-			:global(html:not(.dark)) .debate-split-box,
-			:global(html:not(.dark)) .card-footer,
+			:global(html:not(.dark)) .stream-section-header {
+				border-bottom-color: #e2e8f0 !important;
+			}
+			:global(html:not(.dark)) .widget-header-row,
+			:global(html:not(.dark)) .lead-footer,
+			:global(html:not(.dark)) .debate-bar-wrapper,
+			:global(html:not(.dark)) .card-foot-row,
 			:global(html:not(.dark)) .manifesto-grid {
 				border-top-color: #e2e8f0 !important;
+				border-bottom-color: #e2e8f0 !important;
 			}
-			:global(html:not(.dark)) .featured-footer {
-				color: #64748b !important;
+			:global(html:not(.dark)) .ranked-item {
+				border-bottom-color: #e2e8f0 !important;
 			}
-			:global(html:not(.dark)) .debate-split-label {
-				color: #64748b !important;
-			}
-			:global(html:not(.dark)) .debate-split-val {
-				color: #0f172a !important;
-			}
-			:global(html:not(.dark)) .card-cat-pill {
+			:global(html:not(.dark)) .dossier-item-link {
 				background: #f8fafc !important;
 				border-color: #cbd5e1 !important;
 				color: #334155 !important;
 			}
-			:global(html:not(.dark)) .manifesto-grid {
+			:global(html:not(.dark)) .dossier-item-link:hover {
+				background: #f1f5f9 !important;
+				color: #d97706 !important;
+			}
+			:global(html:not(.dark)) .card-cat-badge {
+				background: #f8fafc !important;
+				border-color: #cbd5e1 !important;
 				color: #334155 !important;
 			}
 		</style>
@@ -650,147 +692,102 @@ const topDebates = [
 	<body class="bg-neutral-950 text-neutral-200 antialiased min-h-screen">
 		<Header />
 		<main>
-			<section class="hero">
-				<div class="hero-pill">
-					인간 실패 탐구 아카이브
+			<!-- Hero Banner -->
+			<section class="hero-banner">
+				<div class="hero-left">
+					<div class="hero-pill">
+						인간 실패 탐구 아카이브
+					</div>
+					<h1>모든 실수는 <span>이야기를 남긴다.</span></h1>
+					<p>실제 실패. 기괴한 결정. 충격적인 결과. 시스템과 인간 심리가 충돌할 때 벌어지는 사건들을 기록하고 분석합니다.</p>
 				</div>
-				<h1>모든 실수는<br/><span>이야기를 남긴다.</span></h1>
-				<p>실제 실패. 기괴한 결정. 충격적인 결과. 시스템과 인간 심리가 충돌할 때 벌어지는 사건들을 기록하고 분석합니다.</p>
-				
-				<div class="hero-btn-row">
+				<div class="hero-actions">
 					<button class="hero-submit-btn" data-open-submit-modal>
 						+ 익명 사건 제보하기
 					</button>
-					<a href="/ko/blog" class="hero-archive-link">
-						전체 아카이브 둘러보기 &rarr;
-					</a>
 				</div>
 			</section>
 
-			<!-- 2-Column Responsive Hub -->
-			<div class="homepage-layout-grid">
-				<!-- Left Sticky Category Rail -->
-				<aside class="category-rail">
-					<div class="rail-header">
-						<span>사건 카테고리</span>
-						<span>{posts.length}개 파일</span>
-					</div>
-					<div class="category-nav-list">
-						{categories.map((cat) => (
-							<a href="/ko/blog" class="category-nav-link">
-								<span>{cat.icon} {cat.label}</span>
-								<span class="cat-count-badge">{categoryCounts[cat.id] || 0}</span>
-							</a>
-						))}
-					</div>
-
-					<div class="rail-dossiers">
-						<div class="rail-header" style="border: none; margin-bottom: 0.5rem; padding-bottom: 0;">
-							<span>테마별 사건 도시에</span>
-						</div>
-						<a href="/ko/blog/deleted-production-database-blamed-intern" class="dossier-link">
-							📂 사내 희생양 사건 모음집
-						</a>
-						<a href="/ko/blog/knight-capital-trading-glitch-45-minutes" class="dossier-link">
-							⚡ 45분 만의 파산: 알고리즘 폭주
-						</a>
-						<a href="/ko/blog/the-friday-update-that-broke-the-world" class="dossier-link">
-							🌋 클라우드 단일 장애점 마비
-						</a>
-					</div>
-				</aside>
-
-				<!-- Right Main Editorial Stream -->
-				<div class="main-editorial-stream">
-					<!-- Lead Incident Hero Card -->
+			<!-- Naver-Style 2-Column Portal Grid -->
+			<div class="portal-layout-grid">
+				<!-- Left Main Editorial Stream (~70%) -->
+				<div class="editorial-stream">
+					<!-- Lead Investigation -->
 					{featuredPost && (
 						<section>
-							<div class="section-header">
-								<span class="section-title">⚡ 주요 탐사 기록</span>
-								<span class="section-sub">이달의 사건 파일</span>
+							<div class="stream-section-header">
+								<span class="section-title-bold">⚡ 이달의 심층 기획 사건</span>
+								<span class="section-subtitle-tag">주요 탐사 기록</span>
 							</div>
 							<a href={`/ko/blog/${featuredPost.data.slug.replace(/^ko\//, '')}`} style="text-decoration: none;">
-								<div class="featured-box">
-									<div class="featured-meta-row">
-										<span class="category-tag">
-											{categoryIcons[featuredPost.data.category] || featuredPost.data.category}
-										</span>
+								<div class="lead-card">
+									<div class="lead-meta">
+										<span class="category-tag">{categoryIcons[featuredPost.data.category] || featuredPost.data.category}</span>
 										<span class="read-time-tag">⏱️ {featuredPost.data.read_time_minutes || 6}분 읽기</span>
 									</div>
-									<h2 class="featured-title">
-										{featuredPost.data.title}
-									</h2>
+									<h2 class="lead-title">{featuredPost.data.title}</h2>
 									{featuredPost.data.subtitle && (
-										<p class="featured-subtitle">
-											{featuredPost.data.subtitle}
-										</p>
+										<p class="lead-subtitle">{featuredPost.data.subtitle}</p>
 									)}
-									<p class="featured-desc">
-										{featuredPost.data.description}
-									</p>
-									<div class="featured-footer">
+									<p class="lead-desc">{featuredPost.data.description}</p>
+									<div class="lead-footer">
 										<span>검증 등급: {featuredPost.data.provenance_label || "공식 문서 검증"}</span>
-										<span class="open-file-link">사건 기록 열람하기 &rarr;</span>
+										<span class="open-lead-btn">사건 기록 열람하기 &rarr;</span>
 									</div>
 								</div>
 							</a>
 						</section>
 					)}
 
-					<!-- Interactive Feature 2: Most Debated Failures Leaderboard -->
-					<section>
-						<div class="section-header">
-							<span class="section-title">⚖️ 가장 뜨거운 논쟁 사건</span>
-							<span class="section-sub">팽팽하게 갈린 독자 여론</span>
+					<!-- Debate Arena (Live Poll Splits) -->
+					<section id="debates-section">
+						<div class="stream-section-header">
+							<span class="section-title-bold">⚖️ 독자 판결 논쟁실</span>
+							<span class="section-subtitle-tag">팽팽하게 갈린 독자 여론</span>
 						</div>
-						<div class="debates-grid">
+						<div class="debates-stream-grid">
 							{topDebates.map((item) => (
-								<a href={`/ko/blog/${item.slug}`} class="debate-card">
+								<a href={`/ko/blog/${item.slug}`} class="debate-portal-card">
 									<div>
-										<div class="debate-card-header">
-											<span class="debate-cat">{item.category}</span>
+										<div class="debate-card-top">
+											<span class="debate-cat-label">{item.category}</span>
 											<span>{item.votes}</span>
 										</div>
-										<h4 class="debate-card-title">
-											{item.title}
-										</h4>
+										<h4 class="debate-card-title">{item.title}</h4>
 									</div>
-									<div class="debate-split-box">
-										<div class="debate-split-label">현재 여론 분기:</div>
-										<div class="debate-split-val">{item.split}</div>
+									<div class="debate-bar-wrapper">
+										<div class="debate-split-desc">{item.split}</div>
+										<div class="debate-visual-bar">
+											<div class="bar-fill-a" style={`width: ${item.splitPctA}%`}></div>
+											<div class="bar-fill-b" style={`width: ${item.splitPctB}%`}></div>
+										</div>
 									</div>
 								</a>
 							))}
 						</div>
 					</section>
 
-					<!-- The Ledger Grid -->
+					<!-- Chronological Ledger Incidents -->
 					{recentPosts.length > 0 && (
 						<section>
-							<div class="section-header">
-								<span class="section-title">📂 전체 사건 보관소</span>
-								<span class="section-sub">{posts.length}개 공식 문서 기록</span>
+							<div class="stream-section-header">
+								<span class="section-title-bold">📂 전체 사건 보관소</span>
+								<span class="section-subtitle-tag">{posts.length}개 공식 문서 기록</span>
 							</div>
-							<div class="grid-posts">
+							<div class="ledger-posts-grid">
 								{recentPosts.map((post) => (
-									<a href={`/ko/blog/${post.data.slug.replace(/^ko\//, '')}`} class="card-post">
+									<a href={`/ko/blog/${post.data.slug.replace(/^ko\//, '')}`} class="ledger-incident-card">
 										<div>
-											<div class="card-meta-top">
-												<span class="card-cat-pill">
-													{categoryIcons[post.data.category] || post.data.category}
-												</span>
-												<span class="card-readtime">⏱️ {post.data.read_time_minutes || 5}분</span>
+											<div class="card-meta-row">
+												<span class="card-cat-badge">{categoryIcons[post.data.category] || post.data.category}</span>
+												<span class="card-readtime-txt">⏱️ {post.data.read_time_minutes || 5}분</span>
 											</div>
-											<h3 class="card-title">
-												{post.data.title}
-											</h3>
-											<p class="card-desc">
-												{post.data.description}
-											</p>
+											<h3 class="card-headline">{post.data.title}</h3>
+											<p class="card-summary-txt">{post.data.description}</p>
 										</div>
-										<div class="card-footer">
+										<div class="card-foot-row">
 											<FormattedDate date={post.data.pubDate || new Date()} />
-											<span class="card-readlink">사건 읽기 &rarr;</span>
+											<span class="card-action-txt">사건 읽기 &rarr;</span>
 										</div>
 									</a>
 								))}
@@ -798,6 +795,7 @@ const topDebates = [
 						</section>
 					)}
 
+					<!-- Manifesto -->
 					<section class="manifesto-box">
 						<div class="manifesto-tag">에러레저 편집국 선언</div>
 						<h3 class="manifesto-title">AI는 질문에 답합니다. 우리는 실제로 일어난 일을 이야기합니다.</h3>
@@ -811,6 +809,60 @@ const topDebates = [
 						</div>
 					</section>
 				</div>
+
+				<!-- Right Sidebar (~30%) -->
+				<aside class="portal-right-sidebar">
+					<!-- Top 5 Most Read Failures -->
+					<div class="sidebar-widget">
+						<div class="widget-header-row">
+							<span class="widget-title">🔥 많이 본 사건 TOP 5</span>
+							<span class="widget-badge">실시간 랭킹</span>
+						</div>
+						<div class="ranked-list">
+							{topRankedPosts.map((item) => (
+								<a href={`/ko/blog/${item.slug}`} class="ranked-item">
+									<div class="rank-num">{item.rank}</div>
+									<div class="rank-content">
+										<h4 class="rank-title">{item.title}</h4>
+										<div class="rank-sub-meta">
+											<span>{item.category}</span>
+											<span>•</span>
+											<span>{item.votes}</span>
+										</div>
+									</div>
+								</a>
+							))}
+						</div>
+					</div>
+
+					<!-- Curated Thematic Dossiers -->
+					<div class="sidebar-widget">
+						<div class="widget-header-row">
+							<span class="widget-title">📂 테마별 사건 도시에</span>
+							<span class="widget-badge">심층 기획</span>
+						</div>
+						<div class="dossier-list-box">
+							<a href="/ko/blog/deleted-production-database-blamed-intern" class="dossier-item-link">
+								📁 사내 희생양 사건 모음집
+							</a>
+							<a href="/ko/blog/knight-capital-trading-glitch-45-minutes" class="dossier-item-link">
+								⚡ 45분 만의 파산: 알고리즘 폭주
+							</a>
+							<a href="/ko/blog/the-friday-update-that-broke-the-world" class="dossier-item-link">
+								🌋 클라우드 단일 장애점 마비
+							</a>
+						</div>
+					</div>
+
+					<!-- Whistleblower Box -->
+					<div class="whistleblower-box">
+						<h4 class="wb-title">사건 제보가 있으신가요?</h4>
+						<p class="wb-desc">사내 은폐 사건, 커리어의 결정적 실수, 시스템 재난의 전말을 아키비스트에게 익명으로 제보하세요.</p>
+						<button class="wb-btn" data-open-submit-modal>
+							+ 익명 사건 제보하기
+						</button>
+					</div>
+				</aside>
 			</div>
 		</main>
 		<Footer />
