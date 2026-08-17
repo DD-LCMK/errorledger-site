@@ -1,19 +1,26 @@
 ---
 interface Props {
-	date?: Date; // Made optional to prevent undefined crashes
+	date?: Date;
+	lang?: string;
 }
 
-const { date } = Astro.props;
+const { date, lang } = Astro.props;
+const currentPath = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+const isKorean = lang === 'ko' || currentPath === '/ko' || currentPath.startsWith('/ko/');
 ---
 
 {date && (
 	<time datetime={date.toISOString()}>
 		{
-			date.toLocaleDateString('en-us', {
-				year: 'numeric',
-				month: 'short',
-				day: 'numeric',
-			})
+			isKorean ? (
+				`${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`
+			) : (
+				date.toLocaleDateString('en-us', {
+					year: 'numeric',
+					month: 'short',
+					day: 'numeric',
+				})
+			)
 		}
 	</time>
 )}
