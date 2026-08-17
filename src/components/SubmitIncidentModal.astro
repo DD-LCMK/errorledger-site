@@ -436,4 +436,32 @@
   .hidden {
     display: none !important;
   }
+
+  /* Light mode styles */
+  :global(html:not(.dark)) .modal-card {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #0f172a;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+  }
+  :global(html:not(.dark)) .modal-title { color: #0f172a; }
+  :global(html:not(.dark)) .modal-subtitle { color: #475569; }
+  :global(html:not(.dark)) .form-group label { color: #1e293b; }
+  :global(html:not(.dark)) .form-input,
+  :global(html:not(.dark)) .form-select,
+  :global(html:not(.dark)) .form-textarea {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #0f172a;
+  }
+  :global(html:not(.dark)) .form-input:focus,
+  :global(html:not(.dark)) .form-select:focus,
+  :global(html:not(.dark)) .form-textarea:focus {
+    border-color: #f43f5e;
+    background: #ffffff;
+  }
+  :global(html:not(.dark)) .close-btn { color: #64748b; }
+  :global(html:not(.dark)) .close-btn:hover { color: #0f172a; }
+  :global(html:not(.dark)) .success-title { color: #0f172a; }
+  :global(html:not(.dark)) .success-desc { color: #475569; }
 </style>
