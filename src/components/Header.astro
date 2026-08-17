@@ -5,13 +5,28 @@ import { SITE_TITLE } from '../consts';
 import { getCollection } from 'astro:content';
 
 const allPosts = await getCollection('blog');
-const allSlugs = allPosts.map(p => `/blog/${p.data.shortenedSlug || p.slug}`);
+const allSlugs = allPosts.map(p => {
+	const prefix = p.data.lang === 'ko' ? '/ko/blog/' : '/blog/';
+	return `${prefix}${p.data.slug.replace(/^ko\//, '')}`;
+});
+
+const currentPath = Astro.url.pathname;
+const isKorean = currentPath.startsWith('/ko');
+const homeUrl = isKorean ? '/ko' : '/';
+const archiveUrl = isKorean ? '/ko/blog' : '/blog';
+const aboutUrl = isKorean ? '/about' : '/about';
+
+// Toggle target
+const langTargetUrl = isKorean 
+	? currentPath.replace(/^\/ko/, '') || '/'
+	: `/ko${currentPath}`;
+const langSwitchLabel = isKorean ? '🇺🇸 EN' : '🇰🇷 한국어';
 ---
 
 <header>
 	<nav class="header-nav">
 		<h2>
-			<a href="/" class="brand-link">
+			<a href={homeUrl} class="brand-link">
 				<span class="brand-badge">&gt;_</span>
 				<span class="logo-text-main">Error</span><span class="logo-text-accent">Ledger</span>
 			</a>
@@ -23,25 +38,30 @@ const allSlugs = allPosts.map(p => `/blog/${p.data.shortenedSlug || p.slug}`);
 				type="text" 
 				name="q" 
 				class="header-search-input" 
-				placeholder="Search the Failure Ledger..." 
+				placeholder={isKorean ? "사건 및 재난 검색..." : "Search the Failure Ledger..."}
 				aria-label="Search repository globally"
 				autocomplete="off"
 			/>
 		</form>
 
 		<div class="internal-links">
-			<HeaderLink href="/">Ledger</HeaderLink>
-			<HeaderLink href="/blog">Archive</HeaderLink>
-			<HeaderLink href="/about">About</HeaderLink>
+			<HeaderLink href={homeUrl}>{isKorean ? "홈" : "Ledger"}</HeaderLink>
+			<HeaderLink href={archiveUrl}>{isKorean ? "아카이브" : "Archive"}</HeaderLink>
+			<HeaderLink href={aboutUrl}>{isKorean ? "소개" : "About"}</HeaderLink>
 			
+			<!-- Language Switcher Button -->
+			<a href={langTargetUrl} class="nav-action-btn lang-btn" title="Switch language">
+				{langSwitchLabel}
+			</a>
+
 			<!-- Interactive Feature 1: Failure Roulette -->
 			<button id="random-failure-btn" class="nav-action-btn random-btn" title="Open a random incident from the ledger">
-				<span>🎲</span> Random
+				<span>🎲</span> {isKorean ? "랜덤" : "Random"}
 			</button>
 
 			<!-- Interactive Feature 5: Submit Incident -->
 			<button class="nav-action-btn submit-btn" data-open-submit-modal title="Submit an incident to The Archivist">
-				<span>+</span> Submit
+				<span>+</span> {isKorean ? "제보" : "Submit"}
 			</button>
 			
 			<!-- Theme Toggle Button -->
@@ -60,7 +80,7 @@ const allSlugs = allPosts.map(p => `/blog/${p.data.shortenedSlug || p.slug}`);
 	<SubmitIncidentModal />
 </header>
 
-<script is:inline define:vars={{ allSlugs }}>
+<script is:inline define:vars={{ allSlugs, isKorean }}>
 	window.__ERRORLEDGER_SLUGS__ = allSlugs || ['/blog'];
 
 	const themeToggleBtn = document.getElementById('theme-toggle');
@@ -90,14 +110,13 @@ const allSlugs = allPosts.map(p => `/blog/${p.data.shortenedSlug || p.slug}`);
 		updateIcons();
 	});
 
-	// Global Random Failure Engine across all buttons
+	// Global Random Failure Engine across all buttons (respects current language)
 	document.addEventListener('click', function(e) {
 		if (e.target.closest('#random-failure-btn') || e.target.closest('#float-random-btn')) {
 			e.preventDefault();
-			const slugs = window.__ERRORLEDGER_SLUGS__ && window.__ERRORLEDGER_SLUGS__.length > 0 
-				? window.__ERRORLEDGER_SLUGS__ 
-				: ['/blog'];
-			const randomTarget = slugs[Math.floor(Math.random() * slugs.length)];
+			const slugs = (window.__ERRORLEDGER_SLUGS__ || []).filter(s => isKorean ? s.startsWith('/ko/blog') : !s.startsWith('/ko/blog'));
+			const pool = slugs.length > 0 ? slugs : window.__ERRORLEDGER_SLUGS__;
+			const randomTarget = pool[Math.floor(Math.random() * pool.length)];
 			window.location.href = randomTarget;
 		}
 	});
@@ -190,6 +209,16 @@ const allSlugs = allPosts.map(p => `/blog/${p.data.shortenedSlug || p.slug}`);
 		cursor: pointer;
 		font-family: ui-monospace, monospace;
 		transition: all 0.15s ease;
+		text-decoration: none;
+	}
+	.lang-btn {
+		background: rgba(245, 158, 11, 0.1);
+		border-color: rgba(245, 158, 11, 0.25);
+		color: #f59e0b;
+	}
+	.lang-btn:hover {
+		background: #f59e0b;
+		color: #000000;
 	}
 	.random-btn:hover {
 		border-color: #f59e0b;

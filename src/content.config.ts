@@ -3,13 +3,19 @@ import { glob } from 'astro/loaders';
 
 const blog = defineCollection({
 	// Load Markdown and MDX files in the `src/content/blog/` directory.
-	loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: "./src/content/blog" }),
+	loader: glob({ 
+		pattern: '**/*.{md,mdx}', 
+		base: "./src/content/blog",
+		generateId: ({ entry }) => entry.replace(/\\/g, '/').replace(/\.mdx?$/, '')
+	}),
 	// Type-check frontmatter using a schema
 	schema: z.object({
 		title: z.string(),
 		subtitle: z.string().optional(),
 		meta_title: z.string().optional(),
 		description: z.string(),
+		lang: z.enum(['en', 'ko']).default('en'),
+		translationSlug: z.string().optional(),
 		pubDate: z.coerce.date().optional(),
 		updatedDate: z.coerce.date().optional(),
 		incidentDate: z.string().optional(),
@@ -50,6 +56,7 @@ const blog = defineCollection({
 			...data,
 			shortenedSlug: slug,
 			slug: slug,
+			translationSlug: data.translationSlug || slug,
 			tags: data.tags && data.tags.length > 0 ? data.tags : ["Failure Archive"]
 		};
 	}),

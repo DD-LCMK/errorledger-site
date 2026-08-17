@@ -17,6 +17,8 @@ const {
 	subtitle,
 	meta_title,
 	description,
+	lang = 'en',
+	translationSlug,
 	pubDate,
 	incidentDate,
 	tags = [],
@@ -38,6 +40,12 @@ const wordCount = rawContent.split(/\s+/).filter(Boolean).length;
 const calculatedReadTime = Math.max(1, Math.ceil(wordCount / 200));
 const displayReadTime = read_time_minutes || calculatedReadTime;
 
+const isKorean = lang === 'ko';
+const cleanSlug = slug.replace(/^ko\//, '');
+const targetTranslationSlug = (translationSlug || cleanSlug).replace(/^ko\//, '');
+const alternateUrl = isKorean ? `/blog/${targetTranslationSlug}` : `/ko/blog/${targetTranslationSlug}`;
+const alternateLabel = isKorean ? "🇺🇸 Read in English →" : "🇰🇷 한국어 버전으로 읽기 →";
+
 const seoTitle = meta_title || title;
 const cleanPathname = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '');
 const cleanUrl = new URL(cleanPathname || '/', Astro.site).href;
@@ -47,6 +55,7 @@ const schemaData = {
 	"@type": "NewsArticle",
 	"headline": title,
 	"description": description,
+	"inLanguage": lang,
 	"datePublished": pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
 	"dateModified": pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
 	"url": cleanUrl,
@@ -58,8 +67,8 @@ const schemaData = {
 	],
 	"author": {
 		"@type": "Person",
-		"name": "The Archivist",
-		"url": "https://errorledger.com/about"
+		"name": isKorean ? "아키비스트" : "The Archivist",
+		"url": isKorean ? "https://errorledger.com/about" : "https://errorledger.com/about"
 	},
 	"publisher": {
 		"@type": "Organization",
@@ -73,21 +82,23 @@ const schemaData = {
 };
 
 const postBreadcrumb = [
-	{ name: 'Home', url: 'https://errorledger.com' },
-	{ name: 'Ledger', url: 'https://errorledger.com/blog' },
+	{ name: 'Home', url: isKorean ? 'https://errorledger.com/ko' : 'https://errorledger.com' },
+	{ name: 'Ledger', url: isKorean ? 'https://errorledger.com/ko/blog' : 'https://errorledger.com/blog' },
 	{ name: seoTitle }
 ];
 
 const allPosts = await getCollection('blog');
-const sortedPosts = allPosts.sort((a, b) => {
-	const dateA = a.data.pubDate ? new Date(a.data.pubDate).valueOf() : 0;
-	const dateB = b.data.pubDate ? new Date(b.data.pubDate).valueOf() : 0;
-	return dateB - dateA;
-});
+const sameLangPosts = allPosts
+	.filter(p => (p.data.lang || 'en') === lang)
+	.sort((a, b) => {
+		const dateA = a.data.pubDate ? new Date(a.data.pubDate).valueOf() : 0;
+		const dateB = b.data.pubDate ? new Date(b.data.pubDate).valueOf() : 0;
+		return dateB - dateA;
+	});
 
-const currentIndex = sortedPosts.findIndex(post => post.data.title === title);
-const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
-const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
+const currentIndex = sameLangPosts.findIndex(post => post.data.title === title);
+const nextPost = currentIndex > 0 ? sameLangPosts[currentIndex - 1] : null;
+const prevPost = currentIndex < sameLangPosts.length - 1 ? sameLangPosts[currentIndex + 1] : null;
 
 const lowercaseTags = tags.map((tag: string) => tag.toLowerCase());
 const isStaticPage = 
@@ -102,7 +113,7 @@ const isStaticPage =
 const showSidebar = !isStaticPage && (nextPost || prevPost);
 ---
 
-<html lang="en" class="dark">
+<html lang={lang} class="dark">
 	<head>
 		<BaseHead title={seoTitle} description={description} image={heroImage} type="article" breadcrumb={postBreadcrumb} />
 		<script type="application/ld+json" set:html={JSON.stringify(schemaData)} />
@@ -181,8 +192,8 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 			}
 			.nav-node-link:hover .nav-node-title { color: #f43f5e !important; }
 
-			.prose { color: #d4d4d4; line-height: 1.85; font-size: 1.15rem; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-			.prose h1 { font-size: 2.3em; margin-top: 0; margin-bottom: 0.4em; color: #f5f5f5; line-height: 1.2; font-weight: 800; letter-spacing: -0.025em; }
+			.prose { color: #d4d4d4; line-height: 1.85; font-size: 1.15rem; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif; }
+			.prose h1 { font-size: 2.3em; margin-top: 0; margin-bottom: 0.4em; color: #f5f5f5; line-height: 1.25; font-weight: 800; letter-spacing: -0.025em; }
 			.article-subtitle { font-size: 1.25rem; color: #a3a3a3; line-height: 1.5; margin-bottom: 1.5rem; font-weight: 400; }
 			.prose h2 { font-size: 1.6em; margin-top: 2em; margin-bottom: 0.75em; color: #fafafa; font-weight: 700; border-bottom: 1px solid #262626; padding-bottom: 0.4em; letter-spacing: -0.015em; }
 			.prose :global(h3) { font-size: 1.3em; margin-top: 1.5em; margin-bottom: 0.5em; color: #f5f5f5; font-weight: 700; }
@@ -202,7 +213,24 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 			.date-info { color: #a3a3a3; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-family: ui-monospace, monospace; }
 			.category-badge { padding: 0.15rem 0.5rem; border-radius: 4px; background: rgba(244, 63, 94, 0.1); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.25); text-transform: uppercase; font-size: 0.75rem; font-weight: 700; }
 			
-			.share-actions { display: flex; gap: 0.5rem; }
+			.share-actions { display: flex; gap: 0.5rem; align-items: center; }
+			.lang-switch-pill {
+				background: rgba(245, 158, 11, 0.12);
+				border: 1px solid rgba(245, 158, 11, 0.3);
+				color: #f59e0b;
+				padding: 0.35rem 0.65rem;
+				border-radius: 6px;
+				font-size: 0.8rem;
+				font-weight: 700;
+				text-decoration: none;
+				font-family: ui-monospace, monospace;
+				transition: all 0.15s ease;
+			}
+			.lang-switch-pill:hover {
+				background: #f59e0b;
+				color: #000000;
+			}
+
 			.share-btn { background: #171717; border: 1px solid #262626; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; color: #d4d4d4; text-decoration: none; font-weight: 500; transition: all 0.15s ease; }
 			.share-btn:hover { background: #262626; color: #ffffff; }
 
@@ -359,10 +387,6 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 				background: #f1f5f9;
 				color: #0f172a;
 			}
-			:global(html:not(.dark)) .float-btn-primary {
-				background: #f43f5e;
-				color: #ffffff;
-			}
 		</style>
 	</head>
 
@@ -388,8 +412,11 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 									</div>
 
 									<div class="share-actions">
+										<a href={alternateUrl} class="lang-switch-pill" title="Toggle language version">
+											{alternateLabel}
+										</a>
 										<a href={`https://x.com/intent/tweet?url=${encodeURIComponent(cleanUrl)}&text=${encodeURIComponent(title)}`} target="_blank" rel="noopener noreferrer" class="share-btn">
-											Share on X
+											Share
 										</a>
 										<button id="copy-link-btn" class="share-btn">
 											Copy Link
@@ -427,14 +454,14 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 								<!-- Bottom Post Navigation: Previous & Next Incident -->
 								<nav class="bottom-incident-nav">
 									{prevPost && (
-										<a href={`/blog/${prevPost.data.shortenedSlug || prevPost.slug}`} class="incident-nav-card">
-											<span class="incident-nav-dir">&larr; Previous Incident</span>
+										<a href={`/${isKorean ? 'ko/blog' : 'blog'}/${prevPost.data.slug.replace(/^ko\//, '')}`} class="incident-nav-card">
+											<span class="incident-nav-dir">&larr; {isKorean ? "이전 사건 기록" : "Previous Incident"}</span>
 											<span class="incident-nav-title">{prevPost.data.title}</span>
 										</a>
 									)}
 									{nextPost && (
-										<a href={`/blog/${nextPost.data.shortenedSlug || nextPost.slug}`} class="incident-nav-card" style={!prevPost ? "grid-column: 1 / -1;" : ""}>
-											<span class="incident-nav-dir">Next Incident &rarr;</span>
+										<a href={`/${isKorean ? 'ko/blog' : 'blog'}/${nextPost.data.slug.replace(/^ko\//, '')}`} class="incident-nav-card" style={!prevPost ? "grid-column: 1 / -1;" : ""}>
+											<span class="incident-nav-dir">{isKorean ? "다음 사건 기록" : "Next Incident"} &rarr;</span>
 											<span class="incident-nav-title">{nextPost.data.title}</span>
 										</a>
 									)}
@@ -460,18 +487,18 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 				{showSidebar && (
 					<aside class="sidebar-wrapper">
 						<div class="sidebar-heading">
-							Archive Trajectory
+							{isKorean ? "사건 탐색 아카이브" : "Archive Trajectory"}
 						</div>
 						{nextPost && (
-							<a href={`/blog/${nextPost.data.shortenedSlug || nextPost.slug}`} class="nav-node-link">
-								<span class="nav-node-label">&larr; Next Record</span>
+							<a href={`/${isKorean ? 'ko/blog' : 'blog'}/${nextPost.data.slug.replace(/^ko\//, '')}`} class="nav-node-link">
+								<span class="nav-node-label">&larr; {isKorean ? "다음 기록" : "Next Record"}</span>
 								<span class="nav-node-title">{nextPost.data.title}</span>
 							</a>
 						)}
 						
 						{prevPost && (
-							<a href={`/blog/${prevPost.data.shortenedSlug || prevPost.slug}`} class="nav-node-link">
-								<span class="nav-node-label">Previous Record &rarr;</span>
+							<a href={`/${isKorean ? 'ko/blog' : 'blog'}/${prevPost.data.slug.replace(/^ko\//, '')}`} class="nav-node-link">
+								<span class="nav-node-label">{isKorean ? "이전 기록" : "Previous Record"} &rarr;</span>
 								<span class="nav-node-title">{prevPost.data.title}</span>
 							</a>
 						)}
@@ -484,13 +511,13 @@ const showSidebar = !isStaticPage && (nextPost || prevPost);
 		{!isStaticPage && (
 			<div id="floating-bar" class="floating-action-bar">
 				<a href="#verdict-anchor" class="float-btn float-btn-primary">
-					<span>🗳️</span> Cast Vote
+					<span>🗳️</span> {isKorean ? "판결 투표" : "Cast Vote"}
 				</a>
 				<button id="float-random-btn" class="float-btn">
-					<span>🎲</span> Next Case
+					<span>🎲</span> {isKorean ? "랜덤 사건" : "Next Case"}
 				</button>
 				<button id="float-share-btn" class="float-btn">
-					<span>🔗</span> Share
+					<span>🔗</span> {isKorean ? "공유" : "Share"}
 				</button>
 			</div>
 		)}

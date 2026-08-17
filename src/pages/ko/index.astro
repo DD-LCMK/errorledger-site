@@ -1,0 +1,546 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import { SITE_TITLE } from '../../consts';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog');
+const koPosts = allPosts
+	.filter(p => p.data.lang === 'ko')
+	.sort((a, b) => {
+		const dateA = a.data.pubDate ? new Date(a.data.pubDate).valueOf() : 0;
+		const dateB = b.data.pubDate ? new Date(b.data.pubDate).valueOf() : 0;
+		return dateB - dateA;
+	});
+
+const featuredPost = koPosts[0];
+const recentPosts = koPosts.slice(1);
+
+const categoryIcons: Record<string, string> = {
+	work: "🧑‍💻 직장 & 커리어",
+	money: "💰 금융 & 경제",
+	corporate: "🏢 기업 & 인프라",
+	ai: "🤖 AI & 자동화",
+	internet: "🌐 인터넷 & 사회",
+	relationships: "❤️ 인간관계",
+	human: "🧠 인간 심리"
+};
+
+const topDebates = [
+	{
+		title: "금요일 아침, 전 세계 850만 대의 컴퓨터를 멈춘 14KB 업데이트",
+		slug: "the-friday-update-that-broke-the-world",
+		split: "48% 크라우드스트라이크 vs 32% 마이크로소프트",
+		votes: "1,421표",
+		category: "기업재난"
+	},
+	{
+		title: "프로덕션 DB를 날리고 인턴에게 뒤집어씌운 시니어 개발자",
+		slug: "deleted-production-database-blamed-intern",
+		split: "54% 시니어의 비겁함 vs 46% 징벌적 조직문화",
+		votes: "2,890표",
+		category: "직장생활"
+	},
+	{
+		title: "8년 된 유령 코드 때문에 45분 만에 6,000억 날리고 파산한 월가 증권사",
+		slug: "knight-capital-trading-glitch-45-minutes",
+		split: "61% 검증 소홀 vs 39% 시스템 복잡성",
+		votes: "3,110표",
+		category: "금융재난"
+	}
+];
+---
+
+<html lang="ko" class="dark">
+	<head>
+		<BaseHead title={`에러레저 (ErrorLedger) — 모든 실수는 이야기를 남긴다`} description="인간의 실수, 기괴한 결정, 충격적인 결과. 시스템과 인간 심리가 충돌할 때 벌어지는 일들을 기록하는 사건 아카이브." />
+		<style>
+			main { width: 1000px; max-width: calc(100% - 2rem); margin: 0 auto; padding: 2em 1rem; }
+			
+			.hero { text-align: center; margin-bottom: 3.5rem; padding: 2rem 0; }
+			.hero-pill {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				padding: 0.3rem 0.75rem;
+				border-radius: 9999px;
+				background: rgba(244, 63, 94, 0.1);
+				border: 1px solid rgba(244, 63, 94, 0.25);
+				color: #fb7185;
+				font-size: 0.75rem;
+				font-family: ui-monospace, monospace;
+				font-weight: 700;
+				text-transform: uppercase;
+				letter-spacing: 0.05em;
+				margin-bottom: 1rem;
+			}
+			.hero h1 { font-size: 2.8rem; margin: 0 0 0.75rem 0; letter-spacing: -0.03em; color: #f5f5f5; font-weight: 800; line-height: 1.25; }
+			.hero h1 span { background: linear-gradient(135deg, #f43f5e, #fb7185); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+			.hero p { font-size: 1.15rem; color: #a3a3a3; max-width: 680px; margin: 0 auto 2rem auto; line-height: 1.6; }
+			
+			.hero-btn-row {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 0.85rem;
+				flex-wrap: wrap;
+			}
+			.hero-submit-btn {
+				padding: 0.65rem 1.35rem;
+				border-radius: 12px;
+				background: linear-gradient(135deg, #f43f5e, #e11d48);
+				color: #ffffff;
+				font-weight: 700;
+				font-size: 0.9rem;
+				border: none;
+				box-shadow: 0 4px 15px rgba(244, 63, 94, 0.35);
+				cursor: pointer;
+				transition: transform 0.15s ease;
+			}
+			.hero-submit-btn:hover {
+				transform: translateY(-1px);
+			}
+			.hero-archive-link {
+				padding: 0.65rem 1.35rem;
+				border-radius: 12px;
+				background: #171717;
+				border: 1px solid #262626;
+				color: #d4d4d4;
+				font-weight: 700;
+				font-size: 0.9rem;
+				text-decoration: none;
+				transition: all 0.15s ease;
+			}
+			.hero-archive-link:hover {
+				background: #262626;
+				color: #ffffff;
+			}
+
+			.featured-box {
+				background: #171717;
+				border: 1px solid #262626;
+				border-radius: 16px;
+				padding: 2rem;
+				margin-bottom: 3.5rem;
+				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+				transition: border-color 0.2s ease, transform 0.2s ease;
+			}
+			.featured-box:hover {
+				border-color: #f43f5e;
+				transform: translateY(-2px);
+			}
+			.featured-meta-row {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				margin-bottom: 0.75rem;
+			}
+			.category-tag {
+				padding: 0.2rem 0.6rem;
+				border-radius: 6px;
+				background: rgba(244, 63, 94, 0.1);
+				color: #fb7185;
+				border: 1px solid rgba(244, 63, 94, 0.25);
+				font-size: 0.75rem;
+				font-weight: 700;
+			}
+			.read-time-tag {
+				font-size: 0.75rem;
+				font-family: ui-monospace, monospace;
+				color: #a3a3a3;
+			}
+			.featured-title {
+				font-size: 1.75rem;
+				font-weight: 800;
+				color: #f5f5f5;
+				margin: 0 0 0.5rem 0;
+				line-height: 1.35;
+				transition: color 0.15s ease;
+			}
+			.featured-box:hover .featured-title { color: #fb7185; }
+			.featured-subtitle {
+				color: #a3a3a3;
+				font-size: 0.95rem;
+				margin: 0 0 1rem 0;
+				line-height: 1.5;
+			}
+			.featured-desc {
+				color: #d4d4d4;
+				font-size: 0.95rem;
+				line-height: 1.6;
+				margin: 0 0 1.5rem 0;
+			}
+			.featured-footer {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding-top: 1rem;
+				border-top: 1px solid #262626;
+				font-size: 0.75rem;
+				font-family: ui-monospace, monospace;
+				color: #a3a3a3;
+			}
+			.open-file-link {
+				color: #fb7185;
+				font-weight: 700;
+			}
+
+			.section-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				margin-bottom: 1.5rem;
+				padding-bottom: 0.75rem;
+				border-bottom: 1px solid #262626;
+			}
+			.section-title {
+				font-size: 1.15rem;
+				font-weight: 800;
+				color: #f5f5f5;
+				text-transform: uppercase;
+				letter-spacing: 0.05em;
+			}
+			.section-sub {
+				font-size: 0.75rem;
+				font-family: ui-monospace, monospace;
+				color: #f59e0b;
+			}
+
+			.debates-grid {
+				display: grid;
+				grid-template-columns: 1fr;
+				gap: 1rem;
+				margin-bottom: 3.5rem;
+			}
+			@media (min-width: 768px) {
+				.debates-grid {
+					grid-template-columns: 1fr 1fr 1fr;
+				}
+			}
+			.debate-card {
+				background: #171717;
+				border: 1px solid #262626;
+				border-radius: 12px;
+				padding: 1.25rem;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				text-decoration: none;
+				transition: all 0.2s ease;
+			}
+			.debate-card:hover {
+				border-color: #f59e0b;
+				transform: translateY(-2px);
+			}
+			.debate-card-header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				font-size: 0.75rem;
+				font-family: ui-monospace, monospace;
+				color: #737373;
+				margin-bottom: 0.5rem;
+			}
+			.debate-cat { color: #f59e0b; font-weight: 700; }
+			.debate-card-title {
+				font-size: 0.95rem;
+				font-weight: 700;
+				color: #f5f5f5;
+				margin: 0 0 1rem 0;
+				line-height: 1.35;
+			}
+			.debate-split-box {
+				padding-top: 0.75rem;
+				border-top: 1px solid #262626;
+				font-size: 0.75rem;
+				font-family: ui-monospace, monospace;
+			}
+			.debate-split-label { color: #737373; margin-bottom: 0.2rem; font-size: 0.7rem; }
+			.debate-split-val { color: #e5e5e5; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+			.grid-posts {
+				display: grid;
+				grid-template-columns: 1fr;
+				gap: 1.25rem;
+				margin-bottom: 3.5rem;
+			}
+			@media (min-width: 768px) {
+				.grid-posts {
+					grid-template-columns: 1fr 1fr;
+				}
+			}
+
+			.card-post {
+				background: #171717;
+				border: 1px solid #262626;
+				border-radius: 12px;
+				padding: 1.5rem;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				text-decoration: none;
+				transition: all 0.2s ease;
+			}
+			.card-post:hover {
+				border-color: #f43f5e;
+				transform: translateY(-2px);
+				box-shadow: 0 4px 20px rgba(244, 63, 94, 0.15);
+			}
+			.card-meta-top {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				margin-bottom: 0.6rem;
+			}
+			.card-cat-pill {
+				padding: 0.15rem 0.5rem;
+				border-radius: 4px;
+				background: #0a0a0a;
+				color: #d4d4d4;
+				border: 1px solid #262626;
+				font-size: 0.72rem;
+				font-weight: 600;
+			}
+			.card-readtime {
+				font-size: 0.72rem;
+				font-family: ui-monospace, monospace;
+				color: #737373;
+			}
+			.card-title {
+				font-size: 1.15rem;
+				font-weight: 700;
+				color: #f5f5f5;
+				margin: 0 0 0.5rem 0;
+				line-height: 1.35;
+			}
+			.card-post:hover .card-title { color: #fb7185; }
+			.card-desc {
+				font-size: 0.85rem;
+				color: #a3a3a3;
+				line-height: 1.5;
+				margin: 0 0 1rem 0;
+			}
+			.card-footer {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding-top: 0.75rem;
+				border-top: 1px solid #262626;
+				font-size: 0.75rem;
+				font-family: ui-monospace, monospace;
+				color: #737373;
+			}
+			.card-readlink { color: #fb7185; }
+
+			.manifesto-box {
+				background: #171717;
+				border: 1px solid #262626;
+				border-left: 4px solid #f43f5e;
+				border-radius: 12px;
+				padding: 2rem;
+				margin-top: 4rem;
+			}
+			.manifesto-tag {
+				font-family: ui-monospace, monospace;
+				font-size: 0.75rem;
+				color: #fb7185;
+				font-weight: 700;
+				text-transform: uppercase;
+				letter-spacing: 0.05em;
+				margin-bottom: 0.5rem;
+			}
+			.manifesto-title {
+				font-size: 1.35rem;
+				font-weight: 800;
+				color: #ffffff;
+				margin: 0 0 0.75rem 0;
+			}
+			.manifesto-desc {
+				font-size: 0.9rem;
+				color: #a3a3a3;
+				line-height: 1.6;
+				margin: 0 0 1.5rem 0;
+			}
+			.manifesto-grid {
+				display: grid;
+				grid-template-columns: 1fr;
+				gap: 1rem;
+				padding-top: 1rem;
+				border-top: 1px solid #262626;
+				font-size: 0.82rem;
+				color: #d4d4d4;
+			}
+			@media (min-width: 768px) {
+				.manifesto-grid {
+					grid-template-columns: 1fr 1fr 1fr;
+				}
+			}
+
+			/* Light mode styles */
+			:global(html:not(.dark)) .hero h1 { color: #0f172a; }
+			:global(html:not(.dark)) .hero p { color: #475569; }
+			:global(html:not(.dark)) .featured-box,
+			:global(html:not(.dark)) .debate-card,
+			:global(html:not(.dark)) .card-post,
+			:global(html:not(.dark)) .manifesto-box {
+				background: #f8fafc;
+				border-color: #e2e8f0;
+			}
+			:global(html:not(.dark)) .featured-title,
+			:global(html:not(.dark)) .section-title,
+			:global(html:not(.dark)) .debate-card-title,
+			:global(html:not(.dark)) .card-title,
+			:global(html:not(.dark)) .manifesto-title {
+				color: #0f172a;
+			}
+			:global(html:not(.dark)) .featured-desc,
+			:global(html:not(.dark)) .card-desc,
+			:global(html:not(.dark)) .manifesto-desc {
+				color: #475569;
+			}
+			:global(html:not(.dark)) .card-cat-pill {
+				background: #ffffff;
+				border-color: #cbd5e1;
+				color: #334155;
+			}
+			:global(html:not(.dark)) .hero-archive-link {
+				background: #f8fafc;
+				border-color: #cbd5e1;
+				color: #334155;
+			}
+		</style>
+	</head>
+	<body class="bg-neutral-950 text-neutral-200 antialiased min-h-screen">
+		<Header />
+		<main>
+			<section class="hero">
+				<div class="hero-pill">
+					인간 실패 탐구 아카이브
+				</div>
+				<h1>모든 실수는<br/><span>이야기를 남긴다.</span></h1>
+				<p>실제 실패. 기괴한 결정. 충격적인 결과. 시스템과 인간 심리가 충돌할 때 벌어지는 사건들을 기록하고 분석합니다.</p>
+				
+				<div class="hero-btn-row">
+					<button class="hero-submit-btn" data-open-submit-modal>
+						+ 익명 사건 제보하기
+					</button>
+					<a href="/ko/blog" class="hero-archive-link">
+						전체 아카이브 둘러보기 &rarr;
+					</a>
+				</div>
+			</section>
+
+			<!-- Lead Incident Hero Card -->
+			{featuredPost && (
+				<section>
+					<div class="section-header">
+						<span class="section-title">⚡ 주요 탐사 기록</span>
+						<span class="section-sub">이달의 사건 파일</span>
+					</div>
+					<a href={`/ko/blog/${featuredPost.data.slug.replace(/^ko\//, '')}`} style="text-decoration: none;">
+						<div class="featured-box">
+							<div class="featured-meta-row">
+								<span class="category-tag">
+									{categoryIcons[featuredPost.data.category] || featuredPost.data.category}
+								</span>
+								<span class="read-time-tag">⏱️ {featuredPost.data.read_time_minutes || 6}분 읽기</span>
+							</div>
+							<h2 class="featured-title">
+								{featuredPost.data.title}
+							</h2>
+							{featuredPost.data.subtitle && (
+								<p class="featured-subtitle">
+									{featuredPost.data.subtitle}
+								</p>
+							)}
+							<p class="featured-desc">
+								{featuredPost.data.description}
+							</p>
+							<div class="featured-footer">
+								<span>검증 등급: {featuredPost.data.provenance_label || "공식 문서 검증 사건"}</span>
+								<span class="open-file-link">사건 기록 열람 &rarr;</span>
+							</div>
+						</div>
+					</a>
+				</section>
+			)}
+
+			<!-- Interactive Feature 2: Most Debated Failures Leaderboard -->
+			<section>
+				<div class="section-header">
+					<span class="section-title">⚖️ 가장 뜨거운 독자 판결</span>
+					<span class="section-sub">팽팽한 책임 공방</span>
+				</div>
+				<div class="debates-grid">
+					{topDebates.map((item) => (
+						<a href={`/ko/blog/${item.slug}`} class="debate-card">
+							<div>
+								<div class="debate-card-header">
+									<span class="debate-cat">{item.category}</span>
+									<span>{item.votes}</span>
+								</div>
+								<h4 class="debate-card-title">
+									{item.title}
+								</h4>
+							</div>
+							<div class="debate-split-box">
+								<div class="debate-split-label">현재 투표 현황:</div>
+								<div class="debate-split-val">{item.split}</div>
+							</div>
+						</a>
+					))}
+				</div>
+			</section>
+
+			<!-- The Ledger Grid -->
+			{recentPosts.length > 0 && (
+				<section>
+					<div class="section-header">
+						<span class="section-title">📂 에러레저 보관소</span>
+						<span class="section-sub">{koPosts.length}개의 기록</span>
+					</div>
+					<div class="grid-posts">
+						{recentPosts.map((post) => (
+							<a href={`/ko/blog/${post.data.slug.replace(/^ko\//, '')}`} class="card-post">
+								<div>
+									<div class="card-meta-top">
+										<span class="card-cat-pill">
+											{categoryIcons[post.data.category] || post.data.category}
+										</span>
+										<span class="card-readtime">⏱️ {post.data.read_time_minutes || 5}분</span>
+									</div>
+									<h3 class="card-title">
+										{post.data.title}
+									</h3>
+									<p class="card-desc">
+										{post.data.description}
+									</p>
+								</div>
+								<div class="card-footer">
+									<FormattedDate date={post.data.pubDate || new Date()} />
+									<span class="card-readlink">사건 읽기 &rarr;</span>
+								</div>
+							</a>
+						))}
+					</div>
+				</section>
+			)}
+
+			<section class="manifesto-box">
+				<div class="manifesto-tag">ErrorLedger의 사명</div>
+				<h3 class="manifesto-title">AI는 질문에 답합니다. 에러레저는 실제로 일어난 일을 이야기합니다.</h3>
+				<p class="manifesto-desc">
+					에러레저의 모든 기록은 실패의 진짜 메커니즘을 파헤치는 탐사입니다. 잘못된 결정 뒤에 숨은 인간의 심리, 관료주의의 덫, 그리고 자기합리화가 파국과 만나는 순간을 기록합니다.
+				</p>
+				<div class="manifesto-grid">
+					<div>&#10003; <strong>엄격한 사실 출처 (Provenance):</strong> 문서 검증과 서사적 재구성의 명확한 구분.</div>
+					<div>&#10003; <strong>아키비스트의 판결:</strong> 단순한 책임 전가를 넘어선 시스템적 근본 원인 분석.</div>
+					<div>&#10003; <strong>독자 판결 투표:</strong> 누가 진짜 책임을 져야 하는지에 대한 독자 참여형 공방.</div>
+				</div>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>

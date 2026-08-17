@@ -1,0 +1,312 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import FormattedDate from '../../../components/FormattedDate.astro';
+import { SITE_TITLE } from '../../../consts';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog');
+const posts = allPosts
+	.filter(p => p.data.lang === 'ko')
+	.sort((a, b) => {
+		const dateA = a.data.pubDate ? new Date(a.data.pubDate).valueOf() : 0;
+		const dateB = b.data.pubDate ? new Date(b.data.pubDate).valueOf() : 0;
+		return dateB - dateA;
+	});
+---
+
+<html lang="ko" class="dark">
+	<head>
+		<BaseHead title={`에러레저 아카이브 | ${SITE_TITLE}`} description="인간의 실수, 기업 과실, 시스템 붕괴에 대한 탐사 기록 보관소." />
+		<style>
+			main { width: 1000px; max-width: calc(100% - 2rem); margin: 0 auto; padding: 3em 1rem; }
+
+			.archive-header {
+				margin-bottom: 2.5rem;
+				border-bottom: 1px solid #262626;
+				padding-bottom: 1.5rem;
+			}
+			.archive-header h1 {
+				font-size: 2.5rem;
+				font-weight: 800;
+				color: #f5f5f5;
+				margin: 0 0 0.5rem 0;
+				letter-spacing: -0.03em;
+			}
+			.archive-header p {
+				color: #a3a3a3;
+				font-size: 1.1rem;
+				margin: 0;
+				line-height: 1.6;
+			}
+
+			.filter-controls {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.75rem;
+				margin-bottom: 2rem;
+				align-items: center;
+				justify-content: space-between;
+			}
+			.pills-group {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				flex-wrap: wrap;
+			}
+
+			.pill-btn {
+				background: #171717;
+				border: 1px solid #262626;
+				color: #a3a3a3;
+				font-size: 0.8rem;
+				font-weight: 600;
+				padding: 0.45rem 0.9rem;
+				border-radius: 9999px;
+				cursor: pointer;
+				font-family: ui-monospace, monospace;
+				transition: all 0.15s ease;
+			}
+			.pill-btn:hover, .pill-btn.active {
+				background: #f43f5e;
+				color: #ffffff;
+				border-color: #f43f5e;
+			}
+
+			.live-filter-input {
+				background: #171717;
+				border: 1px solid #262626;
+				color: #f5f5f5;
+				font-size: 0.85rem;
+				padding: 0.45rem 0.85rem;
+				border-radius: 8px;
+				outline: none;
+				width: 100%;
+				max-width: 260px;
+				font-family: inherit;
+				transition: border-color 0.15s ease;
+			}
+			.live-filter-input:focus {
+				border-color: #f43f5e;
+			}
+
+			.grid-archive {
+				display: grid;
+				grid-template-columns: 1fr;
+				gap: 1.25rem;
+			}
+
+			.archive-card {
+				background: #171717;
+				border: 1px solid #262626;
+				border-radius: 12px;
+				padding: 1.5rem;
+				transition: transform 0.2s ease, border-color 0.2s ease;
+				text-decoration: none;
+				display: block;
+			}
+			.archive-card:hover {
+				transform: translateY(-2px);
+				border-color: #f43f5e;
+			}
+
+			.card-meta {
+				display: flex;
+				align-items: center;
+				gap: 0.6rem;
+				margin-bottom: 0.6rem;
+				font-size: 0.75rem;
+				color: #737373;
+				font-family: ui-monospace, monospace;
+				flex-wrap: wrap;
+			}
+			.card-cat-tag {
+				padding: 0.15rem 0.5rem;
+				border-radius: 4px;
+				background: #0a0a0a;
+				border: 1px solid #262626;
+				color: #d4d4d4;
+				font-weight: 700;
+				text-transform: uppercase;
+			}
+			.card-archive-title {
+				font-size: 1.25rem;
+				font-weight: 700;
+				color: #f5f5f5;
+				margin: 0 0 0.5rem 0;
+				line-height: 1.35;
+				transition: color 0.15s ease;
+			}
+			.archive-card:hover .card-archive-title {
+				color: #fb7185;
+			}
+			.card-archive-desc {
+				font-size: 0.88rem;
+				color: #a3a3a3;
+				line-height: 1.5;
+				margin: 0;
+			}
+
+			.hidden { display: none !important; }
+
+			/* Light mode styles */
+			:global(html:not(.dark)) .archive-header {
+				border-bottom-color: #e2e8f0;
+			}
+			:global(html:not(.dark)) .archive-header h1 {
+				color: #0f172a;
+			}
+			:global(html:not(.dark)) .archive-header p {
+				color: #64748b;
+			}
+			:global(html:not(.dark)) .pill-btn {
+				background: #f8fafc;
+				border-color: #cbd5e1;
+				color: #475569;
+			}
+			:global(html:not(.dark)) .pill-btn:hover,
+			:global(html:not(.dark)) .pill-btn.active {
+				background: #f43f5e;
+				color: #ffffff;
+				border-color: #f43f5e;
+			}
+			:global(html:not(.dark)) .live-filter-input {
+				background: #f8fafc;
+				border-color: #cbd5e1;
+				color: #0f172a;
+			}
+			:global(html:not(.dark)) .archive-card {
+				background: #f8fafc;
+				border-color: #e2e8f0;
+			}
+			:global(html:not(.dark)) .archive-card:hover {
+				background: #ffffff;
+			}
+			:global(html:not(.dark)) .card-archive-title {
+				color: #0f172a;
+			}
+			:global(html:not(.dark)) .card-archive-desc {
+				color: #475569;
+			}
+			:global(html:not(.dark)) .card-cat-tag {
+				background: #ffffff;
+				border-color: #cbd5e1;
+				color: #334155;
+			}
+		</style>
+	</head>
+	<body class="bg-neutral-950 text-neutral-200 antialiased min-h-screen">
+		<Header />
+		<main>
+			<div class="archive-header">
+				<h1>에러레저 사건 보관소</h1>
+				<p>인간의 실수, 기업의 과실, 시스템 붕괴에 대한 탐사 기록입니다. 피해 규모 또는 키워드로 검색하세요.</p>
+			</div>
+
+			<!-- Interactive Feature 6: Blast Radius & Live Filter -->
+			<div class="filter-controls">
+				<div class="pills-group" id="radius-filter-pills">
+					<button class="pill-btn active" data-radius="all">전체 사건</button>
+					<button class="pill-btn" data-radius="corporate">🏢 기업 & 조직 (1억~100억)</button>
+					<button class="pill-btn" data-radius="work">🧑‍💻 직장 & 개인 커리어</button>
+					<button class="pill-btn" data-radius="global">🌋 글로벌 참사 (> 1조원)</button>
+				</div>
+				<input 
+					type="text" 
+					id="archive-search" 
+					class="live-filter-input" 
+					placeholder="제목으로 실시간 검색..." 
+					autocomplete="off"
+				/>
+			</div>
+
+			<div class="grid-archive" id="archive-grid">
+				{posts.map((post) => (
+					<a 
+						href={`/ko/blog/${post.data.slug.replace(/^ko\//, '')}`} 
+						class="archive-card" 
+						data-category={post.data.category}
+						data-title={post.data.title.toLowerCase()}
+					>
+						<div class="card-meta">
+							<span class="card-cat-tag">
+								{post.data.category}
+							</span>
+							<span>•</span>
+							<FormattedDate date={post.data.pubDate || new Date()} />
+							<span>•</span>
+							<span>⏱️ {post.data.read_time_minutes || 6}분</span>
+							<span>•</span>
+							<span style="color: #fb7185;">{post.data.provenance_label || "공식 문서 검증"}</span>
+						</div>
+						<h3 class="card-archive-title">
+							{post.data.title}
+						</h3>
+						<p class="card-archive-desc">
+							{post.data.description}
+						</p>
+					</a>
+				))}
+			</div>
+
+			<div id="no-results" class="hidden" style="text-align: center; padding: 4rem 0; color: #737373; font-family: ui-monospace, monospace; font-size: 0.9rem;">
+				일치하는 사건 기록이 없습니다.
+			</div>
+		</main>
+		<Footer />
+
+		<script is:inline>
+			(function() {
+				const pills = document.querySelectorAll('#radius-filter-pills .pill-btn');
+				const searchInput = document.getElementById('archive-search');
+				const cards = document.querySelectorAll('.archive-card');
+				const noResults = document.getElementById('no-results');
+
+				let activeRadius = 'all';
+				let searchQuery = '';
+
+				function applyFilters() {
+					let visibleCount = 0;
+					cards.forEach(card => {
+						const cat = card.getAttribute('data-category');
+						const title = card.getAttribute('data-title') || '';
+
+						const matchesRadius = (activeRadius === 'all') || 
+							(activeRadius === 'corporate' && cat === 'corporate') ||
+							(activeRadius === 'work' && cat === 'work') ||
+							(activeRadius === 'global' && (cat === 'corporate' || cat === 'money'));
+
+						const matchesSearch = !searchQuery || title.includes(searchQuery.toLowerCase());
+
+						if (matchesRadius && matchesSearch) {
+							card.style.display = 'block';
+							visibleCount++;
+						} else {
+							card.style.display = 'none';
+						}
+					});
+
+					if (noResults) {
+						if (visibleCount === 0) noResults.classList.remove('hidden');
+						else noResults.classList.add('hidden');
+					}
+				}
+
+				pills.forEach(pill => {
+					pill.addEventListener('click', function() {
+						pills.forEach(p => p.classList.remove('active'));
+						this.classList.add('active');
+						activeRadius = this.getAttribute('data-radius');
+						applyFilters();
+					});
+				});
+
+				searchInput?.addEventListener('input', function() {
+					searchQuery = this.value.trim();
+					applyFilters();
+				});
+			})();
+		</script>
+	</body>
+</html>
