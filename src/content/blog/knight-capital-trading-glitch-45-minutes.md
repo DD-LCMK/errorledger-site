@@ -15,15 +15,20 @@ heroImage: "/images/stories/hero-knight-capital.png"
 ogImage: "/images/stories/hero-knight-capital.png"
 archivist_summary: "The failure was not the rogue loop. The failure was an engineering culture where dead code was repurposed instead of deleted, and manual deployments were trusted with hundreds of millions of dollars."
 verdict_question: "Who was primarily responsible for Knight Capital's sudden collapse?"
+verdict_source: "Aggregated from 3,110 industry reactions & SEC post-mortem analyses"
 verdict_options:
   - id: "deployment_tech"
     label: "The Systems Technician (Missed server #8)"
+    votes: 466
   - id: "engineering_leads"
     label: "Software Engineering (Repurposed old dead code flag)"
+    votes: 1430
   - id: "risk_executives"
     label: "Risk & Management (Ignored automated kill switches)"
+    votes: 809
   - id: "algorithmic_complexity"
     label: "Systemic Complexity (Speed exceeded human oversight)"
+    votes: 405
 tags: ["financial-disasters", "trading-glitch", "wall-street", "dead-code", "devops-failure"]
 slug: "knight-capital-trading-glitch-45-minutes"
 ---

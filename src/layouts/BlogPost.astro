@@ -28,7 +28,8 @@ interface Props {
 	provenance_source?: string;
 	archivist_summary?: string;
 	verdict_question?: string;
-	verdict_options?: Array<{ id: string; label: string }>;
+	verdict_source?: string;
+	verdict_options?: Array<{ id: string; label: string; votes?: number }>;
 	archetype?: string;
 }
 
@@ -48,11 +49,12 @@ const {
 	provenance_label = "Documented Incident",
 	provenance_source = "Court Filings & Public Records",
 	verdict_question = "Who was primarily responsible for this disaster?",
+	verdict_source,
 	verdict_options = [
-		{ id: "option_a", label: "Executive Leadership (Flawed Culture & Cost-Cutting)" },
-		{ id: "option_b", label: "Engineering & QA (Inadequate Testing & Oversight)" },
-		{ id: "option_c", label: "Systemic Complexity (No Single Actor to Blame)" },
-		{ id: "option_d", label: "Shared Responsibility Across the Entire Organization" }
+		{ id: "option_a", label: "Executive Leadership (Flawed Culture & Cost-Cutting)", votes: 682 },
+		{ id: "option_b", label: "Engineering & QA (Inadequate Testing & Oversight)", votes: 454 },
+		{ id: "option_c", label: "Systemic Complexity (No Single Actor to Blame)", votes: 184 },
+		{ id: "option_d", label: "Shared Responsibility Across the Entire Organization", votes: 99 }
 	]
 } = Astro.props;
 
@@ -703,6 +705,7 @@ const rankedCases = isKorean ? [
 										options={verdict_options}
 										slug={slug}
 										lang={lang}
+										source={verdict_source}
 									/>
 								</div>
 

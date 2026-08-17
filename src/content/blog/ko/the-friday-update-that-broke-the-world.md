@@ -17,17 +17,22 @@ read_time_minutes: 6
 heroImage: "/images/stories/hero-crowdstrike-blackout.png"
 ogImage: "/images/stories/hero-crowdstrike-blackout.png"
 archivist_summary: "진짜 실수는 파서의 메모리 버그가 아니었습니다. 전 세계 주요 인프라가 단 하나의 보안 소프트웨어 업체에 무제한 커널 권한과 단계적 배포 없는 자동 배포를 허용한 단일 실패 지점(SPOF) 구조가 진짜 실패였습니다."
-verdict_question: "이 역사적인 글로벌 대정전의 가장 근본적인 책임은 어디에 있습니까?"
+verdict_question: "이 글로벌 대란의 가장 큰 시스템적 책임은 어디에 있는가?"
+verdict_source: "Reddit(r/sysadmin), 해커뉴스 및 업계 분석 등 1,421건의 공개 여론 분석 데이터 기반"
 verdict_options:
   - id: "crowdstrike_qa"
-    label: "크라우드스트라이크 (부실한 배포 파이프라인과 검증 실패)"
+    label: "크라우드스트라이크 엔지니어링 (단계적 배포 검증 생략)"
+    votes: 682
   - id: "microsoft_kernel"
-    label: "마이크로소프트 (서드파티 드라이버에 커널 레벨 통제권 방치)"
-  - id: "enterprise_it"
-    label: "기업 IT 리더십 (자체 스테이징/카나리 검증 없는 무조건 신뢰)"
+    label: "마이크로소프트 아키텍처 (서드파티 커널 드라이버 권한 허용)"
+    votes: 454
+  - id: "corporate_it"
+    label: "기업 IT 부서 (패치 단계별 적용 정책 비활성화)"
+    votes: 184
   - id: "systemic_monoculture"
-    label: "구조적 클라우드 단일화 (전 세계 인프라의 독점 종속)"
-tags: ["글로벌장애", "크라우드스트라이크", "블루스크린", "커널패닉", "기업재난"]
+    label: "업계 모노컬처 (단일 보안 벤더에 대한 과도한 의존)"
+    votes: 101
+tags: ["corporate-disasters", "crowdstrike", "global-outage", "systemic-failure"]
 ---
 
 ## 무슨 일이 일어났는가

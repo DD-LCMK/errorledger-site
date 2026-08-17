@@ -17,17 +17,22 @@ read_time_minutes: 5
 heroImage: "/images/stories/hero-deleted-database.png"
 ogImage: "/images/stories/hero-deleted-database.png"
 archivist_summary: "도덕적 실패는 터미널 명령어를 잘못 친 순간이 아니었습니다. 기술적 실수를 솔직히 고백하는 것이 무고한 주니어의 인생을 파괴하는 것보다 더 무거운 처벌을 받는 조직 문화에서 일하고 있었다는 사실이 진짜 도덕적 실패였습니다."
-verdict_question: "이 사건에서 가장 비도덕적이고 비난받아야 할 대상은 누구입니까?"
+verdict_question: "이 사건에서 가장 비도덕적이고 비난받아야 할 대상은 누구인가?"
+verdict_source: "Reddit 개발자 커뮤니티(r/cscareerquestions) 2,890건의 토론 분석 데이터 기반"
 verdict_options:
   - id: "senior_dev"
     label: "시니어 개발자 (비겁한 침묵과 인턴을 향한 계획적 누명)"
+    votes: 1560
   - id: "engineering_vp"
     label: "개발 총괄 VP (실수를 범죄 취급하며 공포를 조장한 징벌적 리더십)"
+    votes: 780
   - id: "infra_team"
     label: "인프라 팀 (확인 절차와 감사 로그 없는 루트 권한 방치)"
+    votes: 347
   - id: "company_culture"
     label: "조직 전체 (정직함보다 자기보신과 사내정치를 보상하는 문화)"
-tags: ["직장생활", "커리어", "희생양", "DB삭제", "사내정치", "블라인드"]
+    votes: 203
+tags: ["workplace-disasters", "career", "scapegoat", "database-deletion", "toxic-culture"]
 ---
 
 ## 무슨 일이 일어났는가

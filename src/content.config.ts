@@ -35,9 +35,11 @@ const blog = defineCollection({
 		read_time_minutes: z.number().default(5),
 		archivist_summary: z.string().optional(),
 		verdict_question: z.string().optional(),
+		verdict_source: z.string().optional(),
 		verdict_options: z.array(z.object({
 			id: z.string(),
-			label: z.string()
+			label: z.string(),
+			votes: z.number().optional()
 		})).optional(),
 		tags: z.array(z.string()).default([]),
 		slug: z.string().optional(),
