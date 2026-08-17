@@ -77,19 +77,33 @@
     <!-- Success Confirmation View -->
     <div id="form-success-view" class="success-view hidden">
       <div class="success-icon">&check;</div>
-      <h4 class="success-title" id="modal-success-title">Incident Recorded in Intake Queue</h4>
+      <h4 class="success-title" id="modal-success-title">Incident Report Formatted</h4>
       <p class="success-desc" id="modal-success-desc">
-        Your submission has been sealed. The Archivist reviews incoming leads for Tier 2 narrative reconstruction.
+        Your submission is being dispatched directly to <strong style="color: #fb7185;">contact@errorledger.com</strong>.
       </p>
-      <button id="close-success-btn" class="return-btn" id="modal-return-btn">
-        Return to the Ledger
-      </button>
+      
+      <div class="success-actions-row">
+        <a id="direct-email-link" href="mailto:contact@errorledger.com" class="submit-action-btn" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; margin-bottom: 0.75rem;">
+          <span id="btn-email-text">✉️ Open in Email App &rarr;</span>
+        </a>
+        <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+          <button id="copy-report-btn" class="return-btn" style="color: #e5e5e5; border-color: #404040;">
+            📋 Copy Report Text
+          </button>
+          <button id="close-success-btn" class="return-btn">
+            Return to the Ledger
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 <script is:inline>
   (function() {
+    let lastFormattedBody = '';
+    let lastMailtoUrl = '';
+
     function getModal() {
       return document.getElementById('submit-incident-modal');
     }
@@ -105,7 +119,7 @@
       if (titleText) titleText.innerText = "에러레저 사건 제보하기";
 
       const subText = document.getElementById('modal-subtitle-text');
-      if (subText) subText.innerText = "모든 실수는 이야기를 남깁니다. 모든 개인 식별 정보는 편집진 검토 전 안전하게 가명 처리됩니다.";
+      if (subText) subText.innerText = "모든 실수는 이야기를 남깁니다. 제보 내용은 contact@errorledger.com으로 즉시 전달됩니다.";
 
       const lblTitle = document.getElementById('lbl-inc-title');
       if (lblTitle) lblTitle.innerText = "1. 사건 한 줄 요약 (헤드라인)";
@@ -146,13 +160,19 @@
       if (protocolTag) protocolTag.innerText = "🔒 Tier 2 제보자 보호 프로토콜";
 
       const submitBtn = document.getElementById('modal-submit-btn');
-      if (submitBtn) submitBtn.innerText = "아키비스트에게 제보하기 →";
+      if (submitBtn) submitBtn.innerText = "contact@errorledger.com으로 발송 →";
 
       const succTitle = document.getElementById('modal-success-title');
-      if (succTitle) succTitle.innerText = "제보가 안전하게 인테이크 큐에 봉인되었습니다";
+      if (succTitle) succTitle.innerText = "제보 서식이 생성되었습니다";
 
       const succDesc = document.getElementById('modal-success-desc');
-      if (succDesc) succDesc.innerText = "제보해 주셔서 감사합니다. 아키비스트가 검토 후 Tier 2 서사적 재구성 작업을 진행합니다.";
+      if (succDesc) succDesc.innerHTML = '제보 내용이 <strong style="color: #fb7185;">contact@errorledger.com</strong>으로 발송 준비되었습니다.';
+
+      const btnEmailText = document.getElementById('btn-email-text');
+      if (btnEmailText) btnEmailText.innerText = "✉️ 이메일 앱으로 발송하기 →";
+
+      const copyBtn = document.getElementById('copy-report-btn');
+      if (copyBtn) copyBtn.innerText = "📋 제보 내용 클립보드 복사";
 
       const returnBtn = document.getElementById('close-success-btn');
       if (returnBtn) returnBtn.innerText = "에러레저로 돌아가기";
@@ -160,6 +180,10 @@
 
     function openModal() {
       localizeModal();
+      const form = document.getElementById('incident-form');
+      const successView = document.getElementById('form-success-view');
+      if (form) form.classList.remove('hidden');
+      if (successView) successView.classList.add('hidden');
       const modal = getModal();
       if (modal) modal.style.display = 'flex';
     }
@@ -183,25 +207,70 @@
       if (e.target === modal) {
         closeModal();
       }
+      if (e.target.closest('#copy-report-btn')) {
+        e.preventDefault();
+        const copyBtn = document.getElementById('copy-report-btn');
+        if (lastFormattedBody) {
+          navigator.clipboard.writeText(lastFormattedBody).then(() => {
+            const isKo = document.documentElement.lang === 'ko' || window.location.pathname.startsWith('/ko');
+            if (copyBtn) copyBtn.innerText = isKo ? "✅ 클립보드 복사 완료!" : "✅ Report Copied!";
+            setTimeout(() => {
+              if (copyBtn) copyBtn.innerText = isKo ? "📋 제보 내용 클립보드 복사" : "📋 Copy Report Text";
+            }, 3000);
+          });
+        }
+      }
     });
 
     document.addEventListener('submit', function(e) {
       if (e.target && e.target.id === 'incident-form') {
         e.preventDefault();
+        const isKo = document.documentElement.lang === 'ko' || window.location.pathname.startsWith('/ko');
         const title = document.getElementById('inc-title')?.value || '';
         const cat = document.getElementById('inc-cat')?.value || 'work';
         const damage = document.getElementById('inc-damage')?.value || 'minor';
         const body = document.getElementById('inc-body')?.value || '';
+        const now = new Date().toISOString();
 
-        const submission = { title, cat, damage, body, date: new Date().toISOString() };
+        // 1. Structured Report Body
+        lastFormattedBody = [
+          `--- ERRORLEDGER INCIDENT INTAKE REPORT ---`,
+          `Headline: ${title}`,
+          `Category: ${cat}`,
+          `Blast Radius / Impact: ${damage}`,
+          `Submitted At: ${now}`,
+          ``,
+          `--- WHAT ACTUALLY HAPPENED ---`,
+          body,
+          ``,
+          `--- WHISTLEBLOWER PROTECTION REQUEST ---`,
+          `Please scrub all identifying personnel, local hostnames, and company names prior to Tier 2 publication.`
+        ].join('\n');
+
+        // 2. Build mailto URL
+        const subject = isKo ? `[에러레저 제보] ${title}` : `[Incident Submission] ${title}`;
+        lastMailtoUrl = `mailto:contact@errorledger.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lastFormattedBody)}`;
+
+        // 3. Update direct link button
+        const directEmailBtn = document.getElementById('direct-email-link');
+        if (directEmailBtn) {
+          directEmailBtn.setAttribute('href', lastMailtoUrl);
+        }
+
+        // 4. Save local backup
+        const submission = { title, cat, damage, body, date: now };
         const existing = JSON.parse(localStorage.getItem('errorledger_submissions') || '[]');
         existing.push(submission);
         localStorage.setItem('errorledger_submissions', JSON.stringify(existing));
 
+        // 5. Switch view and attempt auto-open
         const form = document.getElementById('incident-form');
         const successView = document.getElementById('form-success-view');
         if (form) form.classList.add('hidden');
         if (successView) successView.classList.remove('hidden');
+
+        // Trigger mail client
+        window.location.href = lastMailtoUrl;
       }
     });
   })();
