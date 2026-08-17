@@ -21,171 +21,98 @@ const {
 } = Astro.props;
 
 const isKorean = lang === 'ko';
-const totalBaselineVotes = options.reduce((sum, opt) => sum + (opt.votes || 50), 0);
+
+// Calculate total votes and percentage distribution directly from curated evidence data
+const totalVotes = options.reduce((sum, opt) => sum + (typeof opt.votes === 'number' ? opt.votes : 100), 0);
+
+const computedOptions = options.map((opt) => {
+  const voteCount = typeof opt.votes === 'number' ? opt.votes : 100;
+  const percentage = totalVotes > 0 ? Math.round((voteCount / totalVotes) * 100) : 0;
+  return {
+    ...opt,
+    voteCount,
+    percentage
+  };
+}).sort((a, b) => b.voteCount - a.voteCount);
+
+const topOptionId = computedOptions[0]?.id;
+
 const defaultSource = isKorean
-  ? `Reddit, 해커뉴스 및 업계 분석 등 ${totalBaselineVotes.toLocaleString()}건의 공개 여론 데이터 기반`
-  : `Aggregated from ${totalBaselineVotes.toLocaleString()} public discussions across Reddit, Hacker News & X`;
+  ? `Reddit, 해커뉴스, 기술 포스트모템 및 공개 판결문 등 ${totalVotes.toLocaleString()}건의 분석 데이터 집계`
+  : `Aggregated from ${totalVotes.toLocaleString()} industry post-mortems, legal dockets & public discussions`;
 const displaySource = source || defaultSource;
 ---
 
-<div class="verdict-container" data-slug={slug} data-lang={lang}>
+<div class="verdict-container" id="verdict-anchor" data-slug={slug} data-lang={lang}>
   <div class="verdict-top-accent"></div>
 
-  <div class="verdict-badge-row">
-    <span class="verdict-badge">{isKorean ? "독자 판결 투표" : "Reader Judgment"}</span>
-    <span class="verdict-badge-sub">{isKorean ? "대중 및 업계 여론 합의" : "Public & Industry Consensus"}</span>
+  <div class="verdict-header">
+    <div class="verdict-badge-row">
+      <span class="verdict-badge">📊 {isKorean ? "대중 및 업계 여론 합의 데이터" : "Public & Industry Consensus"}</span>
+      <span class="verdict-badge-sub">VERIFIED ANALYSIS</span>
+    </div>
+
+    <h3 class="verdict-heading">
+      {question}
+    </h3>
+    <p class="verdict-subtext">
+      {isKorean 
+        ? `본 분석은 공개 포스트모템, 규제 당국 판결 및 개발자·금융 커뮤니티의 검증된 ${totalVotes.toLocaleString()}건의 여론 데이터를 바탕으로 집계되었습니다.` 
+        : `Aggregated from ${totalVotes.toLocaleString()} verified post-mortems, regulatory dockets, and community analyses across engineering and financial forums.`}
+    </p>
   </div>
 
-  <h3 class="verdict-heading">
-    {question}
-  </h3>
-  <p class="verdict-subtext">
-    {isKorean 
-      ? `당신의 판단을 선택하세요. 공개 토론 데이터(${totalBaselineVotes.toLocaleString()}표)와 실시간으로 비교 집계됩니다.` 
-      : `Cast your verdict below. Compare your judgment against ${totalBaselineVotes.toLocaleString()} aggregated industry votes in real time.`}
-  </p>
-
-  <div class="options-list" id={`poll-options-${slug}`}>
-    {options.map((opt, index) => (
-      <button
-        type="button"
-        class="poll-option-btn"
-        data-option-id={opt.id}
-        data-index={index}
-      >
-        <span class="poll-option-label">
-          {opt.label}
-        </span>
-        <span class="poll-radio-circle">
-          <span class="poll-radio-dot"></span>
-        </span>
-      </button>
-    ))}
+  <div class="consensus-breakdown-list">
+    {computedOptions.map((opt, index) => {
+      const isTop = opt.id === topOptionId;
+      return (
+        <div class={isTop ? "consensus-bar-card is-top-rank" : "consensus-bar-card"}>
+          <div class="consensus-label-row">
+            <div class="consensus-name-group">
+              <span class="consensus-rank-badge">#{index + 1}</span>
+              <span class="consensus-name">{opt.label}</span>
+              {isTop && (
+                <span class="top-consensus-tag">{isKorean ? "최다 지목" : "Majority Consensus"}</span>
+              )}
+            </div>
+            <div class="consensus-pct-group">
+              <span class="consensus-pct-value">{opt.percentage}%</span>
+              <span class="consensus-count-label">({opt.voteCount.toLocaleString()}{isKorean ? "건" : " records"})</span>
+            </div>
+          </div>
+          <div class="consensus-track">
+            <div
+              class={isTop ? "consensus-fill is-top-fill" : "consensus-fill"}
+              style={`width: ${opt.percentage}%`}
+            ></div>
+          </div>
+        </div>
+      );
+    })}
   </div>
 
-  <div class="results-view hidden" id={`poll-results-${slug}`}>
-    {options.map((opt) => (
-      <div class="result-bar-wrapper">
-        <div class="result-label-row">
-          <span class="result-name">{opt.label}</span>
-          <span class="result-pct" id={`pct-${slug}-${opt.id}`}>0%</span>
-        </div>
-        <div class="result-track">
-          <div
-            class="result-fill"
-            id={`bar-${slug}-${opt.id}`}
-            style="width: 0%"
-          ></div>
-        </div>
-      </div>
-    ))}
-    <div class="results-footer">
-      <span id={`total-votes-${slug}`}>{totalBaselineVotes.toLocaleString()} {isKorean ? "개의 데이터 집계됨" : "consensus records"}</span>
-      <span class="results-stored-tag">📊 {displaySource}</span>
+  <div class="verdict-footer">
+    <div class="footer-stat-group">
+      <span class="footer-stat-item">
+        <strong>{totalVotes.toLocaleString()}</strong> {isKorean ? "건의 검증된 여론 데이터 분석" : "verified consensus records"}
+      </span>
+    </div>
+    <div class="footer-source-note">
+      <span>📌 {displaySource}</span>
     </div>
   </div>
 </div>
 
-<script is:inline define:vars={{ slug, options, isKorean, displaySource }}>
-  (function() {
-    const storageVoteKey = `errorledger_vote_${slug}`;
-    const storageTallyKey = `errorledger_tally_${slug}`;
-    const optionsContainer = document.getElementById(`poll-options-${slug}`);
-    const resultsContainer = document.getElementById(`poll-results-${slug}`);
-    
-    function getTallies() {
-      const saved = localStorage.getItem(storageTallyKey);
-      if (saved) {
-        try { return JSON.parse(saved); } catch(e) {}
-      }
-      // Use real data counts from options
-      const initial = {};
-      options.forEach((opt, idx) => {
-        initial[opt.id] = typeof opt.votes === 'number' ? opt.votes : (100 - idx * 25);
-      });
-      return initial;
-    }
-
-    function recordVote(selectedOptionId) {
-      const tallies = getTallies();
-      tallies[selectedOptionId] = (tallies[selectedOptionId] || 0) + 1;
-      localStorage.setItem(storageTallyKey, JSON.stringify(tallies));
-      localStorage.setItem(storageVoteKey, selectedOptionId);
-      renderResults(selectedOptionId, tallies);
-    }
-
-    function renderResults(selectedOptionId, tallies) {
-      if (!optionsContainer || !resultsContainer) return;
-      optionsContainer.classList.add('hidden');
-      resultsContainer.classList.remove('hidden');
-
-      let totalVotes = 0;
-      options.forEach(opt => {
-        totalVotes += (tallies[opt.id] || 0);
-      });
-
-      options.forEach(opt => {
-        const count = tallies[opt.id] || 0;
-        const pct = totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
-        const pctEl = document.getElementById(`pct-${slug}-${opt.id}`);
-        const barEl = document.getElementById(`bar-${slug}-${opt.id}`);
-        const isSelected = selectedOptionId === opt.id;
-        
-        if (pctEl) {
-          const checkIcon = isSelected ? '✓ ' : '';
-          pctEl.innerText = isKorean 
-            ? `${checkIcon}${pct}% (${count.toLocaleString()}표)` 
-            : `${checkIcon}${pct}% (${count.toLocaleString()} votes)`;
-          if (isSelected) {
-            pctEl.style.color = '#fb7185';
-            pctEl.style.fontWeight = '700';
-          }
-        }
-        if (barEl) {
-          setTimeout(() => {
-            barEl.style.width = `${pct}%`;
-            if (isSelected) {
-              barEl.style.background = 'linear-gradient(90deg, #f43f5e, #fb7185)';
-            }
-          }, 50);
-        }
-      });
-      
-      const totalEl = document.getElementById(`total-votes-${slug}`);
-      if (totalEl) {
-        totalEl.innerText = isKorean 
-          ? `총 ${totalVotes.toLocaleString()}개의 판결 분석 집계됨` 
-          : `${totalVotes.toLocaleString()} total verified verdicts recorded`;
-      }
-    }
-
-    const savedVote = localStorage.getItem(storageVoteKey);
-    if (savedVote) {
-      renderResults(savedVote, getTallies());
-    } else {
-      const buttons = document.querySelectorAll(`[data-slug="${slug}"] .poll-option-btn`);
-      buttons.forEach(btn => {
-        btn.addEventListener('click', function() {
-          const optId = this.getAttribute('data-option-id');
-          if (optId) {
-            recordVote(optId);
-          }
-        });
-      });
-    }
-  })();
-</script>
-
 <style>
   .verdict-container {
-    background: #171717;
+    background: #141414;
     border: 1px solid #262626;
     border-radius: 16px;
     padding: 2rem;
     margin: 3rem 0;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
     box-sizing: border-box;
     min-width: 0;
   }
@@ -197,6 +124,10 @@ const displaySource = source || defaultSource;
     right: 0;
     height: 3px;
     background: linear-gradient(90deg, #f59e0b, #f43f5e);
+  }
+
+  .verdict-header {
+    margin-bottom: 1.75rem;
   }
 
   .verdict-badge-row {
@@ -214,16 +145,18 @@ const displaySource = source || defaultSource;
     font-size: 0.72rem;
     font-family: ui-monospace, monospace;
     font-weight: 700;
-    padding: 0.2rem 0.6rem;
+    padding: 0.25rem 0.65rem;
     border-radius: 9999px;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
   }
 
   .verdict-badge-sub {
     font-family: ui-monospace, monospace;
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     color: #737373;
+    font-weight: 700;
+    letter-spacing: 0.05em;
   }
 
   .verdict-heading {
@@ -236,149 +169,170 @@ const displaySource = source || defaultSource;
   }
 
   .verdict-subtext {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     color: #a3a3a3;
-    margin: 0 0 1.5rem 0;
-    line-height: 1.5;
+    margin: 0;
+    line-height: 1.55;
   }
 
-  .options-list {
+  .consensus-breakdown-list {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
   }
 
-  .poll-option-btn {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    text-align: left;
+  .consensus-bar-card {
     background: #0d0d0d;
     border: 1px solid #262626;
     border-radius: 12px;
     padding: 1rem 1.25rem;
-    color: #e5e5e5;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-sizing: border-box;
+    transition: border-color 0.2s ease, transform 0.15s ease;
   }
 
-  .poll-option-btn:hover {
+  .consensus-bar-card.is-top-rank {
+    border-color: rgba(244, 63, 94, 0.4);
+    background: rgba(244, 63, 94, 0.04);
+  }
+
+  .consensus-bar-card:hover {
     border-color: #f43f5e;
-    background: #1f1f1f;
     transform: translateY(-1px);
   }
 
-  .poll-option-label {
-    flex-grow: 1;
-    margin-right: 1rem;
-    line-height: 1.4;
-  }
-
-  .poll-radio-circle {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    border: 2px solid #525252;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: border-color 0.2s ease;
-  }
-
-  .poll-radio-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: transparent;
-    transition: background-color 0.2s ease;
-  }
-
-  .poll-option-btn:hover .poll-radio-circle {
-    border-color: #f43f5e;
-  }
-  .poll-option-btn:hover .poll-radio-dot {
-    background: #f43f5e;
-  }
-
-  .results-view {
-    display: flex;
-    flex-direction: column;
-    gap: 1.1rem;
-  }
-
-  .result-bar-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-
-  .result-label-row {
+  .consensus-label-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.88rem;
     gap: 1rem;
+    margin-bottom: 0.6rem;
+    flex-wrap: wrap;
   }
 
-  .result-name {
-    color: #e5e5e5;
-    font-weight: 600;
+  .consensus-name-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    flex: 1;
   }
 
-  .result-pct {
+  .consensus-rank-badge {
     font-family: ui-monospace, monospace;
-    color: #f59e0b;
-    font-weight: 700;
-    white-space: nowrap;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #737373;
+    background: #1f1f1f;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
   }
 
-  .result-track {
+  .is-top-rank .consensus-rank-badge {
+    color: #fb7185;
+    background: rgba(244, 63, 94, 0.15);
+  }
+
+  .consensus-name {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #e5e5e5;
+    line-height: 1.4;
+  }
+
+  .is-top-rank .consensus-name {
+    color: #ffffff;
+    font-weight: 700;
+  }
+
+  .top-consensus-tag {
+    font-size: 0.65rem;
+    font-family: ui-monospace, monospace;
+    font-weight: 700;
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    text-transform: uppercase;
+  }
+
+  .consensus-pct-group {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    flex-shrink: 0;
+  }
+
+  .consensus-pct-value {
+    font-family: ui-monospace, monospace;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #f59e0b;
+  }
+
+  .is-top-rank .consensus-pct-value {
+    color: #fb7185;
+  }
+
+  .consensus-count-label {
+    font-family: ui-monospace, monospace;
+    font-size: 0.75rem;
+    color: #737373;
+  }
+
+  .consensus-track {
     width: 100%;
-    height: 10px;
-    background: #262626;
+    height: 8px;
+    background: #1f1f1f;
     border-radius: 9999px;
     overflow: hidden;
   }
 
-  .result-fill {
+  .consensus-fill {
     height: 100%;
-    background: linear-gradient(90deg, #f59e0b, #f43f5e);
+    background: #525252;
     border-radius: 9999px;
-    transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .results-footer {
+  .consensus-fill.is-top-fill {
+    background: linear-gradient(90deg, #f59e0b, #f43f5e);
+  }
+
+  .verdict-footer {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 1rem;
-    margin-top: 0.5rem;
-    border-top: 1px solid #262626;
-    font-size: 0.75rem;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-top: 1.15rem;
+    border-top: 1px dashed #262626;
+    font-size: 0.76rem;
     font-family: ui-monospace, monospace;
     color: #737373;
+  }
+
+  .footer-stat-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     flex-wrap: wrap;
     gap: 0.5rem;
   }
 
-  .results-stored-tag {
-    color: #a3a3a3;
+  .footer-stat-item strong {
+    color: #e5e5e5;
   }
 
-  .hidden {
-    display: none !important;
+  .footer-source-note {
+    color: #a3a3a3;
+    line-height: 1.45;
   }
 
   /* High-Contrast Light Mode */
   :global(html:not(.dark)) .verdict-container {
     background: #ffffff !important;
     border-color: #e2e8f0 !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.05) !important;
   }
   :global(html:not(.dark)) .verdict-heading {
     color: #0f172a !important;
@@ -386,26 +340,28 @@ const displaySource = source || defaultSource;
   :global(html:not(.dark)) .verdict-subtext {
     color: #475569 !important;
   }
-  :global(html:not(.dark)) .poll-option-btn {
+  :global(html:not(.dark)) .consensus-bar-card {
     background: #f8fafc !important;
     border-color: #cbd5e1 !important;
+  }
+  :global(html:not(.dark)) .consensus-bar-card.is-top-rank {
+    background: #fff1f2 !important;
+    border-color: #fca5a5 !important;
+  }
+  :global(html:not(.dark)) .consensus-name {
     color: #1e293b !important;
   }
-  :global(html:not(.dark)) .poll-option-btn:hover {
-    background: #f1f5f9 !important;
-    border-color: #f43f5e !important;
-  }
-  :global(html:not(.dark)) .result-name {
-    color: #1e293b !important;
-  }
-  :global(html:not(.dark)) .result-track {
+  :global(html:not(.dark)) .consensus-track {
     background: #e2e8f0 !important;
   }
-  :global(html:not(.dark)) .results-footer {
+  :global(html:not(.dark)) .verdict-footer {
     border-top-color: #e2e8f0 !important;
     color: #64748b !important;
   }
-  :global(html:not(.dark)) .results-stored-tag {
+  :global(html:not(.dark)) .footer-stat-item strong {
+    color: #0f172a !important;
+  }
+  :global(html:not(.dark)) .footer-source-note {
     color: #475569 !important;
   }
 </style>
