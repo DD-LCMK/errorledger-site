@@ -20,20 +20,15 @@ summary_points:
   fallout: "36 hours of critical records were permanently lost, an innocent intern was fired to protect senior stock options, and the coverup created a toxic culture of silence."
 archivist_summary: "The moral failure was not executing the terminal command. The moral failure was working in an organization where confessing to a technical mistake carried a higher penalty than letting a junior engineer's career be destroyed."
 verdict_question: "Who was most morally reprehensible in this incident?"
-verdict_source: "Aggregated from 2,890 engineer comments on Reddit (r/cscareerquestions & r/devops)"
 verdict_options:
   - id: "senior_engineer"
     label: "The Senior Engineer (Cowardice & Scapegoating)"
-    votes: 1560
   - id: "engineering_manager"
     label: "The Engineering VP (Weaponized punitive culture)"
-    votes: 780
   - id: "system_architecture"
     label: "The Infrastructure Team (Granted unlogged root access)"
-    votes: 347
   - id: "shared_culpability"
     label: "The Entire Organization (Rewarding self-preservation over truth)"
-    votes: 203
 tags: ["workplace-disasters", "career", "scapegoat", "database-deletion", "toxic-culture"]
 slug: "deleted-production-database-blamed-intern"
 ---

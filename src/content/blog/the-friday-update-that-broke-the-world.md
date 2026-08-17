@@ -20,20 +20,15 @@ summary_points:
   fallout: "8.5 million machines were bricked globally, inflicting over $5.4 billion in direct enterprise losses and exposing the extreme vulnerability of global IT monoculture."
 archivist_summary: "The mistake was not the malformed pointer. The mistake was building a global IT monoculture where a single vendor holds the keys to the kernel."
 verdict_question: "Who bears the greatest systemic responsibility for the incident?"
-verdict_source: "Aggregated from 1,421 public discussions across Reddit (r/sysadmin), Hacker News & X"
 verdict_options:
   - id: "crowdstrike_qa"
     label: "CrowdStrike Engineering (Bypassed tiered rollout)"
-    votes: 682
   - id: "microsoft_kernel"
     label: "Microsoft Architecture (Permitted 3rd party kernel drivers)"
-    votes: 454
   - id: "corporate_it"
     label: "Enterprise IT (Disabled staged patch policies)"
-    votes: 184
   - id: "systemic_monoculture"
     label: "The Industry Monoculture (Excessive reliance on single vendors)"
-    votes: 101
 tags: ["corporate-disasters", "crowdstrike", "global-outage", "systemic-failure"]
 slug: "the-friday-update-that-broke-the-world"
 ---

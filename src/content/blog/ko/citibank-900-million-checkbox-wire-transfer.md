@@ -21,20 +21,15 @@ summary_points:
   fallout: "10개 헤지펀드가 5억 달러(약 6,500억 원) 반환을 거부하여 1심에서 패소했으며, 2년간의 법정 공방 끝에 항소심에서 자금을 회수하고 '레블론 방지 조항'이 신설되었습니다."
 archivist_summary: "실패의 본질은 두 개의 체크박스를 누락한 순간이 아니었습니다. 1조 원에 달하는 은행 자본의 외부 유출 여부가 1990년대 스타일의 모달창 속 암호 같은 약어 세 개에 달려있도록 설계한 소프트웨어의 적대성이 진짜 실패였습니다."
 verdict_question: "이 1조 원대 오송금 참사에서 가장 무거운 책임을 져야 할 주체는 누구인가?"
-verdict_source: "블룸버그, 해커뉴스 및 금융공학 커뮤니티 등 3,485건의 공개 분석 데이터 기반"
 verdict_options:
   - id: "flexcube_ui"
     label: "오라클 플렉스큐브 UI (경고창 없는 불친절하고 기괴한 체크박스)"
-    votes: 1642
   - id: "citi_process"
     label: "씨티은행 운영 프로세스 (형식적 결재와 분산된 책임 문화)"
-    votes: 1180
   - id: "hedge_funds"
     label: "수취 헤지펀드들 (명백한 착오 송금을 악의적으로 반환 거부)"
-    votes: 488
   - id: "individual_reviewers"
     label: "세 명의 검토자 (표준 운영 매뉴얼을 철저히 대조하지 않음)"
-    votes: 175
 tags: ["금융재난", "씨티은행", "월스트리트", "UI실패", "체크박스오류", "헤지펀드"]
 slug: "citibank-900-million-checkbox-wire-transfer"
 ---

@@ -20,20 +20,15 @@ summary_points:
   fallout: "Ten hedge funds refused to return $501M, winning a shock federal court victory before a 2-year appellate battle forced Wall Street to create 'Revlon clauses'."
 archivist_summary: "The failure was not leaving two boxes unchecked. The failure was designing a financial system where sending nearly a billion dollars of unbudgeted capital depended on cryptic abbreviations in a 1990s modal window with zero safety interlocks."
 verdict_question: "Who bears the greatest responsibility for the $900M wire disaster?"
-verdict_source: "Aggregated from 3,485 financial discussions and legal post-mortems across Hacker News, Bloomberg & Reddit (r/wallstreetbets)"
 verdict_options:
   - id: "flexcube_ui"
     label: "Oracle Flexcube UI (Cryptic checkboxes with no clear warnings)"
-    votes: 1642
   - id: "citi_process"
     label: "Citibank Operations (Rubber-stamp approval culture)"
-    votes: 1180
   - id: "hedge_funds"
-    label: "The Lenders (Exploited obvious mistake in bad faith)"
-    votes: 488
+    label: "The Lenders (Refused to return obvious misdirected payment)"
   - id: "individual_reviewers"
-    label: "The Three Operators (Failed to follow exact SOP)"
-    votes: 175
+    label: "The Three Operators (Failed to catch unchecked box)"
 tags: ["financial-disasters", "citibank", "banking-glitch", "ui-failure", "wall-street"]
 slug: "citibank-900-million-checkbox-wire-transfer"
 ---

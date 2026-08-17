@@ -23,20 +23,15 @@ summary_points:
   fallout: "전 세계 850만 대의 PC가 일제히 먹통이 되며 54억 달러(약 7조 4,000억 원) 이상의 직간접 피해가 발생했고, 글로벌 IT 단일 실패점(SPOF)의 위험성을 입증했습니다."
 archivist_summary: "진짜 실수는 파서의 메모리 버그가 아니었습니다. 전 세계 주요 인프라가 단 하나의 보안 소프트웨어 업체에 무제한 커널 권한과 단계적 배포 없는 자동 배포를 허용한 단일 실패 지점(SPOF) 구조가 진짜 실패였습니다."
 verdict_question: "이 글로벌 대란의 가장 큰 시스템적 책임은 어디에 있는가?"
-verdict_source: "Reddit(r/sysadmin), 해커뉴스 및 업계 분석 등 1,421건의 공개 여론 분석 데이터 기반"
 verdict_options:
   - id: "crowdstrike_qa"
     label: "크라우드스트라이크 엔지니어링 (단계적 배포 검증 생략)"
-    votes: 682
   - id: "microsoft_kernel"
     label: "마이크로소프트 아키텍처 (서드파티 커널 드라이버 권한 허용)"
-    votes: 454
   - id: "corporate_it"
     label: "기업 IT 부서 (패치 단계별 적용 정책 비활성화)"
-    votes: 184
   - id: "systemic_monoculture"
     label: "업계 모노컬처 (단일 보안 벤더에 대한 과도한 의존)"
-    votes: 101
 tags: ["기업재난", "크라우드스트라이크", "글로벌장애", "블루스크린", "시스템실패"]
 ---
 

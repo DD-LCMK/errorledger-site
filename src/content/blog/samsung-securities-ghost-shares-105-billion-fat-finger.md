@@ -23,24 +23,19 @@ summary_points:
   fallout: "16 traders sold $187M of phantom stock in 30 minutes, triggering a flash crash, criminal indictments for embezzlement, a six-month trading suspension from regulators, and a landmark Supreme Court damages verdict."
 archivist_summary: "The true disaster was not the typo. The disaster was a multi-billion-dollar brokerage architecture that permitted a low-level clerk to conjure 30 times the company's total market value out of thin air with zero inventory verification."
 verdict_question: "Who bears the greatest systemic responsibility for the $105B phantom stock crisis?"
-verdict_source: "Aggregated from 3,840 institutional post-mortems, regulatory filings, and financial industry reactions"
 verdict_options:
   - id: "samsung_architecture"
     label: "Samsung Securities (Zero inventory verification in settlement system)"
-    votes: 1843
   - id: "rogue_employees"
-    label: "The 16 Selling Traders (Knowing exploitation of a catastrophic bug)"
-    votes: 1229
+    label: "The 16 Selling Employees (Executed sales despite company-wide error warnings)"
   - id: "financial_regulators"
-    label: "Financial Regulators & KOSCOM (Permitted naked phantom shorting infrastructure)"
-    votes: 499
+    label: "Financial Regulators & Market Infrastructure (Naked stock clearing loophole)"
   - id: "clerk_fatfinger"
-    label: "The Data Entry Operator (Individual human fat-finger mistake)"
-    votes: 269
+    label: "The Data Entry Operator (Individual typographical input error)"
 tags: ["financial-disaster", "fat-finger", "ghost-shares", "wall-street", "systemic-failure"]
 ---
 
-At 9:31 AM on Friday, April 6, 2018, ordinary office workers across Seoul’s financial district opened their mobile trading apps and discovered personal account balances worth tens of millions of dollars.
+At 9:31 AM on Friday, April 6, 2018, internal brokerage accounts belonging to 2,018 Samsung Securities employees were suddenly credited with astronomical sums of stock.
 
 The money wasn’t real.
 
@@ -48,7 +43,7 @@ The shares weren’t real either.
 
 The system just hadn’t noticed yet.
 
-Minutes earlier, an administrative clerk at Samsung Securities had sat down to execute what should have been an entirely unremarkable quarterly batch job: distributing annual dividends of **1,000 South Korean won** (approximately $0.93 USD) per share to 2,018 employee shareholders under the company’s Employee Stock Ownership Plan. The total planned cash payout was **2.8 billion won** ($2.6 million USD).
+Minutes earlier, an administrative clerk at Samsung Securities had sat down to execute what should have been an entirely routine quarterly dividend payout: distributing annual dividends of **1,000 South Korean won** (approximately $0.93 USD) per share to 2,018 employee shareholders under the company’s Employee Stock Ownership Plan. The total planned cash disbursement was **2.8 billion won** ($2.6 million USD).
 
 Instead, the clerk clicked the wrong item in a drop-down menu, selecting **"shares"** instead of **"cash (won)"**.
 
@@ -68,7 +63,7 @@ At Samsung Securities, however, the employee stock settlement module had no conn
 
 > *"Do these shares actually exist?"*
 
-The software accepted the numerical input, assumed the shares were valid, and instantaneously updated the internal ledger balances of 2,018 employees. Within seconds, junior traders, office assistants, and managers saw balances exceeding **$50 million to $100 million USD** sitting live in their personal trading windows.
+The software accepted the numerical input, assumed the shares were valid, and instantaneously updated the internal ledger balances of 2,018 employees. On paper, individual accounts were suddenly credited with tens of millions of dollars in unissued corporate equity.
 
 The evidence does not record what was said in those office cubicles at that exact second. It records what happened five minutes later.
 
@@ -76,17 +71,15 @@ The evidence does not record what was said in those office cubicles at that exac
 
 ## 30 Minutes of Market Madness
 
-By 9:35 AM, internal pop-up warnings and urgent company-wide chat messages began screaming across Samsung Securities' trading floor:
+By 9:35 AM, internal pop-up warnings and urgent company-wide chat messages began flashing across Samsung Securities' internal systems:
 
 > *"System error in dividend processing. Do not trade. Do not place sell orders under any circumstances."*
 
-For most employees, the message was clear. But for **16 individuals**—including licensed brokers and senior team leaders—the temptation of seeing tens of millions of dollars in their order windows proved irresistible.
+For most employees, the warning was clear. But for **16 individuals**—including licensed brokers and team leaders—the credited balances became actionable orders.
 
-Between 9:35 AM and 10:06 AM, those 16 employees began aggressively hitting the "SELL" button.
+Between 9:35 AM and 10:06 AM, those 16 employees executed sell orders for a combined **5.01 million phantom shares** on the open market through the Korea Exchange (KRX), totaling **201.2 billion won (approximately $187 million USD)**.
 
-They dumped **5.01 million phantom shares** into the open market through the Korea Exchange (KRX), attempting to cash out before the ledger could be corrected. In total, they executed sell orders worth **201.2 billion won (approximately $187 million USD)**.
-
-One employee alone managed to sell 1.4 million nonexistent shares in multiple rapid-fire blocks, trying to liquidate over $50 million before management could pull the server plugs.
+One employee alone executed sell orders for 1.4 million nonexistent shares in rapid blocks, before the brokerage physically restricted internal order routing 37 minutes after the initial credit.
 
 ---
 
