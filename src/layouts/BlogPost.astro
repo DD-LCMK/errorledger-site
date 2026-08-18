@@ -4,6 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import ProvenanceBadge from '../components/ProvenanceBadge.astro';
+import EvidenceLedger from '../components/EvidenceLedger.astro';
 import ThematicDossier from '../components/ThematicDossier.astro';
 import ReaderVerdict from '../components/ReaderVerdict.astro';
 import { SITE_TITLE } from '../consts';
@@ -838,6 +839,14 @@ const rankedCases = isKorean ? [
 
 						{!isStaticPage && (
 							<>
+								<!-- The Evidence Ledger: Epistemic Receipts and Source Audit -->
+								<EvidenceLedger
+									tier={provenance_tier}
+									source={provenance_source}
+									label={provenance_label}
+									lang={lang}
+								/>
+
 								<!-- Interactive Feature 7: Reader Verdict Poll -->
 								<div id="verdict-anchor">
 									<ReaderVerdict

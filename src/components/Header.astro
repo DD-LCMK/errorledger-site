@@ -33,14 +33,14 @@ if (isKorean) {
 const langSwitchLabel = isKorean ? '🇺🇸 English' : '🇰🇷 한국어';
 
 const categories = [
-	{ id: "all", label: isKorean ? "전체 사건" : "All", icon: "⚡", href: archiveUrl },
-	{ id: "corporate", label: isKorean ? "기업 & 인프라" : "Corporate", icon: "🏢", href: `${searchUrl}?q=corporate` },
-	{ id: "money", label: isKorean ? "금융 & 경제" : "Finance", icon: "💰", href: `${searchUrl}?q=money` },
+	{ id: "all", label: isKorean ? "전체 보관소" : "All Records", icon: "⚡", href: archiveUrl },
+	{ id: "money", label: isKorean ? "금융 & 시장" : "Money & Markets", icon: "💰", href: `${searchUrl}?q=money` },
+	{ id: "corporate", label: isKorean ? "기업 & 스캔들" : "Corporate", icon: "🏢", href: `${searchUrl}?q=corporate` },
 	{ id: "work", label: isKorean ? "직장 & 커리어" : "Workplace", icon: "🧑‍💻", href: `${searchUrl}?q=work` },
-	{ id: "ai", label: isKorean ? "AI & 자동화" : "AI Disasters", icon: "🤖", href: `${searchUrl}?q=ai` },
-	{ id: "internet", label: isKorean ? "인터넷 & 사회" : "Internet", icon: "🌐", href: `${searchUrl}?q=internet` },
-	{ id: "human", label: isKorean ? "심리 & 편향" : "Psychology", icon: "🧠", href: `${searchUrl}?q=human` },
-	{ id: "debates", label: isKorean ? "실시간 논쟁" : "Top Debates", icon: "⚖️", href: `${homeUrl}#debates-section` },
+	{ id: "ai", label: isKorean ? "AI & 알고리즘" : "AI & Algorithms", icon: "🤖", href: `${searchUrl}?q=ai` },
+	{ id: "internet", label: isKorean ? "인프라 & 인터넷" : "Infrastructure", icon: "🌐", href: `${searchUrl}?q=internet` },
+	{ id: "human", label: isKorean ? "인간 & 심리" : "Human Decisions", icon: "🧠", href: `${searchUrl}?q=human` },
+	{ id: "debates", label: isKorean ? "독자 판결" : "Reader Verdicts", icon: "⚖️", href: `${homeUrl}#debates-section` },
 ];
 ---
 
@@ -59,15 +59,15 @@ const categories = [
 				type="text" 
 				name="q" 
 				class="header-search-input" 
-				placeholder={isKorean ? "사건 및 재난 검색..." : "Search the Failure Ledger..."}
+				placeholder={isKorean ? "사건 및 재난 기록 검색..." : "Search the Human Failure Archive..."}
 				aria-label="Search repository globally"
 				autocomplete="off"
 			/>
 		</form>
 
 		<div class="internal-links">
-			<HeaderLink href={homeUrl}>{isKorean ? "홈" : "Ledger"}</HeaderLink>
-			<HeaderLink href={archiveUrl}>{isKorean ? "아카이브" : "Archive"}</HeaderLink>
+			<HeaderLink href={homeUrl}>{isKorean ? "홈" : "Home"}</HeaderLink>
+			<HeaderLink href={archiveUrl}>{isKorean ? "보관소" : "The Ledger"}</HeaderLink>
 			<HeaderLink href={aboutUrl}>{isKorean ? "소개" : "About"}</HeaderLink>
 			
 			<!-- Language Switcher Button -->
