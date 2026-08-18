@@ -6,7 +6,6 @@ import FormattedDate from '../components/FormattedDate.astro';
 import ProvenanceBadge from '../components/ProvenanceBadge.astro';
 import EvidenceLedger from '../components/EvidenceLedger.astro';
 import ThematicDossier from '../components/ThematicDossier.astro';
-import ReaderVerdict from '../components/ReaderVerdict.astro';
 import { SITE_TITLE } from '../consts';
 import { getCollection } from 'astro:content';
 
@@ -846,17 +845,6 @@ const rankedCases = isKorean ? [
 									label={provenance_label}
 									lang={lang}
 								/>
-
-								<!-- Interactive Feature 7: Reader Verdict Poll -->
-								<div id="verdict-anchor">
-									<ReaderVerdict
-										question={verdict_question}
-										options={verdict_options}
-										slug={slug}
-										lang={lang}
-										source={verdict_source}
-									/>
-								</div>
 
 								<!-- Bottom Post Navigation: Previous & Next Incident -->
 								<nav class="bottom-incident-nav">
