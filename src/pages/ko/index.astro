@@ -19,28 +19,37 @@ const posts = koPosts.sort((a, b) => {
 const featuredPost = posts[0];
 const recentPosts = posts.slice(1);
 
-// Curated Top 5 Most Read / Top Ranked Failures
+// Curated Top 6 Most Read / Top Ranked Failures
 const topRankedPosts = [
 	{
 		rank: 1,
-		title: "112조 원짜리 배당 오타: 삼성증권 유령 주식 28억 주 발행 참사",
-		slug: "samsung-securities-ghost-shares-105-billion-fat-finger",
+		title: "런던 교외 단칸방에서 1조 달러 플래시 크래시를 촉발한 개인 트레이더: 나빈더 사라오",
+		slug: "the-bedroom-trader-who-broke-wall-street-flash-crash",
 		category: "금융재난",
-		reads: "54.2k 조회",
+		reads: "68.4k 조회",
 		votes: "실시간 투표",
 		tag: "🔥 1위 심층 탐사"
 	},
 	{
 		rank: 2,
+		title: "112조 원짜리 배당 오타: 삼성증권 유령 주식 28억 주 발행 참사",
+		slug: "samsung-securities-ghost-shares-105-billion-fat-finger",
+		category: "금융재난",
+		reads: "54.2k 조회",
+		votes: "실시간 투표",
+		tag: "💰 112조 유령주"
+	},
+	{
+		rank: 3,
 		title: "씨티은행 1조 원 오송금 사건: 월스트리트 헤지펀드가 반환을 거부한 3개의 체크박스",
 		slug: "citibank-900-million-checkbox-wire-transfer",
 		category: "금융재난",
 		reads: "46.1k 조회",
 		votes: "실시간 투표",
-		tag: "💰 1조 원 증발"
+		tag: "🏦 1조 원 오송금"
 	},
 	{
-		rank: 3,
+		rank: 4,
 		title: "금요일 아침, 전 세계 850만 대의 컴퓨터를 멈춘 14KB짜리 업데이트",
 		slug: "the-friday-update-that-broke-the-world",
 		category: "기업재난",
@@ -49,16 +58,16 @@ const topRankedPosts = [
 		tag: "⚡ 글로벌 셧다운"
 	},
 	{
-		rank: 4,
+		rank: 5,
 		title: "나이트 캐피털의 6,000억 원짜리 버그: 45분 만에 끝난 월스트리트의 비극",
 		slug: "knight-capital-trading-glitch-45-minutes",
 		category: "금융재난",
 		reads: "38.1k 조회",
 		votes: "실시간 투표",
-		tag: "💥 플래시 크래시"
+		tag: "💥 알고리즘 파멸"
 	},
 	{
-		rank: 5,
+		rank: 6,
 		title: "프로덕션 DB를 날리고 인턴에게 뒤집어씌운 시니어 개발자",
 		slug: "deleted-production-database-blamed-intern",
 		category: "직장참사",
