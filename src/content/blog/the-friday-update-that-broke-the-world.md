@@ -11,7 +11,7 @@ provenance_tier: 1
 provenance_label: "Documented Incident (Tier 1)"
 provenance_source: "CrowdStrike Official Root Cause Analysis (RCA), Microsoft Incident Review, and US House Homeland Security Committee Hearings"
 read_time_minutes: 12
-heroImage: "/images/stories/hero-samsung-ghost-stock.png"
+heroImage: "/images/stories/hero-crowdstrike-blackout.png"
 summary_points:
   context: "CrowdStrike Falcon operates at Windows Ring 0 (kernel level) to detect sophisticated cyber threats across airlines, hospitals, banks, and government agencies."
   trigger: "Channel File 291 delivered 21 input fields to an internal sensor parser expecting only 20, causing an unhandled out-of-bounds memory read (PAGE_FAULT_IN_NONPAGED_AREA) in csagent.sys."

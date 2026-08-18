@@ -12,7 +12,7 @@ provenance_tier: 1
 provenance_label: "공식 판결문 검증 사건 (Tier 1)"
 provenance_source: "도쿄지방재판소(헤이세이 18년 (와) 제24867호 판결), 도쿄고등재판소(헤이세이 22년 (네) 제347호 판결문) 및 일본 금융청(FSA) 제재처분 기록"
 read_time_minutes: 12
-heroImage: "/images/stories/hero-samsung-ghost-stock.png"
+heroImage: "/images/stories/hero-mizuho-jcom.png"
 summary_points:
   context: "미즈호 증권은 도쿄증권거래소(TSE) 마더스 시장에 신규 상장된 인력 채용 기업 제이콤(J-Com)의 고객 매도 주문을 대행하고 있었습니다."
   trigger: "담당 브로커가 '1주를 61만 엔에 매도'하는 대신 '61만 주를 1엔에 매도'로 수량과 단가를 뒤바꿔 입력하여 회사 총 주식의 42배를 장내에 투매했습니다."

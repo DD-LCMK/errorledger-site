@@ -12,7 +12,7 @@ provenance_tier: 3
 provenance_label: "복합 재구성 사례 (Tier 3)"
 provenance_source: "실리콘밸리 엔지니어링 포스트모텀 아카이브, 익명 사고 보고서 및 스타트업 감사 기록"
 read_time_minutes: 12
-heroImage: "/images/stories/hero-samsung-ghost-stock.png"
+heroImage: "/images/stories/hero-deleted-database.png"
 summary_points:
   context: "시리즈 B 투자를 유치한 고성장 핀테크 스타트업이 공유 루트 권한과 6개월간 검증되지 않은 무용지물 S3 백업 스크립트로 위태롭게 운영되고 있었습니다."
   trigger: "야근에 지친 시니어 개발자가 스테이징 대신 운영 DB에 DROP DATABASE 명령을 날렸고, S3 일일 백업이 권한 오류로 반년 동안 멈춰 있었음이 뒤늦게 발각되었습니다."

@@ -11,7 +11,7 @@ provenance_tier: 3
 provenance_label: "Composite Reconstruction (Tier 3)"
 provenance_source: "Engineering Post-Mortem Archives, Anonymized Incident Reports & SEC S-1 Pre-Audit Filings"
 read_time_minutes: 12
-heroImage: "/images/stories/hero-samsung-ghost-stock.png"
+heroImage: "/images/stories/hero-deleted-database.png"
 summary_points:
   context: "A high-growth Series B FinTech startup operated with unlogged root SSH access, unmanaged production credentials, and unverified automated nightly S3 backups."
   trigger: "A senior architect ran an unprompted DROP DATABASE on the primary PostgreSQL cluster instead of staging, discovering that automated S3 backups had been failing silently for 6 months."

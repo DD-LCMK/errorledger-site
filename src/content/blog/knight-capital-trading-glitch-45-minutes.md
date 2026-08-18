@@ -11,7 +11,7 @@ provenance_tier: 1
 provenance_label: "Documented Incident (Tier 1)"
 provenance_source: "US Securities and Exchange Commission (SEC File No. 3-15570) & FINRA Enforcement Actions"
 read_time_minutes: 12
-heroImage: "/images/stories/hero-samsung-ghost-stock.png"
+heroImage: "/images/stories/hero-knight-capital.png"
 summary_points:
   context: "Knight Capital was the largest equity market maker in the United States, executing roughly 17% of all retail trading volume on the NYSE."
   trigger: "Engineers repurposed an old dead code flag for new NYSE Retail Liquidity software, but manually deployed the patch to only 7 of 8 servers, leaving server #8 running an infinite buying loop."

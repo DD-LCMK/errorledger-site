@@ -12,7 +12,7 @@ provenance_tier: 1
 provenance_label: "공식 판결문 검증 사건 (Tier 1)"
 provenance_source: "미국 뉴욕 남부 연방지방법원(SDNY 20-CV-6539 판결문) 및 제2순환연방항소법원(21-487 판결문)"
 read_time_minutes: 12
-heroImage: "/images/stories/hero-samsung-ghost-stock.png"
+heroImage: "/images/stories/hero-citibank-wire.png"
 summary_points:
   context: "씨티은행은 화장품 대기업 레블론(Revlon)의 신디케이트 론 채권단에게 약 780만 달러의 정기 이자를 지급하는 업무를 처리하고 있었습니다."
   trigger: "원금(8억 8,600만 달러)의 외부 유출을 막으려면 3개의 체크박스를 모두 체크해야 했으나, 담당자가 1개만 체크하면서 원금 전체가 외부로 자동 송금되었습니다."

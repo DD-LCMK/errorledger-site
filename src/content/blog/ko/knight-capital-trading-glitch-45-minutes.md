@@ -12,7 +12,7 @@ provenance_tier: 1
 provenance_label: "공식 행정처분 검증 사건 (Tier 1)"
 provenance_source: "미국 증권거래위원회(SEC 행정소송 File No. 3-15570 명령서) 및 FINRA 제재 기록"
 read_time_minutes: 12
-heroImage: "/images/stories/hero-samsung-ghost-stock.png"
+heroImage: "/images/stories/hero-knight-capital.png"
 summary_points:
   context: "나이트 캐피털은 뉴욕증권거래소(NYSE) 전체 소액 주식 거래량의 약 17%를 처리하던 미국 최대의 시장조성자(Market Maker)였습니다."
   trigger: "신규 알고리즘 배포 시 8년 전 폐기된 데드 코드 플래그를 재활용했으나, 엔지니어가 8개 서버 중 8번 서버에 배포를 누락하며 잠자던 무한 매수 루프가 깨어났습니다."

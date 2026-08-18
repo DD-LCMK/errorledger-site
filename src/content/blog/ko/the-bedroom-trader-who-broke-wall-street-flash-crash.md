@@ -12,7 +12,7 @@ provenance_tier: 1
 provenance_label: "공식 사법 기록 검증 사건 (Tier 1)"
 provenance_source: "미국 법무부(DOJ 기소장 1:15-cr-00075), 미국 상품선물거래위원회(CFTC) 제재 기록 및 버지니아 켄달 연방판사 선고 공판 기록"
 read_time_minutes: 12
-heroImage: "/images/stories/hero-samsung-ghost-stock.png"
+heroImage: "/images/stories/hero-bedroom-trader.png"
 summary_points:
   context: "시카고상업거래소(CME)의 초고단타(HFT) 알고리즘들은 S&P 500 E-mini 선물 시장에서 수 밀리초 단위의 미세한 스프레드를 사냥하고 있었습니다."
   trigger: "내빈더 사라우가 커스텀 자동화 프로그램을 통해 체결 의사가 없는 2만~2만 9천 계약의 유령 매도 주문을 호가창에 깔아 허위 공급 압력을 조성했습니다."

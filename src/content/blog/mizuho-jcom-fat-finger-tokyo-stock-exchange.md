@@ -11,7 +11,7 @@ provenance_tier: 1
 provenance_label: "Documented Incident (Tier 1)"
 provenance_source: "Tokyo District Court (Ruling Heisei 18 (Wa) No. 24867), Tokyo High Court Appeals Docket (Heisei 22 (Ne) No. 347), and Financial Services Agency (FSA) Sanction Orders"
 read_time_minutes: 12
-heroImage: "/images/stories/hero-samsung-ghost-stock.png"
+heroImage: "/images/stories/hero-mizuho-jcom.png"
 summary_points:
   context: "Mizuho Securities was executing an initial public offering (IPO) sell order for an institutional client on the Tokyo Stock Exchange (TSE) Mothers market for staffing agency J-Com Co."
   trigger: "A broker entered 'sell 610,000 shares at 1 yen' instead of 'sell 1 share at 610,000 yen'—submitting an order 42 times larger than the total equity of the company with zero pre-trade sanity limits."

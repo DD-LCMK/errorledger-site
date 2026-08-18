@@ -11,7 +11,7 @@ provenance_tier: 1
 provenance_label: "Documented Incident (Tier 1)"
 provenance_source: "U.S. DOJ Criminal Indictment (1:15-cr-00075), CFTC Enforcement Dockets, and Sentencing Transcripts before Judge Virginia Kendall"
 read_time_minutes: 12
-heroImage: "/images/stories/hero-samsung-ghost-stock.png"
+heroImage: "/images/stories/hero-bedroom-trader.png"
 summary_points:
   context: "High-frequency trading algorithms on the Chicago Mercantile Exchange (CME) captured microsecond price spreads in E-mini S&P 500 futures contracts."
   trigger: "Navinder Sarao deployed custom automated software that layered 20,000 to 29,000 phantom sell orders, creating an illusion of downward supply and causing HFT liquidity to vanish."

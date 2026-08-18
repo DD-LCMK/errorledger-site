@@ -11,7 +11,7 @@ provenance_tier: 1
 provenance_label: "Documented Incident (Tier 1)"
 provenance_source: "US District Court SDNY (Docket 20-CV-6539, Judge Jesse M. Furman) & US Court of Appeals for the Second Circuit (Docket 21-487)"
 read_time_minutes: 12
-heroImage: "/images/stories/hero-samsung-ghost-stock.png"
+heroImage: "/images/stories/hero-citibank-wire.png"
 summary_points:
   context: "Citibank was tasked with routing $7.8M in interest to Revlon lenders while parking $886M in principal inside an internal holding ledger known as a wash account."
   trigger: "Suppressing principal required manually selecting FRONT, FUND, and PRINCIPAL checkboxes. Operators checked only PRINCIPAL, commanding the software to wire the full principal."

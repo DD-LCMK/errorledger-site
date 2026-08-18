@@ -12,7 +12,7 @@ provenance_tier: 1
 provenance_label: "공식 기술 보고서 검증 사건 (Tier 1)"
 provenance_source: "크라우드스트라이크 공식 근본 원인 분석(RCA), 마이크로소프트 사고 조사 보고서 및 미국 하원 국토안보위원회 청문회 기록"
 read_time_minutes: 12
-heroImage: "/images/stories/hero-samsung-ghost-stock.png"
+heroImage: "/images/stories/hero-crowdstrike-blackout.png"
 summary_points:
   context: "크라우드스트라이크 팔콘(Falcon)은 포춘 500대 기업과 공항, 병원, 은행의 사이버 공격을 방어하기 위해 윈도우 커널 최상위 권한(Ring 0)에서 동작하고 있었습니다."
   trigger: "채널 파일 291이 20개 파라미터만 처리할 수 있는 내부 파서에 21개 입력값을 전달하면서 커널 드라이버(csagent.sys)의 유효하지 않은 메모리 참조(PAGE_FAULT_IN_NONPAGED_AREA) 오류가 발생했습니다."
