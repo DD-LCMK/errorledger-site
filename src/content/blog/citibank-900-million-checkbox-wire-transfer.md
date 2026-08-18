@@ -17,6 +17,23 @@ summary_points:
   trigger: "Suppressing principal required manually selecting FRONT, FUND, and PRINCIPAL checkboxes. Operators checked only PRINCIPAL, commanding the software to wire the full principal."
   fallout: "Ten hedge funds refused to return $501M, winning a shock federal court victory before a 2-year appellate battle forced Wall Street to create 'Revlon clawback clauses'."
 tags: ["financial-disasters", "citibank", "banking-glitch", "ui-failure", "wall-street", "fintech-architecture"]
+primary_sources:
+  - title: "US District Court SDNY Docket 20-CV-6539 (Judge Jesse M. Furman Opinion)"
+    url: "https://www.courtlistener.com/docket/17446549/in-re-citibank-august-11-2020-wire-transfers/"
+    institution: "US District Court SDNY"
+    type: "District Court Ruling"
+  - title: "US Court of Appeals for the Second Circuit Decision 21-487"
+    url: "https://www.courtlistener.com/docket/59738096/in-re-citibank-august-11-2020-wire-transfers/"
+    institution: "US Court of Appeals (2nd Cir)"
+    type: "Appellate Decision"
+  - title: "OCC Consent Order & $400 Million Civil Penalty on Citibank"
+    url: "https://www.occ.gov/news-issuances/news-releases/2020/nr-occ-2020-132.html"
+    institution: "Office of the Comptroller of the Currency"
+    type: "Federal Regulatory Order"
+  - title: "LSTA Standard Revlon Clawback Clause Guidance"
+    url: "https://www.lsta.org"
+    institution: "Loan Syndications and Trading Association"
+    type: "Industry Legal Standard"
 ---
 
 On Wednesday morning, August 12, 2020, ten Wall Street hedge funds discovered that **$893,934,008.07** in cash had been wired directly into their custodial bank accounts from Citibank's corporate balance sheet.
@@ -77,7 +94,7 @@ The interface provided zero visual clues regarding the dependencies between thes
 - If you checked **`PRINCIPAL`** alone, the software assumed you wanted to execute an immediate, full-scale paydown of the loan principal and wire the funds externally.
 - To prevent the wire from leaving the building, you had to check **`PRINCIPAL`**, **`FRONT`**, and **`FUND`** simultaneously.
 
-The contractor sitting at the terminal in Chennai, India, believed that checking `PRINCIPAL` and inputting the internal wash account number was sufficient. He left `FRONT` and `FUND` unchecked.
+The contractor sitting at the terminal in Chennai, India, followed training documents that instructed entering the internal account number in the principal field, but left `FRONT` and `FUND` unchecked.
 
 The software silently compiled an external wire instruction for **$893,934,008.07**.
 
@@ -107,7 +124,7 @@ Within seconds, nearly a billion dollars of Citibank’s own liquidity was distr
 
 When Citibank realized the error the following morning and demanded the return of the funds, ten hedge funds (including Brigade Capital and HPS Investment Partners) refused, claiming the payment satisfied a debt Revlon legitimately owed them:
 
-> ### 🏛️ JUDICIAL RECORD EXHIBIT (SDNY Case 20-CV-6539, Judge Jesse M. Furman)
+> ### 🏛️ JUDICIAL RECORD EXHIBIT ([SDNY Case 20-CV-6539, Judge Jesse M. Furman](https://www.courtlistener.com/docket/17446549/in-re-citibank-august-11-2020-wire-transfers/))
 > 
 > *"The evidence demonstrates that Citibank's loan processing software was notoriously counterintuitive, requiring operators to select three separate, cryptographically abbreviated checkboxes to suppress a wire transfer.*
 > 
@@ -119,11 +136,11 @@ When Citibank realized the error the following morning and demanded the return o
 
 ## Act III: The 2-Year Legal War & The Revlon Rule
 
-In February 2021, Judge Jesse Furman shocked Wall Street by ruling against Citibank under a 1991 New York legal precedent known as the **"Discharge-for-Value" doctrine**—holding that because the lenders were owed the money by Revlon and had no prior notice of a mistake, they were legally entitled to keep the $501 million.
+In February 2021, Judge Jesse Furman initially ruled against Citibank under a 1991 New York legal precedent known as the **"Discharge-for-Value" doctrine**—holding that because the lenders were owed the money by Revlon and had no prior notice of a mistake, they were legally entitled to keep the $501 million.
 
 Citibank spent two years and tens of millions of dollars in legal fees appealing the ruling.
 
-In September 2022, the **US Court of Appeals for the Second Circuit overturned Judge Furman's decision**, ruling that the lenders were on constructive inquiry notice of an obvious mistake because Revlon’s debt was not due for another three years.
+In September 2022, the [US Court of Appeals for the Second Circuit (Docket 21-487)](https://www.courtlistener.com/docket/59738096/in-re-citibank-august-11-2020-wire-transfers/) overturned Judge Furman's decision, ruling that the lenders were on constructive inquiry notice of an obvious mistake because Revlon’s debt was not due for another three years.
 
 The lenders were finally forced to return the funds, but the disaster permanently reshaped loan agreements across the globe:
 
@@ -140,6 +157,8 @@ The lenders were finally forced to return the funds, but the disaster permanentl
 │ Executive Fallout                                      │ Forced early CEO transition     │
 └────────────────────────────────────────────────────────┴─────────────────────────────────┘
 ```
+
+The [Office of the Comptroller of the Currency (OCC)](https://www.occ.gov/news-issuances/news-releases/2020/nr-occ-2020-132.html) issued a $400 million civil penalty against Citibank for longstanding internal control deficiencies.
 
 ---
 
@@ -174,5 +193,14 @@ Multi-layer review processes must enforce cognitive independence:
 > 2. **What actually failed:** An enterprise banking architecture that required an obscure combination of three boolean flags to prevent nearly a billion dollars from leaving the bank, combined with a multi-layered approval chain that had degenerated into a rubber-stamp compliance ritual.
 > 3. **Why reasonable people allowed it to happen:** Each reviewer in the "Six-Eye" chain assumed the previous person had verified the technical configuration, while the interface masked the external wire behind an internal accounting zero-balance display.
 > 4. **The point of no return:** 5:43 PM EST on August 11, 2020, when the final approver transmitted the cryptographic key, releasing $894 million onto the Fedwire network without a single automated anomaly check.
-> 5. **Who ultimately carried responsibility:** While Citibank ultimately recovered the principal after a grueling two-year legal war, regulators slapped the bank with a $400 million civil penalty for systemic risk management failures, accelerating a complete overhaul of its executive leadership and technology infrastructure.
+> 5. **Who ultimately carried responsibility:** While Citibank recovered the principal after a grueling two-year legal war, regulators slapped the bank with a $400 million civil penalty for systemic risk management failures, accelerating a complete overhaul of its executive leadership and technology infrastructure.
 > 6. **The uncomfortable lesson:** When an enterprise interface is confusing, adding more layers of human sign-off does not increase safety—it merely distributes the blame. A system with six eyes and zero software sanity checks is still completely blind.
+
+---
+
+## Primary Sources & Official Filings
+
+- [US District Court SDNY Docket 20-CV-6539 (Judge Furman Ruling)](https://www.courtlistener.com/docket/17446549/in-re-citibank-august-11-2020-wire-transfers/) — 105-Page Federal District Court Ruling on Flexcube Mechanics.
+- [US Court of Appeals for the Second Circuit Decision 21-487](https://www.courtlistener.com/docket/59738096/in-re-citibank-august-11-2020-wire-transfers/) — Appellate Decision Reversing Discharge-for-Value Defense.
+- [Office of the Comptroller of the Currency (OCC) Consent Order (Docket AA-EC-2020-63)](https://www.occ.gov/news-issuances/news-releases/2020/nr-occ-2020-132.html) — Federal Banking Regulator $400M Penalty Order.
+- [LSTA Revlon Recovery Clause Documentation](https://www.lsta.org) — Loan Syndications and Trading Association Market Standards.

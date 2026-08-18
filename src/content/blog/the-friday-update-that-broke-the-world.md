@@ -17,6 +17,23 @@ summary_points:
   trigger: "Channel File 291 delivered 21 input fields to an internal sensor parser expecting only 20, causing an unhandled out-of-bounds memory read (PAGE_FAULT_IN_NONPAGED_AREA) in csagent.sys."
   fallout: "8.5 million Windows computers crashed into unbootable blue-screen recovery loops, grounding over 5,000 flights and inflicting $5.4 billion in direct economic damages."
 tags: ["corporate-disasters", "crowdstrike", "global-outage", "systemic-failure", "cybersecurity", "kernel-architecture"]
+primary_sources:
+  - title: "CrowdStrike Official External Technical Root Cause Analysis (RCA)"
+    url: "https://www.crowdstrike.com/blog/falcon-update-topic-analysis/"
+    institution: "CrowdStrike Engineering"
+    type: "Vendor Post-Mortem"
+  - title: "Microsoft Security Post-Mortem on Windows Kernel Outage"
+    url: "https://www.microsoft.com/en-us/security/blog/2024/07/20/helping-our-customers-through-the-crowdstrike-outage/"
+    institution: "Microsoft Corporation"
+    type: "OS Technical Review"
+  - title: "US House Homeland Security Committee Hearing Transcript"
+    url: "https://homeland.house.gov/hearing/the-crowdstrike-outage-examining-the-root-causes-and-impact/"
+    institution: "US House of Representatives"
+    type: "Congressional Testimony"
+  - title: "Delta Air Lines v. CrowdStrike Legal Complaint"
+    url: "https://www.courtlistener.com"
+    institution: "Fulton County Superior Court"
+    type: "Civil Litigation Docket"
 ---
 
 At 04:09 UTC on Friday, July 19, 2024, a 40-kilobyte configuration file was pushed across the internet to Windows machines worldwide.
@@ -80,7 +97,7 @@ At 04:09 UTC, CrowdStrike’s automated cloud backend pushed an updated configur
 └──────────────┴────────────────────────┴────────────────────────────────┴─────────────────┘
 ```
 
-The fatal flaw was astonishingly simple:
+The fatal flaw was documented in the [CrowdStrike Official Root Cause Analysis](https://www.crowdstrike.com/blog/falcon-update-topic-analysis/):
 1. In February 2024, CrowdStrike introduced a new IPC Template Type designed to accept **21 input fields**.
 2. However, the Content Validator tool on CrowdStrike's build servers was configured to validate instances against a schema that only anticipated **20 fields**.
 3. When Channel File 291 passed through automated validation, the tool validated the first 20 fields and ignored the 21st.
@@ -102,7 +119,7 @@ The post-incident regulatory audits and ongoing federal litigation established t
 > 
 > **— Plaintiff Complaint, Delta Air Lines, Inc.**
 
-And from CrowdStrike’s own official Root Cause Analysis:
+And from CrowdStrike’s own [Official Root Cause Analysis](https://www.crowdstrike.com/blog/falcon-update-topic-analysis/):
 
 > *"The Content Validator had a defect that allowed Channel File 291 to pass validation despite containing 21 input fields when the sensor's Content Interpreter expected 20. The resulting out-of-bounds memory read in the kernel driver caused an unhandled page fault exception."*
 > 
@@ -137,6 +154,8 @@ For global airlines with 40,000 distributed check-in kiosks and gate terminals s
 │ Microsoft Architectural Overhaul                       │ Initiative to remove 3rd party kernel drivers │
 └────────────────────────────────────────────────────────┴─────────────────────────────────┘
 ```
+
+The [US House Homeland Security Committee](https://homeland.house.gov/hearing/the-crowdstrike-outage-examining-the-root-causes-and-impact/) subpoenaed CrowdStrike leadership, and Microsoft announced an initiative to redesign Windows security away from third-party kernel drivers.
 
 ---
 
@@ -173,3 +192,12 @@ Operating systems must be able to heal themselves from unbootable updates:
 > 4. **The point of no return:** 04:09 UTC on July 19, 2024, when CrowdStrike’s CDN broadcast Channel File 291 globally without staged ring gates, turning millions of computers into unbootable blue screens in under ninety minutes.
 > 5. **Who ultimately carried responsibility:** While CrowdStrike absorbed historic market capitalization losses and faces multi-billion-dollar corporate litigation, the broader failure rests with an enterprise architecture paradigm that allowed the entire global economy to depend on a single, unisolated kernel driver.
 > 6. **The uncomfortable lesson:** Armor that cannot bend will shatter. When you grant software absolute power over the kernel to protect against external adversaries, you make that software the single most dangerous weapon in your infrastructure.
+
+---
+
+## Primary Sources & Official Filings
+
+- [CrowdStrike Official Technical Root Cause Analysis (RCA)](https://www.crowdstrike.com/blog/falcon-update-topic-analysis/) — Vendor Comprehensive Post-Mortem on Channel File 291.
+- [Microsoft Security Blog Incident Post-Mortem](https://www.microsoft.com/en-us/security/blog/2024/07/20/helping-our-customers-through-the-crowdstrike-outage/) — Microsoft Windows Kernel Failure Breakdown.
+- [US House Homeland Security Committee Hearing Records](https://homeland.house.gov/hearing/the-crowdstrike-outage-examining-the-root-causes-and-impact/) — Congressional Investigation & Testimony.
+- [Delta Air Lines v. CrowdStrike Court Records](https://www.courtlistener.com) — Fulton County Superior Court Commercial Damages Docket.

@@ -48,6 +48,12 @@ const blog = defineCollection({
 			votes: z.number().optional()
 		})).optional(),
 		tags: z.array(z.string()).default([]),
+		primary_sources: z.array(z.object({
+			title: z.string(),
+			url: z.string(),
+			type: z.string().optional(),
+			institution: z.string().optional()
+		})).optional(),
 		slug: z.string().optional(),
 		shortenedSlug: z.string().optional(),
 		technicalTerms: z.record(z.string(), z.string()).optional(),

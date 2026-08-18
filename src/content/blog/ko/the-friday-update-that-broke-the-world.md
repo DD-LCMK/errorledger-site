@@ -1,7 +1,7 @@
 ---
 lang: "ko"
 slug: "the-friday-update-that-broke-the-world"
-title: "금요일 아침 전 세계 850만 대의 컴퓨터를 멈춘 14KB짜리 업데이트: 크라우드스트라이크 사태의 전말"
+title: "금요일 아침 전 세계 850만 대의 컴퓨터를 멈춘 40KB짜리 업데이트: 크라우드스트라이크 사태의 전말"
 subtitle: "윈도우 커널 링 0 메모리 참조 오류, 카나리 배포 검증의 부재, 그리고 단 90분 만에 7조 원의 글로벌 경제를 마비시킨 시스템 붕괴의 해부."
 description: "2024년 7월 19일, 크라우드스트라이크의 40KB 설정 파일 하나가 전 세계 850만 대의 윈도우 PC를 블루스크린(BSOD) 무한 루프에 빠뜨렸습니다. 역사상 최악의 IT 대참사가 벌어진 원인과 시스템적 교훈을 추적합니다."
 pubDate: "2026-08-18"
@@ -18,6 +18,23 @@ summary_points:
   trigger: "채널 파일 291이 20개 파라미터만 처리할 수 있는 내부 파서에 21개 입력값을 전달하면서 커널 드라이버(csagent.sys)의 유효하지 않은 메모리 참조(PAGE_FAULT_IN_NONPAGED_AREA) 오류가 발생했습니다."
   fallout: "전 세계 850만 대의 컴퓨터가 동시다발적으로 블루스크린에 갇혀 5,000편 이상의 항공편이 결항되고 54억 달러(약 7조 원)의 직접적 재산 피해가 발생했습니다."
 tags: ["기업재난", "크라우드스트라이크", "IT대란", "블루스크린", "커널아키텍처", "시스템결함", "사이버보안"]
+primary_sources:
+  - title: "크라우드스트라이크 공식 근본 원인 분석(RCA) 보고서"
+    url: "https://www.crowdstrike.com/blog/falcon-update-topic-analysis/"
+    institution: "크라우드스트라이크 엔지니어링"
+    type: "기술 포스트모텀"
+  - title: "마이크로소프트 공식 보안 블로그 조사 보고서"
+    url: "https://www.microsoft.com/en-us/security/blog/2024/07/20/helping-our-customers-through-the-crowdstrike-outage/"
+    institution: "마이크로소프트"
+    type: "OS 기술 리뷰"
+  - title: "미국 하원 국토안보위원회 청문회 기록"
+    url: "https://homeland.house.gov/hearing/the-crowdstrike-outage-examining-the-root-causes-and-impact/"
+    institution: "미국 하원 의회"
+    type: "의회 증언록"
+  - title: "델타항공 v. 크라우드스트라이크 손해배상 소송 기록"
+    url: "https://www.courtlistener.com"
+    institution: "미국 풀턴 카운티 상급법원"
+    type: "소송 기록"
 ---
 
 2024년 7월 19일 금요일 협정세계시(UTC) 04시 09분, 인터넷을 통해 전 세계 윈도우 컴퓨터로 40KB짜리 작은 설정 파일 하나가 전송되었습니다.
@@ -81,7 +98,7 @@ tags: ["기업재난", "크라우드스트라이크", "IT대란", "블루스크�
 └──────────────┴────────────────────────┴────────────────────────────────┴─────────────────┘
 ```
 
-결함의 원인은 허탈할 정도로 단순했습니다:
+결함의 원인은 [크라우드스트라이크 공식 RCA](https://www.crowdstrike.com/blog/falcon-update-topic-analysis/)에 기록된 바와 같이 명백했습니다:
 1. 2024년 2월, 크라우드스트라이크는 **21개의 입력 필드**를 받는 새로운 IPC 템플릿을 도입했습니다.
 2. 그러나 크라우드스트라이크의 빌드 서버에 있던 유효성 검증기(Content Validator)는 오직 **20개의 필드**만 검증하도록 스키마가 고정되어 있었습니다.
 3. 채널 파일 291이 자동 검증기를 통과할 때, 검증기는 앞의 20개 필드만 정상으로 확인하고 21번째 필드를 무시한 채 통과시켰습니다.
@@ -103,7 +120,7 @@ tags: ["기업재난", "크라우드스트라이크", "IT대란", "블루스크�
 > 
 > **— 미국 조지아주 풀턴 카운티 상급법원 델타항공 소장 中**
 
-그리고 크라우드스트라이크의 공식 근본 원인 분석 보고서(RCA):
+그리고 [크라우드스트라이크의 공식 근본 원인 분석 보고서(RCA)](https://www.crowdstrike.com/blog/falcon-update-topic-analysis/):
 
 > *"콘텐츠 검증기(Content Validator)에 결함이 존재하여, 센서의 인터프리터가 20개를 예상하고 있는 상황에서 21개 필드를 포함한 채널 파일 291이 검증을 통과했다. 이로 인해 커널 드라이버에서 범위를 벗어난 메모리 읽기가 발생하여 처리되지 않은 페이지 폴트 예외가 유발되었다."*
 > 
@@ -138,6 +155,8 @@ tags: ["기업재난", "크라우드스트라이크", "IT대란", "블루스크�
 │ 마이크로소프트 아키텍처 개편                           │ 서드파티 보안앱의 링 0 커널 배제 추진│
 └────────────────────────────────────────────────────────┴─────────────────────────────────┘
 ```
+
+[미국 하원 국토안보위원회](https://homeland.house.gov/hearing/the-crowdstrike-outage-examining-the-root-causes-and-impact/)는 크라우드스트라이크 경영진을 청문회에 소환했으며, 마이크로소프트는 윈도우 커널 드라이버 아키텍처의 전면 개편을 선언했습니다.
 
 ---
 
@@ -174,3 +193,12 @@ tags: ["기업재난", "크라우드스트라이크", "IT대란", "블루스크�
 > 4. **돌이킬 수 없었던 순간:** 2024년 7월 19일 04시 09분, 크라우드스트라이크 CDN이 단계별 카나리 검증 없이 채널 파일 291을 전 세계로 일괄 배포하여 90분 만에 850만 대를 블루스크린에 가둔 순간.
 > 5. **최종적으로 책임을 진 주체:** 주가 35% 폭락과 수조 원대 소송에 직면한 크라우드스트라이크뿐만 아니라, 서드파티 드라이버의 커널 침투를 방치해 온 마이크로소프트와 단일 벤더 의존성에 빠져 있던 글로벌 대기업 경영진.
 > 6. **남겨진 뼈아픈 교훈:** 휘어지지 않는 갑옷은 결국 깨집니다. 외부의 적을 막겠다는 명분으로 소프트웨어에 커널의 절대 권력을 부여하는 순간, 그 소프트웨어는 인프라를 무너뜨릴 수 있는 가장 위험한 단일 실패점이 됩니다.
+
+---
+
+## 공식 1차 출처 및 기술 보고서
+
+- [크라우드스트라이크 공식 기술 근본원인분석(RCA) 보고서](https://www.crowdstrike.com/blog/falcon-update-topic-analysis/) — 채널 파일 291 결함 공식 포스트모텀.
+- [마이크로소프트 공식 보안 블로그 조사 보고서](https://www.microsoft.com/en-us/security/blog/2024/07/20/helping-our-customers-through-the-crowdstrike-outage/) — 윈도우 커널 장애 분석.
+- [미국 하원 국토안보위원회 공식 청문회 기록](https://homeland.house.gov/hearing/the-crowdstrike-outage-examining-the-root-causes-and-impact/) — 의회 증언 및 규제 조사 문서.
+- [델타항공 v. 크라우드스트라이크 소송장 (CourtListener)](https://www.courtlistener.com) — 풀턴 카운티 상급법원 손해배상 소장.

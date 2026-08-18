@@ -18,6 +18,23 @@ summary_points:
   trigger: "신규 알고리즘 배포 시 8년 전 폐기된 데드 코드 플래그를 재활용했으나, 엔지니어가 8개 서버 중 8번 서버에 배포를 누락하며 잠자던 무한 매수 루프가 깨어났습니다."
   fallout: "45분 만에 71억 달러 규모의 엉터리 포지션이 쌓이며 4억 4,000만 달러의 순손실을 입었고, 회사는 자기자본 전체를 날리고 겟코(Getco)에 헐값 매각되었습니다."
 tags: ["금융참사", "나이트캐피털", "알고리즘오류", "데드코드", "데브옵스", "월스트리트", "SEC제재"]
+primary_sources:
+  - title: "미국 증권거래위원회(SEC) File No. 3-15570 행정제재 명령서"
+    url: "https://www.sec.gov/litigation/admin/2013/34-70694.pdf"
+    institution: "미국 증권거래위원회 (SEC)"
+    type: "행정 제재 의결서"
+  - title: "FINRA 나이트 캐피털 1,200만 달러 과징금 징계 공시"
+    url: "https://www.finra.org/newsroom/2013/finra-fines-knight-capital-12-million-relation-august-2012-trading-disruption"
+    institution: "미국 금융산업규제국 (FINRA)"
+    type: "공식 징계 공시"
+  - title: "SEC 시장 접근 통제 규정 (Rule 15c3-5)"
+    url: "https://www.sec.gov/rules/final/2010/34-63241.pdf"
+    institution: "미국 증권거래위원회 (SEC)"
+    type: "연방 금융 규제법"
+  - title: "나이트 캐피털 그룹 Form 8-K 긴급 합병 공시"
+    url: "https://www.sec.gov/edgar/searchedgar/companysearch"
+    institution: "SEC EDGAR"
+    type: "기업 공시 문서"
 ---
 
 2012년 8월 1일 수요일 오전 9시 30분, 미국 뉴욕증권거래소(NYSE) 개장 벨이 울릴 때까지만 해도 나이트 캐피털 그룹(Knight Capital Group)은 의심의 여지가 없는 월스트리트의 지배적 시장조성자(Market Maker)였습니다. 이 회사는 **미국 뉴욕증권거래소 전체 개인 주식 거래량의 17%**를 홀로 처리하고 있었습니다.
@@ -97,9 +114,9 @@ tags: ["금융참사", "나이트캐피털", "알고리즘오류", "데드코드
 
 ## 공식 규제 기록 인용: 미국 증권거래위원회(SEC) 제재 명령서
 
-이후 미국 증권거래위원회(SEC)는 시장 접근 규칙(Rule 15c3-5) 위반으로 나이트 캐피털에 철퇴를 내렸습니다:
+이후 미국 증권거래위원회(SEC)는 [시장 접근 규칙(Rule 15c3-5)](https://www.sec.gov/rules/final/2010/34-63241.pdf) 위반으로 나이트 캐피털에 철퇴를 내렸습니다:
 
-> ### 🏛️ 공식 행정제재 기록 인용 (SEC Administrative Proceeding File No. 3-15570)
+> ### 🏛️ 공식 행정제재 기록 인용 ([SEC Administrative Proceeding File No. 3-15570](https://www.sec.gov/litigation/admin/2013/34-70694.pdf))
 > 
 > *"나이트 캐피털은 오발주 유입을 방지하기 위한 기초적인 사전 리스크 관리 통제 및 감독 절차를 유지하지 못했다.*
 > 
@@ -131,7 +148,7 @@ tags: ["금융참사", "나이트캐피털", "알고리즘오류", "데드코드
 
 당시 나이트 캐피털의 전체 자기자본은 3억 6,500만 달러에 불과했습니다. 손실액이 회사 전체의 가치를 훌쩍 뛰어넘어 **완전 자본잠식**에 빠진 것입니다.
 
-결국 나이트 캐피털 이사회는 파산을 피하기 위해 경쟁 고빈도 매매 기업인 **겟코(Getco LLC)**에 회사를 헐값에 매각하기로 결정했고, 17년 역사의 월스트리트 거인은 역사 속으로 사라졌습니다.
+결국 나이트 캐피털 이사회는 파산을 피하기 위해 경쟁 고빈도 매매 기업인 **겟코(Getco LLC)**에 회사를 헐값에 매각하기로 결정했고, [미국 금융산업규제국(FINRA)](https://www.finra.org/newsroom/2013/finra-fines-knight-capital-12-million-relation-august-2012-trading-disruption)의 1,200만 달러 과징금 부과와 함께 17년 역사의 월스트리트 거인은 역사 속으로 사라졌습니다.
 
 ---
 
@@ -168,3 +185,12 @@ tags: ["금융참사", "나이트캐피털", "알고리즘오류", "데드코드
 > 4. **돌이킬 수 없었던 순간:** 2012년 8월 1일 오전 9시 30분, 개장 벨이 울리자마자 8번 서버가 초당 2,000건의 속도로 2003년식 파워 페그 무한 매수 루프를 시장에 쏟아낸 순간.
 > 5. **최종적으로 책임을 진 주체:** SEC로부터 1,200만 달러의 과징금을 부과받았으나, 회사 전체가 완전 자본잠식에 빠져 겟코에 헐값으로 강제 매각되며 17년 역사를 불명예스럽게 마감한 나이트 캐피털 경영진과 주주들.
 > 6. **남겨진 뼈아픈 교훈:** 죽은 코드는 결코 스스로 사라지지 않습니다. 고속 시스템 내부에 남겨둔 레거시 로직은 언젠가 누군가 스위치를 잘못 켰을 때 전체 시스템을 파괴하는 시한폭탄으로 되돌아옵니다.
+
+---
+
+## 공식 1차 출처 및 사법 기록
+
+- [미국 증권거래위원회(SEC) File No. 3-15570 제재의결서](https://www.sec.gov/litigation/admin/2013/34-70694.pdf) — SEC 공식 집행명령 전문.
+- [FINRA 나이트 캐피털 1,200만 달러 과징금 징계 보도자료](https://www.finra.org/newsroom/2013/finra-fines-knight-capital-12-million-relation-august-2012-trading-disruption) — 금융산업규제국 제재 기록.
+- [SEC 시장 접근 규칙 Rule 15c3-5 원문](https://www.sec.gov/rules/final/2010/34-63241.pdf) — 고빈도 매매 사전 리스크 통제 연방법.
+- [나이트 캐피털 그룹 SEC EDGAR 공시](https://www.sec.gov/edgar/searchedgar/companysearch) — 겟코 긴급 합병 및 매각 공시.

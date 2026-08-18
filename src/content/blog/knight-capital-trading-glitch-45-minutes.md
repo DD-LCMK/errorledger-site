@@ -17,6 +17,23 @@ summary_points:
   trigger: "Engineers repurposed an old dead code flag for new NYSE Retail Liquidity software, but manually deployed the patch to only 7 of 8 servers, leaving server #8 running an infinite buying loop."
   fallout: "The firm accumulated a $7.1 billion rogue position in 45 minutes, absorbed a $440 million realized loss, and was forced into a fire-sale acquisition by Getco within days."
 tags: ["financial-disasters", "trading-glitch", "wall-street", "dead-code", "devops-failure", "sec-enforcement"]
+primary_sources:
+  - title: "US SEC Administrative Proceeding File No. 3-15570 (Knight Capital Enforcement Order)"
+    url: "https://www.sec.gov/litigation/admin/2013/34-70694.pdf"
+    institution: "US Securities and Exchange Commission"
+    type: "Regulatory Enforcement Order"
+  - title: "FINRA Sanction & $12 Million Disciplinary Fine on Knight Capital"
+    url: "https://www.finra.org/newsroom/2013/finra-fines-knight-capital-12-million-relation-august-2012-trading-disruption"
+    institution: "Financial Industry Regulatory Authority"
+    type: "Disciplinary Notice"
+  - title: "SEC Market Access Rule (Exchange Act Rule 15c3-5)"
+    url: "https://www.sec.gov/rules/final/2010/34-63241.pdf"
+    institution: "US Securities and Exchange Commission"
+    type: "Federal Regulatory Rule"
+  - title: "Getco LLC & Knight Capital Group SEC Form 8-K Merger Filing"
+    url: "https://www.sec.gov/edgar/searchedgar/companysearch"
+    institution: "SEC EDGAR"
+    type: "Corporate Disclosure"
 ---
 
 At 9:30 AM on Wednesday, August 1, 2012, Knight Capital Group opened the trading session as Wall Street's undisputed titan of retail equity execution. The firm processed roughly **17% of all trade volume on the New York Stock Exchange** and made markets in thousands of major US equities.
@@ -40,7 +57,7 @@ The gap between Knight Capital's deployment plan, what the eight servers actuall
 | **Order Volume Dispatched**| Normal Daily Client Flow | **397 Million Shares in 45 Minutes** | 4,000,000 Executed Transactions | **Hundreds of Millions of Rogue Shares** |
 | **Gross Open Exposure** | Zero Net Risk (Market Neutral) | **$7.1 Billion Gross Long & Short** | Exceeded firm total capital 20× | **Instant Financial Insolvency** |
 
-Because Knight Capital lacked an automated cluster verification framework or real-time pre-trade capital killswitches, the runaway algorithm continued firing orders across the NYSE until exchange officials physically noticed anomalous market volatility.
+Because Knight Capital lacked an automated cluster verification framework or real-time pre-trade capital killswitches, the runaway algorithm continued firing orders across the NYSE until exchange officials noticed anomalous market volatility.
 
 ---
 
@@ -94,9 +111,9 @@ To make matters worse, at 9:44 AM, confused engineers attempted to "fix" the pro
 
 ## Primary Judicial & Regulatory Exhibits: SEC Enforcement Findings
 
-The subsequent investigation by the US Securities and Exchange Commission resulted in a landmark enforcement action under **SEC Rule 15c3-5 (The Market Access Rule)**:
+The subsequent investigation by the US Securities and Exchange Commission resulted in a landmark enforcement action under **[SEC Rule 15c3-5 (The Market Access Rule)](https://www.sec.gov/rules/final/2010/34-63241.pdf)**:
 
-> ### 🏛️ REGULATORY RECORD EXHIBIT (SEC Administrative Proceeding File No. 3-15570)
+> ### 🏛️ REGULATORY RECORD EXHIBIT ([SEC Administrative Proceeding File No. 3-15570](https://www.sec.gov/litigation/admin/2013/34-70694.pdf))
 > 
 > *"Knight Capital failed to maintain adequate pre-trade risk management controls and supervisory procedures reasonably designed to prevent the entry of erroneous orders.*
 > 
@@ -165,3 +182,12 @@ Dormant code is dangerous code:
 > 4. **The point of no return:** 9:30:00 AM on August 1, 2012, when the opening bell rang and Server #8 began executing the resurrected 2003 Power Peg buying loop at 2,000 orders per second.
 > 5. **Who ultimately carried responsibility:** The SEC fined Knight Capital $12 million for systemic risk management failures, but the ultimate price was paid by the firm’s shareholders and employees as the company was wiped out and forced into a distress merger within days.
 > 6. **The uncomfortable lesson:** Dead code never truly dies—it only waits. When you leave obsolete logic inside a high-speed system, you leave an unexploded bomb in your codebase, waiting for someone to accidentally flip the wrong switch.
+
+---
+
+## Primary Sources & Official Filings
+
+- [US SEC Administrative Proceeding File No. 3-15570](https://www.sec.gov/litigation/admin/2013/34-70694.pdf) — Securities and Exchange Commission Official Enforcement Order.
+- [FINRA Disciplinary Action Notice ($12M Fine on Knight Capital)](https://www.finra.org/newsroom/2013/finra-fines-knight-capital-12-million-relation-august-2012-trading-disruption) — Financial Industry Regulatory Authority Official Release.
+- [SEC Market Access Rule (Exchange Act Rule 15c3-5)](https://www.sec.gov/rules/final/2010/34-63241.pdf) — Risk Management Controls for Brokers with Market Access.
+- [Knight Capital Group SEC Form 8-K Merger Disclosures](https://www.sec.gov/edgar/searchedgar/companysearch) — Corporate Filing on Emergency Merger with Getco.

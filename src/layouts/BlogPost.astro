@@ -20,6 +20,7 @@ interface Props {
 	lang?: string;
 	slug?: string;
 	tags?: string[];
+	primary_sources?: Array<{ title: string; url: string; type?: string; institution?: string }>;
 	read_time_minutes?: number;
 	meta_title?: string;
 	provenance_tier?: number;
@@ -48,6 +49,7 @@ const {
 	lang = "en",
 	slug = "",
 	tags = [],
+	primary_sources = [],
 	read_time_minutes = 6,
 	meta_title,
 	provenance_tier = 1,
@@ -866,6 +868,7 @@ const rankedCases = isKorean ? [
 									source={provenance_source}
 									label={provenance_label}
 									lang={lang}
+									primary_sources={primary_sources}
 								/>
 
 								<!-- Bottom Post Navigation: Previous & Next Incident -->

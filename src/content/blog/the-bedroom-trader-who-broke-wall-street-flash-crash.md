@@ -17,6 +17,23 @@ summary_points:
   trigger: "Navinder Sarao deployed custom automated software that layered 20,000 to 29,000 phantom sell orders, creating an illusion of downward supply and causing HFT liquidity to vanish."
   fallout: "Sarao's spoofing converged with Waddell & Reed's automated $4.1B algorithmic sell program, wiping $1 trillion in market value in 36 minutes before markets rebounded."
 tags: ["WallStreet", "FlashCrash", "Trading", "Algorithms", "FinanceDisaster", "NavinderSarao", "CME"]
+primary_sources:
+  - title: "U.S. Department of Justice Plea Agreement & Case Summary (US v. Sarao)"
+    url: "https://www.justice.gov/opa/pr/futures-trader-pleads-guilty-illegal-trading-contributed-2010-flash-crash"
+    institution: "U.S. Department of Justice"
+    type: "Criminal Plea & Indictment"
+  - title: "CFTC Enforcement Order on Navinder Singh Sarao (Release 7483-16)"
+    url: "https://www.cftc.gov/PressRoom/PressReleases/7483-16"
+    institution: "Commodity Futures Trading Commission"
+    type: "Regulatory Enforcement Order"
+  - title: "SEC-CFTC Joint Report on the Market Events of May 6, 2010"
+    url: "https://www.sec.gov/news/studies/2010/marketevents-report.pdf"
+    institution: "SEC & CFTC Joint Staff"
+    type: "Official Government Investigation"
+  - title: "US District Court Northern District of Illinois Docket (1:15-cr-00075)"
+    url: "https://www.courtlistener.com/docket/4214644/united-states-v-sarao/"
+    institution: "US District Court (N.D. Ill.)"
+    type: "Judicial Sentencing Docket"
 ---
 
 At 2:42 PM on Thursday, May 6, 2010, the automated machinery of American financial markets suffered the most rapid, terrifying, and disorienting collapse in modern economic history.
@@ -56,7 +73,7 @@ Court records and public testimony describe a person who lived with extreme frug
 
 Yet, operating alone through a standard commercial broadband connection, Sarao had accumulated **over $70 million in net trading profits** between 2009 and 2014 by trading E-mini S&P 500 futures on the Chicago Mercantile Exchange (CME).
 
-On the morning of May 6, 2010 alone, regulatory filings confirm that his trading accounts generated **$879,018 in net profit**.
+On the morning of May 6, 2010 alone, [CFTC regulatory records](https://www.cftc.gov/PressRoom/PressReleases/7483-16) confirm that his trading accounts generated **$879,018 in net profit**.
 
 ---
 
@@ -96,7 +113,7 @@ On May 6, 2010, between 11:17 AM and 2:40 PM, Sarao's software modified or repla
 
 ## Act III: The 2:42 PM Convergence & The Flash Crash (Telemetry Log)
 
-The Flash Crash was not caused by Sarao alone. It was an explosive convergence of multiple mechanical factors:
+The Flash Crash was not caused by Sarao alone. It was documented in the [SEC-CFTC Joint Report](https://www.sec.gov/news/studies/2010/marketevents-report.pdf) as an explosive convergence of multiple mechanical factors:
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────────────────┐
@@ -123,9 +140,9 @@ HFT market-makers panicked, pulled their bids, and stepped away from the market.
 
 ## Primary Judicial Exhibit: US District Court Sentencing Findings
 
-When Sarao was finally sentenced by US District Judge Virginia Kendall in Chicago in January 2020:
+When Sarao was sentenced by US District Judge Virginia Kendall in Chicago in January 2020:
 
-> ### 🏛️ JUDICIAL RECORD EXHIBIT (US District Court, Northern District of Illinois, 1:15-cr-00075)
+> ### 🏛️ JUDICIAL RECORD EXHIBIT ([US District Court, N.D. Ill., 1:15-cr-00075](https://www.courtlistener.com/docket/4214644/united-states-v-sarao/))
 > 
 > *"The evidence demonstrates that while Navinder Sarao's spoofing algorithm significantly contributed to the extreme order book imbalance on May 6, 2010, the broader market collapse was the result of a fragile financial microstructure dominated by automated high-frequency algorithms.*
 > 
@@ -133,7 +150,7 @@ When Sarao was finally sentenced by US District Judge Virginia Kendall in Chicag
 > 
 > **— US District Judge Virginia M. Kendall**
 
-Sarao forfeited **$12.8 million** to the US government and assisted the CFTC for hundreds of hours, teaching federal regulators how high-frequency algorithms could be manipulated. He was sentenced to time served with one year of home confinement.
+Sarao forfeited **$12.8 million** to the US government and assisted the [CFTC and DOJ](https://www.justice.gov/opa/pr/futures-trader-pleads-guilty-illegal-trading-contributed-2010-flash-crash) for hundreds of hours, teaching federal regulators how high-frequency algorithms could be manipulated. He was sentenced to time served with one year of home confinement.
 
 ---
 
@@ -169,3 +186,12 @@ Institutional algorithmic execution software must never execute into a hollowed 
 > 4. **The point of no return:** 2:45:15 PM on May 6, 2010, when HFT algorithms simultaneously withdrew quotes, leaving Waddell & Reed's automated sell program dumping contracts into a total liquidity vacuum.
 > 5. **Who ultimately carried responsibility:** While Sarao was prosecuted and forfeited his trading wealth, the true systemic burden forced the SEC and CFTC to overhaul US market microstructure, implementing the modern Limit-Up/Limit-Down (LULD) circuit breaker framework that protects markets today.
 > 6. **The uncomfortable lesson:** High-frequency markets do not create real stability; they create the illusion of liquidity during fair weather and vanish the microsecond pressure arrives. When you build a $100 trillion financial system out of millisecond-chasing algorithms, a single bedroom trader with a modified mouse can pull the pin on the entire machine.
+
+---
+
+## Primary Sources & Official Filings
+
+- [U.S. Department of Justice Criminal Indictment & Plea Record](https://www.justice.gov/opa/pr/futures-trader-pleads-guilty-illegal-trading-contributed-2010-flash-crash) — Official DOJ Announcement on Navinder Sarao Plea.
+- [CFTC Enforcement Order & Settlement Docket](https://www.cftc.gov/PressRoom/PressReleases/7483-16) — Commodity Futures Trading Commission Official Ruling.
+- [SEC-CFTC Joint Findings of the Market Events of May 6, 2010](https://www.sec.gov/news/studies/2010/marketevents-report.pdf) — Comprehensive 104-Page Multi-Agency Investigation Report.
+- [US District Court for the Northern District of Illinois (1:15-cr-00075)](https://www.courtlistener.com/docket/4214644/united-states-v-sarao/) — Federal Sentencing Transcript before Judge Virginia Kendall.
