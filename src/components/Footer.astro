@@ -1,6 +1,6 @@
 ---
 const today = new Date();
-const currentPath = Astro.url.pathname;
+const currentPath = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
 const isKorean = currentPath === '/ko' || currentPath.startsWith('/ko/');
 
 const homeUrl = isKorean ? '/ko' : '/';
@@ -39,10 +39,10 @@ const privacyUrl = isKorean ? '/ko/privacy' : '/privacy';
 
 		<nav class="footer-nav-col" aria-label="Failure Pillars navigation">
 			<h4 class="footer-col-title">{isKorean ? "분류" : "Categories"}</h4>
-			<a href={isKorean ? "/ko/search?q=money" : "/search?q=money"} class="footer-link">{isKorean ? "💰 금융 & 경제" : "💰 Finance & Money"}</a>
-			<a href={isKorean ? "/ko/search?q=corporate" : "/search?q=corporate"} class="footer-link">{isKorean ? "🏢 기업 & 시스템" : "🏢 Corporate & Systems"}</a>
-			<a href={isKorean ? "/ko/search?q=work" : "/search?q=work"} class="footer-link">{isKorean ? "🧑‍💻 직장 & 커리어" : "🧑‍💻 Workplace & Career"}</a>
-			<a href={isKorean ? "/ko/search?q=ai" : "/search?q=ai"} class="footer-link">{isKorean ? "🤖 AI & 알고리즘" : "🤖 AI & Algorithmic"}</a>
+			<a href={`${searchUrl}?q=money`} class="footer-link">{isKorean ? "💰 금융 & 경제" : "💰 Finance & Money"}</a>
+			<a href={`${searchUrl}?q=corporate`} class="footer-link">{isKorean ? "🏢 기업 & 시스템" : "🏢 Corporate & Systems"}</a>
+			<a href={`${searchUrl}?q=work`} class="footer-link">{isKorean ? "🧑‍💻 직장 & 커리어" : "🧑‍💻 Workplace & Career"}</a>
+			<a href={`${searchUrl}?q=ai`} class="footer-link">{isKorean ? "🤖 AI & 알고리즘" : "🤖 AI & Algorithmic"}</a>
 		</nav>
 
 		<nav class="footer-nav-col" aria-label="Site information">

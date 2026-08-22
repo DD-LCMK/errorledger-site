@@ -6,7 +6,7 @@ import { SITE_TITLE } from '../../consts';
 import { getCollection } from 'astro:content';
 
 const allPosts = await getCollection('blog');
-const koPosts = allPosts.filter(p => p.data.lang === 'ko');
+const koPosts = allPosts.filter(p => p.id.startsWith('ko/') || p.data.lang === 'ko');
 
 const posts = koPosts.sort((a, b) => new Date(b.data.pubDate || 0).valueOf() - new Date(a.data.pubDate || 0).valueOf());
 ---
@@ -45,7 +45,7 @@ const posts = koPosts.sort((a, b) => new Date(b.data.pubDate || 0).valueOf() - n
 			</div>
 			<ul>
 				{posts.map((post) => (
-					<li class="post-card">
+					<li class="post-card" data-category={post.data.category} data-tags={post.data.tags?.join(' ') || ''}>
 						<a href={`/ko/blog/${post.data.slug.replace(/^ko\//, '')}`}>
 							<div class="tag-row">
 								<span class="type-badge">
@@ -67,10 +67,12 @@ const posts = koPosts.sort((a, b) => new Date(b.data.pubDate || 0).valueOf() - n
 
 				document.querySelectorAll('.post-card').forEach((post: any) => {
 					const text = post.textContent.toLowerCase();
+					const cat = (post.getAttribute('data-category') || '').toLowerCase();
+					const tags = (post.getAttribute('data-tags') || '').toLowerCase();
 					if (!trimmed) {
 						post.style.display = '';
 					} else {
-						post.style.display = text.includes(trimmed) ? '' : 'none';
+						post.style.display = (text.includes(trimmed) || cat.includes(trimmed) || tags.includes(trimmed)) ? '' : 'none';
 					}
 				});
 			}

@@ -5,9 +5,10 @@ import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
 
-const blogPosts = await getCollection('blog');
+const allPosts = await getCollection('blog');
+const enPosts = allPosts.filter(p => !p.id.startsWith('ko/') && p.data.lang !== 'ko');
 
-const posts = blogPosts.sort((a, b) => new Date(b.data.pubDate || 0).valueOf() - new Date(a.data.pubDate || 0).valueOf());
+const posts = enPosts.sort((a, b) => new Date(b.data.pubDate || 0).valueOf() - new Date(a.data.pubDate || 0).valueOf());
 ---
 
 <html lang="en" class="dark">
@@ -44,8 +45,8 @@ const posts = blogPosts.sort((a, b) => new Date(b.data.pubDate || 0).valueOf() -
 			</div>
 			<ul>
 				{posts.map((post) => (
-					<li class="post-card">
-						<a href={`/blog/${post.data.shortenedSlug || post.slug}`}>
+					<li class="post-card" data-category={post.data.category} data-tags={post.data.tags?.join(' ') || ''}>
+						<a href={`/blog/${post.data.slug.replace(/^ko\//, '')}`}>
 							<div class="tag-row">
 								<span class="type-badge">
 									{post.data.category}
@@ -66,10 +67,12 @@ const posts = blogPosts.sort((a, b) => new Date(b.data.pubDate || 0).valueOf() -
 
 				document.querySelectorAll('.post-card').forEach((post: any) => {
 					const text = post.textContent.toLowerCase();
+					const cat = (post.getAttribute('data-category') || '').toLowerCase();
+					const tags = (post.getAttribute('data-tags') || '').toLowerCase();
 					if (!trimmed) {
 						post.style.display = '';
 					} else {
-						post.style.display = text.includes(trimmed) ? '' : 'none';
+						post.style.display = (text.includes(trimmed) || cat.includes(trimmed) || tags.includes(trimmed)) ? '' : 'none';
 					}
 				});
 			}
