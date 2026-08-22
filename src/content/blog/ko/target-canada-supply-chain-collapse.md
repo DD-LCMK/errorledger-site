@@ -1,14 +1,24 @@
 ---
 title: "데이터베이스가 거짓말을 했을 때: 타겟 캐나다의 21억 달러 물류 붕괴 이면"
 description: "손상된 제품 데이터, 무리한 런칭 일정, 그리고 긴밀하게 결합된 물류창고 시스템이 어떻게 디지털 데이터 품질 문제를 물리적인 물류 위기로 탈바꿈시켰는지 파헤칩니다."
+slug: "target-canada-supply-chain-collapse"
 pubDate: "2026-08-20"
-heroImage: "/hero_target_canada_supply_chain_1787227118326.jpg"
+incidentDate: "2015-01-15"
+category: "corporate"
+archetype: "the-incident"
+provenance_tier: 1
+provenance_label: "Documented Incident (Tier 1)"
+provenance_source: "타겟 코퍼레이션 8-K 공시 및 캐나디안 비즈니스 심층 분석"
+read_time_minutes: 14
+author: "The Archivist"
+date: "2026-08-20"
 lang: "ko"
-tags: ["Architecture", "Systemic Failure", "Data Integrity", "ERP", "Target Canada"]
+heroImage: "/hero_target_canada_supply_chain_1787227118326.jpg"
 summary_points:
   context: "타겟은 엄격한 런칭 일정을 가지고 캐나다로 확장하면서, 기존 시스템 대신 완전히 새로운 SAP 도입을 선택했으나 초기 재고 파라미터 검증에 실패했습니다."
   trigger: "공급망 소프트웨어는 물리적 현실을 수학적으로 모델링했습니다. 단위 필드(인치 대 센티미터)가 손상되었을 때, 시스템은 재고의 물리적 크기를 심각하게 오인했습니다."
   fallout: "디지털 모델은 불가능한 물리적 크기를 바탕으로 물류창고와 트럭에 지시를 내렸고, 이로 인해 유통 병목 현상, 신뢰할 수 없는 재고 보충, 잉여 재고, 텅 빈 진열대가 발생했으며, 결국 현대 캐나다 역사상 가장 값비싼 대가를 치른 국제 소매점 확장 실패 사례가 되었습니다."
+tags: ["Architecture", "Systemic Failure", "Data Integrity", "ERP", "Target Canada"]
 primary_sources:
   - title: "타겟 코퍼레이션 8-K 공시 (캐나다 사업 철수)"
     url: "https://www.sec.gov/Archives/edgar/data/27419/000119312515011749/d854497d8k.htm"

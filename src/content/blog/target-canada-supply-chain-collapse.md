@@ -1,14 +1,24 @@
 ---
 title: "When the Database Lied: Inside Target Canada's $2.1 Billion Supply Chain Collapse"
 description: "How corrupted product data, an aggressive launch schedule, and tightly coupled warehouse systems turned a digital data-quality problem into a physical logistics crisis."
+slug: "target-canada-supply-chain-collapse"
 pubDate: "2026-08-20"
-heroImage: "/hero_target_canada_supply_chain_1787227118326.jpg"
+incidentDate: "2015-01-15"
+category: "corporate"
+archetype: "the-incident"
+provenance_tier: 1
+provenance_label: "Documented Incident (Tier 1)"
+provenance_source: "Target Corp Form 8-K & Canadian Business Post-Mortem"
+read_time_minutes: 14
+author: "The Archivist"
+date: "2026-08-20"
 lang: "en"
-tags: ["Architecture", "Systemic Failure", "Data Integrity", "ERP", "Target Canada"]
+heroImage: "/hero_target_canada_supply_chain_1787227118326.jpg"
 summary_points:
   context: "Target expanded into Canada with a rigid launch timeline, opting for a clean-slate SAP deployment but failing to validate initial inventory parameters."
   trigger: "The supply chain software mathematically modeled physical reality. When dimension fields (inches vs cm) were corrupted, the system hallucinated the physical size of inventory."
   fallout: "The digital models instructed warehouses and trucks based on impossible physical dimensions, resulting in distribution bottlenecks, unreliable replenishment, excess inventory, empty shelves, and ultimately contributing to one of the most expensive failed international retail expansions in modern Canadian history."
+tags: ["Architecture", "Systemic Failure", "Data Integrity", "ERP", "Target Canada"]
 primary_sources:
   - title: "Target Corporation Form 8-K (Discontinuation of Canadian Operations)"
     url: "https://www.sec.gov/Archives/edgar/data/27419/000119312515011749/d854497d8k.htm"
