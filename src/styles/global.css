@@ -54,8 +54,15 @@ html:not(.dark) h6 {
   color: #0f172a !important;
 }
 
-html:not(.dark) p {
-  color: #334155 !important;
+html:not(.dark) p,
+html:not(.dark) li,
+html:not(.dark) td {
+  color: #0f172a !important;
+}
+
+html:not(.dark) th {
+  color: #ffffff !important;
+  background-color: #0f172a !important;
 }
 
 /* --- DARK MODE CANVAS: High-Contrast Solid Slate Dots Fix --- */

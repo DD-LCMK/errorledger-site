@@ -849,31 +849,111 @@ const rankedCases = isKorean ? [
 				color: #334155 !important;
 			}
 
-			/* High-Contrast Light Mode */
+			/* ==========================================================================
+			   High-Contrast Light Mode Overrides (Crisp Pure Black / Dark Typography)
+			   ========================================================================== */
 			:global(html:not(.dark)) body {
-				background: #ffffff;
-				color: #1e293b;
+				background: #f8fafc !important;
+				color: #0f172a !important;
 			}
 			:global(html:not(.dark)) .prose {
-				color: #334155;
+				color: #0f172a !important;
 			}
 			:global(html:not(.dark)) .prose h1,
 			:global(html:not(.dark)) .prose h2,
-			:global(html:not(.dark)) .prose :global(h3) {
+			:global(html:not(.dark)) .prose :global(h3),
+			:global(html:not(.dark)) .prose :global(h4) {
+				color: #0f172a !important;
+				border-bottom-color: #e2e8f0 !important;
+			}
+			:global(html:not(.dark)) .prose :global(p),
+			:global(html:not(.dark)) .prose :global(li) {
 				color: #0f172a !important;
 			}
 			:global(html:not(.dark)) .article-subtitle {
+				color: #475569 !important;
+			}
+			:global(html:not(.dark)) .meta-wrapper {
+				border-bottom-color: #cbd5e1 !important;
+			}
+			:global(html:not(.dark)) .date-info {
 				color: #64748b !important;
 			}
+
+			/* Blockquote (Archivist's Note & Quotes) in Light Mode */
 			:global(html:not(.dark)) .prose :global(blockquote) {
-				background: #f8fafc !important;
-				border-left-color: #f43f5e !important;
-				color: #1e293b !important;
+				background: #f1f5f9 !important;
+				border: 1px solid #cbd5e1 !important;
+				border-left: 4px solid #e11d48 !important;
+				color: #0f172a !important;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
 			}
+			:global(html:not(.dark)) .prose :global(blockquote strong),
+			:global(html:not(.dark)) .prose :global(blockquote p),
+			:global(html:not(.dark)) .prose :global(blockquote em) {
+				color: #0f172a !important;
+			}
+
+			/* BoundaryBox Custom Tag in Light Mode */
+			:global(html:not(.dark)) .prose :global(boundarybox),
+			:global(html:not(.dark)) .prose :global(BoundaryBox) {
+				background: #fff1f2 !important;
+				border: 1px solid #fecdd3 !important;
+				border-left: 4px solid #e11d48 !important;
+				color: #0f172a !important;
+				box-shadow: 0 2px 8px rgba(225, 29, 72, 0.06) !important;
+			}
+			:global(html:not(.dark)) .prose :global(boundarybox strong),
+			:global(html:not(.dark)) .prose :global(BoundaryBox strong) {
+				color: #be123c !important;
+			}
+			:global(html:not(.dark)) .prose :global(boundarybox ul),
+			:global(html:not(.dark)) .prose :global(BoundaryBox ul),
+			:global(html:not(.dark)) .prose :global(boundarybox li),
+			:global(html:not(.dark)) .prose :global(BoundaryBox li),
+			:global(html:not(.dark)) .prose :global(boundarybox p),
+			:global(html:not(.dark)) .prose :global(BoundaryBox p) {
+				color: #0f172a !important;
+			}
+
+			/* Tables in Light Mode (The Forensic Discrepancy Matrix & Incident Chronology) */
+			:global(html:not(.dark)) .prose :global(table) {
+				border: 1px solid #cbd5e1 !important;
+				background: #ffffff !important;
+				box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+			}
+			:global(html:not(.dark)) .prose :global(th) {
+				background: #0f172a !important;
+				color: #ffffff !important;
+				border-bottom: 2px solid #0f172a !important;
+			}
+			:global(html:not(.dark)) .prose :global(td) {
+				background: #ffffff !important;
+				color: #0f172a !important;
+				border-bottom: 1px solid #e2e8f0 !important;
+			}
+
+			/* Pre/Code Blocks in Light Mode */
+			:global(html:not(.dark)) .prose :global(pre),
+			:global(html:not(.dark)) .prose :global(pre.astro-code) {
+				background: #0f172a !important;
+				border: 1px solid #334155 !important;
+				color: #f8fafc !important;
+			}
+			:global(html:not(.dark)) .prose :global(code) {
+				background: #e2e8f0 !important;
+				color: #0f172a !important;
+			}
+			:global(html:not(.dark)) .prose :global(pre code) {
+				background: transparent !important;
+				color: #f8fafc !important;
+			}
+
+			/* Sidebars, Cards & Navigation */
 			:global(html:not(.dark)) .sidebar-card-widget,
 			:global(html:not(.dark)) .incident-nav-card {
 				background: #ffffff !important;
-				border-color: #e2e8f0 !important;
+				border-color: #cbd5e1 !important;
 				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
 			}
 			:global(html:not(.dark)) .sidebar-widget-title,
@@ -896,7 +976,7 @@ const rankedCases = isKorean ? [
 			:global(html:not(.dark)) .badge-tag {
 				background: #f8fafc !important;
 				border-color: #cbd5e1 !important;
-				color: #475569 !important;
+				color: #334155 !important;
 			}
 			:global(html:not(.dark)) .floating-action-bar {
 				background: rgba(255, 255, 255, 0.95) !important;
@@ -904,7 +984,11 @@ const rankedCases = isKorean ? [
 				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
 			}
 			:global(html:not(.dark)) .float-btn {
-				color: #334155 !important;
+				color: #1e293b !important;
+			}
+			:global(html:not(.dark)) .article-hero-wrap {
+				border-color: #e2e8f0 !important;
+				box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.1) !important;
 			}
 		</style>
 	</head>
