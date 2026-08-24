@@ -3,6 +3,15 @@ title: "Patriot Missile Software Failure: How a 24-Bit Timing Error Caused the D
 description: "How a 24-bit limited-precision time conversion accumulated over 100+ hours and caused the Patriot system to lose track of an Iraqi Scud at Dhahran in 1991."
 author: "The Archivist"
 pubDate: "2026-08-25"
+updatedDate: "2026-08-25"
+wordCount: 2280
+keywords:
+  - "Patriot missile software failure 1991"
+  - "Patriot missile Dhahran clock drift"
+  - "24-bit time conversion limited precision"
+  - "GAO IMTEC-92-26 report findings"
+  - "Scud missile barracks failure cause"
+  - "radar range gate displacement calculation"
 slug: "patriot-missile-software-clock-drift"
 heroImage: "/hero_patriot_missile.jpg"
 incidentDate: "1991-02-25"
@@ -21,6 +30,15 @@ summary_points:
   systemic_failure: "The system's operational assumptions did not adequately account for prolonged continuous runtime in the Gulf War deployment. The organization observed evidence of runtime-dependent degradation and developed a software correction, but failed to establish and communicate a concrete operational limit before the corrected software reached the Dhahran battery."
   technical_mechanisms: "A 24-bit limited-precision time conversion of the Patriot's internal tenths-of-a-second clock introduced a small truncation error that accumulated with system uptime."
   fallout: "The battery lost track of an incoming Scud missile, which struck a US barracks in Dhahran, killing 28 soldiers and injuring over 100."
+faqItems:
+  - q: "What caused the Patriot Missile software failure?"
+    a: "A 24-bit register limitation in the weapons-control software caused precision loss when converting internal integer time ticks to real numbers. Over 100+ continuous operating hours, the timing error accumulated to 0.3433 seconds, shifting the radar tracking range gate by 687 meters."
+  - q: "Why was a 0.3433-second timing error fatal?"
+    a: "Incoming Iraqi Scud missiles traveled at 1,676 meters per second. A 0.3433-second timing error shifted the radar's calculated range gate by 687 meters, causing the radar to search the wrong area of the sky and fail to track or engage the missile."
+  - q: "Did the military know about the Patriot bug before the attack?"
+    a: "Yes. The Patriot Project Office received Israeli test data on February 11 showing range-gate degradation. Modified software was released February 16, and an operational warning was sent February 21, but it did not define a specific runtime limit. The patch arrived February 26, one day after the strike."
+  - q: "Was this a hardware or software failure?"
+    a: "It was an architectural and operational mismatch. The 24-bit register imposed a finite mathematical precision constraint, while military operations deployed the system for prolonged continuous runtimes that exceeded original design assumptions."
 primary_sources:
   - title: "GAO Report: Patriot Missile Defense - Software Problem Led to System Failure at Dhahran, Saudi Arabia"
     url: "https://www.gao.gov/assets/imtec-92-26.pdf"
@@ -160,6 +178,8 @@ The sequence from February 11 to February 25 demonstrates the organizational fai
 ## 13. Modern Engineering Lessons
 
 This incident sits at the intersection of embedded systems, safety-critical software, and operational assumptions. A locally reasonable numerical trade-off (24-bit limited-precision time conversion) became unsafe when the software was operated for longer than the assumptions surrounding the calculation could tolerate.
+
+Similar architectural assumptions—where software reuse and untracked runtime boundaries bypassed system safety interlocks—surfaced in [The Therac-25 Radiation Disaster](/blog/therac-25-radiation-overdose-race-condition) and the numerical conversion overflow of [Ariane 5 Flight 501](/blog/ariane-5-flight-501-integer-overflow). Bound every operational assumption with automated assertions rather than relying on unquantified operator warnings.
 
 ## 14. Then vs. Now
 

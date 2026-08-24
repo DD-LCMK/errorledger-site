@@ -18,6 +18,12 @@ const blog = defineCollection({
 		translationSlug: z.string().optional(),
 		pubDate: z.coerce.date().optional(),
 		updatedDate: z.coerce.date().optional(),
+		keywords: z.array(z.string()).optional(),
+		wordCount: z.number().optional(),
+		faqItems: z.array(z.object({
+			q: z.string(),
+			a: z.string()
+		})).optional(),
 		incidentDate: z.string().optional(),
 		incidentPeriod: z.string().optional(),
 		incidentEndDate: z.string().optional(),

@@ -15,6 +15,9 @@ interface Props {
 	description: string;
 	pubDate?: Date;
 	updatedDate?: Date;
+	keywords?: string[];
+	wordCount?: number;
+	faqItems?: Array<{ q: string; a: string }>;
 	heroImage?: string;
 	category?: string;
 	lang?: string;
@@ -44,6 +47,10 @@ const {
 	subtitle,
 	description,
 	pubDate,
+	updatedDate,
+	keywords = [],
+	wordCount,
+	faqItems,
 	heroImage = "/blog-placeholder-about.jpg",
 	category = "corporate",
 	lang = "en",
@@ -95,6 +102,9 @@ const schemaData = {
 	"description": description,
 	"image": [heroImage],
 	"datePublished": pubDate ? pubDate.toISOString() : new Date().toISOString(),
+	"dateModified": updatedDate ? updatedDate.toISOString() : (pubDate ? pubDate.toISOString() : new Date().toISOString()),
+	...(keywords && keywords.length > 0 ? { "keywords": keywords.join(", ") } : (tags && tags.length > 0 ? { "keywords": tags.join(", ") } : {})),
+	...(wordCount ? { "wordCount": wordCount } : {}),
 	"author": [{
 		"@type": "Person",
 		"name": "The Archivist",
@@ -110,6 +120,19 @@ const schemaData = {
 		}
 	}
 };
+
+const faqSchemaData = (faqItems && faqItems.length > 0) ? {
+	"@context": "https://schema.org",
+	"@type": "FAQPage",
+	"mainEntity": faqItems.map(item => ({
+		"@type": "Question",
+		"name": item.q,
+		"acceptedAnswer": {
+			"@type": "Answer",
+			"text": item.a
+		}
+	}))
+} : null;
 
 const postBreadcrumb = [
 	{ name: 'Home', url: isKorean ? 'https://errorledger.com/ko' : 'https://errorledger.com' },
@@ -194,6 +217,7 @@ const rankedCases = isKorean ? [
 	<head>
 		<BaseHead title={seoTitle} description={description} image={heroImage} type="article" breadcrumb={postBreadcrumb} />
 		<script type="application/ld+json" set:html={JSON.stringify(schemaData)} />
+		{faqSchemaData && <script type="application/ld+json" set:html={JSON.stringify(faqSchemaData)} />}
 		<style>
 			main {
 				width: 1280px;
