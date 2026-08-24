@@ -124,6 +124,18 @@ At 57 kilometers, the Martian atmosphere is thick enough to generate extreme aer
 
 ---
 
+## Orbital Insertion Anomaly Timeline
+
+| Time (UTC) | Event | Telemetry Status | Epistemic Status |
+| :--- | :--- | :--- | :--- |
+| **08:46** | MCO begins MOI sequence | Nominal | [DOCUMENTED] |
+| **09:00** | Main engine ignites for deceleration | Nominal | [DOCUMENTED] |
+| **09:04** | MCO enters radio occultation zone | Loss of Signal (Expected) | [DOCUMENTED] |
+| **09:25** | Scheduled emergence from occultation | No Signal Received | [DOCUMENTED] |
+| **Post-Incident** | Investigation determines actual altitude | Periapsis calculated at 57km | [RECONSTRUCTED] |
+
+---
+
 ## Systems Prevention Playbook
 
 The destruction of the Mars Climate Orbiter is a definitive lesson in the fragility of software boundaries and the necessity of defensive architectural design. Modern engineering teams must implement the following defenses:

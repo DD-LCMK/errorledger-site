@@ -39,7 +39,7 @@ primary_sources:
 
 ---
 
-## 법의학적 불일치 매트릭스
+## 법의학적 불일치 분석 (Forensic Discrepancy Matrix)
 
 | 매개변수 | 디지털 표현 | 물리적 현실 | 증거 상태 | 메커니즘 |
 | :--- | :--- | :--- | :--- | :--- |
@@ -125,6 +125,18 @@ JPL 항법 소프트웨어는 데이터가 미터법 단위, 특히 뉴턴-초(N
 
 ---
 
+## 궤도 진입 이상 타임라인
+
+| 시간 (UTC) | 이벤트 | 원격 측정 상태 | 인식론적 상태 |
+| :--- | :--- | :--- | :--- |
+| **08:46** | MCO가 MOI 시퀀스를 시작합니다 | 정상 | [DOCUMENTED] |
+| **09:00** | 감속을 위해 주 엔진 점화 | 정상 | [DOCUMENTED] |
+| **09:04** | MCO가 전파 은폐 구역으로 진입 | 신호 손실 (예상됨) | [DOCUMENTED] |
+| **09:25** | 은폐에서 나타날 예정 시간 | 신호 수신 안 됨 | [DOCUMENTED] |
+| **사고 후** | 조사를 통해 실제 고도 결정 | 57km로 계산된 근일점 | [RECONSTRUCTED] |
+
+---
+
 ## 시스템 예방 플레이북
 
 화성 기후 궤도선의 파괴는 소프트웨어 경계의 취약성과 방어적 아키텍처 설계의 필요성에 대한 결정적인 교훈입니다. 현대 엔지니어링 팀은 다음과 같은 방어 수단을 구현해야 합니다:
@@ -152,7 +164,7 @@ JPL 항법 소프트웨어는 데이터가 미터법 단위, 특히 뉴턴-초(N
 
 ---
 
-## 1차 출처
+## 공식 1차 출처
 
 * [Mars Climate Orbiter Mishap Investigation Board Phase I Report](https://llis.nasa.gov/lesson/0740)
 * [NASA Mars Exploration Program Official Logs](https://mars.nasa.gov/mgs/)
