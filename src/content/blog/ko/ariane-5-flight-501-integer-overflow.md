@@ -18,8 +18,8 @@ primary_sources:
     url: "https://www.esa.int/Enabling_Support/Space_Transportation/Ariane_501_Inquiry_Board_report"
   - title: "ESA 원격 측정 및 비행 로그 (Flight 501)"
     url: "https://www.esa.int/"
-  - title: "Ada Programming Language Defense Standard (MIL-STD-1815A)"
-    url: "https://standards.ieee.org/ieee/1052/1271/"
+  - title: "NASA Technical Reports: Ariane 501 Software & Trajectory Assessment (NTRS 19970020110)"
+    url: "https://ntrs.nasa.gov/citations/19970020110"
 ---
 
 > **아키비스트의 노트:** AI는 무슨 일이 일어났는지 요약할 수 있습니다. 그러나 ErrorLedger는 *왜* 그런 일이 일어났는지, 누가 어떤 결정을 내렸는지, 그 다음에 무슨 일이 발생했는지, 그리고 증거가 실제로 무엇을 보여주는지 재구성합니다.

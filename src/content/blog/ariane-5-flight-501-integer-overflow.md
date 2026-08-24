@@ -17,8 +17,8 @@ primary_sources:
     url: "https://www.esa.int/Enabling_Support/Space_Transportation/Ariane_501_Inquiry_Board_report"
   - title: "ESA Telemetry and Flight Logs (Flight 501)"
     url: "https://www.esa.int/"
-  - title: "Ada Programming Language Defense Standard (MIL-STD-1815A)"
-    url: "https://standards.ieee.org/ieee/1052/1271/"
+  - title: "NASA Technical Reports: Ariane 501 Software & Trajectory Assessment (NTRS 19970020110)"
+    url: "https://ntrs.nasa.gov/citations/19970020110"
 ---
 
 > **The Archivist’s Note:** AI can summarize what happened. ErrorLedger reconstructs *why* it happened, who made which decisions, what happened next, and what the evidence actually shows. 
