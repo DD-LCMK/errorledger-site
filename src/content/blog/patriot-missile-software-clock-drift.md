@@ -10,13 +10,15 @@ incidentPeriod: "February 1991"
 incidentEndDate: "1991-02-25"
 systemTypes: ["Military Radar", "Fixed Point Arithmetic", "Embedded Systems", "Safety-Critical Software"]
 victimCount: 128
-fatalities: "28 fatalities; 100+ injured"
-regulatoryAction: "Software correction, runtime warning, and operational changes"
+victimCountQualifier: "approximate"
+fatalities: "28"
+injuries: "100+"
+correctiveAction: "Software correction, runtime warning, and operational changes"
 systemImpact: "Software correction to the time calculation and changes to operational guidance"
 category: "military"
 summary_points:
   context: "During the 1991 Gulf War, the US Army deployed Patriot Missile batteries to defend against incoming Iraqi Scud missiles."
-  systemic_failure: "The system's operational assumptions did not adequately account for prolonged continuous runtime in the Gulf War deployment. The organization observed evidence of runtime-dependent degradation, developed a partial software correction, but failed to establish and communicate a concrete operational limit before the Dhahran battery reached a dangerous uptime."
+  systemic_failure: "The system's operational assumptions did not adequately account for prolonged continuous runtime in the Gulf War deployment. The organization observed evidence of runtime-dependent degradation and developed a software correction, but failed to establish and communicate a concrete operational limit before the corrected software reached the Dhahran battery."
   technical_mechanisms: "A truncation error in a 24-bit fixed-point register caused the system's internal clock to drift by 0.34 seconds over 100 hours, shifting the radar's calculated range gate."
   fallout: "The battery lost track of an incoming Scud missile, which struck a US barracks in Dhahran, killing 28 soldiers and injuring over 100."
 primary_sources:
@@ -70,7 +72,7 @@ System time was maintained in tenths of a second by an internal hardware clock t
 To perform the tracking calculation (which required time in seconds), the software converted the integer tick count by multiplying it by 1/10.
 
 ### 4.3 The representation error
-In binary base-2 mathematics, the fraction 1/10 cannot be represented exactly. It is a non-terminating repeating fraction: `0.0001100110011001100110011...` The representation was truncated in a 24-bit fixed-point calculation. This truncation meant that the conversion factor used was slightly less than the true value of 1/10. The resulting conversion error associated with the truncated representation of 1/10 was approximately 0.000000095 decimal seconds.
+In binary base-2 mathematics, the fraction 1/10 cannot be represented exactly. It is a non-terminating repeating fraction: `0.0001100110011001100110011...` The representation was truncated in a 24-bit fixed-point calculation. This truncation meant that the conversion factor used was slightly less than the true value of 1/10. The truncation introduced an error of approximately 0.000000095 seconds per 0.1-second tick.
 
 ### 4.4 The accumulation
 This tiny truncation error was multiplied by the elapsed tick count. The longer the system ran, the larger the elapsed tick count became, and therefore the larger the accumulated timing error grew.
@@ -80,9 +82,9 @@ The accumulated timing error shifted the Patriot's calculated range gate. When t
 
 ## 5. Why the Error Accumulated
 
-A key architectural detail compounded the failure: earlier software patches had attempted to fix the timing precision by upgrading *some* modules to use more precise 48-bit arithmetic, while other legacy modules still used the 24-bit truncation. ([CiteSeerX](https://citeseerx.ist.psu.edu/document?doi=a5f2c646283402e6e43b85d7bd9b0d4399e92709))
+A separate complication was that the inaccurate time calculation had been improved in some parts of the software but not all. This meant that different parts of the system could use inconsistent timing calculations, so the underlying errors did not simply cancel one another. ([College of Science and Engineering](https://www-users.cse.umn.edu/~arnold/disasters/patriot.html))
 
-The danger was not merely that the old calculation existed; different parts of the system could therefore operate with different representations of elapsed time. The radar tracking software was ultimately comparing an accurate timestamp against a corrupted 24-bit timestamp.
+The danger was not merely that the old calculation existed; different parts of the system could therefore operate with different representations of elapsed time. The radar tracking software was ultimately comparing an accurate timestamp against a corrupted timestamp.
 
 ## 6. Why 100 Hours Mattered
 
@@ -97,11 +99,11 @@ The error per tick was tiny, but the error was cumulative, making uptime the mul
 | 10 hours | ~34 ms |
 | 100 hours | ~0.34 s |
 
-Because rebooting reset the elapsed time, the system had a runtime-dependent failure mode. 8 hours of uptime had already produced measurable degradation; 100 hours pushed the error into a catastrophic regime.
+Because rebooting reset the elapsed time, the system had a runtime-dependent failure mode. Rebooting reinitialized the computer's clock, resetting the accumulated timing error. The GAO notes that significant range-gate shifts could therefore be eliminated by rebooting every few hours. 8 hours of uptime had already produced measurable degradation; 100 hours pushed the error into a catastrophic regime.
 
 ## 7. How the Range Gate Failed
 
-`[RECONSTRUCTED — NUMERICAL]` The accumulated timing error was approximately 0.34 seconds. At the Scud's reported velocity, that corresponds to several hundred meters of positional error. More importantly, the timing error shifted the Patriot's calculated range gate far enough that the incoming missile was no longer adequately centered within the tracking window. The GAO concluded that the resulting range-gate shift prevented the battery from maintaining the track. ([GAO](https://www.gao.gov/pdf/product/215614))
+`[RECONSTRUCTED — NUMERICAL]` The accumulated timing error was approximately 0.34 seconds. At approximately 1,676 m/s, a 0.34-second timing error corresponds to more than half a kilometre of travel. The timing error shifted the calculated range gate far enough that the system could no longer maintain the incoming Scud's track. Alpha Battery therefore did not engage the missile. ([GAO](https://www.gao.gov/pdf/product/215614))
 
 ## 8. The Warning That Came Before the Disaster
 
@@ -113,16 +115,14 @@ The Patriot Project Office received Israeli data on February 11 showing a signif
 
 `[DOCUMENTED — GAO]` The chain of organizational and technical events leading to the disaster:
 
-* **Feb 11:** Israeli anomaly data identifies a 20% range-gate shift after ~8 hours.
-* **Feb 12-15:** Patriot Project Office investigates.
-* **Feb 16:** Software correction is released.
-* **Feb 21:** Warning issued to users. "Very long run times" is mentioned, but not quantified.
-* **Feb 21-25:** Dhahran battery continues operating, passing >100 hours of uptime.
-* **Feb 25:** Accumulated timing error becomes ~0.34 s.
-* **Feb 25:** Range gate shifts beyond usable tracking margin.
-* **Feb 25:** Scud track is lost. No Patriot engagement occurs.
+* **Feb 11:** Israeli data identifies significant range-gate degradation.
+* **Feb 11-16:** Patriot Project Office investigates and develops a software change.
+* **Feb 16:** Modified software version released.
+* **Feb 21:** Warning sent to Patriot users.
+* **Feb 25:** Dhahran battery has operated for >100 consecutive hours.
+* **Feb 25:** Scud is not tracked/intercepted.
 * **Feb 25:** Scud strikes barracks; 28 soldiers killed.
-* **Feb 26:** Corrected software arrives in Dhahran, one day after the attack.
+* **Feb 26:** Modified software arrives in Dhahran.
 
 ## 10. What the GAO Established
 
@@ -149,11 +149,11 @@ The Patriot Project Office received Israeli data on February 11 showing a signif
 
 ## 12. Root-Cause Analysis
 
-### The Actual Root Cause: Not Precision, but Unbounded Accumulation
+### The Deeper Root Cause: Cumulative Error Without an Adequate Operational Bound
 The numerical approximation itself was tiny and predictable. The dangerous property was that its error grew with elapsed runtime, while the operational environment eventually allowed runtime to become much larger than the assumptions underlying the original calculation.
 
 ### The Second Failure: The Organization Knew
-The sequence from February 11 to February 25 demonstrates the organizational failure. The organization observed evidence of runtime-dependent degradation, developed a partial software correction, but failed to establish and communicate a concrete operational limit (an explicit runtime limitation and restart procedure) before the Dhahran battery reached a dangerous uptime.
+The sequence from February 11 to February 25 demonstrates the organizational failure. The organization observed evidence of runtime-dependent degradation and developed a software correction, but failed to establish and communicate a concrete operational limit before the corrected software reached the Dhahran battery.
 
 ## 13. Modern Engineering Lessons
 
@@ -161,11 +161,11 @@ This incident sits at the intersection of embedded systems, safety-critical soft
 
 ## 14. Then vs. Now
 
-| System Parameter | Before Corrective Action (1991) | After Corrective Action |
+| System Parameter | Before | Corrective Direction |
 | :--- | :--- | :--- |
-| **Arithmetic Precision** | Mixed (some 24-bit, some 48-bit modules) | Unified high-precision routines for time |
-| **Operational Doctrine** | Undefined maximum uptime | Explicit runtime limitations and restart procedures |
-| **Warning Communication** | Vague memo ("very long run times") | Explicit operational limitations |
+| **Time calculation** | 24-bit fixed-point truncation | Corrected time calculation |
+| **Operational doctrine** | No concrete runtime threshold | Explicit runtime limitations/restart procedures |
+| **Warning communication** | "Very long run times" | Quantified operational guidance |
 
 ## 15. FAQ
 
@@ -190,4 +190,4 @@ It was an architectural mismatch. The 24-bit hardware was behaving exactly as ma
 
 ## The Archivist's Verdict
 
-> **The Archivist's Assessment:** The Dhahran Patriot Missile failure is a brutal lesson in operational drift. The engineers who wrote the software in the 1970s made a numerical trade-off (truncation) for a system they believed would operate within specific parameters. A locally reasonable numerical trade-off became unsafe when the software was operated for longer than the assumptions surrounding the calculation could tolerate. The true failure was contextual and organizational. The system exhibited a measurable failure mode before the fatal incident, but the organization did not translate that evidence into an operational limit specific enough to prevent the failure. The failure to explicitly quantify "very long run times" when the bug was first discovered demonstrates a profound disconnect between technical reality and frontline operations.
+> **The Archivist's Assessment:** The Dhahran Patriot failure is a brutal lesson in operational drift. A small numerical approximation in the system's time calculation accumulated with uptime until it became operationally significant. The decisive systems failure was not simply that the approximation existed, but that the deployment environment demanded prolonged continuous operation, the resulting degradation had already been observed, and the organization did not establish and communicate a concrete runtime limit before the corrected software reached the affected battery. The incident demonstrates how a mathematically tiny error can become a safety-critical failure when its accumulation is not bounded by either software design or operational doctrine.
