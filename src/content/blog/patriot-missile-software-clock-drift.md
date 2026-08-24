@@ -33,9 +33,9 @@ primary_sources:
 
 On February 25, 1991, during the Gulf War, an Iraqi Scud missile approached a United States Army barracks in Dhahran, Saudi Arabia. The airspace was defended by an American Patriot Missile battery (Alpha Battery, 2nd Battalion, 7th Air Defense Artillery). The battery had been operating continuously for over 100 hours. 
 
-When the Scud entered the airspace, the Patriot's radar detected it. However, because of a precision truncation error in the software's 24-bit limited-precision time conversion, the system's internal clock had drifted by approximately 0.34 seconds. ([GAO](https://www.gao.gov/pdf/product/215614)) Because a Scud missile travels at approximately 1,676 meters per second, this timing error shifted the Patriot's calculated range gate far enough that the incoming missile was no longer adequately centered within the tracking window.
+When the Scud entered the airspace, the Patriot's radar detected it. However, because of the finite precision of the software's 24-bit limited-precision time conversion, the system's internal clock had drifted by approximately 0.3433 seconds. ([GAO](https://www.gao.gov/pdf/product/215614)) Because a Scud missile travels at approximately 1,676 meters per second, this timing error shifted the Patriot's calculated range gate far enough that the incoming missile was no longer adequately centered within the tracking window.
 
-The tracking algorithm failed to maintain the Scud within the expected range gate, causing the system to reject the track rather than engage the target. The Scud struck the barracks, killing 28 soldiers and injuring over 100 more. This incident remains one of the most deadly and heavily documented software engineering failures in military history.
+The tracking calculation became inaccurate enough that the system looked in the wrong place for the incoming Scud and failed to maintain the track. Alpha Battery therefore did not engage the missile. The Scud struck the barracks, killing 28 soldiers and injuring over 100 more. This incident remains one of the most deadly and heavily documented software engineering failures in military history.
 
 ## 2. What Was the Patriot System?
 
@@ -57,7 +57,7 @@ The exact timeline of the software degradation is documented by the General Acco
 | :--- | :--- | :--- | :--- |
 | **System Uptime** | 100 hours | 100 hours | [DOCUMENTED] Battery Alpha had not been rebooted for 4 days. |
 | **Clock Drift** | Internal time lagging by 0.34 seconds | Real-world time accurate | [DOCUMENTED] Due to continuous fixed-point truncation of 1/10. |
-| **Tracking Gate** | Range gate shifted behind target | Scud was physically ahead | [RECONSTRUCTED] Target fell outside the acceptable window. |
+| **Tracking Gate** | Range gate shifted behind target | Scud was physically ahead | `[DOCUMENTED — GAO]` Target fell outside the acceptable window. |
 | **System Classification** | Track rejected | Incoming Hostile Ballistic Missile | [DOCUMENTED] Software dropped the track. |
 | **Casualties** | Track dropped before impact | 28 American soldiers killed | [DOCUMENTED] Scud struck the Army barracks. |
 
@@ -66,19 +66,19 @@ The exact timeline of the software degradation is documented by the General Acco
 `[ANALYTICAL — ERRORLEDGER]` The failure was caused by how time was represented and converted within the system's architecture.
 
 ### 4.1 The clock
-System time was maintained in tenths of a second by an internal hardware clock ticking every 100 milliseconds.
+The Patriot's internal computer maintained elapsed time in tenths of a second.
 
 ### 4.2 The conversion
-To perform the tracking calculation (which required time in seconds), the software converted the integer tick count by multiplying it by 1/10.
+The tracking software needed elapsed time in a form suitable for its calculations, requiring conversion of the internal time value into a real-number representation.
 
-### 4.3 The representation error
-The Patriot's internal clock represented elapsed time in tenths of a second as an integer. For the tracking calculation, that value had to be converted to a real number. Because the computer's registers were limited to 24 bits, the conversion could not preserve unlimited precision. The resulting approximation made the calculated elapsed time increasingly inaccurate as the clock value grew.
+### 4.3 The precision limitation
+The computer used a 24-bit representation for this conversion. Because the available precision was finite, the conversion could not represent the increasingly large elapsed-time value with arbitrary accuracy. The important property was that the precision loss increased as the elapsed-time value grew.
 
 ### 4.4 The accumulation
-The error increased with elapsed runtime. The GAO calculated that the time inaccuracy reached approximately 0.0034 seconds after one hour, 0.0275 seconds after eight hours, and 0.3433 seconds after approximately 100 hours. ([GAO](https://www.gao.gov/assets/imtec-92-26.pdf))
+Consequently, the tracking calculation became progressively less accurate as the Patriot remained continuously powered. The GAO calculated approximately 0.0034 seconds of timing inaccuracy after one hour, 0.0275 seconds after eight hours, and 0.3433 seconds after approximately 100 hours. ([GAO](https://www.gao.gov/assets/imtec-92-26.pdf))
 
 ### 4.5 The tracking consequence
-The accumulated timing error shifted the Patriot's calculated range gate. When the system looked for the Scud missile on the next radar sweep, the timestamp distortion caused it to look in the wrong place.
+That timing inaccuracy translated into a displacement of the predicted radar range gate. At approximately 100 hours, the GAO calculated a range-gate displacement of approximately 687 meters. ([GAO](https://www.gao.gov/assets/imtec-92-26.pdf))
 
 ## 5. Why the Error Accumulated
 
@@ -86,16 +86,9 @@ The underlying problem was runtime-dependent. The larger the internal clock valu
 
 ## 6. Why 100 Hours Mattered
 
-The error per tick was tiny, but the error was cumulative, making uptime the multiplier. 
+The timing error was runtime-dependent rather than a simple fixed error applied independently to every clock tick. As the internal time value increased, the 24-bit conversion could represent that value with progressively less precision. The resulting time inaccuracy therefore increased with continuous runtime.
 
-* 100 hours × 60 minutes × 60 seconds × 10 = **3,600,000 tenths-of-a-second ticks**.
-* 3,600,000 ticks × 0.000000095 seconds/tick ≈ **0.342 seconds**. (The GAO's table gives 0.3433 seconds at 100 hours).
-
-| Runtime | Approx. accumulated error |
-| :--- | :--- |
-| 1 hour | ~3.4 ms |
-| 10 hours | ~34 ms |
-| 100 hours | ~0.34 s |
+The GAO calculated approximately 0.0034 seconds of inaccuracy after 1 hour, 0.0275 seconds after 8 hours, and 0.3433 seconds after approximately 100 hours. ([GAO](https://www.gao.gov/assets/imtec-92-26.pdf))
 
 Because rebooting reset the elapsed time, the system had a runtime-dependent failure mode. Rebooting reinitialized the computer's clock, resetting the accumulated timing error. The GAO notes that significant range-gate shifts could therefore be eliminated by rebooting every few hours. 8 hours of uptime had already produced measurable degradation; 100 hours pushed the error into a catastrophic regime.
 
@@ -118,7 +111,7 @@ The timing error shifted the calculated range gate far enough that the system co
 
 The system's operational assumptions did not adequately account for prolonged continuous runtime in the Gulf War deployment. The tragedy wasn't merely that there was a software bug. The system exhibited a measurable failure mode before the fatal incident, but the organization did not translate that evidence into an operational limit specific enough to prevent the failure.
 
-The Patriot Project Office received Israeli data on February 11 showing significant range-gate degradation after approximately eight hours of continuous operation. ([GAO](https://www.gao.gov/pdf/product/215614)) Officials investigated and made a software change, which was released on February 16. On February 21, the office sent users a warning that very long runtimes could shift the range gate, but critically, the warning *did not specify what constituted a very long runtime*. Officials assumed users wouldn't operate the system long enough for it to become ineffective.
+The Patriot Project Office received Israeli data on February 11 showing significant range-gate degradation after approximately eight hours of continuous operation. ([GAO](https://www.gao.gov/pdf/product/215614)) Officials investigated and made a software change, which was released on February 16. On February 21, the office sent users a warning that very long runtimes could shift the range gate, but critically, the warning *did not specify what constituted a very long runtime*. The operational assumptions surrounding the system did not anticipate the prolonged continuous runtimes encountered during the Gulf War.
 
 ## 9. The February 11–25 Warning-to-Failure Chain
 
@@ -137,23 +130,23 @@ The Patriot Project Office received Israeli data on February 11 showing signific
 
 | Claim | Source | Confidence |
 | :--- | :--- | :--- |
-| ~100-hour uptime | GAO | `[DOCUMENTED]` |
-| 0.3433 s time inaccuracy at ~100 h | GAO | `[DOCUMENTED]` |
-| 687 m range-gate shift at ~100 h | GAO | `[DOCUMENTED]` |
-| 28 deaths | GAO | `[DOCUMENTED]` |
-| Feb 11 Israeli warning data | GAO | `[DOCUMENTED]` |
-| Feb 16 modified software | GAO | `[DOCUMENTED]` |
-| Feb 21 warning | GAO | `[DOCUMENTED]` |
-| Warning lacked a quantified runtime threshold | GAO | `[DOCUMENTED]` |
-| Exact original test-suite coverage | Not established by GAO | `[UNKNOWN]` |
-| Engineers expected a daily reboot | Not established | `[UNKNOWN]` |
+| ~100-hour uptime | GAO | `[DOCUMENTED — GAO]` |
+| 0.3433 s time inaccuracy at ~100 h | GAO | `[DOCUMENTED — GAO]` |
+| 687 m range-gate shift at ~100 h | GAO | `[DOCUMENTED — GAO]` |
+| 28 deaths | GAO | `[DOCUMENTED — GAO]` |
+| Feb 11 Israeli warning data | GAO | `[DOCUMENTED — GAO]` |
+| Feb 16 modified software | GAO | `[DOCUMENTED — GAO]` |
+| Feb 21 warning | GAO | `[DOCUMENTED — GAO]` |
+| Warning lacked a quantified runtime threshold | GAO | `[DOCUMENTED — GAO]` |
+| Exact original test-suite coverage | Not established by GAO | `[UNKNOWN — INSUFFICIENT RECORD]` |
+| Engineers expected a daily reboot | Not established | `[UNKNOWN — INSUFFICIENT RECORD]` |
 
 ## 11. What the Evidence Does Not Establish
 
 <BoundaryBox>
 **Boundary Conditions:**
-* **Exact Test Suite Coverages:** `[DOCUMENTED]` The GAO reported that the Patriot had not previously been used to defend against tactical ballistic missiles and had not been tested for the long continuous runtimes encountered during the Gulf War. It does not provide a complete reconstruction of the original test suite. A plausible engineering explanation is that testing did not adequately exercise the combination of long continuous runtime and ballistic-missile tracking. `[UNKNOWN — INSUFFICIENT RECORD]`
-* **Engineer Intent:** The evidence does not establish the exact design rationale for the original 24-bit representation or the complete set of runtime assumptions made when the software was developed. `[UNKNOWN — INSUFFICIENT RECORD]`
+* **Exact Test-Suite Coverage:** `[UNKNOWN — INSUFFICIENT RECORD]` The GAO reported that the Patriot had not previously been used to defend against tactical ballistic missiles and had not been tested for the long continuous runtimes encountered during the Gulf War. The available report does not provide a complete reconstruction of the original test suite.
+* **Engineer Intent:** `[UNKNOWN — INSUFFICIENT RECORD]` The available evidence does not establish the exact design rationale for the original limited-precision representation or the complete set of runtime assumptions made when the software was developed.
 </BoundaryBox>
 
 ## 12. Root-Cause Analysis
@@ -181,8 +174,8 @@ This incident sits at the intersection of embedded systems, safety-critical soft
 **What caused the Patriot Missile software failure?**
 The immediate technical cause was a cumulative timing error in the Patriot's weapons-control software. A 24-bit register limitation caused a loss of precision when converting the system's internal integer time to a real number. After more than 100 hours of continuous operation, the accumulated timing error shifted the radar's tracking range gate enough to prevent the battery from maintaining the incoming Scud track.
 
-**Why was a 0.34-second error fatal?**
-Scud missiles travel at approximately 1,676 meters per second (Mach 5). A 0.34-second timing error shifted the Patriot's calculated range gate significantly. The tracking algorithm failed to maintain the Scud within the expected tracking window, causing the system to reject the track rather than engage the target.
+**Why was a 0.3433-second error fatal?**
+Scud missiles travel at approximately 1,676 meters per second (Mach 5). A 0.3433-second timing error shifted the Patriot's calculated range gate significantly. The tracking calculation became inaccurate enough that the system looked in the wrong place for the incoming Scud and failed to maintain the track, causing the system to reject the track rather than engage the target.
 
 **Did they know about the bug before the attack?**
 Yes. The Patriot Project Office received Israeli data on February 11 showing a significant range-gate shift. A modified software version was released on February 16, and a February 21 message warned users about very long runtimes, but it critically did not define the threshold. The corrected software arrived at Dhahran on February 26, one day after the attack.
