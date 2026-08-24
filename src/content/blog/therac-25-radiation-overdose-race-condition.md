@@ -1,22 +1,25 @@
 ---
-title: "Therac-25 Radiation Overdoses: How a Race Condition and Missing Hardware Interlocks Failed"
+title: "Therac-25 Radiation Overdose: How a Race Condition, Counter Overflow, and Missing Hardware Interlocks Caused a Safety-Critical Failure"
 description: "A forensic reconstruction of the 1985–1987 Therac-25 radiation overdoses. How undocumented code reuse, a concurrent state-consistency race condition, a 1-byte counter rollover, and the removal of physical hardware interlocks combined in a catastrophic systems engineering failure."
 author: "The Archivist"
 pubDate: "2026-08-24"
 slug: "therac-25-radiation-overdose-race-condition"
 heroImage: "/hero_therac_25.jpg"
 incidentDate: "1985-06-03"
+incidentPeriod: "1985–1987"
+incidentEndDate: "1987-01-17"
 systemTypes: ["Safety-Critical Software", "Medical Devices", "Race Conditions", "Embedded Systems"]
 victimCount: 6
-fatalities: 3
-regulatoryAction: "FDA corrective action"
-systemImpact: "Therac-25 corrective action and safety redesign"
+fatalities: "3 (Causality mixed: radiation injury contributed to or accelerated death in patients with terminal conditions)"
+regulatoryAction: "FDA defect determination and mandatory corrective-action program"
+systemImpact: "Therac-25 corrective action involving hardware interlocks, software modifications, independent shutdown, and safety-control changes"
 summary_points:
-  context: "Between 1982 and 1985, Atomic Energy of Canada Limited (AECL) manufactured the Therac-25, a dual-mode medical linear accelerator. Critical safety functions were delegated to software, replacing independent hardware interlocks present in prior models."
-  trigger: "Two distinct software defects were conclusively reconstructed from the best-documented accidents: a concurrent data-entry race condition (Tyler) and a 1-byte counter overflow (Yakima). The available evidence does not establish that these two defects explain every Therac-25 overdose."
-  fallout: "Six known overdose accidents involving patients at facilities in the United States and Canada resulted in severe radiation injuries and several fatalities. The FDA declared the device defective, requiring a major corrective-action program involving hardware, software, documentation, and safety-control changes."
+  context: "Between 1982 and 1985, Atomic Energy of Canada Limited (AECL) manufactured the Therac-25, a dual-mode medical linear accelerator."
+  systemic_failure: "AECL removed or did not duplicate several independent hardware safety mechanisms used in predecessor systems, increasing the software's responsibility for enforcing safety without equivalent independent hardware protection."
+  technical_mechanisms: "Post-incident investigations discovered two distinct software defects: a shared-state concurrency defect (Tyler) and an 8-bit counter rollover (Yakima)."
+  fallout: "Six known overdose accidents resulted in severe radiation injuries. The FDA declared the device defective and mandated a comprehensive Corrective Action Plan (CAP) encompassing both software and physical hardware interlocks."
 primary_sources:
-  - title: "IEEE Computer: An Investigation of the Therac-25 Accidents (Leveson & Turner)"
+  - title: "IEEE Computer: An Investigation of the Therac-25 Accidents (Leveson & Turner, 1993)"
     url: "https://cseweb.ucsd.edu/classes/wi14/cse291-c/reports/leveson93investigation.pdf"
   - title: "FDA Center for Devices and Radiological Health (CDRH) Medical Device Safety Records"
     url: "https://www.fda.gov/medical-devices/medical-device-safety"
@@ -28,227 +31,201 @@ primary_sources:
 
 <BoundaryBox>
 **What the evidence does NOT establish:**
-* That the software bugs were caused by an intentional act of sabotage or malicious developer negligence; official FDA and IEEE forensic investigations establish that the defects stemmed from poor software engineering practices, absent independent verification, and uncoordinated code reuse.
-* That all six overdoses shared a single causal mechanism. The historical investigation explicitly notes that the causes of several incidents cannot be conclusively determined.
-* That hospital radiation therapy technicians acted with reckless disregard for human life; operators had become accustomed to treatment pauses that previously had resulted only in inconvenience.
+* That the software bugs were caused by intentional sabotage, malicious intent, or deliberate disregard for patient safety; official FDA and IEEE forensic investigations establish that the defects stemmed from poor software engineering practices, absent independent verification, and uncoordinated code reuse.
+* That a "single programmer" was solely responsible for the entire system, as this simplifies the systemic engineering and regulatory failures documented in the case.
 </BoundaryBox>
-
----
 
 ## 1. Executive Summary
 
-Between June 1985 and January 1987, the Therac-25 medical linear accelerator administered massive radiation overdoses to cancer patients across medical facilities in the United States and Canada. Built by Atomic Energy of Canada Limited (AECL), the Therac-25 was an advanced dual-mode machine heavily reliant on computer control.
+Between 1985 and 1987, the Therac-25 medical linear accelerator was involved in six known radiation overdose accidents in the United States and Canada. Three of the patients later died; while some died of underlying terminal cancer, the radiation injuries were severe and contributed to their suffering or accelerated their deaths. 
 
-The historical evidence establishes two distinct software defects as the causal mechanism for at least three of these incidents, but not every accident can be assigned to one of them. The documented failures were not reducible to a single coding mistake. They emerged from unsafe concurrency, inadequate state validation, weak software engineering practices, flawed human-interface design, the removal of independent hardware protections, and organizational response failures.
+Unlike its predecessors, the Therac-25 was designed to rely heavily on software for safety enforcement. Critical safety functions that had previously been independently enforced by physical hardware were delegated to a PDP-11 computer running custom software. When software defects—including a concurrency race condition and an integer overflow—were triggered, the absence of independent physical interlocks allowed the machine to deliver high-current electron beams directly to patients without the necessary beam-scattering targets.
 
----
+The resulting regulatory investigation by the FDA and the canonical analysis by Leveson and Turner (1993) revealed a cascading failure of software engineering, hazard analysis, human-factors design, and corporate response, culminating in a mandatory Corrective Action Plan (CAP) that fundamentally redesigned the machine's safety architecture.
 
 ## 2. What Was the Therac-25?
 
-The Therac-25 was a state-of-the-art dual-mode medical linear accelerator designed and manufactured by Atomic Energy of Canada Limited (AECL). Unlike its predecessors (the Therac-6 and Therac-20), which relied heavily on physical hardware interlocks to enforce safety limits, the Therac-25 utilized a heavily software-controlled architecture running on a DEC PDP-11 minicomputer. 
+The Therac-25 was a computer-controlled dual-mode medical linear accelerator developed by Atomic Energy of Canada Limited (AECL). It was designed to destroy tumors by irradiating them. 
 
-It was designed to administer two types of therapeutic radiation: low-current electron beams for superficial tumors, and high-current X-ray (photon) beams for deep internal tumors. Between 1985 and 1987, at least six patients suffered massive radiation overdoses when the machine unexpectedly fired an unattenuated high-current beam while configured for a low-current treatment ([Leveson & Turner, p. 19](https://cseweb.ucsd.edu/classes/wi14/cse291-c/reports/leveson93investigation.pdf)).
+The machine operated in two distinct modes:
+1. **Electron Mode:** A low-current electron beam (e.g., 200 rads) was delivered directly to the patient using scanning magnets to spread the beam across the treatment area.
+2. **X-Ray Mode:** A high-current electron beam (e.g., 25,000,000 electron volts) was fired at a physical target (a tungsten target and flattening filter). The target absorbed the electrons and generated a controlled beam of X-rays for deep-tissue treatment.
 
----
+To safely use the high-current X-ray mode, the physical target *must* be positioned in the beam's path. If the high-current beam was activated while the machine was physically configured for electron mode (which had no target in place), the patient would be struck directly by an unattenuated, highly concentrated high-current electron beam, causing severe radiation burns.
 
-## 3. At a Glance: Six Known Accidents
+## 3. Six Known Accidents — Evidence Matrix
 
-The canonical historical investigation by Leveson and Turner describes six known overdose accidents.
+The canonical investigation identifies six known accidents between June 1985 and January 1987 ([Leveson & Turner, p. 21-26](https://cseweb.ucsd.edu/classes/wi14/cse291-c/reports/leveson93investigation.pdf)).
 
-| Incident | Location | Date | Epistemic Confidence | Outcome |
+| Date | Location | Mechanism | Estimated Dose | Injury & Causality |
 | :--- | :--- | :--- | :--- | :--- |
-| **1** | Kennestone (GA) | June 1985 | Unknown: available evidence insufficient to determine mechanism | Severe radiation injury |
-| **2** | Hamilton (ON) | July 1985 | Unknown: available evidence insufficient to determine mechanism | Fatality |
-| **3** | Yakima (WA) | Dec 1985 | Unknown: available evidence insufficient to determine mechanism | Severe radiation injury |
-| **4** | Tyler (TX) | Mar 1986 | Known mechanism: reconstructed from software analysis | Fatality |
-| **5** | Tyler (TX) | Apr 1986 | Known mechanism: reconstructed from software analysis | Fatality |
-| **6** | Yakima (WA) | Jan 1987 | Known mechanism: reconstructed from software analysis | He died approximately three months later from complications associated with the radiation injury; he also had terminal cancer. |
+| **Jun 1985** | Kennestone (Marietta, GA) | Unknown | ~15,000–20,000 rad | [DOCUMENTED] Severe radiation burn to breast. Patient survived. |
+| **Jul 1985** | Hamilton (Ontario, Canada) | Unknown | Unknown | [DOCUMENTED] Severe radiation injury to hip. Patient subsequently died; death attributed to underlying virulent cancer, though radiation injury was severe. |
+| **Dec 1985** | Yakima (WA) - Incident 1 | Unknown | Unknown | [DOCUMENTED] Skin reddening and burn. Mechanism remained unresolved. |
+| **Mar 1986** | Tyler (TX) - Incident 1 | Reconstructed (Tyler Race Condition) | ~16,500–25,000 rad | [DOCUMENTED] Severe neurological and physical damage. Patient died 5 months later from complications of the overdose. |
+| **Apr 1986** | Tyler (TX) - Incident 2 | Reconstructed (Tyler Race Condition) | ~16,500–25,000 rad | [DOCUMENTED] Severe brain damage and coma. Patient died 3 weeks later. |
+| **Jan 1987** | Yakima (WA) - Incident 2 | Reconstructed (Yakima Class3 Rollover) | ~8,000–10,000 rad | [DOCUMENTED] Severe radiation burn. Patient had terminal cancer and died in April; overdose contributed to suffering. |
 
----
+## 4. The Safety Invariant That Failed
 
-## 4. What the Evidence Establishes
+The core physical constraint of a dual-mode linear accelerator is an absolute safety invariant:
 
-To maintain epistemic discipline, this case file classifies claims using the following framework:
+`[ANALYTICAL]` **The Safety Invariant:** `IF (Beam_Current == HIGH) THEN (Physical_Target == IN_PATH)`
 
-*   **[DOCUMENTED]** — Explicitly supported by primary records (e.g., court dockets, regulatory filings).
-*   **[RECONSTRUCTED]** — Derived from source-code analysis, telemetry, timing, or investigation.
-*   **[ANALYTICAL]** — ErrorLedger interpretation based on documented evidence.
-*   **[UNKNOWN]** — Available evidence does not establish the mechanism.
+In previous machines, this invariant was enforced by independent electro-mechanical interlocks. If the high-current mode was selected, physical circuits prevented the beam from turning on unless the target was locked in place. 
 
----
+AECL removed or did not duplicate several independent hardware safety mechanisms used in predecessor systems, increasing the software's responsibility for enforcing safety. The software became the primary arbiter of this invariant. If the internal state of the software became inconsistent with the physical state of the machine, there was no independent physical barrier to stop the beam.
 
-## Act I: Therac-25 Architecture: Why Software Became the Safety Barrier
+## 5. Tyler: The Shared-State/Concurrency Failure
 
-Radiation therapy requires two distinct operational modalities:
+The mechanism behind the two Tyler, Texas accidents was reconstructed through analysis of the data-entry and treatment-monitor tasks ([Leveson & Turner, p. 26](https://cseweb.ucsd.edu/classes/wi14/cse291-c/reports/leveson93investigation.pdf)).
 
-1. **Direct Electron Beam Therapy (Low Current):** Used for superficial skin tumors. The machine fires a direct electron beam at low currents and variable energy levels (6 to 25 MeV), using scanning magnets to disperse the dose safely.
-2. **X-Ray Photon Therapy (High Current):** Used for deep internal tumors. The machine fires a high-energy electron beam with a current nearly 100 to 1,000 times higher into a heavy tungsten-tantalum target to produce penetrating X-ray photons. 
+The operator interface required typing prescriptions on a terminal. If an operator realized they had mistakenly typed 'X' (X-Ray mode) instead of 'E' (Electron mode), they could use the 'Up' arrow to move the cursor, change the 'X' to an 'E', and hit Enter.
 
-In the predecessor Therac-6 and Therac-20 systems, safety was guaranteed by **independent electromechanical hardware interlocks**. Heavy-duty electrical switches physically prevented the high-current beam from firing unless the tungsten target was properly seated. 
+`[RECONSTRUCTED]` **The Concurrency Defect:**
+1. Setting the bending magnets for treatment took approximately 8 seconds. 
+2. During this 8-second window, the data-entry task and the magnet-setting task ran concurrently.
+3. The software relied on shared variables (like `MEOS` for mode/energy) and a data-entry completion flag (`Datent`). 
+4. The system read the high-order byte of `MEOS` to configure some operating parameters, but used the low-order byte of `MEOS` to position the physical turntable (the target).
+5. If the operator edited the mode from 'X' to 'E' *during* the 8-second magnet-setting phase, the concurrent processing allowed the prescription screen to appear updated, but internal state had already been processed inconsistently. 
+6. The machine's physical configuration (turntable) and software parameters (beam current) became misaligned. The high-current beam was enabled while the physical turntable was in the field-light (no target) position.
 
-`[DOCUMENTED]` For the Therac-25, critical safety functions were delegated to software, replacing independent hardware interlocks present in prior models ([Ethics Unwrapped](https://ethicsunwrapped.utexas.edu/case-study/therac-25)). The architecture relied on the sequence: physical configuration → sensors → software validation → beam authorization. Software became responsible for enforcing a safety condition that had previously possessed independent physical enforcement.
+The problem was not simply that the operator had an eight-second window; it was that shared mutable state and asynchronous task handling allowed a rapidly executed operator edit to corrupt the safety invariant.
 
-`[DOCUMENTED]` The software was inherited across system generations with inadequate documentation and software-quality practices. Because older machines possessed physical interlocks that prevented erroneous software commands from causing a physical hazard, latent software defects remained hidden.
+## 6. Yakima: Class3 Rollover + Interlock Failure
 
----
+The second Yakima accident (January 1987) involved an entirely different software defect: an integer overflow interacting with a software interlock.
 
-## Act II: The Tyler Race Condition: How Rapid Editing Created an Unsafe State
+`[RECONSTRUCTED]` **The Class3 Defect:**
+1. A routine called `Set-Up Test` executed repeatedly to verify machine alignment.
+2. Inside this routine, an 8-bit variable named `Class3` was incremented every time the test ran.
+3. Because `Class3` was 1 byte, every 256th pass it suffered an integer overflow and rolled over to exactly `0`.
+4. A separate safety check called `Lmtchk` looked at `Class3`. If `Class3` was non-zero, it checked the collimator positions (`Chkcol`). If `Class3` was `0`, the logic explicitly *skipped* the collimator check.
+5. Due to operator timing, the operator hit the "Set" button at the exact fraction of a second when `Class3 == 0`.
+6. The software bypassed the critical safety check. The fault variable `F$mal` was not set, and the software falsely concluded the machine was safe.
+7. The beam was enabled with the turntable in the incorrect physical position.
 
-`[DOCUMENTED]` On March 21, 1986, at the East Texas Cancer Center in Tyler, Texas, an experienced operator prepared to treat a patient. The treatment sequence required selecting the mode on the operator console. The operator typed `X` for 25 MeV Photon mode by mistake. Realizing the error, the operator quickly edited the mode to `E` for Electron mode and confirmed the rest of the parameters. 
+This was not merely an integer overflow; it was an 8-bit counter rollover interacting with concurrent interlock checking, resulting in the bypassing of a critical safety boundary.
 
-`[RECONSTRUCTED]` The rapid editing sequence created a state-consistency race condition. 
+## 7. Why the Two Bugs Do Not Explain Every Accident
 
-> **What is a race condition?** 
-> A race condition occurs when the result of a system operation depends on the timing or ordering of concurrent actions. In Therac-25, operator input could modify software state while other control routines were still processing the previous configuration.
+The historical record does not establish that the Tyler race condition or the Yakima `Class3` overflow explain the first three accidents (Kennestone, Hamilton, Yakima 1). 
 
-The approximately eight-second magnet-setting interval created a vulnerability in which an operator could modify the prescription while concurrent control tasks were still processing the earlier mode/energy state.
+`[DOCUMENTED]` As Leveson and Turner noted, the exact mechanisms of the earliest accidents remain unknown because detailed telemetry, video records, and reproducible fault sequences were unavailable at the time. Assuming all six accidents were caused by the same race condition is a common historical oversimplification.
 
-```text
-Analytical reconstruction based on Leveson-Turner software analysis
+## 8. Malfunction 54: The Observability/Human-Factors Failure
 
-1. Operator enters 'X' (Photon Mode)
-   └─► System begins positioning collimator turntable (Takes ~8 seconds)
+When the Tyler race condition triggered, the Therac-25 did not display a warning saying "DANGER: LETHAL RADIATION." 
 
-2. Operator changes mode to 'E' (Electron) within 8s
-   └─► Software state: prescription edited to electron mode.
-   └─► Mechanical state: beam-path hardware remains inconsistent with the edited prescription.
+Instead, the terminal displayed a cryptic error: **"Malfunction 54"**. The machine paused the treatment.
 
-3. Discrepant State:
-   ├─ Software permits beam activation based on 'setup complete' flag.
-   └─ Hardware configuration lacks the necessary attenuation/scattering assembly for high current.
-```
+`[ANALYTICAL]` **The Observability Failure Chain:**
+1. **Physical Reality:** A high-current electron beam struck the patient.
+2. **Machine Monitor:** The beam-intensity ion chambers became saturated by the massive dose. The software misread this saturation as a low-dose condition (underdose).
+3. **Operator Interface:** The system threw a low-priority "treatment pause" (Malfunction 54) indicating a minor dose-rate fault.
+4. **Operator Response:** Because Therac-25 operators routinely encountered dozens of minor nuisance pauses a day, they had learned that pressing 'P' (Proceed) was the normal recovery behavior. 
+5. **Patient Experience:** The patient in the shielded room experienced a severe electrical shock and burning sensation, but the operator (without a working intercom in the Tyler case) could not hear them. The operator pressed 'P', delivering a second massive overdose.
 
-`[DOCUMENTED]` When the operator activated the beam, the patient received a massive unattenuated exposure. Based on post-incident physics reconstructions, the estimated dose was approximately 16,500–25,000 rads in less than one second—tens to hundreds of times the intended treatment dose ([Leveson & Turner, p. 25](https://cseweb.ucsd.edu/classes/wi14/cse291-c/reports/leveson93investigation.pdf)). The patient died five months later from severe radiation-induced injuries and complications.
+The system failed to map the physical hazard to an actionable, high-severity fault classification.
 
----
+## 9. Why Testing and Safety Analysis Missed the Risk
 
-## 7. The Yakima Counter Overflow: A Second Independent Software Failure
+How did AECL testing fail to catch the race condition?
 
-`[DOCUMENTED]` In January 1987, at the Yakima Valley Memorial Hospital in Washington state, another patient received a severe overdose due to a completely different software defect.
+`[DOCUMENTED]` The software was primarily tested as an integrated system, not via isolated module testing or adversarial timing analysis. Experienced hospital operators could execute data-entry sequences much faster than the engineers who tested the machine.
 
-`[RECONSTRUCTED]` The investigation reconstructed a second failure involving an 8-bit variable (`Class3`) associated with the setup-test logic. Every time the setup loop executed, the program incremented this variable. 
+Furthermore, the formal safety analysis explicitly assumed that software errors would not occur. The Fault Tree Analysis (FTA) assigned probabilities to hardware failures (e.g., switches, relays) but treated the software as perfectly reliable. The analysis assumed away residual software errors, meaning the safety model never accounted for a scenario where the software itself commanded an unsafe state.
 
-> **What is a counter overflow?** 
-> A value representing execution state is allowed to mathematically wrap around (e.g., passing the maximum value of 255 for an 8-bit integer and returning to 0). 
+## 10. Why Earlier Therac Systems Masked Related Software Defects
 
-When the counter wrapped through zero, a conditional test could be skipped, allowing an unsafe machine state to pass through the software checks. This permitted the internal malfunction state to remain clear even though the physical collimator was still in an unsafe configuration.
+The Therac-25 software was not entirely new. Software lineage and reuse across Therac generations carried code from the Therac-20. 
 
-`[DOCUMENTED]` The Yakima 1987 reconstruction estimated an initial exposure of approximately 4,000–5,000 rad, potentially totaling 8,000–10,000 rad after two attempts. He died approximately three months later from complications associated with the radiation injury; he also had terminal cancer before the incident.
+`[RECONSTRUCTED]` The canonical investigation notes that related software problems existed in the Therac-20. However, the Therac-20 possessed independent physical hardware interlocks. If the Therac-20 software generated an unsafe configuration, the physical hardware breaker would trip, blowing a fuse and preventing the beam from firing. The software defect manifested merely as a blown fuse—a nuisance, not a hazard.
 
----
+When this software lineage was carried over to the Therac-25, the independent hardware safeguards were not duplicated. A latent software defect that had been safely masked by physical hardware in a previous generation was suddenly exposed as a lethal hazard.
 
-## 8. Why the Two Bugs Don't Explain Everything
+## 11. Regulatory Timeline
 
-`[UNKNOWN]` The six accidents should not be represented as six repetitions of the same race condition. The available investigation reconstructs specific mechanisms for particular incidents (Tyler and the second Yakima accident) while leaving others unresolved.
+The regulatory response by the FDA Center for Devices and Radiological Health (CDRH) escalated as the accident patterns became undeniable.
 
-* The exact causal mechanism of the Kennestone, Hamilton, and first Yakima accidents remains undetermined.
-* It is unknown whether the same software defect contributed to those early incidents, or if independent faults were responsible.
-* The exact internal reasoning behind the removal of each hardware interlock remains undocumented.
+| Date | Event | Regulatory Significance |
+| :--- | :--- | :--- |
+| **May 2, 1986** | FDA Defect Determination | FDA declared Therac-25 defective and demanded a Corrective Action Plan (CAP). |
+| **Jun 1986** | Initial CAP Submitted | AECL proposed minor software patches. |
+| **Jan 1987** | Second Yakima Accident | Revealed that the initial patches were insufficient (Class3 bug discovered). |
+| **Feb 10, 1987** | Notice of Adverse Findings | FDA ordered discontinuation of routine therapy until comprehensive corrective action was taken. |
+| **May 26, 1987** | CAP Approval Conditions | FDA approved the CAP subject to strict implementation conditions. |
+| **Jul 1987** | Final CAP Revision | Final redesign encompassing hardware and software approved. |
 
----
+## 12. Engineering Evolution: Before vs After
 
-## 9. What Was Therac-25 Malfunction 54?
+The final Corrective Action Plan fundamentally altered the machine's architecture, effectively restoring the principles of independent safety verification.
 
-`[DOCUMENTED]` When the race condition occurred at Tyler, the operator console displayed a cryptic error message: `Malfunction 54`. The available operator documentation did not explain the significance of Malfunction 54, identifying it merely as a "dose input 2" error ([Online Ethics](https://onlineethics.virginia.edu/cases/therac-25/therac-25-case-narrative)).
+| System Feature | Before Corrective Action (Therac-25) | After Corrective Action (Final CAP) |
+| :--- | :--- | :--- |
+| **Target Interlock** | Software-controlled based on variable state. | Independent hardware interlock preventing beam if turntable is out of position. |
+| **Overdose Protection** | Software monitored ion chamber levels. | Independent hardware single-pulse shutdown circuit. |
+| **Fault Messages** | Cryptic codes ("Malfunction 54"). | Meaningful, actionable malfunction messages. |
+| **Operator Recovery** | 'P' (Proceed) allowed immediate retry. | Treatment suspended for dosimetry faults; required full reset. |
+| **Editing Behavior** | Prescriptions could be edited mid-setup. | Editing-key restrictions enforced during critical setup phases. |
 
-It did not communicate that a dangerous radiation fault had occurred. Instead, the console displayed `TREATMENT PAUSE` and reported that a massive underdose had been delivered. Crucially, the software allowed operators to clear the error and re-fire the beam simply by pressing the `P` (Proceed) key.
+## 13. ErrorLedger Forensic Failure Model
 
-`[ANALYTICAL]` At Tyler, the operator was separated from the treatment room, and visual/audio monitoring was impaired, meaning the operator could not directly observe the patient. Furthermore, operators had become accustomed to treatment pauses that previously had resulted only in inconvenience. The interface design, combined with misleading information and lack of direct patient feedback, normalized anomalous conditions and obscured the severity of the hazard.
+`[ANALYTICAL]` The Therac-25 disaster is best understood through a 5-layer systemic failure model:
 
----
+1. **Layer 1 — Architecture:** Independent hardware safeguards were reduced, transferring total safety responsibility to software.
+2. **Layer 2 — Software:** Concurrent shared-state defects and counter overflows allowed physically unsafe configurations to become representable in memory.
+3. **Layer 3 — Detection:** Fault monitors (ion chambers) saturated, misclassifying a catastrophic high-dose event as a minor underdose.
+4. **Layer 4 — Human Factors:** Operators, habituated by frequent nuisance alarms, received misleading recovery signals and bypassed safety holds.
+5. **Layer 5 — Organization:** Early accident reports were initially dismissed or attributed to patient condition rather than escalating into a system-wide engineering investigation.
 
-## Act III: Regulatory Escalation and Corrective Action
+## 14. Modern Engineering Lessons
 
-`[DOCUMENTED]` The institutional response by AECL and regulatory authorities unfolded in stages:
+Modern safety-critical engineering directly addresses the specific failures of the Therac-25.
 
-1. **Initial Investigation (1985):** Following the Kennestone and Hamilton accidents, AECL investigated but could not reproduce the malfunctions, initially concluding that a massive overdose was physically impossible.
-2. **Escalation (1986):** After the Tyler accidents, the FDA became heavily involved and AECL submitted initial corrective action material.
-3. **Formal Action (February 1987):** The FDA notified AECL that the Therac-25 was defective and requested that customers not use it for routine therapy until corrective measures were completed ([Online Ethics Timeline](https://onlineethics.virginia.edu/cases/therac-25-timeline)).
-4. **Corrective Program (1987):** The FDA required a major corrective-action program involving hardware, software, documentation, and safety-control changes.
+1. **Explicit Safety Invariants:** A numeric counter (`Class3`) should never influence a safety decision. Modern design separates "iteration counts" from "safety-validity state."
+2. **Independent Safety Channels:** A latent software defect can remain invisible when an independent physical safety barrier prevents it from becoming a hazard. The removal of that barrier exposes the defect. Safety requires defense-in-depth (e.g., physical watchdogs).
+3. **Hazard Observability:** Cryptic error codes ("Malfunction 54") in high-risk environments are dangerous. Human-factors validation must ensure that catastrophic faults are visually and procedurally distinct from routine operational pauses.
+4. **Concurrency Validation:** Shared mutable state across asynchronous tasks (data-entry vs magnet-setting) requires strict transactional boundaries, locking, or immutable configuration payloads to prevent race conditions.
 
----
+## 15. Evidence Limitations
 
-## The Forensic Discrepancy Matrix
+While the Tyler and Yakima software defects were definitively reconstructed, several historical aspects remain unknown.
 
-| System Layer | Expected Safety Invariant | Actual System Behavior | Epistemic Status |
-| :--- | :--- | :--- | :--- |
-| **Safety Architecture** | Hardware limit switches physically block beam activation if turntable position is unsafe | Software reads sensors; independent hardware interlocks were removed | `[DOCUMENTED]` |
-| **Keyboard Parameter Entry** | Modifying parameters resets the entire concurrent validation pipeline | Editing mode created state inconsistency between software and hardware | `[RECONSTRUCTED]` |
-| **`Set-Up Test` Logic** | State variable accurately tracks safety invariants | Shared 8-bit variable rolled over to 0, skipping the collimator safety check | `[RECONSTRUCTED]` |
-| **Operator Console** | Display clear, actionable error messages identifying radiation hazards | Displayed cryptic `Malfunction 54` codes and permitted `P` override | `[DOCUMENTED]` |
+`[UNKNOWN]` We do not know the exact mechanisms that caused the first three accidents (Kennestone, Hamilton, Yakima 1). We do not know the exact patient dose received in individual cases, as simulations varied based on precise timing. Furthermore, the complete internal software development history and the exact decision rationale behind the removal of every hardware interlock remain unrecorded in the public judicial and regulatory filings.
 
----
+## 16. FAQ
 
-## 12. Systems Prevention Playbook
+**Was the Therac-25 a software failure or a hardware failure?**
+It was a systemic architectural failure. While specific software bugs (race conditions, integer overflows) triggered the accidents, the root cause was the architectural decision to remove independent hardware interlocks and rely solely on unverified software to enforce physical safety.
 
-Modern engineering lessons derived from these failure modes:
-
-### 1. Friction Defenses: UI State Atomicity
-* **[HISTORICAL LESSON]:** Rapid UI edits invalidated deep concurrent machine states. 
-* **[MODERN ENGINEERING TRANSLATION]:** Implement strict state-machine transactional isolation. In safety-critical UI design, parameter edits must invalidate downstream actuation pipelines, requiring atomic re-verification before the system can transition to an armed state.
-
-### 2. Boundary Constraints: Arithmetic Invariants & Safe Types
-* **[HISTORICAL LESSON]:** The setup variable overflowed, transforming a critical safety-check into a dangerous bypass.
-* **[MODERN ENGINEERING TRANSLATION]:** Use checked arithmetic and explicit invariant enforcement. Never use shared scalar counters to represent binary safety invariants; safety state must be validated through explicit boolean guards.
-
-### 3. Emergency Brakes: Independent Hardware Mechanisms
-* **[HISTORICAL LESSON]:** Critical safety functions were delegated to software, replacing independent hardware interlocks. 
-* **[MODERN ENGINEERING TRANSLATION]:** No single software component should be the sole safety barrier protecting humans from a hazardous actuator. Safety-critical systems require independent hardware safety mechanisms, such as independent watchdogs, redundant sensing, and non-bypassable hardware interlocks.
-
----
-
-## 13. Then vs Now: Engineering Evolution
-
-| Therac-25 Failure | Modern Defensive Pattern |
-| :--- | :--- |
-| Shared mutable safety state | Explicit state machine |
-| Concurrent editing during actuation | Transactional configuration |
-| Counter rollover | Checked arithmetic |
-| Software-only safety enforcement | Independent hardware safety layer |
-| Cryptic malfunction numbers | Actionable hazard messages |
-| Easy fault override | Fail-safe recovery |
-
----
-
-## The Archivist's Verdict
-
-> **The Archivist's Assessment:** The engineering lesson is therefore not "software is dangerous." The lesson is that a safety-critical software system must not be trusted merely because it has historically appeared reliable. Safety claims require independent enforcement, systematic verification, explicit state invariants, and evidence that the system fails safely when assumptions are violated.
-
----
-
-## 15. FAQ
-
-**Was Therac-25 caused by a race condition?**
-The March and April 1986 accidents in Tyler, Texas, were caused by a concurrent data-entry race condition. However, a separate incident in Yakima was caused by a counter overflow, and the exact mechanisms of three other known accidents remain unverified.
-
-**How many people died from Therac-25?**
-The historical investigations document six known overdose accidents, resulting in severe radiation injuries and three fatalities.
-
-**What was Malfunction 54?**
-Malfunction 54 was a cryptic error message displayed on the Therac-25 console during the Tyler race condition. It indicated a "dose input 2" error but failed to communicate to the operator that an unsafe radiation hazard was present.
+**What caused the Therac-25 race condition?**
+The Tyler race condition occurred because the data-entry task and the 8-second magnet-setting task ran concurrently and mutated shared variables without adequate isolation. This allowed the operator to change the prescription on screen while the machine was already configuring itself based on the previous input, resulting in an unsafe physical state.
 
 **What was the Class3 bug?**
-The "Class3" bug refers to the January 1987 Yakima incident, where an 8-bit variable used in a setup-test loop rolled over (overflowed to zero), causing the software to bypass a critical collimator safety check.
+In the second Yakima accident, an 8-bit counter (`Class3`) used in a setup-test loop rolled over to zero. A safety interlock check was programmed to skip collimator validation when `Class3` equaled zero. Because of precise operator timing, the beam was enabled while the machine was unsafe.
 
-**Why were hardware interlocks removed?**
-The manufacturer designed the Therac-25 to rely on software to enforce safety limits that had previously been enforced by physical electromechanical switches in older models, believing the software to be highly reliable.
+**Why didn't testing catch the Therac-25 bugs?**
+Testing was primarily conducted on integrated systems rather than through rigorous module or adversarial timing analysis. Testers did not type as fast as experienced hospital operators, meaning the concurrent timing windows were rarely triggered in the lab. Furthermore, the formal safety analysis assumed the software would not fail.
 
-**How much radiation did Therac-25 deliver?**
-Post-incident reconstructions of the Tyler accident estimate that the patient received approximately 16,500–25,000 rads in less than one second, which is tens to hundreds of times the intended treatment dose.
+**What did Malfunction 54 mean?**
+"Malfunction 54" was a cryptic software error code that occurred during the Tyler accidents. It indicated a "dose input 2" error, which the machine interpreted as an underdose. In reality, the ion chambers had saturated from a massive radiation overdose. The misleading error caused operators to simply press 'Proceed' to try again.
 
-**What did the FDA do?**
-Following the accidents, the FDA became involved in 1986, formally notified the manufacturer that the machine was defective in February 1987, and required a major corrective action program involving software, hardware, and documentation changes.
+**How many Therac-25 accidents occurred?**
+There were six known radiation overdose accidents between June 1985 and January 1987. Three of the patients subsequently died. While the radiation injuries were severe, causation in the fatalities was complex, as some patients were already suffering from terminal cancer.
 
----
+**What changes did the FDA require?**
+The FDA mandated a comprehensive Corrective Action Plan (CAP). This required AECL to redesign the software, improve the clarity of error messages, restrict mid-setup editing, and crucially, install independent physical hardware interlocks to monitor the turntable and prevent the beam from firing if misaligned.
 
 ## Primary Sources
 
-**Tier 1: Canonical Investigations and Regulatory Records**
-* [IEEE Computer: An Investigation of the Therac-25 Accidents (Nancy G. Leveson & Clark S. Turner)](https://cseweb.ucsd.edu/classes/wi14/cse291-c/reports/leveson93investigation.pdf)
-* [Online Ethics Center: Therac-25 Timeline](https://onlineethics.virginia.edu/cases/therac-25-timeline)
-* [U.S. FDA Center for Devices and Radiological Health (CDRH) Medical Device Safety Records](https://www.fda.gov/medical-devices/medical-device-safety)
-* [GAO Report: Medical Devices - The Public Health at Risk](https://www.gao.gov/assets/pemd-90-6.pdf)
+- **[IEEE Computer: An Investigation of the Therac-25 Accidents (Leveson & Turner, 1993)](https://cseweb.ucsd.edu/classes/wi14/cse291-c/reports/leveson93investigation.pdf)**
+  - *Establishes:* The six accidents, system architecture, software lineage, reconstruction of the Tyler mechanism, reconstruction of the Yakima `Class3` mechanism, and regulatory chronology. This is the canonical forensic investigation.
+- **[FDA Center for Devices and Radiological Health (CDRH) Medical Device Safety Records](https://www.fda.gov/medical-devices/medical-device-safety)**
+  - *Establishes:* The formal defect determination, corrective-action requirements, and regulatory communications.
+- **[GAO Report: Medical Devices - The Public Health at Risk](https://www.gao.gov/assets/pemd-90-6.pdf)**
+  - *Establishes:* Broader historical medical-device reporting weaknesses and the FDA post-market surveillance regulatory environment of the era.
 
-**Tier 2: Historical Case Archives**
-* [University of Maryland Computing Archives: AECL Therac-25 Technical Review](https://www.cs.umd.edu/class/spring2003/cmsc838p/Misc/therac.pdf)
-* [IEEE Digital Library: Medical Linear Accelerator Computer Safety Evaluation](https://doi.org/10.1109/MC.1993.274940)
+## The Archivist's Verdict
+
+> **The Archivist's Assessment:** The Therac-25 disaster is the foundational text of modern safety-critical engineering, not simply because it contained software bugs, but because it demonstrated what happens when physical safety barriers are replaced by unverified code. AECL’s engineering failure was trusting that a system that worked safely with hardware interlocks (Therac-20) would remain safe when those interlocks were removed and their responsibilities transferred to software. The race conditions and counter overflows were ordinary programming mistakes; the architecture that allowed those mistakes to deliver lethal doses of radiation was the true catastrophe.
