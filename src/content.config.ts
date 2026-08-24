@@ -28,7 +28,7 @@ const blog = defineCollection({
 		systemImpact: z.string().optional(),
 		heroImage: z.string().optional(),
 		ogImage: z.string().optional(),
-		category: z.enum(['work', 'money', 'relationships', 'internet', 'ai', 'human', 'corporate']).default('corporate'),
+		category: z.enum(['work', 'money', 'relationships', 'internet', 'ai', 'human', 'corporate', 'military', 'embedded-systems']).default('corporate'),
 		archetype: z.enum([
 			'the-confession',
 			'the-incident',
