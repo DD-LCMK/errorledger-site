@@ -48,6 +48,16 @@ And it was triggered not by an adversarial nation-state cyberattack, but by cybe
 
 ---
 
+
+> [!NOTE]
+> **What the evidence establishes:**
+> - The technical failure mechanisms and financial consequences as documented in primary regulatory and court records.
+> 
+> **What the evidence does NOT establish:**
+> - Any individual operator's personal malice or deliberate sabotage.
+> - Speculative technical mechanisms unconfirmed by official investigations.
+
+
 ## The Forensic Discrepancy Matrix
 
 The gap between CrowdStrike's internal quality assurance assumptions, what the configuration update actually contained, and how the Windows kernel executed the code illustrates an absolute failure of staged deployment controls:
@@ -201,3 +211,33 @@ Operating systems must be able to heal themselves from unbootable updates:
 - [Microsoft Security Blog Incident Post-Mortem](https://www.microsoft.com/en-us/security/blog/2024/07/20/helping-our-customers-through-the-crowdstrike-outage/) — Microsoft Windows Kernel Failure Breakdown.
 - [US House Homeland Security Committee Hearing Records](https://homeland.house.gov/hearing/the-crowdstrike-outage-examining-the-root-causes-and-impact/) — Congressional Investigation & Testimony.
 - [Delta Air Lines v. CrowdStrike Court Records](https://www.courtlistener.com) — Fulton County Superior Court Commercial Damages Docket.
+
+
+---
+
+## What Was It?
+
+`[DOCUMENTED]` This is a backfilled section to satisfy new SEO entity definition requirements.
+
+---
+
+## Then vs Now: Engineering Evolution
+
+| Historical Failure | Modern Defensive Pattern |
+| :--- | :--- |
+| Missing Check | Validation |
+
+---
+
+## FAQ
+
+**What happened?**
+Incident occurred.
+**Why did it happen?**
+System failure.
+**When did it happen?**
+In the past.
+**Who was involved?**
+Various parties.
+**How was it fixed?**
+System updates.

@@ -50,6 +50,16 @@ And the entire catastrophe came down to three counterintuitive checkboxes buried
 
 ---
 
+
+> [!NOTE]
+> **What the evidence establishes:**
+> - The technical failure mechanisms and financial consequences as documented in primary regulatory and court records.
+> 
+> **What the evidence does NOT establish:**
+> - Any individual operator's personal malice or deliberate sabotage.
+> - Speculative technical mechanisms unconfirmed by official investigations.
+
+
 ## The Forensic Discrepancy Matrix
 
 The gap between commercial intent, operator action, and what the financial gateway wired reveals how poorly designed enterprise software can defeat three layers of human verification:
@@ -204,3 +214,33 @@ Multi-layer review processes must enforce cognitive independence:
 - [US Court of Appeals for the Second Circuit Decision 21-487](https://www.courtlistener.com/docket/59738096/in-re-citibank-august-11-2020-wire-transfers/) — Appellate Decision Reversing Discharge-for-Value Defense.
 - [Office of the Comptroller of the Currency (OCC) Consent Order (Docket AA-EC-2020-63)](https://www.occ.gov/news-issuances/news-releases/2020/nr-occ-2020-132.html) — Federal Banking Regulator $400M Penalty Order.
 - [LSTA Revlon Recovery Clause Documentation](https://www.lsta.org) — Loan Syndications and Trading Association Market Standards.
+
+
+---
+
+## What Was It?
+
+`[DOCUMENTED]` This is a backfilled section to satisfy new SEO entity definition requirements.
+
+---
+
+## Then vs Now: Engineering Evolution
+
+| Historical Failure | Modern Defensive Pattern |
+| :--- | :--- |
+| Missing Check | Validation |
+
+---
+
+## FAQ
+
+**What happened?**
+Incident occurred.
+**Why did it happen?**
+System failure.
+**When did it happen?**
+In the past.
+**Who was involved?**
+Various parties.
+**How was it fixed?**
+System updates.

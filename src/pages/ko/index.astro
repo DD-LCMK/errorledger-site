@@ -211,17 +211,34 @@ const categoryIcons: Record<string, string> = {
 				color: #f59e0b;
 			}
 
-			/* Lead Featured Investigation Card */
 			.lead-card {
 				background: #171717;
 				border: 1px solid #262626;
 				border-radius: 16px;
-				padding: 1.75rem;
 				margin-bottom: 3rem;
 				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 				transition: border-color 0.2s ease, transform 0.2s ease;
 				min-width: 0;
 				box-sizing: border-box;
+				overflow: hidden;
+				display: flex;
+				flex-direction: column;
+			}
+			.lead-card-image {
+				width: 100%;
+				height: 240px;
+				object-fit: cover;
+				border-bottom: 1px solid #262626;
+				transition: transform 0.4s ease;
+			}
+			.lead-card:hover .lead-card-image {
+				transform: scale(1.02);
+			}
+			.lead-card-content {
+				padding: 1.75rem;
+				background: #171717;
+				position: relative;
+				z-index: 2;
 			}
 			.lead-card:hover {
 				border-color: #f43f5e;
@@ -373,7 +390,6 @@ const categoryIcons: Record<string, string> = {
 				background: #171717;
 				border: 1px solid #262626;
 				border-radius: 12px;
-				padding: 1.35rem;
 				text-decoration: none;
 				display: flex;
 				flex-direction: column;
@@ -381,6 +397,24 @@ const categoryIcons: Record<string, string> = {
 				transition: all 0.2s ease;
 				min-width: 0;
 				box-sizing: border-box;
+				overflow: hidden;
+			}
+			.card-hero-image {
+				width: 100%;
+				height: 160px;
+				object-fit: cover;
+				border-bottom: 1px solid #262626;
+				transition: opacity 0.2s ease;
+			}
+			.ledger-incident-card:hover .card-hero-image {
+				opacity: 0.9;
+			}
+			.ledger-card-content {
+				padding: 1.35rem;
+				display: flex;
+				flex-direction: column;
+				flex-grow: 1;
+				justify-content: space-between;
 			}
 			.ledger-incident-card:hover {
 				border-color: #f43f5e;
@@ -728,18 +762,25 @@ const categoryIcons: Record<string, string> = {
 							</div>
 							<a href={`/ko/blog/${featuredPost.data.slug.replace(/^ko\//, '')}`} style="text-decoration: none;">
 								<div class="lead-card">
-									<div class="lead-meta">
-										<span class="category-tag">{categoryIcons[featuredPost.data.category] || featuredPost.data.category}</span>
-										<span class="read-time-tag">⏱️ {featuredPost.data.read_time_minutes || 6}분 읽기</span>
-									</div>
-									<h2 class="lead-title">{featuredPost.data.title}</h2>
-									{featuredPost.data.subtitle && (
-										<p class="lead-subtitle">{featuredPost.data.subtitle}</p>
+									{featuredPost.data.heroImage && (
+										<div style="overflow: hidden;">
+											<img src={featuredPost.data.heroImage} alt={featuredPost.data.title} class="lead-card-image" />
+										</div>
 									)}
-									<p class="lead-desc">{featuredPost.data.description}</p>
-									<div class="lead-footer">
-										<span>검증 등급: {featuredPost.data.provenance_label || "공식 문서 검증"}</span>
-										<span class="open-lead-btn">사건 기록 열람하기 &rarr;</span>
+									<div class="lead-card-content">
+										<div class="lead-meta">
+											<span class="category-tag">{categoryIcons[featuredPost.data.category] || featuredPost.data.category}</span>
+											<span class="read-time-tag">⏱️ {featuredPost.data.read_time_minutes || 6}분 읽기</span>
+										</div>
+										<h2 class="lead-title">{featuredPost.data.title}</h2>
+										{featuredPost.data.subtitle && (
+											<p class="lead-subtitle">{featuredPost.data.subtitle}</p>
+										)}
+										<p class="lead-desc">{featuredPost.data.description}</p>
+										<div class="lead-footer">
+											<span>검증 등급: {featuredPost.data.provenance_label || "공식 문서 검증"}</span>
+											<span class="open-lead-btn">사건 기록 열람하기 &rarr;</span>
+										</div>
 									</div>
 								</div>
 							</a>
@@ -756,17 +797,22 @@ const categoryIcons: Record<string, string> = {
 							<div class="ledger-posts-grid">
 								{recentPosts.map((post) => (
 									<a href={`/ko/blog/${post.data.slug.replace(/^ko\//, '')}`} class="ledger-incident-card">
-										<div>
-											<div class="card-meta-row">
-												<span class="card-cat-badge">{categoryIcons[post.data.category] || post.data.category}</span>
-												<span class="card-readtime-txt">⏱️ {post.data.read_time_minutes || 5}분</span>
+										{post.data.heroImage && (
+											<img src={post.data.heroImage} alt={post.data.title} class="card-hero-image" />
+										)}
+										<div class="ledger-card-content">
+											<div>
+												<div class="card-meta-row">
+													<span class="card-cat-badge">{categoryIcons[post.data.category] || post.data.category}</span>
+													<span class="card-readtime-txt">⏱️ {post.data.read_time_minutes || 5}분</span>
+												</div>
+												<h3 class="card-headline">{post.data.title}</h3>
+												<p class="card-summary-txt">{post.data.description}</p>
 											</div>
-											<h3 class="card-headline">{post.data.title}</h3>
-											<p class="card-summary-txt">{post.data.description}</p>
-										</div>
-										<div class="card-foot-row">
-											<FormattedDate date={post.data.pubDate || new Date()} />
-											<span class="card-action-txt">사건 읽기 &rarr;</span>
+											<div class="card-foot-row">
+												<FormattedDate date={post.data.pubDate || new Date()} />
+												<span class="card-action-txt">사건 읽기 &rarr;</span>
+											</div>
 										</div>
 									</a>
 								))}

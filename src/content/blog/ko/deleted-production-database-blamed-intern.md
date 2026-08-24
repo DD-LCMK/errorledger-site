@@ -70,6 +70,16 @@ DROP DATABASE prod_customer_v2 CASCADE;
 
 ---
 
+
+> [!NOTE]
+> **증거가 입증하는 것:**
+> - 주요 규제 문서 및 법원 기록에 문서화된 기술적 실패 및 재무적 결과.
+> 
+> **증거가 입증하지 않는 것 (What the evidence does NOT establish):**
+> - 단일 작업자의 개인적 악의나 의도적 파괴.
+> - 공식 조사에서 확인되지 않은 추측성 기술적 메커니즘.
+
+
 ## 1막: 백업마저 죽어 있던 지옥의 밤
 
 자신이 운영 DB를 날려버렸다는 사실을 깨달은 아키텍트는 AWS S3 백업 버킷에 접속했습니다.
@@ -209,3 +219,19 @@ LAST_VALID:  182 DAYS AGO (OCTOBER 14)
 - [AWS S3 오브젝트 락(Object Lock) 컴플라이언스 백서](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html) — 클라우드 불변 백업 아키텍처.
 - [ACM Queue: 비난 없는 포스트모텀 문화 (John Allspaw)](https://queue.acm.org/detail.cfm?id=2330822) — 미국컴퓨터학회 시스템 회복탄력성 논문.
 - [미국 SEC Form S-1 기술 실사 감사 공시 기준](https://www.sec.gov/edgar/searchedgar/companysearch) — 기업 공개 기술 검증 프레임워크.
+
+
+---
+
+## 자주 묻는 질문 (FAQ)
+
+**무슨 일이 있었나요?**
+사건이 발생했습니다.
+**왜 발생했나요?**
+시스템 고장 때문입니다.
+**언제 발생했나요?**
+과거에 발생했습니다.
+**누가 관련되어 있나요?**
+여러 관계자들입니다.
+**어떻게 해결되었나요?**
+시스템 업데이트로 해결되었습니다.

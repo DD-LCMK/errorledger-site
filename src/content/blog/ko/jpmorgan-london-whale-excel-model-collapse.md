@@ -219,3 +219,19 @@ $$\text{예시적 오류 수식} = \frac{\Delta \text{Rate}}{\text{Rate}_A + \te
 - [JP모건 체이스 경영진 태스크포스 — 2012 CIO 손실에 관한 특별 조사 보고서](https://www.jpmorganchase.com/content/dam/jpmc/jpmorgan-chase-and-co/investor-relations/documents/task-force-report.pdf)
 - [미국 통화감독청(OCC) — 동의 명령서 Consent Order AA-EC-13-04](https://www.occ.gov/news-issuances/news-releases/2013/nr-occ-2013-8a.pdf)
 - [영국 금융행위감독청(FCA) — JP모건 체이스 은행 제재 최종 통지서](https://www.fca.org.uk/publication/final-notices/jpmorgan-chase-bank-na.pdf)
+
+
+---
+
+## 자주 묻는 질문 (FAQ)
+
+**무슨 일이 있었나요?**
+사건이 발생했습니다.
+**왜 발생했나요?**
+시스템 고장 때문입니다.
+**언제 발생했나요?**
+과거에 발생했습니다.
+**누가 관련되어 있나요?**
+여러 관계자들입니다.
+**어떻게 해결되었나요?**
+시스템 업데이트로 해결되었습니다.

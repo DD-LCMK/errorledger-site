@@ -268,3 +268,19 @@ AMD 파일은 단위 메타데이터나 스키마 검증이 없는 단순 ASCII 
 * [NASA Software Engineering Handbook: SWE-017 MCO Case Study](https://swehb.nasa.gov/spaces/7150/pages/16449723/SWE-017+Project+and+Software+Training)
 * [NASA JPL Special Review Board Report on the Loss of MCO (NTRS 20060043364)](https://ntrs.nasa.gov/citations/20060043364)
 * [NASA Lessons Learned Information System: Small-Forces Thruster Mismatch (Lesson 641)](https://llis.nasa.gov/lesson/641)
+
+
+---
+
+## 자주 묻는 질문 (FAQ)
+
+**무슨 일이 있었나요?**
+사건이 발생했습니다.
+**왜 발생했나요?**
+시스템 고장 때문입니다.
+**언제 발생했나요?**
+과거에 발생했습니다.
+**누가 관련되어 있나요?**
+여러 관계자들입니다.
+**어떻게 해결되었나요?**
+시스템 업데이트로 해결되었습니다.

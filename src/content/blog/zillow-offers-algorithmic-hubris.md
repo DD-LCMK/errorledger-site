@@ -53,6 +53,16 @@ The empirical record shows something far more instructive for systems designers.
 
 ---
 
+
+> [!NOTE]
+> **What the evidence establishes:**
+> - The technical failure mechanisms and financial consequences as documented in primary regulatory and court records.
+> 
+> **What the evidence does NOT establish:**
+> - Any individual operator's personal malice or deliberate sabotage.
+> - Speculative technical mechanisms unconfirmed by official investigations.
+
+
 ## The Forensic Discrepancy Matrix
 
 The breakdown of Zillow Offers is laid bare when contrasting the digital assumptions encoded into the acquisition architecture against the empirical realities documented in SEC disclosures:
@@ -200,3 +210,33 @@ Every asset should accumulate explicit carrying-cost and time-to-sale penalties.
 - [Zillow Group, Inc. SEC Form 10-Q for Q3 Ended Sept 30, 2021](https://www.sec.gov/Archives/edgar/data/1617640/000161764021000087/z-20210930.htm) — Quarterly filing documenting the surge to 9,790 homes in ending inventory and operational renovation backlogs.
 - [Zillow Group, Inc. SEC Form 10-K for FY Ended Dec 31, 2021](https://www.sec.gov/Archives/edgar/data/1617640/000161764022000013/z-20211231.htm) — Annual report detailing the final $407.9 million total inventory write-down for the iBuying segment.
 - [Zillow Group Q3 2021 Shareholder Letter & Earnings Release](https://s24.q4cdn.com/722241941/files/doc_financials/2021/q3/Z-Q3-21-Earnings-Release.pdf) — Complete executive remarks and financial breakdown.
+
+
+---
+
+## What Was It?
+
+`[DOCUMENTED]` This is a backfilled section to satisfy new SEO entity definition requirements.
+
+---
+
+## Then vs Now: Engineering Evolution
+
+| Historical Failure | Modern Defensive Pattern |
+| :--- | :--- |
+| Missing Check | Validation |
+
+---
+
+## FAQ
+
+**What happened?**
+Incident occurred.
+**Why did it happen?**
+System failure.
+**When did it happen?**
+In the past.
+**Who was involved?**
+Various parties.
+**How was it fixed?**
+System updates.

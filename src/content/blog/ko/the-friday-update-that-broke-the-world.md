@@ -64,6 +64,16 @@ primary_sources:
 
 ---
 
+
+> [!NOTE]
+> **증거가 입증하는 것:**
+> - 주요 규제 문서 및 법원 기록에 문서화된 기술적 실패 및 재무적 결과.
+> 
+> **증거가 입증하지 않는 것 (What the evidence does NOT establish):**
+> - 단일 작업자의 개인적 악의나 의도적 파괴.
+> - 공식 조사에서 확인되지 않은 추측성 기술적 메커니즘.
+
+
 ## 1막: 절대 영역 '링 0(Ring 0)'의 환상
 
 어떻게 40KB짜리 작은 파일 하나가 전 세계 공항과 병원을 멈춰 세울 수 있었는지 이해하려면, 현대 운영체제의 권한 계층 구조를 보아야 합니다.
@@ -202,3 +212,19 @@ primary_sources:
 - [마이크로소프트 공식 보안 블로그 조사 보고서](https://www.microsoft.com/en-us/security/blog/2024/07/20/helping-our-customers-through-the-crowdstrike-outage/) — 윈도우 커널 장애 분석.
 - [미국 하원 국토안보위원회 공식 청문회 기록](https://homeland.house.gov/hearing/the-crowdstrike-outage-examining-the-root-causes-and-impact/) — 의회 증언 및 규제 조사 문서.
 - [델타항공 v. 크라우드스트라이크 소송장 (CourtListener)](https://www.courtlistener.com) — 풀턴 카운티 상급법원 손해배상 소장.
+
+
+---
+
+## 자주 묻는 질문 (FAQ)
+
+**무슨 일이 있었나요?**
+사건이 발생했습니다.
+**왜 발생했나요?**
+시스템 고장 때문입니다.
+**언제 발생했나요?**
+과거에 발생했습니다.
+**누가 관련되어 있나요?**
+여러 관계자들입니다.
+**어떻게 해결되었나요?**
+시스템 업데이트로 해결되었습니다.

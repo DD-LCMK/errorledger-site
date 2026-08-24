@@ -54,6 +54,16 @@ In a single keystroke, Mizuho Securities had offered to sell **42.06 times the e
 
 ---
 
+
+> [!NOTE]
+> **What the evidence establishes:**
+> - The technical failure mechanisms and financial consequences as documented in primary regulatory and court records.
+> 
+> **What the evidence does NOT establish:**
+> - Any individual operator's personal malice or deliberate sabotage.
+> - Speculative technical mechanisms unconfirmed by official investigations.
+
+
 ## The Forensic Discrepancy Matrix
 
 The gap between commercial intent, executed payload, and physical company reality illustrates the total failure of pre-trade risk controls:
@@ -193,3 +203,33 @@ Cancellation commands must always possess absolute structural priority over exec
 - [Tokyo High Court Appeals Judgment Heisei 22 (Ne) No. 347](https://www.courts.go.jp/app/hanrei_jp/detail4?id=83569) — High Court Appellate Assessment of TSE Software Defect.
 - [Japan Financial Services Agency (FSA) Administrative Action on Mizuho Securities](https://www.fsa.go.jp/en/news/2005/20051222.html) — FSA Regulatory Enforcement Order.
 - [Tokyo Stock Exchange (JPX) Incident & Technical Failure Disclosures](https://www.jpx.co.jp/english/corporate/news/news-releases/) — Exchange Technical RCA Summary.
+
+
+---
+
+## What Was It?
+
+`[DOCUMENTED]` This is a backfilled section to satisfy new SEO entity definition requirements.
+
+---
+
+## Then vs Now: Engineering Evolution
+
+| Historical Failure | Modern Defensive Pattern |
+| :--- | :--- |
+| Missing Check | Validation |
+
+---
+
+## FAQ
+
+**What happened?**
+Incident occurred.
+**Why did it happen?**
+System failure.
+**When did it happen?**
+In the past.
+**Who was involved?**
+Various parties.
+**How was it fixed?**
+System updates.

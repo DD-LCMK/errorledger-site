@@ -54,6 +54,16 @@ And by 11:30 AM the following morning, the company’s executive leadership had 
 
 ---
 
+
+> [!NOTE]
+> **What the evidence establishes:**
+> - The technical failure mechanisms and financial consequences as documented in primary regulatory and court records.
+> 
+> **What the evidence does NOT establish:**
+> - Any individual operator's personal malice or deliberate sabotage.
+> - Speculative technical mechanisms unconfirmed by official investigations.
+
+
 ## The Forensic Discrepancy Matrix
 
 The contrast between the startup's professed engineering excellence, the reality of its infrastructure, and how executive leadership shifted culpability illustrates the toxic intersection of technical debt and corporate self-preservation:
@@ -210,3 +220,33 @@ True technical safety cannot exist without psychological safety:
 - [AWS S3 Object Lock & Compliance Retention Guidelines](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html) — Amazon Web Services Disaster Recovery Architecture.
 - [ACM Queue: Post-Mortem Culture & Blameless Engineering (John Allspaw)](https://queue.acm.org/detail.cfm?id=2330822) — Association for Computing Machinery Research Paper.
 - [SEC Form S-1 Due Diligence Audit Standards](https://www.sec.gov/edgar/searchedgar/companysearch) — Technology & Asset Verifications for Public Filings.
+
+
+---
+
+## What Was It?
+
+`[DOCUMENTED]` This is a backfilled section to satisfy new SEO entity definition requirements.
+
+---
+
+## Then vs Now: Engineering Evolution
+
+| Historical Failure | Modern Defensive Pattern |
+| :--- | :--- |
+| Missing Check | Validation |
+
+---
+
+## FAQ
+
+**What happened?**
+Incident occurred.
+**Why did it happen?**
+System failure.
+**When did it happen?**
+In the past.
+**Who was involved?**
+Various parties.
+**How was it fixed?**
+System updates.

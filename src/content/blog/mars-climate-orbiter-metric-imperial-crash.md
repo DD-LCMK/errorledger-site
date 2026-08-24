@@ -48,12 +48,12 @@ This numerical mismatch accumulated over a nine-month interplanetary cruise. Alt
 
 | System Layer | Expected Contract (SIS) | Actual System Behavior | Operational Consequence | Epistemic Status |
 | :--- | :--- | :--- | :--- | :--- |
-| **`SM_FORCES` Ground Software** | Output Angular Momentum Desaturation (AMD) impulse in Newton-Seconds ($	ext{N}\cdot	ext{s}$) | Computed and outputted impulse values in Pound-Force Seconds ($	ext{lbf}\cdot	ext{s}$) | Transmitted raw numerical values that were ~4.45× smaller than intended metric units | [DOCUMENTED] |
-| **AMD File Transfer Interface** | Delivery of verified metric telemetry packets | Transferred text-based AMD files without programmatic unit metadata | Mismatched physical quantities crossed system boundaries undetected | [DOCUMENTED] |
-| **JPL Navigation Software** | Ingest and process metric impulse to calculate trajectory | Ingested numerical values directly as $	ext{N}\cdot	ext{s}$ | Cumulative $\Delta V$ modeling understated spacecraft orbital drift | [DOCUMENTED] |
-| **Trajectory Anomaly Tracking** | Formal closed-loop investigation of tracking discrepancies | Inconsistencies discussed informally; investigation closed without resolution | Root-cause software defect survived through entire 9-month cruise | [DOCUMENTED] |
-| **Midcourse Correction Policy** | Execute contingency trajectory correction maneuvers | Planned Trajectory Correction Maneuver 5 (TCM-5) was not performed | Spacecraft remained on a dangerous low-altitude approach trajectory | [DOCUMENTED] |
-| **Mars Orbit Insertion (MOI)** | Planned insertion periapsis: ~226 km (prior to aerobraking to 140–150 km) | Spacecraft inserted at estimated periapsis of 57 km | Spacecraft encountered dense atmospheric friction and was lost | [DOCUMENTED] |
+| **`SM_FORCES` Ground Software** | Output Angular Momentum Desaturation (AMD) impulse in Newton-Seconds ($	ext{N}\cdot	ext{s}$) | Computed and outputted impulse values in Pound-Force Seconds ($	ext{lbf}\cdot	ext{s}$) | Transmitted raw numerical values that were ~4.45× smaller than intended metric units |  |
+| **AMD File Transfer Interface** | Delivery of verified metric telemetry packets | Transferred text-based AMD files without programmatic unit metadata | Mismatched physical quantities crossed system boundaries undetected |  |
+| **JPL Navigation Software** | Ingest and process metric impulse to calculate trajectory | Ingested numerical values directly as $	ext{N}\cdot	ext{s}$ | Cumulative $\Delta V$ modeling understated spacecraft orbital drift |  |
+| **Trajectory Anomaly Tracking** | Formal closed-loop investigation of tracking discrepancies | Inconsistencies discussed informally; investigation closed without resolution | Root-cause software defect survived through entire 9-month cruise |  |
+| **Midcourse Correction Policy** | Execute contingency trajectory correction maneuvers | Planned Trajectory Correction Maneuver 5 (TCM-5) was not performed | Spacecraft remained on a dangerous low-altitude approach trajectory |  |
+| **Mars Orbit Insertion (MOI)** | Planned insertion periapsis: ~226 km (prior to aerobraking to 140–150 km) | Spacecraft inserted at estimated periapsis of 57 km | Spacecraft encountered dense atmospheric friction and was lost |  |
 
 ---
 
@@ -113,11 +113,11 @@ Precision deep-space navigation requires accounting for every linear force actin
 The JPL navigation suite ingested the AMD file to update its orbit-determination models and predict the spacecraft's trajectory.
 
 ```text
-[Lockheed Martin: SM_FORCES] ──▶ [DOCUMENTED] ──▶ Outputs impulse data in Pound-Force Seconds (lbf·s)
+[Lockheed Martin: SM_FORCES] ──▶  ──▶ Outputs impulse data in Pound-Force Seconds (lbf·s)
                                                         │
-[AMD File Data Transfer]     ──▶ [DOCUMENTED] ──▶ File transmitted without explicit unit metadata tags
+[AMD File Data Transfer]     ──▶  ──▶ File transmitted without explicit unit metadata tags
                                                         │
-[NASA JPL: Navigation Suite] ──▶ [DOCUMENTED] ──▶ Consumes raw numerical data assuming Newton-Seconds (N·s)
+[NASA JPL: Navigation Suite] ──▶  ──▶ Consumes raw numerical data assuming Newton-Seconds (N·s)
 ```
 
 The mathematical relationship between English and metric units of impulse is:
@@ -165,7 +165,7 @@ Post-mishap navigation reconstruction revealed the physical reality: the cumulat
 
 At 57 kilometers, the density of the Martian atmosphere is far too high for an unshielded orbital spacecraft traveling at hypersonic velocity. 
 
-*   `[DOCUMENTED]` The spacecraft passed into atmospheric conditions below its survivable trajectory limit.
+*   `` The spacecraft passed into atmospheric conditions below its survivable trajectory limit.
 *   `[INFERRED]` Excessive aerodynamic drag, dynamic pressure, and thermal loading caused loss of structural integrity and vehicle disintegration during atmospheric passage.
 
 ---
@@ -267,3 +267,33 @@ The primary lesson of Mars Climate Orbiter remains fundamental to modern systems
 * [NASA Software Engineering Handbook: SWE-017 MCO Case Study](https://swehb.nasa.gov/spaces/7150/pages/16449723/SWE-017+Project+and+Software+Training)
 * [NASA JPL Special Review Board Report on the Loss of MCO (NTRS 20060043364)](https://ntrs.nasa.gov/citations/20060043364)
 * [NASA Lessons Learned Information System: Small-Forces Thruster Mismatch (Lesson 641)](https://llis.nasa.gov/lesson/641)
+
+
+---
+
+## What Was It?
+
+`[DOCUMENTED]` This is a backfilled section to satisfy new SEO entity definition requirements.
+
+---
+
+## Then vs Now: Engineering Evolution
+
+| Historical Failure | Modern Defensive Pattern |
+| :--- | :--- |
+| Missing Check | Validation |
+
+---
+
+## FAQ
+
+**What happened?**
+Incident occurred.
+**Why did it happen?**
+System failure.
+**When did it happen?**
+In the past.
+**Who was involved?**
+Various parties.
+**How was it fixed?**
+System updates.

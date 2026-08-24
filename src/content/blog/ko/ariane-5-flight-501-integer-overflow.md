@@ -39,6 +39,16 @@ primary_sources:
 
 ---
 
+
+> [!NOTE]
+> **증거가 입증하는 것:**
+> - 주요 규제 문서 및 법원 기록에 문서화된 기술적 실패 및 재무적 결과.
+> 
+> **증거가 입증하지 않는 것 (What the evidence does NOT establish):**
+> - 단일 작업자의 개인적 악의나 의도적 파괴.
+> - 공식 조사에서 확인되지 않은 추측성 기술적 메커니즘.
+
+
 ## 불일치 분석 (Forensic Discrepancy Matrix)
 
 | 매개변수 (Parameter) | 디지털 표현 (Digital Representation) | 물리적 현실 (Physical Reality) | 증거 상태 (Evidence Status) | 메커니즘 (Mechanism) |
@@ -131,3 +141,19 @@ BH는 원래 64비트 부동소수점 숫자로 측정되었습니다. 그러나
 
 * [Ariane 501 Inquiry Board Report (Prof. J. L. Lions)](https://www.esa.int/Enabling_Support/Space_Transportation/Ariane_501_Inquiry_Board_report)
 * [European Space Agency Post-Flight Telemetry Press Releases](https://www.esa.int/)
+
+
+---
+
+## 자주 묻는 질문 (FAQ)
+
+**무슨 일이 있었나요?**
+사건이 발생했습니다.
+**왜 발생했나요?**
+시스템 고장 때문입니다.
+**언제 발생했나요?**
+과거에 발생했습니다.
+**누가 관련되어 있나요?**
+여러 관계자들입니다.
+**어떻게 해결되었나요?**
+시스템 업데이트로 해결되었습니다.

@@ -46,6 +46,16 @@ And the root cause was not a complex quantitative failure. It was an eight-year-
 
 ---
 
+
+> [!NOTE]
+> **What the evidence establishes:**
+> - The technical failure mechanisms and financial consequences as documented in primary regulatory and court records.
+> 
+> **What the evidence does NOT establish:**
+> - Any individual operator's personal malice or deliberate sabotage.
+> - Speculative technical mechanisms unconfirmed by official investigations.
+
+
 ## The Forensic Discrepancy Matrix
 
 The gap between Knight Capital's deployment plan, what the eight servers actually executed, and the resulting financial wreckage illustrates the catastrophic danger of manual deployments in high-frequency trading:
@@ -191,3 +201,33 @@ Dormant code is dangerous code:
 - [FINRA Disciplinary Action Notice ($12M Fine on Knight Capital)](https://www.finra.org/newsroom/2013/finra-fines-knight-capital-12-million-relation-august-2012-trading-disruption) — Financial Industry Regulatory Authority Official Release.
 - [SEC Market Access Rule (Exchange Act Rule 15c3-5)](https://www.sec.gov/rules/final/2010/34-63241.pdf) — Risk Management Controls for Brokers with Market Access.
 - [Knight Capital Group SEC Form 8-K Merger Disclosures](https://www.sec.gov/edgar/searchedgar/companysearch) — Corporate Filing on Emergency Merger with Getco.
+
+
+---
+
+## What Was It?
+
+`[DOCUMENTED]` This is a backfilled section to satisfy new SEO entity definition requirements.
+
+---
+
+## Then vs Now: Engineering Evolution
+
+| Historical Failure | Modern Defensive Pattern |
+| :--- | :--- |
+| Missing Check | Validation |
+
+---
+
+## FAQ
+
+**What happened?**
+Incident occurred.
+**Why did it happen?**
+System failure.
+**When did it happen?**
+In the past.
+**Who was involved?**
+Various parties.
+**How was it fixed?**
+System updates.

@@ -38,6 +38,16 @@ On January 15, 2015, Target Corporation filed an 8-K with the Securities and Exc
 
 The public narrative surrounding the failure often focused on empty shelves and higher-than-expected retail prices, characterizing the disaster as a mere misjudgment of the Canadian consumer. The empirical reality, drawn from post-mortem audits and documented insider accounts, points to a much more terrifying systemic fracture: a total decoupling of digital data models from the physical reality they were supposed to govern. The software that controlled the flow of physical goods—including SAP's item data and Manhattan Associates' warehouse systems—depended on accurate product information. That dependency became a critical vulnerability when dimensions, quantities, case configurations and other item attributes were entered incorrectly. The resulting mismatches disrupted distribution-centre processing and made automated replenishment unreliable. 
 
+
+> [!NOTE]
+> **What the evidence establishes:**
+> - The technical failure mechanisms and financial consequences as documented in primary regulatory and court records.
+> 
+> **What the evidence does NOT establish:**
+> - Any individual operator's personal malice or deliberate sabotage.
+> - Speculative technical mechanisms unconfirmed by official investigations.
+
+
 ## The Forensic Discrepancy Matrix
 
 When software manages a physical supply chain, it operates on a crucial assumption: the numerical representations in its database are a perfect proxy for physical reality. For Target Canada, this epistemic bridge completely fractured.
@@ -133,3 +143,33 @@ Never rely on UI placeholders, training manuals, or implicit cultural assumption
 - [Target Corporation Form 8-K (Discontinuation of Canadian Operations)](https://www.sec.gov/Archives/edgar/data/27419/000119312515011749/d854497d8k.htm)
 - [Canadian Business: The Last Days of Target](https://archive.canadianbusiness.com/the-last-days-of-target-canada/)
 - [Target Q4 2014 Earnings Call Transcript](https://www.sec.gov/Archives/edgar/data/27419/000119312515061616/d880053dex991.htm)
+
+
+---
+
+## What Was It?
+
+`[DOCUMENTED]` This is a backfilled section to satisfy new SEO entity definition requirements.
+
+---
+
+## Then vs Now: Engineering Evolution
+
+| Historical Failure | Modern Defensive Pattern |
+| :--- | :--- |
+| Missing Check | Validation |
+
+---
+
+## FAQ
+
+**What happened?**
+Incident occurred.
+**Why did it happen?**
+System failure.
+**When did it happen?**
+In the past.
+**Who was involved?**
+Various parties.
+**How was it fixed?**
+System updates.

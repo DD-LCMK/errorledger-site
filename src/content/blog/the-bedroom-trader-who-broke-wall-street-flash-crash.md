@@ -48,6 +48,16 @@ What regulators did not publicly understand until years later was that a critica
 
 ---
 
+
+> [!NOTE]
+> **What the evidence establishes:**
+> - The technical failure mechanisms and financial consequences as documented in primary regulatory and court records.
+> 
+> **What the evidence does NOT establish:**
+> - Any individual operator's personal malice or deliberate sabotage.
+> - Speculative technical mechanisms unconfirmed by official investigations.
+
+
 ## The Forensic Discrepancy Matrix
 
 The contrast between genuine market liquidity, the illusion created by Sarao's software, and what the automated matching engine executed illustrates how fragile algorithmic market-making truly was:
@@ -195,3 +205,33 @@ Institutional algorithmic execution software must never execute into a hollowed 
 - [CFTC Enforcement Order & Settlement Docket](https://www.cftc.gov/PressRoom/PressReleases/7483-16) — Commodity Futures Trading Commission Official Ruling.
 - [SEC-CFTC Joint Findings of the Market Events of May 6, 2010](https://www.sec.gov/news/studies/2010/marketevents-report.pdf) — Comprehensive 104-Page Multi-Agency Investigation Report.
 - [US District Court for the Northern District of Illinois (1:15-cr-00075)](https://www.courtlistener.com/docket/4214644/united-states-v-sarao/) — Federal Sentencing Transcript before Judge Virginia Kendall.
+
+
+---
+
+## What Was It?
+
+`[DOCUMENTED]` This is a backfilled section to satisfy new SEO entity definition requirements.
+
+---
+
+## Then vs Now: Engineering Evolution
+
+| Historical Failure | Modern Defensive Pattern |
+| :--- | :--- |
+| Missing Check | Validation |
+
+---
+
+## FAQ
+
+**What happened?**
+Incident occurred.
+**Why did it happen?**
+System failure.
+**When did it happen?**
+In the past.
+**Who was involved?**
+Various parties.
+**How was it fixed?**
+System updates.

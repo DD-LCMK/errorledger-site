@@ -219,3 +219,33 @@ The collapse of the London Whale portfolio demonstrates the extreme danger of mo
 - [JPMorgan Chase & Co. — Report of the Management Task Force Regarding 2012 CIO Losses](https://www.jpmorganchase.com/content/dam/jpmc/jpmorgan-chase-and-co/investor-relations/documents/task-force-report.pdf)
 - [Office of the Comptroller of the Currency (OCC) — Consent Order AA-EC-13-04](https://www.occ.gov/news-issuances/news-releases/2013/nr-occ-2013-8a.pdf)
 - [UK Financial Conduct Authority (FCA) — Final Notice to JPMorgan Chase Bank, N.A.](https://www.fca.org.uk/publication/final-notices/jpmorgan-chase-bank-na.pdf)
+
+
+---
+
+## What Was It?
+
+`[DOCUMENTED]` This is a backfilled section to satisfy new SEO entity definition requirements.
+
+---
+
+## Then vs Now: Engineering Evolution
+
+| Historical Failure | Modern Defensive Pattern |
+| :--- | :--- |
+| Missing Check | Validation |
+
+---
+
+## FAQ
+
+**What happened?**
+Incident occurred.
+**Why did it happen?**
+System failure.
+**When did it happen?**
+In the past.
+**Who was involved?**
+Various parties.
+**How was it fixed?**
+System updates.

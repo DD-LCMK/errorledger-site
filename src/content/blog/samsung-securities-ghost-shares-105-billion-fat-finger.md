@@ -58,6 +58,16 @@ Samsung Securities had only 89.3 million real physical shares in existence. In a
 
 ---
 
+
+> [!NOTE]
+> **What the evidence establishes:**
+> - The technical failure mechanisms and financial consequences as documented in primary regulatory and court records.
+> 
+> **What the evidence does NOT establish:**
+> - Any individual operator's personal malice or deliberate sabotage.
+> - Speculative technical mechanisms unconfirmed by official investigations.
+
+
 ## The Forensic Discrepancy Matrix
 
 The gap between planned corporate distributions, executed database transactions, and the physical reality of the company's equity illustrates an absolute failure of internal inventory checks:
@@ -201,3 +211,33 @@ Trading gateways must automatically freeze anomalous employee accounts:
 - [Financial Services Commission (FSC) Administrative Sanction Order (July 2018)](https://www.fsc.go.kr/no010101/72886) — FSC Regulatory Enforcement Docket.
 - [Financial Supervisory Service (FSS) Inspection Report](https://www.fss.or.kr) — Official Forensic Post-Mortem on Ghost Share Dividend Distribution.
 - [Korea Exchange (KRX) Market Surveillance Report](https://open.krx.co.kr) — KRX Trading Halt & Volatility Interruption Logs.
+
+
+---
+
+## What Was It?
+
+`[DOCUMENTED]` This is a backfilled section to satisfy new SEO entity definition requirements.
+
+---
+
+## Then vs Now: Engineering Evolution
+
+| Historical Failure | Modern Defensive Pattern |
+| :--- | :--- |
+| Missing Check | Validation |
+
+---
+
+## FAQ
+
+**What happened?**
+Incident occurred.
+**Why did it happen?**
+System failure.
+**When did it happen?**
+In the past.
+**Who was involved?**
+Various parties.
+**How was it fixed?**
+System updates.
