@@ -196,10 +196,11 @@ const rankedCases = isKorean ? [
 		<script type="application/ld+json" set:html={JSON.stringify(schemaData)} />
 		<style>
 			main {
-				width: 1200px;
+				width: 1280px;
 				max-width: calc(100% - 2rem);
 				margin: 0 auto;
 				padding: 2rem 1rem 6rem 1rem;
+				box-sizing: border-box;
 			}
 			
 			.article-layout-grid {
@@ -213,7 +214,7 @@ const rankedCases = isKorean ? [
 
 			@media (min-width: 1024px) {
 				.article-layout-grid.has-sidebar {
-					grid-template-columns: minmax(0, 1fr) 320px;
+					grid-template-columns: minmax(0, 1fr) 300px;
 				}
 			}
 
@@ -221,6 +222,8 @@ const rankedCases = isKorean ? [
 			.article-main-stream {
 				min-width: 0;
 				width: 100%;
+				max-width: 100%;
+				overflow: hidden;
 			}
 
 			.prose {
@@ -229,6 +232,128 @@ const rankedCases = isKorean ? [
 				font-size: 1.15rem;
 				font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
 				min-width: 0;
+				width: 100%;
+				max-width: 100%;
+				overflow-wrap: break-word;
+				word-break: break-word;
+			}
+
+			/* Preformatted Code Blocks & ASCII Diagrams */
+			.prose :global(pre),
+			.prose :global(pre.astro-code) {
+				background: #121212 !important;
+				border: 1px solid #262626 !important;
+				border-radius: 10px !important;
+				padding: 1.25rem !important;
+				margin: 2rem 0 !important;
+				max-width: 100% !important;
+				width: 100% !important;
+				box-sizing: border-box !important;
+				font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+				font-size: clamp(0.68rem, 1.02vw, 0.84rem) !important;
+				line-height: 1.45 !important;
+				letter-spacing: -0.03em !important;
+				overflow-x: auto;
+				scrollbar-width: thin;
+				scrollbar-color: #333333 transparent;
+			}
+
+			.prose :global(pre::-webkit-scrollbar) {
+				height: 5px;
+			}
+			.prose :global(pre::-webkit-scrollbar-thumb) {
+				background: #333333;
+				border-radius: 4px;
+			}
+
+			@media (max-width: 640px) {
+				.prose :global(pre),
+				.prose :global(pre.astro-code) {
+					font-size: 0.65rem !important;
+					padding: 0.75rem !important;
+				}
+			}
+
+			/* Markdown Tables */
+			.prose :global(table) {
+				width: 100% !important;
+				max-width: 100% !important;
+				border-collapse: collapse !important;
+				margin: 2.25rem 0 !important;
+				font-size: 0.9rem !important;
+				table-layout: auto !important;
+				box-sizing: border-box !important;
+				display: table !important;
+				overflow: hidden !important;
+				border: 1px solid #262626 !important;
+				border-radius: 8px !important;
+			}
+
+			.prose :global(th),
+			.prose :global(td) {
+				padding: 0.75rem 0.9rem !important;
+				text-align: left !important;
+				vertical-align: top !important;
+				word-break: break-word !important;
+				overflow-wrap: break-word !important;
+			}
+
+			.prose :global(th) {
+				background: #181818 !important;
+				color: #f5f5f5 !important;
+				font-weight: 700 !important;
+				border-bottom: 2px solid #2a2a2a !important;
+				font-size: 0.8rem !important;
+				text-transform: uppercase !important;
+				letter-spacing: 0.04em !important;
+				font-family: ui-monospace, monospace !important;
+			}
+
+			.prose :global(td) {
+				border-bottom: 1px solid #222222 !important;
+				color: #d4d4d4 !important;
+				font-size: 0.86rem !important;
+				line-height: 1.55 !important;
+			}
+
+			.prose :global(tr:last-child td) {
+				border-bottom: none !important;
+			}
+
+			/* BoundaryBox Custom Tag */
+			.prose :global(boundarybox),
+			.prose :global(BoundaryBox) {
+				display: block;
+				background: rgba(244, 63, 94, 0.06);
+				border: 1px solid rgba(244, 63, 94, 0.25);
+				border-left: 4px solid #f43f5e;
+				border-radius: 8px;
+				padding: 1.25rem 1.5rem;
+				margin: 2rem 0;
+				color: #e5e5e5;
+				box-sizing: border-box;
+				font-size: 0.95rem;
+				line-height: 1.6;
+			}
+			.prose :global(boundarybox strong),
+			.prose :global(BoundaryBox strong) {
+				color: #fb7185;
+				display: block;
+				margin-bottom: 0.5rem;
+				font-family: ui-monospace, monospace;
+				font-size: 0.82rem;
+				text-transform: uppercase;
+				letter-spacing: 0.04em;
+			}
+			.prose :global(boundarybox ul),
+			.prose :global(BoundaryBox ul) {
+				margin: 0;
+				padding-left: 1.25rem;
+			}
+			.prose :global(boundarybox li),
+			.prose :global(BoundaryBox li) {
+				margin-bottom: 0.4rem;
+				color: #d4d4d4;
 			}
 			.prose h1 {
 				font-size: 2.3em;
@@ -400,10 +525,12 @@ const rankedCases = isKorean ? [
 				margin: 3rem 0;
 				padding-top: 2rem;
 				border-top: 1px solid #262626;
+				width: 100%;
+				min-width: 0;
 			}
 			@media (min-width: 640px) {
 				.bottom-incident-nav {
-					grid-template-columns: 1fr 1fr;
+					grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 				}
 			}
 			.incident-nav-card {
@@ -669,10 +796,12 @@ const rankedCases = isKorean ? [
 				margin-top: 0.85rem;
 				padding-top: 0.85rem;
 				border-top: 1px dashed #262626;
+				width: 100%;
+				min-width: 0;
 			}
 			@media (min-width: 768px) {
 				.summary-keypoints-grid {
-					grid-template-columns: repeat(3, 1fr);
+					grid-template-columns: repeat(3, minmax(0, 1fr));
 				}
 			}
 			.summary-point-item {
@@ -683,6 +812,10 @@ const rankedCases = isKorean ? [
 				display: flex;
 				flex-direction: column;
 				gap: 0.35rem;
+				min-width: 0;
+				box-sizing: border-box;
+				overflow-wrap: break-word;
+				word-break: break-word;
 			}
 			.point-label {
 				font-family: ui-monospace, monospace;
@@ -695,6 +828,8 @@ const rankedCases = isKorean ? [
 				font-size: 0.83rem;
 				color: #d4d4d4;
 				line-height: 1.45;
+				overflow-wrap: break-word;
+				word-break: break-word;
 			}
 
 			:global(html:not(.dark)) .executive-summary-card {

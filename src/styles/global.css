@@ -169,8 +169,11 @@ hr {
 
 /* Technical Blog Layout Extensions */
 .prose {
-width: 100% !important;
-max-width: 100% !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow-wrap: break-word !important;
+  word-break: break-word !important;
 }
 
 .prose img {
@@ -178,32 +181,31 @@ max-width: 100% !important;
   height: auto !important;
 }
 
-/* Prevent tables from squashing text vertically */
+/* Responsive Tables */
 .prose table {
-display: block;
-width: 100% !important;
-overflow-x: auto;
-border-collapse: collapse;
-margin: 2rem 0;
+  width: 100% !important;
+  max-width: 100% !important;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  box-sizing: border-box;
+  font-size: 0.92rem;
+  table-layout: auto;
 }
 
 .prose th, .prose td {
-min-width: 150px;
-padding: 10px 14px;
-text-align: left;
-vertical-align: top;
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: top;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Ultra-Wide Technical Layout Extensions */
 main {
-max-width: 1200px !important;
-width: 100% !important;
-margin: 0 auto !important;
-}
-
-.prose {
-width: 100% !important;
-max-width: 100% !important;
+  max-width: 1280px !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important;
 }
 
 

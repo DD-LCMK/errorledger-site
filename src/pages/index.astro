@@ -285,10 +285,12 @@ const topRankedPosts = [
 				grid-template-columns: 1fr;
 				gap: 1.25rem;
 				margin-bottom: 3rem;
+				width: 100%;
+				min-width: 0;
 			}
 			@media (min-width: 640px) {
 				.debates-stream-grid {
-					grid-template-columns: 1fr 1fr;
+					grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 				}
 			}
 			.debate-portal-card {
@@ -351,10 +353,12 @@ const topRankedPosts = [
 				grid-template-columns: 1fr;
 				gap: 1.25rem;
 				margin-bottom: 3rem;
+				width: 100%;
+				min-width: 0;
 			}
 			@media (min-width: 640px) {
 				.ledger-posts-grid {
-					grid-template-columns: 1fr 1fr;
+					grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 				}
 			}
 			.ledger-incident-card {

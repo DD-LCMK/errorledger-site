@@ -104,6 +104,9 @@ const isKorean = lang === 'ko';
     padding: 1.5rem;
     margin: 2.5rem 0;
     box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
   }
 
   .evidence-ledger-header {
@@ -121,10 +124,12 @@ const isKorean = lang === 'ko';
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    min-width: 0;
   }
 
   .evidence-icon {
     font-size: 1.5rem;
+    flex-shrink: 0;
   }
 
   .evidence-title {
@@ -152,6 +157,7 @@ const isKorean = lang === 'ko';
     background: rgba(16, 185, 129, 0.12);
     color: #10b981;
     border: 1px solid rgba(16, 185, 129, 0.3);
+    flex-shrink: 0;
   }
 
   .evidence-body-grid {
@@ -159,11 +165,13 @@ const isKorean = lang === 'ko';
     grid-template-columns: 1fr;
     gap: 1.25rem;
     margin-bottom: 1.25rem;
+    width: 100%;
+    min-width: 0;
   }
 
   @media (min-width: 640px) {
     .evidence-body-grid {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
   }
 
@@ -172,6 +180,10 @@ const isKorean = lang === 'ko';
     border: 1px solid #222222;
     border-radius: 8px;
     padding: 1rem;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   .evidence-block-label {
@@ -190,6 +202,8 @@ const isKorean = lang === 'ko';
     color: #d4d4d4;
     line-height: 1.5;
     margin: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   .epistemic-badges {
@@ -205,6 +219,8 @@ const isKorean = lang === 'ko';
     padding: 0.2rem 0.5rem;
     border-radius: 4px;
     border: 1px solid #222222;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   .ep-badge strong {
@@ -223,6 +239,10 @@ const isKorean = lang === 'ko';
     border-radius: 8px;
     padding: 1rem;
     margin-bottom: 1.25rem;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
   .sources-links-grid {
@@ -230,11 +250,13 @@ const isKorean = lang === 'ko';
     grid-template-columns: 1fr;
     gap: 0.65rem;
     margin-top: 0.5rem;
+    width: 100%;
+    min-width: 0;
   }
 
-  @media (min-width: 640px) {
+  @media (min-width: 768px) {
     .sources-links-grid {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
   }
 
@@ -242,13 +264,17 @@ const isKorean = lang === 'ko';
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.75rem;
+    gap: 0.65rem;
     background: #1a1a1a;
     border: 1px solid #2a2a2a;
     border-radius: 6px;
     padding: 0.6rem 0.85rem;
     text-decoration: none;
     transition: all 0.15s ease;
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
   .source-link-card:hover {
@@ -266,6 +292,10 @@ const isKorean = lang === 'ko';
     padding: 0.15rem 0.4rem;
     border-radius: 4px;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 38%;
+    flex-shrink: 0;
   }
 
   .source-title {
@@ -273,7 +303,8 @@ const isKorean = lang === 'ko';
     color: #e5e5e5;
     font-weight: 500;
     line-height: 1.3;
-    flex-grow: 1;
+    flex: 1 1 0%;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -286,6 +317,7 @@ const isKorean = lang === 'ko';
   .source-ext-icon {
     font-size: 0.85rem;
     color: #737373;
+    flex-shrink: 0;
   }
 
   .evidence-footer {
@@ -298,5 +330,7 @@ const isKorean = lang === 'ko';
     color: #737373;
     line-height: 1.4;
     display: block;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 </style>

@@ -145,10 +145,12 @@ const topRankedPosts = [
 				display: grid;
 				grid-template-columns: 1fr;
 				gap: 1.25rem;
+				width: 100%;
+				min-width: 0;
 			}
 			@media (min-width: 640px) {
 				.archive-cards-list {
-					grid-template-columns: 1fr 1fr;
+					grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 				}
 			}
 
