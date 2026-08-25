@@ -182,19 +182,16 @@ A ledger discrepancy is evidence of a discrepancy. It is not, by itself, evidenc
 
 ## The Archivist's Verdict
 
-The UK Post Office Horizon IT scandal is not merely a tragedy of software engineering; it is a profound failure of organizational epistemology. When we investigate catastrophic failures, we must ask six fundamental questions to understand the true mechanics of the disaster.
+> **The Archivist's Assessment:**  
+> 
+> 1. **What looked like the mistake:** The superficial trigger appeared to be thousands of independent subpostmasters suddenly deciding to steal from their own tills, generating massive cash shortfalls across the entire network.
+> 2. **What actually failed:** The true root cause was a fundamentally flawed EPOSS architecture developed by Fujitsu, riddled with synchronization bugs, asynchronous queueing errors, and database corruption, combined with a legal and corporate framework that refused to acknowledge software fallibility.
+> 3. **Why reasonable people allowed it to happen:** The Post Office leadership and Fujitsu engineers fell victim to the absolute normalization of deviance. The assumption that the software was infallible became institutional dogma. Admitting the system was broken would have jeopardized a multi-million-pound government contract and the reputations of high-level executives, creating a toxic incentive to suppress the truth.
+> 4. **The point of no return:** The exact moment catastrophe became locked in was when the Post Office decided to act as a private prosecutor, withholding or failing to disclose relevant Known Error Logs and other evidence concerning Horizon's reliability to the criminal defense of the subpostmasters. At that moment, it ceased to be an IT failure and became an active cover-up.
+> 5. **Who ultimately carried responsibility:** While Fujitsu built the broken software, the Post Office investigative and prosecution processes ultimately weaponized the authority of Horizon against the people operating its branches, treating system-generated discrepancies as evidence of wrongdoing despite mounting evidence that the system itself could produce such discrepancies.
+> 6. **The uncomfortable lesson:** A software system that lacks transparency and immutable audit trails is a weapon. If a corporate entity is legally permitted to treat its own internal, proprietary database as absolute, unquestionable truth, human testimony will always be discarded. We must never build systems that demand blind obedience, because when the computer is allowed to be always right, human beings will invariably be destroyed.
 
-**What looked like the mistake:** The superficial trigger appeared to be thousands of independent subpostmasters suddenly deciding to steal from their own tills, generating massive cash shortfalls across the entire network.
-
-**What actually failed:** The true root cause was a fundamentally flawed EPOSS architecture developed by Fujitsu, riddled with synchronization bugs, asynchronous queueing errors, and database corruption, combined with a legal and corporate framework that refused to acknowledge software fallibility.
-
-**Why reasonable people allowed it to happen:** The Post Office leadership and Fujitsu engineers fell victim to the absolute normalization of deviance. The assumption that the software was infallible became institutional dogma. Admitting the system was broken would have jeopardized a multi-million-pound government contract and the reputations of high-level executives, creating a toxic incentive to suppress the truth.
-
-**The point of no return:** The exact moment catastrophe became locked in was when the Post Office decided to act as a private prosecutor, withholding or failing to disclose relevant Known Error Logs and other evidence concerning Horizon's reliability to the criminal defense of the subpostmasters. At that moment, it ceased to be an IT failure and became an active cover-up.
-
-**Who ultimately carried responsibility:** While Fujitsu built the broken software, the Post Office investigative and prosecution processes ultimately weaponized the authority of Horizon against the people operating its branches, treating system-generated discrepancies as evidence of wrongdoing despite mounting evidence that the system itself could produce such discrepancies.
-
-**The uncomfortable lesson:** A software system that lacks transparency and immutable audit trails is a weapon. If a corporate entity is legally permitted to treat its own internal, proprietary database as absolute, unquestionable truth, human testimony will always be discarded. We must never build systems that demand blind obedience, because when the computer is allowed to be always right, human beings will invariably be destroyed.
+---
 
 ## Primary Sources
 - For the definitive judicial breakdown of the software defects, see the [High Court Judgment in Bates & Ors v Post Office Ltd](https://www.judiciary.uk/judgments/bates-and-others-v-post-office-ltd-judgment-no-6-horizon-issues/).

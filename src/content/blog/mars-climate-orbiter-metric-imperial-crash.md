@@ -273,14 +273,15 @@ When systems exchange untyped primitive floats across service boundaries without
 ## The Archivist's Verdict
 
 > **The Archivist's Assessment:**
+> 
+> The loss of the Mars Climate Orbiter was not an unpredictable act of nature, nor was it the failure of a mechanical component. It was the deterministic consequence of an unverified interface contract operating within an organization under extreme cost and schedule pressure.
+> 
+> The engineering tragedy lies in the fact that the contract existed. The Software Interface Specification was unambiguous: metric units were required. But an unenforced contract is merely a statement of intent. When Lockheed Martin's `SM_FORCES` ground software produced English units, the receiving navigation team at JPL trusted the contract rather than verifying the data.
+> 
+> When physical tracking measurements repeatedly signaled that the mathematical model was diverging from reality, the organizational structure failed to support working-level navigators with formal closed-loop anomaly resolution. The omission of Trajectory Correction Maneuver 5 sealed the vehicle's fate. 
+> 
+> The primary lesson of Mars Climate Orbiter remains fundamental to modern systems engineering: never assume an interface contract is being honored without programmatic verification. In software, as in aerospace, untyped assumptions across system boundaries will eventually be resolved by the unforgiving physics of the real world.
 
-The loss of the Mars Climate Orbiter was not an unpredictable act of nature, nor was it the failure of a mechanical component. It was the deterministic consequence of an unverified interface contract operating within an organization under extreme cost and schedule pressure.
-
-The engineering tragedy lies in the fact that the contract existed. The Software Interface Specification was unambiguous: metric units were required. But an unenforced contract is merely a statement of intent. When Lockheed Martin's `SM_FORCES` ground software produced English units, the receiving navigation team at JPL trusted the contract rather than verifying the data.
-
-When physical tracking measurements repeatedly signaled that the mathematical model was diverging from reality, the organizational structure failed to support working-level navigators with formal closed-loop anomaly resolution. The omission of Trajectory Correction Maneuver 5 sealed the vehicle's fate. 
-
-The primary lesson of Mars Climate Orbiter remains fundamental to modern systems engineering: never assume an interface contract is being honored without programmatic verification. In software, as in aerospace, untyped assumptions across system boundaries will eventually be resolved by the unforgiving physics of the real world.
 
 ---
 

@@ -54,6 +54,7 @@ primary_sources:
 > - That the failure was caused by a random hardware glitch; it was a deterministic software design flaw triggered by unpredicted physical flight dynamics.
 > - That the self-destruct sequence was a malfunction; it operated exactly as designed once the rocket deviated fatally from its trajectory.
 
+---
 
 The European Space Agency (ESA) spent a decade and over $7 billion engineering the Ariane 5. It was designed to be heavier, faster, and more capable than its reliable predecessor, the Ariane 4. 
 
@@ -146,16 +147,17 @@ The Ariane 5 disaster is a masterclass in the dangers of unverified legacy code 
 ## The Archivist's Verdict
 
 > **The Archivist's Assessment:**
+> 
+> The loss of Ariane 5 Flight 501 was not a failure of rocketry; it was a failure of systems engineering and epistemological assumption. The engineering team assumed that because a piece of software functioned flawlessly on one machine, it would function flawlessly on a stronger, faster machine. 
+> 
+> They failed to recognize that software does not exist in a vacuum. It is deeply coupled to the physical reality of the hardware it operates within. By importing the Ariane 4 code without questioning the physical boundaries that governed its variables, they imported a lethal fragility.
+> 
+> The tragedy was compounded by the architecture of the backup system. A redundant system running identical code provides zero protection against deterministic software flaws. When the active system encountered the physical boundary of the integer overflow, the backup system hit the exact same wall, in the exact same millisecond. 
+> 
+> In the end, a $370 million marvel of aerospace engineering was destroyed because the system meticulously executed a set of instructions that were perfectly logical, mathematically precise, and fundamentally disconnected from the physical reality of the sky.
+> 
+> This disaster fundamentally reshaped aerospace engineering practices. It demonstrated that software engineering for physical systems requires an uncompromising epistemic rigor. The developers did not fail because they wrote bad code; they failed because they allowed their assumptions about physical reality to fossilize inside a mathematical construct. When the physical reality changed, the mathematical construct shattered. Software reuse, once considered a guaranteed mechanism for reliability and cost savings, was proven to be a vector for inheriting dormant vulnerabilities if the environmental context is not relentlessly interrogated.
 
-The loss of Ariane 5 Flight 501 was not a failure of rocketry; it was a failure of systems engineering and epistemological assumption. The engineering team assumed that because a piece of software functioned flawlessly on one machine, it would function flawlessly on a stronger, faster machine. 
-
-They failed to recognize that software does not exist in a vacuum. It is deeply coupled to the physical reality of the hardware it operates within. By importing the Ariane 4 code without questioning the physical boundaries that governed its variables, they imported a lethal fragility.
-
-The tragedy was compounded by the architecture of the backup system. A redundant system running identical code provides zero protection against deterministic software flaws. When the active system encountered the physical boundary of the integer overflow, the backup system hit the exact same wall, in the exact same millisecond. 
-
-In the end, a $370 million marvel of aerospace engineering was destroyed because the system meticulously executed a set of instructions that were perfectly logical, mathematically precise, and fundamentally disconnected from the physical reality of the sky.
-
-This disaster fundamentally reshaped aerospace engineering practices. It demonstrated that software engineering for physical systems requires an uncompromising epistemic rigor. The developers did not fail because they wrote bad code; they failed because they allowed their assumptions about physical reality to fossilize inside a mathematical construct. When the physical reality changed, the mathematical construct shattered. Software reuse, once considered a guaranteed mechanism for reliability and cost savings, was proven to be a vector for inheriting dormant vulnerabilities if the environmental context is not relentlessly interrogated.
 
 ---
 
