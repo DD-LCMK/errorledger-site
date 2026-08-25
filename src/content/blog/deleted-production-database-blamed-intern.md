@@ -267,23 +267,31 @@ True technical safety cannot exist without psychological safety:
 
 ## FAQ: Production Database Deletion Incident Explained
 
-**What happened when the developer deleted the production database?**
+### What happened when the developer deleted the production database?
+
 A senior architect ran `DROP DATABASE prod_customer_v2 CASCADE` on the primary PostgreSQL cluster instead of the staging environment at 11:42 PM. The command deleted three years of merchant data in four seconds with no confirmation prompt.
 
-**Why were there no backups?**
+### Why were there no backups?
+
 Automated S3 backup jobs had been failing silently for six months. An IAM permission misconfiguration caused jobs to complete with exit code 0 while writing zero bytes. No restore-drill process existed to catch the failure.
 
-**Why was the intern blamed?**
+### Why was the intern blamed?
+
 Executives fired the 21-year-old intern (who had been at the company three days and had no production access) to protect the Series C funding round narrative and the senior architect's equity. The coverup was decided at a 3:00 AM leadership meeting.
 
-**How can you prevent DROP DATABASE from running on production?**
+### How can you prevent DROP DATABASE from running on production?
+
 Environment-labeled prompts, mandatory manual re-typing of the database name, role-based access preventing developers from holding production DDL permissions, and dual-key authorization for any destructive schema operation.
 
-**Is a dropped PostgreSQL database recoverable without backup?**
+### Is a dropped PostgreSQL database recoverable without backup?
+
 Only if WAL (Write-Ahead Logging) archiving is enabled and running up to the last checkpoint. Without WAL archives and without a physical backup, `DROP DATABASE CASCADE` is permanent and unrecoverable.
 
-**What is a blameless post-mortem?**
+### What is a blameless post-mortem?
+
 An engineering retrospective that focuses on systemic process and architecture failures rather than individual blame. Pioneered at Google and Etsy, the practice prevents scapegoating and ensures organizations fix the actual converging failures that caused an incident — not just the human who happened to be holding the keyboard.
 
-**What ultimately happened to the startup?**
+### What ultimately happened to the startup?
+
 Engineering attrition accelerated as the culture of blame spread. The company failed to close its Series C on the projected timeline and was eventually liquidated in a distressed asset sale. The intern, according to the archived post-mortem accounts, joined a competing firm and later became an engineering lead.
+

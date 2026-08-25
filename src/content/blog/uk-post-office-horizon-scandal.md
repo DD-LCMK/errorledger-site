@@ -221,23 +221,31 @@ A ledger discrepancy is evidence of a discrepancy. It is not, by itself, evidenc
 
 ## FAQ: UK Post Office Horizon Scandal Explained
 
-**What was the UK Post Office Horizon IT scandal?**
+### What was the UK Post Office Horizon IT scandal?
+
 Fujitsu's Horizon software generated phantom shortfalls in post office branch accounts. The Post Office used Horizon's outputs as criminal evidence to prosecute over 900 subpostmasters for theft and false accounting, despite internal awareness of hundreds of documented system defects. It is considered one of the worst miscarriages of justice in British legal history.
 
-**What bugs caused the phantom shortfalls?**
+### What bugs caused the phantom shortfalls?
+
 The Dalmellington bug caused single transactions to appear multiple times in the ledger, generating artificial deficits in seconds. The Callendar Square bug caused transaction duplication errors. Justice Fraser's 2019 ruling confirmed Horizon had bugs that could and did produce such phantom shortfalls.
 
-**How many people were wrongfully prosecuted?**
+### How many people were wrongfully prosecuted?
+
 Over 900, with prosecutions including theft, fraud, and false accounting. Many were jailed or bankrupted. At least four people connected to the scandal later died by suicide.
 
-**What did the Bates v Post Office judgment find?**
+### What did the Bates v Post Office judgment find?
+
 Justice Peter Fraser ruled in [2019] EWHC 3408 (QB) that Horizon was not robust, that it had bugs capable of causing apparent shortfalls, and that the Post Office had pursued a strategy of denying the existence of bugs despite substantial internal evidence of them.
 
-**What convictions were overturned?**
+### What convictions were overturned?
+
 The Court of Appeal quashed 39 convictions in April 2021. Parliament passed the Post Office (Horizon System) Offences Act 2024 to automatically quash remaining wrongful convictions. Total compensation commitments exceed an estimated £1 billion.
 
-**Why couldn't subpostmasters prove the system was wrong?**
+### Why couldn't subpostmasters prove the system was wrong?
+
 The Post Office held exclusive access to Horizon's internal logs, had a prosecutorial monopoly bypassing the Crown Prosecution Service, and falsely told defendants theirs was the only branch with problems. Without access to the underlying transaction data, subpostmasters had no means to challenge the system's outputs.
 
-**What is the ongoing Post Office Horizon IT Inquiry?**
+### What is the ongoing Post Office Horizon IT Inquiry?
+
 A statutory public inquiry examining how and why the Post Office maintained its prosecutions despite growing internal evidence of Horizon's defects, and the roles of Post Office and Fujitsu executives in suppressing that evidence. The Inquiry's evidence archive and ongoing hearings are publicly accessible at postofficehorizoninquiry.org.uk.
+

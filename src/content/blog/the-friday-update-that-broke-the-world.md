@@ -262,26 +262,35 @@ Operating systems must be able to heal themselves from unbootable updates:
 
 ## FAQ: CrowdStrike Outage Explained
 
-**What caused the CrowdStrike outage on July 19, 2024?**
+### What caused the CrowdStrike outage on July 19, 2024?
+
 Channel File 291 delivered 21 input fields to a kernel parser expecting 20. The unhandled out-of-bounds memory read in `csagent.sys` triggered a `PAGE_FAULT_IN_NONPAGED_AREA` BugCheck, instantly crashing every updated Windows machine.
 
-**Why did 8.5 million computers fail simultaneously?**
+### Why did 8.5 million computers fail simultaneously?
+
 CrowdStrike bypassed staged canary rings and broadcast Channel File 291 globally in a single wave — a deployment monoculture with no staged rollback capability.
 
-**How do you fix the CrowdStrike BSOD?**
+### How do you fix the CrowdStrike BSOD?
+
 Boot into Windows Safe Mode, enter the machine's 48-character BitLocker key, navigate to `C:\Windows\System32\drivers\CrowdStrike\`, and delete the corrupted `C-00000291*.sys` file. The fix requires physical administrator presence because the network stack cannot load during the crash loop.
 
-**Was the CrowdStrike outage a cyberattack?**
+### Was the CrowdStrike outage a cyberattack?
+
 No. CrowdStrike's own Official Root Cause Analysis confirmed the outage was caused by a software defect in the internal content validation tool — not adversarial exploitation.
 
-**How much did the outage cost?**
+### How much did the outage cost?
+
 $5.4 billion in direct enterprise losses. CrowdStrike's stock dropped approximately 35% ($25 billion in market cap). Delta Air Lines filed a civil lawsuit seeking over $500 million in cancellation damages.
 
-**What regulatory action followed?**
+### What regulatory action followed?
+
 The US House Homeland Security Committee subpoenaed CrowdStrike executives. Microsoft announced a Windows security redesign to reduce third-party Ring 0 kernel driver dependencies.
 
-**What is Channel File 291?**
+### What is Channel File 291?
+
 A dynamic configuration file defining Named Pipe threat detection logic. CrowdStrike classified it as "content configuration" (not executable code), allowing it to skip WHQL kernel driver verification and staged deployment checks — the misclassification that enabled the disaster.
 
-**Could this happen again today?**
+### Could this happen again today?
+
 CrowdStrike's post-incident remediation introduced a new Rapid Response Content Deployment System with explicit field-count validation, staged ring gates, and automated error rate monitors. Microsoft's eBPF kernel security initiative — if broadly adopted — would eliminate the architectural dependency that made the outage possible in the first place.
+

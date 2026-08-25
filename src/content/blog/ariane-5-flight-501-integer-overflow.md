@@ -189,20 +189,27 @@ The Ariane 5 disaster is a masterclass in the dangers of unverified legacy code 
 
 ## FAQ: Ariane 5 Flight 501 Integer Overflow Explained
 
-**What caused the Ariane 5 to explode in 1996?**
+### What caused the Ariane 5 to explode in 1996?
+
 A 64-bit floating-point horizontal velocity value exceeded the 32,767 maximum of the 16-bit signed integer it was being converted into. The resulting operand overflow exception crashed both SRIs simultaneously. The main computer misread the crash diagnostic data as extreme attitude commands and deflected the boosters violently, tearing the rocket apart 39 seconds after launch.
 
-**Why was Ariane 4 code used on Ariane 5?**
+### Why was Ariane 4 code used on Ariane 5?
+
 Software reuse was considered a reliability and cost advantage. The SRI had worked flawlessly on Ariane 4. No one re-validated the BH variable bounds against Ariane 5's faster trajectory because the Ariane 4 analysis showed it could never overflow — an assumption that proved false for the new vehicle.
 
-**Why did the backup SRI also fail?**
+### Why did the backup SRI also fail?
+
 Both SRIs ran the same software and experienced the same flight dynamics simultaneously. The Lions Report confirmed they crashed within fractions of a second of each other, providing zero fault tolerance.
 
-**How much did the failure cost?**
+### How much did the failure cost?
+
 $370 million in vehicle and payload losses, plus significant program delays. The four Cluster scientific satellites were uninsured and irreplaceable.
 
-**What did the Lions Inquiry conclude?**
+### What did the Lions Inquiry conclude?
+
 That the BH variable overflow exception handler had been disabled to conserve CPU capacity, that the SRI software had never been re-validated for Ariane 5's flight envelope, and that the failure was entirely deterministic and preventable.
 
-**What changed in aerospace software engineering afterward?**
+### What changed in aerospace software engineering afterward?
+
 DO-178C re-qualification became mandatory for reused software across vehicle classes. Exception handlers for all type conversions in flight-critical code became required. Safe-state failsafe behavior (rather than raw diagnostic data transmission) on SRI failure became standard. Diverse redundancy — backup systems using independently developed software — replaced identical-software redundancy.
+

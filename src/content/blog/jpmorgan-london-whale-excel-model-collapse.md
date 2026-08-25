@@ -266,20 +266,27 @@ The collapse of the London Whale portfolio demonstrates the extreme danger of mo
 
 ## FAQ: JPMorgan London Whale Explained
 
-**What caused JPMorgan's $6.2 billion London Whale loss?**
+### What caused JPMorgan's $6.2 billion London Whale loss?
+
 A formula error in a manually maintained Excel VaR model understated risk by approximately half. This masked the true exposure of the Synthetic Credit Portfolio as positions expanded, risk limits were breached, and counterparties traded against the concentrated credit-default-swap positions.
 
-**What was the London Whale trade?**
+### What was the London Whale trade?
+
 Trader Bruno Iksil accumulated credit-default-swap positions large enough to visibly move CDS index markets. The positions were designed as macro hedges but grew to tens of billions in gross notional exposure as the understated VaR obscured the true risk from management oversight.
 
-**What was wrong with the Excel VaR model?**
+### What was wrong with the Excel VaR model?
+
 The Senate PSI found that a hazard rate volatility formula error muted reported volatility by approximately a factor of two, materially lowering the reported VaR. The error existed in a manually maintained spreadsheet not subject to the same validation controls as the enterprise risk engine it replaced.
 
-**What regulatory fines did JPMorgan pay?**
+### What regulatory fines did JPMorgan pay?
+
 Over $920 million combined: $200M to the SEC, $300M to the OCC, $220M to the Federal Reserve, and £137.6M to the UK FCA. The Senate PSI concluded CIO management had misled regulators about the positions.
 
-**What is Value at Risk (VaR)?**
+### What is Value at Risk (VaR)?
+
 A statistical measure of the maximum expected loss over a given time period at a specified confidence level. Banks use VaR to set risk limits and report market exposure to regulators. Understated VaR makes actual risk invisible to oversight mechanisms.
 
-**Why does it matter that an Excel spreadsheet was used?**
+### Why does it matter that an Excel spreadsheet was used?
+
 Enterprise risk models must be implemented in validated, version-controlled code with independent validation team attestation. Manual spreadsheets cannot enforce formula integrity, version control, or peer validation — the exact failure mode that allowed the calculation error to persist undetected through a live model transition.
+

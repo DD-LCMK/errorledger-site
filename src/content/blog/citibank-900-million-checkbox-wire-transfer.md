@@ -263,23 +263,31 @@ Multi-layer review processes must enforce cognitive independence:
 
 ## FAQ: Citibank $900 Million Wire Transfer Accident Explained
 
-**How did Citibank accidentally wire $900 million?**
+### How did Citibank accidentally wire $900 million?
+
 Operators needed to check FRONT, FUND, and PRINCIPAL in Oracle Flexcube to keep the $886 million principal in an internal wash account. They checked only PRINCIPAL — routing the full principal externally. Three reviewers in the Six-Eye approval chain approved the transmission without catching the error.
 
-**How much did Citibank get back?**
+### How much did Citibank get back?
+
 Ten hedge funds contested the recovery. After district court initially allowed them to keep the $501 million under the discharge-for-value doctrine, the Second Circuit reversed on appeal in 2023. Citibank ultimately recovered the disputed amount, but only after two years of litigation.
 
-**What is the discharge-for-value doctrine?**
+### What is the discharge-for-value doctrine?
+
 A legal defense allowing creditors to keep erroneously received payments if a legitimate debt is owed and the recipient had no reason to know the payment was a mistake. District Court Judge Jesse Furman initially applied it in favor of the hedge funds before the Second Circuit ruled otherwise on appeal.
 
-**What regulatory penalty did Citibank face?**
+### What regulatory penalty did Citibank face?
+
 The OCC issued a Consent Order (Docket AA-EC-2020-63) with a $400 million civil money penalty and a mandatory enterprise-wide risk management and data governance remediation program.
 
-**What were the Revlon clawback clauses?**
+### What were the Revlon clawback clauses?
+
 New LSTA standard syndicated loan agreement provisions requiring lenders to contractually agree to return funds received in error — eliminating the discharge-for-value ambiguity that allowed the ten hedge funds to contest Citibank's initial recovery attempts.
 
-**What is a wash account?**
+### What is a wash account?
+
 An internal bank clearing ledger used to temporarily hold funds during complex transactions. Citibank's wash account was meant to retain the $886 million principal while the $7.8 million interest was transmitted. The misconfiguration bypassed the wash account entirely.
 
-**Could this have been caught automatically?**
+### Could this have been caught automatically?
+
 Yes. A trivial automated sanity check — flagging any single outbound wire exceeding the documented outstanding loan principal for that counterparty — would have halted the transaction before human approval was requested. No such check existed in the Flexcube configuration.
+

@@ -190,20 +190,27 @@ Never rely on UI placeholders, training manuals, or implicit cultural assumption
 
 ## FAQ: Target Canada Supply Chain Collapse Explained
 
-**Why did Target Canada fail so quickly in 2015?**
+### Why did Target Canada fail so quickly in 2015?
+
 Target Canada opened 133 stores in two years with a brand new SAP ERP and Manhattan WMS system populated with corrupted master data. Flawed product dimensions and packaging counts caused distribution centers to gridlock and automated replenishment to fail, leaving shelves empty across the country.
 
-**How much did Target lose on the Canadian expansion?**
+### How much did Target lose on the Canadian expansion?
+
 Target Corporation reported a $2.1 billion pre-tax loss on discontinued operations in its SEC Form 8-K filing, liquidating all Canadian assets and laying off approximately 17,600 employees.
 
-**What was the specific SAP data entry bug?**
+### What was the specific SAP data entry bug?
+
 Entry-level clerks manually typed thousands of product records without automated sanity checks. Inches were entered into centimeter fields, cases were confused with individual items, and barcode IDs were mistyped, resulting in an estimated 70% error rate in master item records.
 
-**Why were distribution centers jammed while shelves were empty?**
+### Why were distribution centers jammed while shelves were empty?
+
 Because the software had incorrect physical dimensions for products, it generated impossible truck-packing plans and warehouse slotting instructions. Warehouses overflowed with unmovable pallets, while store shelves sat bare because replenishment algorithms could not route inventory accurately.
 
-**Why didn't Target adapt its US supply chain system?**
+### Why didn't Target adapt its US supply chain system?
+
 Target US used a legacy mainframe system customized over decades. Leadership deemed it too slow to adapt for Canadian currency, metric standards, and bilingual packaging, opting instead for a rapid clean-slate SAP deployment that proved disastrous under rushed timelines.
 
-**What are the key engineering takeaways?**
+### What are the key engineering takeaways?
+
 Digital inventory systems must enforce physical boundary constraints at ingestion, master data quality must be programmatically verified before automated logistics go live, and expansion schedules must include phased validation gates.
+

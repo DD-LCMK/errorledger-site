@@ -252,20 +252,27 @@ Institutional algorithmic execution software must never execute into a hollowed 
 
 ## FAQ: Navinder Sarao & the 2010 Flash Crash Explained
 
-**What was the 2010 Flash Crash?**
+### What was the 2010 Flash Crash?
+
 On May 6, 2010, the Dow Jones plunged nearly 1,000 points in 36 minutes, evaporating roughly $1 trillion in market value before rapidly rebounding. Equities like Accenture traded for $0.01 per share as market liquidity vanished in a cascade of automated trading reactions.
 
-**Who was Navinder Sarao and what did he do?**
+### Who was Navinder Sarao and what did he do?
+
 Navinder Sarao was an independent day trader working from his parents' London home who used custom automated software to place tens of thousands of fake sell orders on the CME Globex exchange ('spoofing'). His phantom sell wall tricked HFT algorithms into stepping away just as a massive institutional sell program hit the market.
 
-**What is spoofing in financial markets?**
+### What is spoofing in financial markets?
+
 Spoofing is the illegal practice of submitting large orders with the intent to cancel them before execution, artificially moving market prices to profit on separate trades executed on the opposite side of the order book.
 
-**Did Sarao cause the Flash Crash alone?**
+### Did Sarao cause the Flash Crash alone?
+
 No. The SEC-CFTC joint report established that the crash was systemic: Sarao's spoofing depleted visible market depth, Waddell & Reed executed a $4.1 billion automated sell program, and HFT market makers pulled their quotes simultaneously, creating a complete liquidity vacuum.
 
-**What happened to Navinder Sarao legally?**
+### What happened to Navinder Sarao legally?
+
 Sarao was arrested in 2015, extradited to the US, and pleaded guilty to wire fraud and spoofing. Due to his autism diagnosis, extensive cooperation with authorities in analyzing trading algorithms, and lack of luxury spending, he was sentenced to one year of home confinement and forfeited tens of millions in profits.
 
-**What market safety rules were created as a result?**
+### What market safety rules were created as a result?
+
 Regulators created Limit-Up/Limit-Down (LULD) circuit breakers for individual stocks, outlawed stub quotes, instituted order-to-trade ratio limits on futures exchanges, and mandated price-impact safety stops on institutional execution algorithms.
+

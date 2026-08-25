@@ -250,23 +250,31 @@ Dormant code is dangerous code:
 
 ## FAQ: Knight Capital Trading Glitch Explained
 
-**What caused the Knight Capital $440 million loss?**
+### What caused the Knight Capital $440 million loss?
+
 Engineers repurposed a dormant 2003 feature flag for new NYSE Retail Liquidity Program software but failed to deploy the update to all 8 servers. Server #8 executed the old Power Peg buying loop at 2,000 orders per second from the 9:30 AM opening bell, accumulating a $7.1 billion rogue position in 45 minutes.
 
-**What was Power Peg?**
+### What was Power Peg?
+
 An internal 2003 test utility that bought shares at the offer price and sold at the bid price to aggressively fill parent orders. It was decommissioned in 2005 but never deleted from the production binary — sitting dormant for eight years until the repurposed flag accidentally woke it.
 
-**Why did no automated system stop it?**
+### Why did no automated system stop it?
+
 Knight Capital had no pre-trade capital killswitch. NYSE manually called the firm 35 minutes into the incident. Only then did operators cancel the outstanding orders — after $440 million was already gone.
 
-**What happened to Knight Capital afterward?**
+### What happened to Knight Capital afterward?
+
 Knight Capital was acquired by Getco LLC in a distress merger. The SEC fined the firm $12 million for violating Exchange Act Rule 15c3-5. The firm ceased to exist as an independent entity.
 
-**What is Exchange Act Rule 15c3-5?**
+### What is Exchange Act Rule 15c3-5?
+
 The SEC's Market Access Rule (2010) requiring broker-dealers to maintain pre-trade capital thresholds and erroneous order controls. Knight Capital's failure to enforce these controls was the basis of the $12 million enforcement action.
 
-**How long did the entire incident last?**
+### How long did the entire incident last?
+
 45 minutes. From the 9:30 AM opening bell to the manual cancellation of orders at approximately 10:15 AM. In that window, 4 million rogue orders were executed across 154 stocks, and $440 million in firm capital was incinerated.
 
-**Could a manual deployment cause the same disaster today?**
+### Could a manual deployment cause the same disaster today?
+
 In a properly governed trading infrastructure, no. Modern standards require atomic cluster deployments with pre-activation verification that all nodes run identical binaries, hard killswitches triggered by real-time P&L monitoring, and dead code elimination as a mandatory build gate — none of which Knight Capital had in 2012.
+

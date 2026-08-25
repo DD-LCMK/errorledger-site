@@ -191,16 +191,20 @@ Similar architectural assumptions—where software reuse and untracked runtime b
 
 ## 15. FAQ
 
-**What caused the Patriot Missile software failure?**
+### What caused the Patriot Missile software failure?
+
 The immediate technical cause was a cumulative timing error in the Patriot's weapons-control software. A 24-bit register limitation caused a loss of precision when converting the system's internal integer time to a real number. After more than 100 hours of continuous operation, the accumulated timing error shifted the radar's tracking range gate enough to prevent the battery from maintaining the incoming Scud track.
 
-**Why was a 0.3433-second error fatal?**
+### Why was a 0.3433-second error fatal?
+
 Scud missiles travel at approximately 1,676 meters per second (Mach 5). A 0.3433-second timing error shifted the Patriot's calculated range gate significantly. The tracking calculation became inaccurate enough that the system looked in the wrong place for the incoming Scud and failed to maintain the track, causing the system to reject the track rather than engage the target.
 
-**Did they know about the bug before the attack?**
+### Did they know about the bug before the attack?
+
 Yes. The Patriot Project Office received Israeli data on February 11 showing a significant range-gate shift. A modified software version was released on February 16, and a February 21 message warned users about very long runtimes, but it critically did not define the threshold. The corrected software arrived at Dhahran on February 26, one day after the attack.
 
-**Was this a hardware or software failure?**
+### Was this a hardware or software failure?
+
 It was an architectural mismatch. The underlying 24-bit representation imposed a finite precision constraint; the software's time conversion lost precision to fit that register limitation. The resulting approximation was mathematically predictable, but its accumulated effect was not adequately bounded in the deployed operating context. The failure also involved the deployment context and operational handling of a known runtime-dependent software limitation.
 
 ## 16. Primary Sources

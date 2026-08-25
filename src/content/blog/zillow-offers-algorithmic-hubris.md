@@ -257,20 +257,27 @@ Every asset should accumulate explicit carrying-cost and time-to-sale penalties.
 
 ## FAQ: Zillow Offers Algorithmic House-Flipping Collapse Explained
 
-**Why did Zillow Offers shut down in 2021?**
+### Why did Zillow Offers shut down in 2021?
+
 Zillow Offers collapsed because its algorithmic buying engine purchased homes far faster than its physical renovation and resale network could process them. In Q3 2021, inventory surged to 9,790 homes. When contractor shortages delayed repairs as housing appreciation cooled, Zillow was left with billions in overpriced, illiquid inventory, forcing a total wind-down.
 
-**How much money did Zillow lose?**
+### How much money did Zillow lose?
+
 Zillow took a $304.4 million inventory write-down in Q3 2021 and reported a full-year 2021 inventory write-down of $407.9 million in its SEC Form 10-K, alongside hundreds of millions in restructuring charges and laying off 25% of its workforce (about 2,000 employees).
 
-**Was the collapse caused by bad AI predictions?**
+### Was the collapse caused by bad AI predictions?
+
 It was a combined systems failure: the pricing algorithms failed to anticipate price deceleration, but the fatal defect was the complete decoupling of digital buying velocity from physical renovation capacity. The algorithm kept buying aggressively even when renovation pipelines were completely jammed.
 
-**What is iBuying?**
+### What is iBuying?
+
 iBuying is an algorithmic real-estate model where technology companies use automated valuation models to make direct cash offers to home sellers, perform minor repairs, and resell the homes for a service fee and small margin.
 
-**Did the Zestimate cause the failure?**
+### Did the Zestimate cause the failure?
+
 The consumer Zestimate was the foundation, but Zillow Offers used specialized pricing models. The failure occurred because leadership trusted algorithmic scale over physical constraints, allowing the model to make unconstrained multi-billion-dollar balance sheet bets.
 
-**What is the core takeaway for engineering and business leaders?**
+### What is the core takeaway for engineering and business leaders?
+
 'You cannot automate drywall.' Predictive software systems must be constrained by real-world physical throughput, pricing models must widen safety margins under uncertainty, and automated capital deployment must have hard circuit breakers.
+

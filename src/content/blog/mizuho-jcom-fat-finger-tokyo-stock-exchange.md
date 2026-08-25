@@ -252,20 +252,27 @@ Cancellation commands must always possess absolute structural priority over exec
 
 ## FAQ: Mizuho J-Com Fat Finger Trade Explained
 
-**What happened in the Mizuho J-Com trade?**
+### What happened in the Mizuho J-Com trade?
+
 A Mizuho broker entered 'sell 610,000 shares at 1 yen' instead of 'sell 1 share at 610,000 yen.' J-Com had only 14,500 total shares outstanding. The order was 42 times larger than the company's entire equity. Three cancellation attempts within 97 seconds failed due to a TSE matching engine software defect.
 
-**How much did Mizuho lose?**
+### How much did Mizuho lose?
+
 Approximately 40.7 billion yen (~$340 million USD). Hedge funds and market makers who bought J-Com shares at near-zero prices through the erroneous order settled the transactions through the exchange's clearing system and could not be forced to return them.
 
-**Why couldn't the order be cancelled?**
+### Why couldn't the order be cancelled?
+
 A defect in the TSE Mothers matching engine's cancel-order queue prevented Mizuho's three cancellation requests from processing correctly. The Tokyo High Court (Heisei 22 (Ne) No. 347) confirmed the defect and held the TSE partially liable.
 
-**What legal outcome followed?**
+### What legal outcome followed?
+
 The Tokyo High Court ordered the TSE to pay approximately 10.7 billion yen in compensation to Mizuho. The TSE President resigned. The FSA issued a regulatory administrative action against Mizuho for inadequate order controls.
 
-**What pre-trade controls should have stopped this?**
+### What pre-trade controls should have stopped this?
+
 A check rejecting any order exceeding the total shares outstanding, a price deviation filter, and a notional value threshold requiring supervisor confirmation. None existed on the Mizuho terminal at the time.
 
-**What changed in Japanese financial markets afterward?**
+### What changed in Japanese financial markets afterward?
+
 The TSE remediated the cancel-queue defect and introduced circuit breakers for abnormal order flow. Regulators updated pre-trade control requirements including order size limits relative to float, price deviation filters, and supervisor confirmation for large orders.
+

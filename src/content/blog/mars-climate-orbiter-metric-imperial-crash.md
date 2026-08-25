@@ -315,20 +315,27 @@ When systems exchange untyped primitive floats across service boundaries without
 
 ## FAQ: Mars Climate Orbiter Metric-Imperial Crash Explained
 
-**What caused NASA to lose the Mars Climate Orbiter?**
+### What caused NASA to lose the Mars Climate Orbiter?
+
 Lockheed Martin's SM_FORCES ground software delivered thruster data in pound-force seconds (lbf·s) instead of newton-seconds (N·s) as required by the Software Interface Specification. JPL's navigation software accepted the values without unit validation. The 4.45× underestimation of thruster output accumulated into a fatal trajectory error over nine months of cruise.
 
-**How much did the loss cost?**
+### How much did the loss cost?
+
 ~$125 million in spacecraft asset value, part of a $327.6 million total Mars Surveyor '98 program investment that also lost the Mars Polar Lander later the same year.
 
-**Why wasn't the error caught during the nine-month cruise?**
+### Why wasn't the error caught during the nine-month cruise?
+
 Navigation engineers observed unexplained trajectory discrepancies (AMD anomalies) but the formal anomaly resolution process was not effectively engaged. A scheduled TCM-5 correction maneuver was not executed. The organization failed to elevate the unresolved discrepancies to where the unit mismatch could be identified.
 
-**At what altitude did the spacecraft fail?**
+### At what altitude did the spacecraft fail?
+
 The MCO entered Mars atmosphere at an estimated periapsis of ~57 km. The survivable minimum was 80–85 km. At 57 km, aerodynamic forces exceeded structural limits, destroying the spacecraft.
 
-**What did the Mishap Investigation Board conclude?**
+### What did the Mishap Investigation Board conclude?
+
 The root cause was a failure to verify that the SM_FORCES interface complied with the SIS metric unit requirement. Contributing causes included inadequate anomaly resolution, insufficient systems-engineering transition between development and operations, and the omission of TCM-5.
 
-**What changed in NASA engineering practice afterward?**
+### What changed in NASA engineering practice afterward?
+
 NASA mandated interface contract compliance verification as a program milestone gate, issued SWE-017 in the Software Engineering Handbook citing MCO as a case study, and introduced dimensional analysis requirements in cross-team data interfaces. The incident became canonical in aerospace systems engineering curricula.
+

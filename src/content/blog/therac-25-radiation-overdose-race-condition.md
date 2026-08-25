@@ -221,25 +221,32 @@ While the Tyler and Yakima software defects were definitively reconstructed, sev
 
 ## 16. FAQ
 
-**Was the Therac-25 a software failure or a hardware failure?**
+### Was the Therac-25 a software failure or a hardware failure?
+
 It was a systemic architectural failure. While specific software bugs (race conditions, integer overflows) triggered the accidents, the root cause was the architectural decision to remove independent hardware interlocks and rely solely on unverified software to enforce physical safety.
 
-**What caused the Therac-25 race condition?**
+### What caused the Therac-25 race condition?
+
 The Tyler race condition occurred because the data-entry task and the 8-second magnet-setting task ran concurrently and mutated shared variables without adequate isolation. This allowed the operator to change the prescription on screen while the machine was already configuring itself based on the previous input, resulting in an unsafe physical state.
 
-**What was the Class3 bug?**
+### What was the Class3 bug?
+
 In the second Yakima accident, an 8-bit counter (`Class3`) used in a setup-test loop rolled over to zero. A safety interlock check was programmed to skip collimator validation when `Class3` equaled zero. Because of precise operator timing, the beam was enabled while the machine was unsafe.
 
-**Why didn't testing catch the Therac-25 bugs?**
+### Why didn't testing catch the Therac-25 bugs?
+
 Testing was primarily conducted on integrated systems rather than through rigorous module or adversarial timing analysis. Testers did not type as fast as experienced hospital operators, meaning the concurrent timing windows were rarely triggered in the lab. Furthermore, the formal safety analysis assumed the software would not fail.
 
-**What did Malfunction 54 mean?**
+### What did Malfunction 54 mean?
+
 "Malfunction 54" was a cryptic software error code that occurred during the Tyler accidents. It indicated a "dose input 2" error, which the machine interpreted as an underdose. In reality, the ion chambers had saturated from a massive radiation overdose. The misleading error caused operators to simply press 'Proceed' to try again.
 
-**How many Therac-25 accidents occurred?**
+### How many Therac-25 accidents occurred?
+
 There were six known radiation overdose accidents between June 1985 and January 1987. Three of the patients subsequently died. While the radiation injuries were severe, causation in the fatalities was complex, as some patients were already suffering from terminal cancer.
 
-**What changes did the FDA require?**
+### What changes did the FDA require?
+
 The FDA mandated a comprehensive Corrective Action Plan (CAP). This required AECL to redesign the software, improve the clarity of error messages, restrict mid-setup editing, and crucially, install independent physical hardware interlocks to monitor the turntable and prevent the beam from firing if misaligned.
 
 ## Primary Sources

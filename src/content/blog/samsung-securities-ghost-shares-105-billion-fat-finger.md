@@ -258,20 +258,27 @@ Trading gateways must automatically freeze anomalous employee accounts:
 
 ## FAQ: Samsung Securities Ghost Shares Incident Explained
 
-**What was the Samsung Securities ghost stock incident?**
+### What was the Samsung Securities ghost stock incident?
+
 On April 6, 2018, a back-office clerk at Samsung Securities accidentally selected "Shares" instead of "KRW" from a dropdown menu while processing a 1,000 KRW per share cash dividend for employee stock plan participants. The ledger minted 2.81 billion phantom shares worth $105 billion USD — over 30 times the firm's real total equity.
 
-**Did employees actually sell the phantom shares?**
+### Did employees actually sell the phantom shares?
+
 Yes. 16 employees placed sell orders dumping 5.01 million phantom shares on the Korea Exchange within 37 minutes, causing the stock to plunge 11.7% before trading halts and manual interventions stopped the selloff.
 
-**How could the system create shares that didn't exist?**
+### How could the system create shares that didn't exist?
+
 Samsung Securities' internal ledger was decoupled from the Korea Securities Depository (KSD). The software accepted the typed numbers as real inventory without checking whether physical or custodial shares actually existed in the vault, exposing the synthetic equity directly to the live exchange matching engine.
 
-**What happened to the employees who sold?**
+### What happened to the employees who sold?
+
 The employees who sold were criminally prosecuted. South Korean courts issued prison sentences and suspended sentences for breach of trust and market manipulation under the Capital Markets Act.
 
-**How much did it cost Samsung Securities?**
+### How much did it cost Samsung Securities?
+
 Over 200 billion KRW (approx. $190 million USD) in direct buyback losses, retail investor compensation for triggered stop-losses, and regulatory penalties. The firm was also hit with a six-month partial business suspension by the Financial Services Commission.
 
-**What changed in Korean financial market regulations afterward?**
+### What changed in Korean financial market regulations afterward?
+
 Regulators mandated real-time depository balance verification for all corporate actions, segregated cash and stock dividend workflows, eliminated free-form asset dropdowns, and enforced strict pre-trade sanity limits across all brokerage order gateways.
+
