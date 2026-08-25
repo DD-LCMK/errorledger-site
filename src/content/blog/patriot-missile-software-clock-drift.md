@@ -45,7 +45,6 @@ primary_sources:
     institution: "US Government Accountability Office"
 ---
 
-> **The Archivist’s Note:** AI can summarize what happened. ErrorLedger reconstructs *why* it happened, who made which decisions, what happened next, and what the evidence actually shows.
 
 ## 1. Executive Summary
 
@@ -53,7 +52,7 @@ On February 25, 1991, during the Gulf War, an Iraqi Scud missile approached a Un
 
 When the Scud entered the airspace, the Patriot's radar detected it. However, because of the finite precision of the software's 24-bit limited-precision time conversion, the system's internal clock had drifted by approximately 0.3433 seconds. ([GAO](https://www.gao.gov/pdf/product/215614)) Because a Scud missile travels at approximately 1,676 meters per second, this timing error shifted the Patriot's calculated range gate far enough that the incoming missile was no longer adequately centered within the tracking window.
 
-The tracking calculation became inaccurate enough that the system looked in the wrong place for the incoming Scud and failed to maintain the track. Alpha Battery therefore did not engage the missile. The Scud struck the barracks, killing 28 soldiers and injuring over 100 more. This incident remains one of the most deadly and heavily documented software engineering failures in military history.
+The trajectory projection degraded so severely that the azimuth-elevation tracking radar swept an empty sector of airspace, dropping the ballistic track entirely. Alpha Battery therefore did not engage the missile. The Scud struck the barracks, killing 28 soldiers and injuring over 100 more. This incident remains one of the most deadly and heavily documented software engineering failures in military history.
 
 ## 2. What Was the Patriot System?
 
@@ -161,9 +160,13 @@ The Patriot Project Office received Israeli data on February 11 showing signific
 
 ## 11. What the Evidence Does Not Establish
 
+> **What the evidence establishes:**
+> - A limited-precision time conversion error in converting tenths-of-a-second clock ticks into seconds accumulated monotonically with uptime.
+> - After ~100 hours of continuous operation, the 0.3433-second timing drift shifted the radar tracking range gate by 687 meters, causing the system to drop the Scud track.
+> 
 > **What the evidence does NOT establish:**
-> - **Exact Test-Suite Coverage:** `[UNKNOWN — INSUFFICIENT RECORD]` The GAO reported that the Patriot had not previously been used to defend against tactical ballistic missiles and had not been tested for the long continuous runtimes encountered during the Gulf War. The available report does not provide a complete reconstruction of the original test suite.
-> - **Engineer Intent:** `[UNKNOWN — INSUFFICIENT RECORD]` The available evidence does not establish the exact design rationale for the original limited-precision representation or the complete set of runtime assumptions made when the software was developed.
+> - Operator negligence; Army doctrine and user warnings sent before the incident did not specify a quantified continuous runtime limit.
+> - The exact design rationale for the original 24-bit conversion choice in the legacy aircraft-tracking codebase.
 
 
 ## 12. Root-Cause Analysis

@@ -46,12 +46,14 @@ primary_sources:
     url: "https://ntrs.nasa.gov/citations/19970020110"
 ---
 
-> **The Archivist’s Note:** AI can summarize what happened. ErrorLedger reconstructs *why* it happened, who made which decisions, what happened next, and what the evidence actually shows. 
 
+> **What the evidence establishes:**
+> - The primary failure mechanism was an uncaught 64-bit to 16-bit integer conversion overflow in the horizontal bias calculation of the SRI inertial reference software.
+> - Both primary and backup computers failed synchronously because both executed identical, unprotected software routines.
+> 
 > **What the evidence does NOT establish:**
-> - That the developers were incompetent or lazy; the software had worked flawlessly on the predecessor Ariane 4.
-> - That the failure was caused by a random hardware glitch; it was a deterministic software design flaw triggered by unpredicted physical flight dynamics.
-> - That the self-destruct sequence was a malfunction; it operated exactly as designed once the rocket deviated fatally from its trajectory.
+> - Hardware malfunction or physical rocket engine failure; all mechanical and propulsion systems functioned nominally until commanded into extreme angle of attack.
+> - Operator error during launch; the flight sequence was fully automated.
 
 ---
 

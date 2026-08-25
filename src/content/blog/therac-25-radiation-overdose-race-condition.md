@@ -52,11 +52,14 @@ primary_sources:
     url: "https://www.gao.gov/assets/pemd-90-6.pdf"
 ---
 
-> **The Archivist’s Note:** AI can summarize what happened. ErrorLedger reconstructs *why* it happened, who made which decisions, what happened next, and what the evidence actually shows.
 
+> **What the evidence establishes:**
+> - Critical safety interlocks previously enforced by physical hardware were delegated entirely to software without independent hardware backup.
+> - Concurrency race conditions in the keyboard entry handler and counter overflows in the safety task allowed high-power electron beams to fire without scattering targets.
+> 
 > **What the evidence does NOT establish:**
-> - That the software bugs were caused by intentional sabotage, malicious intent, or deliberate disregard for patient safety; official FDA and IEEE forensic investigations establish that the defects stemmed from poor software engineering practices, absent independent verification, and uncoordinated code reuse.
-> - That a "single programmer" was solely responsible for the entire system, as this simplifies the systemic engineering and regulatory failures documented in the case.
+> - Intentional sabotage, operator malice, or deliberate disregard for patient safety by hospital technicians or software developers.
+> - That a "single programmer" was solely responsible for the systemic testing, human-factors, and regulatory verification failures documented by the FDA.
 
 
 ## 1. Executive Summary
