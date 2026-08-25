@@ -48,12 +48,12 @@ primary_sources:
 
 > **The Archivist’s Note:** AI can summarize what happened. ErrorLedger reconstructs *why* it happened, who made which decisions, what happened next, and what the evidence actually shows. 
 
-<BoundaryBox>
-**What the evidence does NOT establish:**
-* That the developers were incompetent or lazy; the software had worked flawlessly on the predecessor Ariane 4.
-* That the failure was caused by a random hardware glitch; it was a deterministic software design flaw triggered by unpredicted physical flight dynamics.
-* That the self-destruct sequence was a malfunction; it operated exactly as designed once the rocket deviated fatally from its trajectory.
-</BoundaryBox>
+> [!NOTE]
+> **What the evidence does NOT establish:**
+> - That the developers were incompetent or lazy; the software had worked flawlessly on the predecessor Ariane 4.
+> - That the failure was caused by a random hardware glitch; it was a deterministic software design flaw triggered by unpredicted physical flight dynamics.
+> - That the self-destruct sequence was a malfunction; it operated exactly as designed once the rocket deviated fatally from its trajectory.
+
 
 The European Space Agency (ESA) spent a decade and over $7 billion engineering the Ariane 5. It was designed to be heavier, faster, and more capable than its reliable predecessor, the Ariane 4. 
 

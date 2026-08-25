@@ -48,12 +48,12 @@ primary_sources:
 
 > **The Archivist’s Note:** AI can summarize what happened. ErrorLedger reconstructs *why* it happened, who made which decisions, what happened next, and what the evidence actually shows. 
 
-<BoundaryBox>
-**What the evidence does NOT establish:**
-* That the spacecraft suffered an in-flight hardware or mechanical failure; telemetry received from the orbiter leading up to Mars Orbit Insertion was nominal.
-* That NASA and Lockheed Martin operated without an agreed specification; the Software Interface Specification (SIS) explicitly defined metric units (newton-seconds).
-* That the loss was caused solely by an isolated typographical error; official NASA mishap reports identify the breakdown of verification and validation (V&V), inadequate anomaly resolution, and insufficient systems-engineering transition between development and operations as contributing causes.
-</BoundaryBox>
+> [!NOTE]
+> **What the evidence does NOT establish:**
+> - That the spacecraft suffered an in-flight hardware or mechanical failure; telemetry received from the orbiter leading up to Mars Orbit Insertion was nominal.
+> - That NASA and Lockheed Martin operated without an agreed specification; the Software Interface Specification (SIS) explicitly defined metric units (newton-seconds).
+> - That the loss was caused solely by an isolated typographical error; official NASA mishap reports identify the breakdown of verification and validation (V&V), inadequate anomaly resolution, and insufficient systems-engineering transition between development and operations as contributing causes.
+
 
 ---
 

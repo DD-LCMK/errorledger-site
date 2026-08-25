@@ -161,11 +161,11 @@ The Patriot Project Office received Israeli data on February 11 showing signific
 
 ## 11. What the Evidence Does Not Establish
 
-<BoundaryBox>
-**Boundary Conditions:**
-* **Exact Test-Suite Coverage:** `[UNKNOWN — INSUFFICIENT RECORD]` The GAO reported that the Patriot had not previously been used to defend against tactical ballistic missiles and had not been tested for the long continuous runtimes encountered during the Gulf War. The available report does not provide a complete reconstruction of the original test suite.
-* **Engineer Intent:** `[UNKNOWN — INSUFFICIENT RECORD]` The available evidence does not establish the exact design rationale for the original limited-precision representation or the complete set of runtime assumptions made when the software was developed.
-</BoundaryBox>
+> [!NOTE]
+> **What the evidence does NOT establish:**
+> - **Exact Test-Suite Coverage:** `[UNKNOWN — INSUFFICIENT RECORD]` The GAO reported that the Patriot had not previously been used to defend against tactical ballistic missiles and had not been tested for the long continuous runtimes encountered during the Gulf War. The available report does not provide a complete reconstruction of the original test suite.
+> - **Engineer Intent:** `[UNKNOWN — INSUFFICIENT RECORD]` The available evidence does not establish the exact design rationale for the original limited-precision representation or the complete set of runtime assumptions made when the software was developed.
+
 
 ## 12. Root-Cause Analysis
 
