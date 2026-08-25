@@ -59,7 +59,7 @@ The failure was not caused by a single algorithmic flaw or a rogue database quer
 ---
 
 > **What the evidence establishes:**
-> - The timeline compression of the Enterprise 21 project from 48 months to 30 months.
+> - The timeline compression of the Enterprise 21 project from a roughly 48-month plan to approximately 30 months.
 > - The use of a simultaneous "Big Bang" deployment strategy across all three major vendor platforms.
 > - A revenue loss of $100M–$150M directly tied to order fulfillment paralysis.
 > 
@@ -159,7 +159,7 @@ When the system was hit with the full Halloween-season transaction volume, the u
 ## The Archivist's Verdict
 
 > **The Archivist's Assessment:**
-> The Enterprise 21 disaster is the canonical warning against allowing arbitrary calendar dates (Y2K) to dictate engineering reality. Management demanded a 48-month integration be completed in 30 months. The software did exactly what the laws of computer science dictated it would do when untested interfaces are subjected to production load: it failed. The ultimate irony of the Hershey incident is that in their rush to prevent a hypothetical digital failure on January 1, 2000, they guaranteed a very real physical failure in October 1999.
+> The Enterprise 21 disaster is the canonical warning against allowing implementation schedules to outrun integration readiness. The organization compressed a planned multi-year transformation into roughly 30 months, delayed critical components into July, and deployed during the company's most commercially demanding period. The combination of schedule pressure, integration complexity, deployment timing and insufficient validation created conditions under which serious failure became highly probable. The outcome was not determined by any law of software engineering. It was determined by the specific decisions made at each point where readiness and the business calendar diverged. The ultimate irony of the Hershey incident is not that the software failed — it's that SAP subsequently continued to run Hershey's business successfully after the implementation was stabilized. The failure was never in the software. It was in the conditions under which the software was asked to operate.
 
 ---
 
