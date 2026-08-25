@@ -77,7 +77,6 @@ The empirical record shows something far more instructive for systems designers.
 ---
 
 
-> [!NOTE]
 > **What the evidence establishes:**
 > - The technical failure mechanisms and financial consequences as documented in primary regulatory and court records.
 > 

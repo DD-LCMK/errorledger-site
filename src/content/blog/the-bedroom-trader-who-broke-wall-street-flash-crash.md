@@ -72,7 +72,6 @@ What regulators did not publicly understand until years later was that a critica
 ---
 
 
-> [!NOTE]
 > **What the evidence establishes:**
 > - The technical failure mechanisms and financial consequences as documented in primary regulatory and court records.
 > 

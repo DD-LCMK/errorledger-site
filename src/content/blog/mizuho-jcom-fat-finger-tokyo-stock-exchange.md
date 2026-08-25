@@ -80,7 +80,6 @@ In a single keystroke, Mizuho Securities had offered to sell **42.06 times the e
 ---
 
 
-> [!NOTE]
 > **What the evidence establishes:**
 > - The technical failure mechanisms and financial consequences as documented in primary regulatory and court records.
 > 

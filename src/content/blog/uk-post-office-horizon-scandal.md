@@ -66,7 +66,6 @@ What followed was not efficiency, but a cascading, decades-long disaster of tech
 More than 900 people were prosecuted in cases in which Horizon evidence played a significant role, including prosecutions for theft, fraud and false accounting. Homes were lost, families were broken, people were incarcerated, and several people affected by the scandal later died by suicide amid the profound financial, psychological and social consequences documented by the Inquiry. The UK Post Office Horizon IT scandal is not simply a story about bad code; it is a profound lesson in the dangers of algorithmic authoritarianism, where human testimony is systematically invalidated by unquestioned digital outputs.
 
 
-> [!NOTE]
 > **What the evidence establishes:**
 > - The technical failure mechanisms and financial consequences as documented in primary regulatory and court records.
 > 

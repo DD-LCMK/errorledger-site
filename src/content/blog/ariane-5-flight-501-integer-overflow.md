@@ -48,7 +48,6 @@ primary_sources:
 
 > **The Archivist’s Note:** AI can summarize what happened. ErrorLedger reconstructs *why* it happened, who made which decisions, what happened next, and what the evidence actually shows. 
 
-> [!NOTE]
 > **What the evidence does NOT establish:**
 > - That the developers were incompetent or lazy; the software had worked flawlessly on the predecessor Ariane 4.
 > - That the failure was caused by a random hardware glitch; it was a deterministic software design flaw triggered by unpredicted physical flight dynamics.

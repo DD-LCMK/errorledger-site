@@ -78,7 +78,6 @@ And by 11:30 AM the following morning, the company’s executive leadership had 
 ---
 
 
-> [!NOTE]
 > **What the evidence establishes:**
 > - The technical failure mechanisms and financial consequences as documented in primary regulatory and court records.
 > 

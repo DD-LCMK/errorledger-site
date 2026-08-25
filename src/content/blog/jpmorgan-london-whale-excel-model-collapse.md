@@ -84,7 +84,6 @@ The new risk measurement therefore created a dangerous divergence between the nu
 
 To maintain strict epistemic hygiene, it is critical to explicitly bound the scope of the documented failure.
 
-> [!NOTE]
 > **What the evidence establishes:**
 > - The new VaR model materially reduced reported risk by about 50%.
 > - The new model relied on manual spreadsheet processes.

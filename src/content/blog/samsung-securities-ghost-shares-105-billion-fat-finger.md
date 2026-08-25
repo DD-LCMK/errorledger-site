@@ -82,7 +82,6 @@ Samsung Securities had only 89.3 million real physical shares in existence. In a
 ---
 
 
-> [!NOTE]
 > **What the evidence establishes:**
 > - The technical failure mechanisms and financial consequences as documented in primary regulatory and court records.
 > 

@@ -76,7 +76,6 @@ And it was triggered not by an adversarial nation-state cyberattack, but by cybe
 ---
 
 
-> [!NOTE]
 > **What the evidence establishes:**
 > - The technical failure mechanisms and financial consequences as documented in primary regulatory and court records.
 > 

@@ -61,7 +61,6 @@ primary_sources:
 
 엄격한 인식론적 무결성(epistemic hygiene)을 유지하기 위해, 문서화된 실패의 범위를 명확히 규정하는 것이 중요합니다.
 
-> [!NOTE]
 > **증거를 통해 문서로 확인된 사실 (What the evidence establishes):**
 > - 새로운 VaR 모델은 보고된 위험 수치를 약 50% 실질적으로 축소시켰음.
 > - 이 새 모델은 수동 엑셀 스프레드시트 프로세스에 의존했음.

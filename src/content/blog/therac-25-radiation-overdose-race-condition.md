@@ -54,7 +54,6 @@ primary_sources:
 
 > **The Archivist’s Note:** AI can summarize what happened. ErrorLedger reconstructs *why* it happened, who made which decisions, what happened next, and what the evidence actually shows.
 
-> [!NOTE]
 > **What the evidence does NOT establish:**
 > - That the software bugs were caused by intentional sabotage, malicious intent, or deliberate disregard for patient safety; official FDA and IEEE forensic investigations establish that the defects stemmed from poor software engineering practices, absent independent verification, and uncoordinated code reuse.
 > - That a "single programmer" was solely responsible for the entire system, as this simplifies the systemic engineering and regulatory failures documented in the case.

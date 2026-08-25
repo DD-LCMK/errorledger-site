@@ -62,7 +62,6 @@ On January 15, 2015, Target Corporation filed an 8-K with the Securities and Exc
 The public narrative surrounding the failure often focused on empty shelves and higher-than-expected retail prices, characterizing the disaster as a mere misjudgment of the Canadian consumer. The empirical reality, drawn from post-mortem audits and documented insider accounts, points to a much more terrifying systemic fracture: a total decoupling of digital data models from the physical reality they were supposed to govern. The software that controlled the flow of physical goods—including SAP's item data and Manhattan Associates' warehouse systems—depended on accurate product information. That dependency became a critical vulnerability when dimensions, quantities, case configurations and other item attributes were entered incorrectly. The resulting mismatches disrupted distribution-centre processing and made automated replenishment unreliable. 
 
 
-> [!NOTE]
 > **What the evidence establishes:**
 > - The technical failure mechanisms and financial consequences as documented in primary regulatory and court records.
 > 

@@ -48,7 +48,6 @@ primary_sources:
 
 > **The Archivist’s Note:** AI can summarize what happened. ErrorLedger reconstructs *why* it happened, who made which decisions, what happened next, and what the evidence actually shows. 
 
-> [!NOTE]
 > **What the evidence does NOT establish:**
 > - That the spacecraft suffered an in-flight hardware or mechanical failure; telemetry received from the orbiter leading up to Mars Orbit Insertion was nominal.
 > - That NASA and Lockheed Martin operated without an agreed specification; the Software Interface Specification (SIS) explicitly defined metric units (newton-seconds).

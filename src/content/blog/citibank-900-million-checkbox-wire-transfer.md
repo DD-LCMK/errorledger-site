@@ -76,7 +76,6 @@ And the entire catastrophe came down to three counterintuitive checkboxes buried
 ---
 
 
-> [!NOTE]
 > **What the evidence establishes:**
 > - The technical failure mechanisms and financial consequences as documented in primary regulatory and court records.
 > 

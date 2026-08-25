@@ -72,7 +72,6 @@ And the root cause was not a complex quantitative failure. It was an eight-year-
 ---
 
 
-> [!NOTE]
 > **What the evidence establishes:**
 > - The technical failure mechanisms and financial consequences as documented in primary regulatory and court records.
 > 
