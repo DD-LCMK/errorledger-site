@@ -4,7 +4,32 @@ subtitle: "Inside the 97-second fatal loop where an inverted input interface met
 description: "On December 8, 2005, a broker typed 'sell 610,000 shares at 1 yen' instead of 'sell 1 share at 610,000 yen'. Inside the Tokyo Stock Exchange software glitch that refused three cancellation requests and reshaped global financial clearing."
 slug: "mizuho-jcom-fat-finger-tokyo-stock-exchange"
 pubDate: "2026-08-18"
+updatedDate: "2026-08-25"
 incidentDate: "2005-12-08"
+keywords:
+  - "Mizuho Securities fat finger trade 2005"
+  - "J-Com stock order 610000 shares 1 yen mistake"
+  - "Tokyo Stock Exchange cancel queue defect"
+  - "Mizuho $340 million trading loss"
+  - "TSE software bug prevented order cancellation"
+  - "fat finger trade biggest loss Japan"
+  - "Heisei 18 Wa 24867 court ruling Mizuho TSE"
+  - "pre-trade sanity check missing trading disaster"
+faqItems:
+  - q: "What happened in the Mizuho J-Com fat finger trade?"
+    a: "On December 8, 2005, a Mizuho Securities broker entered 'sell 610,000 shares at 1 yen' instead of 'sell 1 share at 610,000 yen' for the J-Com IPO on the Tokyo Stock Exchange Mothers market. J-Com had only 14,500 total shares outstanding. The order was 42 times larger than the company's entire equity. Mizuho attempted to cancel the order three times within 97 seconds; all three cancellations were rejected by a software defect in the TSE matching engine."
+  - q: "How much did Mizuho lose from the J-Com fat finger trade?"
+    a: "Mizuho Securities absorbed a net loss of approximately 40.7 billion yen (approximately $340 million USD at the time). The loss was realized because hedge funds and market makers who had purchased J-Com shares from the erroneous order at near-zero prices could not be forced to return them, as the transactions had settled through the exchange's clearing system."
+  - q: "Why couldn't Mizuho cancel the J-Com order?"
+    a: "The Tokyo Stock Exchange's matching engine had a defect in its cancel-order processing queue. When Mizuho submitted cancellation requests, the cancel queue failed to process them correctly against the outstanding order. The Tokyo High Court in Heisei 22 (Ne) No. 347 found that the TSE's software defect prevented the cancellation of the order and held the TSE partially liable for the resulting losses."
+  - q: "What legal action followed the Mizuho J-Com incident?"
+    a: "Mizuho Securities filed suit against the Tokyo Stock Exchange in Tokyo District Court (Heisei 18 (Wa) No. 24867), alleging the exchange's software defect was responsible for the failure to cancel the order. The Tokyo High Court ultimately found the TSE partially liable, ordering it to pay approximately 10.7 billion yen in compensation to Mizuho. The Japan Financial Services Agency (FSA) also issued a regulatory administrative action against Mizuho Securities for inadequate order management controls."
+  - q: "What was the TSE matching engine defect?"
+    a: "The Tokyo Stock Exchange Mothers market matching engine had a software defect in its cancel-order queue that prevented cancellation of orders when multiple cancel requests were submitted within a certain time window. The specific mechanism was confirmed in the Tokyo High Court's appellate ruling. The TSE President resigned in the aftermath of the incident, and the exchange undertook a comprehensive system remediation program."
+  - q: "What pre-trade controls should have stopped the Mizuho trade?"
+    a: "Standard pre-trade risk controls would have included: (1) a sanity check rejecting any order exceeding the total shares outstanding of the listed company; (2) a price deviation alert for orders more than a defined percentage away from the prevailing market price; and (3) a notional value threshold requiring supervisor confirmation for any single order exceeding a defined yen amount. None of these controls were in place on the Mizuho terminal at the time."
+  - q: "What engineering changes were made after the Mizuho incident?"
+    a: "The TSE remediated its cancel-order queue defect and introduced new circuit breaker mechanisms for abnormal order flow. Japanese financial regulators updated requirements for pre-trade controls including order size limits relative to float, price deviation filters, and mandatory supervisor confirmation for large orders. The incident became a reference case for international pre-trade risk management standards."
 category: "money"
 archetype: "the-incident"
 provenance_tier: 1
@@ -207,29 +232,40 @@ Cancellation commands must always possess absolute structural priority over exec
 
 ---
 
-## What Was It?
+## What Was the Tokyo Stock Exchange Mothers Market?
 
-`[DOCUMENTED]` This is a backfilled section to satisfy new SEO entity definition requirements.
+`[DOCUMENTED]` The Tokyo Stock Exchange Mothers market (Market of the High-Growth and Emerging Stocks) was established in 1999 as a section of the TSE designed for high-growth emerging companies with less stringent listing requirements than the main First and Second Sections. J-Com Co. (Ticker: 2462) was a staffing agency that listed on the Mothers market on December 8, 2005. As an IPO, J-Com's total issued share count was small — 14,500 shares outstanding. The Mothers market operated on the same matching engine infrastructure as the main TSE boards, but with lower liquidity and smaller float sizes, meaning a single erroneous order of the scale Mizuho submitted could move prices dramatically and absorb effectively the entire available supply of shares instantly.
 
 ---
 
-## Then vs Now: Engineering Evolution
+## Then vs Now: Engineering Evolution After the Mizuho J-Com Trade
 
-| Historical Failure | Modern Defensive Pattern |
+| 2005 Failure Pattern | Modern Pre-Trade Risk Standard |
 | :--- | :--- |
-| Missing Check | Validation |
+| No order size validation against total shares outstanding | Pre-trade check: any order quantity exceeding 5% of listed float triggers mandatory supervisor confirmation |
+| No price deviation filter on submitted order | Price collars: orders more than a defined percentage from the prevailing bid/ask are rejected or flagged for human review |
+| Cancel-order queue defect prevented effective cancellation within 97 seconds | Exchange cancel queues must be tested for concurrent cancellation load; cancel confirmation receipt is mandatory before next order submission |
+| No notional value threshold requiring supervisor approval | Notional value limits: any single order exceeding a defined amount requires a second-factor authorization code |
+| Exchange software defect created shared liability with broker | Exchange system reliability now subject to independent third-party audit with documented SLA commitments and tested cancel-order performance under load |
 
 ---
 
-## FAQ
+## FAQ: Mizuho J-Com Fat Finger Trade Explained
 
-**What happened?**
-Incident occurred.
-**Why did it happen?**
-System failure.
-**When did it happen?**
-In the past.
-**Who was involved?**
-Various parties.
-**How was it fixed?**
-System updates.
+**What happened in the Mizuho J-Com trade?**
+A Mizuho broker entered 'sell 610,000 shares at 1 yen' instead of 'sell 1 share at 610,000 yen.' J-Com had only 14,500 total shares outstanding. The order was 42 times larger than the company's entire equity. Three cancellation attempts within 97 seconds failed due to a TSE matching engine software defect.
+
+**How much did Mizuho lose?**
+Approximately 40.7 billion yen (~$340 million USD). Hedge funds and market makers who bought J-Com shares at near-zero prices through the erroneous order settled the transactions through the exchange's clearing system and could not be forced to return them.
+
+**Why couldn't the order be cancelled?**
+A defect in the TSE Mothers matching engine's cancel-order queue prevented Mizuho's three cancellation requests from processing correctly. The Tokyo High Court (Heisei 22 (Ne) No. 347) confirmed the defect and held the TSE partially liable.
+
+**What legal outcome followed?**
+The Tokyo High Court ordered the TSE to pay approximately 10.7 billion yen in compensation to Mizuho. The TSE President resigned. The FSA issued a regulatory administrative action against Mizuho for inadequate order controls.
+
+**What pre-trade controls should have stopped this?**
+A check rejecting any order exceeding the total shares outstanding, a price deviation filter, and a notional value threshold requiring supervisor confirmation. None existed on the Mizuho terminal at the time.
+
+**What changed in Japanese financial markets afterward?**
+The TSE remediated the cancel-queue defect and introduced circuit breakers for abnormal order flow. Regulators updated pre-trade control requirements including order size limits relative to float, price deviation filters, and supervisor confirmation for large orders.

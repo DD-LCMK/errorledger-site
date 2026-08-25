@@ -4,7 +4,32 @@ subtitle: "How Fujitsu's Horizon software generated phantom shortfalls, bankrupt
 description: "Fujitsu's buggy Horizon EPOSS software generated massive phantom shortfalls across UK post offices. Armed with the belief that 'the computer is always right,' the Post Office wrongfully prosecuted over 900 subpostmasters."
 slug: "uk-post-office-horizon-scandal"
 pubDate: "2026-08-20"
+updatedDate: "2026-08-25"
 incidentDate: "2019-12-16"
+keywords:
+  - "UK Post Office Horizon IT scandal explained"
+  - "Fujitsu Horizon software bugs phantom shortfalls"
+  - "Post Office wrongful prosecutions subpostmasters"
+  - "Bates v Post Office High Court ruling"
+  - "how many people prosecuted Post Office Horizon"
+  - "Horizon EPOSS Dalmellington bug"
+  - "Post Office Horizon scandal compensation"
+  - "computer evidence wrongful conviction UK"
+faqItems:
+  - q: "What was the UK Post Office Horizon IT scandal?"
+    a: "The Post Office Horizon scandal was a decades-long miscarriage of justice in which the UK Post Office used evidence from its Fujitsu-developed Horizon EPOSS accounting software to wrongfully prosecute over 900 subpostmasters for theft and false accounting. The software contained hundreds of known defects that generated phantom financial shortfalls — including the Dalmellington and Callendar Square bugs documented in court — but the Post Office maintained the system was reliable and forced subpostmasters to make up the artificial deficits from their own funds."
+  - q: "What bugs were found in the Fujitsu Horizon software?"
+    a: "High Court Justice Peter Fraser's 2019 judgment in Bates & Ors v Post Office Ltd documented multiple severe defects. The 'Dalmellington bug' caused a single remittance to appear multiple times in the ledger, generating thousands of pounds in artificial deficit within seconds. The 'Callendar Square bug' caused transaction duplication errors that created phantom branch shortfalls. A Fujitsu internal report to the Post Office disclosed hundreds of such bugs, errors, and defects — a document the Post Office did not disclose to defendants in prosecutions."
+  - q: "How many subpostmasters were wrongfully prosecuted?"
+    a: "Over 900 subpostmasters were prosecuted in cases where Horizon evidence played a significant role, including convictions for theft, fraud, and false accounting, according to the Post Office Horizon IT Inquiry. Many were jailed, bankrupted, or forced into personal insolvency. At least four people connected to the scandal later died by suicide, documented in the Inquiry's evidence record."
+  - q: "What did the 2019 High Court ruling in Bates v Post Office find?"
+    a: "Justice Peter Fraser ruled in Bates & Ors v Post Office Ltd [2019] EWHC 3408 (QB) that Horizon was not robust, and that the system did have bugs, errors, and defects that could cause apparent shortfalls. He found that the Post Office had pursued a strategy of denying the existence of bugs when it had substantial evidence of them, and that it had treated the system's outputs as incontrovertible truth despite internal awareness of problems."
+  - q: "What was the Horizon EPOSS system?"
+    a: "Horizon EPOSS (Electronic Point of Sale Service) was an enterprise IT system developed by ICL (later Fujitsu) and deployed by the UK Post Office from 1999 to digitize cash accounting across approximately 11,500 branches. It managed end-of-day cash declarations, transaction reconciliation, and ledger balancing. Discrepancies between Horizon's ledger figures and physical cash on hand were treated as evidence of subpostmaster theft, rather than as potential system errors."
+  - q: "Why were subpostmasters unable to prove Horizon was wrong?"
+    a: "The Post Office held a prosecutorial monopoly under an ancient legal power and could bring criminal cases without involving the Crown Prosecution Service. It also held exclusive access to Horizon's internal transaction logs. Subpostmasters had no access to the underlying data and were told by the Post Office that no other branches were experiencing similar problems — a claim the Post Office knew to be false, as it had received numerous reports of the same issues from across the network."
+  - q: "What compensation and convictions were overturned?"
+    a: "The UK Court of Appeal overturned 39 convictions in April 2021 in R v Hamilton & Ors [2021] EWCA Crim 577. Parliament passed the Post Office (Horizon System) Offences Act 2024 to quash all remaining wrongful convictions automatically. A government compensation scheme was established; estimates of total compensation commitments exceed £1 billion. The Horizon IT Inquiry continued to examine corporate accountability for how the prosecutions were knowingly maintained despite internal evidence of software defects."
 category: "corporate"
 archetype: "the-incident"
 provenance_tier: 1
@@ -179,29 +204,43 @@ The UK Post Office Horizon IT scandal is not merely a tragedy of software engine
 
 ---
 
-## What Was It?
+## What Was Horizon EPOSS?
 
-`[DOCUMENTED]` This is a backfilled section to satisfy new SEO entity definition requirements.
+`[DOCUMENTED]` Horizon EPOSS (Electronic Point of Sale Service) was an enterprise IT system developed by ICL — later acquired by Fujitsu — and rolled out by the UK Post Office from 1999 across approximately 11,500 branch locations. It replaced a paper-based ledger system with a centralized digital accounting platform that tracked cash declarations, transaction records, and stock inventory for each branch. At the end of each trading period, the system generated a branch balance statement that was treated by the Post Office as legally authoritative for calculating whether subpostmasters owed the Post Office money. Subpostmasters who challenged Horizon's figures were told, repeatedly and falsely, that theirs was the only branch experiencing discrepancies. Internal Fujitsu reports, disclosed to the Post Office and later surfaced by the Inquiry, documented hundreds of known software defects — many of which could generate phantom shortfalls — dating back years before the first prosecution.
 
 ---
 
-## Then vs Now: Engineering Evolution
+## Then vs Now: Engineering Evolution After the Horizon Scandal
 
-| Historical Failure | Modern Defensive Pattern |
+| Horizon-Era Practice | Modern Accountable Systems Standard |
 | :--- | :--- |
-| Missing Check | Validation |
+| Proprietary ledger with no subpostmaster access to underlying transaction logs | Immutable, append-only audit logs with cryptographic verification accessible to all parties whose balances are affected |
+| System discrepancy treated as proof of human fraud without independent investigation | Any system-generated shortfall above a threshold triggers an automatic IT investigation before any employee disciplinary action |
+| Bug reports suppressed from disclosure in criminal prosecutions | Mandatory disclosure of all known software defects to any party facing criminal charges based on system-generated evidence |
+| Post Office held exclusive prosecutorial power and exclusive evidence access | Separation of prosecutorial authority from the entity holding proprietary software evidence; third-party forensic access mandated |
+| Software reliability assumed; individual testimony discarded without corroboration | Known-defective system outputs are inadmissible without independent forensic validation of the relevant system version |
 
 ---
 
-## FAQ
+## FAQ: UK Post Office Horizon Scandal Explained
 
-**What happened?**
-Incident occurred.
-**Why did it happen?**
-System failure.
-**When did it happen?**
-In the past.
-**Who was involved?**
-Various parties.
-**How was it fixed?**
-System updates.
+**What was the UK Post Office Horizon IT scandal?**
+Fujitsu's Horizon software generated phantom shortfalls in post office branch accounts. The Post Office used Horizon's outputs as criminal evidence to prosecute over 900 subpostmasters for theft and false accounting, despite internal awareness of hundreds of documented system defects. It is considered one of the worst miscarriages of justice in British legal history.
+
+**What bugs caused the phantom shortfalls?**
+The Dalmellington bug caused single transactions to appear multiple times in the ledger, generating artificial deficits in seconds. The Callendar Square bug caused transaction duplication errors. Justice Fraser's 2019 ruling confirmed Horizon had bugs that could and did produce such phantom shortfalls.
+
+**How many people were wrongfully prosecuted?**
+Over 900, with prosecutions including theft, fraud, and false accounting. Many were jailed or bankrupted. At least four people connected to the scandal later died by suicide.
+
+**What did the Bates v Post Office judgment find?**
+Justice Peter Fraser ruled in [2019] EWHC 3408 (QB) that Horizon was not robust, that it had bugs capable of causing apparent shortfalls, and that the Post Office had pursued a strategy of denying the existence of bugs despite substantial internal evidence of them.
+
+**What convictions were overturned?**
+The Court of Appeal quashed 39 convictions in April 2021. Parliament passed the Post Office (Horizon System) Offences Act 2024 to automatically quash remaining wrongful convictions. Total compensation commitments exceed an estimated £1 billion.
+
+**Why couldn't subpostmasters prove the system was wrong?**
+The Post Office held exclusive access to Horizon's internal logs, had a prosecutorial monopoly bypassing the Crown Prosecution Service, and falsely told defendants theirs was the only branch with problems. Without access to the underlying transaction data, subpostmasters had no means to challenge the system's outputs.
+
+**What is the ongoing Post Office Horizon IT Inquiry?**
+A statutory public inquiry examining how and why the Post Office maintained its prosecutions despite growing internal evidence of Horizon's defects, and the roles of Post Office and Fujitsu executives in suppressing that evidence. The Inquiry's evidence archive and ongoing hearings are publicly accessible at postofficehorizoninquiry.org.uk.
