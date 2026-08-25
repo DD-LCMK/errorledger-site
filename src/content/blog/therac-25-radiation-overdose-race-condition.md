@@ -138,7 +138,7 @@ This was not merely an integer overflow; it was an 8-bit counter rollover intera
 
 The historical record does not establish that the Tyler race condition or the Yakima `Class3` overflow explain the first three accidents (Kennestone, Hamilton, Yakima 1). 
 
-`[DOCUMENTED]` As Leveson and Turner noted, the exact mechanisms of the earliest accidents remain unknown because detailed telemetry, video records, and reproducible fault sequences were unavailable at the time. Assuming all six accidents were caused by the same race condition is a common historical oversimplification.
+As Leveson and Turner noted, the exact mechanisms of the earliest accidents remain unknown because detailed telemetry, video records, and reproducible fault sequences were unavailable at the time. Assuming all six accidents were caused by the same race condition is a common historical oversimplification.
 
 ## 8. Malfunction 54: The Observability/Human-Factors Failure
 
@@ -159,7 +159,7 @@ The system failed to map the physical hazard to an actionable, high-severity fau
 
 How did AECL testing fail to catch the race condition?
 
-`[DOCUMENTED]` The software was primarily tested as an integrated system, not via isolated module testing or adversarial timing analysis. Experienced hospital operators could execute data-entry sequences much faster than the engineers who tested the machine.
+The software was primarily tested as an integrated system, not via isolated module testing or adversarial timing analysis. Experienced hospital operators could execute data-entry sequences much faster than the engineers who tested the machine.
 
 Furthermore, the formal safety analysis explicitly assumed that software errors would not occur. The Fault Tree Analysis (FTA) assigned probabilities to hardware failures (e.g., switches, relays) but treated the software as perfectly reliable. The analysis assumed away residual software errors, meaning the safety model never accounted for a scenario where the software itself commanded an unsafe state.
 
@@ -167,7 +167,7 @@ Furthermore, the formal safety analysis explicitly assumed that software errors 
 
 The Therac-25 software was not entirely new. Software lineage and reuse across Therac generations carried code from the Therac-20. 
 
-`[RECONSTRUCTED]` The canonical investigation notes that related software problems existed in the Therac-20. However, the Therac-20 possessed independent physical hardware interlocks. If the Therac-20 software generated an unsafe configuration, the physical hardware breaker would trip, blowing a fuse and preventing the beam from firing. The software defect manifested merely as a blown fuse—a nuisance, not a hazard.
+The canonical investigation notes that related software problems existed in the Therac-20. However, the Therac-20 possessed independent physical hardware interlocks. If the Therac-20 software generated an unsafe configuration, the physical hardware breaker would trip, blowing a fuse and preventing the beam from firing. The software defect manifested merely as a blown fuse—a nuisance, not a hazard.
 
 When this software lineage was carried over to the Therac-25, the independent hardware safeguards were not duplicated. A latent software defect that had been safely masked by physical hardware in a previous generation was suddenly exposed as a lethal hazard.
 
@@ -198,7 +198,7 @@ The final Corrective Action Plan fundamentally altered the machine's architectur
 
 ## 13. ErrorLedger Forensic Failure Model
 
-`[ANALYTICAL]` The Therac-25 disaster is best understood through a 5-layer systemic failure model:
+The Therac-25 disaster is best understood through a 5-layer systemic failure model:
 
 1. **Layer 1 — Architecture:** Independent hardware safeguards were reduced, transferring total safety responsibility to software.
 2. **Layer 2 — Software:** Concurrent shared-state defects and counter overflows allowed physically unsafe configurations to become representable in memory.

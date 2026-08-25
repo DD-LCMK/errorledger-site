@@ -233,7 +233,7 @@ Cancellation commands must always possess absolute structural priority over exec
 
 ## What Was the Tokyo Stock Exchange Mothers Market?
 
-`[DOCUMENTED]` The Tokyo Stock Exchange Mothers market (Market of the High-Growth and Emerging Stocks) was established in 1999 as a section of the TSE designed for high-growth emerging companies with less stringent listing requirements than the main First and Second Sections. J-Com Co. (Ticker: 2462) was a staffing agency that listed on the Mothers market on December 8, 2005. As an IPO, J-Com's total issued share count was small — 14,500 shares outstanding. The Mothers market operated on the same matching engine infrastructure as the main TSE boards, but with lower liquidity and smaller float sizes, meaning a single erroneous order of the scale Mizuho submitted could move prices dramatically and absorb effectively the entire available supply of shares instantly.
+The Tokyo Stock Exchange Mothers market (Market of the High-Growth and Emerging Stocks) was established in 1999 as a section of the TSE designed for high-growth emerging companies with less stringent listing requirements than the main First and Second Sections. J-Com Co. (Ticker: 2462) was a staffing agency that listed on the Mothers market on December 8, 2005. As an IPO, J-Com's total issued share count was small — 14,500 shares outstanding. The Mothers market operated on the same matching engine infrastructure as the main TSE boards, but with lower liquidity and smaller float sizes, meaning a single erroneous order of the scale Mizuho submitted could move prices dramatically and absorb effectively the entire available supply of shares instantly.
 
 ---
 

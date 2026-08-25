@@ -80,7 +80,7 @@ The exact timeline of the software degradation is documented by the General Acco
 
 ## 4. How the 24-Bit Time-Conversion Error Worked
 
-`[ANALYTICAL — ERRORLEDGER]` The failure was caused by how time was represented and converted within the system's architecture.
+The failure was caused by how time was represented and converted within the system's architecture.
 
 ### 4.1 The clock
 The Patriot's internal computer maintained elapsed time in tenths of a second.
@@ -111,7 +111,7 @@ Because rebooting reset the elapsed time, the system had a runtime-dependent fai
 
 ## 7. How the Range Gate Failed
 
-`[DOCUMENTED — GAO]` The timing error caused the Patriot's predicted range gate to be displaced relative to the actual target. The GAO calculated that approximately 100 hours of continuous operation produced a 0.3433-second timing inaccuracy and an approximately 687-meter shift in the range gate. ([GAO](https://www.gao.gov/assets/imtec-92-26.pdf))
+The timing error caused the Patriot's predicted range gate to be displaced relative to the actual target. The GAO calculated that approximately 100 hours of continuous operation produced a 0.3433-second timing inaccuracy and an approximately 687-meter shift in the range gate. ([GAO](https://www.gao.gov/assets/imtec-92-26.pdf))
 
 | Runtime | Time inaccuracy | Approx. range-gate shift |
 | :--- | :--- | :--- |
@@ -132,7 +132,7 @@ The Patriot Project Office received Israeli data on February 11 showing signific
 
 ## 9. The February 11–25 Warning-to-Failure Chain
 
-`[DOCUMENTED — GAO]` The chain of organizational and technical events leading to the disaster:
+The chain of organizational and technical events leading to the disaster:
 
 * **Feb 11:** Israeli data identifies significant range-gate degradation.
 * **Feb 11-16:** Patriot Project Office investigates and develops a software change.

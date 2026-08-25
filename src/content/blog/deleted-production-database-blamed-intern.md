@@ -248,7 +248,7 @@ True technical safety cannot exist without psychological safety:
 
 ## What Was the Startup's Database Infrastructure?
 
-`[RECONSTRUCTED]` Based on the documented incident reconstruction, the startup operated a primary PostgreSQL cluster hosted on AWS RDS with unlogged root SSH access shared among the engineering team. Production and staging environments used identical terminal configurations and monochrome font displays, with no visual differentiation between connection contexts. Automated nightly backup jobs were configured to write transaction snapshots to an S3 bucket under a dedicated IAM role — however, that role's permissions had quietly drifted out of compliance six months prior, causing all backup jobs to silently complete with exit code 0 while writing zero bytes to the bucket. No backup integrity monitoring or restore-drill schedule existed to detect the failure.
+Based on the documented incident reconstruction, the startup operated a primary PostgreSQL cluster hosted on AWS RDS with unlogged root SSH access shared among the engineering team. Production and staging environments used identical terminal configurations and monochrome font displays, with no visual differentiation between connection contexts. Automated nightly backup jobs were configured to write transaction snapshots to an S3 bucket under a dedicated IAM role — however, that role's permissions had quietly drifted out of compliance six months prior, causing all backup jobs to silently complete with exit code 0 while writing zero bytes to the bucket. No backup integrity monitoring or restore-drill schedule existed to detect the failure.
 
 ---
 

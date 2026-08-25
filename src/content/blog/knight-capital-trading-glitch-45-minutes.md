@@ -231,7 +231,7 @@ Dormant code is dangerous code:
 
 ## What Was Knight Capital Group?
 
-`[DOCUMENTED]` Knight Capital Group was the largest equity market maker in the United States, executing approximately 17% of all retail trade volume on the New York Stock Exchange as of 2012. The firm operated SMARS — Smart Market Access Routing System — a proprietary high-frequency algorithmic routing engine processing millions of child orders daily across 154 US equities. At the time of the incident, Knight Capital managed over $365 million in firm capital and employed approximately 1,500 people. It was considered among the most sophisticated market-making operations on Wall Street. The firm was acquired by Getco LLC in a distressed merger shortly after the incident, ceasing to exist as an independent entity.
+Knight Capital Group was the largest equity market maker in the United States, executing approximately 17% of all retail trade volume on the New York Stock Exchange as of 2012. The firm operated SMARS — Smart Market Access Routing System — a proprietary high-frequency algorithmic routing engine processing millions of child orders daily across 154 US equities. At the time of the incident, Knight Capital managed over $365 million in firm capital and employed approximately 1,500 people. It was considered among the most sophisticated market-making operations on Wall Street. The firm was acquired by Getco LLC in a distressed merger shortly after the incident, ceasing to exist as an independent entity.
 
 ---
 

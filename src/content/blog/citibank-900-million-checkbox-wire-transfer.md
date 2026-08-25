@@ -244,7 +244,7 @@ Multi-layer review processes must enforce cognitive independence:
 
 ## What Was Oracle Flexcube?
 
-`[DOCUMENTED]` Oracle FLEXCUBE is an enterprise banking platform used by major global banks to manage syndicated loan payments, trade finance, and core banking operations. At the time of the incident, Citibank used Flexcube's "Flexcube Investor Servicing" module to process agent bank loan payment distributions. The Flexcube interface presented operators with a series of checkbox controls that determined payment routing logic; the combination of unchecked FRONT, FUND, and PRINCIPAL fields indicated that corresponding payment tranches should be internally netted to zero within the wash account rather than transmitted as external wires. The interface's visual display showed a zero-balance outcome after any PRINCIPAL checkbox combination, masking the distinction between routing internally versus releasing externally.
+Oracle FLEXCUBE is an enterprise banking platform used by major global banks to manage syndicated loan payments, trade finance, and core banking operations. At the time of the incident, Citibank used Flexcube's "Flexcube Investor Servicing" module to process agent bank loan payment distributions. The Flexcube interface presented operators with a series of checkbox controls that determined payment routing logic; the combination of unchecked FRONT, FUND, and PRINCIPAL fields indicated that corresponding payment tranches should be internally netted to zero within the wash account rather than transmitted as external wires. The interface's visual display showed a zero-balance outcome after any PRINCIPAL checkbox combination, masking the distinction between routing internally versus releasing externally.
 
 ---
 

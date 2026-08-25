@@ -124,7 +124,7 @@ The following forensic matrix deconstructs the structural divergence between the
 
 [PRIMARY — SENATE] The model-development effort occurred amid the implementation of Basel-era market-risk and capital requirements. JPMorgan told investigators that the new models were intended to bring the CIO's calculations into compliance with Basel III requirements, while the Senate investigation found that the resulting models also materially reduced the capital and risk measures applied to the portfolio. 
 
-[ANALYTICAL] The governance problem was therefore not simply that a model produced a lower number, but that a model intended to materially change the risk measurement was introduced while the underlying portfolio was simultaneously breaching risk limits.
+The governance problem was therefore not simply that a model produced a lower number, but that a model intended to materially change the risk measurement was introduced while the underlying portfolio was simultaneously breaching risk limits.
 
 [PRIMARY — SENATE] Patrick Hagan, a CIO senior quantitative analyst who had not previously designed a VaR model, was assigned responsibility for developing the new model. The VaR calculation relied on spreadsheet-based calculations and a manual data-upload process, with insufficient controls and frequent formula and code changes.
 
@@ -153,7 +153,7 @@ $$\text{Illustrative Error} = \frac{\Delta \text{Rate}}{\text{Rate}_A + \text{Ra
 
 [PRIMARY — SENATE] The anticipated implementation of the new methodology was expected to eliminate the immediate VaR-limit problem, and the new methodology was applied to the January 27 close-of-business calculation. As reported VaR dropped, the CIO continued and increased its risky trading.
 
-[ANALYTICAL] The lower reported risk measurement reduced an important constraint on additional risk-taking, masking the true exposure as the portfolio expanded.
+The lower reported risk measurement reduced an important constraint on additional risk-taking, masking the true exposure as the portfolio expanded.
 
 [PRIMARY — SENATE] During the first quarter of 2012, trader Bruno Iksil executed an aggressive strategy, heavily trading the CDX.NA.IG.9 index. JPMorgan's positions became so large that they materially affected pricing and liquidity in the relevant credit-index markets. Counterparties took positions opposing them. The desk faced valuation problems, conflicting valuations, counterparty collateral disputes, and increasing losses.
 
@@ -247,7 +247,7 @@ The collapse of the London Whale portfolio demonstrates the extreme danger of mo
 
 ## What Was JPMorgan's Chief Investment Office?
 
-`[DOCUMENTED]` JPMorgan Chase's Chief Investment Office (CIO) was an internal division responsible for managing the bank's excess deposits and overall investment portfolio, including hedging strategies to protect against macroeconomic tail-risk events. Operating from London, the CIO's Synthetic Credit Portfolio held credit-default swap positions with gross notional exposure in the tens of billions of dollars. According to the Senate PSI report, JPMorgan treated the CIO's activities as a low-profile internal treasury function rather than a trading desk requiring rigorous oversight — an assumption that proved catastrophically wrong when the portfolio's risk exposure expanded and its VaR model failed to surface the true scale of the positions.
+JPMorgan Chase's Chief Investment Office (CIO) was an internal division responsible for managing the bank's excess deposits and overall investment portfolio, including hedging strategies to protect against macroeconomic tail-risk events. Operating from London, the CIO's Synthetic Credit Portfolio held credit-default swap positions with gross notional exposure in the tens of billions of dollars. According to the Senate PSI report, JPMorgan treated the CIO's activities as a low-profile internal treasury function rather than a trading desk requiring rigorous oversight — an assumption that proved catastrophically wrong when the portfolio's risk exposure expanded and its VaR model failed to surface the true scale of the positions.
 
 ---
 

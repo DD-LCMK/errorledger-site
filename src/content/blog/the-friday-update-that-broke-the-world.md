@@ -243,7 +243,7 @@ Operating systems must be able to heal themselves from unbootable updates:
 
 ## What Was CrowdStrike Falcon?
 
-`[DOCUMENTED]` CrowdStrike Falcon is an enterprise endpoint detection and response (EDR) platform deployed on over 29,000 customers globally, including airlines, hospitals, financial institutions, and government agencies. Falcon operates as a **Ring 0 Windows kernel driver** (`csagent.sys`), granting it unrestricted access to CPU memory, hardware registers, and OS system calls — the deepest possible execution privilege. This kernel-level position allows Falcon to detect sophisticated malware that conceals itself within operating system structures, but it also means that a defect in Falcon's code or configuration can immediately crash the entire host machine without process isolation or recovery options.
+CrowdStrike Falcon is an enterprise endpoint detection and response (EDR) platform deployed on over 29,000 customers globally, including airlines, hospitals, financial institutions, and government agencies. Falcon operates as a **Ring 0 Windows kernel driver** (`csagent.sys`), granting it unrestricted access to CPU memory, hardware registers, and OS system calls — the deepest possible execution privilege. This kernel-level position allows Falcon to detect sophisticated malware that conceals itself within operating system structures, but it also means that a defect in Falcon's code or configuration can immediately crash the entire host machine without process isolation or recovery options.
 
 ---
 
