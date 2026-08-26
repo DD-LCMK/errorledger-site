@@ -226,7 +226,6 @@ const topRankedPosts = [
 			}
 			.lead-card-content {
 				padding: 1.75rem;
-				background: #171717;
 				position: relative;
 				z-index: 2;
 			}
@@ -660,9 +659,21 @@ const topRankedPosts = [
 			}
 
 			/* High-Contrast Light Mode */
+			:global(html:not(.dark)) .hero-banner {
+				border-bottom-color: #e2e8f0 !important;
+			}
 			:global(html:not(.dark)) .hero-banner h1 { color: #0f172a !important; }
 			:global(html:not(.dark)) .hero-banner p { color: #475569 !important; }
+			:global(html:not(.dark)) .hero-pill {
+				background: rgba(244, 63, 94, 0.08) !important;
+				color: #e11d48 !important;
+				border-color: rgba(244, 63, 94, 0.2) !important;
+			}
+			:global(html:not(.dark)) .section-subtitle-tag {
+				color: #d97706 !important;
+			}
 			:global(html:not(.dark)) .lead-card,
+			:global(html:not(.dark)) .lead-card-content,
 			:global(html:not(.dark)) .debate-portal-card,
 			:global(html:not(.dark)) .ledger-incident-card,
 			:global(html:not(.dark)) .sidebar-widget,
@@ -670,6 +681,22 @@ const topRankedPosts = [
 				background: #ffffff !important;
 				border-color: #e2e8f0 !important;
 				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+			}
+			:global(html:not(.dark)) .lead-card-image,
+			:global(html:not(.dark)) .card-hero-image {
+				border-bottom-color: #e2e8f0 !important;
+			}
+			:global(html:not(.dark)) .category-tag {
+				background: rgba(244, 63, 94, 0.08) !important;
+				color: #e11d48 !important;
+				border-color: rgba(244, 63, 94, 0.2) !important;
+			}
+			:global(html:not(.dark)) .read-time-tag,
+			:global(html:not(.dark)) .card-readtime-txt,
+			:global(html:not(.dark)) .rank-sub-meta,
+			:global(html:not(.dark)) .debate-split-desc,
+			:global(html:not(.dark)) .debate-card-top {
+				color: #64748b !important;
 			}
 			:global(html:not(.dark)) .section-title-bold,
 			:global(html:not(.dark)) .lead-title,
@@ -688,11 +715,18 @@ const topRankedPosts = [
 			:global(html:not(.dark)) .manifesto-desc {
 				color: #475569 !important;
 			}
+			:global(html:not(.dark)) .lead-footer {
+				border-top-color: #e2e8f0 !important;
+				color: #64748b !important;
+			}
+			:global(html:not(.dark)) .open-lead-btn,
+			:global(html:not(.dark)) .card-action-txt {
+				color: #e11d48 !important;
+			}
 			:global(html:not(.dark)) .stream-section-header {
 				border-bottom-color: #e2e8f0 !important;
 			}
 			:global(html:not(.dark)) .widget-header-row,
-			:global(html:not(.dark)) .lead-footer,
 			:global(html:not(.dark)) .debate-bar-wrapper,
 			:global(html:not(.dark)) .card-foot-row,
 			:global(html:not(.dark)) .manifesto-grid {
@@ -721,6 +755,16 @@ const topRankedPosts = [
 				background: #f8fafc !important;
 				border-color: #cbd5e1 !important;
 				color: #334155 !important;
+			}
+			:global(html:not(.dark)) .whistleblower-box {
+				background: linear-gradient(135deg, rgba(244, 63, 94, 0.06), rgba(244, 63, 94, 0.02)) !important;
+				border-color: rgba(244, 63, 94, 0.2) !important;
+			}
+			:global(html:not(.dark)) .manifesto-tag {
+				color: #e11d48 !important;
+			}
+			:global(html:not(.dark)) .debate-visual-bar {
+				background: #e2e8f0 !important;
 			}
 		</style>
 	</head>
