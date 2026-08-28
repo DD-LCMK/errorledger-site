@@ -198,7 +198,7 @@ The GitLab outage is a canonical demonstration that backup mechanisms are entire
 | **Backup Verification** | Assumed successful if the cron job exited | Automated restoration in sandbox environments to prove data integrity |
 | **Terminal Operations** | Visually identical bash prompts across staging, secondary, and primary nodes | Cognitive friction: Bright red production prompts and mandatory challenge-response for destructive commands |
 | **Snapshot Immutability** | Snapshots were entirely absent for the critical database tier | Immutable block-level cloud snapshots enforced at the hypervisor level, immune to OS-level `rm -rf` |
-| **Alert Priorities** | A stalled replication queue caused general alert fatigue | A silent backup failure or 0-byte dump is treated as a sev-1 production outage |
+| **Alert Priorities** | A stalled replication queue caused general notification desensitization | A silent backup failure or 0-byte dump is treated as a sev-1 production outage |
 
 ---
 
