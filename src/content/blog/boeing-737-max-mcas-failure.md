@@ -60,21 +60,21 @@ Because the active flight control computer was programmed to read from only one 
 
 ## Act II: Architecture and Reconstruction Diagram
 
-The architecture of MCAS violated a fundamental tenet of safety-critical systems. The important architectural distinction is that the aircraft did not lack redundant AoA sensing; rather, the original MCAS implementation did not adequately use that available redundancy to protect the control law from an erroneous single-sensor input.
+The original MCAS architecture failed to use the aircraft's available AoA sensor redundancy as an independent check against erroneous activation. The important architectural distinction is that the aircraft did not lack redundant AoA sensing; rather, the original MCAS implementation did not adequately use that available redundancy to protect the control law from an erroneous single-sensor input.
 
 ### Node-Level Provenance Diagram
 ```mermaid
 graph TD
-    A[Left AoA Sensor] -->|Erroneous High Angle| B(Flight Control Computer)
-    C[Right AoA Sensor] -->|Accurate Angle| D[Unused by Active FCC]
-    B --> E{MCAS Logic}
-    E -->|Condition Met| F[Stabilizer Trim Motor]
-    F -->|2.5 Deg Nose Down| G[Aircraft Pitch Down]
+    A[Left AoA Sensor] --> B(Flight Control Computer)
+    C[Right AoA Sensor] --> B
+    B -->|No cross-sensor agreement required| D{MCAS Logic}
+    D -->|Condition Met| E[Stabilizer Trim Motor]
+    E -->|2.5 Deg Nose Down| F[Aircraft Pitch Down]
 ```
 
 ## Act III: Fracture Sequence and Telemetry Log
 
-The flight data recorders captured a fatal oscillation between automated commands and human counter-actions. MCAS was programmed to reset and fire again after a 5-second delay if the perceived high AoA persisted.
+The flight data recorders captured a fatal oscillation between automated commands and human counter-actions. MCAS could reactivate after pilot electric-trim inputs while the erroneous high-AoA condition persisted.
 
 ### Telemetry Timeline Table (Lion Air Flight 610)
 | Time | Digital Representation | Physical Reality | Mechanism |
@@ -82,7 +82,7 @@ The flight data recorders captured a fatal oscillation between automated command
 | 06:22:39 | Left AoA spikes 20° higher than Right | Sensor outputs faulty raw voltage | Erroneous AoA sensor output |
 | 06:22:54 | MCAS Active | Aircraft artificially pitched down | Software commands 2.5° nose-down trim |
 | 06:23:04 | Pilot trims nose up | Pilots fight control yoke | Electric manual trim interrupts MCAS |
-| 06:23:09 | 5-second timeout expires | Left AoA still registers high | MCAS fires again, commanding another 2.5° down |
+| 06:23:10 | MCAS Reactivates | Left AoA still registers high | MCAS fires again, commanding another 2.5° down |
 
 ## Act IV: Financial and Legal Reckoning
 
@@ -92,13 +92,13 @@ The global grounding of the 737 MAX fleet lasted 20 months, inflicting unprecede
 | --- | --- |
 | **Human Cost** | 346 fatalities across two flights. |
 | **Financial Cost** | Multi-billion-dollar impact including compensation, aircraft grounding, production disruption, and related costs; estimates vary by methodology. |
-| **Regulatory Action** | FAA mandated sweeping software and hardware architecture changes before ungrounding. |
+| **Regulatory Action** | FAA mandated flight-control software updates, cockpit display/alerting changes, physical wiring separation, and revised operational procedures/training before ungrounding. |
 
 ## Why Testing Missed It: Simulation and Hazard Assessment
 
 During development, Boeing's safety assessment assumed that an unintended stabilizer input would be readily recognizable, that pilots would immediately counter the increased control forces, and that the runaway-stabilizer procedure would be followed when appropriate. 
 
-However, the simulator validation did not reproduce the erroneous-AoA failure that caused the MCAS activation in the accidents, and therefore did not reproduce the resulting combination of stick shaker, airspeed-disagree, altitude-disagree, and other cockpit indications. ([NTSB](https://www.ntsb.gov/investigations/AccidentReports/Reports/ASR1901.pdf)) Furthermore, the final version of MCAS had its trim authority increased from 0.6 degrees to 2.5 degrees, an operational envelope change that was not fully re-evaluated in the final hazard assessments.
+However, the simulator validation did not reproduce the erroneous-AoA failure that caused the MCAS activation in the accidents, and therefore did not reproduce the resulting combination of stick shaker, airspeed-disagree, altitude-disagree, and other cockpit indications. ([NTSB](https://www.ntsb.gov/investigations/AccidentReports/Reports/ASR1901.pdf)) Furthermore, the final version of MCAS had its trim authority increased from approximately 0.55° to 2.5°, an operational envelope change that was not fully re-evaluated in the final hazard assessments.
 
 ## Corrected Architecture
 
@@ -106,9 +106,7 @@ To recertify the aircraft, the FAA and global regulators mandated fundamental ar
 
 | Feature | Original MCAS | Corrected architecture |
 |---|---|---|
-| **AoA processing** | One AoA signal used by MCAS at a time | Both AoA inputs monitored |
-| **Disagreement detection** | No effective MCAS AoA disagreement protection | >5.5° disagreement for specified duration disables MCAS |
-| **AoA selection** | No equivalent cross-check before MCAS activation | Middle-value-select logic incorporated |
+| **AoA processing** | MCAS could act on a single AoA input | MCAS uses both AoA sensors and incorporates disagreement protection |
 | **Activation** | Repeated activations possible | Activation logic constrained |
 | **Authority** | Approximately 2.5° maximum stabilizer command | Reduced/constrained authority |
 | **Pilot awareness** | Limited system-specific awareness | Revised procedures, alerting and training |
@@ -137,7 +135,7 @@ The MCAS failure provides critical lessons for any engineering team building cyb
 > **What the evidence does NOT establish:**
 > That the pilots were fundamentally incapable of flying the aircraft. The human operators were overwhelmed by an un-simulated cascade of conflicting alerts and aerodynamic forces they were not trained to expect.
 
-> **The Archivist's Assessment:** The tragedy of the 737 MAX was not merely a software bug; it was the consequence of prioritizing commercial constraints (avoiding simulator training) over architectural safety. By attempting to use software to mask physical aerodynamic properties, the engineers introduced an unconstrained automation loop. When the hardware failed, the software dutifully executed its logic, dragging the aircraft down while blinding the human operators to the true state of the system.
+> **The Archivist's Assessment:** The tragedy illustrates how commercial and certification objectives surrounding 737 commonality interacted with an automation architecture whose safety assumptions proved inadequate. By attempting to use software to mask physical aerodynamic properties, the engineers introduced an unconstrained automation loop. When the hardware failed, the software dutifully executed its logic, dragging the aircraft down while blinding the human operators to the true state of the system.
 
 ## Frequently Asked Questions
 
@@ -150,7 +148,7 @@ Initial 737 MAX pilot training and normal flight-crew documentation did not adeq
 ### How did a single sensor cause the crash?
 The flight control software was designed to take input from only one Angle of Attack sensor per flight. When that single sensor fed erroneous data, the software had no mechanism to cross-check it against the other sensor.
 
-### Why didn't the pilots just turn it off?
+### Why didn't the pilots simply disable the system?
 The crews were simultaneously confronted with multiple alerts and abnormal flight indications, increasing workload and complicating recognition of the underlying stabilizer-trim problem. The crews did attempt corrective actions, including using manual electric trim, but MCAS could reactivate after pilot trim inputs while the triggering AoA condition remained.
 
 ### What is the "runaway stabilizer" checklist?
