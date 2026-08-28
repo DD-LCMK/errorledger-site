@@ -33,6 +33,8 @@ primary_sources:
     url: "https://www.ntsb.gov/investigations/AccidentReports/Reports/ASR1901.pdf"
   - title: "House Transportation and Infrastructure Committee Final Report on 737 MAX"
     url: "https://transportation.house.gov/imo/media/doc/2020.09.15%20FINAL%20737%20MAX%20Report%20for%20Public%20Release.pdf"
+  - title: "FAA Summary of the Boeing 737 MAX Return to Service"
+    url: "https://www.faa.gov/sites/faa.gov/files/2022-08/737_RTS_Summary.pdf"
 ---
 
 ## Executive Summary
@@ -76,13 +78,13 @@ graph TD
 
 The flight data recorders captured a fatal oscillation between automated commands and human counter-actions. MCAS could reactivate after pilot electric-trim inputs while the erroneous high-AoA condition persisted.
 
-### Telemetry Timeline Table (Lion Air Flight 610)
-| Time | Digital Representation | Physical Reality | Mechanism |
-| --- | --- | --- | --- |
-| 06:22:39 | Left AoA spikes 20° higher than Right | Sensor outputs faulty raw voltage | Erroneous AoA sensor output |
-| 06:22:54 | MCAS Active | Aircraft artificially pitched down | Software commands 2.5° nose-down trim |
-| 06:23:04 | Pilot trims nose up | Pilots fight control yoke | Electric manual trim interrupts MCAS |
-| 06:23:10 | MCAS Reactivates | Left AoA still registers high | MCAS fires again, commanding another 2.5° down |
+### Reconstructed Failure Sequence (Lion Air Flight 610)
+| Sequence | Recorded/derived condition | System response |
+| --- | --- | --- |
+| 1 | Left AoA diverges sharply from right | Erroneous high-AoA condition |
+| 2 | MCAS activation criteria satisfied | Uncommanded nose-down stabilizer trim changes aircraft pitch response |
+| 3 | Pilots apply electric trim | MCAS activation is reset |
+| 4 | Erroneous high-AoA condition persists | MCAS can activate again |
 
 ## Act IV: Financial and Legal Reckoning
 
@@ -98,7 +100,7 @@ The global grounding of the 737 MAX fleet lasted 20 months, inflicting unprecede
 
 During development, Boeing's safety assessment assumed that an unintended stabilizer input would be readily recognizable, that pilots would immediately counter the increased control forces, and that the runaway-stabilizer procedure would be followed when appropriate. 
 
-However, the simulator validation did not reproduce the erroneous-AoA failure that caused the MCAS activation in the accidents, and therefore did not reproduce the resulting combination of stick shaker, airspeed-disagree, altitude-disagree, and other cockpit indications. ([NTSB](https://www.ntsb.gov/investigations/AccidentReports/Reports/ASR1901.pdf)) Furthermore, the final version of MCAS had its trim authority increased from approximately 0.55° to 2.5°, an operational envelope change that was not fully re-evaluated in the final hazard assessments.
+However, the simulator validation did not reproduce the erroneous-AoA failure that caused the MCAS activation in the accidents, and therefore did not reproduce the resulting combination of stick shaker, airspeed-disagree, altitude-disagree, and other cockpit indications. ([NTSB](https://www.ntsb.gov/investigations/AccidentReports/Reports/ASR1901.pdf)) The MCAS design was also expanded during development, including an increase in stabilizer-command authority from approximately 0.55° to 2.5°. Subsequent investigations found that the associated safety assessments did not adequately account for the severity of the resulting hazard, including the hazard from repeated activations.
 
 ## Corrected Architecture
 
@@ -106,9 +108,9 @@ To recertify the aircraft, the FAA and global regulators mandated fundamental ar
 
 | Feature | Original MCAS | Corrected architecture |
 |---|---|---|
-| **AoA processing** | MCAS could act on a single AoA input | MCAS uses both AoA sensors and incorporates disagreement protection |
-| **Activation** | Repeated activations possible | Activation logic constrained |
-| **Authority** | Approximately 2.5° maximum stabilizer command | Reduced/constrained authority |
+| **AoA processing** | MCAS could act on a single AoA input | MCAS uses both AoA sensors and disables if disagreement exceeds 5.5° |
+| **Activation** | Repeated activations possible | One activation per high-AoA event |
+| **Authority** | Approximately 2.5° maximum stabilizer command | Preserves pilot's ability to control pitch using the control column |
 | **Pilot awareness** | Limited system-specific awareness | Revised procedures, alerting and training |
 
 ## Systems Prevention Playbook
@@ -133,7 +135,7 @@ The MCAS failure provides critical lessons for any engineering team building cyb
 > The original MCAS control logic could base an activation on a single AoA sensor input rather than requiring agreement between the aircraft's two independent AoA sensors. An erroneous AoA input could therefore trigger MCAS without the control law first establishing that the two available sensors agreed. The software then repeatedly pitched the aircraft down with increased 2.5-degree trim authority.
 > 
 > **What the evidence does NOT establish:**
-> That the pilots were fundamentally incapable of flying the aircraft. The human operators were overwhelmed by an un-simulated cascade of conflicting alerts and aerodynamic forces they were not trained to expect.
+> That the pilots were fundamentally incapable of flying the aircraft. The crews encountered a complex combination of simultaneous alerts, indications, control forces, and repeated stabilizer inputs that the original safety-assessment assumptions did not adequately represent.
 
 > **The Archivist's Assessment:** The tragedy illustrates how commercial and certification objectives surrounding 737 commonality interacted with an automation architecture whose safety assumptions proved inadequate. By attempting to use software to mask physical aerodynamic properties, the engineers introduced an unconstrained automation loop. When the hardware failed, the software dutifully executed its logic, dragging the aircraft down while blinding the human operators to the true state of the system.
 
@@ -160,3 +162,4 @@ Yes. The FAA mandated that the corrected software must read both sensors, disabl
 ## Primary Sources
 - [NTSB Safety Recommendation Report ASR-19-01](https://www.ntsb.gov/investigations/AccidentReports/Reports/ASR1901.pdf)
 - [House Transportation and Infrastructure Committee Final Report on 737 MAX](https://transportation.house.gov/imo/media/doc/2020.09.15%20FINAL%20737%20MAX%20Report%20for%20Public%20Release.pdf)
+- [FAA Summary of the Boeing 737 MAX Return to Service](https://www.faa.gov/sites/faa.gov/files/2022-08/737_RTS_Summary.pdf)

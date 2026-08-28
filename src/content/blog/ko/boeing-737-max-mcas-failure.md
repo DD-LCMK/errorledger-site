@@ -34,6 +34,8 @@ primary_sources:
     url: "https://www.ntsb.gov/investigations/AccidentReports/Reports/ASR1901.pdf"
   - title: "House Transportation and Infrastructure Committee Final Report on 737 MAX"
     url: "https://transportation.house.gov/imo/media/doc/2020.09.15%20FINAL%20737%20MAX%20Report%20for%20Public%20Release.pdf"
+  - title: "FAA Summary of the Boeing 737 MAX Return to Service"
+    url: "https://www.faa.gov/sites/faa.gov/files/2022-08/737_RTS_Summary.pdf"
 ---
 
 ## 경영진 요약 (Executive Summary)
@@ -77,13 +79,13 @@ graph TD
 
 비행 데이터 기록 장치는 자동화된 명령과 조종사의 대응 조치 사이의 치명적인 진동을 포착했습니다. 잘못된 높은 AoA 조건이 지속되는 동안 조종사의 전동 트림 입력 후에도 MCAS가 다시 활성화될 수 있었습니다.
 
-### 텔레메트리 타임라인 테이블 - 라이온 에어 610편 (Telemetry Timeline Table)
-| 시간 | 디지털 표현 | 물리적 현실 | 메커니즘 |
-|---|---|---|---|
-| 06:22:39 | 왼쪽 AoA가 오른쪽보다 20° 높게 스파이크 | 센서가 잘못된 원시 전압을 출력 | 잘못된 AoA 센서 출력 |
-| 06:22:54 | MCAS 활성화 | 항공기가 인위적으로 기수 하향됨 | 소프트웨어가 2.5° 기수 하향 트림을 명령 |
-| 06:23:04 | 조종사가 기수 상향 트림을 시도 | 조종사들이 조종간과 싸움 | 전동 수동 트림이 MCAS를 인터럽트 |
-| 06:23:10 | MCAS 재활성화 | 왼쪽 AoA가 여전히 높게 기록됨 | MCAS가 다시 작동하여 추가로 2.5° 하향 명령 |
+### 재구성된 고장 순서 - 라이온 에어 610편 (Reconstructed Failure Sequence)
+| 순서 | 기록/파생된 조건 | 시스템 반응 |
+| --- | --- | --- |
+| 1 | 왼쪽 AoA가 오른쪽과 크게 다름 | 잘못된 높은 AoA 조건 |
+| 2 | MCAS 활성화 기준 충족 | 명령되지 않은 기수 하향 수평 꼬리날개 트림이 항공기 피치 반응을 변경함 |
+| 3 | 조종사가 전동 트림 적용 | MCAS 활성화가 리셋됨 |
+| 4 | 잘못된 높은 AoA 조건 지속 | MCAS가 다시 활성화될 수 있음 |
 
 ## 4막: 재정적 및 법적 평가 (Act IV: Financial and Legal Reckoning)
 
@@ -99,7 +101,7 @@ graph TD
 
 개발 중 보잉의 안전 평가에서는 의도하지 않은 수평 꼬리날개 입력이 쉽게 인식될 수 있고, 조종사가 증가된 조종력을 즉시 카운터할 것이며, 적절할 때 폭주 수평 꼬리날개 절차를 따를 것이라고 가정했습니다.
 
-그러나 시뮬레이터 검증은 사고에서 MCAS 활성화를 일으킨 잘못된 AoA 고장을 재현하지 못했으며, 따라서 그 결과로 나타나는 스틱 셰이커, 대기속도 불일치, 고도 불일치 및 기타 조종석 표시의 조합을 재현하지 못했습니다. ([NTSB](https://www.ntsb.gov/investigations/AccidentReports/Reports/ASR1901.pdf)) 더욱이 MCAS 최종 버전은 트림 권한이 약 0.55도에서 2.5도로 증가했는데, 이는 최종 위험 평가에서 완전히 재평가되지 않은 운영 영역(operational envelope)의 변경이었습니다.
+그러나 시뮬레이터 검증은 사고에서 MCAS 활성화를 일으킨 잘못된 AoA 고장을 재현하지 못했으며, 따라서 그 결과로 나타나는 스틱 셰이커, 대기속도 불일치, 고도 불일치 및 기타 조종석 표시의 조합을 재현하지 못했습니다. ([NTSB](https://www.ntsb.gov/investigations/AccidentReports/Reports/ASR1901.pdf)) MCAS 설계는 개발 중에 확장되어 수평 꼬리날개 명령 권한이 약 0.55도에서 2.5도로 증가했습니다. 후속 조사에 따르면 관련된 안전 평가는 반복적인 활성화로 인한 위험을 포함하여 결과적인 위험의 심각성을 적절히 설명하지 못한 것으로 나타났습니다.
 
 ## 수정된 아키텍처 (Corrected Architecture)
 
@@ -107,9 +109,9 @@ graph TD
 
 | 기능 | 이전 (Original MCAS) | 수정된 아키텍처 (Corrected architecture) |
 |---|---|---|
-| **AoA 처리** | MCAS는 단일 AoA 입력에 따라 작동할 수 있었음 | MCAS는 양쪽 AoA 센서를 모두 사용하고 불일치 보호 기능을 통합함 |
-| **활성화** | 반복 활성화 가능 | 활성화 로직이 제한됨 |
-| **권한** | 최대 약 2.5° 수평 꼬리날개 명령 | 권한 축소/제한됨 |
+| **AoA 처리** | MCAS는 단일 AoA 입력에 따라 작동할 수 있었음 | MCAS는 양쪽 AoA 센서를 모두 사용하고 5.5° 초과 불일치 시 비활성화됨 |
+| **활성화** | 반복 활성화 가능 | 높은 AoA 이벤트당 한 번의 활성화 |
+| **권한** | 최대 약 2.5° 수평 꼬리날개 명령 | 조종간을 사용해 피치를 제어할 수 있는 조종사의 능력을 유지함 |
 | **조종사 인식** | 시스템별 인식이 제한됨 | 수정된 절차, 경보 및 훈련 |
 
 ## 시스템 예방 플레이북 (Systems Prevention Playbook)
@@ -135,7 +137,7 @@ MCAS 실패는 사이버-물리 또는 자동화 시스템을 구축하는 모�
 > 원래의 MCAS 제어 로직은 항공기의 두 독립적인 AoA 센서 간의 일치를 요구하는 대신 단일 AoA 센서 입력에 기반하여 작동할 수 있었습니다. 따라서 잘못된 AoA 입력은 제어 법칙이 사용 가능한 두 센서가 일치하는지 먼저 확인하지 않고도 MCAS를 트리거할 수 있었습니다. 소프트웨어는 이후 2.5도로 증가된 트림 권한을 사용하여 반복적으로 항공기의 기수를 하향시켰습니다.
 > 
 > **증거가 입증하지 않는 것:**
-> 조종사들이 항공기를 조종할 근본적인 능력이 없었다는 것. 인간 작업자들은 시뮬레이션되지 않은 연쇄적인 상충 경보와 예상하지 못한 공기역학적 힘에 의해 압도당했습니다.
+> 조종사들이 항공기를 조종할 근본적인 능력이 없었다는 것. 승무원들은 원래의 안전 평가 가정이 적절하게 대표하지 못한 동시 경보, 표시, 조종력 및 반복적인 수평 꼬리날개 입력의 복잡한 조합에 직면했습니다.
 
 > **아키비스트의 분석:** 이 비극은 737 공통성을 둘러싼 상업적 및 인증 목표가 안전 가정이 부적절했던 자동화 아키텍처와 어떻게 상호 작용했는지 보여줍니다. 소프트웨어를 사용하여 물리적 공기역학 특성을 마스킹하려 시도함으로써 엔지니어들은 제약 없는 자동화 루프를 도입했습니다. 하드웨어가 실패했을 때 소프트웨어는 프로그래밍된 로직을 충실히 실행하여 항공기를 추락시키는 동시에 인간 조종사들을 시스템의 진정한 상태에 대해 눈멀게 했습니다.
 
@@ -162,3 +164,4 @@ MCAS는 737 MAX의 더 크고 새로운 엔진이 높은 받음각에서 기수�
 ## 공식 1차 출처
 - [NTSB Safety Recommendation Report ASR-19-01](https://www.ntsb.gov/investigations/AccidentReports/Reports/ASR1901.pdf)
 - [House Transportation and Infrastructure Committee Final Report on 737 MAX](https://transportation.house.gov/imo/media/doc/2020.09.15%20FINAL%20737%20MAX%20Report%20for%20Public%20Release.pdf)
+- [FAA Summary of the Boeing 737 MAX Return to Service](https://www.faa.gov/sites/faa.gov/files/2022-08/737_RTS_Summary.pdf)
