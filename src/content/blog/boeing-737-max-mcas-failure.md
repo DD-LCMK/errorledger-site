@@ -3,7 +3,7 @@ slug: "boeing-737-max-mcas-failure"
 title: "The Boeing 737 MAX MCAS Failure: How One Faulty Sensor Exposed a Systemic Safety Breakdown"
 description: "A forensic analysis of the Boeing 737 MAX MCAS accidents, examining how single-sensor dependence, repeated automatic stabilizer commands, inadequate hazard assumptions, and cockpit alert overload combined to create a catastrophic flight-control failure."
 pubDate: "2026-08-28"
-heroImage: "/mcas-failure-hero.webp"
+heroImage: "/mcas-failure-hero.jpg"
 category: "embedded-systems"
 tags: ["Systems Engineering", "Single Point of Failure", "Aerospace", "Software Architecture"]
 keywords: ["MCAS", "Boeing 737 MAX", "Software failure", "Angle of Attack", "Lion Air", "Ethiopian Airlines"]
@@ -14,6 +14,7 @@ incidentEndDate: "2019-03-10"
 financialLoss: "Estimated multi-billion-dollar financial impact; widely reported estimates exceed $20 billion"
 summary_points:
   context: "Boeing introduced the 737 MAX with larger engines, causing a tendency for the nose to pitch up. To correct this without requiring expensive new simulator training, Boeing introduced MCAS as a largely invisible flight-control function intended to preserve the handling characteristics of the 737 family."
+  trigger: "An erroneous reading from a single Angle of Attack (AoA) sensor caused the system to incorrectly conclude the aircraft was stalling, initiating a relentless sequence of automated nose-down trim commands."
   systemic_failure: "The original MCAS control logic could act on a single AoA sensor input without requiring agreement from the aircraft's second AoA sensor. This single-input architecture was compounded by repeated trim authority, inadequate safety-assessment assumptions, and insufficient consideration of multiple simultaneous cockpit alerts."
   fallout: "Erroneous Angle of Attack (AoA) sensor data repeatedly triggered MCAS, producing repeated nose-down stabilizer inputs that increased control forces and contributed to the loss of control, causing two fatal crashes resulting in 346 fatalities, followed by a 20-month global grounding."
 faqItems:

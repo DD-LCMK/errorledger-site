@@ -3,7 +3,7 @@ slug: "boeing-737-max-mcas-failure"
 title: "보잉 737 MAX MCAS 결함: 하나의 결함 센서가 시스템적 안전 붕괴를 드러낸 방법"
 description: "보잉 737 MAX MCAS 추락 사고에 대한 포렌식 분석. 단일 센서 의존성, 반복적인 자동 수평 꼬리날개 명령, 부적절한 위험 가정, 조종석 경보 과부하가 어떻게 치명적인 비행 제어 실패를 초래했는지 조사합니다."
 pubDate: "2026-08-28"
-heroImage: "/mcas-failure-hero.webp"
+heroImage: "/mcas-failure-hero.jpg"
 category: "embedded-systems"
 tags: ["Systems Engineering", "Single Point of Failure", "Aerospace", "Software Architecture"]
 keywords: ["MCAS", "Boeing 737 MAX", "Software failure", "Angle of Attack", "Lion Air", "Ethiopian Airlines"]
@@ -14,7 +14,8 @@ incidentEndDate: "2019-03-10"
 financialLoss: "수십억 달러의 재정적 영향 추정; 널리 보도된 추정치는 200억 달러를 초과함"
 lang: "ko"
 summary_points:
-  context: "보잉은 더 큰 엔진을 장착한 737 MAX를 출시했으며, 이로 인해 기수가 들리는 경향이 생겼습니다. 보잉은 비용이 많이 드는 새로운 시뮬레이터 훈련 없이 이를 교정하기 위해, 737 제품군의 조종 특성을 유지하기 위한 대체로 보이지 않는 비행 제어 기능으로 MCAS를 도입했습니다."
+  context: "보잉은 기수(Nose)가 위로 들리는 경향을 유발하는 더 큰 엔진을 장착한 737 MAX를 도입했습니다. 값비싼 새로운 시뮬레이터 훈련 없이 이 문제를 해결하기 위해, 보잉은 기존 737 제품군의 조종 특성을 유지하기 위한 목적으로 눈에 띄지 않는 비행 제어 기능인 MCAS를 도입했습니다."
+  trigger: "단일 받음각(AoA) 센서의 잘못된 판독값으로 인해 시스템이 항공기가 실속(Stall) 상태라고 잘못 판단하였고, 반복적이고 강제적인 기수 강하(Nose-down) 명령을 자동으로 촉발했습니다."
   systemic_failure: "원래의 MCAS 제어 로직은 항공기의 두 독립적인 AoA 센서 간의 일치를 요구하지 않고 단일 AoA 센서 입력에 따라 작동할 수 있었습니다. 이 단일 입력 아키텍처는 반복적인 트림 권한, 부적절한 안전 평가 가정, 여러 동시 조종석 경보에 대한 불충분한 고려로 인해 더욱 악화되었습니다."
   fallout: "잘못된 받음각(AoA) 센서 데이터가 반복적으로 MCAS를 작동시켜, 기수 하향 수평 꼬리날개 입력을 반복 생성하여 조종력을 증가시키고 통제력 상실의 원인이 되었으며, 결과적으로 346명의 사망자를 낸 두 차례의 치명적 추락 사고와 20개월에 걸친 글로벌 운항 정지로 이어졌습니다."
 faqItems:

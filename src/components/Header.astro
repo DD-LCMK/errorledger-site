@@ -39,8 +39,7 @@ const categories = [
 	{ id: "work", label: isKorean ? "직장 & 커리어" : "Workplace", icon: "🧑‍💻", href: `${searchUrl}?q=work` },
 	{ id: "ai", label: isKorean ? "AI & 알고리즘" : "AI & Algorithms", icon: "🤖", href: `${searchUrl}?q=ai` },
 	{ id: "internet", label: isKorean ? "인프라 & 인터넷" : "Infrastructure", icon: "🌐", href: `${searchUrl}?q=internet` },
-	{ id: "human", label: isKorean ? "인간 & 심리" : "Human Decisions", icon: "🧠", href: `${searchUrl}?q=human` },
-	{ id: "debates", label: isKorean ? "독자 판결" : "Reader Verdicts", icon: "⚖️", href: `${homeUrl}#debates-section` },
+	{ id: "human", label: isKorean ? "인간 & 심리" : "Human Decisions", icon: "🧠", href: `${searchUrl}?q=human` }
 ];
 ---
 
@@ -146,19 +145,19 @@ const categories = [
 	// Dynamic, bulletproof client-side Language Switcher
 	const langToggleBtn = document.getElementById('lang-toggle-btn');
 	if (langToggleBtn) {
-		const path = window.location.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+		const path = window.location.pathname;
 		const isClientKo = path === '/ko' || path.startsWith('/ko/');
 		langToggleBtn.innerText = isClientKo ? '🇺🇸 English' : '🇰🇷 한국어';
 
 		langToggleBtn.addEventListener('click', function(e) {
 			e.preventDefault();
-			const cur = window.location.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
-			const isKo = cur === '/ko' || cur.startsWith('/ko/');
+			const currentPath = window.location.pathname;
+			const isKo = currentPath === '/ko' || currentPath.startsWith('/ko/');
 			let destination = '/';
 			if (isKo) {
-				destination = cur.replace(/^\/ko/, '') || '/';
+				destination = currentPath.replace(/^\/ko/, '') || '/';
 			} else {
-				destination = cur === '/' ? '/ko' : `/ko${cur}`;
+				destination = currentPath === '/' ? '/ko' : `/ko${currentPath}`;
 			}
 			window.location.href = destination;
 		});
