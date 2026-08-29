@@ -77,18 +77,10 @@ const blog = defineCollection({
 		technicalTerms: z.record(z.string(), z.string()).optional(),
 		pipeline_contract_version: z.string().optional(),
 	}).transform((data) => {
-		let slug = data.slug;
-		if (!slug) {
-			slug = data.title
-				.toLowerCase()
-				.replace(/[^a-z0-9]+/g, '-')
-				.replace(/(^-|-$)/g, '');
-		}
 		return {
 			...data,
-			shortenedSlug: slug,
-			slug: slug,
-			translationSlug: data.translationSlug || slug,
+			shortenedSlug: data.slug,
+			translationSlug: data.translationSlug || data.slug,
 			tags: data.tags && data.tags.length > 0 ? data.tags : ["Failure Archive"]
 		};
 	}),

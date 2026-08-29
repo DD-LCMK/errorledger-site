@@ -1126,14 +1126,30 @@ const rankedCases = isKorean ? [
 														<span class="point-label">{isKorean ? "📌 배경 & 목표" : "📌 The Context"}</span>
 														<span class="point-text">{summary_points.context}</span>
 													</div>
-													<div class="summary-point-item">
-														<span class="point-label">{isKorean ? "⚠️ 치명적 트리거" : "⚠️ The Trigger"}</span>
-														<span class="point-text">{summary_points.trigger}</span>
-													</div>
-													<div class="summary-point-item">
-														<span class="point-label">{isKorean ? "💥 피해 & 결과" : "💥 The Fallout"}</span>
-														<span class="point-text">{summary_points.fallout}</span>
-													</div>
+													{summary_points.trigger && (
+														<div class="summary-point-item">
+															<span class="point-label">{isKorean ? "⚠️ 치명적 트리거" : "⚠️ The Trigger"}</span>
+															<span class="point-text">{summary_points.trigger}</span>
+														</div>
+													)}
+													{summary_points.systemic_failure && (
+														<div class="summary-point-item">
+															<span class="point-label">{isKorean ? "⚠️ 구조적 실패" : "⚠️ Systemic Failure"}</span>
+															<span class="point-text">{summary_points.systemic_failure}</span>
+														</div>
+													)}
+													{summary_points.technical_mechanisms && (
+														<div class="summary-point-item">
+															<span class="point-label">{isKorean ? "⚙️ 기술적 메커니즘" : "⚙️ Technical Mechanisms"}</span>
+															<span class="point-text">{summary_points.technical_mechanisms}</span>
+														</div>
+													)}
+													{summary_points.fallout && (
+														<div class="summary-point-item">
+															<span class="point-label">{isKorean ? "💥 피해 & 결과" : "💥 The Fallout"}</span>
+															<span class="point-text">{summary_points.fallout}</span>
+														</div>
+													)}
 												</div>
 											)}
 										</div>
