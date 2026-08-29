@@ -1,4 +1,5 @@
 ---
+slug: "boeing-737-max-mcas-failure"
 title: "The Boeing 737 MAX MCAS Failure: How One Faulty Sensor Exposed a Systemic Safety Breakdown"
 description: "A forensic analysis of the Boeing 737 MAX MCAS accidents, examining how single-sensor dependence, repeated automatic stabilizer commands, inadequate hazard assumptions, and cockpit alert overload combined to create a catastrophic flight-control failure."
 pubDate: "2026-08-28"
