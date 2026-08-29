@@ -10,6 +10,13 @@ incidentEndDate: "October 4, 2021"
 author: "The Archivist"
 description: "A forensic analysis of the 2021 Facebook outage, where a routine backbone-maintenance command bypassed a faulty audit safeguard, severed global connectivity, and triggered a BGP and DNS cascade."
 category: "internet"
+archetype: "the-incident"
+provenance_tier: 1
+provenance_label: "Documented Incident (Tier 1)"
+provenance_source: "Engineering at Meta (Official Postmortem)"
+read_time_minutes: 12
+updatedDate: "2026-08-30"
+lang: "en"
 tags: ["BGP", "DNS", "Facebook", "Meta", "Outage", "Network Backbone"]
 keywords: ["Facebook outage 2021", "BGP withdrawal", "DNS failure", "backbone network", "infrastructure collapse", "audit tool bug", "border gateway protocol"]
 summary_points:
@@ -120,7 +127,7 @@ The immediate operational impact of the roughly six-hour major global disruption
 
 Once the backbone network connectivity was restored, the problem was not entirely over. Bringing services back online simultaneously risked a new round of crashes due to a massive surge in traffic. Individual data centers reported dips in power usage in the range of tens of megawatts during the outage, because servers were sitting idle without traffic. Suddenly reversing such a massive dip in power consumption could put everything from electrical systems to caches at immense risk. Thanks to extensive "storm" drills—simulations of major system failures where regions are taken offline to stress test infrastructure—the engineering teams had the necessary confidence to carefully manage the increasing loads, bringing services back up relatively quickly without further systemwide electrical or caching failures.
 
-## Systems Prevention Playbook
+## 🛡️ Systems Prevention Playbook
 
 The investigation into the October 2021 BGP outage highlights several critical areas for engineering defense. The following systems prevention playbook categorizes the necessary defenses.
 
@@ -158,7 +165,7 @@ What condition must automatically trigger a hard stop?
 > - The evidence does not establish that the individual engineer acted maliciously or deliberately bypassed required controls.
 > - The evidence does not establish the exact internal logic of the audit tool bug, only its failure to intercept the command.
 
-## Engineering Lessons Derived From the Incident
+## Then vs Now: Engineering Evolution After the Facebook Outage
 
 The 2021 Facebook BGP outage demonstrated the catastrophic potential of single-point management failures in highly coupled networks.
 
@@ -169,7 +176,7 @@ The 2021 Facebook BGP outage demonstrated the catastrophic potential of single-p
 | Management dependency on production network | Independently survivable out-of-band management |
 | Recovery assumptions not exercised at global scale | Regular worst-case recovery testing |
 
-## FAQ
+## FAQ: Facebook 2021 Outage Explained
 
 ### Was the Facebook 2021 outage a cyberattack?
 No. The official Meta engineering postmortem confirms that the outage was caused by an internal configuration error during routine maintenance, not malicious activity.

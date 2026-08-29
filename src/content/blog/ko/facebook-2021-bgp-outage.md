@@ -11,6 +11,12 @@ incidentEndDate: "2021년 10월 4일"
 author: "The 사서"
 description: "2021년 페이스북 장애에 대한 법의학적 분석. 일상적인 백본 유지 보수 명령어가 결함이 있는 감사 안전 장치를 우회하여 글로벌 연결을 끊고 BGP 및 DNS 연쇄 장애를 유발한 과정을 분석합니다."
 category: "internet"
+archetype: "the-incident"
+provenance_tier: 1
+provenance_label: "Documented Incident (Tier 1)"
+provenance_source: "Engineering at Meta (Official Postmortem)"
+read_time_minutes: 12
+updatedDate: "2026-08-30"
 tags: ["BGP", "DNS", "Facebook", "Meta", "Outage", "Network Backbone"]
 keywords: ["페이스북 장애 2021", "BGP 철회", "DNS 오류", "백본 네트워크", "인프라 붕괴", "감사 도구 버그"]
 summary_points:
@@ -117,7 +123,7 @@ faqItems:
 
 백본 네트워크 연결이 복원된 후에도 문제는 완전히 끝난 것이 아니었습니다. 서비스를 동시에 다시 온라인 상태로 만들면 트래픽의 엄청난 급증으로 인해 새로운 연쇄 충돌이 발생할 위험이 있었습니다. 서버가 트래픽 없이 유휴 상태에 있었기 때문에 정전 동안 개별 데이터 센터에서 수십 메가와트 범위의 전력 사용량 감소가 보고되었습니다. 이렇게 엄청난 전력 소비 감소를 갑자기 되돌리면 전기 시스템에서 캐시에 이르기까지 모든 것이 엄청난 위험에 처할 수 있습니다. 인프라에 스트레스를 주기 위해 오프라인 지역을 시뮬레이션하는 주요 시스템 오류 시뮬레이션인 광범위한 "폭풍(storm)" 훈련 덕분에 엔지니어링 팀은 증가하는 부하를 신중하게 관리하여 전력 또는 캐싱 시스템의 추가 장애 없이 비교적 신속하게 서비스를 복구할 수 있었습니다.
 
-## 시스템 예방 플레이북 (Systems Prevention Playbook)
+## 🛡️ 시스템 예방 플레이북 (Systems Prevention Playbook)
 
 2021년 10월 BGP 장애에 대한 조사는 엔지니어링 방어를 위한 여러 가지 중요한 영역을 강조합니다. 다음 시스템 예방 플레이북은 필요한 방어 조치를 분류합니다.
 
@@ -155,7 +161,7 @@ faqItems:
 > - 이 증거는 개별 엔지니어가 악의적으로 행동했거나 필수 통제 절차를 고의로 우회했음을 입증하지 않습니다.
 > - 이 증거는 감사 도구 버그의 정확한 내부 논리를 규명하지 않으며, 단지 명령어를 가로채지 못했다는 점만 규명합니다.
 
-## 사건에서 도출된 엔지니어링 교훈 (Engineering Lessons Derived From the Incident)
+## Then vs Now: 사건에서 도출된 엔지니어링 교훈 (Engineering Evolution After the Facebook Outage)
 
 2021년 페이스북 BGP 장애는 고도로 결합된 네트워크에서 단일 장애점 관리 실패가 가진 치명적인 잠재력을 보여주었습니다.
 
@@ -166,7 +172,7 @@ faqItems:
 | 프로덕션 네트워크에 대한 관리 종속성 | 독립적으로 생존 가능한 대역 외 관리 |
 | 글로벌 규모에서 테스트되지 않은 복구 가정 | 정기적인 최악의 상황 복구 테스트 |
 
-## FAQ
+## FAQ: 2021년 페이스북 장애 설명
 
 ### 2021년 페이스북 장애는 사이버 공격이었습니까?
 아닙니다. 공식 Meta 엔지니어링 사후 보고서에 따르면 이번 장애는 악의적인 활동이 아니라 일상적인 유지 보수 중 발생한 내부 구성 오류로 인한 것임이 확인되었습니다.
