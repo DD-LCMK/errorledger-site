@@ -17,7 +17,7 @@ provenance_source: "Engineering at Meta (Official Postmortem)"
 read_time_minutes: 12
 updatedDate: "2026-08-30"
 lang: "en"
-tags: ["BGP", "DNS", "Facebook", "Meta", "Outage", "Network Backbone"]
+tags: ["BGP", "DNS", "Facebook", "Outage", "Network Backbone"]
 keywords: ["Facebook outage 2021", "BGP withdrawal", "DNS failure", "backbone network", "infrastructure collapse", "audit tool bug", "border gateway protocol"]
 summary_points:
   context: "On October 4, 2021, Facebook's engineering team executed a routine command to assess the availability of global backbone capacity."

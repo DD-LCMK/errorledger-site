@@ -17,7 +17,7 @@ provenance_label: "Documented Incident (Tier 1)"
 provenance_source: "Engineering at Meta (Official Postmortem)"
 read_time_minutes: 12
 updatedDate: "2026-08-30"
-tags: ["BGP", "DNS", "Facebook", "Meta", "Outage", "Network Backbone"]
+tags: ["BGP", "DNS", "Facebook", "Outage", "Network Backbone"]
 keywords: ["페이스북 장애 2021", "BGP 철회", "DNS 오류", "백본 네트워크", "인프라 붕괴", "감사 도구 버그"]
 summary_points:
   context: "2021년 10월 4일, 페이스북 엔지니어링 팀은 글로벌 백본 용량의 가용성을 평가하기 위해 일상적인 명령어를 실행했습니다."
