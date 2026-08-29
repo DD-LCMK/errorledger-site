@@ -28,7 +28,7 @@ faqItems:
     a: "Attackers maintained undetected access for roughly 76 days according to the House Oversight investigation. The intrusion remained difficult to detect because an expired certificate prevented Equifax's monitoring system from inspecting relevant ACIS traffic."
   - q: "What is Apache Struts?"
     a: "Apache Struts is a free, open-source framework for creating enterprise Java web applications. It is widely used by corporations to build web portals and interactive user interfaces."
-  - q: "Who was held responsible for the Equifax breach?"
+  - q: "What happened to Equifax's senior executives after the breach?"
     a: "Following the breach, the CEO, CIO, and CSO of Equifax all departed the company in the aftermath of the breach. A Congressional report attributed the failure to a lack of accountability and management structure within Equifax's IT and security organizations."
 category: "corporate"
 archetype: "the-incident"
@@ -57,7 +57,7 @@ primary_sources:
     type: "Regulatory Settlement"
 ---
 
-On September 7, 2017, Equifax made a public announcement that became one of the defining corporate cybersecurity failures of the decade. The consumer credit reporting agency disclosed that attackers had accessed the personal information of approximately 147 million consumers. The stolen data was not limited to usernames and passwords; it consisted of the foundational elements of modern identity: Social Security numbers, birth dates, physical addresses, and driver's license numbers. The scope of the breach was extraordinary, effectively compromising the financial identities of more than half of U.S. adults. 
+On September 7, 2017, Equifax made a public announcement that became one of the defining corporate cybersecurity failures of the decade. The consumer credit reporting agency disclosed that attackers had accessed the personal information of approximately 147 million consumers. The stolen data was not limited to usernames and passwords; it consisted of the foundational elements of modern identity: Social Security numbers, birth dates, physical addresses, and driver's license numbers. The scope of the breach was extraordinary, putting the personal and identity information of more than half of U.S. adults at risk. 
 
 The investigation that followed dismantled the assumption that the breach was the result of a highly sophisticated, unpreventable zero-day exploit orchestrated by an unstoppable state-sponsored adversary. Instead, congressional investigations and forensic analyses revealed a profound failure of basic IT hygiene. The attackers had exploited a known vulnerability in an open-source framework—a vulnerability for which a patch had been available for months. 
 
@@ -74,7 +74,7 @@ The incident demonstrated how the sheer scale and complexity of modern enterpris
 
 The Automated Consumer Interview System (ACIS) was a custom-built, public-facing web portal designed to allow consumers to dispute errors on their credit reports. ACIS was part of a custom-built legacy environment originating in the 1970s and subsequently modified and modernized over decades. By 2017, the system was a complex amalgamation of legacy code and modern web frameworks, serving as an internet-facing application environment with connectivity to backend Equifax databases. 
 
-To handle the web interface and application logic, ACIS relied on Apache Struts, a popular open-source web application framework for developing Java EE web applications. Apache Struts provided the structural scaffolding for the portal, processing HTTP requests and managing the flow of data between the user's browser and the backend logic. Because ACIS was an internet-facing application, any vulnerability in its structural framework directly exposed the internal network to external exploitation. 
+To handle the web interface and application logic, ACIS relied on Apache Struts, a popular open-source web application framework for developing Java EE web applications. Apache Struts provided the structural scaffolding for the portal, processing HTTP requests and managing the flow of data between the user's browser and the backend logic. Because ACIS was internet-facing, exploitation of the vulnerable framework provided an external foothold into Equifax's environment. Insufficient segmentation and overly broad database access then allowed the attackers to move beyond the ACIS application. 
 
 ## Act I: The Warning and the Blind Spot
 
@@ -107,7 +107,7 @@ The attackers ultimately used the credentials to access these 48 unrelated datab
 
 A critical question emerged during the forensic investigation: how could attackers extract massive amounts of data over 76 days without triggering any network alarms? Equifax employed specialized Intrusion Detection Systems (IDS) designed to inspect network traffic for malicious activity and unauthorized data exfiltration. 
 
-The failure of the IDS was traced to an expired digital certificate. The monitoring system depended on a valid certificate configuration to inspect the encrypted traffic. Once that certificate expired, the monitoring device could no longer perform the intended inspection of traffic to and from the ACIS environment. The certificate had expired in November 2016, and the network-monitoring device had therefore been unable to inspect ACIS traffic for approximately 19 months.
+The failure of the network-inspection path was traced to an expired digital certificate on the SSL Visibility (SSLV) appliance that decrypted traffic for downstream intrusion-detection and intrusion-prevention systems. The monitoring system depended on a valid certificate configuration to inspect the encrypted traffic. Once that certificate expired, the monitoring device could no longer perform the intended inspection of traffic to and from the ACIS environment. The certificate had expired on January 31, 2016, leaving the monitoring device without visibility into the ACIS environment for approximately 19 months., and the network-monitoring device had therefore been unable to inspect ACIS traffic for approximately 19 months.
 
 The expired certificate left the monitoring system unable to inspect the relevant encrypted traffic, eliminating a critical detection layer. The incident therefore exposed a second control failure: the organization did not detect and remediate the monitoring outage for an extended period. The attackers were able to transmit their commands and exfiltrate the archived data through an encrypted tunnel that the relevant network-monitoring layer was blind to.
 
@@ -142,10 +142,10 @@ Compromise of one internet-facing application should not provide a path to unrel
 
 | 2017 Failure Pattern | Modern Cybersecurity Architecture |
 | :--- | :--- |
-| **Manual Vulnerability Tracking** | **Automated Software Bill of Materials (SBOM)** ensuring every dependency is known and mapped. |
-| **Static Asset Inventories** | **Continuous Attack Surface Management (CASM)** that dynamically discovers exposed assets. |
+| **Incomplete asset/dependency visibility** | **Asset inventory + SBOM + continuous vulnerability discovery** ensuring every dependency is known and mapped. |
+| **Static/incomplete external-asset inventory** | **Continuous attack-surface discovery + ownership mapping** that dynamically discovers exposed assets. |
 | **Silent IDS Failure** | **Fail-Closed Inspection** (Engineering Recommendation) where expired certificates halt traffic or trigger alerts. |
-| **Flat Internal Networks** | **Zero Trust Architecture** requiring continuous authentication, even for internal microservices. |
+| **Flat Internal Networks** | **Zero Trust Architecture** enforcing explicit identity, authorization, and least-privilege access across internal services. |
 | **Plaintext Credentials** | **Centralized Secrets Management + Rotation** (e.g., HashiCorp Vault) providing temporary credentials. |
 
 ## Primary Sources
@@ -178,6 +178,6 @@ Attackers maintained undetected access for roughly 76 days according to the Hous
 ### What is Apache Struts?
 Apache Struts is a free, open-source framework for creating enterprise Java web applications. It is widely used by corporations to build web portals and interactive user interfaces.
 
-### Who was held responsible for the Equifax breach?
-Following the breach, the CEO, CIO, and CSO of Equifax all departed the company in the aftermath of the breach. A [Congressional Report](https://oversight.house.gov/wp-content/uploads/2018/12/Equifax-Report.pdf) attributed the failure to a lack of accountability and management structure within Equifax's IT and security organizations.
+### What happened to Equifax's senior executives after the breach?
+Following the breach, Equifax's CEO, CIO, and CSO all departed the company in the aftermath of the breach. The House Oversight investigation separately identified organizational weaknesses in accountability, governance, asset management, and security oversight. A [Congressional Report](https://oversight.house.gov/wp-content/uploads/2018/12/Equifax-Report.pdf) attributed the failure to a lack of accountability and management structure within Equifax's IT and security organizations.
 
