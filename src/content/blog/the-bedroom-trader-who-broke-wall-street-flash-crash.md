@@ -166,7 +166,7 @@ When asset management firm **Waddell & Reed** initiated an automated algorithmic
 
 The institutional sell algorithm began dumping massive volumes into a market whose liquidity was already hollowed out by Sarao's phantom sell pressure. 
 
-HFT market-makers panicked, pulled their bids, and stepped away from the market. With no buyers remaining, the price dropped through an air pocket.
+HFT market-makers detected the extreme volatility, pulled their bids, and stepped away from the market. With no buyers remaining, the price dropped through an air pocket.
 
 ---
 

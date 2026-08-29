@@ -194,7 +194,7 @@ If your trading system allows a human to sell more shares than exist in the glob
 Here is how modern financial architectures enforce absolute boundaries:
 
 ### 1. The Friction Rule: Context-Aware Confirmation Modals
-Generic "Are you sure? [OK / Cancel]" confirmation dialogs suffer from 100% alert fatigue:
+Generic "Are you sure? [OK / Cancel]" confirmation dialogs suffer from systemic confirmation habituation:
 - **Enforce Value Deviation Interlocks:** If an order price deviates by more than 10% from the prevailing market price or the order notional value exceeds $10M, the UI must require the operator to **manually type the full ticker symbol and total cash amount** before the send button unlocks.
 
 ### 2. The Physical Boundary Constraint: Total Issued Share Sanity Checks

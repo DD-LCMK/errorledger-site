@@ -22,7 +22,7 @@ faqItems:
   - q: "What role did SAP software play in Target Canada's demise?"
     a: "Rather than customizing its legacy US logistics software, Target opted for a clean-slate deployment of SAP ERP for Canada. However, under pressure from a compressed 24-month launch deadline, entry-level clerks manually entered thousands of product records without automated data validation. Internal audits revealed that up to 70% of the master data fields contained errors (such as inches entered into centimeter fields, or case quantities swapped with individual item counts)."
   - q: "Why were Target Canada's store shelves empty while warehouses were full?"
-    a: "Because product dimension and weight data in SAP was corrupted, the automated Warehouse Management System could not calculate container fit or pallet sizing accurately. Distribution centers were physically overwhelmed with unsortable inventory, while the automated replenishment algorithms refused to order stock for retail stores because the software believed the stores were already full or the products were invalid."
+    a: "Because product dimension and weight data in SAP was corrupted, the automated Warehouse Management System could not calculate container fit or pallet sizing accurately. Distribution centers were physically inundated with unsortable inventory, while the automated replenishment algorithms refused to order stock for retail stores because the software believed the stores were already full or the products were invalid."
   - q: "Why didn't Target Canada use its existing US logistics systems?"
     a: "Target's US operations ran on a highly customized, decades-old mainframe system that was tightly integrated with US distribution networks. Converting it for Canadian bilingual labeling, currency, and metric measurements was deemed too complex by leadership, who chose instead to install an entirely new SAP system within an aggressive two-year rollout window without adequate time for data scrubbing or parallel testing."
   - q: "What supply chain lessons came out of Target Canada's collapse?"
@@ -121,7 +121,7 @@ The fracture of Target Canada's supply chain was not a sudden explosion, but a g
 
 The point of no return occurred during the lead-up to the 2013 launch. Leadership was informed of the catastrophic data integrity issues. The investigation estimated that the information in the system was accurate only about 30% of the time. For a supply chain whose automated processes depended on that data, the gap was catastrophic. 
 
-Despite these glaring technical warnings, the structural momentum of the real estate deals overwhelmed the technical reality. The executive decision was made to push forward with the launch timeline, assuming that the data could be corrected on the fly. This was a fatal misunderstanding of how deeply ERP data is integrated into physical logistics. You cannot patch a supply chain on the fly when the distribution centers are already gridlocked. The warehouses literally ran out of physical space to store goods, forcing Target to rent additional off-site storage facilities just to park inventory that the computer systems refused to process.
+Despite these glaring technical warnings, the structural momentum of the real estate deals overrode the technical reality. The executive decision was made to push forward with the launch timeline, assuming that the data could be corrected on the fly. This was a fatal misunderstanding of how deeply ERP data is integrated into physical logistics. You cannot patch a supply chain on the fly when the distribution centers are already gridlocked. The warehouses literally ran out of physical space to store goods, forcing Target to rent additional off-site storage facilities just to park inventory that the computer systems refused to process.
 
 ## Act IV: Financial & Legal Reckoning
 
@@ -138,7 +138,7 @@ The failure was total and unrecoverable. In 2015, Target filed for creditor prot
 
 ## 🛡️ Systems Prevention Playbook
 
-A sophisticated software architecture that implicitly trusts manual data entry for physical constraints is mathematically guaranteed to fail. The collapse of Target Canada offers three mandatory defensive engineering principles for any system orchestrating physical goods.
+A sophisticated software architecture that implicitly trusts manual data entry for physical constraints, combined with schedule pressure, integration complexity, deployment timing and insufficient validation, created conditions under which failure was highly probable. The collapse of Target Canada offers three mandatory defensive engineering principles for any system orchestrating physical goods.
 
 **1. The Physical Constraint Validation Rule**
 Software that models the physical world must enforce sanity limits at the point of entry. A simple programmatic boundary check—such as verifying that a bottle of shampoo cannot mathematically weigh 40 pounds or be 50 inches wide—would have quarantined the corrupted data before it poisoned the SAP master database. When dealing with physical dimensions, the software must refuse to save data that violates the fundamental laws of physics and standard packaging limits.
@@ -199,7 +199,7 @@ Target Corporation reported a $2.1 billion pre-tax loss on discontinued operatio
 
 ### What was the specific SAP data entry bug?
 
-Entry-level clerks manually typed thousands of product records without automated sanity checks. Inches were entered into centimeter fields, cases were confused with individual items, and barcode IDs were mistyped, resulting in an estimated 70% error rate in master item records.
+Entry-level clerks manually typed thousands of product records without automated sanity checks. Inches were entered into centimeter fields, cases were incorrectly entered as individual items, and barcode IDs were mistyped, resulting in an estimated 70% error rate in master item records.
 
 ### Why were distribution centers jammed while shelves were empty?
 

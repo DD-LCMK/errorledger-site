@@ -14,7 +14,7 @@ keywords: ["Sabadell Proteo system", "Paul Pester TSB CEO", "Core banking platfo
 summary_points:
   context: "TSB Bank, separated from Lloyds Banking Group, needed to migrate its customer accounts and operations from legacy Lloyds IT systems to the new Sabadell Proteo4UK core banking platform — a programme spanning more than four years of planning."
   systemic_failure: "Despite extensive testing, multiple dress rehearsals, and governance processes that produced board-level confidence, the assurance regime failed to expose critical production failure modes. The two data centres supporting the new platform were configured inconsistently in certain areas despite having been designed to be identical — and this discrepancy was not identified before migration."
-  technical_mechanisms: "The platform experienced severe service instability after go-live. The two supporting data centres had been inconsistently configured. Thousands of defects remained open at the time of migration. Once the platform destabilised, a surge in customer enquiries overwhelmed existing contingency resources."
+  technical_mechanisms: "The platform experienced severe service instability after go-live. The two supporting data centres had been inconsistently configured. Thousands of defects remained open at the time of migration. Once the platform destabilised, a surge in customer enquiries exhausted existing contingency resources."
   fallout: "The failure locked millions of customers out of their accounts for weeks, costing TSB £330.2 million in post-migration costs and foregone income, and a combined £48.65 million in regulatory fines from the FCA and PRA. CEO Paul Pester subsequently resigned following sustained scrutiny of the crisis."
 primary_sources:
   - title: "FCA Final Notice 2022 - TSB Bank plc"
@@ -27,7 +27,7 @@ primary_sources:
     url: "https://committees.parliament.uk/committee/158/treasury-committee/"
 faqItems:
   - q: "What caused the TSB IT failure in 2018?"
-    a: "The 2018 TSB failure resulted from multiple technical and governance weaknesses surrounding the migration to Proteo4UK. Independent reviews identified shortcomings in planning, testing, supplier oversight, and technical configuration — including inconsistent configuration between the two supporting data centres that was not detected before migration. These problems caused severe service instability, amplified by a surge in customer demand that overwhelmed existing contingency resources."
+    a: "The 2018 TSB failure resulted from multiple technical and governance weaknesses surrounding the migration to Proteo4UK. Independent reviews identified shortcomings in planning, testing, supplier oversight, and technical configuration — including inconsistent configuration between the two supporting data centres that was not detected before migration. These problems caused severe service instability, amplified by a surge in customer demand that exhausted existing contingency resources."
   - q: "How much was TSB fined for the IT failure?"
     a: "TSB received a combined £48.65 million penalty. The Financial Conduct Authority (FCA) levied £29.75 million and the Prudential Regulation Authority (PRA) levied £18.9 million for operational resilience failings, confirmed in December 2022."
   - q: "Who resigned after the TSB IT crash?"
@@ -137,7 +137,7 @@ As seen in similar high-coupling enterprise platform failures — such as the [K
 ## FAQ
 
 ### What caused the TSB IT failure in 2018?
-The 2018 TSB failure resulted from multiple technical and governance weaknesses surrounding the migration to Proteo4UK. The [Slaughter and May independent review](https://www.tsb.co.uk/content/dam/tsb-public/documents/media-centre/Slaughter-and-May-final-report.pdf) identified shortcomings in planning, testing, supplier oversight, and technical configuration — including inconsistent configuration between the two supporting data centres that was not detected before migration, despite extensive testing. These problems caused severe service instability after go-live, which was then amplified by a customer demand surge that overwhelmed existing contingency resources.
+The 2018 TSB failure resulted from multiple technical and governance weaknesses surrounding the migration to Proteo4UK. The [Slaughter and May independent review](https://www.tsb.co.uk/content/dam/tsb-public/documents/media-centre/Slaughter-and-May-final-report.pdf) identified shortcomings in planning, testing, supplier oversight, and technical configuration — including inconsistent configuration between the two supporting data centres that was not detected before migration, despite extensive testing. These problems caused severe service instability after go-live, which was then amplified by a customer demand surge that exhausted existing contingency resources.
 
 ### How much was TSB fined for the IT failure?
 TSB received a combined £48.65 million penalty. The Financial Conduct Authority (FCA) levied £29.75 million and the Prudential Regulation Authority (PRA) levied £18.9 million for operational resilience failings. The [FCA Final Notice](https://www.fca.org.uk/publication/final-notices/tsb-bank-plc-2022.pdf) was published in December 2022, more than four years after the incident.

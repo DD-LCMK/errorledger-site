@@ -139,7 +139,7 @@ When the market opened at 9:30:00 AM, retail brokers began routing client orders
 3. When the order filled, Server #8 did not mark the parent order as complete. Instead, it sent another 212-share buy order.
 4. It repeated this loop at microsecond speeds, buying thousands of shares per second for a single 212-share client request.
 
-To make matters worse, at 9:44 AM, confused engineers attempted to "fix" the problem by **reverting Servers 1 through 7 back to the old code**—unintentionally activating the Power Peg bug across all eight servers and multiplying the rogue order flow by eight hundred percent.
+To make matters worse, at 9:44 AM, engineers attempted to "fix" the problem by **reverting Servers 1 through 7 back to the old code**—unintentionally activating the Power Peg bug across all eight servers and multiplying the rogue order flow by eight hundred percent.
 
 ---
 

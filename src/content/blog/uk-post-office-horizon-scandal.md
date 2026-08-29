@@ -95,7 +95,7 @@ Almost immediately after deployment, anomalies began to surface. A subpostmaster
 
 The immediate reaction was confusion. The operators would double-check their math, search for missing paperwork, and call the Post Office helpline. The response from the helpline was universally identical: *“You are the only one experiencing this problem. The system is robust. You must make good the shortfall.”*
 
-Because their contracts stipulated that they were financially responsible for any losses, subpostmasters began pouring their own savings into the tills to balance the system, terrified of losing their contracts. But the shortfalls kept appearing. The anomalies were aggressive, seemingly random, and mathematically impossible given the physical foot traffic of small village post offices. The cash had not been stolen; it had never existed. It was purely an artifact of corrupted database rows.
+Because their contracts stipulated that they were financially responsible for any losses, subpostmasters began pouring their own savings into the tills to balance the system, under threat of losing their contracts. But the shortfalls kept appearing. The anomalies were aggressive, seemingly random, and mathematically impossible given the physical foot traffic of small village post offices. The cash had not been stolen; it had never existed. It was purely an artifact of corrupted database rows.
 
 ## Act II: The Architecture of the Trap
 

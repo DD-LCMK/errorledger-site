@@ -141,7 +141,7 @@ The Ariane 5 disaster is a masterclass in the dangers of unverified legacy code 
 
 ### 3. Emergency Brakes
 * **Data Validity Masks:** A primary control computer must possess the capability to definitively distinguish between diagnostic failure codes and valid operational telemetry. Blindly trusting incoming data payloads without a validity bit check is a catastrophic architectural flaw.
-* **Hardware-In-The-Loop (HITL) Complete Simulation:** The fatal vulnerability remained undetected because the SRI was never tested as a complete closed-loop system against the simulated flight dynamics of the Ariane 5. Because the SRI software was considered "flight-proven" on the Ariane 4, it bypassed rigorous re-testing under the new extreme physical parameters. Legacy software must never be exempted from holistic closed-loop simulation on new hardware.
+* **Hardware-In-The-Loop (HITL) Complete Simulation:** The fatal vulnerability remained undetected because testing failed to expose critical production failure modes of the SRI as a complete closed-loop system against the simulated flight dynamics of the Ariane 5. Because the SRI software was considered "flight-proven" on the Ariane 4, it bypassed rigorous re-testing under the new extreme physical parameters. Legacy software must never be exempted from holistic closed-loop simulation on new hardware.
 
 ---
 
