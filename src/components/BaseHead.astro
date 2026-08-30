@@ -14,14 +14,25 @@ interface Props {
 	type?: string;
 	// DYNAMIC BREADCRUMB: Array of {name, url} items. Last item is current page (no url needed).
 	breadcrumb?: { name: string; url?: string }[];
+	lang?: string;
 }
 
 // Strip `.html` and trailing slashes so canonical URLs are always clean
-const cleanPathname = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '');
-const canonicalURL = new URL(cleanPathname || '/', Astro.site);
+const rawPath = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '');
+const siteBase = Astro.site || 'https://errorledger.com';
 
-// Default to "website" type if not explicitly passed
-const { title, description, image = FallbackImage, type = 'website', breadcrumb } = Astro.props;
+const { title, description, image = FallbackImage, type = 'website', breadcrumb, lang } = Astro.props;
+
+const isKorean = (lang === 'ko') || rawPath === '/ko' || rawPath.startsWith('/ko/');
+const enPath = (isKorean ? rawPath.replace(/^\/ko/, '') : rawPath) || '/';
+const koPath = isKorean ? (rawPath || '/ko') : (enPath === '/' ? '/ko' : `/ko${enPath}`);
+
+const canonicalURL = new URL(rawPath || '/', siteBase);
+const enHref = new URL(enPath, siteBase).href;
+const koHref = new URL(koPath, siteBase).href;
+
+const ogLocale = isKorean ? 'ko_KR' : 'en_US';
+const ogLocaleAlternate = isKorean ? 'en_US' : 'ko_KR';
 
 // Truncate title to 70 characters for SEO (Google supports up to ~70 before truncating)
 const truncatedTitle = title && title.length > 70 ? title.substring(0, 67) + '...' : title;
@@ -31,16 +42,17 @@ const truncatedDescription = description && description.length > 160 ? descripti
 
 // RESOLVES P1 ISSUE: Safely process both string paths (from our pipeline) and Astro ImageMetadata fallbacks
 const ogImage = typeof image === 'string'
-	? new URL(image, Astro.site).href
+	? new URL(image, siteBase).href
 	: (image.src.includes('blog-placeholder-1') 
 		? 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=1200&h=630&fit=crop&q=80' 
-		: new URL(image.src, Astro.site).href);
+		: new URL(image.src, siteBase).href);
 
 // Builds a dynamic BreadcrumbList for rich results.
-// Falls back to a simple Home > Blog structure if no breadcrumb is passed.
 const breadcrumbItems = breadcrumb && breadcrumb.length > 0
 	? breadcrumb
-	: [{ name: 'Home', url: 'https://errorledger.com' }, { name: 'Blog', url: 'https://errorledger.com/blog' }];
+	: (isKorean
+		? [{ name: '홈', url: 'https://errorledger.com/ko' }, { name: '보관소', url: 'https://errorledger.com/ko/blog' }]
+		: [{ name: 'Home', url: 'https://errorledger.com' }, { name: 'Blog', url: 'https://errorledger.com/blog' }]);
 
 const breadcrumbSchema = JSON.stringify({
 	"@context": "https://schema.org",
@@ -49,7 +61,7 @@ const breadcrumbSchema = JSON.stringify({
 		"@type": "ListItem",
 		"position": index + 1,
 		"name": item.name,
-		...(item.url ? { "item": item.url } : {})
+		"item": item.url ? (item.url.startsWith('http') ? item.url : new URL(item.url, siteBase).href) : canonicalURL.href
 	}))
 });
 ---
@@ -66,6 +78,11 @@ const breadcrumbSchema = JSON.stringify({
 	href={new URL('rss.xml', Astro.site)}
 />
 <meta name="generator" content={Astro.generator} />
+
+<!-- Multilingual Alternate Annotations (hreflang) -->
+<link rel="alternate" hreflang="en" href={enHref} />
+<link rel="alternate" hreflang="ko" href={koHref} />
+<link rel="alternate" hreflang="x-default" href={enHref} />
 
 <!-- Preconnect for performance (reduces DNS lookup time for external resources) -->
 <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
@@ -96,7 +113,8 @@ const breadcrumbSchema = JSON.stringify({
 <meta property="og:image:height" content="630" />
 <meta property="og:image:alt" content={truncatedTitle} />
 <meta property="og:site_name" content="ErrorLedger" />
-<meta property="og:locale" content="en_US" />
+<meta property="og:locale" content={ogLocale} />
+<meta property="og:locale:alternate" content={ogLocaleAlternate} />
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />

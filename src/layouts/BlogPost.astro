@@ -95,25 +95,35 @@ const cleanUrl = isKorean ? `https://errorledger.com/ko/blog/${cleanSlug}` : `ht
 const alternateUrl = isKorean ? `/blog/${cleanSlug}` : `/ko/blog/${cleanSlug}`;
 const alternateLabel = isKorean ? '🇺🇸 English' : '🇰🇷 한국어';
 
+const fullHeroImage = heroImage
+	? (heroImage.startsWith('http') ? heroImage : new URL(heroImage, Astro.site || 'https://errorledger.com').href)
+	: 'https://errorledger.com/favicon.svg';
+
 const schemaData = {
 	"@context": "https://schema.org",
 	"@type": "NewsArticle",
+	"mainEntityOfPage": {
+		"@type": "WebPage",
+		"@id": cleanUrl
+	},
 	"headline": title,
 	"description": description,
-	"image": [heroImage],
+	"inLanguage": isKorean ? "ko-KR" : "en-US",
+	"image": [fullHeroImage],
 	"datePublished": pubDate ? pubDate.toISOString() : new Date().toISOString(),
 	"dateModified": updatedDate ? updatedDate.toISOString() : (pubDate ? pubDate.toISOString() : new Date().toISOString()),
 	...(keywords && keywords.length > 0 ? { "keywords": keywords.join(", ") } : (tags && tags.length > 0 ? { "keywords": tags.join(", ") } : {})),
 	...(wordCount ? { "wordCount": wordCount } : {}),
 	"author": [{
 		"@type": "Person",
-		"name": "The Archivist",
+		"name": isKorean ? "The 사서" : "The Archivist",
 		"jobTitle": "Lead Investigative Editor",
-		"url": "https://errorledger.com/about"
+		"url": isKorean ? "https://errorledger.com/ko/about" : "https://errorledger.com/about"
 	}],
 	"publisher": {
 		"@type": "Organization",
 		"name": "ErrorLedger",
+		"url": isKorean ? "https://errorledger.com/ko" : "https://errorledger.com",
 		"logo": {
 			"@type": "ImageObject",
 			"url": "https://errorledger.com/favicon.svg"
@@ -215,7 +225,7 @@ const rankedCases = isKorean ? [
 
 <html lang={lang} class="dark">
 	<head>
-		<BaseHead title={seoTitle} description={description} image={heroImage} type="article" breadcrumb={postBreadcrumb} />
+		<BaseHead title={seoTitle} description={description} image={heroImage} type="article" breadcrumb={postBreadcrumb} lang={lang} />
 		<script type="application/ld+json" set:html={JSON.stringify(schemaData)} />
 		{faqSchemaData && <script type="application/ld+json" set:html={JSON.stringify(faqSchemaData)} />}
 		<style>
@@ -1105,7 +1115,15 @@ const rankedCases = isKorean ? [
 
 								{heroImage && (
 									<div class="article-hero-wrap">
-										<img src={heroImage} alt={title} class="article-hero-media" loading="eager" />
+										<img 
+											src={heroImage} 
+											alt={title} 
+											class="article-hero-media" 
+											width="1200" 
+											height="675" 
+											loading="eager" 
+											fetchpriority="high" 
+										/>
 									</div>
 								)}
 
