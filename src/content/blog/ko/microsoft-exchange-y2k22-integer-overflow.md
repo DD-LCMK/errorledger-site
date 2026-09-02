@@ -5,7 +5,7 @@ pubDate: "2026-09-02"
 slug: "ko/microsoft-exchange-y2k22-integer-overflow"
 author: "ErrorLedger Newsroom"
 category: "internet"
-heroImage: "/images/hero-exchange-y2k22.jpg"
+heroImage: "/images/hero-exchange-y2k22-v2.jpg"
 lang: "ko"
 keywords: ["microsoft exchange", "y2k22", "integer overflow", "FIP-FS", "email outage", "software bug"]
 summary_points:

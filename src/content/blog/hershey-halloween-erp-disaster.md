@@ -33,7 +33,7 @@ provenance_tier: 1
 provenance_label: "Documented Incident (Tier 1)"
 provenance_source: "Corporate Disclosures, Industry Case Studies, Supply Chain Logistics Audits"
 read_time_minutes: 10
-heroImage: "/images/stories/hero-hershey-erp.jpg"
+heroImage: "/images/stories/hero-hershey-erp-v2.jpg"
 summary_points:
   context: "Hershey initiated the $112 million 'Enterprise 21' project to integrate SAP R/3, Manugistics, and Siebel into a unified architecture, aiming to retire legacy systems ahead of Y2K."
   trigger: "To meet the aggressive Y2K deadline, the timeline was compressed from 48 to 30 months. The company deployed a 'Big Bang' go-live in July 1999 without conducting comprehensive end-to-end integration and stress testing."

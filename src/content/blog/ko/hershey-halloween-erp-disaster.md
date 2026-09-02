@@ -34,7 +34,7 @@ provenance_tier: 1
 provenance_label: "기록된 사건 (Tier 1)"
 provenance_source: "기업 공시, 업계 사례 연구, 공급망 물류 감사 보고서"
 read_time_minutes: 10
-heroImage: "/images/stories/hero-hershey-erp.jpg"
+heroImage: "/images/stories/hero-hershey-erp-v2.jpg"
 summary_points:
   context: "허쉬는 Y2K 이전에 기존 레거시 시스템을 폐기하기 위해 SAP R/3, Manugistics, Siebel을 통합 아키텍처로 결합하는 1억 1,200만 달러 규모의 '엔터프라이즈 21' 프로젝트를 시작했습니다."
   trigger: "촉박한 Y2K 기한을 맞추기 위해 일정은 48개월에서 30개월로 단축되었습니다. 회사는 종합적인 엔드투엔드(End-to-End) 통합 및 스트레스 테스트를 수행하지 않은 채 1999년 7월 '빅뱅' 방식으로 시스템을 가동했습니다."
