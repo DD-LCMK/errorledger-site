@@ -182,3 +182,24 @@ This incident highlights critical defensive gaps that must be implemented in hig
 > 
 > The deeper failure was not simply that an operator made an error; it was that the operational control plane allowed an ordinary input error to cross a catastrophic system boundary without enforcing a minimum-safe state. Systems must be designed with the assumption that operators will eventually make mistakes. By failing to implement basic boundary constraints and allowing their communication dashboard to rely on the infrastructure it monitored, the operational tooling permitted a removal large enough to defeat the system's resilience assumptions. The true lesson is that as systems scale in complexity, their operational tools must scale equally in defensive friction. Similar to the [GitLab database deletion](/blog/gitlab-2017-database-deletion) or the [Knight Capital trading glitch](/blog/knight-capital-trading-glitch-45-minutes), a single unconstrained command can be catastrophic.
 
+## FAQ
+
+### What caused the 2017 AWS S3 outage?
+An authorized engineer debugging a billing system latency issue entered a command with a typo, accidentally removing far more server capacity than intended. This triggered a cascading failure in the S3 index and placement subsystems.
+
+### Why did it take so long to fix the AWS S3 outage?
+The subsystems that failed had grown massively over the years and had not been completely restarted in the US-EAST-1 region. As S3 had grown substantially, the restart and metadata-integrity validation process took much longer than expected.
+
+### Did AWS change anything after the 2017 outage?
+Yes. AWS added boundary constraints to capacity removal tools, preventing them from removing servers below minimum capacity levels, and changed their Service Health Dashboard administration console to operate across multiple AWS Regions.
+
+### Why couldn't AWS update its status page during the outage?
+The AWS Service Health Dashboard's administration console had a dependency on Amazon S3, preventing AWS from updating individual service statuses from the beginning of the event until 11:37 AM PST.
+
+### Which services were affected by the 2017 AWS S3 outage?
+The outage affected numerous websites, applications, connected devices and AWS services that depended on S3 in US-EAST-1. AWS specifically identified the S3 console, new EC2 instance launches, EBS volumes requiring data from S3 snapshots, and AWS Lambda among affected services. Contemporary reporting also documented disruptions at services including Slack, Quora, Trello and other major platforms.
+
+### Was it a cyberattack?
+No. The AWS postmortem describes the event as an operational incident caused by incorrect input during internal debugging, with no indication of malicious or external activity.
+
+
