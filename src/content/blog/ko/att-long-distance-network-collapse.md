@@ -20,6 +20,9 @@ downtimeDuration: "9시간"
 provenance_tier: 1
 provenance_label: "기술적 메커니즘이 재구성된 문서화된 사고"
 provenance_source: "AT&T의 당시 기술 공개 (RISKS Digest Vol. 9), 사후 규제 기관 보고서, Los Angeles Times (1990년 1 ஜன월 17일)"
+primary_sources:
+  - title: "AT&T Technical Disclosure via Peter G. Neumann"
+    url: "https://catless.ncl.ac.uk/risks/9.62.html"
 read_time_minutes: 12
 faqItems:
   - q: "1990년 AT&T 통신망 마비 사태의 정확한 원인은 무엇입니까?"
@@ -157,7 +160,7 @@ AT&T 사건은 단일 문화(monoculture)의 위험성을 보여주었습니다.
 | **장애 격리 (Failure Isolation)** | 오류 복구 메커니즘이 전파 벡터로 작용함 | 제어 평면(Control Plane) 상태와 데이터 평면(Data Plane) 처리의 엄격한 분리 |
 | **검증 (Verification)** | 코드 리뷰에서 감지되지 않은 C 제어 흐름의 모호성 | 자동화된 정적 분석, 린터(예: `-Wuninitialized`, `-Wimplicit-fallthrough`) |
 
-## 증거가 확립하는 사실들
+## 증거가 입증하는 것:
 > **[DOCUMENTED]**
 > - 초기 트리거는 뉴욕의 트렁크 인터페이스 하드웨어 문제였습니다.
 > - 취약한 소프트웨어는 백업 신호망 접근성을 개선하기 위해 12월 중순 업데이트에 도입되었습니다.
@@ -165,7 +168,7 @@ AT&T 사건은 단일 문화(monoculture)의 위험성을 보여주었습니다.
 > - 통화 성공률은 56%로 떨어졌습니다 (처리된 1억 4,800만 통화 중 8,300만 통화 완료).
 > - AT&T는 백업 링크의 신호 트래픽을 일시적으로 중단시켜 네트워크를 안정화했습니다.
 
-## 증거가 확립하지 않는 사실들
+## 증거가 입증하지 않는 것 (What the evidence does NOT establish):
 > **[UNKNOWN BOUNDARIES]**
 > - 정확한 내부 변수 이름, 메모리 주소, 프로세서 명령어 및 완전한 프로덕션 소스 코드는 공개된 1차 자료에서 여전히 밝혀지지 않았습니다.
 > - 사이버 공격, 악의적 의도 또는 외부 침입에 대한 어떠한 증거도 없습니다.
@@ -179,8 +182,8 @@ AT&T 사건은 단일 문화(monoculture)의 위험성을 보여주었습니다.
 
 ---
 ## 출처 및 기술 자료 (Sources & Technical References)
-- Peter G. Neumann을 통한 AT&T 기술 공개, *RISKS Digest* (Vol. 9, Issues 62/63), 1990.
-- *The Los Angeles Times*, "Software Glitch in AT&T System Set Off Network Collapse," 1990년 1월 17일.
-- *TIME Magazine*, "Ghost in the Machine," 1990년 1월 29일.
-- Peter van der Linden, *Expert C Programming: Deep C Secrets*, Prentice Hall, 1994.
+- [Peter G. Neumann을 통한 AT&T 기술 공개, *RISKS Digest* (Vol. 9, Issues 62/63), 1990](https://catless.ncl.ac.uk/risks/9.62.html).
+- [*The Los Angeles Times*, "Software Glitch in AT&T System Set Off Network Collapse," 1990년 1월 17일](https://www.latimes.com/archives/la-xpm-1990-01-17-mn-302-story.html).
+- [*TIME Magazine*, "Ghost in the Machine," 1990년 1월 29일](https://content.time.com/time/magazine/article/0,9171,969248,00.html).
+- [Peter van der Linden, *Expert C Programming: Deep C Secrets*, Prentice Hall, 1994](https://archive.org/details/expertcprogrammi0000vand).
 - Bruce Sterling, *The Hacker Crackdown: Law and Disorder on the Electronic Frontier*, Bantam Books, 1992.

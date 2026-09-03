@@ -20,6 +20,9 @@ downtimeDuration: "9 hours"
 provenance_tier: 1
 provenance_label: "Documented Incident with Reconstructed Technical Mechanism"
 provenance_source: "AT&T contemporary technical disclosure (RISKS Digest Vol. 9), post-mortem regulatory reporting, Los Angeles Times (Jan 17, 1990)"
+primary_sources:
+  - title: "AT&T Technical Disclosure via Peter G. Neumann"
+    url: "https://catless.ncl.ac.uk/risks/9.62.html"
 read_time_minutes: 12
 faqItems:
   - q: "What exactly caused the AT&T 1990 outage?"
@@ -71,7 +74,7 @@ When the affected switch went down, it sent its own recovery-related signaling t
 
 ## The Reconstructed C Defect
 
-[RECONSTRUCTED] The published reconstruction of the defective C structure shows that the misplaced break bypassed the pointer-initialization path. Subsequent processing therefore operated with an uninitialized pointer, producing the data corruption that AT&T's contemporary account describes.
+The published reconstruction of the defective C structure shows that the misplaced break bypassed the pointer-initialization path. Subsequent processing therefore operated with an uninitialized pointer, producing the data corruption that AT&T's contemporary account describes.
 
 The defect was located in a `switch` statement containing a nested `if` block. 
 
@@ -157,7 +160,7 @@ The AT&T incident demonstrated the danger of monocultures. The same vulnerable s
 | **Failure Isolation** | Fault-recovery mechanism acted as propagation vector | Strict decoupling of control plane state from data plane processing |
 | **Verification** | C control-flow ambiguity undetected in code review | Automated static analysis, linters (e.g., `-Wuninitialized`, `-Wimplicit-fallthrough`) |
 
-## What the Evidence Establishes
+## What the Evidence Establishes:
 > **[DOCUMENTED]**
 > - The initial trigger was a trunk-interface hardware problem in New York.
 > - The vulnerable software had been introduced in a mid-December update intended to improve backup signaling access.
@@ -165,7 +168,7 @@ The AT&T incident demonstrated the danger of monocultures. The same vulnerable s
 > - Call completion rates fell to 56% (83M completed out of 148M handled).
 > - AT&T stabilized the network by temporarily suspending signaling traffic on its backup links.
 
-## What the Evidence Does NOT Establish
+## What the Evidence Does NOT Establish:
 > **[UNKNOWN BOUNDARIES]**
 > - The exact internal variable names, memory addresses, processor instructions, and complete production source code remain undisclosed in the public primary sources.
 > - There is no evidence of a cyberattack, malicious intent, or external intrusion.
@@ -178,9 +181,9 @@ The AT&T incident demonstrated the danger of monocultures. The same vulnerable s
 > That is the enduring lesson of the 1990 AT&T collapse: reliability cannot be evaluated only by asking whether components survive failures. A resilient system must also be tested for what happens when components recover, announce that recovery, and re-enter a network whose other components are simultaneously changing state.
 
 ---
-## Sources & Technical References
-- AT&T Technical Disclosure via Peter G. Neumann, *RISKS Digest* (Vol. 9, Issues 62/63), 1990.
-- *The Los Angeles Times*, "Software Glitch in AT&T System Set Off Network Collapse," January 17, 1990.
-- *TIME Magazine*, "Ghost in the Machine," January 29, 1990.
-- Peter van der Linden, *Expert C Programming: Deep C Secrets*, Prentice Hall, 1994.
+## Primary Sources
+- [AT&T Technical Disclosure via Peter G. Neumann, *RISKS Digest* (Vol. 9, Issues 62/63), 1990](https://catless.ncl.ac.uk/risks/9.62.html).
+- [*The Los Angeles Times*, "Software Glitch in AT&T System Set Off Network Collapse," January 17, 1990](https://www.latimes.com/archives/la-xpm-1990-01-17-mn-302-story.html).
+- [*TIME Magazine*, "Ghost in the Machine," January 29, 1990](https://content.time.com/time/magazine/article/0,9171,969248,00.html).
+- [Peter van der Linden, *Expert C Programming: Deep C Secrets*, Prentice Hall, 1994](https://archive.org/details/expertcprogrammi0000vand).
 - Bruce Sterling, *The Hacker Crackdown: Law and Disorder on the Electronic Frontier*, Bantam Books, 1992.
