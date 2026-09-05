@@ -1,0 +1,914 @@
+---
+import GameLayout from '../../layouts/GameLayout.astro';
+import { getEntry } from 'astro:content';
+
+const gameEntry = await getEntry('games', 'ladder');
+const data = gameEntry?.data || {
+  title: 'Streamer Ladder Game',
+  tagline: 'Interactive Ghost Leg (사다리 타기) for Live Stream Bets & Raffles',
+  description: 'The classic Korean Ghost Leg / Amidakuji ladder game reimagined for live streams, office bets, and group decisions.',
+  icon: '🪜',
+  category: 'arcade',
+  badge: '🪜 Stream Bet',
+  players: '2-8 Players',
+  playTime: '1-2 mins',
+  controls: [
+    'Click any player at the top to animate their individual path down the ladder',
+    'Click "Reveal All" to trace all participants simultaneously in vibrant neon colors',
+    'Click "Re-roll Ladder" to generate brand new randomized horizontal cross-bridges',
+    'Edit player names and bottom outcomes in the control panel'
+  ],
+  rules: [
+    'Each participant starts at the top of their vertical ladder pole.',
+    'The glowing tracer travels straight down until it hits a horizontal bridge.',
+    'When a bridge is hit, the tracer MUST cross to the neighboring pole and continue downward.',
+    'The path terminates at the bottom prize or penalty!'
+  ],
+  faqItems: [
+    {
+      q: 'How does Amidakuji / Ghost Leg guarantee fairness?',
+      a: 'Mathematically, each horizontal rung represents a permutation swap between adjacent elements. Because it is a continuous bijective mapping, every top pole leads to exactly one distinct bottom outcome with zero duplicate collisions.'
+    },
+    {
+      q: 'How many players are supported?',
+      a: 'You can choose between 2 to 8 players. The ladder adjusts dynamically with clean spacing and distinct glowing colors for each line.'
+    }
+  ]
+};
+---
+
+<GameLayout
+  title={data.title}
+  description={data.description}
+  tagline={data.tagline}
+  icon={data.icon}
+  category={data.category}
+  badge={data.badge}
+  players={data.players}
+  playTime={data.playTime}
+  controls={data.controls}
+  rules={data.rules}
+  faqItems={data.faqItems}
+>
+  <div class="ladder-app-root" id="ladder-root">
+    
+    <!-- Top Action & Config Bar -->
+    <div class="ladder-toolbar">
+      <div class="toolbar-left">
+        <span class="toolbar-title">🪜 방송용 사다리 타기</span>
+        <div class="player-count-select">
+          <label>참여 인원:</label>
+          <div class="count-btns" id="count-btns">
+            <button class="count-btn" data-count="2">2명</button>
+            <button class="count-btn" data-count="3">3명</button>
+            <button class="count-btn active" data-count="4">4명</button>
+            <button class="count-btn" data-count="5">5명</button>
+            <button class="count-btn" data-count="6">6명</button>
+            <button class="count-btn" data-count="8">8명</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Presets -->
+      <div class="toolbar-presets">
+        <span class="preset-label">빠른 프리셋:</span>
+        <button class="preset-btn" data-preset="coffee">☕ 커피 쏘기</button>
+        <button class="preset-btn" data-preset="chicken">🍗 치킨 내기</button>
+        <button class="preset-btn" data-preset="penalty">⚡ 벌칙 뽑기</button>
+        <button class="preset-btn" data-preset="duty">🧹 청소/당번</button>
+      </div>
+
+      <div class="toolbar-actions">
+        <button id="reveal-all-btn" class="action-btn-primary">
+          <span>⚡ 전체 결과 보기 (Reveal All)</span>
+        </button>
+        <button id="reroll-ladder-btn" class="action-btn-secondary">
+          <span>🎲 사다리 다시 섞기 (Re-roll)</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- The Interactive Ladder Stage -->
+    <div class="ladder-canvas-stage" id="ladder-stage">
+      
+      <!-- Top Participants Row -->
+      <div class="participants-top-row" id="participants-row">
+        <!-- Injected dynamically -->
+      </div>
+
+      <!-- Main Ladder SVG / Canvas Container -->
+      <div class="ladder-grid-container" id="ladder-container">
+        <svg id="ladder-svg" class="ladder-svg"></svg>
+      </div>
+
+      <!-- Bottom Outcomes Row -->
+      <div class="outcomes-bottom-row" id="outcomes-row">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+
+    <!-- Final Result Modal -->
+    <div class="ladder-result-modal hidden" id="result-modal">
+      <div class="result-modal-card">
+        <div class="res-icon">🎯</div>
+        <h2>사다리 결과 확인</h2>
+        <div class="result-summary-list" id="result-summary-list"></div>
+        <button id="close-result-btn" class="result-close-btn">닫기 (Close)</button>
+      </div>
+    </div>
+  </div>
+
+  <div slot="guide">
+    <h2>Ghost Leg (사다리 타기) Rules & Mathematics</h2>
+    <p>
+      Known as <strong>사다리타기</strong> in Korea and <strong>Amidakuji (阿弥陀籤)</strong> in Japan, this ancient permutation puzzle ensures 100% fair, un-rigged outcomes. Every horizontal bridge swaps adjacent paths, making the game a bijective mapping where no two players can ever land on the same prize box.
+    </p>
+  </div>
+</GameLayout>
+
+<style>
+  .ladder-app-root {
+    background: #090d16;
+    border-radius: 16px;
+    padding: 1.5rem;
+    min-height: 680px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    user-select: none;
+  }
+
+  /* Toolbar */
+  .ladder-toolbar {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .toolbar-title {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #f8fafc;
+    letter-spacing: -0.02em;
+  }
+
+  .player-count-select {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    color: #94a3b8;
+    font-weight: 700;
+  }
+
+  .count-btns {
+    display: flex;
+    gap: 0.3rem;
+  }
+
+  .count-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    padding: 0.3rem 0.65rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .count-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .count-btn.active {
+    background: linear-gradient(135deg, #a855f7, #38bdf8);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+  }
+
+  .toolbar-presets {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .preset-label {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #64748b;
+  }
+
+  .preset-btn {
+    background: rgba(168, 85, 247, 0.12);
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    color: #e9d5ff;
+    padding: 0.3rem 0.65rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .preset-btn:hover {
+    background: rgba(168, 85, 247, 0.25);
+    color: #ffffff;
+  }
+
+  .toolbar-actions {
+    display: flex;
+    gap: 0.6rem;
+  }
+
+  .action-btn-primary {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #ffffff;
+    border: none;
+    padding: 0.6rem 1.1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+    transition: transform 0.15s ease;
+  }
+
+  .action-btn-primary:hover {
+    transform: scale(1.03);
+  }
+
+  .action-btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #f8fafc;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .action-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  /* Ladder Stage */
+  .ladder-canvas-stage {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 1.75rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    overflow-x: auto;
+  }
+
+  /* Participants Top Row */
+  .participants-top-row {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: 0.5rem;
+  }
+
+  :global(.participant-card) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+    padding: 0.35rem 0.6rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px solid transparent;
+    width: 95px;
+  }
+
+  :global(.participant-card:hover) {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  :global(.participant-avatar) {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  }
+
+  :global(.participant-name-input) {
+    background: transparent;
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    color: #f8fafc;
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-align: center;
+    width: 80px;
+    padding: 0.15rem 0.2rem;
+    outline: none;
+  }
+
+  :global(.participant-name-input:focus) {
+    border-color: #38bdf8;
+    background: #090d16;
+  }
+
+  :global(.participant-trace-btn) {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 4px;
+    padding: 0.15rem 0.45rem;
+    cursor: pointer;
+  }
+
+  /* Ladder Grid Container */
+  .ladder-grid-container {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    height: 380px;
+    margin: 0.5rem 0;
+  }
+
+  .ladder-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Outcomes Bottom Row */
+  .outcomes-bottom-row {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 900px;
+    margin-top: 0.5rem;
+  }
+
+  :global(.outcome-card) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 95px;
+    padding: 0.5rem 0.4rem;
+    border-radius: 10px;
+    background: #1e293b;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    text-align: center;
+  }
+
+  :global(.outcome-card.revealed) {
+    border-color: #facc15;
+    background: rgba(234, 179, 8, 0.15);
+    box-shadow: 0 0 20px rgba(234, 179, 8, 0.4);
+    transform: scale(1.08);
+  }
+
+  :global(.outcome-name-input) {
+    background: transparent;
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    color: #f8fafc;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-align: center;
+    width: 80px;
+    padding: 0.2rem;
+    outline: none;
+  }
+
+  :global(.outcome-name-input:focus) {
+    border-color: #facc15;
+    background: #090d16;
+  }
+
+  :global(.outcome-winner-badge) {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #facc15;
+    margin-top: 0.25rem;
+  }
+
+  /* Result Modal */
+  .ladder-result-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(9, 13, 22, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+
+  .result-modal-card {
+    background: #0f172a;
+    border: 2px solid rgba(56, 189, 248, 0.5);
+    border-radius: 20px;
+    padding: 2.25rem;
+    max-width: 440px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 0 40px rgba(56, 189, 248, 0.3);
+  }
+
+  .res-icon {
+    font-size: 3.2rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .result-modal-card h2 {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #f8fafc;
+    margin: 0 0 1.25rem;
+  }
+
+  .result-summary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    max-height: 240px;
+    overflow-y: auto;
+  }
+
+  :global(.result-row) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.88rem;
+    font-weight: 800;
+  }
+
+  :global(.result-p-name) {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  :global(.result-arrow) {
+    color: #64748b;
+  }
+
+  :global(.result-dest) {
+    color: #facc15;
+  }
+
+  .result-close-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #a855f7, #38bdf8);
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 800;
+    padding: 0.75rem;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+</style>
+
+<script>
+  // Presets Data
+  const PRESETS: Record<string, { participants: string[]; outcomes: string[] }> = {
+    coffee: {
+      participants: ['김팀장', '이대리', '박사원', '최인턴'],
+      outcomes: ['커피 쏘기 ☕', '통과 (Safe)', '통과 (Safe)', '통과 (Safe)']
+    },
+    chicken: {
+      participants: ['호스트', '게스트A', '게스트B', '시청자대표'],
+      outcomes: ['치킨 쏘기 🍗', '생존 ✨', '생존 ✨', '생존 ✨']
+    },
+    penalty: {
+      participants: ['철수', '영희', '민수', '지은'],
+      outcomes: ['애교 3종 💖', '물 원샷 💧', '팔굽혀펴기 10개', '벌칙 면제 🎉']
+    },
+    duty: {
+      participants: ['1번 참가자', '2번 참가자', '3번 참가자', '4번 참가자'],
+      outcomes: ['설거지 당번 🧼', '청소 당번 🧹', '간식 사오기 🍪', '휴식 (면제) 🛋️']
+    }
+  };
+
+  const PLAYER_COLORS = [
+    '#38bdf8', // Cyan
+    '#f43f5e', // Rose
+    '#10b981', // Emerald
+    '#facc15', // Amber
+    '#a855f7', // Purple
+    '#f97316', // Orange
+    '#06b6d4', // Teal
+    '#ec4899'  // Pink
+  ];
+
+  const EMOJIS = ['🦊', '🐼', '🐯', '🐰', '🦁', '🐨', '🐸', '🦄'];
+
+  let playerCount = 4;
+  let participantNames = ['참가자 1', '참가자 2', '참가자 3', '참가자 4'];
+  let outcomeNames = ['당첨 🍗', '꽝 💨', '커피 ☕', '생존 ✨'];
+  let bridges: { poleA: number; poleB: number; y: number }[] = [];
+  let isTracing = false;
+
+  // Web Audio Synth for footsteps
+  class StepAudio {
+    private ctx: AudioContext | null = null;
+    playStep(freq = 400) {
+      if (!this.ctx) {
+        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioCtx) this.ctx = new AudioCtx();
+      }
+      if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+      if (!this.ctx) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+      gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.06);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.06);
+    }
+    playWin() {
+      if (!this.ctx) return;
+      const notes = [440, 554.37, 659.25, 880];
+      notes.forEach((f, i) => {
+        const osc = this.ctx!.createOscillator();
+        const gain = this.ctx!.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(f, this.ctx!.currentTime + i * 0.09);
+        gain.gain.setValueAtTime(0.25, this.ctx!.currentTime + i * 0.09);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx!.currentTime + i * 0.09 + 0.25);
+        osc.connect(gain);
+        gain.connect(this.ctx!.destination);
+        osc.start(this.ctx!.currentTime + i * 0.09);
+        osc.stop(this.ctx!.currentTime + i * 0.09 + 0.25);
+      });
+    }
+  }
+
+  const audio = new StepAudio();
+
+  // DOM Elements
+  const participantsRow = document.getElementById('participants-row');
+  const outcomesRow = document.getElementById('outcomes-row');
+  const ladderSvg = document.getElementById('ladder-svg') as SVGSVGElement | null;
+  const ladderContainer = document.getElementById('ladder-container');
+  const countBtns = document.querySelectorAll('.count-btn');
+  const revealAllBtn = document.getElementById('reveal-all-btn');
+  const rerollBtn = document.getElementById('reroll-ladder-btn');
+  const resultModal = document.getElementById('result-modal');
+  const resultSummaryList = document.getElementById('result-summary-list');
+  const closeResultBtn = document.getElementById('close-result-btn');
+
+  function initLadder() {
+    // Generate random horizontal bridges
+    bridges = [];
+    const height = 380;
+    const numRows = 7; // Discrete rows of bridge opportunities
+    const rowSpacing = height / (numRows + 1);
+
+    for (let row = 1; row <= numRows; row++) {
+      const y = row * rowSpacing;
+      // Add random bridges without adjacent overlapping bridges
+      let p = 0;
+      while (p < playerCount - 1) {
+        if (Math.random() < 0.6) {
+          bridges.push({ poleA: p, poleB: p + 1, y });
+          p += 2; // Skip next to avoid 3-way conflict at same height
+        } else {
+          p += 1;
+        }
+      }
+    }
+
+    renderUI();
+    renderLadderSVG();
+  }
+
+  function renderUI() {
+    if (!participantsRow || !outcomesRow) return;
+
+    // Render Top Participants
+    participantsRow.innerHTML = '';
+    for (let i = 0; i < playerCount; i++) {
+      const color = PLAYER_COLORS[i % PLAYER_COLORS.length];
+      const emoji = EMOJIS[i % EMOJIS.length];
+      const name = participantNames[i] || `참가자 ${i + 1}`;
+
+      const card = document.createElement('div');
+      card.className = 'participant-card';
+      card.style.borderColor = `${color}40`;
+
+      card.innerHTML = `
+        <div class="participant-avatar" style="background: ${color}25; border: 2px solid ${color};">
+          ${emoji}
+        </div>
+        <input type="text" class="participant-name-input" data-idx="${i}" value="${name}" />
+        <button class="participant-trace-btn" data-idx="${i}">출발 ▶</button>
+      `;
+
+      card.querySelector('.participant-trace-btn')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        tracePlayer(i);
+      });
+
+      card.querySelector('.participant-name-input')?.addEventListener('input', (e) => {
+        participantNames[i] = (e.target as HTMLInputElement).value;
+      });
+
+      participantsRow.appendChild(card);
+    }
+
+    // Render Bottom Outcomes
+    outcomesRow.innerHTML = '';
+    for (let i = 0; i < playerCount; i++) {
+      const name = outcomeNames[i] || `결과 ${i + 1}`;
+      const card = document.createElement('div');
+      card.className = 'outcome-card';
+      card.id = `outcome-card-${i}`;
+
+      card.innerHTML = `
+        <input type="text" class="outcome-name-input" data-idx="${i}" value="${name}" />
+        <span class="outcome-winner-badge" id="outcome-badge-${i}"></span>
+      `;
+
+      card.querySelector('.outcome-name-input')?.addEventListener('input', (e) => {
+        outcomeNames[i] = (e.target as HTMLInputElement).value;
+      });
+
+      outcomesRow.appendChild(card);
+    }
+  }
+
+  function getPoleX(poleIdx: number, totalPoles: number, width: number): number {
+    const margin = width / (totalPoles * 2);
+    const spacing = (width - margin * 2) / (totalPoles - 1);
+    return margin + poleIdx * spacing;
+  }
+
+  function renderLadderSVG(activePaths: { points: { x: number; y: number }[]; color: string }[] = []) {
+    if (!ladderSvg || !ladderContainer) return;
+    const width = ladderContainer.clientWidth || 800;
+    const height = 380;
+    ladderSvg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+    let svgContent = '';
+
+    // Draw Vertical Poles
+    for (let i = 0; i < playerCount; i++) {
+      const x = getPoleX(i, playerCount, width);
+      const color = PLAYER_COLORS[i % PLAYER_COLORS.length];
+      svgContent += `
+        <line x1="${x}" y1="0" x2="${x}" y2="${height}" 
+              stroke="#334155" stroke-width="4" stroke-linecap="round" />
+      `;
+    }
+
+    // Draw Horizontal Bridges
+    for (const b of bridges) {
+      const x1 = getPoleX(b.poleA, playerCount, width);
+      const x2 = getPoleX(b.poleB, playerCount, width);
+      svgContent += `
+        <line x1="${x1}" y1="${b.y}" x2="${x2}" y2="${b.y}" 
+              stroke="#475569" stroke-width="4" stroke-linecap="round" />
+      `;
+    }
+
+    // Draw Active Traced Paths
+    for (const path of activePaths) {
+      if (path.points.length > 1) {
+        let d = `M ${path.points[0].x} ${path.points[0].y}`;
+        for (let j = 1; j < path.points.length; j++) {
+          d += ` L ${path.points[j].x} ${path.points[j].y}`;
+        }
+        svgContent += `
+          <path d="${d}" fill="none" stroke="${path.color}" stroke-width="6" 
+                stroke-linecap="round" stroke-linejoin="round"
+                filter="drop-shadow(0 0 8px ${path.color})" />
+        `;
+      }
+    }
+
+    ladderSvg.innerHTML = svgContent;
+  }
+
+  // Calculate full route path for a given start pole
+  function calculatePath(startPole: number, width: number, height: number): { x: number; y: number }[] {
+    const points: { x: number; y: number }[] = [];
+    let curPole = startPole;
+    let curY = 0;
+
+    points.push({ x: getPoleX(curPole, playerCount, width), y: curY });
+
+    // Sort bridges by Y descending
+    const sortedBridges = [...bridges].sort((a, b) => a.y - b.y);
+
+    for (const b of sortedBridges) {
+      if (b.y > curY) {
+        if (b.poleA === curPole) {
+          // Move down to bridge
+          points.push({ x: getPoleX(curPole, playerCount, width), y: b.y });
+          // Cross bridge
+          curPole = b.poleB;
+          points.push({ x: getPoleX(curPole, playerCount, width), y: b.y });
+          curY = b.y;
+        } else if (b.poleB === curPole) {
+          // Move down to bridge
+          points.push({ x: getPoleX(curPole, playerCount, width), y: b.y });
+          // Cross bridge
+          curPole = b.poleA;
+          points.push({ x: getPoleX(curPole, playerCount, width), y: b.y });
+          curY = b.y;
+        }
+      }
+    }
+
+    // Move to bottom
+    points.push({ x: getPoleX(curPole, playerCount, width), y: height });
+    return points;
+  }
+
+  // Trace one player path with animated steps
+  function tracePlayer(playerIdx: number) {
+    if (isTracing || !ladderContainer) return;
+    isTracing = true;
+
+    const width = ladderContainer.clientWidth || 800;
+    const height = 380;
+    const fullPoints = calculatePath(playerIdx, width, height);
+    const color = PLAYER_COLORS[playerIdx % PLAYER_COLORS.length];
+
+    let currentStep = 0;
+    const animatedPoints: { x: number; y: number }[] = [fullPoints[0]];
+
+    const interval = setInterval(() => {
+      currentStep++;
+      if (currentStep < fullPoints.length) {
+        animatedPoints.push(fullPoints[currentStep]);
+        audio.playStep(450 + currentStep * 30);
+        renderLadderSVG([{ points: animatedPoints, color }]);
+      } else {
+        clearInterval(interval);
+        isTracing = false;
+        audio.playWin();
+
+        // Reveal bottom outcome
+        const lastX = fullPoints[fullPoints.length - 1].x;
+        // Determine which pole lastX corresponds to
+        let destPole = 0;
+        let minDist = Infinity;
+        for (let p = 0; p < playerCount; p++) {
+          const px = getPoleX(p, playerCount, width);
+          const d = Math.abs(px - lastX);
+          if (d < minDist) {
+            minDist = d;
+            destPole = p;
+          }
+        }
+
+        const outcomeCard = document.getElementById(`outcome-card-${destPole}`);
+        if (outcomeCard) {
+          outcomeCard.classList.add('revealed');
+          const badge = document.getElementById(`outcome-badge-${destPole}`);
+          if (badge) badge.textContent = `👑 ${participantNames[playerIdx]}`;
+        }
+      }
+    }, 120);
+  }
+
+  // Reveal all paths at once
+  function revealAll() {
+    if (!ladderContainer) return;
+    const width = ladderContainer.clientWidth || 800;
+    const height = 380;
+
+    const allPaths: { points: { x: number; y: number }[]; color: string }[] = [];
+    const results: { player: string; outcome: string; color: string; emoji: string }[] = [];
+
+    for (let p = 0; p < playerCount; p++) {
+      const color = PLAYER_COLORS[p % PLAYER_COLORS.length];
+      const emoji = EMOJIS[p % EMOJIS.length];
+      const points = calculatePath(p, width, height);
+      allPaths.push({ points, color });
+
+      const lastX = points[points.length - 1].x;
+      let destPole = 0;
+      let minDist = Infinity;
+      for (let d = 0; d < playerCount; d++) {
+        const px = getPoleX(d, playerCount, width);
+        const dist = Math.abs(px - lastX);
+        if (dist < minDist) {
+          minDist = dist;
+          destPole = d;
+        }
+      }
+
+      results.push({
+        player: participantNames[p],
+        outcome: outcomeNames[destPole],
+        color,
+        emoji
+      });
+
+      const outcomeCard = document.getElementById(`outcome-card-${destPole}`);
+      if (outcomeCard) {
+        outcomeCard.classList.add('revealed');
+        const badge = document.getElementById(`outcome-badge-${destPole}`);
+        if (badge) badge.textContent = participantNames[p];
+      }
+    }
+
+    renderLadderSVG(allPaths);
+    audio.playWin();
+
+    // Show Results Modal
+    if (resultSummaryList && resultModal) {
+      resultSummaryList.innerHTML = results.map(r => `
+        <div class="result-row">
+          <span class="result-p-name" style="color: ${r.color};">${r.emoji} ${r.player}</span>
+          <span class="result-arrow">➔</span>
+          <span class="result-dest">${r.outcome}</span>
+        </div>
+      `).join('');
+      resultModal.classList.remove('hidden');
+    }
+  }
+
+  // Count buttons
+  countBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      countBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      playerCount = parseInt(btn.getAttribute('data-count') || '4', 10);
+      initLadder();
+    });
+  });
+
+  // Presets
+  document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.getAttribute('data-preset') || 'coffee';
+      const preset = PRESETS[key];
+      if (preset) {
+        playerCount = preset.participants.length;
+        participantNames = [...preset.participants];
+        outcomeNames = [...preset.outcomes];
+        countBtns.forEach(b => {
+          b.classList.toggle('active', b.getAttribute('data-count') === String(playerCount));
+        });
+        initLadder();
+      }
+    });
+  });
+
+  revealAllBtn?.addEventListener('click', revealAll);
+  rerollBtn?.addEventListener('click', initLadder);
+  closeResultBtn?.addEventListener('click', () => resultModal?.classList.add('hidden'));
+
+  // Window resize re-draw
+  window.addEventListener('resize', () => renderLadderSVG());
+
+  // Launch
+  initLadder();
+</script>

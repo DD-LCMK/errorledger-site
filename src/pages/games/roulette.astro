@@ -1,0 +1,1011 @@
+---
+import GameLayout from '../../layouts/GameLayout.astro';
+import { getEntry } from 'astro:content';
+
+const gameEntry = await getEntry('games', 'roulette');
+const data = gameEntry?.data || {
+  title: 'Streamer Roulette',
+  tagline: 'Customizable Wheel of Fortune for Live Streams & Raffles',
+  description: 'A broadcast-ready, customizable spinning wheel roulette designed for streamers, content creators, and party games.',
+  icon: '🎡',
+  category: 'arcade',
+  badge: '🔴 Stream Tool',
+  players: '1-100+ (Party / Chat)',
+  playTime: '30s',
+  controls: [
+    'Click SPIN or press Spacebar to spin the wheel',
+    'Type or paste names in the text box (one per line or comma-separated)',
+    'Use quick preset buttons (Food, Penalties, Giveaways) for instant setup',
+    'Click Fullscreen / Stream Mode for a clean OBS broadcast view'
+  ],
+  rules: [
+    'Each item is assigned a vibrant wedge on the wheel.',
+    'The wheel spins with randomized physical torque and realistic friction deceleration.',
+    'The top needle points to the winning slice with confetti and fanfare!'
+  ],
+  faqItems: [
+    {
+      q: 'How do I use this on OBS Studio for Twitch, Chzzk, or YouTube?',
+      a: 'Add a Browser Source in OBS pointing to this page, or capture the window and click the Fullscreen / Stream Mode button for a clean broadcast overlay.'
+    },
+    {
+      q: 'Can I remove the winning option after it is selected?',
+      a: 'Yes! Check the "Eliminate Winner" option in the control panel to automatically remove selected winners for multi-round giveaways.'
+    }
+  ]
+};
+---
+
+<GameLayout
+  title={data.title}
+  description={data.description}
+  tagline={data.tagline}
+  icon={data.icon}
+  category={data.category}
+  badge={data.badge}
+  players={data.players}
+  playTime={data.playTime}
+  controls={data.controls}
+  rules={data.rules}
+  faqItems={data.faqItems}
+>
+  <div class="roulette-app-root" id="roulette-root">
+    
+    <!-- Left / Center: The Wheel Stage -->
+    <div class="wheel-stage-container">
+      <div class="wheel-title-bar" id="display-title">오늘의 방송 룰렛</div>
+
+      <div class="wheel-canvas-wrapper" id="wheel-wrapper">
+        <!-- Physical Pointer Needle -->
+        <div class="roulette-pointer" id="wheel-pointer">
+          <div class="pointer-arrow"></div>
+        </div>
+
+        <!-- HTML5 High-DPI Canvas -->
+        <canvas id="roulette-canvas" width="600" height="600"></canvas>
+
+        <!-- Center Glowing Hub & Spin Button -->
+        <button id="center-spin-btn" class="center-hub-btn" title="Click or press Space to Spin">
+          <span class="hub-label">SPIN</span>
+        </button>
+      </div>
+
+      <!-- Quick Action Controls -->
+      <div class="wheel-action-bar">
+        <button id="main-spin-btn" class="roulette-btn spin-btn-main">
+          <span>🎯 SPIN WHEEL (Space)</span>
+        </button>
+        <button id="shuffle-btn" class="roulette-btn btn-secondary">
+          <span>🔀 Shuffle Items</span>
+        </button>
+        <button id="stream-mode-btn" class="roulette-btn btn-stream" title="Toggle Clean Stream Overlay Mode">
+          <span>📺 Stream Overlay</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right: Streamer Control Desk -->
+    <div class="streamer-sidebar" id="streamer-sidebar">
+      <div class="sidebar-header">
+        <span class="panel-icon">⚙️</span>
+        <h3>Streamer Setup Desk</h3>
+      </div>
+
+      <!-- Title Input -->
+      <div class="config-group">
+        <label for="input-title">Raffle / Bet Title</label>
+        <input type="text" id="input-title" value="오늘의 방송 룰렛" placeholder="룰렛 제목을 입력하세요" />
+      </div>
+
+      <!-- Presets Row -->
+      <div class="config-group">
+        <label>Quick Stream Presets</label>
+        <div class="presets-grid">
+          <button class="preset-pill" data-preset="food">🍗 야식 메뉴</button>
+          <button class="preset-pill" data-preset="penalty">⚡ 벌칙 룰렛</button>
+          <button class="preset-pill" data-preset="event">🎁 치킨/이벤트</button>
+          <button class="preset-pill" data-preset="game">🎮 게임 뽑기</button>
+        </div>
+      </div>
+
+      <!-- Items Textarea -->
+      <div class="config-group">
+        <div class="label-with-meta">
+          <label for="input-items">Items / Names List</label>
+          <span class="items-count-badge" id="items-count-badge">8 items</span>
+        </div>
+        <textarea id="input-items" rows="7" placeholder="Enter options separated by lines or commas...">치킨
+피자
+햄버거
+족발
+엽기떡볶이
+마라탕
+삼겹살
+라면</textarea>
+      </div>
+
+      <!-- Options Toggles -->
+      <div class="config-group toggles-row">
+        <label class="checkbox-label">
+          <input type="checkbox" id="chk-eliminate" />
+          <span>Eliminate winner on finish</span>
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="chk-sound" checked />
+          <span>Sound effects (Ticks & Win)</span>
+        </label>
+      </div>
+
+      <!-- Recent Winners History -->
+      <div class="config-group history-group">
+        <div class="label-with-meta">
+          <label>Winners History</label>
+          <button id="clear-history-btn" class="mini-clear-btn">Clear</button>
+        </div>
+        <div class="winners-history-list" id="winners-history">
+          <span class="empty-history-text">No winners yet. Spin the wheel!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Celebration Modal / Banner Overlay -->
+    <div class="winner-celebration-overlay hidden" id="winner-modal">
+      <div class="celebration-card">
+        <div class="trophy-bounce">👑</div>
+        <div class="congrats-tag">WINNER SELECTED!</div>
+        <div class="winner-item-name" id="winner-name-display">치킨</div>
+        <button id="modal-confirm-btn" class="winner-confirm-btn">Confirm (Close)</button>
+      </div>
+    </div>
+
+    <!-- Particle Confetti Canvas Layer -->
+    <canvas id="confetti-canvas" class="confetti-layer"></canvas>
+  </div>
+
+  <div slot="guide">
+    <h2>How to Use Streamer Roulette for Live Broadcasts</h2>
+    <p>
+      The <strong>Streamer Roulette</strong> is built specifically for live content creators on <em>Chzzk (치지직), Twitch, YouTube, and AfreecaTV</em>.
+    </p>
+
+    <h3>1. Quick Stream Presets</h3>
+    <p>
+      Click any of the preset buttons to instantly populate the wheel with popular streaming formats like late-night meal choices (야식 메뉴), streamer penalties (벌칙 룰렛), or viewer gift events (치킨 기프티콘).
+    </p>
+
+    <h3>2. OBS Browser Source Setup</h3>
+    <p>
+      To capture the roulette inside OBS Studio without window borders, click the <strong>Stream Overlay</strong> button or add this URL as an OBS Browser Source with a width of 1280 and height of 720.
+    </p>
+  </div>
+</GameLayout>
+
+<style>
+  .roulette-app-root {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 1.5rem;
+    background: #090d16;
+    border-radius: 16px;
+    padding: 1.5rem;
+    min-height: 640px;
+    user-select: none;
+  }
+
+  /* Wheel Stage */
+  .wheel-stage-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.5rem 1rem;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  .wheel-title-bar {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #f8fafc;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.25rem;
+    text-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+    text-align: center;
+  }
+
+  .wheel-canvas-wrapper {
+    position: relative;
+    width: 460px;
+    height: 460px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #roulette-canvas {
+    width: 440px;
+    height: 440px;
+    border-radius: 50%;
+    box-shadow: 0 0 35px rgba(0, 0, 0, 0.7), 0 0 20px rgba(168, 85, 247, 0.25);
+  }
+
+  /* Top Needle Pointer */
+  .roulette-pointer {
+    position: absolute;
+    top: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 25;
+    pointer-events: none;
+    transition: transform 0.08s ease-out;
+  }
+
+  .pointer-arrow {
+    width: 0;
+    height: 0;
+    border-left: 18px solid transparent;
+    border-right: 18px solid transparent;
+    border-top: 36px solid #ef4444;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 10px #ef4444);
+  }
+
+  .pointer-tick {
+    transform: translateX(-50%) rotate(-15deg);
+  }
+
+  /* Center Hub Button */
+  .center-hub-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #f8fafc 0%, #0f172a 100%);
+    border: 4px solid #ffffff;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8), 0 0 15px rgba(56, 189, 248, 0.6);
+    color: #020617;
+    cursor: pointer;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
+  }
+
+  .center-hub-btn:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.9);
+  }
+
+  .hub-label {
+    font-size: 0.88rem;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+  }
+
+  /* Action Bar */
+  .wheel-action-bar {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .roulette-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .spin-btn-main {
+    background: linear-gradient(135deg, #a855f7 0%, #38bdf8 100%);
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+  }
+
+  .spin-btn-main:hover {
+    transform: scale(1.04);
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.6);
+  }
+
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+  }
+
+  .btn-stream {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+  }
+
+  .btn-stream:hover {
+    background: rgba(56, 189, 248, 0.25);
+  }
+
+  /* Streamer Sidebar */
+  .streamer-sidebar {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .sidebar-header h3 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0;
+  }
+
+  .config-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .config-group label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #94a3b8;
+    letter-spacing: 0.05em;
+  }
+
+  .label-with-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .items-count-badge {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+  }
+
+  #input-title, #input-items {
+    background: #090d16;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    color: #f8fafc;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.88rem;
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.15s ease;
+  }
+
+  #input-title:focus, #input-items:focus {
+    border-color: #38bdf8;
+  }
+
+  #input-items {
+    resize: vertical;
+    line-height: 1.5;
+  }
+
+  /* Presets Grid */
+  .presets-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+  }
+
+  .preset-pill {
+    background: rgba(168, 85, 247, 0.12);
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    color: #e9d5ff;
+    padding: 0.4rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: center;
+  }
+
+  .preset-pill:hover {
+    background: rgba(168, 85, 247, 0.25);
+    color: #ffffff;
+  }
+
+  .toggles-row {
+    gap: 0.6rem;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem !important;
+    color: #cbd5e1 !important;
+    cursor: pointer;
+  }
+
+  /* Winners History */
+  .mini-clear-btn {
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    font-size: 0.7rem;
+  }
+
+  .mini-clear-btn:hover {
+    color: #e2e8f0;
+  }
+
+  .winners-history-list {
+    background: #090d16;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 0.5rem;
+    max-height: 110px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .history-item {
+    font-size: 0.78rem;
+    color: #cbd5e1;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .history-item .h-time {
+    color: #64748b;
+    font-size: 0.68rem;
+  }
+
+  .empty-history-text {
+    font-size: 0.72rem;
+    color: #475569;
+    font-style: italic;
+    text-align: center;
+    padding: 0.4rem 0;
+  }
+
+  /* Celebration Modal */
+  .winner-celebration-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(9, 13, 22, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+
+  .celebration-card {
+    background: #0f172a;
+    border: 2px solid rgba(234, 179, 8, 0.6);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 0 50px rgba(234, 179, 8, 0.4);
+    animation: popModal 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes popModal {
+    0% { transform: scale(0.6); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .trophy-bounce {
+    font-size: 3.8rem;
+    margin-bottom: 0.5rem;
+    animation: bounce 1s infinite alternate;
+  }
+
+  @keyframes bounce {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-8px); }
+  }
+
+  .congrats-tag {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #facc15;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+  }
+
+  .winner-item-name {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    word-break: break-word;
+    text-shadow: 0 0 20px rgba(250, 204, 21, 0.6);
+  }
+
+  .winner-confirm-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #facc15 0%, #f97316 100%);
+    color: #020617;
+    font-size: 1.05rem;
+    font-weight: 900;
+    padding: 0.75rem;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+  }
+
+  /* Confetti Layer */
+  .confetti-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 90;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  @media (max-width: 900px) {
+    .roulette-app-root {
+      grid-template-columns: 1fr;
+    }
+    .wheel-canvas-wrapper {
+      width: 340px;
+      height: 340px;
+    }
+    #roulette-canvas {
+      width: 330px;
+      height: 330px;
+    }
+  }
+</style>
+
+<script>
+  // Presets Data
+  const PRESETS: Record<string, { title: string; items: string[] }> = {
+    food: {
+      title: '🍗 야식 / 배달 메뉴 룰렛',
+      items: ['치킨', '피자', '햄버거', '족발/보쌈', '엽기떡볶이', '마라탕', '삼겹살 구이', '라면/분식', '초밥/회', '샐러드(양심)']
+    },
+    penalty: {
+      title: '⚡ 스트리머 벌칙 룰렛',
+      items: ['애교 3종 세트', '팔굽혀펴기 20회', '노방종 +1시간 추가', '노래 한 곡 완곡', '물 500ml 원샷', '영도 10분 금지', '시청자 소원권 1개', '벌칙 패스권 (럭키!)']
+    },
+    event: {
+      title: '🎁 시청자 치킨/기프티콘 추첨',
+      items: ['BBQ 황금올리브 치킨', '배민 1만원권', '스타벅스 아메리카노', '싸이버거 세트', '꽝 (다음 기회에)', '꽝 (아쉬워요)', '스타벅스 디저트 세트', '꽝 (재도전!)']
+    },
+    game: {
+      title: '🎮 다음 할 게임 뽑기',
+      items: ['리그 오브 레전드', '발로란트', '배틀그라운드', '스팀 신작 탐방', '공포 게임 (심야)', '종합 똥게임 챌린지', '시청자 참여 멀티', 'just chatting']
+    }
+  };
+
+  // Color Palette for Slices
+  const SLICE_COLORS = [
+    '#ec4899', '#8b5cf6', '#3b82f6', '#06b6d4',
+    '#10b981', '#84cc16', '#eab308', '#f97316',
+    '#ef4444', '#a855f7', '#14b8a6', '#6366f1'
+  ];
+
+  // Web Audio Procedural Sound Synthesizer
+  class SoundFX {
+    private ctx: AudioContext | null = null;
+    public enabled: boolean = true;
+
+    private init() {
+      if (!this.ctx) {
+        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioCtx) this.ctx = new AudioCtx();
+      }
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+    }
+
+    playTick() {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(600, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(120, this.ctx.currentTime + 0.04);
+      gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.04);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.04);
+    }
+
+    playWinFanfare() {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      notes.forEach((freq, idx) => {
+        const osc = this.ctx!.createOscillator();
+        const gain = this.ctx!.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, this.ctx!.currentTime + idx * 0.1);
+        gain.gain.setValueAtTime(0.3, this.ctx!.currentTime + idx * 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx!.currentTime + idx * 0.1 + 0.35);
+        osc.connect(gain);
+        gain.connect(this.ctx!.destination);
+        osc.start(this.ctx!.currentTime + idx * 0.1);
+        osc.stop(this.ctx!.currentTime + idx * 0.1 + 0.35);
+      });
+    }
+  }
+
+  const sfx = new SoundFX();
+
+  // Particle Confetti Engine
+  class ConfettiEngine {
+    private canvas: HTMLCanvasElement;
+    private ctx: CanvasRenderingContext2D | null;
+    private particles: { x: number; y: number; vx: number; vy: number; color: string; size: number; rot: number; vrot: number }[] = [];
+    private running: boolean = false;
+
+    constructor(canvas: HTMLCanvasElement) {
+      this.canvas = canvas;
+      this.ctx = canvas.getContext('2d');
+    }
+
+    burst() {
+      this.canvas.width = this.canvas.offsetWidth;
+      this.canvas.height = this.canvas.offsetHeight;
+      this.particles = [];
+      const colors = ['#facc15', '#ec4899', '#38bdf8', '#a855f7', '#10b981', '#f97316'];
+      for (let i = 0; i < 90; i++) {
+        this.particles.push({
+          x: this.canvas.width / 2,
+          y: this.canvas.height / 2,
+          vx: (Math.random() - 0.5) * 14,
+          vy: (Math.random() - 0.5) * 14 - 3,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          size: Math.random() * 8 + 4,
+          rot: Math.random() * Math.PI,
+          vrot: (Math.random() - 0.5) * 0.2
+        });
+      }
+      this.running = true;
+      this.loop();
+    }
+
+    private loop = () => {
+      if (!this.ctx || !this.running) return;
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      let alive = 0;
+      for (const p of this.particles) {
+        p.vy += 0.3; // gravity
+        p.x += p.vx;
+        p.y += p.vy;
+        p.rot += p.vrot;
+
+        if (p.y < this.canvas.height) {
+          alive++;
+          this.ctx.save();
+          this.ctx.translate(p.x, p.y);
+          this.ctx.rotate(p.rot);
+          this.ctx.fillStyle = p.color;
+          this.ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+          this.ctx.restore();
+        }
+      }
+
+      if (alive > 0) {
+        requestAnimationFrame(this.loop);
+      } else {
+        this.running = false;
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      }
+    };
+  }
+
+  // DOM Elements
+  const canvas = document.getElementById('roulette-canvas') as HTMLCanvasElement;
+  const ctx = canvas?.getContext('2d');
+  const pointerElem = document.getElementById('wheel-pointer');
+  const confettiCanvas = document.getElementById('confetti-canvas') as HTMLCanvasElement;
+  const confetti = new ConfettiEngine(confettiCanvas);
+
+  const titleInput = document.getElementById('input-title') as HTMLInputElement;
+  const itemsTextarea = document.getElementById('input-items') as HTMLTextAreaElement;
+  const displayTitle = document.getElementById('display-title');
+  const itemsCountBadge = document.getElementById('items-count-badge');
+  const chkEliminate = document.getElementById('chk-eliminate') as HTMLInputElement;
+  const chkSound = document.getElementById('chk-sound') as HTMLInputElement;
+
+  const mainSpinBtn = document.getElementById('main-spin-btn');
+  const centerSpinBtn = document.getElementById('center-spin-btn');
+  const shuffleBtn = document.getElementById('shuffle-btn');
+  const streamModeBtn = document.getElementById('stream-mode-btn');
+
+  const winnerModal = document.getElementById('winner-modal');
+  const winnerNameDisplay = document.getElementById('winner-name-display');
+  const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+  const winnersHistory = document.getElementById('winners-history');
+  const clearHistoryBtn = document.getElementById('clear-history-btn');
+
+  let items: string[] = [];
+  let currentAngle = 0; // In radians
+  let isSpinning = false;
+  let lastTickedSlice = -1;
+
+  function parseItems(): string[] {
+    if (!itemsTextarea) return [];
+    return itemsTextarea.value
+      .split(/[\r\n,]+/)
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
+  }
+
+  function syncItems() {
+    items = parseItems();
+    if (itemsCountBadge) itemsCountBadge.textContent = `${items.length} items`;
+    drawWheel();
+  }
+
+  function drawWheel() {
+    if (!ctx) return;
+    const width = canvas.width;
+    const height = canvas.height;
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const radius = width / 2 - 15;
+
+    ctx.clearRect(0, 0, width, height);
+
+    if (items.length === 0) {
+      // Empty wheel state
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      ctx.fillStyle = '#1e293b';
+      ctx.fill();
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 6;
+      ctx.stroke();
+
+      ctx.fillStyle = '#64748b';
+      ctx.font = 'bold 20px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('옵션을 입력해주세요', centerX, centerY);
+      return;
+    }
+
+    const sliceAngle = (Math.PI * 2) / items.length;
+
+    // Outer Glow Ring
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius + 5, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(168, 85, 247, 0.4)';
+    ctx.lineWidth = 8;
+    ctx.stroke();
+
+    for (let i = 0; i < items.length; i++) {
+      const startAngle = currentAngle + i * sliceAngle;
+      const endAngle = startAngle + sliceAngle;
+      const color = SLICE_COLORS[i % SLICE_COLORS.length];
+
+      // Draw Slice
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Draw Slice Text
+      ctx.save();
+      ctx.translate(centerX, centerY);
+      ctx.rotate(startAngle + sliceAngle / 2);
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `bold ${items.length > 12 ? 14 : 17}px sans-serif`;
+      ctx.shadowColor = 'rgba(0,0,0,0.8)';
+      ctx.shadowBlur = 4;
+
+      // Truncate long text
+      let text = items[i];
+      if (text.length > 11) text = text.substring(0, 10) + '…';
+      ctx.fillText(text, radius - 25, 6);
+      ctx.restore();
+    }
+  }
+
+  function spinWheel() {
+    if (isSpinning || items.length < 2) return;
+    isSpinning = true;
+
+    // Random spin parameters
+    const minRounds = 5;
+    const maxRounds = 9;
+    const extraRounds = minRounds + Math.random() * (maxRounds - minRounds);
+    const targetDeltaAngle = extraRounds * Math.PI * 2 + Math.random() * Math.PI * 2;
+    const duration = 4800 + Math.random() * 800; // ms
+    const startTime = performance.now();
+    const startAngle = currentAngle;
+
+    function anim(now: number) {
+      const elapsed = now - startTime;
+      const progress = Math.min(1, elapsed / duration);
+
+      // Ease out cubic deceleration
+      const ease = 1 - Math.pow(1 - progress, 3.2);
+      currentAngle = startAngle + targetDeltaAngle * ease;
+
+      // Calculate current slice under top pointer (Pointer is at -PI/2 or 270 deg)
+      const normalized = ((currentAngle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+      const pointerAngle = (Math.PI * 1.5 - normalized + Math.PI * 2) % (Math.PI * 2);
+      const sliceAngle = (Math.PI * 2) / items.length;
+      const currentSlice = Math.floor(pointerAngle / sliceAngle);
+
+      // Play tick sound when slice boundary crossed
+      if (currentSlice !== lastTickedSlice) {
+        lastTickedSlice = currentSlice;
+        sfx.playTick();
+        if (pointerElem) {
+          pointerElem.classList.remove('pointer-tick');
+          void pointerElem.offsetWidth;
+          pointerElem.classList.add('pointer-tick');
+        }
+      }
+
+      drawWheel();
+
+      if (progress < 1) {
+        requestAnimationFrame(anim);
+      } else {
+        isSpinning = false;
+        const winnerIndex = currentSlice;
+        const winner = items[winnerIndex];
+        finishSpin(winner, winnerIndex);
+      }
+    }
+
+    requestAnimationFrame(anim);
+  }
+
+  function finishSpin(winner: string, index: number) {
+    sfx.playWinFanfare();
+    confetti.burst();
+
+    // Show winner banner
+    if (winnerNameDisplay) winnerNameDisplay.textContent = winner;
+    if (winnerModal) winnerModal.classList.remove('hidden');
+
+    // Add to history
+    addHistoryItem(winner);
+
+    // If eliminate winner checked
+    if (chkEliminate && chkEliminate.checked) {
+      items.splice(index, 1);
+      if (itemsTextarea) itemsTextarea.value = items.join('\n');
+      syncItems();
+    }
+  }
+
+  function addHistoryItem(winner: string) {
+    if (!winnersHistory) return;
+    const emptyHint = winnersHistory.querySelector('.empty-history-text');
+    if (emptyHint) emptyHint.remove();
+
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    const now = new Date();
+    const timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+    item.innerHTML = `<span>🏆 <strong>${winner}</strong></span><span class="h-time">${timeStr}</span>`;
+    winnersHistory.prepend(item);
+  }
+
+  // Preset Handlers
+  document.querySelectorAll('.preset-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = (btn as HTMLElement).dataset.preset || '';
+      const preset = PRESETS[key];
+      if (preset) {
+        if (titleInput) titleInput.value = preset.title;
+        if (displayTitle) displayTitle.textContent = preset.title;
+        if (itemsTextarea) itemsTextarea.value = preset.items.join('\n');
+        syncItems();
+      }
+    });
+  });
+
+  // Event Listeners
+  titleInput?.addEventListener('input', () => {
+    if (displayTitle) displayTitle.textContent = titleInput.value || '오늘의 룰렛';
+  });
+
+  itemsTextarea?.addEventListener('input', syncItems);
+
+  shuffleBtn?.addEventListener('click', () => {
+    items.sort(() => Math.random() - 0.5);
+    if (itemsTextarea) itemsTextarea.value = items.join('\n');
+    syncItems();
+  });
+
+  mainSpinBtn?.addEventListener('click', spinWheel);
+  centerSpinBtn?.addEventListener('click', spinWheel);
+
+  modalConfirmBtn?.addEventListener('click', () => {
+    if (winnerModal) winnerModal.classList.add('hidden');
+  });
+
+  clearHistoryBtn?.addEventListener('click', () => {
+    if (winnersHistory) winnersHistory.innerHTML = '<span class="empty-history-text">No winners yet. Spin the wheel!</span>';
+  });
+
+  chkSound?.addEventListener('change', () => {
+    sfx.enabled = chkSound.checked;
+  });
+
+  // Stream Overlay Mode Toggle
+  const sidebar = document.getElementById('streamer-sidebar');
+  streamModeBtn?.addEventListener('click', () => {
+    if (sidebar) {
+      sidebar.classList.toggle('hidden');
+      streamModeBtn.classList.toggle('btn-secondary');
+    }
+  });
+
+  // Spacebar to Spin
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && document.activeElement !== itemsTextarea && document.activeElement !== titleInput) {
+      e.preventDefault();
+      if (!winnerModal?.classList.contains('hidden')) {
+        winnerModal?.classList.add('hidden');
+      } else {
+        spinWheel();
+      }
+    }
+  });
+
+  // Initial setup
+  syncItems();
+</script>
