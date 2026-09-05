@@ -5,13 +5,10 @@
  */
 
 :root {
-	--accent: #2337ff;
-	--accent-dark: #000d8a;
-	--black: 15, 18, 25;
+	--accent: #38bdf8;
+	--accent-dark: #0284c7;
 	--gray: 96, 115, 159;
-	--gray-light: 229, 233, 240;
 	--gray-dark: 34, 41, 57;
-	--gray-gradient: rgba(var(--gray-light), 50%), #fff;
 	--box-shadow:
 		0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%),
 		0 16px 32px rgba(var(--gray), 33%);
@@ -21,7 +18,7 @@ html {
 	min-height: 100%;
 }
 
-/* --- LIGHT MODE CANVAS: Crisp Slate Dot Grid --- */
+/* --- Dark Mode Canvas (only mode) --- */
 body {
   font-family: var(--font-atkinson);
   margin: 0;
@@ -30,47 +27,14 @@ body {
   word-wrap: break-word;
   overflow-wrap: break-word;
   overflow-x: hidden;
-  color: #1e293b !important;
+  color: #cbd5e1;
   font-size: 20px;
   line-height: 1.7;
   min-height: 100vh;
 
-  background-color: #f8fafc !important;
-  background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px) !important;
-  background-size: 24px 24px !important;
-}
-
-html:not(.dark) body {
-  background-color: #f8fafc !important;
-  color: #1e293b !important;
-}
-
-html:not(.dark) h1,
-html:not(.dark) h2,
-html:not(.dark) h3,
-html:not(.dark) h4,
-html:not(.dark) h5,
-html:not(.dark) h6 {
-  color: #0f172a !important;
-}
-
-html:not(.dark) p,
-html:not(.dark) li,
-html:not(.dark) td {
-  color: #0f172a !important;
-}
-
-html:not(.dark) th {
-  color: #ffffff !important;
-  background-color: #0f172a !important;
-}
-
-/* --- DARK MODE CANVAS: High-Contrast Solid Slate Dots Fix --- */
-html.dark body {
-  background-color: #090d16 !important;
-  background-image: radial-gradient(#334155 1.5px, transparent 1.5px) !important;
-  background-size: 24px 24px !important;
-  color: #cbd5e1 !important;
+  background-color: #090d16;
+  background-image: radial-gradient(#334155 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
 }
 
 main {
@@ -86,7 +50,7 @@ h4,
 h5,
 h6 {
 	margin: 0 0 0.5rem 0;
-	color: #0f172a;
+	color: #f1f5f9;
 	line-height: 1.2;
 }
 h1 {
@@ -137,7 +101,8 @@ img {
 }
 code {
 	padding: 2px 5px;
-	background-color: rgb(var(--gray-light));
+	background-color: #1e293b;
+	color: #38bdf8;
 	border-radius: 2px;
 }
 pre {
@@ -149,7 +114,7 @@ pre > code {
 }
 hr {
 	border: none;
-	border-top: 1px solid rgb(var(--gray-light));
+	border-top: 1px solid #334155;
 }
 @media (max-width: 720px) {
 	body {
@@ -244,70 +209,43 @@ main {
 
 /* Pillar 1: AI Evolutions (Blue Glass) */
 .badge-pillar-ai {
-  background: rgba(59, 130, 246, 0.12);
-  color: #1d4ed8;
-  border: 1px solid rgba(59, 130, 246, 0.3);
-}
-html.dark .badge-pillar-ai {
   background: rgba(59, 130, 246, 0.22);
-  color: #93c5fd !important;
-  border-color: rgba(147, 197, 253, 0.35);
+  color: #93c5fd;
+  border: 1px solid rgba(147, 197, 253, 0.35);
 }
 
 /* Pillar 2: Architecture & Protocols (Emerald Glass) */
 .badge-pillar-arch {
-  background: rgba(16, 185, 129, 0.12);
-  color: #047857;
-  border: 1px solid rgba(16, 185, 129, 0.3);
-}
-html.dark .badge-pillar-arch {
   background: rgba(16, 185, 129, 0.22);
-  color: #6ee7b7 !important;
-  border-color: rgba(110, 231, 183, 0.35);
+  color: #6ee7b7;
+  border: 1px solid rgba(110, 231, 183, 0.35);
 }
 
 /* Pillar 3: System Failures & Incidents (Red Glass) */
 .badge-pillar-incident {
-  background: rgba(239, 68, 68, 0.12);
-  color: #b91c1c;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-}
-html.dark .badge-pillar-incident {
   background: rgba(239, 68, 68, 0.22);
-  color: #fca5a5 !important;
-  border-color: rgba(252, 165, 165, 0.35);
+  color: #fca5a5;
+  border: 1px solid rgba(252, 165, 165, 0.35);
 }
 
 /* Catch-All / Neutral Pillar (Slate Glass) */
 .badge-pillar-neutral {
-  background: rgba(100, 116, 139, 0.12);
-  color: #334155;
-  border: 1px solid rgba(100, 116, 139, 0.3);
-}
-html.dark .badge-pillar-neutral {
   background: rgba(51, 65, 85, 0.6);
-  color: #e2e8f0 !important;
-  border-color: rgba(148, 163, 184, 0.4);
+  color: #e2e8f0;
+  border: 1px solid rgba(148, 163, 184, 0.4);
 }
 
-/* --- KEY TAKEAWAYS / SRE BLOCKQUOTE CALLOUT BOX DARK MODE FIX --- */
+/* --- KEY TAKEAWAYS / SRE BLOCKQUOTE CALLOUT BOX --- */
 .prose blockquote {
-  background: rgba(241, 245, 249, 0.8) !important;
-  border: 1px solid #cbd5e1 !important;
-  border-left: 4px solid #ef4444 !important;
+  background: #1e293b !important;
+  border: 1px solid #334155 !important;
+  border-left: 4px solid #f87171 !important;
   border-radius: 8px !important;
   padding: 1.25rem 1.5rem !important;
   margin: 1.75rem 0 !important;
   font-style: normal !important;
-  color: #1e293b !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-}
-
-html.dark .prose blockquote {
-  background: #1e293b !important;
-  border: 1px solid #334155 !important;
-  border-left: 4px solid #f87171 !important;
   color: #f8fafc !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 .prose blockquote h3 {
@@ -315,30 +253,22 @@ html.dark .prose blockquote {
   margin-bottom: 0.75rem !important;
   font-size: 1.15rem !important;
   font-weight: 800 !important;
-  color: #ef4444 !important;
-}
-html.dark .prose blockquote h3 {
   color: #f87171 !important;
 }
 
 .prose blockquote p,
 .prose blockquote ul,
 .prose blockquote li {
-  color: #334155 !important;
+  color: #cbd5e1 !important;
   font-size: 0.98rem !important;
   line-height: 1.6 !important;
 }
-html.dark .prose blockquote p,
-html.dark .prose blockquote ul,
-html.dark .prose blockquote li {
-  color: #cbd5e1 !important;
-}
 
-html.dark .prose blockquote strong {
+.prose blockquote strong {
   color: #f8fafc !important;
 }
 
-html.dark .prose blockquote code {
+.prose blockquote code {
   background-color: #0f172a !important;
   color: #38bdf8 !important;
   border: 1px solid #334155 !important;
@@ -359,30 +289,22 @@ html.dark .prose blockquote code {
    INCIDENT SUMMARY BOX (E-E-A-T VISUAL AUTHORITY)
    ========================================================================== */
 .incident-summary-box {
-	background: #f1f5f9;
-	border: 1px solid #cbd5e1;
+	background: #1e293b;
+	border: 1px solid #334155;
 	border-left: 5px solid #3b82f6;
 	border-radius: 8px;
 	padding: 1.5rem;
 	margin: 2rem 0;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
-}
-html.dark .incident-summary-box {
-	background: #1e293b;
-	border-color: #334155;
-	border-left-color: #3b82f6;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 .incident-summary-title {
 	font-size: 1.1rem !important;
 	font-weight: 800 !important;
-	color: #0f172a !important;
+	color: #f8fafc !important;
 	margin-top: 0 !important;
 	margin-bottom: 1rem !important;
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
-}
-html.dark .incident-summary-title {
-	color: #f8fafc !important;
 }
 .incident-summary-box ul {
 	margin: 0 !important;
@@ -390,17 +312,11 @@ html.dark .incident-summary-title {
 }
 .incident-summary-box li {
 	margin-bottom: 0.75rem !important;
-	color: #334155 !important;
+	color: #cbd5e1 !important;
 	font-size: 0.95rem !important;
 	line-height: 1.5 !important;
 }
-html.dark .incident-summary-box li {
-	color: #cbd5e1 !important;
-}
 .incident-summary-box li strong {
-	color: #0f172a !important;
-}
-html.dark .incident-summary-box li strong {
 	color: #f8fafc !important;
 }
 

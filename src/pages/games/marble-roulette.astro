@@ -49,21 +49,9 @@ const data = gameEntry?.data || {
   controls={data.controls}
   rules={data.rules}
   faqItems={data.faqItems}
+  layoutMode="full"
 >
   <div class="marble-app-root" id="marble-root">
-
-    <!-- Top Mode Switcher Bar -->
-    <div class="roulette-mode-tabs">
-      <a href="/games/roulette" class="mode-tab">
-        <span class="tab-icon">🎡</span>
-        <span class="tab-label">원판 돌림판 룰렛</span>
-      </a>
-      <a href="/games/marble-roulette" class="mode-tab active">
-        <span class="tab-icon">🔮</span>
-        <span class="tab-label">구슬 레이스 룰렛</span>
-        <span class="tab-badge">인기</span>
-      </a>
-    </div>
 
     <!-- Main Game Container -->
     <div class="marble-main-layout">
@@ -95,7 +83,7 @@ const data = gameEntry?.data || {
 
             <!-- Minimap Strip -->
             <div class="minimap-container" id="minimap-container" title="코스 전체 미니맵">
-              <canvas id="minimap-canvas" width="36" height="260"></canvas>
+              <canvas id="minimap-canvas" width="36" height="320"></canvas>
             </div>
           </div>
 
@@ -181,7 +169,6 @@ const data = gameEntry?.data || {
             <button class="preset-chip" data-preset="chicken">🍗 치킨 내기 (꼴찌)</button>
             <button class="preset-chip" data-preset="lunch">🍽️ 점심 메뉴</button>
             <button class="preset-chip" data-preset="penalty">⚡ 벌칙 뽑기</button>
-            <button class="preset-chip" data-preset="streamer">🎮 스트리머 합방</button>
           </div>
         </div>
 
@@ -207,6 +194,20 @@ const data = gameEntry?.data || {
           <div class="finish-list" id="finish-list">
             <div class="finish-empty-hint">레이스가 시작되면 결승선을 통과한 순서가 기록됩니다.</div>
           </div>
+        </div>
+
+        <!-- Energy Gauge Toggle -->
+        <div class="panel-box">
+          <div class="panel-header">
+            <span class="panel-title">⚡ 에너지 게이지 설정</span>
+          </div>
+          <label class="energy-toggle-label">
+            <input type="checkbox" id="energy-gauge-toggle" checked />
+            <span class="energy-toggle-text">
+              <strong>충돌 폭발 효과 활성화</strong>
+              <span class="energy-toggle-desc">구슬이 충돌할수록 에너지가 차오르고, 가득 차면 주변 구슬을 밀어내는 충격파를 발사합니다.</span>
+            </span>
+          </label>
         </div>
 
       </div>
@@ -241,14 +242,16 @@ const data = gameEntry?.data || {
   <div slot="guide">
     <h2>방송용 마블 룰렛 (구슬 레이스) 완벽 가이드</h2>
     <p>
-      <strong>마블 룰렛</strong>은 실제 2D 물리 법칙을 바탕으로 구슬들이 경사로와 회전 장애물을 헤쳐나가는 실시간 구슬 추첨기입니다.
-      원판 룰렛과 달리 구슬들이 서로 부딪히며 밀치고, 장애물에 의해 극적인 역전이 발생하는 방송 콘텐츠에 최적화된 도구입니다.
+      <strong>마블 룰렛</strong>은 실제 2D 물리 법칙을 바탕으로 구슬들이 7,200px 초대형 롱코스를 질주하는 방송용 실시간 구슬 추첨기입니다.
+      단순히 먼저 떨어진 구슬이 이기는 것이 아니라, 트랙 곳곳의 <strong>역전의 스프링 바운서(Spring Bouncer)</strong>와 <strong>11개의 회전 스피너</strong>, <strong>도박의 갈림길</strong>을 통해 1등이 언제든 꼴찌로 뒤바뀌는 극강의 도파민을 제공합니다.
     </p>
     <ul>
-      <li><strong>💀 꼴찌 당첨 모드:</strong> 가장 마지막까지 살아남지 못하고 꼴찌로 들어온 구슬이 당첨되는 모드로, '커피 쏘기', '치킨 내기', '벌칙 뽑기' 방송에서 극강의 도파민을 제공합니다.</li>
-      <li><strong>🥇 1등 당첨 모드:</strong> 가장 먼저 결승선을 밟은 구슬이 우승하는 클래식 레이스 모드입니다.</li>
+      <li><strong>⚡ 역전의 스프링 바운서 (Comeback Bouncers):</strong> 최고 속도로 질주하는 선두 구슬이 바운서에 충돌하면 폭발적인 반발력으로 거꾸로 튕겨 올라가 후발 주자들과 뒤엉키게 됩니다!</li>
+      <li><strong>🔀 도박의 갈림길 (지름길 vs 안전 외곽로):</strong> 중앙의 고속 지름길은 빠르지만 출구에 리버스 함정이 도사리고 있어 언제든 판도가 뒤집힙니다.</li>
+      <li><strong>💀 꼴찌 당첨 모드:</strong> 가장 마지막까지 결승선을 넘지 못한 구슬이 당첨되는 모드로, 커피 쏘기·치킨 내기·벌칙 뽑기 방송에 제격입니다.</li>
+      <li><strong>🥇 1등 당첨 모드:</strong> 치열한 난투극 끝에 가장 먼저 골인한 구슬이 우승하는 클래식 레이스 모드입니다.</li>
       <li><strong>다중 구슬 배정 (* N):</strong> 이름 뒤에 <code>* 3</code> 또는 <code>* 5</code>를 적으면 해당 참가자에게 구슬이 여러 개 지급되어 확률을 조절할 수 있습니다.</li>
-      <li><strong>실시간 미니맵 & 카메라 워킹:</strong> 우측 미니맵을 통해 전체 코스에서의 구슬 분포를 볼 수 있으며, 카메라는 박진감 넘치는 선두(또는 꼴찌) 그룹을 실시간으로 추적합니다.</li>
+      <li><strong>실시간 미니맵 & 카메라 워킹:</strong> 우측 7,200px 전체 코스 미니맵을 통해 구슬 분포를 파악하고, 선두와 꼴찌의 명승부를 실시간으로 추적합니다.</li>
     </ul>
   </div>
 </GameLayout>
@@ -258,54 +261,10 @@ const data = gameEntry?.data || {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 1rem;
+    padding: 0.5rem 0.25rem;
     user-select: none;
-    gap: 1rem;
-  }
-
-  /* Mode Switcher Tabs */
-  .roulette-mode-tabs {
-    display: flex;
-    gap: 0.5rem;
-    background: #0f172a;
-    padding: 0.35rem;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-  }
-
-  .mode-tab {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 800;
-    color: #94a3b8;
-    text-decoration: none;
-    transition: all 0.15s ease;
-  }
-
-  .mode-tab:hover {
-    color: #f8fafc;
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .mode-tab.active {
-    background: #38bdf8;
-    color: #040813;
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
-  }
-
-  .tab-badge {
-    background: #ef4444;
-    color: #ffffff;
-    font-size: 0.65rem;
-    font-weight: 900;
-    padding: 0.1rem 0.35rem;
-    border-radius: 4px;
-    margin-left: 0.2rem;
+    gap: 0.75rem;
+    width: 100%;
   }
 
   /* Main Two-Column Layout */
@@ -415,7 +374,7 @@ const data = gameEntry?.data || {
     top: 12px;
     right: 12px;
     width: 36px;
-    height: 260px;
+    height: 320px;
     background: rgba(15, 23, 42, 0.85);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 6px;
@@ -853,6 +812,41 @@ const data = gameEntry?.data || {
   .hidden {
     display: none !important;
   }
+
+  .energy-toggle-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    cursor: pointer;
+    padding: 0.5rem 0.2rem;
+  }
+
+  .energy-toggle-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #f59e0b;
+    cursor: pointer;
+    margin-top: 0.15rem;
+    flex-shrink: 0;
+  }
+
+  .energy-toggle-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .energy-toggle-text strong {
+    font-size: 0.85rem;
+    color: #f8fafc;
+    font-weight: 700;
+  }
+
+  .energy-toggle-desc {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    line-height: 1.4;
+  }
 </style>
 
 <script>
@@ -904,6 +898,24 @@ const data = gameEntry?.data || {
       osc.stop(this.ctx.currentTime + 0.06);
     }
 
+    playSpring() {
+      if (!this.ctx) return;
+      this.resume();
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      const now = this.ctx.currentTime;
+      osc.frequency.setValueAtTime(180, now);
+      osc.frequency.exponentialRampToValueAtTime(850, now + 0.08);
+      osc.frequency.exponentialRampToValueAtTime(280, now + 0.22);
+      gain.gain.setValueAtTime(0.24, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(now + 0.22);
+    }
+
     playFinish() {
       if (!this.ctx) return;
       this.resume();
@@ -918,7 +930,7 @@ const data = gameEntry?.data || {
 
   const sfx = new MarbleAudio();
 
-  // Presets Data
+  // Presets Data (Streamer preset removed)
   const PRESETS: Record<string, { mode: string; names: string[] }> = {
     coffee: {
       mode: 'last',
@@ -935,10 +947,6 @@ const data = gameEntry?.data || {
     penalty: {
       mode: 'last',
       names: ['애교 3종', '노래 1곡', '딱밤 한 대', '팔굽혀펴기 20개', '벌칙 면제', '음료수 쏘기', '엉덩이 춤', '물 원샷']
-    },
-    streamer: {
-      mode: 'first',
-      names: ['침착맨', '풍월량', '우왁굳', '녹두로', '주호민', '기안84', '옥냥이', '김도']
     }
   };
 
@@ -959,12 +967,14 @@ const data = gameEntry?.data || {
     finished: boolean;
     finishTime: number;
     finishRank: number;
+    energy: number; // 0.0 to 1.0 (charges on collisions)
   }
 
   interface Pin {
     x: number;
     y: number;
     radius: number;
+    isBumper?: boolean;
   }
 
   interface Spinner {
@@ -975,40 +985,83 @@ const data = gameEntry?.data || {
     speed: number;
   }
 
+  interface Bouncer {
+    x: number;
+    y: number;
+    radius: number;
+    power: number;
+    label?: string;
+  }
+
   interface Segment {
     x1: number;
     y1: number;
     x2: number;
     y2: number;
+    type?: 'wall' | 'ramp' | 'guide';
   }
 
-  // Course Dimensions
+  interface ZoneMarker {
+    y: number;
+    title: string;
+    sub: string;
+  }
+
+  interface Shockwave {
+    x: number;
+    y: number;
+    radius: number;
+    maxRadius: number;
+    color: string;
+    alpha: number;
+  }
+
+  // Course Dimensions (Mega 7,200px track)
   const COURSE_WIDTH = 440;
-  const COURSE_HEIGHT = 2400;
-  const FINISH_LINE_Y = 2220;
+  const COURSE_HEIGHT = 7200;
+  const FINISH_LINE_Y = 6950;
+
+  const ZONE_MARKERS: ZoneMarker[] = [
+    { y: 260, title: 'ZONE 1 — 스타팅 핀 숲', sub: 'PLINKO FOREST FIELD' },
+    { y: 800, title: 'ZONE 2 — 1차 쿼드 스피너', sub: 'QUAD SPINNER GAUNTLET' },
+    { y: 1380, title: 'ZONE 3 — 1차 역전 스프링 트랩', sub: 'COMEBACK SPRING TRAP 1' },
+    { y: 1920, title: 'ZONE 4 — 6단 지그재그 슬로프', sub: 'SWITCHBACK RAMPS' },
+    { y: 2700, title: 'ZONE 5 — 소용돌이 퍼널 & 2차 스피너', sub: 'VORTEX CHUTE & SPINNERS' },
+    { y: 3420, title: 'ZONE 6 — 도박의 갈림길', sub: 'SPLIT-PATH GAMBLE (HIGH RISK CHUTE)' },
+    { y: 4160, title: 'ZONE 7 — 2차 역전 메가 볼텍스 & 킥백', sub: 'REVERSE VORTEX & KICKBACKS' },
+    { y: 4860, title: 'ZONE 8 — 메가 네온 범퍼 슬라럼', sub: 'NEON BUMPER FOREST' },
+    { y: 5560, title: 'ZONE 9 — 3차 트라이앵글 스피너', sub: 'TRIPLE SPINNER GAUNTLET' },
+    { y: 6150, title: 'ZONE 10 — S-커브 고속 와인딩', sub: 'S-CURVE WINDING SLOPES' },
+    { y: 6680, title: 'ZONE 11 — 최종 스퍼트 & 승부 결정 핀', sub: 'FINAL SPRINT & DECIDER PINS' },
+    { y: 6940, title: 'ZONE 12 — 결승선 & 피니시', sub: 'FINISH LINE' }
+  ];
 
   // Track Entities
   let pins: Pin[] = [];
   let spinners: Spinner[] = [];
+  let bouncers: Bouncer[] = [];
   let segments: Segment[] = [];
+  let shockwaves: Shockwave[] = [];
   let isGateOpen = false;
+  let energyGaugeEnabled = true;
 
   function buildCourse() {
     pins = [];
     spinners = [];
+    bouncers = [];
     segments = [];
 
-    // Outer Course Boundary Walls (Left and Right)
-    segments.push({ x1: 20, y1: 0, x2: 20, y2: COURSE_HEIGHT });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 0, x2: COURSE_WIDTH - 20, y2: COURSE_HEIGHT });
+    // Outer Boundary Walls (Left & Right)
+    segments.push({ x1: 20, y1: 0, x2: 20, y2: COURSE_HEIGHT, type: 'wall' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 0, x2: COURSE_WIDTH - 20, y2: COURSE_HEIGHT, type: 'wall' });
 
-    // 1. Starting Hopper (y: 60 - 180)
-    segments.push({ x1: 20, y1: 180, x2: 170, y2: 220 });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 180, x2: 270, y2: 220 });
+    // Starting Hopper (y: 60 - 220)
+    segments.push({ x1: 20, y1: 180, x2: 170, y2: 220, type: 'guide' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 180, x2: 270, y2: 220, type: 'guide' });
 
-    // 2. Plinko Pin Forest (y: 280 - 620)
-    for (let row = 0; row < 7; row++) {
-      const y = 290 + row * 48;
+    // ZONE 1: 스타팅 핀 숲 (y: 280 - 750) - 10 dense rows
+    for (let row = 0; row < 10; row++) {
+      const y = 290 + row * 44;
       const count = (row % 2 === 0) ? 6 : 7;
       const spacing = (COURSE_WIDTH - 90) / (count - 1);
       const startX = (row % 2 === 0) ? 45 : 30;
@@ -1016,36 +1069,138 @@ const data = gameEntry?.data || {
         pins.push({ x: startX + c * spacing, y, radius: 7 });
       }
     }
+    segments.push({ x1: 20, y1: 460, x2: 75, y2: 500, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 460, x2: COURSE_WIDTH - 75, y2: 500, type: 'ramp' });
+    segments.push({ x1: 20, y1: 680, x2: 70, y2: 710, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 680, x2: COURSE_WIDTH - 70, y2: 710, type: 'ramp' });
 
-    // 3. Double Rotating Spinners (y: 680, y: 840, y: 1000)
-    spinners.push({ x: 130, y: 730, length: 70, angle: 0, speed: 0.04 });
-    spinners.push({ x: 310, y: 730, length: 70, angle: Math.PI / 2, speed: -0.045 });
-    spinners.push({ x: 220, y: 920, length: 85, angle: 0, speed: 0.05 });
+    // ZONE 2: 1차 쿼드 스피너 가운틀릿 (y: 800 - 1300) - 4 Spinners
+    spinners.push({ x: 125, y: 840, length: 70, angle: 0, speed: 0.035 });
+    spinners.push({ x: 315, y: 840, length: 70, angle: Math.PI / 2, speed: -0.038 });
+    spinners.push({ x: 220, y: 1000, length: 85, angle: Math.PI / 4, speed: 0.04 });
+    spinners.push({ x: 220, y: 1160, length: 80, angle: -Math.PI / 3, speed: -0.042 });
 
-    // 4. Slanted Ramps / Switchbacks (y: 1060 - 1420)
-    segments.push({ x1: 20, y1: 1080, x2: 320, y2: 1140 });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 1240, x2: 120, y2: 1300 });
-    segments.push({ x1: 20, y1: 1400, x2: 320, y2: 1460 });
+    segments.push({ x1: 20, y1: 920, x2: 75, y2: 950, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 920, x2: COURSE_WIDTH - 75, y2: 950, type: 'ramp' });
+    segments.push({ x1: 20, y1: 1080, x2: 70, y2: 1100, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 1080, x2: COURSE_WIDTH - 70, y2: 1100, type: 'ramp' });
 
-    // 5. Funnel Bottleneck (y: 1540 - 1760)
-    segments.push({ x1: 20, y1: 1540, x2: 180, y2: 1680 });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 1540, x2: 260, y2: 1680 });
-    segments.push({ x1: 180, y1: 1680, x2: 180, y2: 1750 });
-    segments.push({ x1: 260, y1: 1680, x2: 260, y2: 1750 });
+    // ZONE 3: 1차 역전 구간 - 스프링 바운서 트랩 (y: 1350 - 1850)
+    segments.push({ x1: 20, y1: 1370, x2: 165, y2: 1470, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 1370, x2: 275, y2: 1470, type: 'ramp' });
 
-    // 6. Bumper Pins and Slalom before Finish (y: 1820 - 2150)
-    for (let r = 0; r < 5; r++) {
-      const y = 1840 + r * 65;
-      const count = (r % 2 === 0) ? 5 : 6;
+    // 2 Spring Bouncers right under the high-speed funnel drop!
+    bouncers.push({ x: 190, y: 1560, radius: 18, power: 7.5, label: 'KICKBACK' });
+    bouncers.push({ x: 250, y: 1560, radius: 18, power: 7.5, label: 'KICKBACK' });
+
+    // Side bypass ramps
+    segments.push({ x1: 20, y1: 1550, x2: 130, y2: 1630, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 1550, x2: 310, y2: 1630, type: 'ramp' });
+    segments.push({ x1: 130, y1: 1630, x2: 190, y2: 1750, type: 'ramp' });
+    segments.push({ x1: 310, y1: 1630, x2: 250, y2: 1750, type: 'ramp' });
+    pins.push({ x: 220, y: 1820, radius: 8, isBumper: true });
+
+    // ZONE 4: 6단 지그재그 슬로프 (y: 1900 - 2650)
+    segments.push({ x1: 20, y1: 1920, x2: 340, y2: 1980, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 2060, x2: 100, y2: 2120, type: 'ramp' });
+    segments.push({ x1: 20, y1: 2200, x2: 340, y2: 2260, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 2340, x2: 100, y2: 2400, type: 'ramp' });
+    segments.push({ x1: 20, y1: 2480, x2: 340, y2: 2540, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 2620, x2: 100, y2: 2680, type: 'ramp' });
+
+    pins.push({ x: 370, y: 2010, radius: 8, isBumper: true });
+    pins.push({ x: 70, y: 2150, radius: 8, isBumper: true });
+    pins.push({ x: 370, y: 2290, radius: 8, isBumper: true });
+    pins.push({ x: 70, y: 2430, radius: 8, isBumper: true });
+    pins.push({ x: 370, y: 2570, radius: 8, isBumper: true });
+
+    // ZONE 5: 소용돌이 퍼널 & 2차 스피너 (y: 2700 - 3350) - 3 Spinners
+    segments.push({ x1: 20, y1: 2730, x2: 180, y2: 2860, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 2730, x2: 260, y2: 2860, type: 'ramp' });
+    segments.push({ x1: 180, y1: 2860, x2: 180, y2: 2940, type: 'wall' });
+    segments.push({ x1: 260, y1: 2860, x2: 260, y2: 2940, type: 'wall' });
+
+    spinners.push({ x: 135, y: 3040, length: 75, angle: 0, speed: -0.038 });
+    spinners.push({ x: 305, y: 3040, length: 75, angle: Math.PI / 2, speed: 0.038 });
+    spinners.push({ x: 220, y: 3200, length: 90, angle: Math.PI / 4, speed: -0.042 });
+
+    segments.push({ x1: 20, y1: 3120, x2: 80, y2: 3150, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 3120, x2: COURSE_WIDTH - 80, y2: 3150, type: 'ramp' });
+
+    // ZONE 6: 도박의 갈림길 (y: 3400 - 4100) - Shortcut vs Outer Loop
+    segments.push({ x1: 220, y1: 3450, x2: 220, y2: 3860, type: 'wall' }); // Center divider
+    segments.push({ x1: 150, y1: 3450, x2: 150, y2: 3860, type: 'wall' }); // Left chute wall
+
+    // Left shortcut trap bouncer right at the high-speed exit
+    bouncers.push({ x: 185, y: 3910, radius: 18, power: 8.0, label: 'TRAP' });
+
+    // Right outer safe loop ramps
+    segments.push({ x1: 270, y1: 3500, x2: 390, y2: 3580, type: 'ramp' });
+    segments.push({ x1: 390, y1: 3640, x2: 250, y2: 3720, type: 'ramp' });
+    segments.push({ x1: 250, y1: 3780, x2: 380, y2: 3860, type: 'ramp' });
+
+    // Convergence funnel
+    segments.push({ x1: 20, y1: 3980, x2: 170, y2: 4080, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 3980, x2: 270, y2: 4080, type: 'ramp' });
+
+    // ZONE 7: 2차 역전 메가 볼텍스 & 킥백 (y: 4150 - 4800) - 2 Spinners + 2 Bouncers
+    spinners.push({ x: 140, y: 4260, length: 80, angle: 0, speed: -0.045 });
+    spinners.push({ x: 300, y: 4260, length: 80, angle: 0, speed: 0.045 });
+
+    bouncers.push({ x: 160, y: 4460, radius: 19, power: 7.8, label: 'KICKBACK' });
+    bouncers.push({ x: 280, y: 4460, radius: 19, power: 7.8, label: 'KICKBACK' });
+
+    segments.push({ x1: 20, y1: 4520, x2: 90, y2: 4580, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 4520, x2: COURSE_WIDTH - 90, y2: 4580, type: 'ramp' });
+    pins.push({ x: 220, y: 4700, radius: 8, isBumper: true });
+
+    // ZONE 8: 메가 네온 범퍼 슬라럼 (y: 4850 - 5500) - 8 rows
+    for (let r = 0; r < 8; r++) {
+      const y = 4900 + r * 65;
+      const count = (r % 2 === 0) ? 6 : 7;
       const spacing = (COURSE_WIDTH - 100) / (count - 1);
       const startX = (r % 2 === 0) ? 50 : 35;
       for (let c = 0; c < count; c++) {
-        pins.push({ x: startX + c * spacing, y, radius: 8 });
+        pins.push({ x: startX + c * spacing, y, radius: 8, isBumper: true });
       }
     }
+    segments.push({ x1: 20, y1: 5020, x2: 95, y2: 5060, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 5020, x2: COURSE_WIDTH - 95, y2: 5060, type: 'ramp' });
+    segments.push({ x1: 20, y1: 5240, x2: 95, y2: 5280, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 5240, x2: COURSE_WIDTH - 95, y2: 5280, type: 'ramp' });
 
-    // 7. Finish Catch Basin Floor (y: 2380)
-    segments.push({ x1: 20, y1: 2380, x2: COURSE_WIDTH - 20, y2: 2380 });
+    // ZONE 9: 3차 트라이앵글 스피너 (y: 5550 - 6100) - 2 Spinners + 1 Mega Bouncer
+    spinners.push({ x: 130, y: 5660, length: 75, angle: Math.PI / 4, speed: -0.04 });
+    spinners.push({ x: 310, y: 5660, length: 75, angle: -Math.PI / 4, speed: 0.04 });
+
+    bouncers.push({ x: 220, y: 5850, radius: 20, power: 8.2, label: 'MEGA SPRING' });
+
+    segments.push({ x1: 20, y1: 5800, x2: 130, y2: 5880, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 5800, x2: COURSE_WIDTH - 130, y2: 5880, type: 'ramp' });
+    segments.push({ x1: 130, y1: 5950, x2: 220, y2: 6040, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 5950, x2: COURSE_WIDTH - 110, y2: 6040, type: 'ramp' });
+
+    // ZONE 10: S-커브 고속 와인딩 (y: 6150 - 6600)
+    segments.push({ x1: 20, y1: 6180, x2: 330, y2: 6270, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 6340, x2: 110, y2: 6430, type: 'ramp' });
+    segments.push({ x1: 20, y1: 6500, x2: 310, y2: 6580, type: 'ramp' });
+
+    pins.push({ x: 360, y: 6300, radius: 8, isBumper: true });
+    pins.push({ x: 80, y: 6460, radius: 8, isBumper: true });
+
+    // ZONE 11: 최종 스퍼트 & 승부 결정 핀 (y: 6650 - 6920)
+    segments.push({ x1: 20, y1: 6680, x2: 140, y2: 6780, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 6680, x2: COURSE_WIDTH - 140, y2: 6780, type: 'ramp' });
+
+    // 5 Decider Bumper Pins right above the finish line
+    pins.push({ x: 170, y: 6860, radius: 7, isBumper: true });
+    pins.push({ x: 270, y: 6860, radius: 7, isBumper: true });
+    pins.push({ x: 220, y: 6890, radius: 8, isBumper: true });
+    pins.push({ x: 150, y: 6920, radius: 7, isBumper: true });
+    pins.push({ x: 290, y: 6920, radius: 7, isBumper: true });
+
+    // ZONE 12: Catch Basin Floor (y: 7150)
+    segments.push({ x1: 20, y1: 7150, x2: COURSE_WIDTH - 20, y2: 7150, type: 'wall' });
   }
 
   buildCourse();
@@ -1081,7 +1236,6 @@ const data = gameEntry?.data || {
   const countdownNumber = document.getElementById('countdown-number');
 
   const resultModal = document.getElementById('result-modal');
-  const modalWinnerIcon = document.getElementById('modal-winner-icon');
   const modalWinnerTitle = document.getElementById('modal-winner-title');
   const spotlightBadge = document.getElementById('spotlight-badge');
   const spotlightName = document.getElementById('spotlight-name');
@@ -1094,6 +1248,7 @@ const data = gameEntry?.data || {
   const customSettingsRow = document.getElementById('custom-settings-row');
   const multiCountInput = document.getElementById('multi-count-input') as HTMLInputElement;
   const customRankInput = document.getElementById('custom-rank-input') as HTMLInputElement;
+  const energyToggle = document.getElementById('energy-gauge-toggle') as HTMLInputElement | null;
 
   // Parse names and multipliers (e.g. "홍길동 * 3")
   function parseNamesList(): string[] {
@@ -1120,6 +1275,7 @@ const data = gameEntry?.data || {
   function spawnMarbles() {
     const names = parseNamesList();
     marbles = [];
+    shockwaves = [];
     finishRankCounter = 0;
     cameraY = 0;
     isGateOpen = false;
@@ -1145,13 +1301,14 @@ const data = gameEntry?.data || {
         name,
         x: startX + col * spacingX + jitterX,
         y: 65 + row * 22 + jitterY,
-        vx: (Math.random() - 0.5) * 0.5,
+        vx: (Math.random() - 0.5) * 0.4,
         vy: 0,
         radius: 9,
         color: MARBLE_COLORS[idx % MARBLE_COLORS.length],
         finished: false,
         finishTime: 0,
-        finishRank: 0
+        finishRank: 0,
+        energy: 0
       });
     });
 
@@ -1196,23 +1353,65 @@ const data = gameEntry?.data || {
     }, 700);
   }
 
-  // Physics Update
+  // Energy Shockwave Burst
+  function triggerShockwave(src: Marble) {
+    sfx.playPop();
+    shockwaves.push({
+      x: src.x,
+      y: src.y,
+      radius: src.radius,
+      maxRadius: 85,
+      color: src.color,
+      alpha: 1.0
+    });
+
+    // Radial push on nearby marbles
+    marbles.forEach(other => {
+      if (other.id === src.id || other.finished) return;
+      const dx = other.x - src.x;
+      const dy = other.y - src.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < 90 && dist > 0.01) {
+        const factor = (1 - dist / 90) * 4.2;
+        const nx = dx / dist;
+        const ny = dy / dist;
+        other.vx += nx * factor;
+        other.vy += ny * factor;
+      }
+    });
+
+    // Slight forward impulse for the triggered marble
+    src.vy += 1.2;
+  }
+
+  // Physics Update (Slower physics tuning for 7,200px track)
   function updatePhysics(dt: number) {
     if (!isRacing) return;
 
-    const gravity = 0.32 * timeScale;
-    const friction = Math.pow(0.992, timeScale);
-    const bounce = 0.55;
+    // Slower, more readable motion as requested
+    const gravity = 0.22 * timeScale;
+    const friction = Math.pow(0.988, timeScale);
+    const bounce = 0.45;
 
     // Spinners angular update
     spinners.forEach(sp => {
       sp.angle += sp.speed * timeScale;
     });
 
+    // Shockwaves animation update
+    for (let i = shockwaves.length - 1; i >= 0; i--) {
+      const sw = shockwaves[i];
+      sw.radius += 3.5 * timeScale;
+      sw.alpha -= 0.045 * timeScale;
+      if (sw.alpha <= 0 || sw.radius >= sw.maxRadius) {
+        shockwaves.splice(i, 1);
+      }
+    }
+
     // 1. Move Marbles
     marbles.forEach(m => {
-      if (m.finished && m.y > FINISH_LINE_Y + 120) {
-        // Gently slow down finished marbles in catch basin
+      if (m.finished && m.y > FINISH_LINE_Y + 100) {
+        // Gently settle finished marbles in catch basin
         m.vx *= 0.92;
         m.vy *= 0.92;
         m.x += m.vx;
@@ -1263,6 +1462,20 @@ const data = gameEntry?.data || {
           m1.vy -= p * ny * bounce;
           m2.vx += p * nx * bounce;
           m2.vy += p * ny * bounce;
+
+          // Energy charge from marble bump
+          if (energyGaugeEnabled) {
+            m1.energy = Math.min(1.0, m1.energy + 0.12);
+            m2.energy = Math.min(1.0, m2.energy + 0.12);
+            if (m1.energy >= 1.0) {
+              triggerShockwave(m1);
+              m1.energy = 0;
+            }
+            if (m2.energy >= 1.0) {
+              triggerShockwave(m2);
+              m2.energy = 0;
+            }
+          }
         }
       }
     }
@@ -1286,15 +1499,25 @@ const data = gameEntry?.data || {
           // Reflect velocity
           const dot = m.vx * nx + m.vy * ny;
           if (dot < 0) {
-            m.vx -= 1.8 * dot * nx;
-            m.vy -= 1.8 * dot * ny;
-            if (Math.random() < 0.15) sfx.playPop();
+            const reboundMultiplier = pin.isBumper ? 1.7 : 1.5;
+            m.vx -= reboundMultiplier * dot * nx;
+            m.vy -= reboundMultiplier * dot * ny;
+            if (Math.random() < 0.2) sfx.playPop();
+
+            // Energy charge from pin bounce
+            if (energyGaugeEnabled) {
+              m.energy = Math.min(1.0, m.energy + (pin.isBumper ? 0.15 : 0.08));
+              if (m.energy >= 1.0) {
+                triggerShockwave(m);
+                m.energy = 0;
+              }
+            }
           }
         }
       });
     });
 
-    // 4. Marble vs Rotating Spinners
+    // 4. Marble vs Rotating Spinners (11 Spinners)
     marbles.forEach(m => {
       spinners.forEach(sp => {
         const cos = Math.cos(sp.angle);
@@ -1304,7 +1527,6 @@ const data = gameEntry?.data || {
         const x2 = sp.x + cos * sp.length;
         const y2 = sp.y + sin * sp.length;
 
-        // Distance from point to line segment
         const dist = distToSegment(m.x, m.y, x1, y1, x2, y2);
         if (dist.d < m.radius + 6) {
           const nx = (m.x - dist.px) / (dist.d || 1);
@@ -1312,17 +1534,74 @@ const data = gameEntry?.data || {
           m.x = dist.px + nx * (m.radius + 6);
           m.y = dist.py + ny * (m.radius + 6);
 
-          // Add tangential force from spinner rotation
+          // Tangential force from spinner rotation
           const tanX = -sin * sp.speed * 60;
           const tanY = cos * sp.speed * 60;
-          m.vx = nx * 5 + tanX;
-          m.vy = ny * 5 + tanY;
+          m.vx = nx * 3.5 + tanX * 0.65;
+          m.vy = ny * 3.5 + tanY * 0.65;
           sfx.playPop();
+
+          // Energy charge from spinner paddle strike
+          if (energyGaugeEnabled) {
+            m.energy = Math.min(1.0, m.energy + 0.16);
+            if (m.energy >= 1.0) {
+              triggerShockwave(m);
+              m.energy = 0;
+            }
+          }
         }
       });
     });
 
-    // 5. Marble vs Course Segments (Walls & Slanted Ramps)
+    // 5. Marble vs Spring Bouncers (Comeback Reversal Mechanism!)
+    marbles.forEach(m => {
+      bouncers.forEach(bn => {
+        const dx = m.x - bn.x;
+        const dy = m.y - bn.y;
+        const dist = Math.hypot(dx, dy);
+        const minDist = m.radius + bn.radius;
+
+        if (dist < minDist && dist > 0.001) {
+          const nx = dx / dist;
+          const ny = dy / dist;
+          const overlap = minDist - dist;
+
+          m.x += nx * overlap;
+          m.y += ny * overlap;
+
+          // Impact speed check
+          const speed = Math.hypot(m.vx, m.vy);
+          sfx.playSpring();
+
+          // Add visual blast ring
+          shockwaves.push({
+            x: bn.x,
+            y: bn.y,
+            radius: bn.radius,
+            maxRadius: 75,
+            color: '#f43f5e',
+            alpha: 1.0
+          });
+
+          // Launch marble violently upward!
+          // The faster it approaches, the harder it gets catapulted back up!
+          const upwardKick = Math.max(bn.power, speed * 1.55);
+          m.vy = -upwardKick;
+          m.vx = nx * 3.5 + (Math.random() - 0.5) * 3;
+
+          // Energy charge bonus
+          if (energyGaugeEnabled) {
+            m.energy = Math.min(1.0, m.energy + 0.25);
+            if (m.energy >= 1.0) {
+              triggerShockwave(m);
+              m.energy = 0;
+            }
+          }
+        }
+      });
+    });
+
+    // 6. Marble vs Course Segments (Walls, Ramps, Guides)
     marbles.forEach(m => {
       // Gate segment at hopper bottom (open or closed)
       if (!isGateOpen) {
@@ -1343,8 +1622,8 @@ const data = gameEntry?.data || {
 
           const dot = m.vx * nx + m.vy * ny;
           if (dot < 0) {
-            m.vx -= 1.6 * dot * nx;
-            m.vy -= 1.6 * dot * ny;
+            m.vx -= 1.4 * dot * nx;
+            m.vy -= 1.4 * dot * ny;
           }
         }
       });
@@ -1378,10 +1657,9 @@ const data = gameEntry?.data || {
     let targetY = 0;
 
     if (winnerMode === 'last') {
-      // In 꼴찌 mode, after majority finish, focus on the trailing battle!
+      // In 꼴찌 mode, track trailing active battle
       const activeMarbles = marbles.filter(m => !m.finished);
       if (activeMarbles.length > 0) {
-        // Track the lowest active (leading among un-finished) or highest (straggler)
         const avgY = activeMarbles.reduce((acc, m) => acc + m.y, 0) / activeMarbles.length;
         targetY = avgY - 260;
       } else {
@@ -1441,15 +1719,53 @@ const data = gameEntry?.data || {
     ctx.save();
     ctx.translate(0, -cameraY);
 
-    // 1. Draw Course Walls & Background grid
-    ctx.strokeStyle = '#334155';
-    ctx.lineWidth = 4;
-    ctx.lineCap = 'round';
+    // Subtle dashed track center-line
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+    ctx.setLineDash([8, 12]);
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(COURSE_WIDTH / 2, 230);
+    ctx.lineTo(COURSE_WIDTH / 2, FINISH_LINE_Y);
+    ctx.stroke();
+    ctx.restore();
+
+    // Zone Background Markers
+    ZONE_MARKERS.forEach(zm => {
+      ctx.save();
+      ctx.textAlign = 'center';
+      ctx.font = '900 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.fillStyle = 'rgba(148, 163, 184, 0.22)';
+      ctx.fillText(zm.title, COURSE_WIDTH / 2, zm.y);
+      ctx.font = '700 9px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.fillStyle = 'rgba(148, 163, 184, 0.12)';
+      ctx.fillText(zm.sub, COURSE_WIDTH / 2, zm.y + 13);
+      ctx.restore();
+    });
+
+    // 1. Draw Course Walls & Ramps
     segments.forEach(seg => {
       ctx.beginPath();
       ctx.moveTo(seg.x1, seg.y1);
       ctx.lineTo(seg.x2, seg.y2);
-      ctx.stroke();
+      ctx.lineCap = 'round';
+
+      if (seg.type === 'ramp') {
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 4.5;
+        ctx.shadowColor = 'rgba(56, 189, 248, 0.35)';
+        ctx.shadowBlur = 6;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      } else if (seg.type === 'guide') {
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+      } else {
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+      }
     });
 
     // Hopper starting gate
@@ -1462,39 +1778,104 @@ const data = gameEntry?.data || {
       ctx.stroke();
     }
 
-    // 2. Draw Pins (Plinko)
+    // 2. Draw Pins (Plinko & Neon Bumpers)
     pins.forEach(p => {
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-      ctx.fillStyle = '#64748b';
-      ctx.shadowColor = '#38bdf8';
-      ctx.shadowBlur = 6;
-      ctx.fill();
-      ctx.shadowBlur = 0;
-      ctx.strokeStyle = '#94a3b8';
-      ctx.lineWidth = 2;
-      ctx.stroke();
+
+      if (p.isBumper) {
+        ctx.fillStyle = '#a855f7';
+        ctx.shadowColor = '#c084fc';
+        ctx.shadowBlur = 8;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = '#f3e8ff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      } else {
+        ctx.fillStyle = '#64748b';
+        ctx.shadowColor = '#38bdf8';
+        ctx.shadowBlur = 5;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
     });
 
-    // 3. Draw Spinners
+    // 3. Draw Spinners (11 Spinners)
     spinners.forEach(sp => {
       ctx.save();
       ctx.translate(sp.x, sp.y);
       ctx.rotate(sp.angle);
+
+      // Paddle body
       ctx.fillStyle = '#f59e0b';
       ctx.shadowColor = '#f59e0b';
       ctx.shadowBlur = 10;
-      ctx.fillRect(-sp.length, -5, sp.length * 2, 10);
-      ctx.shadowBlur = 0;
-      // Center pivot
       ctx.beginPath();
-      ctx.arc(0, 0, 7, 0, Math.PI * 2);
+      ctx.roundRect(-sp.length, -5.5, sp.length * 2, 11, 5);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // Endcap dots
+      ctx.fillStyle = '#fef08a';
+      ctx.beginPath();
+      ctx.arc(-sp.length + 5, 0, 3, 0, Math.PI * 2);
+      ctx.arc(sp.length - 5, 0, 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Center pivot ring
+      ctx.beginPath();
+      ctx.arc(0, 0, 7.5, 0, Math.PI * 2);
       ctx.fillStyle = '#ffffff';
       ctx.fill();
+      ctx.strokeStyle = '#d97706';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
       ctx.restore();
     });
 
-    // 4. Finish Line Banner
+    // 4. Draw Spring Bouncers (Comeback Reversal Devices)
+    const timeNow = Date.now();
+    bouncers.forEach(bn => {
+      ctx.save();
+      // Outer animated pulsating halo
+      const pulse = Math.sin(timeNow * 0.008 + bn.y * 0.1) * 3;
+      ctx.beginPath();
+      ctx.arc(bn.x, bn.y, bn.radius + pulse + 3, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(244, 63, 94, 0.45)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Core sphere with rich radial gradient
+      ctx.beginPath();
+      ctx.arc(bn.x, bn.y, bn.radius, 0, Math.PI * 2);
+      const grad = ctx.createRadialGradient(bn.x - 4, bn.y - 4, 2, bn.x, bn.y, bn.radius);
+      grad.addColorStop(0, '#fecdd3');
+      grad.addColorStop(0.4, '#f43f5e');
+      grad.addColorStop(1, '#881337');
+      ctx.fillStyle = grad;
+      ctx.shadowColor = '#f43f5e';
+      ctx.shadowBlur = 14;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Spring coil symbol
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('⚡', bn.x, bn.y);
+      ctx.restore();
+    });
+
+    // 5. Finish Line Banner
     ctx.save();
     ctx.fillStyle = 'rgba(250, 204, 21, 0.15)';
     ctx.fillRect(20, FINISH_LINE_Y - 15, COURSE_WIDTH - 40, 30);
@@ -1513,9 +1894,39 @@ const data = gameEntry?.data || {
     ctx.fillText('FINISH LINE 결승선', COURSE_WIDTH / 2 - 55, FINISH_LINE_Y - 22);
     ctx.restore();
 
-    // 5. Draw Marbles
+    // 6. Draw Shockwaves
+    shockwaves.forEach(sw => {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2);
+      ctx.strokeStyle = sw.color;
+      ctx.globalAlpha = Math.max(0, sw.alpha);
+      ctx.lineWidth = 3;
+      ctx.shadowColor = sw.color;
+      ctx.shadowBlur = 10;
+      ctx.stroke();
+      ctx.restore();
+    });
+
+    // 7. Draw Marbles
     marbles.forEach(m => {
       ctx.save();
+
+      // Energy Gauge Arc around marble
+      if (energyGaugeEnabled && !m.finished && m.energy > 0.03) {
+        ctx.beginPath();
+        const startAngle = -Math.PI / 2;
+        const endAngle = startAngle + (Math.PI * 2 * m.energy);
+        ctx.arc(m.x, m.y, m.radius + 4.5, startAngle, endAngle);
+        const isNearFull = m.energy >= 0.85;
+        ctx.strokeStyle = isNearFull ? '#ef4444' : '#f59e0b';
+        ctx.lineWidth = 2.5;
+        ctx.shadowColor = ctx.strokeStyle;
+        ctx.shadowBlur = isNearFull ? 8 : 4;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      }
+
       // Outer sphere
       ctx.beginPath();
       ctx.arc(m.x, m.y, m.radius, 0, Math.PI * 2);
@@ -1524,8 +1935,8 @@ const data = gameEntry?.data || {
       ctx.shadowBlur = 12;
       ctx.fill();
       ctx.shadowBlur = 0;
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+      ctx.lineWidth = 1.5;
       ctx.stroke();
 
       // Specular shine highlight
@@ -1535,13 +1946,13 @@ const data = gameEntry?.data || {
       ctx.fill();
 
       // Name label tag
-      ctx.font = '800 10px sans-serif';
+      ctx.font = '800 10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'bottom';
       ctx.fillStyle = '#f8fafc';
       ctx.shadowColor = '#000000';
       ctx.shadowBlur = 4;
-      ctx.fillText(m.name, m.x, m.y - m.radius - 3);
+      ctx.fillText(m.name, m.x, m.y - m.radius - 4);
       ctx.restore();
     });
 
@@ -1564,6 +1975,14 @@ const data = gameEntry?.data || {
     // Finish line indicator
     miniCtx.fillStyle = '#facc15';
     miniCtx.fillRect(0, FINISH_LINE_Y * scaleY, minimapCanvas.width, 2);
+
+    // Spring Bouncer indicators on minimap
+    bouncers.forEach(bn => {
+      miniCtx.beginPath();
+      miniCtx.arc(bn.x * scaleX, bn.y * scaleY, 2, 0, Math.PI * 2);
+      miniCtx.fillStyle = '#f43f5e';
+      miniCtx.fill();
+    });
 
     // Camera viewport box
     miniCtx.strokeStyle = 'rgba(56, 189, 248, 0.7)';
@@ -1678,6 +2097,11 @@ const data = gameEntry?.data || {
         spawnMarbles();
       }
     });
+  });
+
+  // Energy Gauge Toggle
+  energyToggle?.addEventListener('change', (e) => {
+    energyGaugeEnabled = (e.target as HTMLInputElement).checked;
   });
 
   // Winner Mode Radios

@@ -6,7 +6,7 @@ import { SITE_TITLE, SITE_TAGLINE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
 
 const games = await getCollection('games');
-const priorityOrder = ['roulette', 'marble-roulette', 'ladder', 'balance', 'cosmic-drop', 'gem-2048'];
+const priorityOrder = ['marble-roulette', 'roulette', 'ladder', 'cosmic-drop', 'word-sprint'];
 const sortedGames = games.sort((a, b) => {
   const idxA = priorityOrder.indexOf(a.id);
   const idxB = priorityOrder.indexOf(b.id);
@@ -36,39 +36,27 @@ const CATEGORY_MAP: Record<string, string> = {
       <section class="hero-showcase">
         <div class="hero-backdrop"></div>
         <div class="hero-content">
-          <div class="hero-pill">
-            <span class="pill-spark">🔴</span>
-            <span>치지직(CHZZK) · 유튜브 라이브 · SOOP 방송 도구</span>
-          </div>
-
           <h1 class="hero-headline">
-            생방송의 긴장감을 극대화하는<br />
-            <span class="gradient-text">무료 방송용 인터랙티브 도구 모음</span>
+            생방송을 위한 <span class="gradient-text">무료 방송 도구 모음</span>
           </h1>
 
           <p class="hero-subtext">
-            야식 추첨 돌림판, 커피 내기 사다리타기, 구슬 레이스, 밸런스 게임까지! 설치나 로그인 없이 브라우저에서 즉시 실행하여 방송 텐션을 끌어올리세요.
+            설치와 로그인 없이 브라우저에서 1초 만에 실행하는 방송용 룰렛, 사다리타기, 구슬 레이스.
           </p>
 
           <!-- Featured Game Hero Banner -->
           <div class="featured-hero-card">
-            <div class="featured-glow"></div>
-            <div class="featured-inner">
-              <div class="featured-badge-row">
-                <span class="flagship-badge">🔥 실시간 인기 방송 도구</span>
-                <span class="rating-badge">★ 4.99 (45.2K회 사용)</span>
+            <div class="featured-main-row">
+              <div class="featured-icon-box">🔮</div>
+              <div class="featured-text">
+                <span class="flagship-label">🔥 추천 1위 플래그십</span>
+                <h2>방송용 구슬 레이스 룰렛</h2>
+                <p>7,200px 롱코스 트랙과 스프링 바운서 역전 기믹을 갖춘 실시간 구슬 추첨기</p>
               </div>
-              <div class="featured-main-row">
-                <div class="featured-icon-box">🎡</div>
-                <div class="featured-text">
-                  <h2>방송용 돌림판 룰렛</h2>
-                  <p>실제 회전 물리 엔진, 찰진 래칫 눈금 틱 사운드, 승자 폭죽 이펙트와 야식/벌칙 1초 프리셋 지원.</p>
-                </div>
-                <div class="featured-action">
-                  <a href="/games/roulette" class="btn-play-hero">
-                    <span>🎡 룰렛 돌리기</span>
-                  </a>
-                </div>
+              <div class="featured-action">
+                <a href="/games/marble-roulette" class="btn-play-hero">
+                  <span>구슬 레이스 시작하기 →</span>
+                </a>
               </div>
             </div>
           </div>
@@ -78,22 +66,15 @@ const CATEGORY_MAP: Record<string, string> = {
       <!-- Games Showcase Grid -->
       <section class="games-directory-section">
         <div class="section-header">
-          <div class="title-group">
-            <span class="sec-label">전체 게임 목록</span>
-            <h2>방송용 게임 & 추첨 도구 모음</h2>
-          </div>
-          <p class="sec-desc">설치나 로그인 없이 웹 브라우저에서 바로 즐기는 무료 방송용 웹 도구입니다.</p>
+          <h2>방송 도구 라인업</h2>
         </div>
 
         <div class="games-grid">
           {sortedGames.map(game => (
-            <article class={`game-card ${game.data.featured ? 'featured-card' : ''}`}>
+            <article class="game-card">
               <div class="card-top-row">
                 <span class="card-icon">{game.data.icon}</span>
-                <div class="card-badges">
-                  <span class="category-pill">{CATEGORY_MAP[game.data.category] || game.data.category}</span>
-                  <span class="badge-accent">{game.data.badge}</span>
-                </div>
+                <span class="badge-accent">{game.data.badge}</span>
               </div>
 
               <div class="card-body">
@@ -101,14 +82,10 @@ const CATEGORY_MAP: Record<string, string> = {
                   <a href={`/games/${game.id}`}>{game.data.title}</a>
                 </h3>
                 <p class="card-tagline">{game.data.tagline}</p>
-                <p class="card-description">{game.data.description.substring(0, 130)}...</p>
               </div>
 
               <div class="card-footer">
-                <div class="meta-row">
-                  <span class="meta-item">⏱️ {game.data.playTime}</span>
-                  <span class="meta-item">👥 {game.data.players}</span>
-                </div>
+                <span class="meta-item">⏱️ {game.data.playTime}</span>
                 <a href={`/games/${game.id}`} class="btn-play-card">
                   <span>시작하기 →</span>
                 </a>
@@ -121,24 +98,23 @@ const CATEGORY_MAP: Record<string, string> = {
       <!-- FAQ Section -->
       <section class="home-faq-section">
         <div class="faq-container">
-          <span class="faq-tag">자주 묻는 질문</span>
-          <h2>스트리머 FAQ</h2>
+          <h2>자주 묻는 질문</h2>
           <div class="faq-grid">
             <div class="faq-box">
               <h3>방송 화면에 어떻게 띄우나요?</h3>
-              <p>웹 브라우저 창을 띄우거나 각 게임 우측 상단의 [전체화면] 버튼을 활용하여 방송 화면에 깔끔하게 배치할 수 있습니다.</p>
+              <p>브라우저 창 캡처 또는 우측 상단의 [전체화면] 버튼으로 OBS에 깔끔하게 송출할 수 있습니다.</p>
             </div>
             <div class="faq-box">
-              <h3>회원가입이나 결제가 필요한가요?</h3>
-              <p>아닙니다! 스트림아케이드는 100% 무료이며 로그인이나 회원가입 없이 모든 방송 도구를 평생 무료로 사용하실 수 있습니다.</p>
+              <h3>비용이나 회원가입이 필요한가요?</h3>
+              <p>아닙니다. 로그인이나 회원가입 없이 모든 기능을 평생 100% 무료로 사용할 수 있습니다.</p>
             </div>
             <div class="faq-box">
-              <h3>치지직(CHZZK), SOOP, 유튜브 모두 지원하나요?</h3>
-              <p>네! 웹 브라우저 기반으로 동작하므로 치지직, SOOP(아프리카TV), 유튜브 라이브, 트위치 등 모든 방송 플랫폼에서 원활하게 작동합니다.</p>
+              <h3>치지직, SOOP, 유튜브 모두 지원하나요?</h3>
+              <p>네. 웹 브라우저 기반으로 동작하므로 모든 생방송 플랫폼에서 자유롭게 사용 가능합니다.</p>
             </div>
             <div class="faq-box">
-              <h3>사다리타기나 룰렛 결과는 조작이 불가능한가요?</h3>
-              <p>네, 모든 난수는 브라우저의 암호학적/물리 엔진 알고리즘에 의해 실시간으로 생성되므로 100% 공정합니다.</p>
+              <h3>추첨 결과는 공정한가요?</h3>
+              <p>실시간 물리 엔진 및 난수 알고리즘에 의해 연산되므로 조작 없이 100% 공정합니다.</p>
             </div>
           </div>
         </div>
@@ -242,26 +218,15 @@ const CATEGORY_MAP: Record<string, string> = {
     box-shadow: 0 12px 35px rgba(168, 85, 247, 0.2);
   }
 
-  .featured-badge-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-  }
-
-  .flagship-badge {
+  .flagship-label {
+    display: inline-block;
     background: linear-gradient(135deg, #ef4444, #f97316);
     color: #ffffff;
     font-size: 0.7rem;
     font-weight: 800;
-    padding: 0.2rem 0.6rem;
+    padding: 0.2rem 0.55rem;
     border-radius: 6px;
-  }
-
-  .rating-badge {
-    font-size: 0.75rem;
-    color: #facc15;
-    font-weight: 700;
+    margin-bottom: 0.35rem;
   }
 
   .featured-main-row {

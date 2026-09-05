@@ -47,6 +47,7 @@ const data = gameEntry?.data || {
   controls={data.controls}
   rules={data.rules}
   faqItems={data.faqItems}
+  layoutMode="split"
 >
   <div class="cosmic-drop-root">
     <!-- Header HUD -->
@@ -57,7 +58,7 @@ const data = gameEntry?.data || {
       </div>
 
       <div class="hud-box next-box">
-        <span class="hud-lbl">다음 행성 (NEXT)</span>
+        <span class="hud-lbl">다음 행성</span>
         <div class="next-orb-wrapper">
           <div class="next-orb-preview" id="next-preview-circle">
             <span class="preview-emoji" id="next-emoji">🌑</span>
@@ -78,14 +79,14 @@ const data = gameEntry?.data || {
       
       <!-- Danger Line Overlay -->
       <div class="danger-line" title="경고: 이 선 위로 행성이 쌓이면 게임 오버됩니다">
-        <span>⚠ 한계선 초과 주의 (DANGER) ⚠</span>
+        <span>⚠ 한계선 초과 주의 (위험) ⚠</span>
       </div>
 
       <!-- Game Over Modal -->
       <div class="drop-modal hidden" id="drop-over-modal">
         <div class="drop-modal-card">
           <div class="modal-icon">🌌</div>
-          <h2>특이점 붕괴! (Game Over)</h2>
+          <h2>특이점 붕괴! (게임 오버)</h2>
           <p>행성이 한계선을 넘어 중력실이 포화되었습니다.</p>
           <div class="final-score-display">최종 점수: <strong id="over-score">0</strong></div>
           <button id="drop-restart-btn" class="drop-btn-primary">다시 도전하기</button>

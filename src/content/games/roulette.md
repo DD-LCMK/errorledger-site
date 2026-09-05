@@ -7,7 +7,7 @@ badge: "🔴 추천 방송도구"
 icon: "🎡"
 players: "1~100인 (방송 참여)"
 playTime: "10초~30초"
-featured: true
+featured: false
 rating: 4.99
 plays: "45.2K"
 controls:

@@ -4,33 +4,33 @@ import { getEntry } from 'astro:content';
 
 const gameEntry = await getEntry('games', 'roulette');
 const data = gameEntry?.data || {
-  title: 'Streamer Roulette',
-  tagline: 'Customizable Wheel of Fortune for Live Streams & Raffles',
-  description: 'A broadcast-ready, customizable spinning wheel roulette designed for streamers, content creators, and party games.',
+  title: '스트리머 돌림판 룰렛',
+  tagline: '방송 & 추첨 전용 커스텀 행운의 룰렛',
+  description: '야식 메뉴 결정, 벌칙 추첨, 구독자 이벤트까지! 부드러운 물리 회전과 1초 프리셋을 지원하는 무료 방송용 웹 룰렛입니다.',
   icon: '🎡',
-  category: 'arcade',
-  badge: '🔴 Stream Tool',
-  players: '1-100+ (Party / Chat)',
-  playTime: '30s',
+  category: 'stream',
+  badge: '🔥 방송 필수',
+  players: '1인 ~ 시청자 다수',
+  playTime: '즉시 (3~10초)',
   controls: [
-    'Click SPIN or press Spacebar to spin the wheel',
-    'Type or paste names in the text box (one per line or comma-separated)',
-    'Use quick preset buttons (Food, Penalties, Giveaways) for instant setup',
-    'Click Fullscreen / Stream Mode for a clean OBS broadcast view'
+    '스페이스바(Space) 또는 [룰렛 돌리기] 버튼 클릭',
+    '오른쪽 목록에서 나만의 항목 및 가중치 직접 입력',
+    '상단 원클릭 프리셋으로 야식, 벌칙, 선물 추첨 즉시 세팅',
+    '집중 모드를 활용해 OBS에서 깔끔한 오버레이 연출 가능'
   ],
   rules: [
-    'Each item is assigned a vibrant wedge on the wheel.',
-    'The wheel spins with randomized physical torque and realistic friction deceleration.',
-    'The top needle points to the winning slice with confetti and fanfare!'
+    '각 항목은 돌림판 위의 화려한 부채꼴 칸으로 자동 배정됩니다.',
+    '물리 엔진 기반의 무작위 회전 토크와 감속 마찰을 거쳐 회전합니다.',
+    '상단 바늘이 최종 멈춘 칸이 당첨자로 선정되며 꽃가루 축하 효과가 울립니다!'
   ],
   faqItems: [
     {
-      q: 'How do I use this on OBS Studio for Twitch, Chzzk, or YouTube?',
-      a: 'Add a Browser Source in OBS pointing to this page, or capture the window and click the Fullscreen / Stream Mode button for a clean broadcast overlay.'
+      q: '치지직, SOOP, 트위치, 유튜브 OBS에서 어떻게 띄우나요?',
+      a: 'OBS 스튜디오에서 [브라우저 소스]로 본 페이지 URL을 추가하거나, 창 캡처 후 [전체화면 / 방송 모드] 버튼을 누르면 군더더기 없는 방송용 오버레이로 송출할 수 있습니다.'
     },
     {
-      q: 'Can I remove the winning option after it is selected?',
-      a: 'Yes! Check the "Eliminate Winner" option in the control panel to automatically remove selected winners for multi-round giveaways.'
+      q: '한 번 뽑힌 항목을 다음 라운드에서 자동 제외할 수 있나요?',
+      a: '네! 제어판에서 [당첨 항목 제외] 옵션을 켜두시면 여러 번 연속 추첨할 때 이미 뽑힌 항목이 자동으로 목록에서 제외됩니다.'
     }
   ]
 };
@@ -48,21 +48,10 @@ const data = gameEntry?.data || {
   controls={data.controls}
   rules={data.rules}
   faqItems={data.faqItems}
+  layoutMode="full"
 >
   <div class="roulette-app-root" id="roulette-root">
 
-    <!-- Top Mode Switcher Bar -->
-    <div class="roulette-mode-tabs">
-      <a href="/games/roulette" class="mode-tab active">
-        <span class="tab-icon">🎡</span>
-        <span class="tab-label">원판 돌림판 룰렛</span>
-      </a>
-      <a href="/games/marble-roulette" class="mode-tab">
-        <span class="tab-icon">🔮</span>
-        <span class="tab-label">구슬 레이스 룰렛</span>
-        <span class="tab-badge">신규</span>
-      </a>
-    </div>
     <!-- Left / Center: The Wheel Stage -->
     <div class="wheel-stage-container">
       <div class="wheel-title-bar" id="display-title">오늘의 방송 룰렛</div>
@@ -194,55 +183,6 @@ const data = gameEntry?.data || {
 </GameLayout>
 
 <style>
-  
-  /* Mode Switcher Tabs */
-  .roulette-mode-tabs {
-    grid-column: 1 / -1;
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    background: #0f172a;
-    padding: 0.35rem;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-    margin-bottom: 0.5rem;
-  }
-
-  .mode-tab {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 800;
-    color: #94a3b8;
-    text-decoration: none;
-    transition: all 0.15s ease;
-  }
-
-  .mode-tab:hover {
-    color: #f8fafc;
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .mode-tab.active {
-    background: #38bdf8;
-    color: #040813;
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
-  }
-
-  .tab-badge {
-    background: #ef4444;
-    color: #ffffff;
-    font-size: 0.65rem;
-    font-weight: 900;
-    padding: 0.1rem 0.35rem;
-    border-radius: 4px;
-    margin-left: 0.2rem;
-  }
-
   .roulette-app-root {
     position: relative;
     display: grid;

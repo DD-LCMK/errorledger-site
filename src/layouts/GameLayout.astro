@@ -15,6 +15,7 @@ interface Props {
   controls?: string[];
   rules?: string[];
   faqItems?: { q: string; a: string }[];
+  layoutMode?: 'full' | 'split';
 }
 
 const {
@@ -22,14 +23,14 @@ const {
   description,
   tagline = '무료 웹게임 & 추첨 도구',
   icon = '🕹️',
-  category = '방송/추첨',
-  badge = '추천',
-  players = '1인용',
-  playTime = '1-3분',
   controls = [],
   rules = [],
-  faqItems = []
+  faqItems = [],
+  layoutMode = 'full'
 } = Astro.props;
+
+// Combine key controls & rules into 3-4 concise stream-friendly tips
+const quickTips = [...controls.slice(0, 3), ...rules.slice(0, 2)];
 ---
 
 <!doctype html>
@@ -41,82 +42,75 @@ const {
     <Header />
 
     <main class="game-main-container">
-      <!-- Game Stage & Screen Area -->
-      <section class="game-stage-wrapper">
-        <div class="game-stage-header">
-          <div class="game-meta-left">
-            <span class="game-hero-icon">{icon}</span>
-            <div>
-              <h1 class="game-title">{title}</h1>
-              <p class="game-tagline">{tagline}</p>
+      <!-- Sleek Minimal Stage Header Bar -->
+      <div class="game-top-bar">
+        <div class="game-bar-title">
+          <span class="game-bar-icon">{icon}</span>
+          <h1 class="game-bar-h1">{title}</h1>
+        </div>
+        <div class="game-bar-actions">
+          <button id="fullscreen-btn" class="stage-fullscreen-btn" title="전체화면 전환">
+            <span>⛶ 전체화면</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Game Arena (Full width for suite tools, Split for arcade puzzles) -->
+      {layoutMode === 'split' ? (
+        <div class="game-split-layout">
+          <div class="game-left-col">
+            <div class="game-viewport-container" id="game-viewport">
+              <slot />
             </div>
           </div>
-          <div class="game-stage-controls">
-            <span class="game-badge">{badge}</span>
-            <span class="game-pill">⏱️ {playTime}</span>
-            <span class="game-pill">👥 {players}</span>
-            <button id="fullscreen-btn" class="stage-btn" title="전체화면 전환">
-              <span>⛶ 전체화면</span>
-            </button>
-          </div>
-        </div>
 
-        <!-- Interactive Game Viewport (Slot) -->
-        <div class="game-viewport-container" id="game-viewport">
-          <slot />
-        </div>
-      </section>
-
-      <!-- Game Guide & SEO Semantic Content -->
-      <section class="game-guide-section">
-        <div class="guide-grid">
-          <!-- Controls & Rules -->
-          <div class="guide-card">
-            <h3>🎮 조작법 & 사용 방법</h3>
-            {controls.length > 0 ? (
-              <ul class="guide-list">
-                {controls.map(c => <li>{c}</li>)}
-              </ul>
-            ) : (
-              <p>마우스 클릭, 화면 터치 또는 키보드로 간편하게 조작할 수 있습니다.</p>
-            )}
-          </div>
-
-          <div class="guide-card">
-            <h3>📜 규칙 & 방송 진행 팁</h3>
-            {rules.length > 0 ? (
-              <ul class="guide-list">
-                {rules.map(r => <li>{r}</li>)}
-              </ul>
-            ) : (
-              <p>시청자와 함께 규칙을 정하고 재미있게 방송을 진행해보세요!</p>
+          <div class="game-right-col">
+            {quickTips.length > 0 && (
+              <div class="clean-tips-card">
+                <div class="tips-title-row">
+                  <span class="tips-icon">💡</span>
+                  <h3>방송 안내 &amp; 조작법</h3>
+                </div>
+                <ul class="clean-tips-list">
+                  {quickTips.map(t => <li>{t}</li>)}
+                </ul>
+              </div>
             )}
           </div>
         </div>
-
-        <!-- Detailed Description Slot -->
-        <div class="guide-article">
-          <slot name="guide" />
-        </div>
-
-        <!-- FAQ Section for Rich Snippets -->
-        {faqItems && faqItems.length > 0 && (
-          <div class="game-faq-section">
-            <h2>자주 묻는 질문 (FAQ)</h2>
-            <div class="faq-accordion">
-              {faqItems.map((item, idx) => (
-                <details class="faq-item" open={idx === 0}>
-                  <summary class="faq-question">
-                    <span>{item.q}</span>
-                    <span class="faq-chevron">▼</span>
-                  </summary>
-                  <p class="faq-answer">{item.a}</p>
-                </details>
-              ))}
-            </div>
+      ) : (
+        <div class="game-full-layout">
+          <div class="game-viewport-container" id="game-viewport">
+            <slot />
           </div>
-        )}
-      </section>
+        </div>
+      )}
+
+      <!-- Unobtrusive Expandable Information Drawer (for Guide & FAQ) -->
+      {(Astro.slots.has('guide') || (faqItems && faqItems.length > 0)) && (
+        <details class="stream-bottom-details">
+          <summary class="details-summary">
+            <span>📖 상세 가이드 및 FAQ 보기</span>
+            <span class="chevron">▼</span>
+          </summary>
+          <div class="details-content">
+            <slot name="guide" />
+            {faqItems && faqItems.length > 0 && (
+              <div class="details-faq-section">
+                <h3>자주 묻는 질문 (FAQ)</h3>
+                <div class="details-faq-grid">
+                  {faqItems.map(f => (
+                    <div class="details-faq-card">
+                      <strong class="faq-q">Q. {f.q}</strong>
+                      <p class="faq-a">{f.a}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </details>
+      )}
     </main>
 
     <Footer />
@@ -131,112 +125,102 @@ const {
       }
 
       .game-main-container {
-        max-width: 1100px;
+        max-width: 1200px;
         margin: 0 auto;
-        padding: 1.5rem 1rem 4rem;
+        padding: 0.65rem 1rem 3rem;
         width: 100%;
         flex: 1;
+        box-sizing: border-box;
       }
 
-      .game-stage-wrapper {
-        background: #0f172a;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 16px;
-        padding: 1.25rem;
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-        margin-bottom: 2.5rem;
-      }
-
-      .game-stage-header {
+      /* Slim Minimal Stage Header Bar */
+      .game-top-bar {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 1rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 0.35rem 0.25rem 0.65rem;
       }
 
-      .game-meta-left {
+      .game-bar-title {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
+        gap: 0.5rem;
       }
 
-      .game-hero-icon {
-        font-size: 2.2rem;
-        filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.4));
+      .game-bar-icon {
+        font-size: 1.35rem;
       }
 
-      .game-title {
-        font-size: 1.6rem;
+      .game-bar-h1 {
+        font-size: 1.15rem;
         font-weight: 800;
         margin: 0;
         color: #f8fafc;
         letter-spacing: -0.02em;
       }
 
-      .game-tagline {
-        font-size: 0.85rem;
-        color: #94a3b8;
-        margin: 0.15rem 0 0;
-      }
-
-      .game-stage-controls {
+      .game-bar-actions {
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        flex-wrap: wrap;
       }
 
-      .game-badge {
-        font-size: 0.75rem;
-        font-weight: 700;
-        background: rgba(168, 85, 247, 0.2);
-        color: #d8b4fe;
-        border: 1px solid rgba(168, 85, 247, 0.35);
-        padding: 0.25rem 0.6rem;
-        border-radius: 6px;
-      }
-
-      .game-pill {
-        font-size: 0.75rem;
-        color: #94a3b8;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        padding: 0.25rem 0.55rem;
-        border-radius: 6px;
-      }
-
-      .stage-btn {
-        background: rgba(56, 189, 248, 0.12);
+      .stage-fullscreen-btn {
+        background: rgba(56, 189, 248, 0.1);
         color: #38bdf8;
         border: 1px solid rgba(56, 189, 248, 0.25);
-        padding: 0.35rem 0.75rem;
-        border-radius: 8px;
-        font-size: 0.8rem;
+        padding: 0.25rem 0.65rem;
+        border-radius: 6px;
+        font-size: 0.76rem;
         font-weight: 700;
         cursor: pointer;
         transition: all 0.15s ease;
       }
 
-      .stage-btn:hover {
+      .stage-fullscreen-btn:hover {
         background: rgba(56, 189, 248, 0.22);
         border-color: rgba(56, 189, 248, 0.45);
         color: #ffffff;
       }
 
-      /* Game Viewport Container */
+      /* Full layout (centered suite tools) */
+      .game-full-layout {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+      }
+
+      .game-full-layout .game-viewport-container {
+        width: 100%;
+      }
+
+      /* Split layout (arcade / single canvas) */
+      .game-split-layout {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 1.25rem;
+        align-items: start;
+      }
+
+      .game-left-col {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .game-right-col {
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Viewport container */
       .game-viewport-container {
         position: relative;
         background: #020617;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 12px;
         overflow: hidden;
-        margin: 0.5rem 0;
       }
 
-      /* Fullscreen state */
       .game-viewport-container:fullscreen {
         border-radius: 0;
         border: none;
@@ -247,145 +231,154 @@ const {
         justify-content: center;
       }
 
-      /* Guide & SEO Section */
-      .game-guide-section {
-        max-width: 900px;
-        margin: 0 auto;
-      }
-
-      .guide-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-      }
-
-      .guide-card {
+      /* Clean Tips Card in Split Mode */
+      .clean-tips-card {
         background: #0f172a;
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 12px;
-        padding: 1.25rem 1.5rem;
+        padding: 1rem 1.25rem;
       }
 
-      .guide-card h3 {
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: #f8fafc;
-        margin: 0 0 0.85rem;
-      }
-
-      .guide-list {
-        margin: 0;
-        padding-left: 1.25rem;
-        color: #cbd5e1;
-        font-size: 0.88rem;
-        line-height: 1.6;
-      }
-
-      .guide-list li {
-        margin-bottom: 0.4rem;
-      }
-
-      .guide-article {
-        background: #0f172a;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 12px;
-        padding: 1.75rem 2rem;
-        margin-bottom: 2.5rem;
-        color: #cbd5e1;
-        font-size: 0.95rem;
-        line-height: 1.7;
-      }
-
-      .guide-article :global(h2) {
-        font-size: 1.35rem;
-        color: #f8fafc;
-        margin-top: 0;
+      .tips-title-row {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
         margin-bottom: 0.75rem;
       }
 
-      .guide-article :global(h3) {
+      .tips-icon {
         font-size: 1.1rem;
-        color: #e2e8f0;
-        margin-top: 1.25rem;
-        margin-bottom: 0.5rem;
       }
 
-      .guide-article :global(ol),
-      .guide-article :global(ul) {
-        padding-left: 1.25rem;
-      }
-
-      .game-faq-section {
-        margin-top: 2rem;
-      }
-
-      .game-faq-section h2 {
-        font-size: 1.35rem;
+      .tips-title-row h3 {
+        font-size: 0.92rem;
+        font-weight: 700;
         color: #f8fafc;
-        margin-bottom: 1rem;
+        margin: 0;
       }
 
-      .faq-accordion {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
+      .clean-tips-list {
+        margin: 0;
+        padding-left: 1.1rem;
+        color: #cbd5e1;
+        font-size: 0.83rem;
+        line-height: 1.7;
       }
 
-      .faq-item {
+      .clean-tips-list li {
+        margin-bottom: 0.4rem;
+      }
+
+      /* Unobtrusive Bottom Drawer */
+      .stream-bottom-details {
+        margin-top: 2rem;
         background: #0f172a;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.06);
         border-radius: 10px;
-        padding: 0.85rem 1.25rem;
+        overflow: hidden;
         transition: border-color 0.15s ease;
       }
 
-      .faq-item[open] {
-        border-color: rgba(168, 85, 247, 0.35);
+      .stream-bottom-details[open] {
+        border-color: rgba(168, 85, 247, 0.3);
       }
 
-      .faq-question {
-        font-weight: 700;
-        font-size: 0.95rem;
-        color: #f1f5f9;
-        cursor: pointer;
+      .details-summary {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.84rem;
+        font-weight: 700;
+        color: #94a3b8;
+        cursor: pointer;
         user-select: none;
+        list-style: none;
+        transition: color 0.15s ease;
       }
 
-      .faq-chevron {
-        font-size: 0.7rem;
+      .details-summary:hover {
+        color: #e2e8f0;
+      }
+
+      .details-summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .chevron {
+        font-size: 0.65rem;
         color: #a855f7;
         transition: transform 0.2s ease;
       }
 
-      .faq-item[open] .faq-chevron {
+      .stream-bottom-details[open] .chevron {
         transform: rotate(180deg);
       }
 
-      .faq-answer {
-        margin: 0.75rem 0 0;
-        color: #94a3b8;
-        font-size: 0.88rem;
-        line-height: 1.6;
+      .details-content {
+        padding: 1.25rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        color: #cbd5e1;
+        font-size: 0.85rem;
+        line-height: 1.7;
       }
 
-      @media (max-width: 640px) {
-        .guide-grid {
+      .details-content :global(h2) {
+        font-size: 1.05rem;
+        color: #f8fafc;
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+      }
+
+      .details-content :global(ul) {
+        padding-left: 1.2rem;
+      }
+
+      .details-faq-section {
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .details-faq-section h3 {
+        font-size: 0.95rem;
+        color: #f8fafc;
+        margin-bottom: 0.75rem;
+      }
+
+      .details-faq-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+      }
+
+      .details-faq-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+      }
+
+      .faq-q {
+        display: block;
+        font-size: 0.82rem;
+        color: #e2e8f0;
+        margin-bottom: 0.35rem;
+      }
+
+      .faq-a {
+        margin: 0;
+        font-size: 0.78rem;
+        color: #94a3b8;
+        line-height: 1.55;
+      }
+
+      @media (max-width: 900px) {
+        .game-split-layout {
           grid-template-columns: 1fr;
         }
-        .game-main-container {
-          padding: 1rem 0.5rem 3rem;
-        }
-        .game-stage-wrapper {
-          padding: 0.75rem;
-        }
-        .ad-placeholder {
-          flex-direction: column;
-          gap: 0.2rem;
-          text-align: center;
+        .details-faq-grid {
+          grid-template-columns: 1fr;
         }
       }
     </style>

@@ -4,23 +4,23 @@ import { getEntry } from 'astro:content';
 
 const gameEntry = await getEntry('games', 'word-sprint');
 const data = gameEntry?.data || {
-  title: 'Word Sprint',
-  tagline: '60-Second Anagram & Word Hunt Challenge',
-  description: 'Unscramble letters, find valid English words, and beat the clock in this rapid-fire vocabulary puzzle.',
+  title: '단어 스프린트',
+  tagline: '60초 스피드 철자 조합 & 단어 찾기 챌린지',
+  description: '무작위로 섞인 6개의 알파벳에서 숨겨진 단어를 찾아내 제한 시간 내에 고득점을 달성하는 스피드 어휘력 퍼즐 게임.',
   icon: '🔤',
   category: 'word',
-  badge: '⚡ Speed',
-  players: '1 Player',
-  playTime: '60 seconds',
+  badge: '⚡ 스피드',
+  players: '1인 플레이',
+  playTime: '60초',
   controls: [
-    'Type on keyboard or click the letter buttons',
-    'Press Enter to submit word, Backspace to delete',
-    'Click Shuffle (or Spacebar) to rearrange letters'
+    '키보드로 입력하거나 아래 단어 타일 버튼을 클릭',
+    'Enter로 단어 제출, Backspace로 삭제',
+    '스페이스바 또는 셔플 버튼으로 알파벳 순서 섞기'
   ],
   rules: [
-    'You have 60 seconds to find as many words as possible from 6 scrambled letters.',
-    'Words must be at least 3 letters long.',
-    'Find the 6-letter master word for extra bonus points and glory!'
+    '60초 내에 6자리 알파벳 속에서 가능한 한 많은 단어를 찾아내세요.',
+    '단어는 3글자 이상이어야 합니다.',
+    '6자리 마스터 단어를 찾으면 큰 보너스 점수 획득!'
   ]
 };
 ---
@@ -36,20 +36,21 @@ const data = gameEntry?.data || {
   playTime={data.playTime}
   controls={data.controls}
   rules={data.rules}
+  layoutMode="split"
 >
   <div class="word-sprint-root">
     <!-- Header Vitals -->
     <div class="sprint-header">
       <div class="vital-badge timer-badge">
-        <span class="v-label">TIME</span>
+        <span class="v-label">시간</span>
         <span class="v-val" id="time-left">60s</span>
       </div>
       <div class="vital-badge score-badge">
-        <span class="v-label">SCORE</span>
+        <span class="v-label">점수</span>
         <span class="v-val" id="sprint-score">0</span>
       </div>
       <div class="vital-badge words-badge">
-        <span class="v-label">WORDS FOUND</span>
+        <span class="v-label">찾은 단어</span>
         <span class="v-val" id="words-count">0</span>
       </div>
     </div>
@@ -57,7 +58,7 @@ const data = gameEntry?.data || {
     <!-- Active Word Input Bar -->
     <div class="input-display-box">
       <div class="current-word-text" id="current-word-display">_ _ _ _ _ _</div>
-      <div class="input-status" id="input-status-msg">Type or tap letters below</div>
+      <div class="input-status" id="input-status-msg">아래 단어 타일을 입력하거나 클릭하세요</div>
     </div>
 
     <!-- Letter Tiles Row -->
@@ -67,16 +68,16 @@ const data = gameEntry?.data || {
 
     <!-- Controls Row -->
     <div class="sprint-controls">
-      <button id="shuffle-btn" class="ctrl-btn shuffle-btn"><span>🔀 Shuffle (Space)</span></button>
-      <button id="backspace-btn" class="ctrl-btn back-btn"><span>⌫ Delete</span></button>
-      <button id="submit-btn" class="ctrl-btn submit-btn"><span>✅ Submit (Enter)</span></button>
+      <button id="shuffle-btn" class="ctrl-btn shuffle-btn"><span>🔀 셔플 (Space)</span></button>
+      <button id="backspace-btn" class="ctrl-btn back-btn"><span>⌫ 삭제</span></button>
+      <button id="submit-btn" class="ctrl-btn submit-btn"><span>✅ 제출 (Enter)</span></button>
     </div>
 
     <!-- Found Words Drawer -->
     <div class="found-words-container">
-      <div class="drawer-title">FOUND WORDS</div>
+      <div class="drawer-title">찾은 단어</div>
       <div class="words-pill-list" id="found-words-list">
-        <span class="empty-hint">Words you find will appear here...</span>
+        <span class="empty-hint">찾은 단어가 여기에 표시됩니다...</span>
       </div>
     </div>
 
@@ -84,22 +85,22 @@ const data = gameEntry?.data || {
     <div class="sprint-modal-mask hidden" id="sprint-modal">
       <div class="sprint-modal-card">
         <div class="modal-icon">🏆</div>
-        <h2>Sprint Completed!</h2>
-        <p class="final-score-text">Final Score: <strong id="modal-score">0</strong> points</p>
-        <p class="final-words-text">Words Discovered: <strong id="modal-words">0</strong></p>
+        <h2>스프린트 완료!</h2>
+        <p class="final-score-text">최종 점수: <strong id="modal-score">0</strong>점</p>
+        <p class="final-words-text">찾은 단어: <strong id="modal-words">0</strong>개</p>
         <div class="solution-box">
-          <span class="sol-label">MASTER 6-LETTER WORD:</span>
+          <span class="sol-label">마스터 6자리 단어:</span>
           <span class="sol-word" id="modal-solution">PLANET</span>
         </div>
-        <button id="modal-restart-btn" class="sprint-play-again-btn">Play Another Round</button>
+        <button id="modal-restart-btn" class="sprint-play-again-btn">또 다른 라운드 도전</button>
       </div>
     </div>
   </div>
 
   <div slot="guide">
-    <h2>Word Sprint Strategy</h2>
+    <h2>단어 스프린트 공략법</h2>
     <p>
-      Look for prefixes like <em>RE-</em>, <em>UN-</em>, and common suffixes like <em>-ED</em>, <em>-ER</em>, <em>-ING</em>, or <em>-S</em>. Shuffling the letters frequently helps trigger new mental word associations when your eyes get stuck on one combination.
+      <em>RE-</em>, <em>UN-</em> 같은 접두사나 <em>-ED</em>, <em>-ER</em>, <em>-ING</em>, <em>-S</em> 같은 접미사를 먼저 떠올려보세요. 특정 조합에 눈이 고정될 때는 셔플 버튼으로 철자 순서를 바꾸면 새로운 단어 조합을 더 쉽게 떠올릴 수 있습니다.
     </p>
   </div>
 </GameLayout>
@@ -406,7 +407,7 @@ const data = gameEntry?.data || {
     timeLeft = 60;
 
     if (modal) modal.classList.add('hidden');
-    if (foundWordsList) foundWordsList.innerHTML = '<span class="empty-hint">Words you find will appear here...</span>';
+    if (foundWordsList) foundWordsList.innerHTML = '<span class="empty-hint">찾은 단어가 여기에 표시됩니다...</span>';
     updateHUD();
     renderTiles();
     updateDisplay();
@@ -453,7 +454,7 @@ const data = gameEntry?.data || {
     updateDisplay();
     if (statusMsg) {
       statusMsg.className = 'input-status';
-      statusMsg.textContent = 'Keep typing or press Enter';
+      statusMsg.textContent = '계속 입력하거나 Enter를 누르세요';
     }
   }
 
@@ -475,12 +476,12 @@ const data = gameEntry?.data || {
   function submitWord() {
     const word = enteredIndices.map(i => letters[i]).join('');
     if (word.length < 3) {
-      flashStatus('Word must be at least 3 letters!', 'error');
+      flashStatus('3글자 이상인 단어를 입력하세요!', 'error');
       return;
     }
 
     if (foundWords.has(word)) {
-      flashStatus(`Already found "${word}"!`, 'error');
+      flashStatus(`"​${word}"은(는) 이미 찾았습니다!`, 'error');
       enteredIndices = [];
       renderTiles();
       updateDisplay();
@@ -491,11 +492,11 @@ const data = gameEntry?.data || {
       foundWords.add(word);
       const pts = word.length === 6 ? 1200 : word.length * 100;
       score += pts;
-      flashStatus(`+${pts} points for "${word}"!`, 'success');
+      flashStatus(`+${pts}점! "​${word}" 단어 적중!`, 'success');
       addWordPill(word);
       updateHUD();
     } else {
-      flashStatus(`"${word}" is not in this round's wordlist`, 'error');
+      flashStatus(`"​${word}"은(는) 이번 라운드 단어목록에 없습니다`, 'error');
     }
 
     enteredIndices = [];

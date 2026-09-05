@@ -9,40 +9,30 @@ import { SITE_TITLE } from '../consts';
         <span class="brand-icon">🔴</span>
         <span class="brand-text-main">스트림</span><span class="brand-text-accent">아케이드</span>
       </a>
-      <span class="brand-tagline">치지직·유튜브 방송용 게임 & 추첨 도구</span>
     </div>
 
     <nav class="header-nav">
-      <a href="/games/roulette" class="nav-item highlight">
+      <a href="/games/marble-roulette" class="nav-item highlight">
+        <span class="nav-icon">🔮</span>
+        <span class="nav-label">구슬 룰렛</span>
+      </a>
+      <a href="/games/roulette" class="nav-item">
         <span class="nav-icon">🎡</span>
-        <span class="nav-label">돌림판 룰렛</span>
-        <span class="badge-live">인기</span>
+        <span class="nav-label">돌림판</span>
       </a>
       <a href="/games/ladder" class="nav-item">
         <span class="nav-icon">🪜</span>
         <span class="nav-label">사다리타기</span>
-        <span class="badge-hot">추천</span>
-      </a>
-      <a href="/games/balance" class="nav-item">
-        <span class="nav-icon">⚖️</span>
-        <span class="nav-label">밸런스 게임</span>
       </a>
       <a href="/games/cosmic-drop" class="nav-item">
         <span class="nav-icon">🪐</span>
         <span class="nav-label">수박게임</span>
-      </a>
-      <a href="/games/gem-2048" class="nav-item">
-        <span class="nav-icon">💎</span>
-        <span class="nav-label">2048</span>
       </a>
     </nav>
 
     <div class="header-actions">
       <button id="global-sound-toggle" class="action-btn" title="소리 켜기/끄기" aria-label="소리 켜기/끄기">
         <span id="sound-icon">🔊</span>
-      </button>
-      <button id="theme-toggle-btn" class="action-btn" title="다크/라이트 모드 전환" aria-label="테마 전환">
-        <span id="theme-icon">🌙</span>
       </button>
     </div>
   </div>
@@ -100,22 +90,6 @@ import { SITE_TITLE } from '../consts';
     -webkit-text-fill-color: transparent;
   }
 
-  .brand-tagline {
-    display: none;
-    font-size: 0.75rem;
-    color: #94a3b8;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 0.2rem 0.5rem;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-  }
-
-  @media (min-width: 768px) {
-    .brand-tagline {
-      display: inline-block;
-    }
-  }
-
   .header-nav {
     display: flex;
     align-items: center;
@@ -152,32 +126,6 @@ import { SITE_TITLE } from '../consts';
     background: rgba(168, 85, 247, 0.25);
     border-color: rgba(168, 85, 247, 0.5);
     color: #ffffff;
-  }
-
-  .badge-hot {
-    font-size: 0.65rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, #ef4444, #f97316);
-    color: #ffffff;
-    padding: 0.1rem 0.35rem;
-    border-radius: 4px;
-    letter-spacing: 0.04em;
-  }
-
-  .badge-live {
-    font-size: 0.65rem;
-    font-weight: 800;
-    background: #ef4444;
-    color: #ffffff;
-    padding: 0.1rem 0.35rem;
-    border-radius: 4px;
-    letter-spacing: 0.04em;
-    animation: livePulse 1.6s infinite ease-in-out;
-  }
-
-  @keyframes livePulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.7; transform: scale(0.95); }
   }
 
   .header-actions {
@@ -222,7 +170,7 @@ import { SITE_TITLE } from '../consts';
 </style>
 
 <script>
-  // Client-side sound toggle & theme toggle
+  // Client-side sound toggle
   const soundBtn = document.getElementById('global-sound-toggle');
   const soundIcon = document.getElementById('sound-icon');
 
@@ -238,31 +186,5 @@ import { SITE_TITLE } from '../consts';
       updateSoundUI();
     });
     updateSoundUI();
-  }
-
-  // Theme toggle
-  const themeBtn = document.getElementById('theme-toggle-btn');
-  const themeIcon = document.getElementById('theme-icon');
-
-  function updateThemeUI() {
-    const isDark = document.documentElement.classList.contains('dark') || !document.documentElement.classList.contains('light');
-    if (themeIcon) themeIcon.textContent = isDark ? '🌙' : '☀️';
-  }
-
-  if (themeBtn) {
-    themeBtn.addEventListener('click', () => {
-      const isDark = document.documentElement.classList.contains('dark');
-      if (isDark) {
-        document.documentElement.classList.remove('dark');
-        document.documentElement.classList.add('light');
-        localStorage.setItem('theme', 'light');
-      } else {
-        document.documentElement.classList.remove('light');
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-      }
-      updateThemeUI();
-    });
-    updateThemeUI();
   }
 </script>
