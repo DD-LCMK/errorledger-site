@@ -1,424 +1,247 @@
 ---
-import HeaderLink from './HeaderLink.astro';
-import SubmitIncidentModal from './SubmitIncidentModal.astro';
 import { SITE_TITLE } from '../consts';
-import { getCollection } from 'astro:content';
-
-const allPosts = await getCollection('blog');
-const allSlugs = allPosts.map(p => {
-	const prefix = p.data.lang === 'ko' ? '/ko/blog/' : '/blog/';
-	return `${prefix}${p.data.slug.replace(/^ko\//, '')}`;
-});
-
-const rawPath = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
-const isKorean = rawPath === '/ko' || rawPath.startsWith('/ko/');
-
-const homeUrl = isKorean ? '/ko' : '/';
-const archiveUrl = isKorean ? '/ko/blog' : '/blog';
-const aboutUrl = isKorean ? '/ko/about' : '/about';
-const searchUrl = isKorean ? '/ko/search' : '/search';
-
-// Calculate target URL to switch between languages
-let langTargetUrl = '/';
-if (isKorean) {
-	const stripped = rawPath.replace(/^\/ko/, '');
-	langTargetUrl = stripped || '/';
-} else {
-	if (rawPath === '/') {
-		langTargetUrl = '/ko';
-	} else {
-		langTargetUrl = `/ko${rawPath}`;
-	}
-}
-const langSwitchLabel = isKorean ? '🇺🇸 English' : '🇰🇷 한국어';
-
-const categories = [
-	{ id: "all", label: isKorean ? "전체 보관소" : "All Records", icon: "⚡", href: archiveUrl },
-	{ id: "money", label: isKorean ? "금융 & 시장" : "Money & Markets", icon: "💰", href: `${searchUrl}?q=money` },
-	{ id: "corporate", label: isKorean ? "기업 & 스캔들" : "Corporate", icon: "🏢", href: `${searchUrl}?q=corporate` },
-	{ id: "work", label: isKorean ? "직장 & 커리어" : "Workplace", icon: "🧑‍💻", href: `${searchUrl}?q=work` },
-	{ id: "ai", label: isKorean ? "AI & 알고리즘" : "AI & Algorithms", icon: "🤖", href: `${searchUrl}?q=ai` },
-	{ id: "internet", label: isKorean ? "인프라 & 인터넷" : "Infrastructure", icon: "🌐", href: `${searchUrl}?q=internet` },
-	{ id: "human", label: isKorean ? "인간 & 심리" : "Human Decisions", icon: "🧠", href: `${searchUrl}?q=human` }
-];
 ---
 
-<header>
-	<nav class="header-nav">
-		<h2>
-			<a href={homeUrl} class="brand-link">
-				<span class="brand-badge">&gt;_</span>
-				<span class="logo-text-main">Error</span><span class="logo-text-accent">Ledger</span>
-			</a>
-		</h2>
+<header class="arcade-header">
+  <div class="header-inner">
+    <div class="header-left">
+      <a href="/" class="brand-link">
+        <span class="brand-icon">🕹️</span>
+        <span class="brand-text-main">Aether</span><span class="brand-text-accent">Arcade</span>
+      </a>
+      <span class="brand-tagline">100% Free Web Games</span>
+    </div>
 
-		<!-- Search Input -->
-		<form action={searchUrl} method="GET" class="header-search-form">
-			<input 
-				type="text" 
-				name="q" 
-				class="header-search-input" 
-				placeholder={isKorean ? "사건 및 재난 기록 검색..." : "Search the Human Failure Archive..."}
-				aria-label="Search repository globally"
-				autocomplete="off"
-			/>
-		</form>
+    <nav class="header-nav">
+      <a href="/games/god-duel" class="nav-item highlight">
+        <span class="nav-icon">⚔️</span>
+        <span class="nav-label">God Duel</span>
+        <span class="badge-hot">HOT</span>
+      </a>
+      <a href="/games/gem-2048" class="nav-item">
+        <span class="nav-icon">💎</span>
+        <span class="nav-label">2048</span>
+      </a>
+      <a href="/games/word-sprint" class="nav-item">
+        <span class="nav-icon">🔤</span>
+        <span class="nav-label">Word Sprint</span>
+      </a>
+      <a href="/games/cosmic-drop" class="nav-item">
+        <span class="nav-icon">🪐</span>
+        <span class="nav-label">Cosmic Drop</span>
+      </a>
+    </nav>
 
-		<div class="internal-links">
-			<HeaderLink href={homeUrl}>{isKorean ? "홈" : "Home"}</HeaderLink>
-			<HeaderLink href={archiveUrl}>{isKorean ? "보관소" : "The Ledger"}</HeaderLink>
-			<HeaderLink href={aboutUrl}>{isKorean ? "소개" : "About"}</HeaderLink>
-			
-			<!-- Language Switcher Button -->
-			<a href={langTargetUrl} id="lang-toggle-btn" class="nav-action-btn lang-btn" title="Switch language">
-				{langSwitchLabel}
-			</a>
-
-			<!-- Interactive Feature 1: Failure Roulette -->
-			<button id="random-failure-btn" class="nav-action-btn random-btn" title="Open a random incident from the ledger">
-				<span>🎲</span> {isKorean ? "랜덤" : "Random"}
-			</button>
-
-			<!-- Interactive Feature 5: Submit Incident -->
-			<button class="nav-action-btn submit-btn" data-open-submit-modal title="Submit an incident to The Archivist">
-				<span>+</span> {isKorean ? "제보" : "Submit"}
-			</button>
-			
-			<!-- Theme Toggle Button -->
-			<button id="theme-toggle" aria-label="Toggle dark mode" class="theme-btn">
-				<svg id="theme-toggle-dark-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>
-				<svg id="theme-toggle-light-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
-			</button>
-		</div>
-	</nav>
-
-	<!-- Naver-Style Horizontal Category Sub-Navigation Bar -->
-	<div class="category-subnav-container">
-		<div class="category-subnav-inner">
-			{categories.map((cat) => (
-				<a href={cat.href} class="subnav-chip">
-					<span class="subnav-chip-icon">{cat.icon}</span>
-					<span class="subnav-chip-label">{cat.label}</span>
-				</a>
-			))}
-		</div>
-	</div>
-
-	<!-- Telemetry Reading Progress Bar -->
-	<div class="progress-bus">
-		<div id="reading-progress-bar" class="progress-fill"></div>
-	</div>
-
-	<SubmitIncidentModal />
+    <div class="header-actions">
+      <button id="global-sound-toggle" class="action-btn" title="Toggle Sound (Mute/Unmute)" aria-label="Toggle Sound">
+        <span id="sound-icon">🔊</span>
+      </button>
+      <button id="theme-toggle-btn" class="action-btn" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
+        <span id="theme-icon">🌙</span>
+      </button>
+    </div>
+  </div>
 </header>
 
-<script is:inline define:vars={{ allSlugs, isKorean }}>
-	window.__ERRORLEDGER_SLUGS__ = allSlugs || ['/blog'];
-
-	const themeToggleBtn = document.getElementById('theme-toggle');
-	const darkIcon = document.getElementById('theme-toggle-dark-icon');
-	const lightIcon = document.getElementById('theme-toggle-light-icon');
-
-	function updateIcons() {
-		if (document.documentElement.classList.contains('dark')) {
-			lightIcon?.classList.remove('hidden');
-			darkIcon?.classList.add('hidden');
-		} else {
-			darkIcon?.classList.remove('hidden');
-			lightIcon?.classList.add('hidden');
-		}
-	}
-
-	updateIcons();
-
-	themeToggleBtn?.addEventListener('click', () => {
-		if (document.documentElement.classList.contains('dark')) {
-			document.documentElement.classList.remove('dark');
-			localStorage.setItem('theme', 'light');
-		} else {
-			document.documentElement.classList.add('dark');
-			localStorage.setItem('theme', 'dark');
-		}
-		updateIcons();
-	});
-
-	// Dynamic, bulletproof client-side Language Switcher
-	const langToggleBtn = document.getElementById('lang-toggle-btn');
-	if (langToggleBtn) {
-		const path = window.location.pathname;
-		const isClientKo = path === '/ko' || path.startsWith('/ko/');
-		langToggleBtn.innerText = isClientKo ? '🇺🇸 English' : '🇰🇷 한국어';
-
-		langToggleBtn.addEventListener('click', function(e) {
-			e.preventDefault();
-			const currentPath = window.location.pathname;
-			const isKo = currentPath === '/ko' || currentPath.startsWith('/ko/');
-			let destination = '/';
-			if (isKo) {
-				destination = currentPath.replace(/^\/ko/, '') || '/';
-			} else {
-				destination = currentPath === '/' ? '/ko' : `/ko${currentPath}`;
-			}
-			window.location.href = destination;
-		});
-	}
-
-	// Global Random Failure Engine
-	document.addEventListener('click', function(e) {
-		if (e.target.closest('#random-failure-btn') || e.target.closest('#float-random-btn')) {
-			e.preventDefault();
-			const cur = window.location.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
-			const isKo = cur === '/ko' || cur.startsWith('/ko/');
-			const slugs = (window.__ERRORLEDGER_SLUGS__ || []).filter(s => isKo ? s.startsWith('/ko/blog') : !s.startsWith('/ko/blog'));
-			const pool = slugs.length > 0 ? slugs : window.__ERRORLEDGER_SLUGS__;
-			const randomTarget = pool[Math.floor(Math.random() * pool.length)];
-			window.location.href = randomTarget;
-		}
-	});
-
-	// Dynamic Reading Progress Engine
-	window.addEventListener('scroll', () => {
-		const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
-		const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-		const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
-		const progressBar = document.getElementById('reading-progress-bar');
-		if (progressBar) {
-			progressBar.style.width = scrolled + '%';
-		}
-	});
-</script>
-
 <style>
-	header {
-		position: sticky;
-		top: 0;
-		z-index: 100;
-		margin: 0;
-		padding: 0 1.5rem;
-		background: rgba(10, 10, 10, 0.92);
-		backdrop-filter: blur(14px);
-		-webkit-backdrop-filter: blur(14px);
-		border-bottom: 1px solid #262626;
-		box-shadow: 0 4px 25px rgba(0, 0, 0, 0.45);
-		transition: background-color 0.2s ease, border-color 0.2s ease;
-	}
-	.header-nav {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 0.75rem 0 0.5rem 0;
-		gap: 1.5rem;
-	}
-	.brand-link {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		text-decoration: none;
-		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-		font-weight: 700;
-		font-size: 1.25rem;
-	}
-	.brand-badge {
-		background-color: #171717;
-		color: #f43f5e;
-		padding: 0.15rem 0.45rem;
-		border-radius: 6px;
-		border: 1px solid #262626;
-		font-size: 0.95rem;
-		font-weight: 900;
-	}
-	.logo-text-main { color: #f5f5f5; }
-	.logo-text-accent { color: #f43f5e; }
+  .arcade-header {
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 0.65rem 1rem;
+  }
 
-	.internal-links {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
-	.internal-links a {
-		padding: 0.4rem 0.65rem;
-		color: #a3a3a3;
-		text-decoration: none;
-		font-size: 0.9rem;
-		font-weight: 500;
-		border-radius: 6px;
-		transition: color 0.15s ease;
-	}
-	.internal-links a:hover, .internal-links a.active {
-		color: #ffffff;
-	}
+  .header-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
 
-	.nav-action-btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.35rem;
-		font-size: 0.8rem;
-		font-weight: 700;
-		padding: 0.4rem 0.75rem;
-		border-radius: 8px;
-		border: 1px solid #262626;
-		background: #171717;
-		color: #d4d4d4;
-		cursor: pointer;
-		font-family: ui-monospace, monospace;
-		transition: all 0.15s ease;
-		text-decoration: none;
-	}
-	.lang-btn {
-		background: rgba(245, 158, 11, 0.1);
-		border-color: rgba(245, 158, 11, 0.25);
-		color: #f59e0b;
-	}
-	.lang-btn:hover {
-		background: #f59e0b;
-		color: #000000;
-	}
-	.random-btn:hover {
-		border-color: #f59e0b;
-		color: #f59e0b;
-		background: rgba(245, 158, 11, 0.1);
-	}
-	.submit-btn {
-		background: rgba(244, 63, 94, 0.1);
-		border-color: rgba(244, 63, 94, 0.3);
-		color: #fb7185;
-	}
-	.submit-btn:hover {
-		background: #f43f5e;
-		color: #ffffff;
-		border-color: #f43f5e;
-	}
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
 
-	.theme-btn {
-		background: none;
-		border: none;
-		cursor: pointer;
-		padding: 0.4rem;
-		color: #a3a3a3;
-		display: inline-flex;
-		align-items: center;
-	}
-	.theme-btn:hover { color: #ffffff; }
+  .brand-link {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 1.35rem;
+    font-weight: 800;
+    text-decoration: none;
+    letter-spacing: -0.02em;
+  }
 
-	.header-search-form {
-		flex-grow: 1;
-		max-width: 320px;
-		margin: 0 1rem;
-	}
-	.header-search-input {
-		width: 100%;
-		padding: 0.45rem 0.85rem;
-		font-size: 0.85rem;
-		border-radius: 8px;
-		border: 1px solid #262626;
-		background: #171717;
-		color: #f5f5f5;
-		outline: none;
-		font-family: inherit;
-		transition: all 0.15s ease;
-	}
-	.header-search-input:focus {
-		border-color: #f43f5e;
-		box-shadow: 0 0 0 2px rgba(244, 63, 94, 0.2);
-	}
+  .brand-icon {
+    font-size: 1.4rem;
+    filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.5));
+  }
 
-	@media (max-width: 850px) {
-		.header-search-form { display: none; }
-	}
+  .brand-text-main {
+    color: #f8fafc;
+  }
 
-	/* Naver-Style Horizontal Category Sub-Navigation Bar */
-	.category-subnav-container {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 0.35rem 0 0.6rem 0;
-		border-top: 1px solid #1f1f1f;
-		overflow-x: auto;
-		scrollbar-width: none !important;
-		-ms-overflow-style: none !important;
-	}
-	.category-subnav-container::-webkit-scrollbar {
-		display: none !important;
-		width: 0 !important;
-		height: 0 !important;
-	}
-	.category-subnav-inner {
-		display: flex;
-		align-items: center;
-		gap: 0.45rem;
-		white-space: nowrap;
-	}
-	.subnav-chip {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.35rem;
-		padding: 0.3rem 0.75rem;
-		border-radius: 9999px;
-		background: #141414;
-		border: 1px solid #262626;
-		color: #a3a3a3;
-		font-size: 0.8rem;
-		font-weight: 600;
-		text-decoration: none;
-		transition: all 0.15s ease;
-		flex-shrink: 0;
-	}
-	.subnav-chip:hover {
-		background: #262626;
-		color: #ffffff;
-		border-color: #404040;
-	}
-	.subnav-chip-icon {
-		font-size: 0.85rem;
-	}
+  .brand-text-accent {
+    background: linear-gradient(135deg, #a855f7 0%, #38bdf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 
-	.progress-bus {
-		position: absolute;
-		bottom: -1px;
-		left: 0;
-		width: 100%;
-		height: 2px;
-		background: transparent;
-	}
-	.progress-fill {
-		height: 100%;
-		width: 0%;
-		background: linear-gradient(to r, #f59e0b, #f43f5e);
-		box-shadow: 0 0 8px rgba(244, 63, 94, 0.6);
-		transition: width 0.05s ease-out;
-	}
-	.hidden { display: none !important; }
+  .brand-tagline {
+    display: none;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
 
-	/* Light mode styles */
-	:global(html:not(.dark)) header {
-		background: rgba(255, 255, 255, 0.94);
-		border-bottom-color: #e2e8f0;
-	}
-	:global(html:not(.dark)) .logo-text-main { color: #0f172a; }
-	:global(html:not(.dark)) .internal-links a { color: #475569; }
-	:global(html:not(.dark)) .internal-links a:hover { color: #0f172a; }
-	:global(html:not(.dark)) .header-search-input {
-		background: #f8fafc;
-		border-color: #cbd5e1;
-		color: #0f172a;
-	}
-	:global(html:not(.dark)) .nav-action-btn {
-		background: #f8fafc;
-		border-color: #cbd5e1;
-		color: #334155;
-	}
-	:global(html:not(.dark)) .category-subnav-container {
-		border-top-color: #e2e8f0;
-	}
-	:global(html:not(.dark)) .subnav-chip {
-		background: #f8fafc;
-		border-color: #cbd5e1;
-		color: #475569;
-	}
-	:global(html:not(.dark)) .subnav-chip:hover {
-		background: #f1f5f9;
-		color: #0f172a;
-		border-color: #94a3b8;
-	}
+  @media (min-width: 768px) {
+    .brand-tagline {
+      display: inline-block;
+    }
+  }
+
+  .header-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 8px;
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: all 0.15s ease;
+    border: 1px solid transparent;
+  }
+
+  .nav-item:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .nav-item.highlight {
+    background: rgba(168, 85, 247, 0.15);
+    border-color: rgba(168, 85, 247, 0.3);
+    color: #e9d5ff;
+  }
+
+  .nav-item.highlight:hover {
+    background: rgba(168, 85, 247, 0.25);
+    border-color: rgba(168, 85, 247, 0.5);
+    color: #ffffff;
+  }
+
+  .badge-hot {
+    font-size: 0.65rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ef4444, #f97316);
+    color: #ffffff;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.15s ease;
+  }
+
+  .action-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+  }
+
+  @media (max-width: 640px) {
+    .nav-label {
+      display: none;
+    }
+    .badge-hot {
+      display: none;
+    }
+    .nav-item {
+      padding: 0.4rem 0.5rem;
+      font-size: 1.1rem;
+    }
+  }
 </style>
+
+<script>
+  // Client-side sound toggle & theme toggle
+  const soundBtn = document.getElementById('global-sound-toggle');
+  const soundIcon = document.getElementById('sound-icon');
+
+  function updateSoundUI() {
+    const muted = localStorage.getItem('aether_sound_muted') === 'true';
+    if (soundIcon) soundIcon.textContent = muted ? '🔇' : '🔊';
+  }
+
+  if (soundBtn) {
+    soundBtn.addEventListener('click', () => {
+      const current = localStorage.getItem('aether_sound_muted') === 'true';
+      localStorage.setItem('aether_sound_muted', String(!current));
+      updateSoundUI();
+    });
+    updateSoundUI();
+  }
+
+  // Theme toggle
+  const themeBtn = document.getElementById('theme-toggle-btn');
+  const themeIcon = document.getElementById('theme-icon');
+
+  function updateThemeUI() {
+    const isDark = document.documentElement.classList.contains('dark') || !document.documentElement.classList.contains('light');
+    if (themeIcon) themeIcon.textContent = isDark ? '🌙' : '☀️';
+  }
+
+  if (themeBtn) {
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.classList.contains('dark');
+      if (isDark) {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('light');
+        localStorage.setItem('theme', 'light');
+      } else {
+        document.documentElement.classList.remove('light');
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+      updateThemeUI();
+    });
+    updateThemeUI();
+  }
+</script>

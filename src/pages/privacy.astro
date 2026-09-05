@@ -1,48 +1,188 @@
 ---
-import Layout from '../layouts/BlogPost.astro';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE } from '../consts';
 ---
 
-<Layout
-	title="Privacy Policy"
-	meta_title="Privacy Policy & Data Transparency | ErrorLedger"
-	description="Data telemetry, cookie policies, AdSense disclosures, and user rights for ErrorLedger."
-	pubDate={new Date('August 17, 2026')}
-	tags={["legal", "privacy", "compliance"]}
->
-	<p><em>Last Updated: August 17, 2026</em></p>
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead 
+      title={`Privacy Policy | ${SITE_TITLE}`} 
+      description="Privacy policy and data telemetry disclosures for AetherArcade, including Google AdSense cookies and local storage." 
+    />
+  </head>
+  <body class="static-page-body">
+    <Header />
 
-	<p>At ErrorLedger, we value transparency and privacy. This Privacy Policy explains how information is collected, used, and protected when you access the ErrorLedger platform.</p>
+    <main class="static-page-main">
+      <div class="content-container">
+        <span class="pill-label">LEGAL & PRIVACY</span>
+        <h1>Privacy Policy</h1>
+        <p class="updated-date"><em>Last Updated: September 2026</em></p>
 
-	<h2>1. Information We Collect</h2>
-	<p>When you visit ErrorLedger, we collect standard server telemetry to ensure uptime, security, and performance:</p>
-	<ul>
-		<li><strong>Log File Telemetry:</strong> Internet Protocol (IP) addresses, browser type, Internet Service Provider (ISP), date/time stamps, referring/exit pages, and click paths.</li>
-		<li><strong>Local Browser Storage (localStorage):</strong> We use client-side storage solely to record your Reader Verdict poll votes, dark/light theme preference, and anonymous incident intake drafts on your own device.</li>
-	</ul>
+        <p>
+          At <strong>AetherArcade</strong>, accessible from our website, the privacy of our visitors is of paramount importance to us. This Privacy Policy document outlines the types of information that is collected and recorded by AetherArcade and how we use it.
+        </p>
 
-	<h2>2. Advertising & Third-Party Cookies (Google AdSense)</h2>
-	<p>ErrorLedger partners with third-party vendors, including Google, to serve advertisements when you visit our website:</p>
-	<ul>
-		<li>Google uses cookies (such as the DoubleClick DART cookie) to serve ads to users based on their visits to this site and other sites on the internet.</li>
-		<li>Users may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer">Google Ads Settings</a> or through the <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer">Digital Advertising Alliance Consumer Choice page</a>.</li>
-	</ul>
+        <hr class="divider" />
 
-	<h2>3. Anonymous Incident Submissions</h2>
-	<p>
-		When you submit an incident via our intake portal:
-	</p>
-	<ul>
-		<li>We do not require you to provide your name, phone number, or employer identification.</li>
-		<li>All submitted text is reviewed under our Whistleblower Protection standard to scrub sensitive identifiers prior to editorial publication.</li>
-	</ul>
+        <h2>1. Client-Side Architecture & Local Storage</h2>
+        <p>
+          AetherArcade operates on a 100% client-side gaming model. We do not require accounts, logins, or server-side database profiles.
+        </p>
+        <p>
+          We utilize standard HTML5 <strong>localStorage</strong> directly within your browser solely for:
+        </p>
+        <ul>
+          <li>Saving your local high scores and best runs (e.g., 2048 high score, Cosmic Drop record).</li>
+          <li>Preserving your sound mute preferences (<code>aether_sound_muted</code>).</li>
+          <li>Saving your visual theme choice (dark mode vs. light mode).</li>
+        </ul>
+        <p>This data never leaves your device and can be cleared at any time by clearing your browser cache.</p>
 
-	<h2>4. External Links</h2>
-	<p>
-		Our investigative case files contain links to public court records, news archives, and regulatory disclosures. ErrorLedger is not responsible for the privacy practices or content of these external domains.
-	</p>
+        <h2>2. Google AdSense & Third-Party Advertising</h2>
+        <p>
+          To keep all games completely free for everyone with zero paywalls, AetherArcade uses third-party advertising vendors, including Google AdSense, to serve ads when you visit our website:
+        </p>
+        <ul>
+          <li>Google, as a third-party vendor, uses cookies to serve ads on AetherArcade.</li>
+          <li>Google's use of advertising cookies enables it and its partners to serve ads to our users based on their visit to our site and/or other sites on the Internet.</li>
+          <li>Users may opt out of personalized advertising by visiting the <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer">Google Ads Settings</a> page.</li>
+          <li>Alternatively, you can opt out of third-party vendors' use of cookies for personalized advertising by visiting <a href="https://www.aboutads.info" target="_blank" rel="noopener noreferrer">www.aboutads.info</a>.</li>
+        </ul>
 
-	<h2>5. Contact Information</h2>
-	<p>
-		For any questions, corrections, or privacy inquiries, contact us at <a href="mailto:contact@errorledger.com">contact@errorledger.com</a>.
-	</p>
-</Layout>
+        <h2>3. Log Files</h2>
+        <p>
+          Like almost all modern websites, AetherArcade uses standard server log files. These files merely log visitors to the site—usually a standard procedure for hosting services and analytics. The information collected by log files includes internet protocol (IP) addresses, browser type, Internet Service Provider (ISP), date and time stamps, referring/exit pages, and possibly the number of clicks. These are not linked to any information that is personally identifiable.
+        </p>
+
+        <h2>4. Children's Privacy</h2>
+        <p>
+          Another part of our priority is adding protection for children while using the internet. We encourage parents and guardians to observe, participate in, and/or monitor and guide their online activity. AetherArcade does not knowingly collect any Personal Identifiable Information from children under the age of 13.
+        </p>
+
+        <h2>5. CCPA Privacy Rights (Do Not Sell My Personal Information)</h2>
+        <p>
+          Under the CCPA, California consumers have the right to request that a business disclose what personal data it collects, delete any collected personal data, and not sell the consumer's personal data. We do not sell any personal information.
+        </p>
+
+        <h2>6. GDPR Data Protection Rights</h2>
+        <p>
+          We want to ensure you are fully aware of all of your data protection rights. Every user is entitled to the right of access, rectification, erasure, restrict processing, and data portability.
+        </p>
+
+        <h2>7. Contact Us</h2>
+        <p>
+          If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact us at <code>privacy@aetherarcade.com</code> or via our <a href="/contact">Contact Page</a>.
+        </p>
+      </div>
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .static-page-body {
+    background: #090d16 !important;
+    color: #f1f5f9 !important;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .static-page-main {
+    flex: 1;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+    width: 100%;
+  }
+
+  .content-container {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    line-height: 1.75;
+  }
+
+  .pill-label {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #a855f7;
+    background: rgba(168, 85, 247, 0.12);
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+  }
+
+  h1 {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #f8fafc;
+    letter-spacing: -0.03em;
+    margin: 0 0 0.5rem;
+  }
+
+  .updated-date {
+    color: #64748b;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin: 2rem 0;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 2rem 0 0.75rem;
+  }
+
+  p {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    margin: 0 0 1rem;
+  }
+
+  ul {
+    color: #cbd5e1;
+    font-size: 0.95rem;
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  li {
+    margin-bottom: 0.4rem;
+  }
+
+  a {
+    color: #38bdf8;
+    text-decoration: underline;
+  }
+
+  code {
+    background: rgba(255, 255, 255, 0.06);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.88rem;
+    color: #e2e8f0;
+  }
+
+  @media (max-width: 640px) {
+    .content-container {
+      padding: 1.5rem;
+    }
+  }
+</style>

@@ -1,0 +1,144 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead 
+      title={`Terms of Service | ${SITE_TITLE}`} 
+      description="Terms of service and user agreements for AetherArcade free browser games." 
+    />
+  </head>
+  <body class="static-page-body">
+    <Header />
+
+    <main class="static-page-main">
+      <div class="content-container">
+        <span class="pill-label">LEGAL & TERMS</span>
+        <h1>Terms of Service</h1>
+        <p class="updated-date"><em>Last Updated: September 2026</em></p>
+
+        <p>
+          Welcome to <strong>AetherArcade</strong>! By accessing or playing any games on our website, you agree to comply with and be bound by the following terms and conditions.
+        </p>
+
+        <hr class="divider" />
+
+        <h2>1. Permitted Use</h2>
+        <p>
+          AetherArcade provides free client-side browser video games for personal, non-commercial entertainment. You may access our games across desktop and mobile devices at any time without fee or mandatory registration.
+        </p>
+
+        <h2>2. Intellectual Property</h2>
+        <p>
+          The original game designs, codebases, procedural audio engines, logos, and website layouts are the intellectual property of AetherArcade. Classic puzzle mechanics (such as the sliding-tile 2048 system) are recognized as public domain mathematical/puzzle concepts.
+        </p>
+
+        <h2>3. Disclaimer of Warranty</h2>
+        <p>
+          All games and materials on AetherArcade are provided "as is" and without warranties of any kind. While we strive for 100% uptime and zero bugs, we do not warrant that gameplay will be error-free or uninterrupted.
+        </p>
+
+        <h2>4. Modifications</h2>
+        <p>
+          We reserve the right to add, modify, or update games and these Terms of Service at any time without prior notice. Continued use of the website constitutes acceptance of the modified terms.
+        </p>
+
+        <h2>5. Contact Support</h2>
+        <p>
+          For legal or terms inquiries, reach out through our <a href="/contact">Contact Page</a>.
+        </p>
+      </div>
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .static-page-body {
+    background: #090d16 !important;
+    color: #f1f5f9 !important;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .static-page-main {
+    flex: 1;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+    width: 100%;
+  }
+
+  .content-container {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    line-height: 1.75;
+  }
+
+  .pill-label {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+  }
+
+  h1 {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #f8fafc;
+    letter-spacing: -0.03em;
+    margin: 0 0 0.5rem;
+  }
+
+  .updated-date {
+    color: #64748b;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin: 2rem 0;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 2rem 0 0.75rem;
+  }
+
+  p {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    margin: 0 0 1rem;
+  }
+
+  a {
+    color: #38bdf8;
+    text-decoration: underline;
+  }
+
+  @media (max-width: 640px) {
+    .content-container {
+      padding: 1.5rem;
+    }
+  }
+</style>

@@ -1,169 +1,150 @@
 ---
-const today = new Date();
-const currentPath = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
-const isKorean = currentPath === '/ko' || currentPath.startsWith('/ko/');
-
-const homeUrl = isKorean ? '/ko' : '/';
-const archiveUrl = isKorean ? '/ko/blog' : '/blog';
-const searchUrl = isKorean ? '/ko/search' : '/search';
-const aboutUrl = isKorean ? '/ko/about' : '/about';
-const methodologyUrl = isKorean ? '/ko/methodology' : '/methodology';
-const contactUrl = isKorean ? '/ko/contact' : '/contact';
-const privacyUrl = isKorean ? '/ko/privacy' : '/privacy';
+const currentYear = new Date().getFullYear();
 ---
 
-<footer>
-	<div class="footer-grid">
-		<div class="footer-brand">
-			<a href={homeUrl} class="footer-logo">
-				<span class="logo-badge">&gt;_</span>
-				<span>Error<span class="logo-red">Ledger</span></span>
-			</a>
-			<p class="footer-tagline">
-				{isKorean 
-					? "실제 실패. 기괴한 결정. 충격적인 결과. 인간과 시스템의 재난을 기록하는 아카이브." 
-					: "Real failures. Strange decisions. Unbelievable consequences. An archive of human and systemic disasters."}
-			</p>
-			<a href="/rss.xml" class="rss-link" target="_blank" rel="noopener noreferrer">
-				<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: #f43f5e; vertical-align: middle;"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg>
-				{isKorean ? "RSS 구독" : "Subscribe via RSS"}
-			</a>
-		</div>
+<footer class="arcade-footer">
+  <div class="footer-inner">
+    <div class="footer-brand-col">
+      <div class="footer-logo">
+        <span class="brand-icon">🕹️</span>
+        <span class="brand-text-main">Aether</span><span class="brand-text-accent">Arcade</span>
+      </div>
+      <p class="footer-desc">
+        AetherArcade is an independent, 100% client-side web gaming platform. Play tactical card battlers, tile puzzles, word hunts, and physics drop games instantly with zero downloads.
+      </p>
+      <div class="footer-badge">
+        <span>⚡ 100% Client-Side • $0 Paywalls • Zero Installs</span>
+      </div>
+    </div>
 
-		<nav class="footer-nav-col" aria-label="Archive navigation">
-			<h4 class="footer-col-title">{isKorean ? "보관소" : "The Ledger"}</h4>
-			<a href={archiveUrl} class="footer-link">{isKorean ? "전체 사건 목록" : "All Incidents"}</a>
-			<a href={searchUrl} class="footer-link">{isKorean ? "사건 검색" : "Search Ledger"}</a>
-			<a href="#" class="footer-link" data-open-submit-modal>+ {isKorean ? "사건 제보" : "Submit Incident"}</a>
-		</nav>
+    <div class="footer-links-col">
+      <h4>Popular Games</h4>
+      <ul>
+        <li><a href="/games/god-duel">⚔️ God Duel (Card Battle)</a></li>
+        <li><a href="/games/gem-2048">💎 GemMerge 2048</a></li>
+        <li><a href="/games/word-sprint">🔤 Word Sprint</a></li>
+        <li><a href="/games/cosmic-drop">🪐 Cosmic Drop</a></li>
+      </ul>
+    </div>
 
-		<nav class="footer-nav-col" aria-label="Failure Pillars navigation">
-			<h4 class="footer-col-title">{isKorean ? "분류" : "Categories"}</h4>
-			<a href={`${searchUrl}?q=money`} class="footer-link">{isKorean ? "💰 금융 & 경제" : "💰 Finance & Money"}</a>
-			<a href={`${searchUrl}?q=corporate`} class="footer-link">{isKorean ? "🏢 기업 & 시스템" : "🏢 Corporate & Systems"}</a>
-			<a href={`${searchUrl}?q=work`} class="footer-link">{isKorean ? "🧑‍💻 직장 & 커리어" : "🧑‍💻 Workplace & Career"}</a>
-			<a href={`${searchUrl}?q=ai`} class="footer-link">{isKorean ? "🤖 AI & 알고리즘" : "🤖 AI & Algorithmic"}</a>
-		</nav>
+    <div class="footer-links-col">
+      <h4>Legal & Policies</h4>
+      <ul>
+        <li><a href="/privacy">Privacy Policy</a></li>
+        <li><a href="/terms">Terms of Service</a></li>
+        <li><a href="/about">About Us</a></li>
+        <li><a href="/contact">Contact Support</a></li>
+      </ul>
+    </div>
+  </div>
 
-		<nav class="footer-nav-col" aria-label="Site information">
-			<h4 class="footer-col-title">{isKorean ? "편집국" : "Editorial"}</h4>
-			<a href={aboutUrl} class="footer-link">{isKorean ? "소개 (About)" : "About ErrorLedger"}</a>
-			<a href={methodologyUrl} class="footer-link">{isKorean ? "탐사 방법론" : "Research Methodology"}</a>
-			<a href={contactUrl} class="footer-link">{isKorean ? "제보 및 문의" : "Contact & Tips"}</a>
-			<a href={privacyUrl} class="footer-link">{isKorean ? "개인정보처리방침" : "Privacy Policy"}</a>
-		</nav>
-	</div>
-
-	<div class="footer-bottom">
-		<span>&copy; {today.getFullYear()} ErrorLedger. {isKorean ? "모든 실수는 이야기를 남긴다." : "Every mistake leaves a story."} All rights reserved.</span>
-	</div>
-
-	<style>
-		footer {
-			padding: 3rem 1.5rem 1.5rem 1.5rem;
-			border-top: 1px solid #262626;
-			margin-top: auto;
-			font-size: 0.9rem;
-			background: #0a0a0a;
-		}
-		.footer-grid {
-			display: grid;
-			grid-template-columns: 2fr 1fr 1fr 1fr;
-			gap: 2rem;
-			max-width: 1000px;
-			margin: 0 auto 2rem auto;
-		}
-		@media (max-width: 768px) {
-			.footer-grid {
-				grid-template-columns: 1fr 1fr;
-			}
-		}
-		@media (max-width: 480px) {
-			.footer-grid {
-				grid-template-columns: 1fr;
-			}
-		}
-		.footer-logo {
-			display: inline-flex;
-			align-items: center;
-			gap: 0.4rem;
-			text-decoration: none;
-			font-family: ui-monospace, monospace;
-			font-weight: 700;
-			font-size: 1.1rem;
-			color: #f5f5f5;
-			margin-bottom: 0.75rem;
-		}
-		.logo-badge {
-			background: #171717;
-			color: #f43f5e;
-			padding: 0.1rem 0.35rem;
-			border-radius: 4px;
-			border: 1px solid #262626;
-			font-size: 0.85rem;
-			font-weight: 900;
-		}
-		.logo-red { color: #f43f5e; }
-		.footer-tagline {
-			color: #a3a3a3;
-			font-size: 0.85rem;
-			line-height: 1.5;
-			margin: 0.5rem 0 0.75rem 0;
-			max-width: 280px;
-		}
-		.rss-link {
-			display: inline-flex;
-			align-items: center;
-			gap: 0.35rem;
-			color: #a3a3a3;
-			text-decoration: none;
-			font-size: 0.82rem;
-			font-family: ui-monospace, monospace;
-			transition: color 0.15s ease;
-		}
-		.rss-link:hover { color: #f43f5e; }
-		.footer-col-title {
-			font-size: 0.75rem;
-			font-weight: 700;
-			text-transform: uppercase;
-			letter-spacing: 0.06em;
-			color: #737373;
-			font-family: ui-monospace, monospace;
-			margin: 0 0 0.85rem 0;
-		}
-		.footer-nav-col {
-			display: flex;
-			flex-direction: column;
-			gap: 0.5rem;
-		}
-		.footer-link {
-			color: #a3a3a3;
-			text-decoration: none;
-			font-size: 0.88rem;
-			transition: color 0.15s ease;
-		}
-		.footer-link:hover { color: #f43f5e; }
-		.footer-bottom {
-			text-align: center;
-			color: #737373;
-			font-size: 0.8rem;
-			font-family: ui-monospace, monospace;
-			border-top: 1px solid #262626;
-			padding-top: 1.5rem;
-			max-width: 1000px;
-			margin: 0 auto;
-		}
-
-		/* Light mode styles */
-		:global(html:not(.dark)) footer {
-			background: #f8fafc;
-			border-top-color: #e2e8f0;
-		}
-		:global(html:not(.dark)) .footer-logo { color: #0f172a; }
-		:global(html:not(.dark)) .footer-tagline { color: #64748b; }
-		:global(html:not(.dark)) .footer-col-title { color: #94a3b8; }
-		:global(html:not(.dark)) .footer-link { color: #475569; }
-		:global(html:not(.dark)) .footer-link:hover { color: #f43f5e; }
-		:global(html:not(.dark)) .footer-bottom { color: #94a3b8; border-top-color: #e2e8f0; }
-	</style>
+  <div class="footer-bottom">
+    <p>&copy; {currentYear} AetherArcade. All rights reserved. Free browser games for desktop and mobile.</p>
+  </div>
 </footer>
+
+<style>
+  .arcade-footer {
+    background: #090d16;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+    padding: 3rem 1.5rem 1.5rem;
+    margin-top: auto;
+  }
+
+  .footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 3rem;
+  }
+
+  .footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+  }
+
+  .brand-icon {
+    font-size: 1.3rem;
+  }
+
+  .brand-text-main {
+    color: #f8fafc;
+  }
+
+  .brand-text-accent {
+    background: linear-gradient(135deg, #a855f7 0%, #38bdf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .footer-desc {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: #64748b;
+    margin-bottom: 1rem;
+    max-width: 440px;
+  }
+
+  .footer-badge span {
+    display: inline-block;
+    font-size: 0.75rem;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+
+  .footer-links-col h4 {
+    color: #f1f5f9;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 0 0 1rem;
+    letter-spacing: 0.02em;
+  }
+
+  .footer-links-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-links-col li {
+    margin-bottom: 0.6rem;
+  }
+
+  .footer-links-col a {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.88rem;
+    transition: color 0.15s ease;
+  }
+
+  .footer-links-col a:hover {
+    color: #38bdf8;
+  }
+
+  .footer-bottom {
+    max-width: 1200px;
+    margin: 2.5rem auto 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+    font-size: 0.8rem;
+    color: #475569;
+  }
+
+  @media (max-width: 768px) {
+    .footer-inner {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+</style>

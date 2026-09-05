@@ -1,37 +1,187 @@
 ---
-import Layout from '../layouts/BlogPost.astro';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE } from '../consts';
 ---
 
-<Layout
-	title="Contact & Incident Intake"
-	meta_title="Submit Incidents, Confessions & Tips | ErrorLedger"
-	description="Submit confidential incident reports, career confessions, or editorial inquiries to The Archivist."
-	pubDate={new Date('August 17, 2026')}
-	tags={["meta", "contact", "submissions"]}
->
-	<h2>The Intake Desk</h2>
-	<p>
-		ErrorLedger investigates real human, corporate, and systemic failures. If you were involved in a notable disaster, witnessed a bizarre operational blunder, or have access to verifiable public records, we invite your tip.
-	</p>
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead 
+      title={`Contact & Support | ${SITE_TITLE}`} 
+      description="Get in touch with the AetherArcade game development team. Submit feedback, bug reports, or game requests." 
+    />
+  </head>
+  <body class="static-page-body">
+    <Header />
 
-	<h2>Submission Channels</h2>
-	<ul>
-		<li>
-			<strong>Confidential Incident Inquiries & Direct Tips:</strong><br/>
-			<a href="mailto:contact@errorledger.com">contact@errorledger.com</a>
-		</li>
-		<li>
-			<strong>Anonymous Quick Intake:</strong><br/>
-			Use our interactive on-site intake form by clicking <a href="#" data-open-submit-modal><strong>+ Submit an Incident</strong></a> from any page. Submissions are scrubbed of identifying credentials before review.
-		</li>
-		<li>
-			<strong>Factual Corrections & Rights Inquiries:</strong><br/>
-			<a href="mailto:contact@errorledger.com">contact@errorledger.com</a>
-		</li>
-	</ul>
+    <main class="static-page-main">
+      <div class="content-container">
+        <span class="pill-label">FEEDBACK & SUPPORT</span>
+        <h1>Get in Touch</h1>
+        <p class="lead-text">
+          Have an idea for a new turn-based card or puzzle game? Encountered a bug in <em>God Duel</em> or <em>Cosmic Drop</em>? We would love to hear from you.
+        </p>
 
-	<h2>Whistleblower Protection Standard</h2>
-	<p>
-		When reviewing Tier 2 submissions, ErrorLedger scrubs names, corporate identifiers, localized database credentials, and internal hostnames unless the incident is already a matter of public legal or regulatory record (Tier 1). We do not disclose confidential sources.
-	</p>
-</Layout>
+        <hr class="divider" />
+
+        <div class="contact-channels">
+          <div class="channel-card">
+            <span class="ch-icon">📧</span>
+            <h3>Direct Email</h3>
+            <p>For support, bug reports, and general feedback:</p>
+            <a href="mailto:support@aetherarcade.com" class="ch-link">support@aetherarcade.com</a>
+          </div>
+
+          <div class="channel-card">
+            <span class="ch-icon">💡</span>
+            <h3>Game Submissions & Ideas</h3>
+            <p>Have a favorite classic web game you'd like to see reimagined?</p>
+            <a href="mailto:ideas@aetherarcade.com" class="ch-link">ideas@aetherarcade.com</a>
+          </div>
+        </div>
+
+        <div class="faq-box-notice">
+          <h3>⚡ Quick Developer Note</h3>
+          <p>
+            AetherArcade is 100% free and client-side. If a game ever appears stuck or frozen on your device, a simple page refresh (<code>Ctrl + R</code> or swipe down on mobile) will instantly reset the client state without losing your saved high scores.
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .static-page-body {
+    background: #090d16 !important;
+    color: #f1f5f9 !important;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .static-page-main {
+    flex: 1;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+    width: 100%;
+  }
+
+  .content-container {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    line-height: 1.75;
+  }
+
+  .pill-label {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+  }
+
+  h1 {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #f8fafc;
+    letter-spacing: -0.03em;
+    margin: 0 0 1rem;
+  }
+
+  .lead-text {
+    font-size: 1.05rem;
+    color: #94a3b8;
+    margin-bottom: 1.5rem;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin: 2rem 0;
+  }
+
+  .contact-channels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .channel-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .ch-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .channel-card h3 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 0.5rem;
+  }
+
+  .channel-card p {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin: 0 0 1rem;
+  }
+
+  .ch-link {
+    display: inline-block;
+    color: #38bdf8;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: underline;
+  }
+
+  .faq-box-notice {
+    background: rgba(168, 85, 247, 0.1);
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+  }
+
+  .faq-box-notice h3 {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #d8b4fe;
+    margin: 0 0 0.4rem;
+  }
+
+  .faq-box-notice p {
+    color: #cbd5e1;
+    font-size: 0.88rem;
+    margin: 0;
+  }
+
+  @media (max-width: 640px) {
+    .contact-channels {
+      grid-template-columns: 1fr;
+    }
+    .content-container {
+      padding: 1.5rem;
+    }
+  }
+</style>

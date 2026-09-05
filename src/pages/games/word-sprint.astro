@@ -1,0 +1,556 @@
+---
+import GameLayout from '../../layouts/GameLayout.astro';
+import { getEntry } from 'astro:content';
+
+const gameEntry = await getEntry('games', 'word-sprint');
+const data = gameEntry?.data || {
+  title: 'Word Sprint',
+  tagline: '60-Second Anagram & Word Hunt Challenge',
+  description: 'Unscramble letters, find valid English words, and beat the clock in this rapid-fire vocabulary puzzle.',
+  icon: '🔤',
+  category: 'word',
+  badge: '⚡ Speed',
+  players: '1 Player',
+  playTime: '60 seconds',
+  controls: [
+    'Type on keyboard or click the letter buttons',
+    'Press Enter to submit word, Backspace to delete',
+    'Click Shuffle (or Spacebar) to rearrange letters'
+  ],
+  rules: [
+    'You have 60 seconds to find as many words as possible from 6 scrambled letters.',
+    'Words must be at least 3 letters long.',
+    'Find the 6-letter master word for extra bonus points and glory!'
+  ]
+};
+---
+
+<GameLayout
+  title={data.title}
+  description={data.description}
+  tagline={data.tagline}
+  icon={data.icon}
+  category={data.category}
+  badge={data.badge}
+  players={data.players}
+  playTime={data.playTime}
+  controls={data.controls}
+  rules={data.rules}
+>
+  <div class="word-sprint-root">
+    <!-- Header Vitals -->
+    <div class="sprint-header">
+      <div class="vital-badge timer-badge">
+        <span class="v-label">TIME</span>
+        <span class="v-val" id="time-left">60s</span>
+      </div>
+      <div class="vital-badge score-badge">
+        <span class="v-label">SCORE</span>
+        <span class="v-val" id="sprint-score">0</span>
+      </div>
+      <div class="vital-badge words-badge">
+        <span class="v-label">WORDS FOUND</span>
+        <span class="v-val" id="words-count">0</span>
+      </div>
+    </div>
+
+    <!-- Active Word Input Bar -->
+    <div class="input-display-box">
+      <div class="current-word-text" id="current-word-display">_ _ _ _ _ _</div>
+      <div class="input-status" id="input-status-msg">Type or tap letters below</div>
+    </div>
+
+    <!-- Letter Tiles Row -->
+    <div class="letter-tiles-row" id="letter-tiles-container">
+      <!-- 6 dynamic interactive letter buttons -->
+    </div>
+
+    <!-- Controls Row -->
+    <div class="sprint-controls">
+      <button id="shuffle-btn" class="ctrl-btn shuffle-btn"><span>🔀 Shuffle (Space)</span></button>
+      <button id="backspace-btn" class="ctrl-btn back-btn"><span>⌫ Delete</span></button>
+      <button id="submit-btn" class="ctrl-btn submit-btn"><span>✅ Submit (Enter)</span></button>
+    </div>
+
+    <!-- Found Words Drawer -->
+    <div class="found-words-container">
+      <div class="drawer-title">FOUND WORDS</div>
+      <div class="words-pill-list" id="found-words-list">
+        <span class="empty-hint">Words you find will appear here...</span>
+      </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div class="sprint-modal-mask hidden" id="sprint-modal">
+      <div class="sprint-modal-card">
+        <div class="modal-icon">🏆</div>
+        <h2>Sprint Completed!</h2>
+        <p class="final-score-text">Final Score: <strong id="modal-score">0</strong> points</p>
+        <p class="final-words-text">Words Discovered: <strong id="modal-words">0</strong></p>
+        <div class="solution-box">
+          <span class="sol-label">MASTER 6-LETTER WORD:</span>
+          <span class="sol-word" id="modal-solution">PLANET</span>
+        </div>
+        <button id="modal-restart-btn" class="sprint-play-again-btn">Play Another Round</button>
+      </div>
+    </div>
+  </div>
+
+  <div slot="guide">
+    <h2>Word Sprint Strategy</h2>
+    <p>
+      Look for prefixes like <em>RE-</em>, <em>UN-</em>, and common suffixes like <em>-ED</em>, <em>-ER</em>, <em>-ING</em>, or <em>-S</em>. Shuffling the letters frequently helps trigger new mental word associations when your eyes get stuck on one combination.
+    </p>
+  </div>
+</GameLayout>
+
+<style>
+  .word-sprint-root {
+    background: #090d16;
+    border-radius: 12px;
+    padding: 1.5rem 1rem;
+    max-width: 580px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    user-select: none;
+  }
+
+  .sprint-header {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 0.75rem;
+  }
+
+  .vital-badge {
+    flex: 1;
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 0.4rem 0.5rem;
+    text-align: center;
+  }
+
+  .v-label {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #94a3b8;
+    letter-spacing: 0.05em;
+  }
+
+  .v-val {
+    font-size: 1.35rem;
+    font-weight: 900;
+    color: #f8fafc;
+  }
+
+  .timer-badge .v-val { color: #38bdf8; }
+  .score-badge .v-val { color: #facc15; }
+  .words-badge .v-val { color: #a855f7; }
+
+  /* Input Display */
+  .input-display-box {
+    width: 100%;
+    background: #0f172a;
+    border: 2px solid rgba(168, 85, 247, 0.35);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.15);
+  }
+
+  .current-word-text {
+    font-size: 2.2rem;
+    font-weight: 900;
+    letter-spacing: 0.25em;
+    color: #ffffff;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .input-status {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-top: 0.35rem;
+    min-height: 18px;
+  }
+
+  .input-status.error { color: #ef4444; font-weight: 700; }
+  .input-status.success { color: #10b981; font-weight: 700; }
+
+  /* Letter Tiles */
+  .letter-tiles-row {
+    display: flex;
+    gap: 0.6rem;
+    justify-content: center;
+    width: 100%;
+  }
+
+  :global(.letter-tile-btn) {
+    width: 58px;
+    height: 64px;
+    background: #1e293b;
+    border: 2px solid #475569;
+    border-radius: 10px;
+    color: #f8fafc;
+    font-size: 1.8rem;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.12s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  :global(.letter-tile-btn:hover) {
+    background: #334155;
+    border-color: #38bdf8;
+    transform: translateY(-4px);
+  }
+
+  :global(.letter-tile-btn.used) {
+    opacity: 0.25;
+    pointer-events: none;
+    transform: translateY(2px);
+  }
+
+  /* Controls */
+  .sprint-controls {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .ctrl-btn {
+    flex: 1;
+    padding: 0.65rem 0.5rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
+  }
+
+  .shuffle-btn { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-color: rgba(56, 189, 248, 0.3); }
+  .back-btn { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: rgba(239, 68, 68, 0.3); }
+  .submit-btn { background: linear-gradient(135deg, #10b981, #059669); color: #ffffff; }
+
+  .ctrl-btn:hover {
+    transform: scale(1.03);
+  }
+
+  /* Found Words Container */
+  .found-words-container {
+    width: 100%;
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 0.75rem;
+  }
+
+  .drawer-title {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #64748b;
+    margin-bottom: 0.4rem;
+  }
+
+  .words-pill-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    max-height: 90px;
+    overflow-y: auto;
+  }
+
+  :global(.word-pill) {
+    background: rgba(168, 85, 247, 0.15);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    color: #e9d5ff;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+  }
+
+  .empty-hint {
+    font-size: 0.75rem;
+    color: #475569;
+    font-style: italic;
+  }
+
+  /* Modal */
+  .sprint-modal-mask {
+    position: fixed;
+    inset: 0;
+    background: rgba(9, 13, 22, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+
+  .sprint-modal-card {
+    background: #0f172a;
+    border: 2px solid rgba(56, 189, 248, 0.5);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    max-width: 380px;
+    width: 90%;
+    box-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
+  }
+
+  .modal-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+  .sprint-modal-card h2 { color: #f8fafc; margin: 0 0 0.5rem; }
+  .final-score-text { color: #facc15; font-size: 1.2rem; margin: 0.25rem 0; }
+  .final-words-text { color: #94a3b8; font-size: 0.9rem; margin: 0 0 1rem; }
+
+  .solution-box {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 0.6rem;
+    margin-bottom: 1.25rem;
+  }
+  .sol-label { display: block; font-size: 0.65rem; color: #64748b; font-weight: 800; }
+  .sol-word { font-size: 1.4rem; font-weight: 900; color: #38bdf8; letter-spacing: 0.1em; }
+
+  .sprint-play-again-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #a855f7, #38bdf8);
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 800;
+    padding: 0.75rem;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 480px) {
+    :global(.letter-tile-btn) {
+      width: 44px;
+      height: 52px;
+      font-size: 1.4rem;
+    }
+    .current-word-text {
+      font-size: 1.7rem;
+    }
+  }
+</style>
+
+<script>
+  // Curated 6-letter master words and their sub-anagrams
+  const PUZZLE_SETS = [
+    {
+      master: 'PLANET',
+      valid: ['PLANET', 'PLANE', 'PLANT', 'PLATE', 'PANEL', 'LEPTA', 'PLEAT', 'PALE', 'LEAP', 'PEAL', 'PLEA', 'PATE', 'PEAT', 'TAPE', 'LANE', 'LEAN', 'LATE', 'TALE', 'TEAL', 'NEAT', 'PANT', 'PLAN', 'PLAT', 'PAN', 'PEN', 'TAP', 'PAT', 'PET', 'APE', 'ALE', 'LET', 'TEA', 'EAT', 'ATE', 'TAN', 'NET', 'TEN']
+    },
+    {
+      master: 'SILVER',
+      valid: ['SILVER', 'LIVER', 'RIVES', 'SLIER', 'VEILS', 'VIRES', 'SIRE', 'LIVE', 'EVIL', 'VILE', 'VEIL', 'RISE', 'SIRE', 'RIVE', 'LIES', 'ISLE', 'LIRA', 'REIS', 'SIR', 'LIE', 'VIE']
+    },
+    {
+      master: 'CASTLE',
+      valid: ['CASTLE', 'LEAST', 'STALE', 'STEAL', 'SLATE', 'TALES', 'TEALS', 'SCALE', 'CASE', 'CAST', 'CATS', 'ACTS', 'LATE', 'TALE', 'TEAL', 'EAST', 'SEAT', 'SALE', 'SEAL', 'LAST', 'SALT', 'CAT', 'ACT', 'ALE', 'LET', 'TEA', 'EAT', 'ATE', 'SET']
+    },
+    {
+      master: 'GARDEN',
+      valid: ['GARDEN', 'DANGER', 'RANGED', 'GRADE', 'GRAND', 'RAGED', 'DEAR', 'DARE', 'READ', 'EARN', 'NEAR', 'GEAR', 'RAGE', 'AGED', 'DRAG', 'GRAD', 'RED', 'EAR', 'ERA', 'AGE', 'DEN', 'END']
+    }
+  ];
+
+  let currentPuzzle = PUZZLE_SETS[0];
+  let letters: string[] = [];
+  let enteredIndices: number[] = [];
+  let foundWords = new Set<string>();
+  let score = 0;
+  let timeLeft = 60;
+  let timerInterval: number | null = null;
+
+  const timerElem = document.getElementById('time-left');
+  const scoreElem = document.getElementById('sprint-score');
+  const wordsCountElem = document.getElementById('words-count');
+  const wordDisplay = document.getElementById('current-word-display');
+  const statusMsg = document.getElementById('input-status-msg');
+  const tilesContainer = document.getElementById('letter-tiles-container');
+  const foundWordsList = document.getElementById('found-words-list');
+
+  const shuffleBtn = document.getElementById('shuffle-btn');
+  const backspaceBtn = document.getElementById('backspace-btn');
+  const submitBtn = document.getElementById('submit-btn');
+
+  const modal = document.getElementById('sprint-modal');
+  const modalScore = document.getElementById('modal-score');
+  const modalWords = document.getElementById('modal-words');
+  const modalSolution = document.getElementById('modal-solution');
+  const modalRestartBtn = document.getElementById('modal-restart-btn');
+
+  function initRound() {
+    currentPuzzle = PUZZLE_SETS[Math.floor(Math.random() * PUZZLE_SETS.length)];
+    letters = currentPuzzle.master.split('').sort(() => Math.random() - 0.5);
+    enteredIndices = [];
+    foundWords.clear();
+    score = 0;
+    timeLeft = 60;
+
+    if (modal) modal.classList.add('hidden');
+    if (foundWordsList) foundWordsList.innerHTML = '<span class="empty-hint">Words you find will appear here...</span>';
+    updateHUD();
+    renderTiles();
+    updateDisplay();
+
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = window.setInterval(() => {
+      timeLeft--;
+      if (timerElem) timerElem.textContent = `${timeLeft}s`;
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval!);
+        endGame();
+      }
+    }, 1000);
+  }
+
+  function updateHUD() {
+    if (timerElem) timerElem.textContent = `${timeLeft}s`;
+    if (scoreElem) scoreElem.textContent = String(score);
+    if (wordsCountElem) wordsCountElem.textContent = String(foundWords.size);
+  }
+
+  function renderTiles() {
+    if (!tilesContainer) return;
+    tilesContainer.innerHTML = '';
+    letters.forEach((char, idx) => {
+      const btn = document.createElement('button');
+      btn.className = `letter-tile-btn ${enteredIndices.includes(idx) ? 'used' : ''}`;
+      btn.textContent = char;
+      btn.addEventListener('click', () => pickLetter(idx));
+      tilesContainer.appendChild(btn);
+    });
+  }
+
+  function updateDisplay() {
+    if (!wordDisplay) return;
+    const currentWord = enteredIndices.map(i => letters[i]).join('');
+    wordDisplay.textContent = currentWord || '_ _ _ _ _ _';
+  }
+
+  function pickLetter(idx: number) {
+    if (enteredIndices.includes(idx)) return;
+    enteredIndices.push(idx);
+    renderTiles();
+    updateDisplay();
+    if (statusMsg) {
+      statusMsg.className = 'input-status';
+      statusMsg.textContent = 'Keep typing or press Enter';
+    }
+  }
+
+  function deleteLetter() {
+    if (enteredIndices.length === 0) return;
+    enteredIndices.pop();
+    renderTiles();
+    updateDisplay();
+  }
+
+  function shuffleTiles() {
+    // Keep unselected letters randomized
+    letters.sort(() => Math.random() - 0.5);
+    enteredIndices = [];
+    renderTiles();
+    updateDisplay();
+  }
+
+  function submitWord() {
+    const word = enteredIndices.map(i => letters[i]).join('');
+    if (word.length < 3) {
+      flashStatus('Word must be at least 3 letters!', 'error');
+      return;
+    }
+
+    if (foundWords.has(word)) {
+      flashStatus(`Already found "${word}"!`, 'error');
+      enteredIndices = [];
+      renderTiles();
+      updateDisplay();
+      return;
+    }
+
+    if (currentPuzzle.valid.includes(word)) {
+      foundWords.add(word);
+      const pts = word.length === 6 ? 1200 : word.length * 100;
+      score += pts;
+      flashStatus(`+${pts} points for "${word}"!`, 'success');
+      addWordPill(word);
+      updateHUD();
+    } else {
+      flashStatus(`"${word}" is not in this round's wordlist`, 'error');
+    }
+
+    enteredIndices = [];
+    renderTiles();
+    updateDisplay();
+  }
+
+  function flashStatus(msg: string, type: 'error' | 'success') {
+    if (!statusMsg) return;
+    statusMsg.textContent = msg;
+    statusMsg.className = `input-status ${type}`;
+  }
+
+  function addWordPill(word: string) {
+    if (!foundWordsList) return;
+    const hint = foundWordsList.querySelector('.empty-hint');
+    if (hint) hint.remove();
+
+    const pill = document.createElement('span');
+    pill.className = 'word-pill';
+    pill.textContent = word;
+    foundWordsList.prepend(pill);
+  }
+
+  function endGame() {
+    if (modal) modal.classList.remove('hidden');
+    if (modalScore) modalScore.textContent = String(score);
+    if (modalWords) modalWords.textContent = String(foundWords.size);
+    if (modalSolution) modalSolution.textContent = currentPuzzle.master;
+  }
+
+  // Keyboard input
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      submitWord();
+    } else if (e.key === 'Backspace') {
+      deleteLetter();
+    } else if (e.code === 'Space') {
+      e.preventDefault();
+      shuffleTiles();
+    } else if (/^[a-zA-Z]$/.test(e.key)) {
+      const char = e.key.toUpperCase();
+      // Find unused tile with this char
+      const availableIdx = letters.findIndex((l, idx) => l === char && !enteredIndices.includes(idx));
+      if (availableIdx !== -1) {
+        pickLetter(availableIdx);
+      }
+    }
+  });
+
+  shuffleBtn?.addEventListener('click', shuffleTiles);
+  backspaceBtn?.addEventListener('click', deleteLetter);
+  submitBtn?.addEventListener('click', submitWord);
+  modalRestartBtn?.addEventListener('click', initRound);
+
+  // Start round
+  initRound();
+</script>

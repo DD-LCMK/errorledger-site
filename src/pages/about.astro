@@ -1,59 +1,175 @@
 ---
-import Layout from '../layouts/BlogPost.astro';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE } from '../consts';
 ---
 
-<Layout
-	title="About ErrorLedger"
-	meta_title="About ErrorLedger: The Human & Corporate Failure Archive"
-	description="ErrorLedger is an investigative archive of human, corporate, and systemic failures. Real disasters, strange decisions, and unbelievable consequences."
-	pubDate={new Date('August 17, 2026')}
-	tags={["meta", "about"]}
->
-	<h2>The Editorial Axiom</h2>
-	<p>
-		<strong>AI can answer questions. ErrorLedger tells you what happened.</strong>
-	</p>
-	<p>
-		The modern web is flooded with generic information retrieval. When something catastrophic happens—a $440M trading algorithm suicide, an intern scapegoated for a production wipeout, or a global cloud blackout—press releases offer diplomatic sanitization and AI summaries offer bullet points.
-	</p>
-	<p>
-		<strong>ErrorLedger is different.</strong> We are an investigative, narrative-driven archive of real human, corporate, and systemic mistakes. We investigate how reasonable people, flawed incentives, exhaustion, and hidden systemic pressures combine to produce catastrophic or bizarre outcomes.
-	</p>
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead 
+      title={`About ${SITE_TITLE} - Free Instant Web Games & Tactical Puzzles`} 
+      description="Learn about AetherArcade, an independent client-side browser gaming portal dedicated to high-speed, zero-install, free web games." 
+    />
+  </head>
+  <body class="static-page-body">
+    <Header />
 
-	<h2>The Brand Promise</h2>
-	<blockquote>
-		<strong>Every mistake leaves a story.</strong><br/>
-		<em>Real failures. Strange decisions. Unbelievable consequences.</em>
-	</blockquote>
+    <main class="static-page-main">
+      <div class="content-container">
+        <span class="pill-label">ABOUT AETHERARCADE</span>
+        <h1>Free Web Games, Reimagined for the Modern Browser</h1>
+        
+        <p class="lead-text">
+          <strong>AetherArcade</strong> is an independent web gaming platform built with one singular mission: <em>instant, frictionless, and high-quality browser gaming with zero downloads, zero paywalls, and zero waiting.</em>
+        </p>
 
-	<h2>The Archivist: Keeping the Receipts</h2>
-	<p>
-		ErrorLedger is curated under the editorial direction of <strong>The Archivist</strong>. 
-	</p>
-	<p>
-		The Archivist operates with a clear worldview: <em>people rarely set out to cause disasters.</em> Most catastrophes are born from fear, ego, misaligned corporate incentives, or late-night exhaustion. 
-	</p>
-	<p>
-		Every investigation concludes with <strong>The Archivist’s Verdict</strong>—a sharp, objective dissection of the true root cause that looks past superficial blame to expose the underlying organizational pathology.
-	</p>
+        <hr class="divider" />
 
-	<h2>Our Core Storytelling Archetypes</h2>
-	<p>Every case in the Ledger is crafted around five structural narrative archetypes:</p>
-	<ul>
-		<li><strong>The Confession:</strong> First-person vulnerability, secret anxiety, and the snowballing escalation of a hidden mistake.</li>
-		<li><strong>The Incident:</strong> High-rigor, journalistic reconstruction of a documented corporate, legal, or technology disaster.</li>
-		<li><strong>The Verdict:</strong> High-stakes moral dilemmas exploring ambiguous blame, competing loyalties, and corporate scapegoats.</li>
-		<li><strong>The Investigation:</strong> The forensic discovery arc peeling back deceptive layers to uncover the hidden catalyst.</li>
-		<li><strong>The Failure Anatomy:</strong> Deconstructing how catastrophic outcomes became mathematically inevitable through chains of minor compromises.</li>
-	</ul>
+        <h2>Our Gaming Philosophy</h2>
+        <p>
+          Remember when you could click a link and immediately play a fun, clever game in your browser? In an era dominated by 50GB game downloads, mandatory launcher apps, invasive trackers, and predatory in-app purchases, browser games offer pure, unadulterated fun.
+        </p>
+        <p>
+          Every title on AetherArcade is crafted to run <strong>100% client-side</strong>. This means:
+        </p>
+        <ul>
+          <li><strong>Zero Installation:</strong> Games load in under 500 milliseconds. Tap or click and you are playing.</li>
+          <li><strong>Cross-Platform by Design:</strong> Whether you are on an iPhone, Android, MacBook, Chromebook, or Linux desktop, our games scale to fit your screen with touch and keyboard support.</li>
+          <li><strong>Privacy-Respecting:</strong> We do not require accounts, logins, or invasive tracking cookies. Your game progress and high scores are saved directly in your browser's private local storage.</li>
+          <li><strong>100% Free Forever:</strong> We do not have micro-transactions or pay-to-win items.</li>
+        </ul>
 
-	<h2>The Reader Verdict Protocol</h2>
-	<p>
-		Mistakes are rarely black and white. ErrorLedger integrates the <strong>Reader Verdict</strong> interactive poll on every incident, inviting the community to evaluate moral culpability and record collective consensus on who bears true responsibility.
-	</p>
+        <h2>Our Flagship Game: God Duel</h2>
+        <p>
+          Our featured original title is <strong>God Duel</strong>, inspired by the beloved Japanese and Korean web classic <em>God Field (갓필드)</em>. We wanted to celebrate the strategic depth of turn-based card dueling—where luck, probability calculation, and bluffing meet in rapid 3-minute matches against responsive AI opponents.
+        </p>
 
-	<h2>Whistleblower & Intake Protocols</h2>
-	<p>
-		We welcome anonymous submissions from engineers, operators, and professionals who have lived through operational or workplace catastrophes. All submissions undergo strict scrub cycles to remove identifying credentials prior to editorial review.
-	</p>
-</Layout>
+        <h2>The Tech Behind the Arcade</h2>
+        <p>
+          AetherArcade is built using modern web standards:
+        </p>
+        <ul>
+          <li><strong>Astro 7:</strong> Delivers lightning-fast, static HTML architecture with zero JavaScript overhead on content pages.</li>
+          <li><strong>HTML5 Canvas & Pure TypeScript:</strong> Ensures silky smooth 60fps animations and responsive physics without heavy game engines.</li>
+          <li><strong>Web Audio API:</strong> Powers our sound effects entirely via real-time procedural synthesis, meaning zero bulky audio files to download.</li>
+        </ul>
+
+        <h2>Contact & Feedback</h2>
+        <p>
+          Have a suggestion for a new game, found a bug, or want to say hello? Visit our <a href="/contact">Contact Page</a> or email us directly at <code>support@aetherarcade.com</code>.
+        </p>
+      </div>
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .static-page-body {
+    background: #090d16 !important;
+    color: #f1f5f9 !important;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .static-page-main {
+    flex: 1;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+    width: 100%;
+  }
+
+  .content-container {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    line-height: 1.75;
+  }
+
+  .pill-label {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+  }
+
+  h1 {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #f8fafc;
+    letter-spacing: -0.03em;
+    margin: 0 0 1rem;
+    line-height: 1.25;
+  }
+
+  .lead-text {
+    font-size: 1.1rem;
+    color: #cbd5e1;
+    margin-bottom: 1.5rem;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin: 2rem 0;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 2rem 0 0.75rem;
+  }
+
+  p {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    margin: 0 0 1rem;
+  }
+
+  ul {
+    color: #cbd5e1;
+    font-size: 0.95rem;
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  li {
+    margin-bottom: 0.5rem;
+  }
+
+  a {
+    color: #38bdf8;
+    text-decoration: underline;
+  }
+
+  code {
+    background: rgba(255, 255, 255, 0.06);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.88rem;
+    color: #e2e8f0;
+  }
+
+  @media (max-width: 640px) {
+    .content-container {
+      padding: 1.5rem;
+    }
+    h1 {
+      font-size: 1.75rem;
+    }
+  }
+</style>

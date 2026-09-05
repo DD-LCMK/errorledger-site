@@ -1,0 +1,520 @@
+---
+import GameLayout from '../../layouts/GameLayout.astro';
+import { getEntry } from 'astro:content';
+
+const gameEntry = await getEntry('games', 'cosmic-drop');
+const data = gameEntry?.data || {
+  title: 'Cosmic Drop',
+  tagline: 'Physics-Based Celestial Orb Merge Game',
+  description: 'Drop celestial bodies into the gravity chamber. Merge identical planets to evolve them into the blazing Sun!',
+  icon: '🪐',
+  category: 'arcade',
+  badge: '🪐 Viral',
+  players: '1 Player',
+  playTime: '3-10 mins',
+  controls: [
+    'Move mouse or drag finger to aim the drop location',
+    'Click or release touch to drop the celestial body',
+    'Watch the Next Orb preview in the top bar'
+  ],
+  rules: [
+    'Matching celestial orbs merge on impact into a larger planet tier.',
+    'Evolution order: Asteroid ➔ Moon ➔ Mars ➔ Venus ➔ Earth ➔ Neptune ➔ Saturn ➔ Jupiter ➔ Sun!',
+    'Do not let planets pile up over the top danger line!'
+  ]
+};
+---
+
+<GameLayout
+  title={data.title}
+  description={data.description}
+  tagline={data.tagline}
+  icon={data.icon}
+  category={data.category}
+  badge={data.badge}
+  players={data.players}
+  playTime={data.playTime}
+  controls={data.controls}
+  rules={data.rules}
+>
+  <div class="cosmic-drop-root">
+    <!-- Header HUD -->
+    <div class="drop-hud">
+      <div class="hud-box score-box">
+        <span class="hud-lbl">STELLAR SCORE</span>
+        <span class="hud-num" id="cosmic-score">0</span>
+      </div>
+
+      <div class="hud-box next-box">
+        <span class="hud-lbl">NEXT ORB</span>
+        <div class="next-orb-preview" id="next-preview">
+          <span class="preview-emoji" id="next-emoji">🌑</span>
+        </div>
+      </div>
+
+      <div class="hud-box best-box">
+        <span class="hud-lbl">RECORD</span>
+        <span class="hud-num" id="cosmic-best">0</span>
+      </div>
+    </div>
+
+    <!-- Physics Canvas Container -->
+    <div class="canvas-wrapper">
+      <canvas id="cosmic-canvas" width="400" height="550"></canvas>
+      
+      <!-- Danger Line Overlay -->
+      <div class="danger-line" title="Warning: Do not overflow above this threshold">
+        <span>⚠ SINGULARITY DANGER LINE ⚠</span>
+      </div>
+
+      <!-- Game Over Modal -->
+      <div class="drop-modal hidden" id="drop-over-modal">
+        <div class="drop-modal-card">
+          <div class="modal-icon">🌌</div>
+          <h2>Singularity Collapsed!</h2>
+          <p>Planetary overflow reached maximum density.</p>
+          <div class="final-score-display">Final Score: <strong id="over-score">0</strong></div>
+          <button id="drop-restart-btn" class="drop-btn-primary">Drop Again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div slot="guide">
+    <h2>Cosmic Drop Evolution Guide</h2>
+    <p>
+      Planetary mass grows with each fusion. To achieve the <strong>Blazing Sun</strong>, keep your heaviest giant gas planets settled in one corner, allowing smaller moons and rocky planets to roll downward into collisions.
+    </p>
+  </div>
+</GameLayout>
+
+<style>
+  .cosmic-drop-root {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.25rem 1rem;
+    background: #090d16;
+    border-radius: 12px;
+    user-select: none;
+  }
+
+  .drop-hud {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 400px;
+    margin-bottom: 0.75rem;
+  }
+
+  .hud-box {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 0.4rem 0.75rem;
+    text-align: center;
+    min-width: 90px;
+  }
+
+  .hud-lbl {
+    display: block;
+    font-size: 0.6rem;
+    font-weight: 800;
+    color: #94a3b8;
+    letter-spacing: 0.05em;
+  }
+
+  .hud-num {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #f8fafc;
+  }
+
+  .score-box .hud-num { color: #38bdf8; }
+  .best-box .hud-num { color: #facc15; }
+
+  .next-box {
+    min-width: 80px;
+  }
+
+  .next-orb-preview {
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .preview-emoji {
+    font-size: 1.4rem;
+  }
+
+  /* Canvas */
+  .canvas-wrapper {
+    position: relative;
+    width: 400px;
+    height: 550px;
+    background: radial-gradient(circle at 50% 20%, #1e1b4b 0%, #020617 100%);
+    border: 3px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+  }
+
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+  }
+
+  .danger-line {
+    position: absolute;
+    top: 90px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    border-top: 2px dashed rgba(239, 68, 68, 0.5);
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .danger-line span {
+    font-size: 0.55rem;
+    font-weight: 800;
+    color: rgba(239, 68, 68, 0.7);
+    background: #020617;
+    padding: 0 0.4rem;
+    transform: translateY(-50%);
+  }
+
+  /* Modal */
+  .drop-modal {
+    position: absolute;
+    inset: 0;
+    background: rgba(9, 13, 22, 0.85);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+  }
+
+  .drop-modal-card {
+    background: #0f172a;
+    border: 2px solid rgba(168, 85, 247, 0.5);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    max-width: 320px;
+  }
+
+  .modal-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+  .drop-modal-card h2 { color: #f8fafc; margin: 0 0 0.5rem; font-size: 1.4rem; }
+  .drop-modal-card p { color: #94a3b8; font-size: 0.85rem; margin: 0 0 1rem; }
+  .final-score-display { font-size: 1.25rem; font-weight: 900; color: #38bdf8; margin-bottom: 1.25rem; }
+
+  .drop-btn-primary {
+    width: 100%;
+    background: linear-gradient(135deg, #a855f7, #38bdf8);
+    color: #ffffff;
+    font-weight: 800;
+    padding: 0.75rem;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 480px) {
+    .drop-hud, .canvas-wrapper {
+      width: 330px;
+    }
+    .canvas-wrapper {
+      height: 480px;
+    }
+  }
+</style>
+
+<script>
+  interface PlanetDef {
+    tier: number;
+    radius: number;
+    name: string;
+    emoji: string;
+    color: string;
+    points: number;
+  }
+
+  const PLANET_TIERS: PlanetDef[] = [
+    { tier: 0, radius: 14, name: 'Asteroid', emoji: '🪨', color: '#64748b', points: 2 },
+    { tier: 1, radius: 19, name: 'Moon', emoji: '🌑', color: '#94a3b8', points: 4 },
+    { tier: 2, radius: 25, name: 'Mercury', emoji: '🟤', color: '#b45309', points: 8 },
+    { tier: 3, radius: 32, name: 'Mars', emoji: '🔴', color: '#ef4444', points: 16 },
+    { tier: 4, radius: 39, name: 'Venus', emoji: '🟡', color: '#eab308', points: 32 },
+    { tier: 5, radius: 48, name: 'Earth', emoji: '🌍', color: '#3b82f6', points: 64 },
+    { tier: 6, radius: 58, name: 'Neptune', emoji: '🔵', color: '#06b6d4', points: 128 },
+    { tier: 7, radius: 68, name: 'Saturn', emoji: '🪐', color: '#f97316', points: 256 },
+    { tier: 8, radius: 80, name: 'Jupiter', emoji: '🟠', color: '#ea580c', points: 512 },
+    { tier: 9, radius: 95, name: 'The Sun', emoji: '☀️', color: '#facc15', points: 1024 }
+  ];
+
+  class Body {
+    x: number;
+    y: number;
+    vx: number = 0;
+    vy: number = 0;
+    tier: number;
+    radius: number;
+    color: string;
+    emoji: string;
+    points: number;
+
+    constructor(x: number, y: number, tier: number) {
+      const def = PLANET_TIERS[tier];
+      this.x = x;
+      this.y = y;
+      this.tier = tier;
+      this.radius = def.radius;
+      this.color = def.color;
+      this.emoji = def.emoji;
+      this.points = def.points;
+    }
+  }
+
+  const canvas = document.getElementById('cosmic-canvas') as HTMLCanvasElement;
+  const ctx = canvas?.getContext('2d');
+  const scoreElem = document.getElementById('cosmic-score');
+  const bestElem = document.getElementById('cosmic-best');
+  const nextEmoji = document.getElementById('next-emoji');
+  const modal = document.getElementById('drop-over-modal');
+  const overScoreElem = document.getElementById('over-score');
+  const restartBtn = document.getElementById('drop-restart-btn');
+
+  let score = 0;
+  let bestScore = Number(localStorage.getItem('cosmic_drop_best') || 0);
+  if (bestElem) bestElem.textContent = String(bestScore);
+
+  let bodies: Body[] = [];
+  let nextTier = 0;
+  let currentTier = 0;
+  let aimX = 200;
+  let canDrop = true;
+  let dangerTime = 0;
+  let isGameOver = false;
+
+  function pickRandomSpawnTier(): number {
+    // Only spawn smaller tiers (0 to 3)
+    const weights = [0.45, 0.30, 0.15, 0.10];
+    const r = Math.random();
+    let acc = 0;
+    for (let i = 0; i < weights.length; i++) {
+      acc += weights[i];
+      if (r <= acc) return i;
+    }
+    return 0;
+  }
+
+  function init() {
+    bodies = [];
+    score = 0;
+    isGameOver = false;
+    currentTier = pickRandomSpawnTier();
+    nextTier = pickRandomSpawnTier();
+    if (nextEmoji) nextEmoji.textContent = PLANET_TIERS[nextTier].emoji;
+    if (scoreElem) scoreElem.textContent = '0';
+    if (modal) modal.classList.add('hidden');
+  }
+
+  function dropBody() {
+    if (!canDrop || isGameOver) return;
+    canDrop = false;
+    const body = new Body(aimX, 60, currentTier);
+    bodies.push(body);
+
+    currentTier = nextTier;
+    nextTier = pickRandomSpawnTier();
+    if (nextEmoji) nextEmoji.textContent = PLANET_TIERS[nextTier].emoji;
+
+    setTimeout(() => {
+      canDrop = true;
+    }, 600);
+  }
+
+  // Physics simulation
+  function updatePhysics() {
+    if (isGameOver) return;
+    const gravity = 0.35;
+    const friction = 0.985;
+    const bounce = 0.25;
+    const width = canvas.width;
+    const height = canvas.height;
+
+    // Movement & Wall collision
+    for (const b of bodies) {
+      b.vy += gravity;
+      b.vx *= friction;
+      b.x += b.vx;
+      b.y += b.vy;
+
+      // Bottom wall
+      if (b.y + b.radius > height) {
+        b.y = height - b.radius;
+        b.vy = -b.vy * bounce;
+      }
+      // Left wall
+      if (b.x - b.radius < 0) {
+        b.x = b.radius;
+        b.vx = -b.vx * bounce;
+      }
+      // Right wall
+      if (b.x + b.radius > width) {
+        b.x = width - b.radius;
+        b.vx = -b.vx * bounce;
+      }
+    }
+
+    // Body vs Body collision & Merging
+    for (let i = 0; i < bodies.length; i++) {
+      for (let j = i + 1; j < bodies.length; j++) {
+        const b1 = bodies[i];
+        const b2 = bodies[j];
+        const dx = b2.x - b1.x;
+        const dy = b2.y - b1.y;
+        const dist = Math.hypot(dx, dy);
+        const minDist = b1.radius + b2.radius;
+
+        if (dist < minDist) {
+          // Check Merge
+          if (b1.tier === b2.tier && b1.tier < PLANET_TIERS.length - 1) {
+            // Fuse into next tier
+            const newTier = b1.tier + 1;
+            const midX = (b1.x + b2.x) / 2;
+            const midY = (b1.y + b2.y) / 2;
+            score += PLANET_TIERS[newTier].points;
+            if (scoreElem) scoreElem.textContent = String(score);
+            if (score > bestScore) {
+              bestScore = score;
+              localStorage.setItem('cosmic_drop_best', String(bestScore));
+              if (bestElem) bestElem.textContent = String(bestScore);
+            }
+
+            bodies.splice(j, 1);
+            bodies.splice(i, 1);
+            bodies.push(new Body(midX, midY, newTier));
+            return;
+          }
+
+          // Elastic collision push apart
+          const overlap = minDist - dist;
+          const nx = dx / (dist || 1);
+          const ny = dy / (dist || 1);
+
+          b1.x -= nx * overlap * 0.5;
+          b1.y -= ny * overlap * 0.5;
+          b2.x += nx * overlap * 0.5;
+          b2.y += ny * overlap * 0.5;
+
+          const kx = b1.vx - b2.vx;
+          const ky = b1.vy - b2.vy;
+          const p = 2 * (nx * kx + ny * ky) / 2;
+          b1.vx -= p * nx * bounce;
+          b1.vy -= p * ny * bounce;
+          b2.vx += p * nx * bounce;
+          b2.vy += p * ny * bounce;
+        }
+      }
+    }
+
+    // Check Danger Line overflow (Y < 90 when stationary)
+    let isOverflowing = false;
+    for (const b of bodies) {
+      if (b.y - b.radius < 90 && Math.abs(b.vy) < 0.2) {
+        isOverflowing = true;
+        break;
+      }
+    }
+
+    if (isOverflowing) {
+      dangerTime++;
+      if (dangerTime > 120) {
+        // 2 seconds over danger line -> Game Over
+        isGameOver = true;
+        if (modal) modal.classList.remove('hidden');
+        if (overScoreElem) overScoreElem.textContent = String(score);
+      }
+    } else {
+      dangerTime = Math.max(0, dangerTime - 1);
+    }
+  }
+
+  function draw() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw Aim Indicator
+    if (canDrop && !isGameOver) {
+      const cur = PLANET_TIERS[currentTier];
+      ctx.beginPath();
+      ctx.arc(aimX, 50, cur.radius, 0, Math.PI * 2);
+      ctx.fillStyle = cur.color;
+      ctx.globalAlpha = 0.5;
+      ctx.fill();
+      ctx.globalAlpha = 1.0;
+
+      ctx.beginPath();
+      ctx.setLineDash([4, 4]);
+      ctx.moveTo(aimX, 50 + cur.radius);
+      ctx.lineTo(aimX, canvas.height);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Draw Bodies
+    for (const b of bodies) {
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+      ctx.fillStyle = b.color;
+      ctx.shadowColor = b.color;
+      ctx.shadowBlur = 10;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Emoji/Label
+      ctx.font = `${b.radius * 0.9}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(b.emoji, b.x, b.y);
+    }
+
+    updatePhysics();
+    requestAnimationFrame(draw);
+  }
+
+  // Aiming Controls
+  canvas?.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const cur = PLANET_TIERS[currentTier];
+    aimX = Math.max(cur.radius, Math.min(canvas.width - cur.radius, e.clientX - rect.left));
+  });
+
+  canvas?.addEventListener('click', dropBody);
+
+  canvas?.addEventListener('touchmove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const cur = PLANET_TIERS[currentTier];
+    aimX = Math.max(cur.radius, Math.min(canvas.width - cur.radius, e.touches[0].clientX - rect.left));
+  }, { passive: true });
+
+  canvas?.addEventListener('touchend', dropBody);
+
+  restartBtn?.addEventListener('click', init);
+
+  init();
+  requestAnimationFrame(draw);
+</script>

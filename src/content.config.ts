@@ -1,89 +1,32 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
-const blog = defineCollection({
-	// Load Markdown and MDX files in the `src/content/blog/` directory.
+const games = defineCollection({
 	loader: glob({ 
 		pattern: '**/*.{md,mdx}', 
-		base: "./src/content/blog",
+		base: "./src/content/games",
 		generateId: ({ entry }) => entry.replace(/\\/g, '/').replace(/\.mdx?$/, '')
 	}),
-	// Type-check frontmatter using a schema
 	schema: z.object({
 		title: z.string(),
-		subtitle: z.string().optional(),
-		meta_title: z.string().optional(),
+		tagline: z.string(),
 		description: z.string(),
-		lang: z.enum(['en', 'ko']).default('en'),
-		translationSlug: z.string().optional(),
-		pubDate: z.coerce.date().optional(),
-		updatedDate: z.coerce.date().optional(),
-		keywords: z.array(z.string()).optional(),
-		wordCount: z.number().optional(),
+		category: z.enum(['card', 'puzzle', 'arcade', 'word', 'strategy']).default('card'),
+		badge: z.string().default('Popular'),
+		icon: z.string().default('⚔️'),
+		players: z.string().default('1 Player (vs AI)'),
+		playTime: z.string().default('2-4 mins'),
+		controls: z.array(z.string()).default([]),
+		rules: z.array(z.string()).default([]),
+		features: z.array(z.string()).default([]),
 		faqItems: z.array(z.object({
 			q: z.string(),
 			a: z.string()
 		})).optional(),
-		incidentDate: z.string().optional(),
-		incidentPeriod: z.string().optional(),
-		incidentEndDate: z.string().optional(),
-		systemTypes: z.array(z.string()).optional(),
-		victimCount: z.number().optional(),
-		victimCountQualifier: z.string().optional(),
-		fatalities: z.string().optional(),
-		injuries: z.string().optional(),
-		regulatoryAction: z.string().optional(),
-		correctiveAction: z.string().optional(),
-		systemImpact: z.string().optional(),
-		heroImage: z.string().optional(),
-		ogImage: z.string().optional(),
-		category: z.enum(['work', 'money', 'relationships', 'internet', 'ai', 'human', 'corporate', 'military', 'embedded-systems']).default('corporate'),
-		archetype: z.enum([
-			'the-confession',
-			'the-incident',
-			'the-verdict',
-			'the-investigation',
-			'the-failure-anatomy'
-		]).default('the-incident'),
-		provenance_tier: z.number().min(1).max(4).default(1),
-		provenance_label: z.string().optional(),
-		provenance_source: z.string().optional(),
-		read_time_minutes: z.number().default(5),
-		archivist_summary: z.string().optional(),
-		executive_summary: z.string().optional(),
-		summary_points: z.object({
-			context: z.string(),
-			trigger: z.string().optional(),
-			systemic_failure: z.string().optional(),
-			technical_mechanisms: z.string().optional(),
-			fallout: z.string()
-		}).optional(),
-		verdict_question: z.string().optional(),
-		verdict_source: z.string().optional(),
-		verdict_options: z.array(z.object({
-			id: z.string(),
-			label: z.string(),
-			votes: z.number().optional()
-		})).optional(),
-		tags: z.array(z.string()).default([]),
-		primary_sources: z.array(z.object({
-			title: z.string(),
-			url: z.string(),
-			type: z.string().optional(),
-			institution: z.string().optional()
-		})).optional(),
-		slug: z.string().optional(),
-		shortenedSlug: z.string().optional(),
-		technicalTerms: z.record(z.string(), z.string()).optional(),
-		pipeline_contract_version: z.string().optional(),
-	}).transform((data) => {
-		return {
-			...data,
-			shortenedSlug: data.slug,
-			translationSlug: data.translationSlug || data.slug,
-			tags: data.tags && data.tags.length > 0 ? data.tags : ["Failure Archive"]
-		};
-	}),
+		featured: z.boolean().default(false),
+		rating: z.number().default(4.9),
+		plays: z.string().default('12.4K'),
+	})
 });
 
-export const collections = { blog };
+export const collections = { games };

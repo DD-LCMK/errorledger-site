@@ -2,932 +2,613 @@
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import FormattedDate from '../components/FormattedDate.astro';
-import { SITE_TITLE } from '../consts';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
 
-const allPosts = await getCollection('blog');
-const enPosts = allPosts.filter(p => !p.id.startsWith('ko/') && p.data.lang !== 'ko');
+const games = await getCollection('games');
 
-// Sort by date (newest first)
-const posts = enPosts.sort((a, b) => {
-	const dateA = a.data.pubDate ? new Date(a.data.pubDate).valueOf() : 0;
-	const dateB = b.data.pubDate ? new Date(b.data.pubDate).valueOf() : 0;
-	return dateB - dateA;
-});
-
-const featuredPost = posts[0];
-const recentPosts = posts.slice(1);
-
-// Curated Top 6 Most Read / Top Ranked Failures
-const topRankedPosts = [
-	{
-		rank: 1,
-		title: "The 1-Yen Stock Order That Broke Tokyo: How Mizuho Securities Sold 610,000 Shares of a Company That Only Had 14,500",
-		slug: "mizuho-jcom-fat-finger-tokyo-stock-exchange",
-		category: "Finance",
-		reads: "74.1k reads",
-		votes: "Active Debate",
-		tag: "🔥 #1 Top Investigation"
-	},
-	{
-		rank: 2,
-		title: "The Bedroom Trader Who Helped Trigger the $1 Trillion Flash Crash",
-		slug: "the-bedroom-trader-who-broke-wall-street-flash-crash",
-		category: "Finance",
-		reads: "68.4k reads",
-		votes: "Active Debate",
-		tag: "⚡ $1T Flash Crash"
-	},
-	{
-		rank: 3,
-		title: "The $105 Billion Typo: How Samsung Securities Issued 2.8 Billion Phantom Shares",
-		slug: "samsung-securities-ghost-shares-105-billion-fat-finger",
-		category: "Finance",
-		reads: "54.2k reads",
-		votes: "Active Debate",
-		tag: "💰 $105B Phantom Stock"
-	},
-	{
-		rank: 4,
-		title: "Citibank's $900 Million Checkbox Error: The Wire Transfer Wall Street Refused to Return",
-		slug: "citibank-900-million-checkbox-wire-transfer",
-		category: "Finance",
-		reads: "46.1k reads",
-		votes: "Active Debate",
-		tag: "🏦 $900M Wire"
-	},
-	{
-		rank: 5,
-		title: "The Friday Morning Update That Took Down 8.5 Million Computers",
-		slug: "the-friday-update-that-broke-the-world",
-		category: "Corporate",
-		reads: "42.8k reads",
-		votes: "Active Debate",
-		tag: "⚡ Global Crash"
-	},
-	{
-		rank: 6,
-		title: "The $440M Knight Capital Trading Glitch: 45 Minutes of Algorithmic Ruin",
-		slug: "knight-capital-trading-glitch-45-minutes",
-		category: "Finance",
-		reads: "38.1k reads",
-		votes: "Active Debate",
-		tag: "💥 Algorithmic Ruin"
-	}
-];
+// Sort so flagship god-duel is first
+const sortedGames = games.sort((a, b) => (b.data.featured ? 1 : 0) - (a.data.featured ? 1 : 0));
 ---
 
+<!doctype html>
 <html lang="en" class="dark">
-	<head>
-		<BaseHead title={`${SITE_TITLE} — The Human & Systemic Failure Archive`} description="Real failures. Strange decisions. Unbelievable consequences. An investigative archive dissecting corporate disasters, career catastrophes, and AI anomalies." />
-		<style>
-			main {
-				width: 1200px;
-				max-width: calc(100% - 2rem);
-				margin: 0 auto;
-				padding: 2rem 1rem 5rem 1rem;
-			}
+  <head>
+    <BaseHead title={`${SITE_TITLE} - Free Instant Browser Games & Tactical Puzzles`} description={SITE_DESCRIPTION} />
+  </head>
+  <body class="arcade-home-body">
+    <Header />
 
-			/* Hero Banner */
-			.hero-banner {
-				margin-bottom: 2.5rem;
-				padding-bottom: 1.5rem;
-				border-bottom: 1px solid #262626;
-				display: flex;
-				justify-content: space-between;
-				align-items: flex-end;
-				flex-wrap: wrap;
-				gap: 1.5rem;
-			}
-			.hero-left {
-				max-width: 650px;
-			}
-			.hero-pill {
-				display: inline-flex;
-				align-items: center;
-				gap: 0.5rem;
-				padding: 0.25rem 0.65rem;
-				border-radius: 9999px;
-				background: rgba(244, 63, 94, 0.1);
-				border: 1px solid rgba(244, 63, 94, 0.25);
-				color: #fb7185;
-				font-size: 0.72rem;
-				font-family: ui-monospace, monospace;
-				font-weight: 700;
-				text-transform: uppercase;
-				letter-spacing: 0.05em;
-				margin-bottom: 0.75rem;
-			}
-			.hero-banner h1 {
-				font-size: 2.4rem;
-				font-weight: 800;
-				margin: 0 0 0.5rem 0;
-				color: #f5f5f5;
-				letter-spacing: -0.025em;
-				line-height: 1.2;
-			}
-			.hero-banner h1 span {
-				background: linear-gradient(135deg, #f43f5e, #fb7185);
-				-webkit-background-clip: text;
-				-webkit-text-fill-color: transparent;
-			}
-			.hero-banner p {
-				font-size: 1rem;
-				color: #a3a3a3;
-				margin: 0;
-				line-height: 1.5;
-			}
-			.hero-actions {
-				display: flex;
-				align-items: center;
-				gap: 0.75rem;
-			}
-			.hero-submit-btn {
-				padding: 0.6rem 1.25rem;
-				border-radius: 10px;
-				background: linear-gradient(135deg, #f43f5e, #e11d48);
-				color: #ffffff;
-				font-weight: 700;
-				font-size: 0.85rem;
-				border: none;
-				box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);
-				cursor: pointer;
-				transition: transform 0.15s ease;
-			}
-			.hero-submit-btn:hover { transform: translateY(-1px); }
+    <main class="arcade-home-main">
+      <!-- Hero Section -->
+      <section class="hero-showcase">
+        <div class="hero-backdrop"></div>
+        <div class="hero-content">
+          <div class="hero-pill">
+            <span class="pill-spark">✨</span>
+            <span>100% Free Client-Side Gaming • Zero Downloads</span>
+          </div>
 
-			/* Naver-Style 2-Column Portal Grid */
-			.portal-layout-grid {
-				display: grid;
-				grid-template-columns: 1fr;
-				gap: 2.5rem;
-				align-items: start;
-				min-width: 0;
-				width: 100%;
-			}
-			@media (min-width: 1024px) {
-				.portal-layout-grid {
-					grid-template-columns: minmax(0, 1fr) 340px;
-				}
-			}
+          <h1 class="hero-headline">
+            Instant Web Games.<br />
+            <span class="gradient-text">Zero Waiting. Endless Fun.</span>
+          </h1>
 
-			/* Left Main Editorial Stream */
-			.editorial-stream {
-				min-width: 0;
-				width: 100%;
-			}
+          <p class="hero-subtext">
+            Play tactical turn card battles, satisfying tile mergers, and 60-second speed puzzles directly in your web browser. Free forever on mobile and desktop.
+          </p>
 
-			/* Section Headers */
-			.stream-section-header {
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				padding-bottom: 0.6rem;
-				border-bottom: 2px solid #262626;
-				margin-bottom: 1.5rem;
-			}
-			.section-title-bold {
-				font-size: 1.15rem;
-				font-weight: 800;
-				color: #f5f5f5;
-				display: flex;
-				align-items: center;
-				gap: 0.5rem;
-			}
-			.section-subtitle-tag {
-				font-family: ui-monospace, monospace;
-				font-size: 0.75rem;
-				color: #f59e0b;
-			}
+          <!-- Featured Game Hero Banner -->
+          <div class="featured-hero-card">
+            <div class="featured-glow"></div>
+            <div class="featured-inner">
+              <div class="featured-badge-row">
+                <span class="flagship-badge">🔥 FLAGSHIP RELEASE</span>
+                <span class="rating-badge">★ 4.95 (24.8K plays)</span>
+              </div>
+              <div class="featured-main-row">
+                <div class="featured-icon-box">⚔️</div>
+                <div class="featured-text">
+                  <h2>God Duel</h2>
+                  <p>Inspired by the legendary <em>God Field (갓필드)</em>. Duel chaos deities with swords, shields, divine miracles, and clutch comebacks.</p>
+                </div>
+                <div class="featured-action">
+                  <a href="/games/god-duel" class="btn-play-hero">
+                    <span>⚔️ Play God Duel</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-			.lead-card {
-				background: #171717;
-				border: 1px solid #262626;
-				border-radius: 16px;
-				margin-bottom: 3rem;
-				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-				transition: border-color 0.2s ease, transform 0.2s ease;
-				min-width: 0;
-				box-sizing: border-box;
-				overflow: hidden;
-				display: flex;
-				flex-direction: column;
-			}
-			.lead-card-image {
-				width: 100%;
-				height: 240px;
-				object-fit: cover;
-				border-bottom: 1px solid #262626;
-				transition: transform 0.4s ease;
-			}
-			.lead-card:hover .lead-card-image {
-				transform: scale(1.02);
-			}
-			.lead-card-content {
-				padding: 1.75rem;
-				position: relative;
-				z-index: 2;
-			}
-			.lead-card:hover {
-				border-color: #f43f5e;
-				transform: translateY(-2px);
-			}
-			.lead-meta {
-				display: flex;
-				align-items: center;
-				gap: 0.5rem;
-				margin-bottom: 0.75rem;
-				flex-wrap: wrap;
-			}
-			.category-tag {
-				padding: 0.2rem 0.55rem;
-				border-radius: 6px;
-				background: rgba(244, 63, 94, 0.1);
-				color: #fb7185;
-				border: 1px solid rgba(244, 63, 94, 0.25);
-				font-size: 0.72rem;
-				font-family: ui-monospace, monospace;
-				font-weight: 700;
-				text-transform: uppercase;
-			}
-			.read-time-tag {
-				font-size: 0.75rem;
-				font-family: ui-monospace, monospace;
-				color: #a3a3a3;
-			}
-			.lead-title {
-				font-size: 1.75rem;
-				font-weight: 800;
-				color: #f5f5f5;
-				margin: 0 0 0.5rem 0;
-				line-height: 1.3;
-				transition: color 0.15s ease;
-				overflow-wrap: break-word;
-			}
-			.lead-card:hover .lead-title { color: #fb7185; }
-			.lead-subtitle {
-				color: #a3a3a3;
-				font-size: 0.95rem;
-				margin: 0 0 1rem 0;
-				line-height: 1.5;
-			}
-			.lead-desc {
-				color: #d4d4d4;
-				font-size: 0.92rem;
-				line-height: 1.6;
-				margin: 0 0 1.25rem 0;
-			}
-			.lead-footer {
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				padding-top: 1rem;
-				border-top: 1px solid #262626;
-				font-size: 0.75rem;
-				font-family: ui-monospace, monospace;
-				color: #a3a3a3;
-				flex-wrap: wrap;
-				gap: 0.5rem;
-			}
-			.open-lead-btn {
-				color: #fb7185;
-				font-weight: 700;
-			}
+      <!-- Ad Banner Top Area -->
+      <div class="home-ad-zone">
+        <div class="ad-card-placeholder">
+          <span class="ad-tag">ADVERTISEMENT</span>
+          <span class="ad-msg">Support free indie web games • 100% client-side</span>
+        </div>
+      </div>
 
-			/* Debate Grid (Naver News Multi-Column Voting Split) */
-			.debates-stream-grid {
-				display: grid;
-				grid-template-columns: 1fr;
-				gap: 1.25rem;
-				margin-bottom: 3rem;
-				width: 100%;
-				min-width: 0;
-			}
-			@media (min-width: 640px) {
-				.debates-stream-grid {
-					grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-				}
-			}
-			.debate-portal-card {
-				background: #171717;
-				border: 1px solid #262626;
-				border-radius: 12px;
-				padding: 1.25rem;
-				text-decoration: none;
-				display: flex;
-				flex-direction: column;
-				justify-content: space-between;
-				transition: all 0.2s ease;
-				min-width: 0;
-				box-sizing: border-box;
-			}
-			.debate-portal-card:hover {
-				border-color: #f59e0b;
-				transform: translateY(-2px);
-			}
-			.debate-card-top {
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				font-size: 0.72rem;
-				font-family: ui-monospace, monospace;
-				color: #737373;
-				margin-bottom: 0.5rem;
-			}
-			.debate-cat-label { color: #f59e0b; font-weight: 700; text-transform: uppercase; }
-			.debate-card-title {
-				font-size: 0.95rem;
-				font-weight: 700;
-				color: #f5f5f5;
-				line-height: 1.4;
-				margin: 0 0 1rem 0;
-			}
-			.debate-bar-wrapper {
-				padding-top: 0.75rem;
-				border-top: 1px solid #262626;
-			}
-			.debate-split-desc {
-				font-size: 0.72rem;
-				font-family: ui-monospace, monospace;
-				color: #a3a3a3;
-				margin-bottom: 0.4rem;
-			}
-			.debate-visual-bar {
-				height: 6px;
-				background: #262626;
-				border-radius: 9999px;
-				overflow: hidden;
-				display: flex;
-			}
-			.bar-fill-a { background: #f43f5e; height: 100%; }
-			.bar-fill-b { background: #3b82f6; height: 100%; }
+      <!-- Games Showcase Grid -->
+      <section class="games-directory-section">
+        <div class="section-header">
+          <div class="title-group">
+            <span class="sec-label">ALL TITLES</span>
+            <h2>Choose Your Challenge</h2>
+          </div>
+          <p class="sec-desc">Every game runs directly on your device CPU with zero lag, instant loading, and zero installations.</p>
+        </div>
 
-			/* Incident Cards Grid */
-			.ledger-posts-grid {
-				display: grid;
-				grid-template-columns: 1fr;
-				gap: 1.25rem;
-				margin-bottom: 3rem;
-				width: 100%;
-				min-width: 0;
-			}
-			@media (min-width: 640px) {
-				.ledger-posts-grid {
-					grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-				}
-			}
-			.ledger-incident-card {
-				background: #171717;
-				border: 1px solid #262626;
-				border-radius: 12px;
-				text-decoration: none;
-				display: flex;
-				flex-direction: column;
-				justify-content: space-between;
-				transition: all 0.2s ease;
-				min-width: 0;
-				box-sizing: border-box;
-				overflow: hidden;
-			}
-			.card-hero-image {
-				width: 100%;
-				height: 160px;
-				object-fit: cover;
-				border-bottom: 1px solid #262626;
-				transition: opacity 0.2s ease;
-			}
-			.ledger-incident-card:hover .card-hero-image {
-				opacity: 0.9;
-			}
-			.ledger-card-content {
-				padding: 1.35rem;
-				display: flex;
-				flex-direction: column;
-				flex-grow: 1;
-				justify-content: space-between;
-			}
-			.ledger-incident-card:hover {
-				border-color: #f43f5e;
-				transform: translateY(-2px);
-				box-shadow: 0 4px 20px rgba(244, 63, 94, 0.15);
-			}
-			.card-meta-row {
-				display: flex;
-				align-items: center;
-				gap: 0.5rem;
-				margin-bottom: 0.6rem;
-			}
-			.card-cat-badge {
-				padding: 0.15rem 0.5rem;
-				border-radius: 4px;
-				background: #0a0a0a;
-				color: #d4d4d4;
-				border: 1px solid #262626;
-				font-size: 0.72rem;
-				font-family: ui-monospace, monospace;
-				font-weight: 600;
-				text-transform: uppercase;
-			}
-			.card-readtime-txt {
-				font-size: 0.72rem;
-				font-family: ui-monospace, monospace;
-				color: #737373;
-			}
-			.card-headline {
-				font-size: 1.05rem;
-				font-weight: 700;
-				color: #f5f5f5;
-				margin: 0 0 0.5rem 0;
-				line-height: 1.35;
-			}
-			.ledger-incident-card:hover .card-headline { color: #fb7185; }
-			.card-summary-txt {
-				font-size: 0.85rem;
-				color: #a3a3a3;
-				line-height: 1.5;
-				margin: 0 0 1rem 0;
-			}
-			.card-foot-row {
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				padding-top: 0.75rem;
-				border-top: 1px solid #262626;
-				font-size: 0.72rem;
-				font-family: ui-monospace, monospace;
-				color: #737373;
-			}
-			.card-action-txt { color: #fb7185; font-weight: 600; }
+        <div class="games-grid">
+          {sortedGames.map(game => (
+            <article class={`game-card ${game.data.featured ? 'featured-card' : ''}`}>
+              <div class="card-top-row">
+                <span class="card-icon">{game.data.icon}</span>
+                <div class="card-badges">
+                  <span class="category-pill">{game.data.category}</span>
+                  <span class="badge-accent">{game.data.badge}</span>
+                </div>
+              </div>
 
-			/* Right Sidebar (Naver News "많이 본 뉴스 / 랭킹" Style) */
-			.portal-right-sidebar {
-				min-width: 0;
-				width: 100%;
-			}
-			.sidebar-widget {
-				background: #171717;
-				border: 1px solid #262626;
-				border-radius: 16px;
-				padding: 1.25rem;
-				margin-bottom: 2rem;
-				box-sizing: border-box;
-			}
-			.widget-header-row {
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				padding-bottom: 0.65rem;
-				border-bottom: 1px solid #262626;
-				margin-bottom: 1rem;
-			}
-			.widget-title {
-				font-size: 0.95rem;
-				font-weight: 800;
-				color: #f5f5f5;
-				display: flex;
-				align-items: center;
-				gap: 0.4rem;
-			}
-			.widget-badge {
-				font-family: ui-monospace, monospace;
-				font-size: 0.7rem;
-				color: #f43f5e;
-				font-weight: 700;
-			}
+              <div class="card-body">
+                <h3 class="card-title">
+                  <a href={`/games/${game.id}`}>{game.data.title}</a>
+                </h3>
+                <p class="card-tagline">{game.data.tagline}</p>
+                <p class="card-description">{game.data.description.substring(0, 130)}...</p>
+              </div>
 
-			/* Top 5 Ranked List */
-			.ranked-list {
-				display: flex;
-				flex-direction: column;
-				gap: 0.85rem;
-			}
-			.ranked-item {
-				display: flex;
-				align-items: flex-start;
-				gap: 0.75rem;
-				text-decoration: none;
-				padding-bottom: 0.85rem;
-				border-bottom: 1px dashed #262626;
-				transition: transform 0.15s ease;
-			}
-			.ranked-item:last-child {
-				border-bottom: none;
-				padding-bottom: 0;
-			}
-			.ranked-item:hover {
-				transform: translateX(2px);
-			}
-			.rank-num {
-				font-size: 1.25rem;
-				font-weight: 900;
-				font-family: ui-monospace, monospace;
-				line-height: 1;
-				color: #f43f5e;
-				min-width: 1.5rem;
-			}
-			.rank-content {
-				flex-grow: 1;
-				min-width: 0;
-			}
-			.rank-title {
-				font-size: 0.85rem;
-				font-weight: 700;
-				color: #e5e5e5;
-				line-height: 1.35;
-				margin: 0 0 0.35rem 0;
-				transition: color 0.15s ease;
-			}
-			.ranked-item:hover .rank-title {
-				color: #fb7185;
-			}
-			.rank-sub-meta {
-				display: flex;
-				align-items: center;
-				gap: 0.5rem;
-				font-size: 0.7rem;
-				font-family: ui-monospace, monospace;
-				color: #737373;
-			}
+              <div class="card-footer">
+                <div class="meta-row">
+                  <span class="meta-item">⏱️ {game.data.playTime}</span>
+                  <span class="meta-item">👥 {game.data.players}</span>
+                </div>
+                <a href={`/games/${game.id}`} class="btn-play-card">
+                  <span>Play Now →</span>
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
 
-			/* Curated Dossiers List */
-			.dossier-list-box {
-				display: flex;
-				flex-direction: column;
-				gap: 0.5rem;
-			}
-			.dossier-item-link {
-				display: block;
-				padding: 0.5rem 0.65rem;
-				background: #111111;
-				border: 1px solid #262626;
-				border-radius: 8px;
-				text-decoration: none;
-				color: #d4d4d4;
-				font-size: 0.82rem;
-				font-weight: 600;
-				transition: all 0.15s ease;
-			}
-			.dossier-item-link:hover {
-				background: #262626;
-				color: #f59e0b;
-				border-color: #f59e0b;
-			}
+      <!-- Why AetherArcade Section -->
+      <section class="value-props-section">
+        <div class="props-grid">
+          <div class="prop-card">
+            <div class="prop-icon">⚡</div>
+            <h3>Zero Download Required</h3>
+            <p>Runs 100% client-side via lightweight HTML5 and JavaScript. No apps to install, no storage eaten, instant play in seconds.</p>
+          </div>
+          <div class="prop-card">
+            <div class="prop-icon">📱</div>
+            <h3>Mobile & Desktop Ready</h3>
+            <p>Fully responsive with touch controls for smartphones and keyboard hotkeys for desktop. Pick up and play anywhere.</p>
+          </div>
+          <div class="prop-card">
+            <div class="prop-icon">🧠</div>
+            <h3>Quick Mental Refresh</h3>
+            <p>Designed for 2–5 minute tactical breaks during work, study, or commuting. Instant dopamine with zero predatory paywalls.</p>
+          </div>
+        </div>
+      </section>
 
-			/* Whistleblower CTA Widget */
-			.whistleblower-box {
-				background: linear-gradient(135deg, rgba(244, 63, 94, 0.08), rgba(244, 63, 94, 0.02));
-				border: 1px solid rgba(244, 63, 94, 0.25);
-				border-radius: 16px;
-				padding: 1.25rem;
-				text-align: center;
-			}
-			.wb-title {
-				font-size: 0.95rem;
-				font-weight: 800;
-				color: #ffffff;
-				margin: 0 0 0.35rem 0;
-			}
-			.wb-desc {
-				font-size: 0.8rem;
-				color: #a3a3a3;
-				line-height: 1.45;
-				margin: 0 0 1rem 0;
-			}
-			.wb-btn {
-				display: block;
-				width: 100%;
-				padding: 0.55rem 0;
-				border-radius: 8px;
-				background: #f43f5e;
-				color: #ffffff;
-				font-weight: 700;
-				font-size: 0.82rem;
-				border: none;
-				cursor: pointer;
-				transition: background 0.15s ease;
-			}
-			.wb-btn:hover {
-				background: #fb7185;
-			}
+      <!-- FAQ Section for Search Optimization -->
+      <section class="home-faq-section">
+        <div class="faq-inner">
+          <h2>Frequently Asked Questions</h2>
+          <div class="faq-grid">
+            <div class="faq-box">
+              <h3>Are all games on AetherArcade completely free?</h3>
+              <p>Yes, 100% free forever. We do not have micro-transactions, pay-to-win cards, or paywalls. All games are funded by non-intrusive web display advertisements.</p>
+            </div>
+            <div class="faq-box">
+              <h3>Do I need an account or login to play?</h3>
+              <p>No account required! Your high scores and preferences are securely saved in your browser's local storage so you can jump in and play instantly as a guest.</p>
+            </div>
+            <div class="faq-box">
+              <h3>What is God Duel?</h3>
+              <p>God Duel is our flagship turn-based card duel game inspired by the legendary web classic <em>God Field (갓필드)</em>. You manage Health and Miracle Points while bluffing, attacking, and guarding against an intelligent deity AI opponent.</p>
+            </div>
+            <div class="faq-box">
+              <h3>Can I play these games unblocked at school or work?</h3>
+              <p>Yes. AetherArcade is a lightweight, standard HTTPS website without external heavyweight game launchers, making it accessible on almost any standard modern browser.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
 
-			/* Manifesto Box */
-			.manifesto-box {
-				background: #171717;
-				border: 1px solid #262626;
-				border-left: 4px solid #f43f5e;
-				border-radius: 12px;
-				padding: 1.75rem;
-				margin-top: 1rem;
-				min-width: 0;
-				box-sizing: border-box;
-			}
-			.manifesto-tag {
-				font-family: ui-monospace, monospace;
-				font-size: 0.72rem;
-				color: #fb7185;
-				font-weight: 700;
-				text-transform: uppercase;
-				letter-spacing: 0.05em;
-				margin-bottom: 0.35rem;
-			}
-			.manifesto-title {
-				font-size: 1.25rem;
-				font-weight: 800;
-				color: #ffffff;
-				margin: 0 0 0.6rem 0;
-			}
-			.manifesto-desc {
-				font-size: 0.88rem;
-				color: #a3a3a3;
-				line-height: 1.6;
-				margin: 0 0 1.25rem 0;
-			}
-			.manifesto-grid {
-				display: grid;
-				grid-template-columns: 1fr;
-				gap: 0.85rem;
-				padding-top: 1rem;
-				border-top: 1px solid #262626;
-				font-size: 0.8rem;
-				color: #d4d4d4;
-			}
-			@media (min-width: 640px) {
-				.manifesto-grid {
-					grid-template-columns: 1fr 1fr 1fr;
-				}
-			}
-
-			/* High-Contrast Light Mode */
-			:global(html:not(.dark)) .hero-banner {
-				border-bottom-color: #e2e8f0 !important;
-			}
-			:global(html:not(.dark)) .hero-banner h1 { color: #0f172a !important; }
-			:global(html:not(.dark)) .hero-banner p { color: #475569 !important; }
-			:global(html:not(.dark)) .hero-pill {
-				background: rgba(244, 63, 94, 0.08) !important;
-				color: #e11d48 !important;
-				border-color: rgba(244, 63, 94, 0.2) !important;
-			}
-			:global(html:not(.dark)) .section-subtitle-tag {
-				color: #d97706 !important;
-			}
-			:global(html:not(.dark)) .lead-card,
-			:global(html:not(.dark)) .lead-card-content,
-			:global(html:not(.dark)) .debate-portal-card,
-			:global(html:not(.dark)) .ledger-incident-card,
-			:global(html:not(.dark)) .sidebar-widget,
-			:global(html:not(.dark)) .manifesto-box {
-				background: #ffffff !important;
-				border-color: #e2e8f0 !important;
-				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
-			}
-			:global(html:not(.dark)) .lead-card-image,
-			:global(html:not(.dark)) .card-hero-image {
-				border-bottom-color: #e2e8f0 !important;
-			}
-			:global(html:not(.dark)) .category-tag {
-				background: rgba(244, 63, 94, 0.08) !important;
-				color: #e11d48 !important;
-				border-color: rgba(244, 63, 94, 0.2) !important;
-			}
-			:global(html:not(.dark)) .read-time-tag,
-			:global(html:not(.dark)) .card-readtime-txt,
-			:global(html:not(.dark)) .rank-sub-meta,
-			:global(html:not(.dark)) .debate-split-desc,
-			:global(html:not(.dark)) .debate-card-top {
-				color: #64748b !important;
-			}
-			:global(html:not(.dark)) .section-title-bold,
-			:global(html:not(.dark)) .lead-title,
-			:global(html:not(.dark)) .debate-card-title,
-			:global(html:not(.dark)) .card-headline,
-			:global(html:not(.dark)) .widget-title,
-			:global(html:not(.dark)) .rank-title,
-			:global(html:not(.dark)) .wb-title,
-			:global(html:not(.dark)) .manifesto-title {
-				color: #0f172a !important;
-			}
-			:global(html:not(.dark)) .lead-subtitle,
-			:global(html:not(.dark)) .lead-desc,
-			:global(html:not(.dark)) .card-summary-txt,
-			:global(html:not(.dark)) .wb-desc,
-			:global(html:not(.dark)) .manifesto-desc {
-				color: #475569 !important;
-			}
-			:global(html:not(.dark)) .lead-footer {
-				border-top-color: #e2e8f0 !important;
-				color: #64748b !important;
-			}
-			:global(html:not(.dark)) .open-lead-btn,
-			:global(html:not(.dark)) .card-action-txt {
-				color: #e11d48 !important;
-			}
-			:global(html:not(.dark)) .stream-section-header {
-				border-bottom-color: #e2e8f0 !important;
-			}
-			:global(html:not(.dark)) .widget-header-row,
-			:global(html:not(.dark)) .debate-bar-wrapper,
-			:global(html:not(.dark)) .card-foot-row,
-			:global(html:not(.dark)) .manifesto-grid {
-				border-top-color: #e2e8f0 !important;
-				border-bottom-color: #e2e8f0 !important;
-			}
-			:global(html:not(.dark)) .manifesto-grid {
-				color: #475569 !important;
-			}
-			:global(html:not(.dark)) .manifesto-grid strong {
-				color: #0f172a !important;
-			}
-			:global(html:not(.dark)) .ranked-item {
-				border-bottom-color: #e2e8f0 !important;
-			}
-			:global(html:not(.dark)) .dossier-item-link {
-				background: #f8fafc !important;
-				border-color: #cbd5e1 !important;
-				color: #334155 !important;
-			}
-			:global(html:not(.dark)) .dossier-item-link:hover {
-				background: #f1f5f9 !important;
-				color: #d97706 !important;
-			}
-			:global(html:not(.dark)) .card-cat-badge {
-				background: #f8fafc !important;
-				border-color: #cbd5e1 !important;
-				color: #334155 !important;
-			}
-			:global(html:not(.dark)) .whistleblower-box {
-				background: linear-gradient(135deg, rgba(244, 63, 94, 0.06), rgba(244, 63, 94, 0.02)) !important;
-				border-color: rgba(244, 63, 94, 0.2) !important;
-			}
-			:global(html:not(.dark)) .manifesto-tag {
-				color: #e11d48 !important;
-			}
-			:global(html:not(.dark)) .debate-visual-bar {
-				background: #e2e8f0 !important;
-			}
-		</style>
-	</head>
-	<body class="bg-neutral-950 text-neutral-200 antialiased min-h-screen">
-		<Header />
-		<main>
-			<!-- Hero Banner -->
-			<section class="hero-banner">
-				<div class="hero-left">
-					<div class="hero-pill">
-						The Failure Archive
-					</div>
-					<h1>Every mistake leaves <span>a story.</span></h1>
-					<p>Real failures. Strange decisions. Unbelievable consequences. Investigating the root mechanisms when systems and human psychology collide.</p>
-				</div>
-				<div class="hero-actions">
-					<button class="hero-submit-btn" data-open-submit-modal>
-						+ Submit Incident
-					</button>
-				</div>
-			</section>
-
-			<!-- Naver-Style 2-Column Portal Grid -->
-			<div class="portal-layout-grid">
-				<!-- Left Main Editorial Stream (~70%) -->
-				<div class="editorial-stream">
-					<!-- Lead Investigation -->
-					{featuredPost && (
-						<section>
-							<div class="stream-section-header">
-								<span class="section-title-bold">⚡ The Lead Investigation</span>
-								<span class="section-subtitle-tag">Incident Dossier of the Month</span>
-							</div>
-							<a href={`/blog/${featuredPost.data.slug.replace(/^ko\//, '')}`} style="text-decoration: none;">
-								<div class="lead-card">
-									{featuredPost.data.heroImage && (
-										<div style="overflow: hidden;">
-											<img src={featuredPost.data.heroImage} alt={featuredPost.data.title} class="lead-card-image" />
-										</div>
-									)}
-									<div class="lead-card-content">
-										<div class="lead-meta">
-											<span class="category-tag">{featuredPost.data.category}</span>
-											<span class="read-time-tag">⏱️ {featuredPost.data.read_time_minutes || 6} min read</span>
-										</div>
-										<h2 class="lead-title">{featuredPost.data.title}</h2>
-										{featuredPost.data.subtitle && (
-											<p class="lead-subtitle">{featuredPost.data.subtitle}</p>
-										)}
-										<p class="lead-desc">{featuredPost.data.description}</p>
-										<div class="lead-footer">
-											<span>Verified: {featuredPost.data.provenance_label || "Documented Incident"}</span>
-											<span class="open-lead-btn">Open Incident File &rarr;</span>
-										</div>
-									</div>
-								</div>
-							</a>
-						</section>
-					)}
-
-					<!-- Chronological Ledger Incidents -->
-					{recentPosts.length > 0 && (
-						<section>
-							<div class="stream-section-header">
-								<span class="section-title-bold">📂 The Ledger Case Files</span>
-								<span class="section-subtitle-tag">{posts.length} Documented Records ({recentPosts.length} in Archive)</span>
-							</div>
-							<div class="ledger-posts-grid">
-								{recentPosts.map((post) => (
-									<a href={`/blog/${post.data.slug.replace(/^ko\//, '')}`} class="ledger-incident-card">
-										{post.data.heroImage && (
-											<img src={post.data.heroImage} alt={post.data.title} class="card-hero-image" />
-										)}
-										<div class="ledger-card-content">
-											<div>
-												<div class="card-meta-row">
-													<span class="card-cat-badge">{post.data.category}</span>
-													<span class="card-readtime-txt">⏱️ {post.data.read_time_minutes || 5} min</span>
-												</div>
-												<h3 class="card-headline">{post.data.title}</h3>
-												<p class="card-summary-txt">{post.data.description}</p>
-											</div>
-											<div class="card-foot-row">
-												<FormattedDate date={post.data.pubDate || new Date()} />
-												<span class="card-action-txt">Read Incident &rarr;</span>
-											</div>
-										</div>
-									</a>
-								))}
-							</div>
-						</section>
-					)}
-
-					<!-- Manifesto -->
-					<section class="manifesto-box">
-						<div class="manifesto-tag">ErrorLedger Editorial Ethos</div>
-						<h3 class="manifesto-title">AI can answer questions. ErrorLedger tells you what happened.</h3>
-						<p class="manifesto-desc">
-							Every entry in ErrorLedger investigates the deeper mechanics of human and corporate failure. We dissect the flawed incentives, systemic pressures, and organizational blind spots that turn minor compromises into catastrophic disasters.
-						</p>
-						<div class="manifesto-grid">
-							<div>&#10003; <strong>Strict Claim Firewall:</strong> Verifiable court records and primary disclosures.</div>
-							<div>&#10003; <strong>The Archivist's Verdict:</strong> Systemic root causes over simple scapegoating.</div>
-							<div>&#10003; <strong>Live Reader Verdicts:</strong> Genuine community debates and blame distribution.</div>
-						</div>
-					</section>
-				</div>
-
-				<!-- Right Sidebar (~30%) -->
-				<aside class="portal-right-sidebar">
-					<!-- Top 5 Most Read Failures -->
-					<div class="sidebar-widget">
-						<div class="widget-header-row">
-							<span class="widget-title">🔥 Top Ranked Failures</span>
-							<span class="widget-badge">MOST READ</span>
-						</div>
-						<div class="ranked-list">
-							{topRankedPosts.map((item) => (
-								<a href={`/blog/${item.slug}`} class="ranked-item">
-									<div class="rank-num">{item.rank}</div>
-									<div class="rank-content">
-										<h4 class="rank-title">{item.title}</h4>
-										<div class="rank-sub-meta">
-											<span>{item.category}</span>
-											<span>•</span>
-											<span>{item.votes}</span>
-										</div>
-									</div>
-								</a>
-							))}
-						</div>
-					</div>
-
-					<!-- Curated Thematic Dossiers -->
-					<div class="sidebar-widget">
-						<div class="widget-header-row">
-							<span class="widget-title">📂 Thematic Dossiers</span>
-							<span class="widget-badge">CURATED</span>
-						</div>
-						<div class="dossier-list-box">
-							<a href="/blog/deleted-production-database-blamed-intern" class="dossier-item-link">
-								📁 The Scapegoat Collection
-							</a>
-							<a href="/blog/knight-capital-trading-glitch-45-minutes" class="dossier-item-link">
-								⚡ 45-Minute Fast Crashes
-							</a>
-							<a href="/blog/the-friday-update-that-broke-the-world" class="dossier-item-link">
-								🌋 Cloud Monoculture Failures
-							</a>
-						</div>
-					</div>
-
-					<!-- Whistleblower Box -->
-					<div class="whistleblower-box">
-						<h4 class="wb-title">Have a Failure Receipt?</h4>
-						<p class="wb-desc">Submit an anonymous corporate blunder, career mistake, or systemic disaster to The Archivist.</p>
-						<button class="wb-btn" data-open-submit-modal>
-							+ Submit Anonymous Case
-						</button>
-					</div>
-				</aside>
-			</div>
-		</main>
-		<Footer />
-	</body>
+    <Footer />
+  </body>
 </html>
+
+<style>
+  .arcade-home-body {
+    background: #090d16 !important;
+    color: #f1f5f9 !important;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .arcade-home-main {
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem 5rem;
+    width: 100%;
+  }
+
+  /* Hero Section */
+  .hero-showcase {
+    position: relative;
+    padding: 3rem 1rem 2.5rem;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .hero-backdrop {
+    position: absolute;
+    top: -30%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 650px;
+    height: 450px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.22) 0%, rgba(56, 189, 248, 0.1) 50%, transparent 80%);
+    filter: blur(60px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 850px;
+    margin: 0 auto;
+  }
+
+  .hero-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(168, 85, 247, 0.15);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    color: #e9d5ff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.3rem 0.85rem;
+    border-radius: 999px;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-headline {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    color: #ffffff;
+    margin: 0 0 1rem;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #a855f7 0%, #38bdf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-subtext {
+    font-size: 1.1rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0 auto 2.5rem;
+    max-width: 620px;
+  }
+
+  /* Featured Hero Card */
+  .featured-hero-card {
+    position: relative;
+    background: #0f172a;
+    border: 2px solid rgba(168, 85, 247, 0.4);
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    text-align: left;
+    box-shadow: 0 12px 35px rgba(168, 85, 247, 0.2);
+  }
+
+  .featured-badge-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .flagship-badge {
+    background: linear-gradient(135deg, #ef4444, #f97316);
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+  }
+
+  .rating-badge {
+    font-size: 0.75rem;
+    color: #facc15;
+    font-weight: 700;
+  }
+
+  .featured-main-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .featured-icon-box {
+    font-size: 3rem;
+    background: rgba(168, 85, 247, 0.15);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 14px;
+    width: 72px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .featured-text {
+    flex: 1;
+  }
+
+  .featured-text h2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 0.25rem;
+  }
+
+  .featured-text p {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .btn-play-hero {
+    background: linear-gradient(135deg, #a855f7 0%, #38bdf8 100%);
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 1.05rem;
+    padding: 0.85rem 1.75rem;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .btn-play-hero:hover {
+    transform: scale(1.04);
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.5);
+  }
+
+  /* Ad Zone */
+  .home-ad-zone {
+    margin: 2rem 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  .ad-card-placeholder {
+    width: 100%;
+    max-width: 728px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px dashed rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 0.6rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #64748b;
+  }
+
+  /* Games Grid */
+  .games-directory-section {
+    margin: 3rem 0;
+  }
+
+  .section-header {
+    margin-bottom: 2rem;
+  }
+
+  .sec-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #38bdf8;
+    letter-spacing: 0.05em;
+  }
+
+  .section-header h2 {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #f8fafc;
+    margin: 0.2rem 0 0.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  .sec-desc {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    margin: 0;
+  }
+
+  .games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .game-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .game-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(56, 189, 248, 0.4);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  }
+
+  .game-card.featured-card {
+    border-color: rgba(168, 85, 247, 0.35);
+  }
+
+  .card-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .card-icon {
+    font-size: 2.2rem;
+  }
+
+  .card-badges {
+    display: flex;
+    gap: 0.35rem;
+  }
+
+  .category-pill {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: rgba(255, 255, 255, 0.06);
+    color: #94a3b8;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+  }
+
+  .badge-accent {
+    font-size: 0.65rem;
+    font-weight: 700;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin: 0 0 0.2rem;
+  }
+
+  .card-title a {
+    color: #f8fafc;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .card-title a:hover {
+    color: #38bdf8;
+  }
+
+  .card-tagline {
+    font-size: 0.8rem;
+    color: #38bdf8;
+    font-weight: 600;
+    margin: 0 0 0.6rem;
+  }
+
+  .card-description {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .card-footer {
+    margin-top: 1.5rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .meta-row {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    color: #64748b;
+  }
+
+  .btn-play-card {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+  }
+
+  .btn-play-card:hover {
+    background: #38bdf8;
+    color: #020617;
+  }
+
+  /* Value Props */
+  .value-props-section {
+    margin: 4rem 0;
+    padding: 3rem 1.5rem;
+    background: #0f172a;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .props-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+
+  .prop-card {
+    text-align: center;
+  }
+
+  .prop-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .prop-card h3 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 0.5rem;
+  }
+
+  .prop-card p {
+    font-size: 0.88rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* FAQ */
+  .home-faq-section {
+    margin: 4rem 0 2rem;
+  }
+
+  .faq-inner {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .home-faq-section h2 {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #f8fafc;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .faq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .faq-box {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+
+  .faq-box h3 {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 0.5rem;
+  }
+
+  .faq-box p {
+    font-size: 0.88rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .hero-headline {
+      font-size: 2.2rem;
+    }
+    .featured-main-row {
+      flex-direction: column;
+      text-align: center;
+      gap: 1rem;
+    }
+    .props-grid, .faq-grid {
+      grid-template-columns: 1fr;
+    }
+    .btn-play-hero {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
