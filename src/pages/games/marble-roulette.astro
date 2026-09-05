@@ -1240,7 +1240,7 @@ const data = gameEntry?.data || {
     { y: 3880, title: 'ZONE 6 — 계단식 쾌속 캐스케이드', sub: 'CASCADING SLALOM CHICANES' },
     { y: 4680, title: 'ZONE 7 — 쿼드 크로스 스피너 & 킥백', sub: 'QUAD CROSS GAUNTLET & KICKBACKS' },
     { y: 5480, title: 'ZONE 8 — 네온 범퍼 웨이브 숲', sub: 'NEON BUMPER WAVE FIELD' },
-    { y: 6240, title: 'ZONE 9 — 파이널 스피드웨이 & 승부 결정 핀', sub: 'FINAL SPEEDWAY & DECIDER GATE' },
+    { y: 6240, title: 'ZONE 9 — 파이널 스피드웨이 & 자이언트 프로펠러', sub: 'STEEP SPEEDWAY & GIANT PROPELLER' },
     { y: 6940, title: 'ZONE 10 — 결승선 & 챔피언 존', sub: 'FINISH LINE & CHAMPION BASIN' }
   ];
 
@@ -1287,7 +1287,7 @@ const data = gameEntry?.data || {
       });
     });
 
-    // ZONE 2: 트윈 윈드밀 회전차 (y: 800 - 1450) - 2 Synchronized Counter-Rotating Wheels + Center Gatekeeper
+    // ZONE 2: 트윈 윈드밀 회전차 (y: 800 - 1450) - 50% Longer & 20% Slower Synchronized Windmills + Center Gatekeeper
     // Funnel entry ramps
     segments.push({ x1: 20, y1: 820, x2: 120, y2: 900, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 820, x2: 320, y2: 900, type: 'ramp' });
@@ -1296,18 +1296,18 @@ const data = gameEntry?.data || {
     segments.push({ x1: 220, y1: 870, x2: 190, y2: 930, type: 'guide' });
     segments.push({ x1: 220, y1: 870, x2: 250, y2: 930, type: 'guide' });
 
-    // Twin Windmills: Left clockwise, Right counter-clockwise
-    spinners.push({ x: 130, y: 990, length: 80, angle: 0, speed: 0.028 });
-    spinners.push({ x: 310, y: 990, length: 80, angle: Math.PI / 2, speed: -0.028 });
+    // Staggered Twin Windmills (Length 115px, 20% slower speed 0.022)
+    spinners.push({ x: 160, y: 970, length: 115, angle: 0, speed: 0.022 });
+    spinners.push({ x: 280, y: 1130, length: 115, angle: Math.PI / 2, speed: -0.022 });
 
     // Lower collection funnel
-    segments.push({ x1: 20, y1: 1100, x2: 140, y2: 1200, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 1100, x2: 300, y2: 1200, type: 'ramp' });
+    segments.push({ x1: 20, y1: 1140, x2: 140, y2: 1230, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 1140, x2: 300, y2: 1230, type: 'ramp' });
 
-    // Center gatekeeper wheel
-    spinners.push({ x: 220, y: 1300, length: 85, angle: Math.PI / 4, speed: 0.032 });
-    segments.push({ x1: 20, y1: 1280, x2: 80, y2: 1330, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 1280, x2: 360, y2: 1330, type: 'ramp' });
+    // Center gatekeeper wheel (Length 125px, speed 0.025)
+    spinners.push({ x: 220, y: 1320, length: 125, angle: Math.PI / 4, speed: 0.025 });
+    segments.push({ x1: 20, y1: 1290, x2: 80, y2: 1340, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 1290, x2: 360, y2: 1340, type: 'ramp' });
 
     // ZONE 3: 운명의 갈림길 (y: 1500 - 2250) - High-Risk Shortcut vs Safe S-Loop
     // Divider walls creating left shortcut chute (x: 140 to 210)
@@ -1317,8 +1317,8 @@ const data = gameEntry?.data || {
     // Entry guide to left chute
     segments.push({ x1: 20, y1: 1520, x2: 140, y2: 1560, type: 'guide' });
 
-    // Left Chute REVERSAL Spring Bouncer right at the high-speed drop exit!
-    bouncers.push({ x: 175, y: 2050, radius: 20, power: 8.5, label: 'REVERSAL' });
+    // Left Chute REVERSAL Spring Bouncer (Softer power: 5.2)
+    bouncers.push({ x: 175, y: 2050, radius: 20, power: 5.2, label: 'REVERSAL' });
     segments.push({ x1: 20, y1: 2080, x2: 130, y2: 2170, type: 'ramp' });
 
     // Right Lane Safe S-Loop
@@ -1331,23 +1331,23 @@ const data = gameEntry?.data || {
     segments.push({ x1: 20, y1: 2210, x2: 160, y2: 2290, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 2210, x2: 280, y2: 2290, type: 'ramp' });
 
-    // ZONE 4: 네온 핀볼 범퍼 아레나 (y: 2300 - 3050) - 6 Pulsating Spring Bouncers (Pure Stadium - NO ramps or pins)
+    // ZONE 4: 네온 핀볼 범퍼 아레나 (y: 2300 - 3050) - 7 Pulsating Spring Bouncers (Softened power: 4.2 - 4.8)
     segments.push({ x1: 20, y1: 2340, x2: 70, y2: 2370, type: 'guide' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 2340, x2: 370, y2: 2370, type: 'guide' });
 
-    bouncers.push({ x: 130, y: 2430, radius: 20, power: 7.6, label: 'BOUNCE' });
-    bouncers.push({ x: 310, y: 2430, radius: 20, power: 7.6, label: 'BOUNCE' });
-    bouncers.push({ x: 220, y: 2610, radius: 22, power: 8.0, label: 'MEGA' });
-    bouncers.push({ x: 80, y: 2760, radius: 19, power: 7.4, label: 'KICK' });
-    bouncers.push({ x: 360, y: 2760, radius: 19, power: 7.4, label: 'KICK' });
-    bouncers.push({ x: 160, y: 2930, radius: 19, power: 7.5, label: 'BOUNCE' });
-    bouncers.push({ x: 280, y: 2930, radius: 19, power: 7.5, label: 'BOUNCE' });
+    bouncers.push({ x: 130, y: 2430, radius: 20, power: 4.5, label: 'BOUNCE' });
+    bouncers.push({ x: 310, y: 2430, radius: 20, power: 4.5, label: 'BOUNCE' });
+    bouncers.push({ x: 220, y: 2610, radius: 22, power: 4.8, label: 'MEGA' });
+    bouncers.push({ x: 80, y: 2760, radius: 19, power: 4.2, label: 'KICK' });
+    bouncers.push({ x: 360, y: 2760, radius: 19, power: 4.2, label: 'KICK' });
+    bouncers.push({ x: 160, y: 2930, radius: 19, power: 4.4, label: 'BOUNCE' });
+    bouncers.push({ x: 280, y: 2930, radius: 19, power: 4.4, label: 'BOUNCE' });
 
     // Arena exit funnel
     segments.push({ x1: 20, y1: 2990, x2: 150, y2: 3080, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 2990, x2: 290, y2: 3080, type: 'ramp' });
 
-    // ZONE 5: 소용돌이 볼텍스 퍼널 (y: 3100 - 3850) - Stepped Vortex Funnel & Swirling Hub
+    // ZONE 5: 소용돌이 볼텍스 퍼널 (y: 3100 - 3850) - Stepped Vortex Funnel & Swirling Hub (Length 115px, speed -0.025)
     segments.push({ x1: 20, y1: 3150, x2: 180, y2: 3270, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 3150, x2: 260, y2: 3270, type: 'ramp' });
 
@@ -1357,33 +1357,33 @@ const data = gameEntry?.data || {
     segments.push({ x1: 120, y1: 3380, x2: 300, y2: 3470, type: 'ramp' });
     segments.push({ x1: 320, y1: 3510, x2: 140, y2: 3600, type: 'ramp' });
 
-    spinners.push({ x: 220, y: 3670, length: 75, angle: 0, speed: -0.032 });
+    spinners.push({ x: 220, y: 3670, length: 115, angle: 0, speed: -0.025 });
 
     segments.push({ x1: 20, y1: 3710, x2: 170, y2: 3810, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 3710, x2: 270, y2: 3810, type: 'ramp' });
 
-    // ZONE 6: 계단식 쾌속 캐스케이드 (y: 3900 - 4650) - 4 Alternating Steep Ramps + Speed Booster
+    // ZONE 6: 계단식 쾌속 캐스케이드 (y: 3900 - 4650) - 4 Alternating Steep Ramps + Speed Booster (Length 105px, speed 0.028)
     segments.push({ x1: 20, y1: 3930, x2: 350, y2: 4050, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 4100, x2: 90, y2: 4220, type: 'ramp' });
     segments.push({ x1: 20, y1: 4270, x2: 350, y2: 4390, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 4440, x2: 110, y2: 4560, type: 'ramp' });
 
-    spinners.push({ x: 240, y: 4610, length: 70, angle: Math.PI / 3, speed: 0.035 });
+    spinners.push({ x: 225, y: 4610, length: 105, angle: Math.PI / 3, speed: 0.028 });
 
     segments.push({ x1: 20, y1: 4620, x2: 140, y2: 4680, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 4620, x2: 300, y2: 4680, type: 'ramp' });
 
-    // ZONE 7: 쿼드 크로스 스피너 & 킥백 (y: 4700 - 5450) - 4 Propellers + 3 Comeback Bouncers
-    spinners.push({ x: 130, y: 4800, length: 65, angle: 0, speed: 0.026 });
-    spinners.push({ x: 310, y: 4800, length: 65, angle: 0, speed: -0.026 });
+    // ZONE 7: 쿼드 크로스 스피너 & 킥백 (y: 4700 - 5450) - 4 Large Propellers (Length 100px) + 3 Softened Bouncers (power: 4.2 - 4.8)
+    spinners.push({ x: 150, y: 4790, length: 100, angle: 0, speed: 0.021 });
+    spinners.push({ x: 290, y: 4940, length: 100, angle: 0, speed: -0.021 });
 
-    bouncers.push({ x: 220, y: 4940, radius: 20, power: 7.8, label: 'KICKBACK' });
+    bouncers.push({ x: 220, y: 4940, radius: 20, power: 4.8, label: 'KICKBACK' });
 
-    spinners.push({ x: 130, y: 5080, length: 65, angle: Math.PI / 4, speed: -0.028 });
-    spinners.push({ x: 310, y: 5080, length: 65, angle: -Math.PI / 4, speed: 0.028 });
+    spinners.push({ x: 150, y: 5090, length: 100, angle: Math.PI / 4, speed: -0.022 });
+    spinners.push({ x: 290, y: 5230, length: 100, angle: -Math.PI / 4, speed: 0.022 });
 
-    bouncers.push({ x: 65, y: 5220, radius: 18, power: 7.4, label: 'BOUNCE' });
-    bouncers.push({ x: 375, y: 5220, radius: 18, power: 7.4, label: 'BOUNCE' });
+    bouncers.push({ x: 65, y: 5220, radius: 18, power: 4.2, label: 'BOUNCE' });
+    bouncers.push({ x: 375, y: 5220, radius: 18, power: 4.2, label: 'BOUNCE' });
 
     segments.push({ x1: 20, y1: 5320, x2: 150, y2: 5420, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 5320, x2: 290, y2: 5420, type: 'ramp' });
@@ -1402,18 +1402,24 @@ const data = gameEntry?.data || {
     segments.push({ x1: 20, y1: 6150, x2: 100, y2: 6220, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 6150, x2: 340, y2: 6220, type: 'ramp' });
 
-    // ZONE 9: 파이널 스피드웨이 & 승부 결정 핀 (y: 6250 - 6920) - Steep Acceleration Runway & 3 Decider Pins
-    segments.push({ x1: 20, y1: 6280, x2: 340, y2: 6400, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 6460, x2: 100, y2: 6580, type: 'ramp' });
-    segments.push({ x1: 20, y1: 6640, x2: 340, y2: 6750, type: 'ramp' });
+    // ZONE 9: 파이널 스피드웨이 & 자이언트 프로펠러 (y: 6250 - 6920) - Steeper High-Octane Runway & Giant Propeller Gate
+    // Steep Ramp 1 (30° grade)
+    segments.push({ x1: 20, y1: 6260, x2: 330, y2: 6440, type: 'ramp' });
+    // Steep Ramp 2 (30° grade)
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 6470, x2: 110, y2: 6650, type: 'ramp' });
+    // Steep Ramp 3 (30° grade)
+    segments.push({ x1: 20, y1: 6670, x2: 320, y2: 6800, type: 'ramp' });
 
-    segments.push({ x1: 20, y1: 6810, x2: 130, y2: 6880, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 6810, x2: 310, y2: 6880, type: 'ramp' });
+    // Funnel guides into the giant propeller gate
+    segments.push({ x1: 20, y1: 6810, x2: 110, y2: 6870, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 6810, x2: 330, y2: 6870, type: 'ramp' });
 
-    // 3 Decider Bumper Pins positioned 45-80px above the finish line in open field
-    pins.push({ x: 175, y: 6870, radius: 7.5, isBumper: true });
-    pins.push({ x: 265, y: 6870, radius: 7.5, isBumper: true });
-    pins.push({ x: 220, y: 6905, radius: 8.5, isBumper: true });
+    // GIANT PROPELLER right before the finish line (y: 6850, FINISH_LINE_Y is 6950, length 135px)
+    spinners.push({ x: 220, y: 6850, length: 135, angle: 0, speed: 0.022 });
+
+    // 2 Decider Bumper Pins right below giant propeller corners (y: 6915)
+    pins.push({ x: 140, y: 6915, radius: 8, isBumper: true });
+    pins.push({ x: 300, y: 6915, radius: 8, isBumper: true });
 
     // ZONE 10: 결승선 & 피니시 베이슨 (y: 6950 - 7200)
     segments.push({ x1: 20, y1: 7150, x2: COURSE_WIDTH - 20, y2: 7150, type: 'wall' });
@@ -1882,7 +1888,7 @@ const data = gameEntry?.data || {
       });
     });
 
-    // 5. Marble vs Spring Bouncers (Comeback Reversal Mechanism)
+    // 5. Marble vs Spring Bouncers (Controlled, Natural Elastic Rebound - Less Bouncy)
     marbles.forEach(m => {
       bouncers.forEach(bn => {
         const dx = m.x - bn.x;
@@ -1898,24 +1904,42 @@ const data = gameEntry?.data || {
           m.x += nx * overlap;
           m.y += ny * overlap;
 
-          const speed = Math.hypot(m.vx, m.vy);
           sfx.playSpring();
 
           shockwaves.push({
             x: bn.x,
             y: bn.y,
             radius: bn.radius,
-            maxRadius: 75,
+            maxRadius: 50,
             color: '#f43f5e',
-            alpha: 1.0
+            alpha: 0.85
           });
 
-          const upwardKick = Math.max(bn.power, speed * 1.55);
-          m.vy = -upwardKick;
-          m.vx = nx * 3.5 + (Math.random() - 0.5) * 3;
+          // Controlled normal bounce instead of violent upward launch
+          const dot = m.vx * nx + m.vy * ny;
+          if (dot < 0) {
+            // Gentle restitution (less bouncy)
+            const restitution = 0.70;
+            m.vx -= (1 + restitution) * dot * nx;
+            m.vy -= (1 + restitution) * dot * ny;
+          } else {
+            m.vx += nx * 1.8;
+            m.vy += ny * 1.2;
+          }
+
+          // Gentle outward impulse scaled by bn.power
+          m.vx += nx * (bn.power * 0.35);
+          m.vy += ny * (bn.power * 0.35);
+
+          // Speed cap to prevent bouncing off-screen
+          const bounceSpeed = Math.hypot(m.vx, m.vy);
+          if (bounceSpeed > 5.2) {
+            m.vx = (m.vx / bounceSpeed) * 5.2;
+            m.vy = (m.vy / bounceSpeed) * 5.2;
+          }
 
           if (energyGaugeEnabled) {
-            m.energy = Math.min(1.0, m.energy + 0.12);
+            m.energy = Math.min(1.0, m.energy + 0.08);
             if (m.energy >= 1.0) {
               triggerShockwave(m);
               m.energy = 0;
@@ -2189,32 +2213,37 @@ const data = gameEntry?.data || {
       }
     });
 
-    // 3. Draw Spinners (11 Spinners)
+    // 3. Draw Spinners (including Giant Finish Propeller)
     spinners.forEach(sp => {
       ctx.save();
       ctx.translate(sp.x, sp.y);
       ctx.rotate(sp.angle);
 
-      ctx.fillStyle = '#f59e0b';
-      ctx.shadowColor = '#f59e0b';
-      ctx.shadowBlur = 10;
+      const isGiant = sp.length >= 130;
+      const bladeH = isGiant ? 15 : 12;
+
+      ctx.fillStyle = isGiant ? '#ea580c' : '#f59e0b';
+      ctx.shadowColor = isGiant ? '#f97316' : '#f59e0b';
+      ctx.shadowBlur = isGiant ? 16 : 10;
       ctx.beginPath();
-      ctx.roundRect(-sp.length, -5.5, sp.length * 2, 11, 5);
+      ctx.roundRect(-sp.length, -bladeH / 2, sp.length * 2, bladeH, 6);
       ctx.fill();
       ctx.shadowBlur = 0;
 
+      // Glowing tip indicators
       ctx.fillStyle = '#fef08a';
       ctx.beginPath();
-      ctx.arc(-sp.length + 5, 0, 3, 0, Math.PI * 2);
-      ctx.arc(sp.length - 5, 0, 3, 0, Math.PI * 2);
+      ctx.arc(-sp.length + 6, 0, isGiant ? 4.5 : 3, 0, Math.PI * 2);
+      ctx.arc(sp.length - 6, 0, isGiant ? 4.5 : 3, 0, Math.PI * 2);
       ctx.fill();
 
+      // Center Hub
       ctx.beginPath();
-      ctx.arc(0, 0, 7.5, 0, Math.PI * 2);
+      ctx.arc(0, 0, isGiant ? 10 : 8, 0, Math.PI * 2);
       ctx.fillStyle = '#ffffff';
       ctx.fill();
-      ctx.strokeStyle = '#d97706';
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = isGiant ? '#c2410c' : '#d97706';
+      ctx.lineWidth = 2.5;
       ctx.stroke();
 
       ctx.restore();
@@ -2383,11 +2412,12 @@ const data = gameEntry?.data || {
       miniCtx.fillRect(0, zm.y * scaleY, minimapCanvas.width, 1);
     });
 
-    // Spinner hubs on minimap
+    // Spinner hubs on minimap (giant propeller highlighted)
     spinners.forEach(sp => {
+      const isGiant = sp.length >= 130;
       miniCtx.beginPath();
-      miniCtx.arc(sp.x * scaleX, sp.y * scaleY, 1.5, 0, Math.PI * 2);
-      miniCtx.fillStyle = '#f59e0b';
+      miniCtx.arc(sp.x * scaleX, sp.y * scaleY, isGiant ? 2.5 : 1.5, 0, Math.PI * 2);
+      miniCtx.fillStyle = isGiant ? '#ea580c' : '#f59e0b';
       miniCtx.fill();
     });
 
