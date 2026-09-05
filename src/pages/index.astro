@@ -12,6 +12,15 @@ const sortedGames = games.sort((a, b) => {
   const idxB = priorityOrder.indexOf(b.id);
   return (idxA !== -1 ? idxA : 99) - (idxB !== -1 ? idxB : 99);
 });
+
+const CATEGORY_MAP: Record<string, string> = {
+  stream: '방송/추첨',
+  arcade: '아케이드',
+  puzzle: '퍼즐',
+  word: '단어/두뇌',
+  card: '카드/보드',
+  strategy: '전략'
+};
 ---
 
 <!doctype html>
@@ -38,7 +47,7 @@ const sortedGames = games.sort((a, b) => {
           </h1>
 
           <p class="hero-subtext">
-            야식 추첨 돌림판, 커피 내기 사다리타기, 저챗 밸런스 게임까지! 설치 없이 OBS 브라우저 소스로 즉시 띄워 방송 텐션을 끌어올리세요.
+            야식 추첨 돌림판, 커피 내기 사다리타기, 구슬 레이스, 밸런스 게임까지! 설치나 로그인 없이 브라우저에서 즉시 실행하여 방송 텐션을 끌어올리세요.
           </p>
 
           <!-- Featured Game Hero Banner -->
@@ -70,10 +79,10 @@ const sortedGames = games.sort((a, b) => {
       <section class="games-directory-section">
         <div class="section-header">
           <div class="title-group">
-            <span class="sec-label">ALL TITLES</span>
-            <h2>Choose Your Challenge</h2>
+            <span class="sec-label">전체 게임 목록</span>
+            <h2>방송용 게임 & 추첨 도구 모음</h2>
           </div>
-          <p class="sec-desc">Every game runs directly on your device CPU with zero lag, instant loading, and zero installations.</p>
+          <p class="sec-desc">설치나 로그인 없이 웹 브라우저에서 바로 즐기는 무료 방송용 웹 도구입니다.</p>
         </div>
 
         <div class="games-grid">
@@ -82,7 +91,7 @@ const sortedGames = games.sort((a, b) => {
               <div class="card-top-row">
                 <span class="card-icon">{game.data.icon}</span>
                 <div class="card-badges">
-                  <span class="category-pill">{game.data.category}</span>
+                  <span class="category-pill">{CATEGORY_MAP[game.data.category] || game.data.category}</span>
                   <span class="badge-accent">{game.data.badge}</span>
                 </div>
               </div>
@@ -101,32 +110,11 @@ const sortedGames = games.sort((a, b) => {
                   <span class="meta-item">👥 {game.data.players}</span>
                 </div>
                 <a href={`/games/${game.id}`} class="btn-play-card">
-                  <span>Play Now →</span>
+                  <span>시작하기 →</span>
                 </a>
               </div>
             </article>
           ))}
-        </div>
-      </section>
-
-      <!-- Why StreamArcade Section -->
-      <section class="value-props-section">
-        <div class="props-grid">
-          <div class="prop-card">
-            <div class="prop-icon">📺</div>
-            <h3>OBS 브라우저 소스 100% 호환</h3>
-            <p>프로그램 설치 없이 URL만 복사하여 OBS 스튜디오 브라우저 소스에 붙여넣으면 깔끔한 크로마키/오버레이로 즉시 방송에 띄울 수 있습니다.</p>
-          </div>
-          <div class="prop-card">
-            <div class="prop-icon">📱</div>
-            <h3>PC & 모바일 완벽 지원</h3>
-            <p>PC 단축키(Space, 숫자키)와 스마트폰 터치 인터페이스를 모두 지원하여 생방송 중 끊김 없이 조작할 수 있습니다.</p>
-          </div>
-          <div class="prop-card">
-            <div class="prop-icon">🔒</div>
-            <h3>100% 무료 & 개인정보 수집 제로</h3>
-            <p>회원가입, 로그인, 유료 결제가 일절 없으며 모든 데이터는 브라우저 내부에서 안전하게 실행됩니다.</p>
-          </div>
         </div>
       </section>
 
@@ -137,8 +125,8 @@ const sortedGames = games.sort((a, b) => {
           <h2>스트리머 FAQ</h2>
           <div class="faq-grid">
             <div class="faq-box">
-              <h3>OBS Studio에서 어떻게 띄우나요?</h3>
-              <p>OBS 소스 목록에서 [+] 버튼을 누르고 [브라우저]를 추가한 뒤, 원하는 게임 페이지 URL(예: /games/roulette)을 입력하세요. 너비 1280, 높이 720으로 설정하시면 방송 화면에 완벽하게 표시됩니다.</p>
+              <h3>방송 화면에 어떻게 띄우나요?</h3>
+              <p>웹 브라우저 창을 띄우거나 각 게임 우측 상단의 [전체화면] 버튼을 활용하여 방송 화면에 깔끔하게 배치할 수 있습니다.</p>
             </div>
             <div class="faq-box">
               <h3>회원가입이나 결제가 필요한가요?</h3>
@@ -146,7 +134,7 @@ const sortedGames = games.sort((a, b) => {
             </div>
             <div class="faq-box">
               <h3>치지직(CHZZK), SOOP, 유튜브 모두 지원하나요?</h3>
-              <p>네! 웹 브라우저 기반으로 동작하므로 치지직, SOOP(아프리카TV), 유튜브 라이브, 트위치 등 모든 방송 플랫폼에서 완벽하게 작동합니다.</p>
+              <p>네! 웹 브라우저 기반으로 동작하므로 치지직, SOOP(아프리카TV), 유튜브 라이브, 트위치 등 모든 방송 플랫폼에서 원활하게 작동합니다.</p>
             </div>
             <div class="faq-box">
               <h3>사다리타기나 룰렛 결과는 조작이 불가능한가요?</h3>

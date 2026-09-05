@@ -1,35 +1,35 @@
 ---
-title: "Word Sprint"
-tagline: "60-Second Anagram & Word Hunt Speed Puzzle"
-description: "Test your vocabulary and reflexes in this fast-paced word finding challenge. Given 6 scrambled letters, how many valid words can you uncover before the 60-second countdown hits zero? Discover the mystery 6-letter word for massive bonus multipliers."
+title: "워드 스프린트 (단어 찾기)"
+tagline: "60초 스피드 아나그램 & 어휘력 두뇌 퍼즐"
+description: "6개의 무작위 알파벳에서 유효한 영단어를 찾아내는 스피드 단어 퍼즐. 60초의 제한 시간 동안 얼마나 많은 단어를 찾아낼 수 있을까요? 숨겨진 6글자 마스터 단어를 찾아 대량 보너스를 노려보세요."
 category: "word"
-badge: "⚡ Speed"
+badge: "⚡ 스피드"
 icon: "🔤"
-players: "1 Player"
-playTime: "60 seconds"
+players: "1인용"
+playTime: "60초"
 featured: false
 rating: 4.82
 plays: "9.6K"
 controls:
-  - "Type letters on keyboard or click the on-screen letter tiles"
-  - "Press Enter to submit word, Backspace to delete"
-  - "Press Space to shuffle letter order for new angles"
+  - "키보드로 글자를 입력하거나 화면의 글자 타일을 클릭"
+  - "Enter 키로 단어 제출, Backspace 키로 글자 삭제"
+  - "스페이스바(Space) 또는 섞기 버튼으로 글자 순서 재배열"
 rules:
-  - "Form valid English words between 3 and 6 letters using only the given letters."
-  - "Each letter can only be used once per submission."
-  - "Earn 100 points for 3-letter words, 250 for 4-letter words, 500 for 5-letter words, and 1,200 for the full 6-letter master word."
-  - "Find the target 6-letter word to earn extra bonus time!"
+  - "주어진 6개의 알파벳을 조합하여 3~6글자의 올바른 단어를 만드세요."
+  - "한 단어를 만들 때 각 글자는 한 번만 사용할 수 있습니다."
+  - "단어 길이에 따라 3글자 100점, 4글자 250점, 5글자 500점, 6글자 1,200점이 부여됩니다."
+  - "숨겨진 6글자 마스터 단어를 찾으면 추가 보너스 시간을 획득합니다."
 features:
-  - "Built-in offline dictionary of 15,000+ verified English words"
-  - "Instant shuffle button to break mental blocks"
-  - "Leaderboard ranking categories (Novice, Wordsmith, Lexical Master)"
+  - "15,000단어 이상의 오프라인 사전 내장으로 지연 없는 즉각 판정"
+  - "생각이 막혔을 때 관점을 바꿔주는 원클릭 글자 셔플 기능"
+  - "점수에 따른 랭킹 티어 판정 (입문자, 단어 전문가, 어휘 마스터)"
 faqItems:
-  - q: "Are plural words accepted?"
-    a: "Yes, standard English plurals and verb conjugations (such as 'runs', 'cars', 'jump') are valid dictionary words."
-  - q: "Can I play multiple rounds?"
-    a: "Yes! Every round generates a fresh, hand-curated anagram set for unlimited speed runs."
+  - q: "복수형 단어나 동사 변형도 인정되나요?"
+    a: "네! 사전에 등록된 표준 복수형(-s)이나 동사 과거형/변형 등도 모두 정답으로 인정됩니다."
+  - q: "여러 라운드를 연속해서 플레이할 수 있나요?"
+    a: "네! 매 라운드마다 새로운 알파벳 조합이 무한으로 생성되어 끝없이 두뇌 스피드런에 도전할 수 있습니다."
 ---
 
-## Fast-Paced Wordplay
+## 60초 동안 펼쳐지는 단어 찾기 스피드런
 
-Warm up your brain in 60 seconds of anagram hunting. Perfect for quick mental breaks between study or work tasks.
+휴식 시간이나 방송 중 두뇌 워밍업에 제격입니다. 60초 동안 집중하여 숨겨진 단어를 모두 찾아보세요.

@@ -55,11 +55,11 @@ const data = gameEntry?.data || {
     <div class="roulette-mode-tabs">
       <a href="/games/roulette" class="mode-tab active">
         <span class="tab-icon">🎡</span>
-        <span class="tab-label">원판 룰렛 (Spin Wheel)</span>
+        <span class="tab-label">원판 돌림판 룰렛</span>
       </a>
       <a href="/games/marble-roulette" class="mode-tab">
         <span class="tab-icon">🔮</span>
-        <span class="tab-label">마블 룰렛 (Marble Race)</span>
+        <span class="tab-label">구슬 레이스 룰렛</span>
         <span class="tab-badge">신규</span>
       </a>
     </div>
@@ -77,21 +77,21 @@ const data = gameEntry?.data || {
         <canvas id="roulette-canvas" width="600" height="600"></canvas>
 
         <!-- Center Glowing Hub & Spin Button -->
-        <button id="center-spin-btn" class="center-hub-btn" title="Click or press Space to Spin">
-          <span class="hub-label">SPIN</span>
+        <button id="center-spin-btn" class="center-hub-btn" title="클릭하거나 스페이스바를 눌러 룰렛 회전">
+          <span class="hub-label">돌리기</span>
         </button>
       </div>
 
       <!-- Quick Action Controls -->
       <div class="wheel-action-bar">
         <button id="main-spin-btn" class="roulette-btn spin-btn-main">
-          <span>🎯 SPIN WHEEL (Space)</span>
+          <span>🎯 룰렛 돌리기 (Space)</span>
         </button>
         <button id="shuffle-btn" class="roulette-btn btn-secondary">
-          <span>🔀 Shuffle Items</span>
+          <span>🔀 항목 섞기</span>
         </button>
-        <button id="stream-mode-btn" class="roulette-btn btn-stream" title="Toggle Clean Stream Overlay Mode">
-          <span>📺 Stream Overlay</span>
+        <button id="stream-mode-btn" class="roulette-btn btn-stream" title="깔끔한 집중 모드 전환">
+          <span>📺 집중 모드</span>
         </button>
       </div>
     </div>
@@ -152,11 +152,11 @@ const data = gameEntry?.data || {
       <!-- Recent Winners History -->
       <div class="config-group history-group">
         <div class="label-with-meta">
-          <label>Winners History</label>
-          <button id="clear-history-btn" class="mini-clear-btn">Clear</button>
+          <label>🏆 당첨 히스토리</label>
+          <button id="clear-history-btn" class="mini-clear-btn">초기화</button>
         </div>
         <div class="winners-history-list" id="winners-history">
-          <span class="empty-history-text">No winners yet. Spin the wheel!</span>
+          <span class="empty-history-text">아직 당첨 기록이 없습니다. 룰렛을 돌려보세요!</span>
         </div>
       </div>
     </div>
@@ -165,9 +165,9 @@ const data = gameEntry?.data || {
     <div class="winner-celebration-overlay hidden" id="winner-modal">
       <div class="celebration-card">
         <div class="trophy-bounce">👑</div>
-        <div class="congrats-tag">WINNER SELECTED!</div>
+        <div class="congrats-tag">🎉 당첨을 축하합니다!</div>
         <div class="winner-item-name" id="winner-name-display">치킨</div>
-        <button id="modal-confirm-btn" class="winner-confirm-btn">Confirm (Close)</button>
+        <button id="modal-confirm-btn" class="winner-confirm-btn">확인 (닫기)</button>
       </div>
     </div>
 
@@ -176,19 +176,19 @@ const data = gameEntry?.data || {
   </div>
 
   <div slot="guide">
-    <h2>How to Use Streamer Roulette for Live Broadcasts</h2>
+    <h2>방송용 돌림판 룰렛 활용 가이드</h2>
     <p>
-      The <strong>Streamer Roulette</strong> is built specifically for live content creators on <em>Chzzk (치지직), Twitch, YouTube, and AfreecaTV</em>.
+      <strong>스트리머 룰렛</strong>은 치지직(CHZZK), SOOP(아프리카TV), 유튜브 라이브 등 다양한 방송 환경에서 시청자와 함께 실시간으로 소통할 수 있도록 제작된 무료 웹 도구입니다.
     </p>
 
-    <h3>1. Quick Stream Presets</h3>
+    <h3>1. 1초 원클릭 방송 프리셋</h3>
     <p>
-      Click any of the preset buttons to instantly populate the wheel with popular streaming formats like late-night meal choices (야식 메뉴), streamer penalties (벌칙 룰렛), or viewer gift events (치킨 기프티콘).
+      상단의 야식 메뉴, 벌칙 룰렛, 치킨 이벤트 프리셋 버튼을 클릭하면 방송에서 가장 많이 쓰이는 항목들이 돌림판에 즉시 자동 입력됩니다.
     </p>
 
-    <h3>2. OBS Browser Source Setup</h3>
+    <h3>2. 가중치 설정 팁</h3>
     <p>
-      To capture the roulette inside OBS Studio without window borders, click the <strong>Stream Overlay</strong> button or add this URL as an OBS Browser Source with a width of 1280 and height of 720.
+      특정 항목의 당첨 확률을 높이거나 여러 칸으로 만들고 싶다면 <code>피자*2</code>, <code>치킨*3</code>과 같이 별표(*)와 숫자를 붙여 입력해 보세요. 해당 칸이 자동으로 분할되어 생성됩니다.
     </p>
   </div>
 </GameLayout>
