@@ -4,23 +4,33 @@ import { getEntry } from 'astro:content';
 
 const gameEntry = await getEntry('games', 'cosmic-drop');
 const data = gameEntry?.data || {
-  title: 'Cosmic Drop',
-  tagline: 'Physics-Based Celestial Orb Merge Game',
-  description: 'Drop celestial bodies into the gravity chamber. Merge identical planets to evolve them into the blazing Sun!',
+  title: '행성 합치기 (수박게임)',
+  tagline: '물리 엔진 기반 중력 행성 머지 퍼즐',
+  description: '화제의 수박게임 룰! 소행성부터 거대한 태양까지, 같은 행성끼리 부딪혀 거대하게 진화시키는 중독성 100% 방송용 물리 퍼즐 게임.',
   icon: '🪐',
   category: 'arcade',
-  badge: '🪐 Viral',
-  players: '1 Player',
-  playTime: '3-10 mins',
+  badge: '🪐 수박게임',
+  players: '1인 플레이',
+  playTime: '3-10분',
   controls: [
-    'Move mouse or drag finger to aim the drop location',
-    'Click or release touch to drop the celestial body',
-    'Watch the Next Orb preview in the top bar'
+    '마우스나 손가락을 좌우로 움직여 투하 위치 조준',
+    '클릭하거나 터치를 떼면 행성이 중력실로 낙하',
+    '상단 [다음 행성] 미리보기로 크기와 순서 예측'
   ],
   rules: [
-    'Matching celestial orbs merge on impact into a larger planet tier.',
-    'Evolution order: Asteroid ➔ Moon ➔ Mars ➔ Venus ➔ Earth ➔ Neptune ➔ Saturn ➔ Jupiter ➔ Sun!',
-    'Do not let planets pile up over the top danger line!'
+    '같은 종류의 행성이 충돌하면 다음 단계의 더 큰 행성으로 합쳐집니다.',
+    '진화 단계: 소행성 ➔ 달 ➔ 수성 ➔ 화성 ➔ 금성 ➔ 지구 ➔ 해왕성 ➔ 토성 ➔ 목성 ➔ 불타는 태양(Sun)!',
+    '상단 붉은 위험선을 넘어 행성이 넘치면 게임 오버!'
+  ],
+  faqItems: [
+    {
+      q: '가장 큰 최종 행성은 무엇인가요?',
+      a: '목성 2개를 합치면 나타나는 [불타는 태양(The Sun)]입니다! 태양을 완성하면 엄청난 추가 보너스 점수를 획득합니다.'
+    },
+    {
+      q: '행성이 넘치지 않게 하는 팁이 있나요?',
+      a: '큰 행성은 한쪽 구석에 몰아두고, 작은 행성들이 경사를 타고 굴러 내려가 자연스럽게 머지되도록 유도하는 것이 정석 공략법입니다.'
+    }
   ]
 };
 ---
@@ -36,55 +46,81 @@ const data = gameEntry?.data || {
   playTime={data.playTime}
   controls={data.controls}
   rules={data.rules}
+  faqItems={data.faqItems}
 >
   <div class="cosmic-drop-root">
     <!-- Header HUD -->
     <div class="drop-hud">
       <div class="hud-box score-box">
-        <span class="hud-lbl">STELLAR SCORE</span>
+        <span class="hud-lbl">현재 점수</span>
         <span class="hud-num" id="cosmic-score">0</span>
       </div>
 
       <div class="hud-box next-box">
-        <span class="hud-lbl">NEXT ORB</span>
-        <div class="next-orb-preview" id="next-preview">
-          <span class="preview-emoji" id="next-emoji">🌑</span>
+        <span class="hud-lbl">다음 행성 (NEXT)</span>
+        <div class="next-orb-wrapper">
+          <div class="next-orb-preview" id="next-preview-circle">
+            <span class="preview-emoji" id="next-emoji">🌑</span>
+          </div>
+          <span class="next-orb-name" id="next-name">달</span>
         </div>
       </div>
 
       <div class="hud-box best-box">
-        <span class="hud-lbl">RECORD</span>
+        <span class="hud-lbl">최고 기록</span>
         <span class="hud-num" id="cosmic-best">0</span>
       </div>
     </div>
 
     <!-- Physics Canvas Container -->
     <div class="canvas-wrapper">
-      <canvas id="cosmic-canvas" width="400" height="550"></canvas>
+      <canvas id="cosmic-canvas" width="400" height="560"></canvas>
       
       <!-- Danger Line Overlay -->
-      <div class="danger-line" title="Warning: Do not overflow above this threshold">
-        <span>⚠ SINGULARITY DANGER LINE ⚠</span>
+      <div class="danger-line" title="경고: 이 선 위로 행성이 쌓이면 게임 오버됩니다">
+        <span>⚠ 한계선 초과 주의 (DANGER) ⚠</span>
       </div>
 
       <!-- Game Over Modal -->
       <div class="drop-modal hidden" id="drop-over-modal">
         <div class="drop-modal-card">
           <div class="modal-icon">🌌</div>
-          <h2>Singularity Collapsed!</h2>
-          <p>Planetary overflow reached maximum density.</p>
-          <div class="final-score-display">Final Score: <strong id="over-score">0</strong></div>
-          <button id="drop-restart-btn" class="drop-btn-primary">Drop Again</button>
+          <h2>특이점 붕괴! (Game Over)</h2>
+          <p>행성이 한계선을 넘어 중력실이 포화되었습니다.</p>
+          <div class="final-score-display">최종 점수: <strong id="over-score">0</strong></div>
+          <button id="drop-restart-btn" class="drop-btn-primary">다시 도전하기</button>
         </div>
+      </div>
+    </div>
+
+    <!-- Planet Evolution Order Strip -->
+    <div class="evolution-strip">
+      <span class="evo-title">진화 순서:</span>
+      <div class="evo-items">
+        <span title="소행성">🪨</span>➔
+        <span title="달">🌑</span>➔
+        <span title="수성">🟤</span>➔
+        <span title="화성">🔴</span>➔
+        <span title="금성">🟡</span>➔
+        <span title="지구">🌍</span>➔
+        <span title="해왕성">🔵</span>➔
+        <span title="토성">🪐</span>➔
+        <span title="목성">🟠</span>➔
+        <span title="태양" class="evo-sun">☀️</span>
       </div>
     </div>
   </div>
 
   <div slot="guide">
-    <h2>Cosmic Drop Evolution Guide</h2>
+    <h2>행성 합치기 (수박게임) 고득점 공략 가이드</h2>
     <p>
-      Planetary mass grows with each fusion. To achieve the <strong>Blazing Sun</strong>, keep your heaviest giant gas planets settled in one corner, allowing smaller moons and rocky planets to roll downward into collisions.
+      <strong>행성 합치기</strong>는 귀여운 천체들을 떨어뜨려 같은 행성끼리 융합시키는 중독성 만점의 물리 머지 퍼즐 게임입니다.
     </p>
+    <ul>
+      <li><strong>조준선과 크기 확인:</strong> 투하하기 전 마우스를 움직이면 투하될 행성의 실제 크기와 위치가 상단에 표시됩니다.</li>
+      <li><strong>다음 행성 예측:</strong> 상단 [다음 행성] 박스를 확인하여 다음에 나올 행성의 크기에 맞춰 현재 행성을 어디에 놓을지 전략적으로 판단하세요.</li>
+      <li><strong>한쪽 몰아넣기 전략:</strong> 거대한 목성과 태양을 만들려면 크기가 큰 행성을 한쪽 벽면에 고정시키고, 반대쪽에서 작은 행성을 굴려 차례대로 계단식 합체를 유도하는 것이 핵심입니다.</li>
+    </ul>
   </div>
 </GameLayout>
 
@@ -95,8 +131,9 @@ const data = gameEntry?.data || {
     align-items: center;
     padding: 1.25rem 1rem;
     background: #090d16;
-    border-radius: 12px;
+    border-radius: 14px;
     user-select: none;
+    gap: 0.75rem;
   }
 
   .drop-hud {
@@ -104,28 +141,32 @@ const data = gameEntry?.data || {
     justify-content: space-between;
     align-items: center;
     width: 400px;
-    margin-bottom: 0.75rem;
   }
 
   .hud-box {
     background: #0f172a;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 0.4rem 0.75rem;
     text-align: center;
-    min-width: 90px;
+    min-width: 95px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 
   .hud-lbl {
     display: block;
-    font-size: 0.6rem;
+    font-size: 0.65rem;
     font-weight: 800;
     color: #94a3b8;
     letter-spacing: 0.05em;
+    margin-bottom: 0.15rem;
   }
 
   .hud-num {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     font-weight: 900;
     color: #f8fafc;
   }
@@ -134,66 +175,134 @@ const data = gameEntry?.data || {
   .best-box .hud-num { color: #facc15; }
 
   .next-box {
-    min-width: 80px;
+    min-width: 120px;
+    padding: 0.35rem 0.75rem;
+  }
+
+  .next-orb-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.15rem;
   }
 
   .next-orb-preview {
-    height: 28px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #475569;
+    border: 2px solid rgba(255, 255, 255, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   }
 
   .preview-emoji {
-    font-size: 1.4rem;
+    font-size: 1.15rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+  }
+
+  .next-orb-name {
+    font-size: 0.75rem;
+    font-weight: 900;
+    color: #f8fafc;
   }
 
   /* Canvas */
   .canvas-wrapper {
     position: relative;
     width: 400px;
-    height: 550px;
+    height: 560px;
     background: radial-gradient(circle at 50% 20%, #1e1b4b 0%, #020617 100%);
     border: 3px solid rgba(255, 255, 255, 0.15);
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 35px rgba(0, 0, 0, 0.7), 0 0 15px rgba(56, 189, 248, 0.15);
+    cursor: crosshair;
   }
 
   canvas {
     display: block;
     width: 100%;
     height: 100%;
-    cursor: crosshair;
   }
 
+  /* Danger Line */
   .danger-line {
     position: absolute;
-    top: 90px;
+    top: 88px;
     left: 0;
     right: 0;
-    height: 1px;
-    border-top: 2px dashed rgba(239, 68, 68, 0.5);
+    height: 2px;
+    background: repeating-linear-gradient(90deg, #ef4444, #ef4444 8px, transparent 8px, transparent 16px);
     display: flex;
+    align-items: center;
     justify-content: center;
     pointer-events: none;
   }
 
   .danger-line span {
-    font-size: 0.55rem;
+    background: rgba(15, 23, 42, 0.85);
+    color: #fca5a5;
+    font-size: 0.6rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+  }
+
+  /* Evolution Strip */
+  .evolution-strip {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 0.4rem 0.85rem;
+    width: 400px;
+    box-sizing: border-box;
+  }
+
+  .evo-title {
+    font-size: 0.72rem;
     font-weight: 800;
-    color: rgba(239, 68, 68, 0.7);
-    background: #020617;
-    padding: 0 0.4rem;
-    transform: translateY(-50%);
+    color: #94a3b8;
+    white-space: nowrap;
+  }
+
+  .evo-items {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+    font-size: 0.85rem;
+    color: #475569;
+  }
+
+  .evo-items span {
+    font-size: 1rem;
+    cursor: default;
+    transition: transform 0.15s ease;
+  }
+
+  .evo-items span:hover {
+    transform: scale(1.3);
+  }
+
+  .evo-sun {
+    filter: drop-shadow(0 0 6px #facc15);
   }
 
   /* Modal */
   .drop-modal {
     position: absolute;
     inset: 0;
-    background: rgba(9, 13, 22, 0.85);
-    backdrop-filter: blur(6px);
+    background: rgba(9, 13, 22, 0.88);
+    backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -202,38 +311,70 @@ const data = gameEntry?.data || {
 
   .drop-modal-card {
     background: #0f172a;
-    border: 2px solid rgba(168, 85, 247, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 16px;
-    padding: 2rem;
+    padding: 2rem 1.5rem;
     text-align: center;
+    width: 85%;
     max-width: 320px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
   }
 
-  .modal-icon { font-size: 3rem; margin-bottom: 0.5rem; }
-  .drop-modal-card h2 { color: #f8fafc; margin: 0 0 0.5rem; font-size: 1.4rem; }
-  .drop-modal-card p { color: #94a3b8; font-size: 0.85rem; margin: 0 0 1rem; }
-  .final-score-display { font-size: 1.25rem; font-weight: 900; color: #38bdf8; margin-bottom: 1.25rem; }
+  .modal-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .drop-modal-card h2 {
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #f8fafc;
+    margin: 0 0 0.5rem;
+  }
+
+  .drop-modal-card p {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin: 0 0 1.25rem;
+    line-height: 1.4;
+  }
+
+  .final-score-display {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin-bottom: 1.5rem;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    padding: 0.5rem;
+    border-radius: 8px;
+  }
+
+  .final-score-display strong {
+    color: #38bdf8;
+    font-size: 1.35rem;
+  }
 
   .drop-btn-primary {
     width: 100%;
-    background: linear-gradient(135deg, #a855f7, #38bdf8);
+    background: linear-gradient(135deg, #38bdf8, #2563eb);
     color: #ffffff;
-    font-weight: 800;
+    border: none;
     padding: 0.75rem;
     border-radius: 10px;
-    border: none;
+    font-size: 0.95rem;
+    font-weight: 900;
     cursor: pointer;
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+    transition: transform 0.15s ease;
   }
 
-  .hidden { display: none !important; }
+  .drop-btn-primary:hover {
+    transform: scale(1.03);
+  }
 
-  @media (max-width: 480px) {
-    .drop-hud, .canvas-wrapper {
-      width: 330px;
-    }
-    .canvas-wrapper {
-      height: 480px;
-    }
+  .hidden {
+    display: none !important;
   }
 </style>
 
@@ -248,17 +389,61 @@ const data = gameEntry?.data || {
   }
 
   const PLANET_TIERS: PlanetDef[] = [
-    { tier: 0, radius: 14, name: 'Asteroid', emoji: '🪨', color: '#64748b', points: 2 },
-    { tier: 1, radius: 19, name: 'Moon', emoji: '🌑', color: '#94a3b8', points: 4 },
-    { tier: 2, radius: 25, name: 'Mercury', emoji: '🟤', color: '#b45309', points: 8 },
-    { tier: 3, radius: 32, name: 'Mars', emoji: '🔴', color: '#ef4444', points: 16 },
-    { tier: 4, radius: 39, name: 'Venus', emoji: '🟡', color: '#eab308', points: 32 },
-    { tier: 5, radius: 48, name: 'Earth', emoji: '🌍', color: '#3b82f6', points: 64 },
-    { tier: 6, radius: 58, name: 'Neptune', emoji: '🔵', color: '#06b6d4', points: 128 },
-    { tier: 7, radius: 68, name: 'Saturn', emoji: '🪐', color: '#f97316', points: 256 },
-    { tier: 8, radius: 80, name: 'Jupiter', emoji: '🟠', color: '#ea580c', points: 512 },
-    { tier: 9, radius: 95, name: 'The Sun', emoji: '☀️', color: '#facc15', points: 1024 }
+    { tier: 0, radius: 15, name: '소행성', emoji: '🪨', color: '#64748b', points: 2 },
+    { tier: 1, radius: 21, name: '달', emoji: '🌑', color: '#94a3b8', points: 4 },
+    { tier: 2, radius: 27, name: '수성', emoji: '🟤', color: '#b45309', points: 8 },
+    { tier: 3, radius: 34, name: '화성', emoji: '🔴', color: '#ef4444', points: 16 },
+    { tier: 4, radius: 41, name: '금성', emoji: '🟡', color: '#eab308', points: 32 },
+    { tier: 5, radius: 50, name: '지구', emoji: '🌍', color: '#3b82f6', points: 64 },
+    { tier: 6, radius: 60, name: '해왕성', emoji: '🔵', color: '#06b6d4', points: 128 },
+    { tier: 7, radius: 71, name: '토성', emoji: '🪐', color: '#f97316', points: 256 },
+    { tier: 8, radius: 83, name: '목성', emoji: '🟠', color: '#ea580c', points: 512 },
+    { tier: 9, radius: 96, name: '태양', emoji: '☀️', color: '#facc15', points: 1024 }
   ];
+
+  // Synth Audio FX for Suika
+  class SuikaAudio {
+    private ctx: AudioContext | null = null;
+    constructor() {
+      try {
+        const AudioClass = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioClass) this.ctx = new AudioClass();
+      } catch {}
+    }
+    playDrop() {
+      if (!this.ctx) return;
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(320, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(140, this.ctx.currentTime + 0.12);
+      gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.12);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.12);
+    }
+    playPop(tier: number) {
+      if (!this.ctx) return;
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const baseFreq = 300 + tier * 70;
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(baseFreq, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, this.ctx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.15);
+    }
+  }
+
+  const sfx = new SuikaAudio();
 
   class Body {
     x: number;
@@ -287,7 +472,9 @@ const data = gameEntry?.data || {
   const ctx = canvas?.getContext('2d');
   const scoreElem = document.getElementById('cosmic-score');
   const bestElem = document.getElementById('cosmic-best');
+  const nextPreviewCircle = document.getElementById('next-preview-circle');
   const nextEmoji = document.getElementById('next-emoji');
+  const nextName = document.getElementById('next-name');
   const modal = document.getElementById('drop-over-modal');
   const overScoreElem = document.getElementById('over-score');
   const restartBtn = document.getElementById('drop-restart-btn');
@@ -304,6 +491,34 @@ const data = gameEntry?.data || {
   let dangerTime = 0;
   let isGameOver = false;
 
+  // Particle effects on merge
+  interface Spark {
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    color: string;
+    alpha: number;
+    size: number;
+  }
+  let sparks: Spark[] = [];
+
+  function addMergeSparks(x: number, y: number, color: string) {
+    for (let i = 0; i < 16; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 2 + Math.random() * 4;
+      sparks.push({
+        x,
+        y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        color,
+        alpha: 1.0,
+        size: 3 + Math.random() * 4
+      });
+    }
+  }
+
   function pickRandomSpawnTier(): number {
     // Only spawn smaller tiers (0 to 3)
     const weights = [0.45, 0.30, 0.15, 0.10];
@@ -316,13 +531,28 @@ const data = gameEntry?.data || {
     return 0;
   }
 
+  function updateHUDNext() {
+    const nextDef = PLANET_TIERS[nextTier];
+    if (nextEmoji) nextEmoji.textContent = nextDef.emoji;
+    if (nextName) nextName.textContent = nextDef.name;
+    if (nextPreviewCircle) {
+      nextPreviewCircle.style.background = nextDef.color;
+      nextPreviewCircle.style.boxShadow = `0 0 14px ${nextDef.color}88`;
+      const size = Math.max(30, Math.min(46, nextDef.radius * 1.4));
+      nextPreviewCircle.style.width = `${size}px`;
+      nextPreviewCircle.style.height = `${size}px`;
+    }
+  }
+
   function init() {
     bodies = [];
+    sparks = [];
     score = 0;
     isGameOver = false;
+    canDrop = true;
     currentTier = pickRandomSpawnTier();
     nextTier = pickRandomSpawnTier();
-    if (nextEmoji) nextEmoji.textContent = PLANET_TIERS[nextTier].emoji;
+    updateHUDNext();
     if (scoreElem) scoreElem.textContent = '0';
     if (modal) modal.classList.add('hidden');
   }
@@ -330,24 +560,28 @@ const data = gameEntry?.data || {
   function dropBody() {
     if (!canDrop || isGameOver) return;
     canDrop = false;
-    const body = new Body(aimX, 60, currentTier);
+
+    const cur = PLANET_TIERS[currentTier];
+    const clampedX = Math.max(cur.radius + 5, Math.min(canvas.width - cur.radius - 5, aimX));
+    const body = new Body(clampedX, 48, currentTier);
     bodies.push(body);
+    sfx.playDrop();
 
     currentTier = nextTier;
     nextTier = pickRandomSpawnTier();
-    if (nextEmoji) nextEmoji.textContent = PLANET_TIERS[nextTier].emoji;
+    updateHUDNext();
 
     setTimeout(() => {
       canDrop = true;
-    }, 600);
+    }, 450);
   }
 
   // Physics simulation
   function updatePhysics() {
     if (isGameOver) return;
-    const gravity = 0.35;
+    const gravity = 0.38;
     const friction = 0.985;
-    const bounce = 0.25;
+    const bounce = 0.22;
     const width = canvas.width;
     const height = canvas.height;
 
@@ -388,7 +622,6 @@ const data = gameEntry?.data || {
         if (dist < minDist) {
           // Check Merge
           if (b1.tier === b2.tier && b1.tier < PLANET_TIERS.length - 1) {
-            // Fuse into next tier
             const newTier = b1.tier + 1;
             const midX = (b1.x + b2.x) / 2;
             const midY = (b1.y + b2.y) / 2;
@@ -399,6 +632,9 @@ const data = gameEntry?.data || {
               localStorage.setItem('cosmic_drop_best', String(bestScore));
               if (bestElem) bestElem.textContent = String(bestScore);
             }
+
+            sfx.playPop(newTier);
+            addMergeSparks(midX, midY, PLANET_TIERS[newTier].color);
 
             bodies.splice(j, 1);
             bodies.splice(i, 1);
@@ -427,10 +663,10 @@ const data = gameEntry?.data || {
       }
     }
 
-    // Check Danger Line overflow (Y < 90 when stationary)
+    // Check Danger Line overflow (Y < 88 when settled)
     let isOverflowing = false;
     for (const b of bodies) {
-      if (b.y - b.radius < 90 && Math.abs(b.vy) < 0.2) {
+      if (b.y - b.radius < 88 && Math.abs(b.vy) < 0.25) {
         isOverflowing = true;
         break;
       }
@@ -438,8 +674,7 @@ const data = gameEntry?.data || {
 
     if (isOverflowing) {
       dangerTime++;
-      if (dangerTime > 120) {
-        // 2 seconds over danger line -> Game Over
+      if (dangerTime > 110) {
         isGameOver = true;
         if (modal) modal.classList.remove('hidden');
         if (overScoreElem) overScoreElem.textContent = String(score);
@@ -453,26 +688,46 @@ const data = gameEntry?.data || {
     if (!ctx) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw Aim Indicator
-    if (canDrop && !isGameOver) {
+    // Draw Aim Indicator & Current Dropping Planet
+    if (!isGameOver) {
       const cur = PLANET_TIERS[currentTier];
-      ctx.beginPath();
-      ctx.arc(aimX, 50, cur.radius, 0, Math.PI * 2);
-      ctx.fillStyle = cur.color;
-      ctx.globalAlpha = 0.5;
-      ctx.fill();
-      ctx.globalAlpha = 1.0;
+      const clampedAimX = Math.max(cur.radius + 5, Math.min(canvas.width - cur.radius - 5, aimX));
+      const dropY = 46;
 
+      // Dashed vertical guide line to floor
       ctx.beginPath();
-      ctx.setLineDash([4, 4]);
-      ctx.moveTo(aimX, 50 + cur.radius);
-      ctx.lineTo(aimX, canvas.height);
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+      ctx.setLineDash([5, 5]);
+      ctx.moveTo(clampedAimX, dropY + cur.radius);
+      ctx.lineTo(clampedAimX, canvas.height);
+      ctx.strokeStyle = canDrop ? 'rgba(255, 255, 255, 0.28)' : 'rgba(255, 255, 255, 0.08)';
+      ctx.lineWidth = 1.5;
       ctx.stroke();
       ctx.setLineDash([]);
+
+      // Draw The Actual Orb Being Dropped (Full Color + Glow + Emoji)
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(clampedAimX, dropY, cur.radius, 0, Math.PI * 2);
+      ctx.fillStyle = cur.color;
+      ctx.shadowColor = cur.color;
+      ctx.shadowBlur = canDrop ? 18 : 4;
+      ctx.globalAlpha = canDrop ? 1.0 : 0.45;
+      ctx.fill();
+
+      // Glowing outer rim
+      ctx.strokeStyle = canDrop ? 'rgba(255, 255, 255, 0.85)' : 'rgba(255, 255, 255, 0.2)';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // Emoji inside the dropping orb
+      ctx.font = `${cur.radius * 0.95}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(cur.emoji, clampedAimX, dropY);
+      ctx.restore();
     }
 
-    // Draw Bodies
+    // Draw Bodies in gravity chamber
     for (const b of bodies) {
       ctx.beginPath();
       ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
@@ -481,15 +736,37 @@ const data = gameEntry?.data || {
       ctx.shadowBlur = 10;
       ctx.fill();
       ctx.shadowBlur = 0;
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
       ctx.lineWidth = 2;
       ctx.stroke();
 
       // Emoji/Label
-      ctx.font = `${b.radius * 0.9}px sans-serif`;
+      ctx.font = `${b.radius * 0.95}px sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(b.emoji, b.x, b.y);
+    }
+
+    // Draw Merge Sparkles
+    for (let i = sparks.length - 1; i >= 0; i--) {
+      const s = sparks[i];
+      s.x += s.vx;
+      s.y += s.vy;
+      s.vy += 0.15;
+      s.alpha -= 0.035;
+
+      if (s.alpha <= 0) {
+        sparks.splice(i, 1);
+        continue;
+      }
+
+      ctx.save();
+      ctx.globalAlpha = s.alpha;
+      ctx.fillStyle = s.color;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
     }
 
     updatePhysics();
@@ -499,19 +776,22 @@ const data = gameEntry?.data || {
   // Aiming Controls
   canvas?.addEventListener('mousemove', (e) => {
     const rect = canvas.getBoundingClientRect();
-    const cur = PLANET_TIERS[currentTier];
-    aimX = Math.max(cur.radius, Math.min(canvas.width - cur.radius, e.clientX - rect.left));
+    aimX = e.clientX - rect.left;
   });
 
   canvas?.addEventListener('click', dropBody);
 
   canvas?.addEventListener('touchmove', (e) => {
     const rect = canvas.getBoundingClientRect();
-    const cur = PLANET_TIERS[currentTier];
-    aimX = Math.max(cur.radius, Math.min(canvas.width - cur.radius, e.touches[0].clientX - rect.left));
+    if (e.touches[0]) {
+      aimX = e.touches[0].clientX - rect.left;
+    }
   }, { passive: true });
 
-  canvas?.addEventListener('touchend', dropBody);
+  canvas?.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    dropBody();
+  });
 
   restartBtn?.addEventListener('click', init);
 

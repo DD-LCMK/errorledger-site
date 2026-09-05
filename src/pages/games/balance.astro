@@ -24,8 +24,8 @@ const data = gameEntry?.data || {
   ],
   faqItems: [
     {
-      q: '직접 질문을 만들어 띄울 수 있나요?',
-      a: '네! 하단의 [직접 입력] 버튼을 눌러 원하는 질문과 A/B 선택지를 작성하면 즉시 대형 카드로 띄울 수 있습니다.'
+      q: '직접 질문 세트를 만들어 공유할 수 있나요?',
+      a: '네! [📦 질문 관리 & 세트 공유] 버튼을 통해 대량 질문을 붙여넣고 나만의 세트를 저장하거나, URL 공유 링크를 복사해 시청자/디스코드에 바로 공유할 수 있습니다.'
     }
   ]
 };
@@ -54,6 +54,7 @@ const data = gameEntry?.data || {
         <button class="cat-pill" data-cat="life">💼 직장 & 돈</button>
         <button class="cat-pill" data-cat="love">💖 연애 & 친구</button>
         <button class="cat-pill" data-cat="funny">🤡 황당 & 엽기</button>
+        <button class="cat-pill" data-cat="custom" id="custom-cat-pill">⭐ 내 질문 세트 (<span id="custom-q-badge">0</span>)</button>
       </div>
 
       <div class="timer-display-box" id="timer-box">
@@ -62,12 +63,16 @@ const data = gameEntry?.data || {
       </div>
 
       <div class="nav-actions">
-        <button id="custom-modal-btn" class="mini-btn">✏️ 직접 입력</button>
+        <button id="shuffle-btn" class="mini-btn highlight-gold" title="질문 순서를 무작위로 섞습니다">🔀 무작위 섞기</button>
+        <button id="pack-manager-btn" class="mini-btn highlight-purple" title="질문 목록 관리, 대량 추가, 세트 저장 및 링크 공유">📦 질문 관리 & 세트 공유</button>
         <button id="next-btn" class="primary-action-btn">
           <span>다음 질문 ▶ [Space]</span>
         </button>
       </div>
     </div>
+
+    <!-- Floating Toast Notification -->
+    <div class="balance-toast hidden" id="balance-toast"></div>
 
     <!-- Main Dual Cards Arena -->
     <div class="cards-arena">
@@ -102,32 +107,92 @@ const data = gameEntry?.data || {
       <div class="gauge-fill-b" id="gauge-fill-b" style="width: 50%;">B (50%)</div>
     </div>
 
-    <!-- Custom Question Modal -->
-    <div class="custom-modal-overlay hidden" id="custom-modal">
-      <div class="custom-modal-card">
-        <h3>✏️ 직접 질문 만들기</h3>
-        <div class="input-row">
-          <label>선택지 A 내용</label>
-          <input type="text" id="custom-a" placeholder="예: 평생 탄산음료 금지" />
+    <!-- Question Pack Manager & Share Modal -->
+    <div class="pack-modal-overlay hidden" id="pack-modal">
+      <div class="pack-modal-card">
+        <div class="pack-modal-header">
+          <div class="pack-title-row">
+            <span class="modal-icon">📦</span>
+            <h3>질문 세트 관리 & 공유</h3>
+          </div>
+          <button id="close-pack-modal-btn" class="btn-close-modal">✕</button>
         </div>
-        <div class="input-row">
-          <label>선택지 B 내용</label>
-          <input type="text" id="custom-b" placeholder="예: 평생 라면 금지" />
+
+        <!-- Modal Tabs -->
+        <div class="pack-tabs">
+          <button class="pack-tab-btn active" data-tab="list">📋 질문 목록 (<span id="total-q-count">0</span>)</button>
+          <button class="pack-tab-btn" data-tab="bulk">➕ 대량 추가 (Bulk)</button>
+          <button class="pack-tab-btn" data-tab="share">💾 저장 & 🔗 링크 공유</button>
         </div>
-        <div class="modal-btns">
-          <button id="apply-custom-btn" class="btn-confirm">적용하기</button>
-          <button id="close-modal-btn" class="btn-cancel">취소</button>
+
+        <!-- Tab 1: Current List -->
+        <div class="tab-pane active" id="pane-list">
+          <div class="list-action-toolbar">
+            <button id="modal-shuffle-btn" class="sub-btn">🔀 무작위 섞기</button>
+            <button id="reset-default-btn" class="sub-btn danger">🔄 기본 질문으로 리셋</button>
+          </div>
+          <div class="questions-scroll-list" id="questions-scroll-list">
+            <!-- Dynamic question rows -->
+          </div>
         </div>
+
+        <!-- Tab 2: Bulk Add -->
+        <div class="tab-pane" id="pane-bulk">
+          <p class="bulk-guide">줄바꿈으로 <code>A vs B</code> 형태로 질문들을 한 번에 붙여넣으세요!</p>
+          <textarea id="bulk-textarea" rows="7" placeholder="예시:
+월 250 백수 vs 월 1200 대기업 주7일 야근
+평생 라면만 먹기 vs 평생 치킨만 먹기
+스마트폰 없이 1년 살기 vs 친구 연락 끊고 1년 살기
+짜장면 vs 짬뽕"></textarea>
+          <div class="bulk-btn-row">
+            <button id="bulk-append-btn" class="btn-confirm">➕ 현재 목록 뒤에 추가</button>
+            <button id="bulk-replace-btn" class="btn-replace">⚠️ 현재 목록 전체 교체</button>
+          </div>
+        </div>
+
+        <!-- Tab 3: Save & Share -->
+        <div class="tab-pane" id="pane-share">
+          <div class="share-box">
+            <h4>🔗 시청자 / 스트리머 공유 링크</h4>
+            <p class="share-desc">현재 질문 목록이 담긴 고유 URL을 복사하여 방송 채팅창이나 디스코드에 공유하세요. 링크를 클릭하면 즉시 이 질문들로 게임이 시작됩니다!</p>
+            <div class="share-input-group">
+              <input type="text" id="share-url-input" readonly />
+              <button id="copy-share-url-btn" class="btn-copy">링크 복사</button>
+            </div>
+            <span id="copy-feedback" class="copy-feedback hidden">✅ 공유 링크가 클립보드에 복사되었습니다!</span>
+          </div>
+
+          <hr class="modal-hr" />
+
+          <div class="save-box">
+            <h4>💾 내 브라우저에 세트 저장</h4>
+            <div class="save-input-group">
+              <input type="text" id="save-pack-name" placeholder="세트 이름 (예: 침착맨 합방용 질문 세트)" />
+              <button id="save-pack-btn" class="btn-save">저장하기</button>
+            </div>
+            <div class="saved-packs-container">
+              <span class="saved-packs-title">저장된 세트 목록:</span>
+              <div class="saved-packs-list" id="saved-packs-list">
+                <!-- Saved packs injected dynamically -->
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
 
   <div slot="guide">
-    <h2>스트리머를 위한 밸런스 게임 활용 팁</h2>
+    <h2>스트리머 밸런스 게임 방송 꿀팁 & 소통 가이드</h2>
     <p>
-      밸런스 게임은 시청자와의 즉각적인 채팅 티키타카를 이끌어내는 최고의 소통 콘텐츠입니다.
-      단순히 선택지만 고르지 말고 <strong>"왜 이 선택을 할 수밖에 없는지"</strong>에 대한 처절한 이유를 덧붙일수록 채팅창과 도네이션 반응이 더욱 뜨거워집니다.
+      <strong>스트리머 밸런스 게임</strong>은 치지직(CHZZK), SOOP, 유튜브 라이브 방송에서 침묵이 흐르거나 저챗(Just Chatting) 콘텐츠를 진행할 때 시청자들의 실시간 채팅 참여를 폭발적으로 이끌어내는 최고의 소통 도구입니다.
     </p>
+    <ul>
+      <li><strong>키보드 단축키 지원:</strong> PC 환경에서 숫자 <code>1</code>(A 선택), 숫자 <code>2</code>(B 선택), <code>Space</code>(다음 질문) 단축키를 통해 마우스 조작 없이 자연스러운 리액션 방송이 가능합니다.</li>
+      <li><strong>나만의 질문 세트 공유:</strong> 스트리머가 직접 작성한 밸런스 질문 목록을 URL 링크 하나로 압축하여 동료 스트리머나 시청자에게 원클릭 공유할 수 있습니다.</li>
+      <li><strong>랜덤 셔플 엔진:</strong> 무작위 섞기를 통해 매 방송마다 새로운 질문 순서로 신선한 긴장감을 유지하세요.</li>
+    </ul>
   </div>
 </GameLayout>
 
@@ -136,11 +201,11 @@ const data = gameEntry?.data || {
     background: #090d16;
     border-radius: 16px;
     padding: 1.5rem;
-    min-height: 640px;
+    min-height: 650px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 1.25rem;
+    gap: 1.5rem;
+    position: relative;
     user-select: none;
   }
 
@@ -213,6 +278,27 @@ const data = gameEntry?.data || {
     font-size: 0.8rem;
     font-weight: 800;
     cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .mini-btn.highlight-gold {
+    background: rgba(234, 179, 8, 0.15);
+    border-color: rgba(234, 179, 8, 0.35);
+    color: #facc15;
+  }
+
+  .mini-btn.highlight-gold:hover {
+    background: rgba(234, 179, 8, 0.25);
+  }
+
+  .mini-btn.highlight-purple {
+    background: rgba(168, 85, 247, 0.15);
+    border-color: rgba(168, 85, 247, 0.35);
+    color: #e9d5ff;
+  }
+
+  .mini-btn.highlight-purple:hover {
+    background: rgba(168, 85, 247, 0.25);
   }
 
   .primary-action-btn {
@@ -230,6 +316,25 @@ const data = gameEntry?.data || {
 
   .primary-action-btn:hover {
     transform: scale(1.04);
+  }
+
+  /* Floating Toast */
+  .balance-toast {
+    position: absolute;
+    top: 5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0f172a;
+    border: 1px solid #38bdf8;
+    color: #f8fafc;
+    padding: 0.6rem 1.25rem;
+    border-radius: 30px;
+    font-size: 0.88rem;
+    font-weight: 800;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.4);
+    z-index: 50;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
   }
 
   /* Main Cards Arena */
@@ -299,74 +404,68 @@ const data = gameEntry?.data || {
   }
 
   .card-tag {
-    font-size: 0.82rem;
+    font-size: 0.85rem;
     font-weight: 900;
     letter-spacing: 0.08em;
-    padding: 0.25rem 0.75rem;
-    border-radius: 999px;
+    color: #94a3b8;
     margin-bottom: 1rem;
   }
 
-  .choice-a .card-tag {
-    background: rgba(56, 189, 248, 0.15);
-    color: #38bdf8;
-  }
-
-  .choice-b .card-tag {
-    background: rgba(244, 63, 94, 0.15);
-    color: #f43f5e;
-  }
+  .choice-a .card-tag { color: #38bdf8; }
+  .choice-b .card-tag { color: #f43f5e; }
 
   .card-icon-preview {
-    font-size: 4rem;
+    font-size: 3.5rem;
     margin-bottom: 1.25rem;
-    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
   }
 
   .choice-text {
     font-size: 1.6rem;
     font-weight: 900;
     color: #f8fafc;
-    line-height: 1.4;
+    line-height: 1.35;
     word-break: keep-all;
+    max-width: 380px;
   }
 
   .vote-result-box {
     margin-top: 1.5rem;
-    animation: popIn 0.3s ease-out;
-  }
-
-  @keyframes popIn {
-    0% { transform: scale(0.5); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   .vote-percent {
-    font-size: 2.2rem;
+    font-size: 2.8rem;
     font-weight: 900;
-    color: #facc15;
   }
+
+  .choice-a .vote-percent { color: #38bdf8; text-shadow: 0 0 15px rgba(56, 189, 248, 0.5); }
+  .choice-b .vote-percent { color: #f43f5e; text-shadow: 0 0 15px rgba(244, 63, 94, 0.5); }
 
   .vote-label {
-    font-size: 0.75rem;
+    font-size: 0.82rem;
+    font-weight: 800;
     color: #94a3b8;
-    font-weight: 700;
   }
 
-  /* Bottom Gauge */
+  /* Bottom Gauge Vote Bar */
   .vote-gauge-container {
-    height: 28px;
-    border-radius: 14px;
+    height: 38px;
+    background: #020617;
+    border-radius: 12px;
     overflow: hidden;
     display: flex;
-    font-size: 0.8rem;
-    font-weight: 900;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
   }
 
   .gauge-fill-a {
-    background: linear-gradient(90deg, #38bdf8, #0284c7);
+    background: linear-gradient(90deg, #0284c7, #38bdf8);
     color: #ffffff;
+    font-weight: 900;
+    font-size: 0.88rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -376,73 +475,208 @@ const data = gameEntry?.data || {
   .gauge-fill-b {
     background: linear-gradient(90deg, #e11d48, #f43f5e);
     color: #ffffff;
+    font-weight: 900;
+    font-size: 0.88rem;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: width 0.4s ease;
   }
 
-  /* Custom Modal */
-  .custom-modal-overlay {
+  /* Pack Manager Modal */
+  .pack-modal-overlay {
     position: fixed;
     inset: 0;
     background: rgba(9, 13, 22, 0.85);
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(10px);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 100;
   }
 
-  .custom-modal-card {
+  .pack-modal-card {
     background: #0f172a;
     border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 16px;
+    border-radius: 18px;
     padding: 1.75rem;
-    width: 90%;
-    max-width: 420px;
+    width: 92%;
+    max-width: 580px;
+    max-height: 90vh;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.25rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
   }
 
-  .custom-modal-card h3 {
+  .pack-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .pack-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .modal-icon {
+    font-size: 1.4rem;
+  }
+
+  .pack-modal-header h3 {
     margin: 0;
-    font-size: 1.2rem;
+    font-size: 1.25rem;
+    font-weight: 900;
     color: #f8fafc;
   }
 
-  .input-row {
+  .btn-close-modal {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+
+  .btn-close-modal:hover {
+    color: #f8fafc;
+  }
+
+  /* Pack Tabs */
+  .pack-tabs {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.5rem;
+  }
+
+  .pack-tab-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 800;
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .pack-tab-btn.active {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+  }
+
+  .tab-pane {
+    display: none;
+    flex-direction: column;
+    gap: 0.85rem;
+    overflow-y: auto;
+    max-height: 420px;
+  }
+
+  .tab-pane.active {
+    display: flex;
+  }
+
+  /* Tab 1: List */
+  .list-action-toolbar {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .sub-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .sub-btn.danger {
+    color: #f87171;
+    border-color: rgba(248, 113, 113, 0.3);
+  }
+
+  .questions-scroll-list {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.45rem;
+    max-height: 280px;
+    overflow-y: auto;
   }
 
-  .input-row label {
-    font-size: 0.78rem;
-    font-weight: 800;
+  :global(.q-row) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.82rem;
+  }
+
+  :global(.q-text-box) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  :global(.q-vs) {
+    color: #facc15;
+    font-weight: 900;
+    font-size: 0.75rem;
+  }
+
+  :global(.btn-del-q) {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+  }
+
+  :global(.btn-del-q:hover) {
+    color: #ef4444;
+  }
+
+  /* Tab 2: Bulk Add */
+  .bulk-guide {
+    font-size: 0.82rem;
     color: #94a3b8;
+    margin: 0;
   }
 
-  .input-row input {
+  #bulk-textarea {
     background: #090d16;
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 8px;
-    padding: 0.6rem 0.75rem;
-    color: #ffffff;
-    font-size: 0.9rem;
+    color: #f8fafc;
+    padding: 0.75rem;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    resize: vertical;
     outline: none;
   }
 
-  .modal-btns {
+  .bulk-btn-row {
     display: flex;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
+    gap: 0.6rem;
   }
 
   .btn-confirm {
     flex: 1;
-    background: linear-gradient(135deg, #a855f7, #38bdf8);
+    background: linear-gradient(135deg, #10b981, #059669);
     color: #ffffff;
     font-weight: 900;
     border: none;
@@ -451,13 +685,129 @@ const data = gameEntry?.data || {
     cursor: pointer;
   }
 
-  .btn-cancel {
-    background: rgba(255, 255, 255, 0.08);
-    color: #cbd5e1;
-    border: none;
+  .btn-replace {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    color: #fca5a5;
+    font-weight: 900;
     padding: 0.65rem 1rem;
     border-radius: 8px;
     cursor: pointer;
+  }
+
+  /* Tab 3: Share & Save */
+  .share-box, .save-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .share-box h4, .save-box h4 {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #f8fafc;
+  }
+
+  .share-desc {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .share-input-group, .save-input-group {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  #share-url-input, #save-pack-name {
+    flex: 1;
+    background: #090d16;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #ffffff;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.82rem;
+    outline: none;
+  }
+
+  .btn-copy, .btn-save {
+    background: linear-gradient(135deg, #38bdf8, #2563eb);
+    color: #ffffff;
+    border: none;
+    padding: 0.55rem 1rem;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 900;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .copy-feedback {
+    font-size: 0.78rem;
+    color: #4ade80;
+    font-weight: 800;
+  }
+
+  .modal-hr {
+    border: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 0.4rem 0;
+  }
+
+  .saved-packs-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.3rem;
+  }
+
+  .saved-packs-title {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    font-weight: 800;
+  }
+
+  .saved-packs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    max-height: 120px;
+    overflow-y: auto;
+  }
+
+  :global(.saved-pack-row) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+  }
+
+  :global(.pack-load-btn) {
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: #38bdf8;
+    border-radius: 4px;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  :global(.pack-del-btn) {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+  }
+
+  :global(.pack-del-btn:hover) {
+    color: #ef4444;
   }
 
   .hidden {
@@ -487,7 +837,7 @@ const data = gameEntry?.data || {
     ratioA: number; // default baseline percent
   }
 
-  const QUESTIONS: Question[] = [
+  const DEFAULT_QUESTIONS: Question[] = [
     { cat: 'life', iconA: '💰', textA: '평생 월 250만원 백수로 살기', iconB: '🏢', textB: '월 1200만원 대기업 주7일 야근', ratioA: 58 },
     { cat: 'spicy', iconA: '🍜', textA: '평생 라면만 먹기 (밥/반찬 금지)', iconB: '🍚', textB: '평생 밥 없이 반찬만 먹기', ratioA: 44 },
     { cat: 'love', iconA: '🥰', textA: '내가 미치도록 짝사랑하는 사람', iconB: '💖', textB: '나를 목숨 걸고 사랑해주는 사람', ratioA: 36 },
@@ -503,11 +853,13 @@ const data = gameEntry?.data || {
     { cat: 'love', iconA: '🧠', textA: '애인의 전 애인이 내 절친', iconB: '💔', textB: '내 절친의 전 애인이 내 애인', ratioA: 33 }
   ];
 
+  let currentQuestions: Question[] = [...DEFAULT_QUESTIONS];
   let currentCategory = 'all';
   let currentIndex = 0;
   let timerInterval: any = null;
   let timeLeft = 30;
 
+  // DOM Elements
   const choiceABtn = document.getElementById('choice-a-btn');
   const choiceBBtn = document.getElementById('choice-b-btn');
   const iconA = document.getElementById('icon-a');
@@ -523,24 +875,94 @@ const data = gameEntry?.data || {
   const gaugeFillB = document.getElementById('gauge-fill-b');
 
   const nextBtn = document.getElementById('next-btn');
+  const shuffleBtn = document.getElementById('shuffle-btn');
   const timerText = document.getElementById('timer-text');
   const catPills = document.querySelectorAll('.cat-pill');
+  const customQBadge = document.getElementById('custom-q-badge');
+  const toastElem = document.getElementById('balance-toast');
 
-  const customModal = document.getElementById('custom-modal');
-  const customModalBtn = document.getElementById('custom-modal-btn');
-  const applyCustomBtn = document.getElementById('apply-custom-btn');
-  const closeModalBtn = document.getElementById('close-modal-btn');
-  const inputCustomA = document.getElementById('custom-a') as HTMLInputElement;
-  const inputCustomB = document.getElementById('custom-b') as HTMLInputElement;
+  // Pack Modal Elements
+  const packModal = document.getElementById('pack-modal');
+  const packManagerBtn = document.getElementById('pack-manager-btn');
+  const closePackModalBtn = document.getElementById('close-pack-modal-btn');
+  const packTabBtns = document.querySelectorAll('.pack-tab-btn');
+  const totalQCount = document.getElementById('total-q-count');
+  const questionsScrollList = document.getElementById('questions-scroll-list');
+  const modalShuffleBtn = document.getElementById('modal-shuffle-btn');
+  const resetDefaultBtn = document.getElementById('reset-default-btn');
+
+  const bulkTextarea = document.getElementById('bulk-textarea') as HTMLTextAreaElement | null;
+  const bulkAppendBtn = document.getElementById('bulk-append-btn');
+  const bulkReplaceBtn = document.getElementById('bulk-replace-btn');
+
+  const shareUrlInput = document.getElementById('share-url-input') as HTMLInputElement | null;
+  const copyShareUrlBtn = document.getElementById('copy-share-url-btn');
+  const copyFeedback = document.getElementById('copy-feedback');
+  const savePackName = document.getElementById('save-pack-name') as HTMLInputElement | null;
+  const savePackBtn = document.getElementById('save-pack-btn');
+  const savedPacksList = document.getElementById('saved-packs-list');
+
+  // UTF-8 safe base64 URL encoding
+  function encodePackToURL(questions: Question[]): string {
+    try {
+      const compact = questions.map(q => [q.textA, q.textB, q.iconA || '✨', q.iconB || '🔥']);
+      const jsonStr = JSON.stringify(compact);
+      const base64 = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (_, p1) => String.fromCharCode(parseInt(p1, 16))));
+      const url = new URL(window.location.href);
+      url.searchParams.set('pack', base64);
+      return url.toString();
+    } catch {
+      return window.location.href;
+    }
+  }
+
+  function decodePackFromURL(base64Str: string): Question[] | null {
+    try {
+      const jsonStr = decodeURIComponent(Array.prototype.map.call(atob(base64Str), (c: string) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+      const compact = JSON.parse(jsonStr);
+      if (!Array.isArray(compact)) return null;
+      return compact.map((item: any) => ({
+        cat: 'custom',
+        textA: String(item[0] || ''),
+        textB: String(item[1] || ''),
+        iconA: String(item[2] || '✨'),
+        iconB: String(item[3] || '🔥'),
+        ratioA: 50
+      })).filter(q => q.textA.length > 0 && q.textB.length > 0);
+    } catch (e) {
+      console.error('Failed to decode pack from URL', e);
+      return null;
+    }
+  }
+
+  function showToast(msg: string) {
+    if (!toastElem) return;
+    toastElem.textContent = msg;
+    toastElem.classList.remove('hidden');
+    setTimeout(() => {
+      toastElem.classList.add('hidden');
+    }, 2800);
+  }
 
   function getFilteredQuestions(): Question[] {
-    if (currentCategory === 'all') return QUESTIONS;
-    return QUESTIONS.filter(q => q.cat === currentCategory);
+    if (currentCategory === 'all') return currentQuestions;
+    return currentQuestions.filter(q => q.cat === currentCategory);
+  }
+
+  function updateCustomBadge() {
+    const customCount = currentQuestions.filter(q => q.cat === 'custom').length;
+    if (customQBadge) customQBadge.textContent = String(customCount);
+    if (totalQCount) totalQCount.textContent = String(currentQuestions.length);
+    if (shareUrlInput) shareUrlInput.value = encodePackToURL(currentQuestions);
   }
 
   function loadQuestion() {
     const list = getFilteredQuestions();
-    if (list.length === 0) return;
+    if (list.length === 0) {
+      if (textA) textA.textContent = '해당 카테고리에 질문이 없습니다.';
+      if (textB) textB.textContent = '질문 관리를 열어 질문을 추가해보세요!';
+      return;
+    }
     const q = list[currentIndex % list.length];
 
     if (iconA) iconA.textContent = q.iconA;
@@ -558,6 +980,7 @@ const data = gameEntry?.data || {
 
   function revealChoice(chosen: 'A' | 'B') {
     const list = getFilteredQuestions();
+    if (list.length === 0) return;
     const q = list[currentIndex % list.length];
 
     const rA = q.ratioA;
@@ -582,8 +1005,21 @@ const data = gameEntry?.data || {
 
   function nextQuestion() {
     const list = getFilteredQuestions();
+    if (list.length === 0) return;
     currentIndex = (currentIndex + 1) % list.length;
     loadQuestion();
+  }
+
+  // Fisher-Yates Shuffle
+  function shuffleQuestions() {
+    for (let i = currentQuestions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [currentQuestions[i], currentQuestions[j]] = [currentQuestions[j], currentQuestions[i]];
+    }
+    currentIndex = 0;
+    loadQuestion();
+    renderQuestionsList();
+    showToast('🔀 질문 순서가 무작위로 섞였습니다!');
   }
 
   function resetTimer() {
@@ -600,10 +1036,107 @@ const data = gameEntry?.data || {
     }, 1000);
   }
 
+  // Render questions list inside modal
+  function renderQuestionsList() {
+    if (!questionsScrollList) return;
+    questionsScrollList.innerHTML = '';
+    currentQuestions.forEach((q, idx) => {
+      const row = document.createElement('div');
+      row.className = 'q-row';
+      row.innerHTML = `
+        <div class="q-text-box">
+          <span>${q.iconA} ${q.textA}</span>
+          <span class="q-vs">VS</span>
+          <span>${q.iconB} ${q.textB}</span>
+        </div>
+        <button class="btn-del-q" data-idx="${idx}" title="삭제">🗑️</button>
+      `;
+      row.querySelector('.btn-del-q')?.addEventListener('click', () => {
+        currentQuestions.splice(idx, 1);
+        updateCustomBadge();
+        renderQuestionsList();
+        loadQuestion();
+      });
+      questionsScrollList.appendChild(row);
+    });
+    updateCustomBadge();
+  }
+
+  // Bulk parser (A vs B)
+  function parseBulkText(text: string): Question[] {
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    const parsed: Question[] = [];
+
+    for (const line of lines) {
+      // Look for " vs " or " VS " or " / " or " 대 "
+      const parts = line.split(/\s+(?:vs|VS|대|\/)\s+/);
+      if (parts.length >= 2) {
+        parsed.push({
+          cat: 'custom',
+          iconA: '✨',
+          textA: parts[0].trim(),
+          iconB: '🔥',
+          textB: parts[1].trim(),
+          ratioA: 50
+        });
+      }
+    }
+    return parsed;
+  }
+
+  // Saved packs in LocalStorage
+  function getSavedPacks(): Record<string, Question[]> {
+    try {
+      return JSON.parse(localStorage.getItem('balance_saved_packs') || '{}');
+    } catch {
+      return {};
+    }
+  }
+
+  function renderSavedPacks() {
+    if (!savedPacksList) return;
+    const packs = getSavedPacks();
+    savedPacksList.innerHTML = '';
+
+    const keys = Object.keys(packs);
+    if (keys.length === 0) {
+      savedPacksList.innerHTML = '<span style="color:#64748b; font-size:0.75rem;">저장된 세트가 없습니다.</span>';
+      return;
+    }
+
+    keys.forEach(k => {
+      const row = document.createElement('div');
+      row.className = 'saved-pack-row';
+      row.innerHTML = `
+        <span>📁 <strong>${k}</strong> (${packs[k].length}개)</span>
+        <div>
+          <button class="pack-load-btn" data-key="${k}">불러오기</button>
+          <button class="pack-del-btn" data-key="${k}">🗑️</button>
+        </div>
+      `;
+      row.querySelector('.pack-load-btn')?.addEventListener('click', () => {
+        currentQuestions = [...packs[k]];
+        currentIndex = 0;
+        updateCustomBadge();
+        renderQuestionsList();
+        loadQuestion();
+        showToast(`📁 "${k}" 질문 세트가 로드되었습니다!`);
+      });
+      row.querySelector('.pack-del-btn')?.addEventListener('click', () => {
+        delete packs[k];
+        localStorage.setItem('balance_saved_packs', JSON.stringify(packs));
+        renderSavedPacks();
+      });
+      savedPacksList.appendChild(row);
+    });
+  }
+
   // Event Listeners
   choiceABtn?.addEventListener('click', () => revealChoice('A'));
   choiceBBtn?.addEventListener('click', () => revealChoice('B'));
   nextBtn?.addEventListener('click', nextQuestion);
+  shuffleBtn?.addEventListener('click', shuffleQuestions);
+  modalShuffleBtn?.addEventListener('click', shuffleQuestions);
 
   catPills.forEach(pill => {
     pill.addEventListener('click', () => {
@@ -615,31 +1148,100 @@ const data = gameEntry?.data || {
     });
   });
 
-  // Custom Modal
-  customModalBtn?.addEventListener('click', () => customModal?.classList.remove('hidden'));
-  closeModalBtn?.addEventListener('click', () => customModal?.classList.add('hidden'));
-  applyCustomBtn?.addEventListener('click', () => {
-    const aVal = inputCustomA?.value.trim();
-    const bVal = inputCustomB?.value.trim();
-    if (aVal && bVal) {
-      QUESTIONS.unshift({
-        cat: 'custom',
-        iconA: '✨',
-        textA: aVal,
-        iconB: '🔥',
-        textB: bVal,
-        ratioA: 50
-      });
-      currentCategory = 'all';
+  // Modal open/close & tabs
+  packManagerBtn?.addEventListener('click', () => {
+    packModal?.classList.remove('hidden');
+    renderQuestionsList();
+    renderSavedPacks();
+    if (shareUrlInput) shareUrlInput.value = encodePackToURL(currentQuestions);
+  });
+
+  closePackModalBtn?.addEventListener('click', () => packModal?.classList.add('hidden'));
+
+  packTabBtns.forEach(tabBtn => {
+    tabBtn.addEventListener('click', () => {
+      packTabBtns.forEach(t => t.classList.remove('active'));
+      tabBtn.classList.add('active');
+      const target = tabBtn.getAttribute('data-tab');
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      document.getElementById(`pane-${target}`)?.classList.add('active');
+    });
+  });
+
+  // Reset to default questions
+  resetDefaultBtn?.addEventListener('click', () => {
+    if (confirm('기본 질문 목록으로 리셋하시겠습니까?')) {
+      currentQuestions = [...DEFAULT_QUESTIONS];
       currentIndex = 0;
+      updateCustomBadge();
+      renderQuestionsList();
       loadQuestion();
-      customModal?.classList.add('hidden');
+      showToast('🔄 기본 질문으로 리셋되었습니다.');
     }
+  });
+
+  // Bulk add buttons
+  bulkAppendBtn?.addEventListener('click', () => {
+    if (!bulkTextarea) return;
+    const parsed = parseBulkText(bulkTextarea.value);
+    if (parsed.length === 0) {
+      alert("'A vs B' 형식으로 최소 1개 이상의 질문을 입력해주세요.");
+      return;
+    }
+    currentQuestions.push(...parsed);
+    bulkTextarea.value = '';
+    updateCustomBadge();
+    renderQuestionsList();
+    showToast(`➕ ${parsed.length}개 질문이 추가되었습니다!`);
+  });
+
+  bulkReplaceBtn?.addEventListener('click', () => {
+    if (!bulkTextarea) return;
+    const parsed = parseBulkText(bulkTextarea.value);
+    if (parsed.length === 0) {
+      alert("'A vs B' 형식으로 최소 1개 이상의 질문을 입력해주세요.");
+      return;
+    }
+    if (confirm(`현재 질문 목록을 지우고 ${parsed.length}개 질문으로 전체 교체하시겠습니까?`)) {
+      currentQuestions = [...parsed];
+      currentIndex = 0;
+      bulkTextarea.value = '';
+      updateCustomBadge();
+      renderQuestionsList();
+      loadQuestion();
+      showToast(`⚠️ 질문 목록이 ${parsed.length}개로 교체되었습니다!`);
+    }
+  });
+
+  // Copy share URL
+  copyShareUrlBtn?.addEventListener('click', () => {
+    if (!shareUrlInput) return;
+    shareUrlInput.select();
+    navigator.clipboard.writeText(shareUrlInput.value).then(() => {
+      copyFeedback?.classList.remove('hidden');
+      setTimeout(() => copyFeedback?.classList.add('hidden'), 2500);
+      showToast('🔗 공유 링크가 복사되었습니다!');
+    });
+  });
+
+  // Save pack to LocalStorage
+  savePackBtn?.addEventListener('click', () => {
+    const name = savePackName?.value.trim();
+    if (!name) {
+      alert('세트 이름을 입력해주세요!');
+      return;
+    }
+    const packs = getSavedPacks();
+    packs[name] = [...currentQuestions];
+    localStorage.setItem('balance_saved_packs', JSON.stringify(packs));
+    if (savePackName) savePackName.value = '';
+    renderSavedPacks();
+    showToast(`💾 "${name}" 세트가 저장되었습니다!`);
   });
 
   // Keyboard Shortcuts: 1 (A), 2 (B), Space (Next)
   window.addEventListener('keydown', (e) => {
-    if (customModal && !customModal.classList.contains('hidden')) return;
+    if (packModal && !packModal.classList.contains('hidden')) return;
 
     if (e.key === '1') {
       revealChoice('A');
@@ -651,5 +1253,19 @@ const data = gameEntry?.data || {
     }
   });
 
+  // Check URL on startup for shared pack
+  const urlParams = new URLSearchParams(window.location.search);
+  const sharedPack = urlParams.get('pack');
+  if (sharedPack) {
+    const decoded = decodePackFromURL(sharedPack);
+    if (decoded && decoded.length > 0) {
+      currentQuestions = decoded;
+      currentIndex = 0;
+      currentCategory = 'all';
+      showToast(`✨ 공유받은 질문 세트 (${decoded.length}개 질문) 로드됨!`);
+    }
+  }
+
+  updateCustomBadge();
   loadQuestion();
 </script>

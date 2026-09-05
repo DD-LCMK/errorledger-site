@@ -6,7 +6,7 @@ import { SITE_TITLE, SITE_TAGLINE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
 
 const games = await getCollection('games');
-const priorityOrder = ['roulette', 'ladder', 'balance', 'crocodile', 'cosmic-drop', 'gem-2048'];
+const priorityOrder = ['roulette', 'ladder', 'balance', 'cosmic-drop', 'gem-2048'];
 const sortedGames = games.sort((a, b) => {
   const idxA = priorityOrder.indexOf(a.id);
   const idxB = priorityOrder.indexOf(b.id);
@@ -38,7 +38,7 @@ const sortedGames = games.sort((a, b) => {
           </h1>
 
           <p class="hero-subtext">
-            야식 추첨 돌림판, 커피 내기 사다리타기, 저챗 밸런스 게임, 악어 복불복까지! 설치 없이 OBS 브라우저 소스로 즉시 띄워 방송 텐션을 끌어올리세요.
+            야식 추첨 돌림판, 커피 내기 사다리타기, 저챗 밸런스 게임까지! 설치 없이 OBS 브라우저 소스로 즉시 띄워 방송 텐션을 끌어올리세요.
           </p>
 
           <!-- Featured Game Hero Banner -->

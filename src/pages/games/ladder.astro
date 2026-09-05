@@ -79,6 +79,9 @@ const data = gameEntry?.data || {
       </div>
 
       <div class="toolbar-actions">
+        <button id="toggle-blind-btn" class="action-btn-blind" title="사다리 가림막 켜기/끄기">
+          <span id="blind-btn-text">🔒 가림막 ON</span>
+        </button>
         <button id="reveal-all-btn" class="action-btn-primary">
           <span>⚡ 전체 결과 보기 (Reveal All)</span>
         </button>
@@ -99,6 +102,16 @@ const data = gameEntry?.data || {
       <!-- Main Ladder SVG / Canvas Container -->
       <div class="ladder-grid-container" id="ladder-container">
         <svg id="ladder-svg" class="ladder-svg"></svg>
+
+        <!-- Blurring Suspense Blind (가림막) -->
+        <div class="ladder-blind-overlay" id="ladder-blind">
+          <div class="blind-content">
+            <span class="blind-icon">🔒</span>
+            <span class="blind-title">사다리 가림막 ON</span>
+            <span class="blind-sub">결과를 미리 예측할 수 없도록 다리가 블러 처리되었습니다</span>
+            <button id="blind-unveil-center-btn" class="btn-blind-unveil">👁️ 가림막 걷기 (미리보기)</button>
+          </div>
+        </div>
       </div>
 
       <!-- Bottom Outcomes Row -->
@@ -251,6 +264,28 @@ const data = gameEntry?.data || {
     transition: transform 0.15s ease;
   }
 
+  .action-btn-blind {
+    background: rgba(234, 179, 8, 0.15);
+    border: 1px solid rgba(234, 179, 8, 0.35);
+    color: #facc15;
+    padding: 0.6rem 0.9rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .action-btn-blind:hover {
+    background: rgba(234, 179, 8, 0.25);
+  }
+
+  .action-btn-blind.off {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #94a3b8;
+  }
+
   .action-btn-primary:hover {
     transform: scale(1.03);
   }
@@ -365,6 +400,72 @@ const data = gameEntry?.data || {
     width: 100%;
     height: 100%;
     display: block;
+  }
+
+  /* Ladder Blind Overlay */
+  .ladder-blind-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(9, 13, 22, 0.7);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  .ladder-blind-overlay.unveiled {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .blind-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 1.25rem 2rem;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    text-align: center;
+  }
+
+  .blind-icon {
+    font-size: 1.6rem;
+  }
+
+  .blind-title {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: #facc15;
+  }
+
+  .blind-sub {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-bottom: 0.5rem;
+  }
+
+  .btn-blind-unveil {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #f8fafc;
+    padding: 0.45rem 1rem;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .btn-blind-unveil:hover {
+    background: rgba(255, 255, 255, 0.18);
   }
 
   /* Outcomes Bottom Row */
@@ -597,6 +698,35 @@ const data = gameEntry?.data || {
   const countBtns = document.querySelectorAll('.count-btn');
   const revealAllBtn = document.getElementById('reveal-all-btn');
   const rerollBtn = document.getElementById('reroll-ladder-btn');
+
+  const ladderBlind = document.getElementById('ladder-blind');
+  const toggleBlindBtn = document.getElementById('toggle-blind-btn');
+  const blindBtnText = document.getElementById('blind-btn-text');
+  const blindUnveilCenterBtn = document.getElementById('blind-unveil-center-btn');
+
+  let isBlindActive = true;
+
+  function coverBlind() {
+    isBlindActive = true;
+    ladderBlind?.classList.remove('unveiled');
+    toggleBlindBtn?.classList.remove('off');
+    if (blindBtnText) blindBtnText.textContent = '🔒 가림막 ON';
+  }
+
+  function unveilBlind() {
+    isBlindActive = false;
+    ladderBlind?.classList.add('unveiled');
+    toggleBlindBtn?.classList.add('off');
+    if (blindBtnText) blindBtnText.textContent = '👁️ 가림막 OFF';
+  }
+
+  function toggleBlind() {
+    if (isBlindActive) {
+      unveilBlind();
+    } else {
+      coverBlind();
+    }
+  }
   const resultModal = document.getElementById('result-modal');
   const resultSummaryList = document.getElementById('result-summary-list');
   const closeResultBtn = document.getElementById('close-result-btn');
@@ -624,6 +754,7 @@ const data = gameEntry?.data || {
 
     renderUI();
     renderLadderSVG();
+    coverBlind();
   }
 
   function renderUI() {
@@ -772,6 +903,7 @@ const data = gameEntry?.data || {
   // Trace one player path with animated steps
   function tracePlayer(playerIdx: number) {
     if (isTracing || !ladderContainer) return;
+    unveilBlind();
     isTracing = true;
 
     const width = ladderContainer.clientWidth || 800;
@@ -820,6 +952,7 @@ const data = gameEntry?.data || {
   // Reveal all paths at once
   function revealAll() {
     if (!ladderContainer) return;
+    unveilBlind();
     const width = ladderContainer.clientWidth || 800;
     const height = 380;
 
@@ -905,6 +1038,8 @@ const data = gameEntry?.data || {
   revealAllBtn?.addEventListener('click', revealAll);
   rerollBtn?.addEventListener('click', initLadder);
   closeResultBtn?.addEventListener('click', () => resultModal?.classList.add('hidden'));
+  toggleBlindBtn?.addEventListener('click', toggleBlind);
+  blindUnveilCenterBtn?.addEventListener('click', unveilBlind);
 
   // Window resize re-draw
   window.addEventListener('resize', () => renderLadderSVG());
