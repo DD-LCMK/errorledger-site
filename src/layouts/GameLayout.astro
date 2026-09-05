@@ -61,25 +61,9 @@ const {
           </div>
         </div>
 
-        <!-- Ad Slot: Top Leaderboard Zone -->
-        <div class="ad-banner-zone top-zone" id="ad-top-zone">
-          <div class="ad-placeholder">
-            <span class="ad-label">ADVERTISEMENT</span>
-            <span class="ad-sub">Enjoying {title}? Share with friends!</span>
-          </div>
-        </div>
-
         <!-- Interactive Game Viewport (Slot) -->
         <div class="game-viewport-container" id="game-viewport">
           <slot />
-        </div>
-
-        <!-- Ad Slot: Bottom Display Zone -->
-        <div class="ad-banner-zone bottom-zone" id="ad-bottom-zone">
-          <div class="ad-placeholder">
-            <span class="ad-label">ADVERTISEMENT</span>
-            <span class="ad-sub">Zero downloads • 100% Client-Side Play</span>
-          </div>
         </div>
       </section>
 
@@ -240,38 +224,6 @@ const {
         background: rgba(56, 189, 248, 0.22);
         border-color: rgba(56, 189, 248, 0.45);
         color: #ffffff;
-      }
-
-      /* Ad Banner Zones */
-      .ad-banner-zone {
-        margin: 0.75rem 0;
-        min-height: 50px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .ad-placeholder {
-        width: 100%;
-        max-width: 728px;
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px dashed rgba(255, 255, 255, 0.08);
-        border-radius: 8px;
-        padding: 0.5rem 1rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        font-size: 0.75rem;
-        color: #64748b;
-      }
-
-      .ad-label {
-        font-weight: 700;
-        letter-spacing: 0.05em;
-      }
-
-      .ad-sub {
-        color: #475569;
       }
 
       /* Game Viewport Container */

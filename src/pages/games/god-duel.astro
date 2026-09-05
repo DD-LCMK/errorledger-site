@@ -154,7 +154,10 @@ const data = gameEntry?.data || {
 
       <!-- Player Hand Carousel -->
       <div class="player-hand-container">
-        <div class="hand-label">YOUR DIVINE HAND:</div>
+        <div class="hand-header-bar">
+          <span class="hand-label">YOUR DIVINE HAND:</span>
+          <span class="desktop-keyboard-guide">⌨️ Desktop Hotkeys: Press [1]–[5] to play card • [Space] to Meditate • [Enter] to Endure</span>
+        </div>
         <div class="cards-hand" id="player-hand">
           <!-- Dynamically populated cards -->
         </div>
@@ -541,6 +544,60 @@ const data = gameEntry?.data || {
     gap: 0.4rem;
   }
 
+  .hand-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .desktop-keyboard-guide {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+  }
+
+  .keybind-tag {
+    position: absolute;
+    top: 4px;
+    left: 6px;
+    font-size: 0.65rem;
+    font-weight: 900;
+    color: #38bdf8;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    padding: 0.05rem 0.3rem;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  }
+
+  .card-desc-tooltip {
+    display: none;
+    position: absolute;
+    bottom: 155px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #020617;
+    border: 1px solid rgba(168, 85, 247, 0.5);
+    color: #cbd5e1;
+    font-size: 0.72rem;
+    padding: 0.4rem 0.65rem;
+    border-radius: 6px;
+    white-space: nowrap;
+    z-index: 40;
+    pointer-events: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+  }
+
+  .card-item:hover .card-desc-tooltip {
+    display: block;
+  }
+
   .hand-label {
     font-size: 0.7rem;
     font-weight: 800;
@@ -917,7 +974,7 @@ const data = gameEntry?.data || {
     // Render Player Cards
     if (playerHandContainer) {
       playerHandContainer.innerHTML = '';
-      state.player.hand.forEach(card => {
+      state.player.hand.forEach((card, idx) => {
         const cardElem = document.createElement('div');
         const isDefending = state.phase === 'PLAYER_DEFENDING';
         const isShield = card.type === 'shield' || card.name.includes('Fog');
@@ -931,11 +988,13 @@ const data = gameEntry?.data || {
         const valPrefix = card.type === 'shield' ? 'DEF' : (card.type === 'item' && card.description.includes('HP') ? 'HEAL' : 'ATK');
 
         cardElem.innerHTML = `
+          <span class="keybind-tag">[${idx + 1}]</span>
           ${costBadge}
           <span class="card-badge">${card.type}</span>
           <div class="card-icon">${card.icon}</div>
           <div class="card-name" title="${card.name}">${card.name}</div>
           <div class="card-val-row">${valPrefix} +${card.value}</div>
+          <div class="card-desc-tooltip">${card.description}</div>
         `;
 
         cardElem.addEventListener('click', () => {
@@ -1010,6 +1069,44 @@ const data = gameEntry?.data || {
       combatLog.innerHTML = '<div class="log-item system">Battle chronicle cleared.</div>';
     });
   }
+
+  // Desktop Keyboard Shortcuts
+  window.addEventListener('keydown', (e) => {
+    // If modal is open, Enter or Space restarts
+    if (gameOverModal && !gameOverModal.classList.contains('hidden')) {
+      if (e.key === 'Enter' || e.code === 'Space') {
+        engine.startNewGame();
+        return;
+      }
+    }
+
+    const state = engine.getState();
+
+    // 1-5 keys play cards from hand
+    if (['1', '2', '3', '4', '5'].includes(e.key)) {
+      const cardIdx = parseInt(e.key, 10) - 1;
+      if (state.player.hand[cardIdx]) {
+        const card = state.player.hand[cardIdx];
+        if (state.phase === 'PLAYER_ACTION') {
+          engine.playerPlayCard(card.id);
+        } else if (state.phase === 'PLAYER_DEFENDING') {
+          const isShield = card.type === 'shield' || card.name.includes('Fog');
+          if (isShield) {
+            engine.playerDefend(card.id);
+          }
+        }
+      }
+    } else if (e.code === 'Space') {
+      e.preventDefault();
+      if (state.phase === 'PLAYER_ACTION') {
+        engine.playerPassTurn();
+      }
+    } else if (e.key === 'Enter' || e.key === 'h' || e.key === 'H') {
+      if (state.phase === 'PLAYER_DEFENDING') {
+        engine.playerDefend(null);
+      }
+    }
+  });
 
   // Initial render
   render(engine.getState());
