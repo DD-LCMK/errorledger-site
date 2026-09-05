@@ -1,0 +1,1731 @@
+---
+import GameLayout from '../../layouts/GameLayout.astro';
+import { getEntry } from 'astro:content';
+
+const gameEntry = await getEntry('games', 'marble-roulette');
+const data = gameEntry?.data || {
+  title: '방송용 마블 룰렛 (구슬 레이스)',
+  tagline: '물리 엔진 기반 구슬 굴리기 추첨기',
+  description: '원판 룰렛보다 10배 더 쫄깃한 실시간 구슬 레이스! 1등 당첨부터 꼴찌 벌칙 뽑기, 다중 당첨까지 완벽 지원합니다.',
+  icon: '🔮',
+  category: 'stream',
+  badge: '🔮 마블 레이스',
+  players: '1~100인+ (무제한)',
+  playTime: '30초~1분',
+  controls: [
+    '참가자 목록을 한 줄에 하나씩 입력 (홍길동 * 3 입력 시 구슬 3개 생성)',
+    '당첨 방식 선택: 1등 당첨, 꼴찌(벌칙) 당첨, 다중 당첨, 특정 순위',
+    '레이스 시작 또는 스페이스바를 눌러 출발 게이트 오픈',
+    '배속 조절 버튼(1x / 1.5x / 2x)으로 레이스 속도 제어'
+  ],
+  rules: [
+    '모든 참가자의 이름이 새겨진 고유 색상의 구슬이 상단 출발선에 배치됩니다.',
+    '게이트가 열리면 중력과 충돌 물리 법칙에 따라 핀과 회전 장애물을 튕겨 내려옵니다.',
+    '결승선을 통과한 순서에 따라 1등부터 꼴찌까지의 순위가 실시간 기록됩니다.',
+    '설정한 당첨 조건(1등 또는 꼴찌 등)에 부합하는 참가자가 최종 당첨자로 선정됩니다.'
+  ],
+  faqItems: [
+    {
+      q: '구슬 레이스 결과는 조작 없이 공정한가요?',
+      a: '네! 마블 룰렛은 매 프레임 순수한 2D 강체 물리 연산(중력, 탄성 계수, 충돌 반발력, 각운동량)에 의해 시뮬레이션되므로 누구도 결과를 예측하거나 임의 조작할 수 없습니다.'
+    },
+    {
+      q: '벌칙용으로 꼴찌를 뽑고 싶을 때는 어떻게 하나요?',
+      a: '상단 당첨자 설정에서 [💀 꼴찌(마지막) 당첨] 모드를 선택하시면 됩니다. 가장 마지막에 결승선을 통과하는 구슬이 당첨자로 선정되며, 후반부에는 꼴찌를 다투는 구슬을 카메라가 집중 조명합니다.'
+    }
+  ]
+};
+---
+
+<GameLayout
+  title={data.title}
+  description={data.description}
+  tagline={data.tagline}
+  icon={data.icon}
+  category={data.category}
+  badge={data.badge}
+  players={data.players}
+  playTime={data.playTime}
+  controls={data.controls}
+  rules={data.rules}
+  faqItems={data.faqItems}
+>
+  <div class="marble-app-root" id="marble-root">
+
+    <!-- Top Mode Switcher Bar -->
+    <div class="roulette-mode-tabs">
+      <a href="/games/roulette" class="mode-tab">
+        <span class="tab-icon">🎡</span>
+        <span class="tab-label">원판 룰렛 (Spin Wheel)</span>
+      </a>
+      <a href="/games/marble-roulette" class="mode-tab active">
+        <span class="tab-icon">🔮</span>
+        <span class="tab-label">마블 룰렛 (Marble Race)</span>
+        <span class="tab-badge">인기</span>
+      </a>
+    </div>
+
+    <!-- Main Game Container -->
+    <div class="marble-main-layout">
+
+      <!-- Left Column: Race Track Canvas & Minimap -->
+      <div class="track-column">
+        <div class="canvas-card">
+          <!-- Live Overlay Header -->
+          <div class="track-hud-overlay">
+            <div class="live-rank-chip" id="live-rank-chip">
+              <span class="rank-dot">● LIVE</span>
+              <span class="rank-text" id="lead-name">선두: 준비 중</span>
+            </div>
+            <div class="speed-control-group">
+              <button class="speed-btn active" data-speed="1">1x</button>
+              <button class="speed-btn" data-speed="1.5">1.5x</button>
+              <button class="speed-btn" data-speed="2">2x</button>
+            </div>
+          </div>
+
+          <!-- Canvas Viewport -->
+          <div class="canvas-viewport" id="canvas-viewport">
+            <canvas id="marble-canvas" width="440" height="620"></canvas>
+
+            <!-- Countdown Overlay -->
+            <div class="countdown-overlay hidden" id="countdown-overlay">
+              <span class="countdown-number" id="countdown-number">3</span>
+            </div>
+
+            <!-- Minimap Strip -->
+            <div class="minimap-container" id="minimap-container" title="코스 전체 미니맵">
+              <canvas id="minimap-canvas" width="36" height="260"></canvas>
+            </div>
+          </div>
+
+          <!-- Bottom Action Bar under Canvas -->
+          <div class="track-controls-bottom">
+            <button id="start-race-btn" class="btn-race-primary">
+              <span>🚀 레이스 시작! (Space)</span>
+            </button>
+            <button id="reset-race-btn" class="btn-race-secondary">
+              <span>🔄 리셋</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Settings, Inputs & Live Log -->
+      <div class="control-column">
+        
+        <!-- Winner Mode Selection Box -->
+        <div class="panel-box">
+          <div class="panel-header">
+            <span class="panel-title">🎯 당첨 방식 설정</span>
+          </div>
+          <div class="winner-mode-grid">
+            <label class="mode-card active">
+              <input type="radio" name="winner-mode" value="last" checked />
+              <div class="mode-card-body">
+                <span class="mode-icon">💀</span>
+                <span class="mode-title">꼴찌 당첨</span>
+                <span class="mode-desc">마지막 통과자 (벌칙/내기)</span>
+              </div>
+            </label>
+
+            <label class="mode-card">
+              <input type="radio" name="winner-mode" value="first" />
+              <div class="mode-card-body">
+                <span class="mode-icon">🥇</span>
+                <span class="mode-title">1등 당첨</span>
+                <span class="mode-desc">가장 먼저 통과한 구슬</span>
+              </div>
+            </label>
+
+            <label class="mode-card">
+              <input type="radio" name="winner-mode" value="multi" />
+              <div class="mode-card-body">
+                <span class="mode-icon">🏆</span>
+                <span class="mode-title">다중 당첨</span>
+                <span class="mode-desc">상위 N명 (1~3등 등)</span>
+              </div>
+            </label>
+
+            <label class="mode-card">
+              <input type="radio" name="winner-mode" value="custom" />
+              <div class="mode-card-body">
+                <span class="mode-icon">🎯</span>
+                <span class="mode-title">특정 순위</span>
+                <span class="mode-desc">지정한 N번째 통과자</span>
+              </div>
+            </label>
+          </div>
+
+          <!-- Dynamic Mode Sub-settings -->
+          <div class="mode-sub-row hidden" id="multi-settings-row">
+            <label>당첨 인원수:</label>
+            <input type="number" id="multi-count-input" value="3" min="1" max="20" class="sub-num-input" />
+            <span>명 (1등부터 순서대로)</span>
+          </div>
+
+          <div class="mode-sub-row hidden" id="custom-settings-row">
+            <label>지정 당첨 순위:</label>
+            <input type="number" id="custom-rank-input" value="7" min="1" max="50" class="sub-num-input" />
+            <span>등 통과자 당첨</span>
+          </div>
+        </div>
+
+        <!-- Quick Presets -->
+        <div class="panel-box">
+          <div class="panel-header">
+            <span class="panel-title">⚡ 빠른 프리셋</span>
+          </div>
+          <div class="preset-chips">
+            <button class="preset-chip active" data-preset="coffee">☕ 커피 쏘기 (꼴찌)</button>
+            <button class="preset-chip" data-preset="chicken">🍗 치킨 내기 (꼴찌)</button>
+            <button class="preset-chip" data-preset="lunch">🍽️ 점심 메뉴</button>
+            <button class="preset-chip" data-preset="penalty">⚡ 벌칙 뽑기</button>
+            <button class="preset-chip" data-preset="streamer">🎮 스트리머 합방</button>
+          </div>
+        </div>
+
+        <!-- Participant Names Input -->
+        <div class="panel-box">
+          <div class="panel-header">
+            <span class="panel-title">👥 참가자 목록</span>
+            <span class="marble-count-badge" id="marble-count-badge">총 8개 구슬 대기</span>
+          </div>
+          <textarea id="names-input" class="names-textarea" rows="6" placeholder="참가자 이름을 한 줄에 하나씩 입력하세요.&#10;예시:&#10;김팀장&#10;이대리&#10;박사원 * 2 (구슬 2개)&#10;최인턴"></textarea>
+          <div class="input-actions-row">
+            <button id="shuffle-btn" class="btn-small-action">🔀 무작위 섞기</button>
+            <button id="apply-btn" class="btn-small-action primary">✓ 구슬 배치하기</button>
+          </div>
+        </div>
+
+        <!-- Live Finish Order Board -->
+        <div class="panel-box finish-log-box">
+          <div class="panel-header">
+            <span class="panel-title">🏁 완주 현황 (실시간 순위)</span>
+            <span class="finish-progress-text" id="finish-progress">0 / 8 완주</span>
+          </div>
+          <div class="finish-list" id="finish-list">
+            <div class="finish-empty-hint">레이스가 시작되면 결승선을 통과한 순서가 기록됩니다.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Final Result Modal -->
+    <div class="marble-modal hidden" id="result-modal">
+      <div class="modal-card">
+        <div class="modal-confetti" id="modal-confetti"></div>
+        <div class="modal-icon" id="modal-winner-icon">🎉</div>
+        <h2 id="modal-winner-title">최종 당첨자 발표!</h2>
+        
+        <div class="winner-spotlight" id="winner-spotlight">
+          <span class="spotlight-badge" id="spotlight-badge">당첨 (꼴찌)</span>
+          <strong class="spotlight-name" id="spotlight-name">김팀장</strong>
+          <p class="spotlight-sub" id="spotlight-sub">커피 당첨을 축하드립니다!</p>
+        </div>
+
+        <div class="modal-ranks-scroll" id="modal-ranks-scroll">
+          <!-- Injected dynamically -->
+        </div>
+
+        <div class="modal-btn-row">
+          <button id="modal-restart-btn" class="btn-modal-primary">🔄 다시 달리기</button>
+          <button id="modal-close-btn" class="btn-modal-secondary">닫기</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div slot="guide">
+    <h2>방송용 마블 룰렛 (구슬 레이스) 완벽 가이드</h2>
+    <p>
+      <strong>마블 룰렛</strong>은 실제 2D 물리 법칙을 바탕으로 구슬들이 경사로와 회전 장애물을 헤쳐나가는 실시간 구슬 추첨기입니다.
+      원판 룰렛과 달리 구슬들이 서로 부딪히며 밀치고, 장애물에 의해 극적인 역전이 발생하는 방송 콘텐츠에 최적화된 도구입니다.
+    </p>
+    <ul>
+      <li><strong>💀 꼴찌 당첨 모드:</strong> 가장 마지막까지 살아남지 못하고 꼴찌로 들어온 구슬이 당첨되는 모드로, '커피 쏘기', '치킨 내기', '벌칙 뽑기' 방송에서 극강의 도파민을 제공합니다.</li>
+      <li><strong>🥇 1등 당첨 모드:</strong> 가장 먼저 결승선을 밟은 구슬이 우승하는 클래식 레이스 모드입니다.</li>
+      <li><strong>다중 구슬 배정 (* N):</strong> 이름 뒤에 <code>* 3</code> 또는 <code>* 5</code>를 적으면 해당 참가자에게 구슬이 여러 개 지급되어 확률을 조절할 수 있습니다.</li>
+      <li><strong>실시간 미니맵 & 카메라 워킹:</strong> 우측 미니맵을 통해 전체 코스에서의 구슬 분포를 볼 수 있으며, 카메라는 박진감 넘치는 선두(또는 꼴찌) 그룹을 실시간으로 추적합니다.</li>
+    </ul>
+  </div>
+</GameLayout>
+
+<style>
+  .marble-app-root {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    user-select: none;
+    gap: 1rem;
+  }
+
+  /* Mode Switcher Tabs */
+  .roulette-mode-tabs {
+    display: flex;
+    gap: 0.5rem;
+    background: #0f172a;
+    padding: 0.35rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  }
+
+  .mode-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #94a3b8;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .mode-tab:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .mode-tab.active {
+    background: #38bdf8;
+    color: #040813;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+  }
+
+  .tab-badge {
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: 900;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    margin-left: 0.2rem;
+  }
+
+  /* Main Two-Column Layout */
+  .marble-main-layout {
+    display: grid;
+    grid-template-columns: 440px 1fr;
+    gap: 1.25rem;
+    width: 100%;
+    max-width: 960px;
+    align-items: start;
+  }
+
+  @media (max-width: 860px) {
+    .marble-main-layout {
+      grid-template-columns: 1fr;
+      justify-items: center;
+    }
+  }
+
+  /* Left Track Column */
+  .track-column {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .canvas-card {
+    background: #090d16;
+    border: 2px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7), 0 0 20px rgba(56, 189, 248, 0.15);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Track HUD Top Bar */
+  .track-hud-overlay {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0f172a;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.5rem 0.75rem;
+  }
+
+  .live-rank-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 900;
+    color: #f8fafc;
+  }
+
+  .rank-dot {
+    color: #ef4444;
+    font-size: 0.7rem;
+    animation: pulse 1s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .speed-control-group {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .speed-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #94a3b8;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .speed-btn.active {
+    background: #38bdf8;
+    color: #040813;
+    border-color: #38bdf8;
+  }
+
+  /* Canvas Viewport */
+  .canvas-viewport {
+    position: relative;
+    width: 440px;
+    height: 620px;
+    background: #020617;
+    overflow: hidden;
+  }
+
+  canvas#marble-canvas {
+    display: block;
+    width: 440px;
+    height: 620px;
+  }
+
+  /* Minimap */
+  .minimap-container {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 260px;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    backdrop-filter: blur(4px);
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+  }
+
+  canvas#minimap-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Countdown Overlay */
+  .countdown-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(9, 13, 22, 0.75);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 30;
+  }
+
+  .countdown-number {
+    font-size: 6rem;
+    font-weight: 900;
+    color: #facc15;
+    text-shadow: 0 0 30px #facc15, 0 0 60px rgba(250, 204, 21, 0.6);
+    animation: scale-countdown 0.9s ease-out infinite;
+  }
+
+  @keyframes scale-countdown {
+    0% { transform: scale(1.6); opacity: 0; }
+    50% { transform: scale(1.0); opacity: 1; }
+    100% { transform: scale(0.85); opacity: 0.8; }
+  }
+
+  /* Track Bottom Action Controls */
+  .track-controls-bottom {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: #0f172a;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .btn-race-primary {
+    flex: 2;
+    background: linear-gradient(135deg, #38bdf8, #2563eb);
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+    transition: transform 0.15s ease;
+  }
+
+  .btn-race-primary:hover {
+    transform: scale(1.02);
+  }
+
+  .btn-race-secondary {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #f8fafc;
+    padding: 0.75rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .btn-race-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  /* Right Control Column */
+  .control-column {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .panel-box {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 0.85rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .panel-title {
+    font-size: 0.85rem;
+    font-weight: 900;
+    color: #f8fafc;
+  }
+
+  .marble-count-badge {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 0.15rem 0.5rem;
+    border-radius: 20px;
+  }
+
+  /* Winner Mode Selection Cards */
+  .winner-mode-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.45rem;
+  }
+
+  .mode-card {
+    cursor: pointer;
+  }
+
+  .mode-card input {
+    display: none;
+  }
+
+  .mode-card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.5rem 0.4rem;
+    transition: all 0.15s ease;
+  }
+
+  .mode-card input:checked + .mode-card-body {
+    border-color: #facc15;
+    background: rgba(250, 204, 21, 0.12);
+    box-shadow: 0 0 12px rgba(250, 204, 21, 0.25);
+  }
+
+  .mode-icon {
+    font-size: 1.25rem;
+    margin-bottom: 0.15rem;
+  }
+
+  .mode-title {
+    font-size: 0.78rem;
+    font-weight: 900;
+    color: #f8fafc;
+  }
+
+  .mode-desc {
+    font-size: 0.65rem;
+    color: #94a3b8;
+  }
+
+  .mode-sub-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+  }
+
+  .sub-num-input {
+    width: 50px;
+    background: #020617;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    color: #facc15;
+    font-weight: 800;
+    padding: 0.2rem 0.4rem;
+    text-align: center;
+  }
+
+  /* Preset Chips */
+  .preset-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .preset-chip {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 0.3rem 0.55rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .preset-chip:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #f8fafc;
+  }
+
+  .preset-chip.active {
+    background: rgba(56, 189, 248, 0.2);
+    border-color: #38bdf8;
+    color: #38bdf8;
+  }
+
+  /* Textarea */
+  .names-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    background: #020617;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    color: #f8fafc;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    padding: 0.5rem;
+    outline: none;
+    resize: vertical;
+    font-family: monospace;
+  }
+
+  .names-textarea:focus {
+    border-color: #38bdf8;
+  }
+
+  .input-actions-row {
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .btn-small-action {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+    padding: 0.4rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .btn-small-action:hover {
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  .btn-small-action.primary {
+    background: rgba(56, 189, 248, 0.2);
+    border-color: #38bdf8;
+    color: #38bdf8;
+  }
+
+  /* Finish List Box */
+  .finish-log-box {
+    max-height: 180px;
+    overflow-y: auto;
+  }
+
+  .finish-progress-text {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    font-weight: 700;
+  }
+
+  .finish-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .finish-empty-hint {
+    font-size: 0.72rem;
+    color: #64748b;
+    text-align: center;
+    padding: 1rem 0;
+  }
+
+  :global(.finish-item) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.74rem;
+  }
+
+  :global(.finish-rank) {
+    font-weight: 900;
+    color: #facc15;
+    min-width: 32px;
+  }
+
+  :global(.finish-name) {
+    font-weight: 800;
+    color: #f8fafc;
+    flex: 1;
+    margin: 0 0.4rem;
+  }
+
+  :global(.finish-time) {
+    color: #94a3b8;
+    font-size: 0.65rem;
+  }
+
+  /* Result Modal */
+  .marble-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(9, 13, 22, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+
+  .modal-card {
+    background: #0f172a;
+    border: 2px solid #facc15;
+    border-radius: 20px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 0 40px rgba(250, 204, 21, 0.35);
+    position: relative;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-icon {
+    font-size: 3rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .modal-card h2 {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: #f8fafc;
+    margin: 0 0 1rem;
+  }
+
+  .winner-spotlight {
+    background: rgba(250, 204, 21, 0.12);
+    border: 1px solid rgba(250, 204, 21, 0.35);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .spotlight-badge {
+    background: #facc15;
+    color: #020617;
+    font-size: 0.7rem;
+    font-weight: 900;
+    padding: 0.15rem 0.5rem;
+    border-radius: 20px;
+    margin-bottom: 0.3rem;
+  }
+
+  .spotlight-name {
+    font-size: 1.6rem;
+    color: #ffffff;
+    font-weight: 900;
+  }
+
+  .spotlight-sub {
+    font-size: 0.8rem;
+    color: #cbd5e1;
+    margin: 0.25rem 0 0;
+  }
+
+  .modal-ranks-scroll {
+    overflow-y: auto;
+    max-height: 160px;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .modal-btn-row {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .btn-modal-primary {
+    flex: 1;
+    background: linear-gradient(135deg, #facc15, #eab308);
+    color: #020617;
+    border: none;
+    padding: 0.65rem;
+    border-radius: 8px;
+    font-weight: 900;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  .btn-modal-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #f8fafc;
+    padding: 0.65rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+</style>
+
+<script>
+  // Web Audio Synth for Marble FX
+  class MarbleAudio {
+    private ctx: AudioContext | null = null;
+    constructor() {
+      try {
+        const AudioClass = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioClass) this.ctx = new AudioClass();
+      } catch {}
+    }
+
+    private resume() {
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+    }
+
+    playBeep(freq = 440, dur = 0.1) {
+      if (!this.ctx) return;
+      this.resume();
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+      gain.gain.setValueAtTime(0.18, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + dur);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + dur);
+    }
+
+    playPop() {
+      if (!this.ctx) return;
+      this.resume();
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const freq = 350 + Math.random() * 300;
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(freq * 0.5, this.ctx.currentTime + 0.06);
+      gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.005, this.ctx.currentTime + 0.06);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.06);
+    }
+
+    playFinish() {
+      if (!this.ctx) return;
+      this.resume();
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, i) => {
+        setTimeout(() => {
+          this.playBeep(freq, 0.25);
+        }, i * 90);
+      });
+    }
+  }
+
+  const sfx = new MarbleAudio();
+
+  // Presets Data
+  const PRESETS: Record<string, { mode: string; names: string[] }> = {
+    coffee: {
+      mode: 'last',
+      names: ['김팀장', '이대리', '박사원', '최인턴', '정부장', '강과장', '조선임', '윤연구원']
+    },
+    chicken: {
+      mode: 'last',
+      names: ['철수', '영희', '민수', '지은', '호스트', '게스트A', '게스트B', '시청자1']
+    },
+    lunch: {
+      mode: 'first',
+      names: ['돈까스', '제육볶음', '김치찌개', '짜장면', '초밥', '햄버거', '마라탕', '쌀국수']
+    },
+    penalty: {
+      mode: 'last',
+      names: ['애교 3종', '노래 1곡', '딱밤 한 대', '팔굽혀펴기 20개', '벌칙 면제', '음료수 쏘기', '엉덩이 춤', '물 원샷']
+    },
+    streamer: {
+      mode: 'first',
+      names: ['침착맨', '풍월량', '우왁굳', '녹두로', '주호민', '기안84', '옥냥이', '김도']
+    }
+  };
+
+  const MARBLE_COLORS = [
+    '#38bdf8', '#f43f5e', '#10b981', '#facc15', '#a855f7',
+    '#f97316', '#06b6d4', '#ec4899', '#84cc16', '#6366f1'
+  ];
+
+  interface Marble {
+    id: number;
+    name: string;
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    radius: number;
+    color: string;
+    finished: boolean;
+    finishTime: number;
+    finishRank: number;
+  }
+
+  interface Pin {
+    x: number;
+    y: number;
+    radius: number;
+  }
+
+  interface Spinner {
+    x: number;
+    y: number;
+    length: number;
+    angle: number;
+    speed: number;
+  }
+
+  interface Segment {
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+  }
+
+  // Course Dimensions
+  const COURSE_WIDTH = 440;
+  const COURSE_HEIGHT = 2400;
+  const FINISH_LINE_Y = 2220;
+
+  // Track Entities
+  let pins: Pin[] = [];
+  let spinners: Spinner[] = [];
+  let segments: Segment[] = [];
+  let isGateOpen = false;
+
+  function buildCourse() {
+    pins = [];
+    spinners = [];
+    segments = [];
+
+    // Outer Course Boundary Walls (Left and Right)
+    segments.push({ x1: 20, y1: 0, x2: 20, y2: COURSE_HEIGHT });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 0, x2: COURSE_WIDTH - 20, y2: COURSE_HEIGHT });
+
+    // 1. Starting Hopper (y: 60 - 180)
+    segments.push({ x1: 20, y1: 180, x2: 170, y2: 220 });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 180, x2: 270, y2: 220 });
+
+    // 2. Plinko Pin Forest (y: 280 - 620)
+    for (let row = 0; row < 7; row++) {
+      const y = 290 + row * 48;
+      const count = (row % 2 === 0) ? 6 : 7;
+      const spacing = (COURSE_WIDTH - 90) / (count - 1);
+      const startX = (row % 2 === 0) ? 45 : 30;
+      for (let c = 0; c < count; c++) {
+        pins.push({ x: startX + c * spacing, y, radius: 7 });
+      }
+    }
+
+    // 3. Double Rotating Spinners (y: 680, y: 840, y: 1000)
+    spinners.push({ x: 130, y: 730, length: 70, angle: 0, speed: 0.04 });
+    spinners.push({ x: 310, y: 730, length: 70, angle: Math.PI / 2, speed: -0.045 });
+    spinners.push({ x: 220, y: 920, length: 85, angle: 0, speed: 0.05 });
+
+    // 4. Slanted Ramps / Switchbacks (y: 1060 - 1420)
+    segments.push({ x1: 20, y1: 1080, x2: 320, y2: 1140 });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 1240, x2: 120, y2: 1300 });
+    segments.push({ x1: 20, y1: 1400, x2: 320, y2: 1460 });
+
+    // 5. Funnel Bottleneck (y: 1540 - 1760)
+    segments.push({ x1: 20, y1: 1540, x2: 180, y2: 1680 });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 1540, x2: 260, y2: 1680 });
+    segments.push({ x1: 180, y1: 1680, x2: 180, y2: 1750 });
+    segments.push({ x1: 260, y1: 1680, x2: 260, y2: 1750 });
+
+    // 6. Bumper Pins and Slalom before Finish (y: 1820 - 2150)
+    for (let r = 0; r < 5; r++) {
+      const y = 1840 + r * 65;
+      const count = (r % 2 === 0) ? 5 : 6;
+      const spacing = (COURSE_WIDTH - 100) / (count - 1);
+      const startX = (r % 2 === 0) ? 50 : 35;
+      for (let c = 0; c < count; c++) {
+        pins.push({ x: startX + c * spacing, y, radius: 8 });
+      }
+    }
+
+    // 7. Finish Catch Basin Floor (y: 2380)
+    segments.push({ x1: 20, y1: 2380, x2: COURSE_WIDTH - 20, y2: 2380 });
+  }
+
+  buildCourse();
+
+  // State
+  let marbles: Marble[] = [];
+  let isRacing = false;
+  let isCountingDown = false;
+  let raceStartTime = 0;
+  let finishRankCounter = 0;
+  let timeScale = 1.0;
+  let cameraY = 0;
+  let winnerMode = 'last'; // 'last', 'first', 'multi', 'custom'
+
+  // DOM Queries
+  const canvas = document.getElementById('marble-canvas') as HTMLCanvasElement;
+  const ctx = canvas?.getContext('2d');
+  const minimapCanvas = document.getElementById('minimap-canvas') as HTMLCanvasElement;
+  const miniCtx = minimapCanvas?.getContext('2d');
+
+  const namesInput = document.getElementById('names-input') as HTMLTextAreaElement;
+  const marbleCountBadge = document.getElementById('marble-count-badge');
+  const startBtn = document.getElementById('start-race-btn');
+  const resetBtn = document.getElementById('reset-race-btn');
+  const shuffleBtn = document.getElementById('shuffle-btn');
+  const applyBtn = document.getElementById('apply-btn');
+
+  const leadNameElem = document.getElementById('lead-name');
+  const finishProgressElem = document.getElementById('finish-progress');
+  const finishListElem = document.getElementById('finish-list');
+
+  const countdownOverlay = document.getElementById('countdown-overlay');
+  const countdownNumber = document.getElementById('countdown-number');
+
+  const resultModal = document.getElementById('result-modal');
+  const modalWinnerIcon = document.getElementById('modal-winner-icon');
+  const modalWinnerTitle = document.getElementById('modal-winner-title');
+  const spotlightBadge = document.getElementById('spotlight-badge');
+  const spotlightName = document.getElementById('spotlight-name');
+  const spotlightSub = document.getElementById('spotlight-sub');
+  const modalRanksScroll = document.getElementById('modal-ranks-scroll');
+  const modalRestartBtn = document.getElementById('modal-restart-btn');
+  const modalCloseBtn = document.getElementById('modal-close-btn');
+
+  const multiSettingsRow = document.getElementById('multi-settings-row');
+  const customSettingsRow = document.getElementById('custom-settings-row');
+  const multiCountInput = document.getElementById('multi-count-input') as HTMLInputElement;
+  const customRankInput = document.getElementById('custom-rank-input') as HTMLInputElement;
+
+  // Parse names and multipliers (e.g. "홍길동 * 3")
+  function parseNamesList(): string[] {
+    const raw = namesInput?.value || '';
+    const lines = raw.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
+    const parsed: string[] = [];
+
+    lines.forEach(line => {
+      const match = line.match(/^(.+?)\s*\*\s*(\d+)$/);
+      if (match) {
+        const name = match[1].trim();
+        const count = Math.min(20, Math.max(1, parseInt(match[2], 10)));
+        for (let i = 0; i < count; i++) {
+          parsed.push(name);
+        }
+      } else {
+        parsed.push(line);
+      }
+    });
+
+    return parsed.length > 0 ? parsed : PRESETS.coffee.names;
+  }
+
+  function spawnMarbles() {
+    const names = parseNamesList();
+    marbles = [];
+    finishRankCounter = 0;
+    cameraY = 0;
+    isGateOpen = false;
+
+    if (marbleCountBadge) {
+      marbleCountBadge.textContent = `총 ${names.length}개 구슬 대기`;
+    }
+
+    // Distribute in starting hopper (y: 60 - 160)
+    const cols = Math.min(10, Math.ceil(Math.sqrt(names.length * 2)));
+    const startX = 60;
+    const endX = COURSE_WIDTH - 60;
+    const spacingX = (endX - startX) / (cols - 1 || 1);
+
+    names.forEach((name, idx) => {
+      const row = Math.floor(idx / cols);
+      const col = idx % cols;
+      const jitterX = (Math.random() - 0.5) * 6;
+      const jitterY = (Math.random() - 0.5) * 6;
+
+      marbles.push({
+        id: idx,
+        name,
+        x: startX + col * spacingX + jitterX,
+        y: 65 + row * 22 + jitterY,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: 0,
+        radius: 9,
+        color: MARBLE_COLORS[idx % MARBLE_COLORS.length],
+        finished: false,
+        finishTime: 0,
+        finishRank: 0
+      });
+    });
+
+    if (finishListElem) {
+      finishListElem.innerHTML = '<div class="finish-empty-hint">레이스가 시작되면 결승선을 통과한 순서가 기록됩니다.</div>';
+    }
+    if (finishProgressElem) {
+      finishProgressElem.textContent = `0 / ${marbles.length} 완주`;
+    }
+  }
+
+  // Countdown & Start
+  function startRace() {
+    if (isRacing || isCountingDown) return;
+    if (marbles.length === 0) spawnMarbles();
+
+    isCountingDown = true;
+    if (countdownOverlay) countdownOverlay.classList.remove('hidden');
+
+    let count = 3;
+    if (countdownNumber) countdownNumber.textContent = '3';
+    sfx.playBeep(440, 0.15);
+
+    const timer = setInterval(() => {
+      count--;
+      if (count > 0) {
+        if (countdownNumber) countdownNumber.textContent = String(count);
+        sfx.playBeep(440, 0.15);
+      } else if (count === 0) {
+        if (countdownNumber) countdownNumber.textContent = 'GO!';
+        sfx.playBeep(880, 0.3);
+      } else {
+        clearInterval(timer);
+        isCountingDown = false;
+        if (countdownOverlay) countdownOverlay.classList.add('hidden');
+        
+        // Open gate!
+        isGateOpen = true;
+        isRacing = true;
+        raceStartTime = performance.now();
+      }
+    }, 700);
+  }
+
+  // Physics Update
+  function updatePhysics(dt: number) {
+    if (!isRacing) return;
+
+    const gravity = 0.32 * timeScale;
+    const friction = Math.pow(0.992, timeScale);
+    const bounce = 0.55;
+
+    // Spinners angular update
+    spinners.forEach(sp => {
+      sp.angle += sp.speed * timeScale;
+    });
+
+    // 1. Move Marbles
+    marbles.forEach(m => {
+      if (m.finished && m.y > FINISH_LINE_Y + 120) {
+        // Gently slow down finished marbles in catch basin
+        m.vx *= 0.92;
+        m.vy *= 0.92;
+        m.x += m.vx;
+        m.y += m.vy;
+        return;
+      }
+
+      m.vy += gravity;
+      m.vx *= friction;
+      m.x += m.vx * timeScale;
+      m.y += m.vy * timeScale;
+
+      // Finish line check
+      if (!m.finished && m.y >= FINISH_LINE_Y) {
+        m.finished = true;
+        finishRankCounter++;
+        m.finishRank = finishRankCounter;
+        m.finishTime = (performance.now() - raceStartTime) / 1000;
+        onMarbleFinished(m);
+      }
+    });
+
+    // 2. Marble vs Marble Collision
+    for (let i = 0; i < marbles.length; i++) {
+      for (let j = i + 1; j < marbles.length; j++) {
+        const m1 = marbles[i];
+        const m2 = marbles[j];
+        const dx = m2.x - m1.x;
+        const dy = m2.y - m1.y;
+        const dist = Math.hypot(dx, dy);
+        const minDist = m1.radius + m2.radius;
+
+        if (dist < minDist && dist > 0.01) {
+          const overlap = minDist - dist;
+          const nx = dx / dist;
+          const ny = dy / dist;
+
+          m1.x -= nx * overlap * 0.5;
+          m1.y -= ny * overlap * 0.5;
+          m2.x += nx * overlap * 0.5;
+          m2.y += ny * overlap * 0.5;
+
+          const kx = m1.vx - m2.vx;
+          const ky = m1.vy - m2.vy;
+          const p = 2 * (nx * kx + ny * ky) / 2;
+
+          m1.vx -= p * nx * bounce;
+          m1.vy -= p * ny * bounce;
+          m2.vx += p * nx * bounce;
+          m2.vy += p * ny * bounce;
+        }
+      }
+    }
+
+    // 3. Marble vs Static Pins
+    marbles.forEach(m => {
+      pins.forEach(pin => {
+        const dx = m.x - pin.x;
+        const dy = m.y - pin.y;
+        const dist = Math.hypot(dx, dy);
+        const minDist = m.radius + pin.radius;
+
+        if (dist < minDist && dist > 0.001) {
+          const nx = dx / dist;
+          const ny = dy / dist;
+          const overlap = minDist - dist;
+
+          m.x += nx * overlap;
+          m.y += ny * overlap;
+
+          // Reflect velocity
+          const dot = m.vx * nx + m.vy * ny;
+          if (dot < 0) {
+            m.vx -= 1.8 * dot * nx;
+            m.vy -= 1.8 * dot * ny;
+            if (Math.random() < 0.15) sfx.playPop();
+          }
+        }
+      });
+    });
+
+    // 4. Marble vs Rotating Spinners
+    marbles.forEach(m => {
+      spinners.forEach(sp => {
+        const cos = Math.cos(sp.angle);
+        const sin = Math.sin(sp.angle);
+        const x1 = sp.x - cos * sp.length;
+        const y1 = sp.y - sin * sp.length;
+        const x2 = sp.x + cos * sp.length;
+        const y2 = sp.y + sin * sp.length;
+
+        // Distance from point to line segment
+        const dist = distToSegment(m.x, m.y, x1, y1, x2, y2);
+        if (dist.d < m.radius + 6) {
+          const nx = (m.x - dist.px) / (dist.d || 1);
+          const ny = (m.y - dist.py) / (dist.d || 1);
+          m.x = dist.px + nx * (m.radius + 6);
+          m.y = dist.py + ny * (m.radius + 6);
+
+          // Add tangential force from spinner rotation
+          const tanX = -sin * sp.speed * 60;
+          const tanY = cos * sp.speed * 60;
+          m.vx = nx * 5 + tanX;
+          m.vy = ny * 5 + tanY;
+          sfx.playPop();
+        }
+      });
+    });
+
+    // 5. Marble vs Course Segments (Walls & Slanted Ramps)
+    marbles.forEach(m => {
+      // Gate segment at hopper bottom (open or closed)
+      if (!isGateOpen) {
+        const gateDist = distToSegment(m.x, m.y, 170, 220, 270, 220);
+        if (gateDist.d < m.radius + 2) {
+          m.y = 220 - m.radius - 2;
+          m.vy = -m.vy * 0.4;
+        }
+      }
+
+      segments.forEach(seg => {
+        const res = distToSegment(m.x, m.y, seg.x1, seg.y1, seg.x2, seg.y2);
+        if (res.d < m.radius + 2) {
+          const nx = (m.x - res.px) / (res.d || 1);
+          const ny = (m.y - res.py) / (res.d || 1);
+          m.x = res.px + nx * (m.radius + 2);
+          m.y = res.py + ny * (m.radius + 2);
+
+          const dot = m.vx * nx + m.vy * ny;
+          if (dot < 0) {
+            m.vx -= 1.6 * dot * nx;
+            m.vy -= 1.6 * dot * ny;
+          }
+        }
+      });
+    });
+
+    // Camera tracking
+    updateCamera();
+
+    // Check race completion
+    const allFinished = marbles.every(m => m.finished);
+    if (allFinished && isRacing) {
+      isRacing = false;
+      setTimeout(() => {
+        showFinalResults();
+      }, 700);
+    }
+  }
+
+  function distToSegment(px: number, py: number, x1: number, y1: number, x2: number, y2: number) {
+    const l2 = (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
+    if (l2 === 0) return { d: Math.hypot(px - x1, py - y1), px: x1, py: y1 };
+    let t = ((px - x1) * (x2 - x1) + (py - y1) * (y2 - y1)) / l2;
+    t = Math.max(0, Math.min(1, t));
+    const projX = x1 + t * (x2 - x1);
+    const projY = y1 + t * (y2 - y1);
+    return { d: Math.hypot(px - projX, py - projY), px: projX, py: projY };
+  }
+
+  // Camera smoothly follows target
+  function updateCamera() {
+    let targetY = 0;
+
+    if (winnerMode === 'last') {
+      // In 꼴찌 mode, after majority finish, focus on the trailing battle!
+      const activeMarbles = marbles.filter(m => !m.finished);
+      if (activeMarbles.length > 0) {
+        // Track the lowest active (leading among un-finished) or highest (straggler)
+        const avgY = activeMarbles.reduce((acc, m) => acc + m.y, 0) / activeMarbles.length;
+        targetY = avgY - 260;
+      } else {
+        targetY = FINISH_LINE_Y - 200;
+      }
+    } else {
+      // Lead marble tracking
+      const active = marbles.filter(m => !m.finished);
+      if (active.length > 0) {
+        const lead = active.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), active[0]);
+        targetY = lead.y - 240;
+      } else {
+        targetY = FINISH_LINE_Y - 200;
+      }
+    }
+
+    targetY = Math.max(0, Math.min(COURSE_HEIGHT - 620, targetY));
+    cameraY += (targetY - cameraY) * 0.08;
+
+    // Update live leader text
+    const unfinished = marbles.filter(m => !m.finished);
+    if (unfinished.length > 0) {
+      const top = unfinished.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), unfinished[0]);
+      if (leadNameElem) leadNameElem.textContent = `선두: ${top.name}`;
+    } else {
+      if (leadNameElem) leadNameElem.textContent = `레이스 종료!`;
+    }
+  }
+
+  function onMarbleFinished(m: Marble) {
+    sfx.playFinish();
+    if (finishProgressElem) {
+      finishProgressElem.textContent = `${finishRankCounter} / ${marbles.length} 완주`;
+    }
+
+    if (finishListElem) {
+      const emptyHint = finishListElem.querySelector('.finish-empty-hint');
+      if (emptyHint) emptyHint.remove();
+
+      const item = document.createElement('div');
+      item.className = 'finish-item';
+      item.innerHTML = `
+        <span class="finish-rank">${m.finishRank}위</span>
+        <span class="finish-name">${m.name}</span>
+        <span class="finish-time">${m.finishTime.toFixed(2)}s</span>
+      `;
+      finishListElem.appendChild(item);
+      finishListElem.scrollTop = finishListElem.scrollHeight;
+    }
+  }
+
+  // Draw Course & Marbles
+  function render() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.save();
+    ctx.translate(0, -cameraY);
+
+    // 1. Draw Course Walls & Background grid
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+    segments.forEach(seg => {
+      ctx.beginPath();
+      ctx.moveTo(seg.x1, seg.y1);
+      ctx.lineTo(seg.x2, seg.y2);
+      ctx.stroke();
+    });
+
+    // Hopper starting gate
+    if (!isGateOpen) {
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(170, 220);
+      ctx.lineTo(270, 220);
+      ctx.stroke();
+    }
+
+    // 2. Draw Pins (Plinko)
+    pins.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = '#64748b';
+      ctx.shadowColor = '#38bdf8';
+      ctx.shadowBlur = 6;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    });
+
+    // 3. Draw Spinners
+    spinners.forEach(sp => {
+      ctx.save();
+      ctx.translate(sp.x, sp.y);
+      ctx.rotate(sp.angle);
+      ctx.fillStyle = '#f59e0b';
+      ctx.shadowColor = '#f59e0b';
+      ctx.shadowBlur = 10;
+      ctx.fillRect(-sp.length, -5, sp.length * 2, 10);
+      ctx.shadowBlur = 0;
+      // Center pivot
+      ctx.beginPath();
+      ctx.arc(0, 0, 7, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.restore();
+    });
+
+    // 4. Finish Line Banner
+    ctx.save();
+    ctx.fillStyle = 'rgba(250, 204, 21, 0.15)';
+    ctx.fillRect(20, FINISH_LINE_Y - 15, COURSE_WIDTH - 40, 30);
+    // Checkered pattern
+    const squareSize = 15;
+    for (let x = 20; x < COURSE_WIDTH - 20; x += squareSize * 2) {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(x, FINISH_LINE_Y - 15, squareSize, 15);
+      ctx.fillRect(x + squareSize, FINISH_LINE_Y, squareSize, 15);
+      ctx.fillStyle = '#020617';
+      ctx.fillRect(x + squareSize, FINISH_LINE_Y - 15, squareSize, 15);
+      ctx.fillRect(x, FINISH_LINE_Y, squareSize, 15);
+    }
+    ctx.font = '900 12px sans-serif';
+    ctx.fillStyle = '#facc15';
+    ctx.fillText('FINISH LINE 결승선', COURSE_WIDTH / 2 - 55, FINISH_LINE_Y - 22);
+    ctx.restore();
+
+    // 5. Draw Marbles
+    marbles.forEach(m => {
+      ctx.save();
+      // Outer sphere
+      ctx.beginPath();
+      ctx.arc(m.x, m.y, m.radius, 0, Math.PI * 2);
+      ctx.fillStyle = m.color;
+      ctx.shadowColor = m.color;
+      ctx.shadowBlur = 12;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Specular shine highlight
+      ctx.beginPath();
+      ctx.arc(m.x - m.radius * 0.3, m.y - m.radius * 0.3, m.radius * 0.25, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.fill();
+
+      // Name label tag
+      ctx.font = '800 10px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      ctx.fillStyle = '#f8fafc';
+      ctx.shadowColor = '#000000';
+      ctx.shadowBlur = 4;
+      ctx.fillText(m.name, m.x, m.y - m.radius - 3);
+      ctx.restore();
+    });
+
+    ctx.restore();
+
+    // Render Minimap
+    renderMinimap();
+
+    updatePhysics(1);
+    requestAnimationFrame(render);
+  }
+
+  function renderMinimap() {
+    if (!miniCtx) return;
+    miniCtx.clearRect(0, 0, minimapCanvas.width, minimapCanvas.height);
+
+    const scaleY = minimapCanvas.height / COURSE_HEIGHT;
+    const scaleX = minimapCanvas.width / COURSE_WIDTH;
+
+    // Finish line indicator
+    miniCtx.fillStyle = '#facc15';
+    miniCtx.fillRect(0, FINISH_LINE_Y * scaleY, minimapCanvas.width, 2);
+
+    // Camera viewport box
+    miniCtx.strokeStyle = 'rgba(56, 189, 248, 0.7)';
+    miniCtx.lineWidth = 1;
+    miniCtx.strokeRect(0, cameraY * scaleY, minimapCanvas.width, 620 * scaleY);
+
+    // Marbles dots
+    marbles.forEach(m => {
+      miniCtx.beginPath();
+      miniCtx.arc(m.x * scaleX, m.y * scaleY, 2.5, 0, Math.PI * 2);
+      miniCtx.fillStyle = m.color;
+      miniCtx.fill();
+    });
+  }
+
+  // Show Final Results
+  function showFinalResults() {
+    if (!resultModal) return;
+
+    // Sort marbles by finishRank
+    const sorted = [...marbles].sort((a, b) => a.finishRank - b.finishRank);
+    let winners: Marble[] = [];
+    let spotlightTitle = '최종 결과';
+    let badgeText = '당첨';
+
+    if (winnerMode === 'first') {
+      winners = [sorted[0]];
+      spotlightTitle = '🏆 1등 우승 축하드립니다!';
+      badgeText = '🥇 1등 당첨';
+    } else if (winnerMode === 'last') {
+      winners = [sorted[sorted.length - 1]];
+      spotlightTitle = '💀 꼴찌 당첨! (벌칙/당번)';
+      badgeText = '꼴찌 당첨';
+    } else if (winnerMode === 'multi') {
+      const count = Math.min(sorted.length, Math.max(1, parseInt(multiCountInput.value, 10) || 3));
+      winners = sorted.slice(0, count);
+      spotlightTitle = `🏆 상위 ${count}명 당첨!`;
+      badgeText = '다중 당첨';
+    } else if (winnerMode === 'custom') {
+      const targetRank = Math.min(sorted.length, Math.max(1, parseInt(customRankInput.value, 10) || 7));
+      winners = [sorted[targetRank - 1]];
+      spotlightTitle = `🎯 행운의 ${targetRank}등 당첨!`;
+      badgeText = `${targetRank}등 당첨`;
+    }
+
+    if (modalWinnerTitle) modalWinnerTitle.textContent = spotlightTitle;
+    if (spotlightBadge) spotlightBadge.textContent = badgeText;
+    if (spotlightName) spotlightName.textContent = winners.map(w => w.name).join(', ');
+    if (spotlightSub) {
+      spotlightSub.textContent = winnerMode === 'last' 
+        ? '치킨 또는 커피를 쏘실 시간입니다! ☕🍗' 
+        : '축하합니다! 행운의 당첨자로 선정되셨습니다!';
+    }
+
+    if (modalRanksScroll) {
+      modalRanksScroll.innerHTML = sorted.map((m, idx) => {
+        const isWinner = winners.some(w => w.id === m.id);
+        const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}위`;
+        return `
+          <div class="finish-item" style="${isWinner ? 'border: 1px solid #facc15; background: rgba(250, 204, 21, 0.15);' : ''}">
+            <span class="finish-rank">${medal}</span>
+            <span class="finish-name">${m.name} ${isWinner ? '👑' : ''}</span>
+            <span class="finish-time">${m.finishTime.toFixed(2)}s</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    resultModal.classList.remove('hidden');
+  }
+
+  // Event Listeners
+  startBtn?.addEventListener('click', startRace);
+  resetBtn?.addEventListener('click', () => {
+    isRacing = false;
+    isCountingDown = false;
+    if (countdownOverlay) countdownOverlay.classList.add('hidden');
+    spawnMarbles();
+  });
+
+  applyBtn?.addEventListener('click', () => {
+    isRacing = false;
+    spawnMarbles();
+  });
+
+  shuffleBtn?.addEventListener('click', () => {
+    const list = parseNamesList();
+    // Fisher-Yates shuffle
+    for (let i = list.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [list[i], list[j]] = [list[j], list[i]];
+    }
+    if (namesInput) namesInput.value = list.join('\n');
+    spawnMarbles();
+  });
+
+  // Presets click
+  document.querySelectorAll('.preset-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.preset-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      const key = chip.getAttribute('data-preset') || 'coffee';
+      const p = PRESETS[key];
+      if (p) {
+        if (namesInput) namesInput.value = p.names.join('\n');
+        // Set mode
+        const radio = document.querySelector(`input[name="winner-mode"][value="${p.mode}"]`) as HTMLInputElement;
+        if (radio) {
+          radio.checked = true;
+          winnerMode = p.mode;
+        }
+        spawnMarbles();
+      }
+    });
+  });
+
+  // Winner Mode Radios
+  document.querySelectorAll('input[name="winner-mode"]').forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      winnerMode = (e.target as HTMLInputElement).value;
+      if (multiSettingsRow) {
+        multiSettingsRow.classList.toggle('hidden', winnerMode !== 'multi');
+      }
+      if (customSettingsRow) {
+        customSettingsRow.classList.toggle('hidden', winnerMode !== 'custom');
+      }
+    });
+  });
+
+  // Speed buttons
+  document.querySelectorAll('.speed-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      timeScale = parseFloat(btn.getAttribute('data-speed') || '1');
+    });
+  });
+
+  // Modal actions
+  modalRestartBtn?.addEventListener('click', () => {
+    resultModal?.classList.add('hidden');
+    spawnMarbles();
+    startRace();
+  });
+
+  modalCloseBtn?.addEventListener('click', () => {
+    resultModal?.classList.add('hidden');
+  });
+
+  // Spacebar hotkey
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && e.target !== namesInput) {
+      e.preventDefault();
+      if (isRacing) return;
+      startRace();
+    }
+  });
+
+  // Init
+  if (namesInput) {
+    namesInput.value = PRESETS.coffee.names.join('\n');
+  }
+  spawnMarbles();
+  requestAnimationFrame(render);
+</script>

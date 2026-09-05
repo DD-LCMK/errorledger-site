@@ -6,7 +6,7 @@ import { SITE_TITLE, SITE_TAGLINE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
 
 const games = await getCollection('games');
-const priorityOrder = ['roulette', 'ladder', 'balance', 'cosmic-drop', 'gem-2048'];
+const priorityOrder = ['roulette', 'marble-roulette', 'ladder', 'balance', 'cosmic-drop', 'gem-2048'];
 const sortedGames = games.sort((a, b) => {
   const idxA = priorityOrder.indexOf(a.id);
   const idxB = priorityOrder.indexOf(b.id);
