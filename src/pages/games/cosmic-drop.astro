@@ -455,6 +455,7 @@ const data = gameEntry?.data || {
     color: string;
     emoji: string;
     points: number;
+    age: number = 0;
 
     constructor(x: number, y: number, tier: number) {
       const def = PLANET_TIERS[tier];
@@ -465,6 +466,7 @@ const data = gameEntry?.data || {
       this.color = def.color;
       this.emoji = def.emoji;
       this.points = def.points;
+      this.age = 0;
     }
   }
 
@@ -564,6 +566,7 @@ const data = gameEntry?.data || {
     const cur = PLANET_TIERS[currentTier];
     const clampedX = Math.max(cur.radius + 5, Math.min(canvas.width - cur.radius - 5, aimX));
     const body = new Body(clampedX, 48, currentTier);
+    body.vy = 1.2; // Soft initial downward impulse so it gently clears the dropper
     bodies.push(body);
     sfx.playDrop();
 
@@ -571,15 +574,17 @@ const data = gameEntry?.data || {
     nextTier = pickRandomSpawnTier();
     updateHUDNext();
 
+    // Fast 150ms reload so players can drop multiple floating orbs rapidly!
     setTimeout(() => {
       canDrop = true;
-    }, 450);
+    }, 150);
   }
 
   // Physics simulation
   function updatePhysics() {
     if (isGameOver) return;
-    const gravity = 0.38;
+    const gravity = 0.17; // Slower, graceful celestial gravity
+    const maxVy = 6.0; // Terminal falling velocity so orbs don't plunge harshly
     const friction = 0.985;
     const bounce = 0.22;
     const width = canvas.width;
@@ -587,7 +592,9 @@ const data = gameEntry?.data || {
 
     // Movement & Wall collision
     for (const b of bodies) {
+      b.age = (b.age || 0) + 1;
       b.vy += gravity;
+      if (b.vy > maxVy) b.vy = maxVy;
       b.vx *= friction;
       b.x += b.vx;
       b.y += b.vy;
@@ -663,10 +670,10 @@ const data = gameEntry?.data || {
       }
     }
 
-    // Check Danger Line overflow (Y < 88 when settled)
+    // Check Danger Line overflow (Y < 88 when settled, ignore freshly dropped orbs with age < 90)
     let isOverflowing = false;
     for (const b of bodies) {
-      if (b.y - b.radius < 88 && Math.abs(b.vy) < 0.25) {
+      if (b.age > 90 && (b.y - b.radius < 88) && Math.abs(b.vy) < 0.25) {
         isOverflowing = true;
         break;
       }

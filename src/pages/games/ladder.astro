@@ -4,34 +4,33 @@ import { getEntry } from 'astro:content';
 
 const gameEntry = await getEntry('games', 'ladder');
 const data = gameEntry?.data || {
-  title: 'Streamer Ladder Game',
-  tagline: 'Interactive Ghost Leg (사다리 타기) for Live Stream Bets & Raffles',
-  description: 'The classic Korean Ghost Leg / Amidakuji ladder game reimagined for live streams, office bets, and group decisions.',
+  title: '방송용 사다리 타기',
+  tagline: '실시간 긴장감 200%! 2~8인 인터랙티브 사다리타기',
+  description: '네온 발자국을 따라 실시간으로 내려가는 애니메이션 사다리 타기. 커피 내기, 밥값 내기, 방송 벌칙 추첨까지 1초 만에 설정하고 시청자와 함께 짜릿한 결과를 확인하세요.',
   icon: '🪜',
-  category: 'arcade',
-  badge: '🪜 Stream Bet',
-  players: '2-8 Players',
-  playTime: '1-2 mins',
+  category: 'stream',
+  badge: '🪜 내기 전용',
+  players: '2~8인',
+  playTime: '30초~1분',
   controls: [
-    'Click any player at the top to animate their individual path down the ladder',
-    'Click "Reveal All" to trace all participants simultaneously in vibrant neon colors',
-    'Click "Re-roll Ladder" to generate brand new randomized horizontal cross-bridges',
-    'Edit player names and bottom outcomes in the control panel'
+    '상단 참가자 이름을 클릭하여 개별 사다리 타기 애니메이션 시작',
+    '전체 결과 보기를 눌러 모든 참가자의 이동 경로를 일괄 공개',
+    '사다리 다시 섞기로 언제든 새로운 무작위 다리 생성',
+    '참가자 이름과 하단 당첨/벌칙 칸을 실시간으로 직접 수정 가능'
   ],
   rules: [
-    'Each participant starts at the top of their vertical ladder pole.',
-    'The glowing tracer travels straight down until it hits a horizontal bridge.',
-    'When a bridge is hit, the tracer MUST cross to the neighboring pole and continue downward.',
-    'The path terminates at the bottom prize or penalty!'
+    '모든 참가자는 고유한 세로선 상단에서 출발합니다.',
+    '아래로 진행하다가 가로 다리를 만나면 반드시 반대편 세로선으로 건너갑니다.',
+    '단 하나의 중복 없이 1:1로 정직하게 매칭됩니다.'
   ],
   faqItems: [
     {
-      q: 'How does Amidakuji / Ghost Leg guarantee fairness?',
-      a: 'Mathematically, each horizontal rung represents a permutation swap between adjacent elements. Because it is a continuous bijective mapping, every top pole leads to exactly one distinct bottom outcome with zero duplicate collisions.'
+      q: '사다리타기 결과는 조작이 불가능하고 공정한가요?',
+      a: '네! 사다리타기는 각 가로 다리가 인접한 두 경로의 일대일 맞교환(전치 치환, Transposition)을 수행하는 수학적 전단사 함수(Bijective Mapping)로 설계되어 어떠한 중복이나 편향 없이 100% 공정합니다.'
     },
     {
-      q: 'How many players are supported?',
-      a: 'You can choose between 2 to 8 players. The ladder adjusts dynamically with clean spacing and distinct glowing colors for each line.'
+      q: '최대 몇 명까지 지원되나요?',
+      a: '2인부터 최대 8인까지 인원수를 자유롭게 조절할 수 있습니다.'
     }
   ]
 };
@@ -83,10 +82,10 @@ const data = gameEntry?.data || {
           <span id="blind-btn-text">🔒 가림막 ON</span>
         </button>
         <button id="reveal-all-btn" class="action-btn-primary">
-          <span>⚡ 전체 결과 보기 (Reveal All)</span>
+          <span>⚡ 전체 결과 보기</span>
         </button>
         <button id="reroll-ladder-btn" class="action-btn-secondary">
-          <span>🎲 사다리 다시 섞기 (Re-roll)</span>
+          <span>🎲 사다리 다시 섞기</span>
         </button>
       </div>
     </div>
@@ -108,8 +107,8 @@ const data = gameEntry?.data || {
           <div class="blind-content">
             <span class="blind-icon">🔒</span>
             <span class="blind-title">사다리 가림막 ON</span>
-            <span class="blind-sub">결과를 미리 예측할 수 없도록 다리가 블러 처리되었습니다</span>
-            <button id="blind-unveil-center-btn" class="btn-blind-unveil">👁️ 가림막 걷기 (미리보기)</button>
+            <span class="blind-sub">결과를 미리 예측할 수 없도록 다리가 완전히 가려져 있습니다 (출발 시 자동 공개)</span>
+            <button id="blind-unveil-center-btn" class="btn-blind-unveil">👁️ 가림막 걷기</button>
           </div>
         </div>
       </div>
@@ -126,16 +125,22 @@ const data = gameEntry?.data || {
         <div class="res-icon">🎯</div>
         <h2>사다리 결과 확인</h2>
         <div class="result-summary-list" id="result-summary-list"></div>
-        <button id="close-result-btn" class="result-close-btn">닫기 (Close)</button>
+        <button id="close-result-btn" class="result-close-btn">닫기</button>
       </div>
     </div>
   </div>
 
   <div slot="guide">
-    <h2>Ghost Leg (사다리 타기) Rules & Mathematics</h2>
+    <h2>사다리타기 게임 원리와 공정성의 수학</h2>
     <p>
-      Known as <strong>사다리타기</strong> in Korea and <strong>Amidakuji (阿弥陀籤)</strong> in Japan, this ancient permutation puzzle ensures 100% fair, un-rigged outcomes. Every horizontal bridge swaps adjacent paths, making the game a bijective mapping where no two players can ever land on the same prize box.
+      사다리타기(Amidakuji)는 예로부터 널리 쓰여온 <strong>100% 공정한 무작위 일대일 매칭 추첨 게임</strong>입니다.
+      각 가로 다리는 인접한 세로줄 간의 전치(Transposition) 연산으로 작동하여, 출발지와 도착지가 완벽하게 1:1로 대응되는 수학적 전단사 함수(Bijection)를 형성합니다. 따라서 두 명의 참가자가 동일한 결과 칸에 중복 도착하는 일이 없으며, 방송이나 모임에서 가장 공평하고 투명한 결정을 내릴 수 있습니다.
     </p>
+    <ul>
+      <li><strong>실시간 보안 가림막(Blind):</strong> 사다리 경로를 미리 보고 결과를 유추하지 못하도록 출발 전까지 가로선이 완벽히 차단됩니다.</li>
+      <li><strong>원클릭 프리셋:</strong> 커피 쏘기, 치킨 내기, 벌칙 뽑기, 당번 정하기를 버튼 하나로 간편하게 설정할 수 있습니다.</li>
+      <li><strong>실시간 편집:</strong> 참가자 닉네임과 하단 당첨/벌칙 칸을 클릭하여 원하는 내용으로 자유롭게 수정하세요.</li>
+    </ul>
   </div>
 </GameLayout>
 
@@ -406,15 +411,21 @@ const data = gameEntry?.data || {
   .ladder-blind-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(9, 13, 22, 0.7);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+    background: #090d16;
+    background-image: repeating-linear-gradient(
+      -45deg,
+      #090d16,
+      #090d16 16px,
+      #0e1526 16px,
+      #0e1526 32px
+    );
+    border: 2px dashed rgba(234, 179, 8, 0.35);
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 20;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
   }
 
   .ladder-blind-overlay.unveiled {
@@ -614,7 +625,7 @@ const data = gameEntry?.data || {
   const PRESETS: Record<string, { participants: string[]; outcomes: string[] }> = {
     coffee: {
       participants: ['김팀장', '이대리', '박사원', '최인턴'],
-      outcomes: ['커피 쏘기 ☕', '통과 (Safe)', '통과 (Safe)', '통과 (Safe)']
+      outcomes: ['커피 쏘기 ☕', '통과 🎉', '통과 🎉', '통과 🎉']
     },
     chicken: {
       participants: ['호스트', '게스트A', '게스트B', '시청자대표'],
@@ -711,6 +722,7 @@ const data = gameEntry?.data || {
     ladderBlind?.classList.remove('unveiled');
     toggleBlindBtn?.classList.remove('off');
     if (blindBtnText) blindBtnText.textContent = '🔒 가림막 ON';
+    renderLadderSVG();
   }
 
   function unveilBlind() {
@@ -718,6 +730,7 @@ const data = gameEntry?.data || {
     ladderBlind?.classList.add('unveiled');
     toggleBlindBtn?.classList.add('off');
     if (blindBtnText) blindBtnText.textContent = '👁️ 가림막 OFF';
+    renderLadderSVG();
   }
 
   function toggleBlind() {
@@ -836,14 +849,16 @@ const data = gameEntry?.data || {
       `;
     }
 
-    // Draw Horizontal Bridges
-    for (const b of bridges) {
-      const x1 = getPoleX(b.poleA, playerCount, width);
-      const x2 = getPoleX(b.poleB, playerCount, width);
-      svgContent += `
-        <line x1="${x1}" y1="${b.y}" x2="${x2}" y2="${b.y}" 
-              stroke="#475569" stroke-width="4" stroke-linecap="round" />
-      `;
+    // Draw Horizontal Bridges (Only rendered when blind is OFF to prevent any peeking)
+    if (!isBlindActive) {
+      for (const b of bridges) {
+        const x1 = getPoleX(b.poleA, playerCount, width);
+        const x2 = getPoleX(b.poleB, playerCount, width);
+        svgContent += `
+          <line x1="${x1}" y1="${b.y}" x2="${x2}" y2="${b.y}" 
+                stroke="#475569" stroke-width="4" stroke-linecap="round" />
+        `;
+      }
     }
 
     // Draw Active Traced Paths
