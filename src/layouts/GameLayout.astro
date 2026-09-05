@@ -16,6 +16,8 @@ interface Props {
   rules?: string[];
   faqItems?: { q: string; a: string }[];
   layoutMode?: 'full' | 'split';
+  hideStageHeader?: boolean;
+  hideFooter?: boolean;
 }
 
 const {
@@ -26,7 +28,9 @@ const {
   controls = [],
   rules = [],
   faqItems = [],
-  layoutMode = 'full'
+  layoutMode = 'full',
+  hideStageHeader = false,
+  hideFooter = false
 } = Astro.props;
 
 // Combine key controls & rules into 3-4 concise stream-friendly tips
@@ -43,17 +47,19 @@ const quickTips = [...controls.slice(0, 3), ...rules.slice(0, 2)];
 
     <main class="game-main-container">
       <!-- Sleek Minimal Stage Header Bar -->
-      <div class="game-top-bar">
-        <div class="game-bar-title">
-          <span class="game-bar-icon">{icon}</span>
-          <h1 class="game-bar-h1">{title}</h1>
+      {!hideStageHeader && (
+        <div class="game-top-bar">
+          <div class="game-bar-title">
+            <span class="game-bar-icon">{icon}</span>
+            <h1 class="game-bar-h1">{title}</h1>
+          </div>
+          <div class="game-bar-actions">
+            <button id="fullscreen-btn" class="stage-fullscreen-btn" title="전체화면 전환">
+              <span>⛶ 전체화면</span>
+            </button>
+          </div>
         </div>
-        <div class="game-bar-actions">
-          <button id="fullscreen-btn" class="stage-fullscreen-btn" title="전체화면 전환">
-            <span>⛶ 전체화면</span>
-          </button>
-        </div>
-      </div>
+      )}
 
       <!-- Game Arena (Full width for suite tools, Split for arcade puzzles) -->
       {layoutMode === 'split' ? (
@@ -113,7 +119,7 @@ const quickTips = [...controls.slice(0, 3), ...rules.slice(0, 2)];
       )}
     </main>
 
-    <Footer />
+    {!hideFooter && <Footer />}
 
     <style>
       .game-page-body {
@@ -125,9 +131,9 @@ const quickTips = [...controls.slice(0, 3), ...rules.slice(0, 2)];
       }
 
       .game-main-container {
-        max-width: 1200px;
+        max-width: 1360px;
         margin: 0 auto;
-        padding: 0.65rem 1rem 3rem;
+        padding: 0.4rem 0.75rem 1rem;
         width: 100%;
         flex: 1;
         box-sizing: border-box;

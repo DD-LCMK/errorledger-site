@@ -50,6 +50,8 @@ const data = gameEntry?.data || {
   rules={data.rules}
   faqItems={data.faqItems}
   layoutMode="full"
+  hideStageHeader={true}
+  hideFooter={true}
 >
   <div class="marble-app-root" id="marble-root">
 
@@ -61,20 +63,36 @@ const data = gameEntry?.data || {
         <div class="canvas-card">
           <!-- Live Overlay Header -->
           <div class="track-hud-overlay">
-            <div class="live-rank-chip" id="live-rank-chip">
-              <span class="rank-dot">● LIVE</span>
-              <span class="rank-text" id="lead-name">선두: 준비 중</span>
+            <div class="hud-left-items">
+              <div class="live-rank-chip" id="live-rank-chip">
+                <span class="rank-dot">● LIVE</span>
+                <span class="rank-text" id="lead-name">선두: 대기 중</span>
+              </div>
+              <div class="cam-control-group">
+                <button class="cam-btn active" data-cam="auto" title="선두 완주 전까지 선두 추적, 완주 후 모드별 동적 전환">🎥 자동</button>
+                <button class="cam-btn" data-cam="first" title="선두 주자 집중 추적">🥇 선두</button>
+                <button class="cam-btn" data-cam="last" title="후미/꼴찌 주자 집중 추적">💀 꼴찌</button>
+                <button class="cam-resume-btn hidden" id="cam-resume-btn" title="자동 추적 카메라로 복귀">↩ 자동 복귀</button>
+              </div>
             </div>
-            <div class="speed-control-group">
-              <button class="speed-btn active" data-speed="1">1x</button>
-              <button class="speed-btn" data-speed="1.5">1.5x</button>
-              <button class="speed-btn" data-speed="2">2x</button>
+            
+            <div class="hud-right-items">
+              <div class="zoom-control-group">
+                <button class="zoom-btn" data-zoom="0.65" title="초광각 뷰 (코스 1200px 표시)">0.65x</button>
+                <button class="zoom-btn active" data-zoom="0.75" title="표준 방송 와이드 뷰 (코스 1040px 표시)">0.75x</button>
+                <button class="zoom-btn" data-zoom="1.0" title="1:1 실제 배율">1.0x</button>
+              </div>
+              <div class="speed-control-group">
+                <button class="speed-btn active" data-speed="1">1x</button>
+                <button class="speed-btn" data-speed="1.5">1.5x</button>
+                <button class="speed-btn" data-speed="2">2x</button>
+              </div>
             </div>
           </div>
 
           <!-- Canvas Viewport -->
           <div class="canvas-viewport" id="canvas-viewport">
-            <canvas id="marble-canvas" width="440" height="620"></canvas>
+            <canvas id="marble-canvas" width="540" height="780"></canvas>
 
             <!-- Countdown Overlay -->
             <div class="countdown-overlay hidden" id="countdown-overlay">
@@ -82,8 +100,13 @@ const data = gameEntry?.data || {
             </div>
 
             <!-- Minimap Strip -->
-            <div class="minimap-container" id="minimap-container" title="코스 전체 미니맵">
-              <canvas id="minimap-canvas" width="36" height="320"></canvas>
+            <div class="minimap-container" id="minimap-container" title="코스 전체 미니맵 (클릭/드래그 시 시점 이동)">
+              <canvas id="minimap-canvas" width="40" height="460"></canvas>
+            </div>
+
+            <!-- Pan hint badge -->
+            <div class="pan-hint-chip" id="pan-hint-chip">
+              <span>🖱️ 드래그/휠로 맵 자유 탐색</span>
             </div>
           </div>
 
@@ -270,14 +293,14 @@ const data = gameEntry?.data || {
   /* Main Two-Column Layout */
   .marble-main-layout {
     display: grid;
-    grid-template-columns: 440px 1fr;
+    grid-template-columns: 540px 1fr;
     gap: 1.25rem;
     width: 100%;
-    max-width: 960px;
+    max-width: 1240px;
     align-items: start;
   }
 
-  @media (max-width: 860px) {
+  @media (max-width: 1100px) {
     .marble-main-layout {
       grid-template-columns: 1fr;
       justify-items: center;
@@ -288,7 +311,14 @@ const data = gameEntry?.data || {
   .track-column {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.65rem;
+    width: 540px;
+  }
+
+  @media (max-width: 600px) {
+    .track-column {
+      width: 100%;
+    }
   }
 
   .canvas-card {
@@ -308,14 +338,30 @@ const data = gameEntry?.data || {
     align-items: center;
     background: #0f172a;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 0.5rem 0.75rem;
+    padding: 0.45rem 0.65rem;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .hud-left-items {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .hud-right-items {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
   }
 
   .live-rank-chip {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    font-size: 0.78rem;
+    gap: 0.35rem;
+    font-size: 0.75rem;
     font-weight: 900;
     color: #f8fafc;
   }
@@ -331,18 +377,90 @@ const data = gameEntry?.data || {
     50% { opacity: 0.4; }
   }
 
+  /* Camera Mode Controls */
+  .cam-control-group {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+  }
+
+  .cam-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 0.2rem 0.45rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .cam-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .cam-btn.active {
+    background: rgba(250, 204, 21, 0.2);
+    color: #facc15;
+    border-color: #facc15;
+    box-shadow: 0 0 8px rgba(250, 204, 21, 0.3);
+  }
+
+  .cam-resume-btn {
+    background: #f59e0b;
+    color: #020617;
+    border: 1px solid #facc15;
+    font-size: 0.7rem;
+    font-weight: 900;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+  }
+
+  /* Zoom Mode Controls */
+  .zoom-control-group {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+  }
+
+  .zoom-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.18rem 0.38rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .zoom-btn:hover {
+    color: #f8fafc;
+  }
+
+  .zoom-btn.active {
+    background: #0284c7;
+    color: #f8fafc;
+    border-color: #38bdf8;
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+  }
+
   .speed-control-group {
     display: flex;
-    gap: 0.25rem;
+    gap: 0.2rem;
   }
 
   .speed-btn {
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.12);
     color: #94a3b8;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 800;
-    padding: 0.2rem 0.5rem;
+    padding: 0.18rem 0.45rem;
     border-radius: 6px;
     cursor: pointer;
   }
@@ -356,16 +474,22 @@ const data = gameEntry?.data || {
   /* Canvas Viewport */
   .canvas-viewport {
     position: relative;
-    width: 440px;
-    height: 620px;
+    width: 540px;
+    height: 780px;
     background: #020617;
     overflow: hidden;
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .canvas-viewport.is-dragging {
+    cursor: grabbing;
   }
 
   canvas#marble-canvas {
     display: block;
-    width: 440px;
-    height: 620px;
+    width: 540px;
+    height: 780px;
   }
 
   /* Minimap */
@@ -373,21 +497,41 @@ const data = gameEntry?.data || {
     position: absolute;
     top: 12px;
     right: 12px;
-    width: 36px;
-    height: 320px;
-    background: rgba(15, 23, 42, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 6px;
-    backdrop-filter: blur(4px);
+    width: 40px;
+    height: 460px;
+    background: rgba(15, 23, 42, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 8px;
+    backdrop-filter: blur(6px);
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    pointer-events: none;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+    pointer-events: auto;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+  }
+
+  .minimap-container:hover {
+    border-color: #38bdf8;
   }
 
   canvas#minimap-canvas {
     width: 100%;
     height: 100%;
     display: block;
+  }
+
+  .pan-hint-chip {
+    position: absolute;
+    bottom: 10px;
+    left: 12px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.4);
+    background: rgba(0, 0, 0, 0.5);
+    padding: 0.15rem 0.5rem;
+    border-radius: 12px;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
   }
 
   /* Countdown Overlay */
@@ -420,7 +564,7 @@ const data = gameEntry?.data || {
   .track-controls-bottom {
     display: flex;
     gap: 0.5rem;
-    padding: 0.75rem;
+    padding: 0.65rem 0.75rem;
     background: #0f172a;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
   }
@@ -464,7 +608,28 @@ const data = gameEntry?.data || {
   .control-column {
     display: flex;
     flex-direction: column;
-    gap: 0.85rem;
+    gap: 0.75rem;
+    max-height: 860px;
+    overflow-y: auto;
+    padding-right: 0.35rem;
+  }
+
+  .control-column::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .control-column::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 4px;
+  }
+
+  .control-column::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+  }
+
+  .control-column::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
   }
 
   .panel-box {
@@ -968,6 +1133,10 @@ const data = gameEntry?.data || {
     finishTime: number;
     finishRank: number;
     energy: number; // 0.0 to 1.0 (charges on collisions)
+    lastShockwaveTime: number;
+    stuckTimer: number;
+    lastSampleX: number;
+    lastSampleY: number;
   }
 
   interface Pin {
@@ -1100,19 +1269,19 @@ const data = gameEntry?.data || {
     segments.push({ x1: 310, y1: 1630, x2: 250, y2: 1750, type: 'ramp' });
     pins.push({ x: 220, y: 1820, radius: 8, isBumper: true });
 
-    // ZONE 4: 6단 지그재그 슬로프 (y: 1900 - 2650)
-    segments.push({ x1: 20, y1: 1920, x2: 340, y2: 1980, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 2060, x2: 100, y2: 2120, type: 'ramp' });
-    segments.push({ x1: 20, y1: 2200, x2: 340, y2: 2260, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 2340, x2: 100, y2: 2400, type: 'ramp' });
-    segments.push({ x1: 20, y1: 2480, x2: 340, y2: 2540, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 2620, x2: 100, y2: 2680, type: 'ramp' });
+    // ZONE 4: 6단 지그재그 슬로프 (y: 1900 - 2650) - Steeper 90px slopes & wide 70px gaps to eliminate jams
+    segments.push({ x1: 20, y1: 1920, x2: 350, y2: 2010, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 2060, x2: 90, y2: 2150, type: 'ramp' });
+    segments.push({ x1: 20, y1: 2200, x2: 350, y2: 2290, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 2340, x2: 90, y2: 2430, type: 'ramp' });
+    segments.push({ x1: 20, y1: 2480, x2: 350, y2: 2570, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 2620, x2: 90, y2: 2710, type: 'ramp' });
 
-    pins.push({ x: 370, y: 2010, radius: 8, isBumper: true });
-    pins.push({ x: 70, y: 2150, radius: 8, isBumper: true });
-    pins.push({ x: 370, y: 2290, radius: 8, isBumper: true });
-    pins.push({ x: 70, y: 2430, radius: 8, isBumper: true });
-    pins.push({ x: 370, y: 2570, radius: 8, isBumper: true });
+    pins.push({ x: 375, y: 2030, radius: 8, isBumper: true });
+    pins.push({ x: 65, y: 2170, radius: 8, isBumper: true });
+    pins.push({ x: 375, y: 2310, radius: 8, isBumper: true });
+    pins.push({ x: 65, y: 2450, radius: 8, isBumper: true });
+    pins.push({ x: 375, y: 2590, radius: 8, isBumper: true });
 
     // ZONE 5: 소용돌이 퍼널 & 2차 스피너 (y: 2700 - 3350) - 3 Spinners
     segments.push({ x1: 20, y1: 2730, x2: 180, y2: 2860, type: 'ramp' });
@@ -1129,15 +1298,23 @@ const data = gameEntry?.data || {
 
     // ZONE 6: 도박의 갈림길 (y: 3400 - 4100) - Shortcut vs Outer Loop
     segments.push({ x1: 220, y1: 3450, x2: 220, y2: 3860, type: 'wall' }); // Center divider
-    segments.push({ x1: 150, y1: 3450, x2: 150, y2: 3860, type: 'wall' }); // Left chute wall
+    segments.push({ x1: 150, y1: 3450, x2: 150, y2: 3860, type: 'wall' }); // Chute wall
+
+    // Anti-stuck deflector bumper pins right above divider tops
+    pins.push({ x: 150, y: 3442, radius: 5, isBumper: true });
+    pins.push({ x: 220, y: 3442, radius: 5, isBumper: true });
 
     // Left shortcut trap bouncer right at the high-speed exit
     bouncers.push({ x: 185, y: 3910, radius: 18, power: 8.0, label: 'TRAP' });
 
-    // Right outer safe loop ramps
-    segments.push({ x1: 270, y1: 3500, x2: 390, y2: 3580, type: 'ramp' });
-    segments.push({ x1: 390, y1: 3640, x2: 250, y2: 3720, type: 'ramp' });
-    segments.push({ x1: 250, y1: 3780, x2: 380, y2: 3860, type: 'ramp' });
+    // Right outer safe loop ramps - Widened clearances (60px+ openings) so marbles never bottleneck
+    segments.push({ x1: 260, y1: 3490, x2: 360, y2: 3580, type: 'ramp' });
+    segments.push({ x1: 370, y1: 3640, x2: 280, y2: 3730, type: 'ramp' });
+    segments.push({ x1: 270, y1: 3790, x2: 360, y2: 3880, type: 'ramp' });
+
+    // Deflector pins around outer ramp exits to glide marbles cleanly
+    pins.push({ x: 390, y: 3610, radius: 6, isBumper: true });
+    pins.push({ x: 250, y: 3760, radius: 6, isBumper: true });
 
     // Convergence funnel
     segments.push({ x1: 20, y1: 3980, x2: 170, y2: 4080, type: 'ramp' });
@@ -1180,13 +1357,13 @@ const data = gameEntry?.data || {
     segments.push({ x1: 130, y1: 5950, x2: 220, y2: 6040, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 5950, x2: COURSE_WIDTH - 110, y2: 6040, type: 'ramp' });
 
-    // ZONE 10: S-커브 고속 와인딩 (y: 6150 - 6600)
-    segments.push({ x1: 20, y1: 6180, x2: 330, y2: 6270, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 6340, x2: 110, y2: 6430, type: 'ramp' });
-    segments.push({ x1: 20, y1: 6500, x2: 310, y2: 6580, type: 'ramp' });
+    // ZONE 10: S-커브 고속 와인딩 (y: 6150 - 6600) - Steeper drops
+    segments.push({ x1: 20, y1: 6180, x2: 335, y2: 6280, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 6340, x2: 105, y2: 6440, type: 'ramp' });
+    segments.push({ x1: 20, y1: 6500, x2: 325, y2: 6595, type: 'ramp' });
 
-    pins.push({ x: 360, y: 6300, radius: 8, isBumper: true });
-    pins.push({ x: 80, y: 6460, radius: 8, isBumper: true });
+    pins.push({ x: 365, y: 6310, radius: 8, isBumper: true });
+    pins.push({ x: 75, y: 6470, radius: 8, isBumper: true });
 
     // ZONE 11: 최종 스퍼트 & 승부 결정 핀 (y: 6650 - 6920)
     segments.push({ x1: 20, y1: 6680, x2: 140, y2: 6780, type: 'ramp' });
@@ -1215,11 +1392,21 @@ const data = gameEntry?.data || {
   let cameraY = 0;
   let winnerMode = 'last'; // 'last', 'first', 'multi', 'custom'
 
+  // Camera & Viewport State
+  let zoom = 0.75; // Default 0.75x: shows ~1,040px of course vertically on 780px canvas
+  let camMode: 'auto' | 'first' | 'last' | 'runner' = 'auto';
+  let focusedMarbleId: number | null = null;
+  let isManualCam = false;
+
   // DOM Queries
   const canvas = document.getElementById('marble-canvas') as HTMLCanvasElement;
   const ctx = canvas?.getContext('2d');
+  const canvasViewport = document.getElementById('canvas-viewport');
   const minimapCanvas = document.getElementById('minimap-canvas') as HTMLCanvasElement;
   const miniCtx = minimapCanvas?.getContext('2d');
+  const minimapContainer = document.getElementById('minimap-container');
+  const panHintChip = document.getElementById('pan-hint-chip');
+  const camResumeBtn = document.getElementById('cam-resume-btn');
 
   const namesInput = document.getElementById('names-input') as HTMLTextAreaElement;
   const marbleCountBadge = document.getElementById('marble-count-badge');
@@ -1279,6 +1466,9 @@ const data = gameEntry?.data || {
     finishRankCounter = 0;
     cameraY = 0;
     isGateOpen = false;
+    isManualCam = false;
+    focusedMarbleId = null;
+    updateCamModeHUD();
 
     if (marbleCountBadge) {
       marbleCountBadge.textContent = `총 ${names.length}개 구슬 대기`;
@@ -1295,12 +1485,14 @@ const data = gameEntry?.data || {
       const col = idx % cols;
       const jitterX = (Math.random() - 0.5) * 6;
       const jitterY = (Math.random() - 0.5) * 6;
+      const spawnX = startX + col * spacingX + jitterX;
+      const spawnY = 65 + row * 22 + jitterY;
 
       marbles.push({
         id: idx,
         name,
-        x: startX + col * spacingX + jitterX,
-        y: 65 + row * 22 + jitterY,
+        x: spawnX,
+        y: spawnY,
         vx: (Math.random() - 0.5) * 0.4,
         vy: 0,
         radius: 9,
@@ -1308,7 +1500,11 @@ const data = gameEntry?.data || {
         finished: false,
         finishTime: 0,
         finishRank: 0,
-        energy: 0
+        energy: 0,
+        lastShockwaveTime: 0,
+        stuckTimer: 0,
+        lastSampleX: spawnX,
+        lastSampleY: spawnY
       });
     });
 
@@ -1317,6 +1513,9 @@ const data = gameEntry?.data || {
     }
     if (finishProgressElem) {
       finishProgressElem.textContent = `0 / ${marbles.length} 완주`;
+    }
+    if (leadNameElem) {
+      leadNameElem.textContent = '선두: 대기 중';
     }
   }
 
@@ -1353,26 +1552,33 @@ const data = gameEntry?.data || {
     }, 700);
   }
 
-  // Energy Shockwave Burst
+  // Energy Shockwave Burst (Rebalanced: less frequent, much stronger push, and obstacle bounce)
   function triggerShockwave(src: Marble) {
+    const now = performance.now();
+    if (now - src.lastShockwaveTime < 4000) {
+      return; // Cooldown of 4 seconds per marble
+    }
+    src.lastShockwaveTime = now;
     sfx.playPop();
+
+    const blastRadius = 135;
     shockwaves.push({
       x: src.x,
       y: src.y,
       radius: src.radius,
-      maxRadius: 85,
+      maxRadius: blastRadius,
       color: src.color,
       alpha: 1.0
     });
 
-    // Radial push on nearby marbles
+    // 1. Radial push on nearby marbles (Stronger 9.5x force)
     marbles.forEach(other => {
       if (other.id === src.id || other.finished) return;
       const dx = other.x - src.x;
       const dy = other.y - src.y;
       const dist = Math.hypot(dx, dy);
-      if (dist < 90 && dist > 0.01) {
-        const factor = (1 - dist / 90) * 4.2;
+      if (dist < blastRadius && dist > 0.01) {
+        const factor = (1 - dist / blastRadius) * 9.5;
         const nx = dx / dist;
         const ny = dy / dist;
         other.vx += nx * factor;
@@ -1380,15 +1586,62 @@ const data = gameEntry?.data || {
       }
     });
 
-    // Slight forward impulse for the triggered marble
-    src.vy += 1.2;
+    // 2. Obstacle Bounce: Marble bounces ITSELF away from nearby obstacles and walls
+    let repulseX = 0;
+    let repulseY = 0;
+    let obstacleNearCount = 0;
+
+    // Check course segments (walls, ramps, dividers)
+    segments.forEach(seg => {
+      const res = distToSegment(src.x, src.y, seg.x1, seg.y1, seg.x2, seg.y2);
+      if (res.d < 75) {
+        const d = Math.max(res.d, 1);
+        const nx = (src.x - res.px) / d;
+        const ny = (src.y - res.py) / d;
+        const weight = (75 - d) / 75;
+        repulseX += nx * weight;
+        repulseY += ny * weight;
+        obstacleNearCount++;
+      }
+    });
+
+    // Check static pins
+    pins.forEach(p => {
+      const dx = src.x - p.x;
+      const dy = src.y - p.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < 75 && dist > 0.01) {
+        const weight = (75 - dist) / 75;
+        repulseX += (dx / dist) * weight;
+        repulseY += (dy / dist) * weight;
+        obstacleNearCount++;
+      }
+    });
+
+    // Boundaries
+    if (src.x < 55) {
+      repulseX += (55 - src.x) / 55;
+      obstacleNearCount++;
+    } else if (src.x > COURSE_WIDTH - 55) {
+      repulseX -= (src.x - (COURSE_WIDTH - 55)) / 55;
+      obstacleNearCount++;
+    }
+
+    if (obstacleNearCount > 0) {
+      const len = Math.hypot(repulseX, repulseY) || 1;
+      src.vx += (repulseX / len) * 7.5;
+      src.vy = Math.min(src.vy, 0) + (repulseY / len) * 5.0 + 3.2; // Downward escape bias
+    } else {
+      // General strong forward boost if triggered in open space
+      src.vy += 3.5;
+      src.vx += (Math.random() - 0.5) * 4.0;
+    }
   }
 
-  // Physics Update (Slower physics tuning for 7,200px track)
+  // Physics Update
   function updatePhysics(dt: number) {
     if (!isRacing) return;
 
-    // Slower, more readable motion as requested
     const gravity = 0.22 * timeScale;
     const friction = Math.pow(0.988, timeScale);
     const bounce = 0.45;
@@ -1401,8 +1654,8 @@ const data = gameEntry?.data || {
     // Shockwaves animation update
     for (let i = shockwaves.length - 1; i >= 0; i--) {
       const sw = shockwaves[i];
-      sw.radius += 3.5 * timeScale;
-      sw.alpha -= 0.045 * timeScale;
+      sw.radius += 4.5 * timeScale;
+      sw.alpha -= 0.04 * timeScale;
       if (sw.alpha <= 0 || sw.radius >= sw.maxRadius) {
         shockwaves.splice(i, 1);
       }
@@ -1431,6 +1684,33 @@ const data = gameEntry?.data || {
         m.finishRank = finishRankCounter;
         m.finishTime = (performance.now() - raceStartTime) / 1000;
         onMarbleFinished(m);
+      }
+    });
+
+    // Active Anti-Stuck Watchdog
+    marbles.forEach(m => {
+      if (m.finished) return;
+      const speed = Math.hypot(m.vx, m.vy);
+      const movedDist = Math.hypot(m.x - m.lastSampleX, m.y - m.lastSampleY);
+
+      if (speed < 0.45 && movedDist < 8) {
+        m.stuckTimer += 0.016 * timeScale;
+        if (m.stuckTimer > 1.2) {
+          // Gentle nudge
+          m.vx += (Math.random() - 0.5) * 3.0;
+          m.vy += 2.0 + Math.random() * 1.5;
+        }
+        if (m.stuckTimer > 2.5) {
+          // Emergency escape burst & ejection
+          triggerShockwave(m);
+          m.vy += 4.2;
+          m.vx += (m.x < COURSE_WIDTH / 2 ? 3.5 : -3.5);
+          m.stuckTimer = 0;
+        }
+      } else {
+        m.stuckTimer = 0;
+        m.lastSampleX = m.x;
+        m.lastSampleY = m.y;
       }
     });
 
@@ -1463,10 +1743,10 @@ const data = gameEntry?.data || {
           m2.vx += p * nx * bounce;
           m2.vy += p * ny * bounce;
 
-          // Energy charge from marble bump
+          // Rebalanced collision energy charging (+0.045 instead of 0.12)
           if (energyGaugeEnabled) {
-            m1.energy = Math.min(1.0, m1.energy + 0.12);
-            m2.energy = Math.min(1.0, m2.energy + 0.12);
+            m1.energy = Math.min(1.0, m1.energy + 0.045);
+            m2.energy = Math.min(1.0, m2.energy + 0.045);
             if (m1.energy >= 1.0) {
               triggerShockwave(m1);
               m1.energy = 0;
@@ -1504,9 +1784,9 @@ const data = gameEntry?.data || {
             m.vy -= reboundMultiplier * dot * ny;
             if (Math.random() < 0.2) sfx.playPop();
 
-            // Energy charge from pin bounce
+            // Energy charge from pin bounce (+0.025 to +0.04)
             if (energyGaugeEnabled) {
-              m.energy = Math.min(1.0, m.energy + (pin.isBumper ? 0.15 : 0.08));
+              m.energy = Math.min(1.0, m.energy + (pin.isBumper ? 0.04 : 0.025));
               if (m.energy >= 1.0) {
                 triggerShockwave(m);
                 m.energy = 0;
@@ -1541,9 +1821,9 @@ const data = gameEntry?.data || {
           m.vy = ny * 3.5 + tanY * 0.65;
           sfx.playPop();
 
-          // Energy charge from spinner paddle strike
+          // Energy charge (+0.05)
           if (energyGaugeEnabled) {
-            m.energy = Math.min(1.0, m.energy + 0.16);
+            m.energy = Math.min(1.0, m.energy + 0.05);
             if (m.energy >= 1.0) {
               triggerShockwave(m);
               m.energy = 0;
@@ -1553,7 +1833,7 @@ const data = gameEntry?.data || {
       });
     });
 
-    // 5. Marble vs Spring Bouncers (Comeback Reversal Mechanism!)
+    // 5. Marble vs Spring Bouncers (Comeback Reversal Mechanism)
     marbles.forEach(m => {
       bouncers.forEach(bn => {
         const dx = m.x - bn.x;
@@ -1569,11 +1849,9 @@ const data = gameEntry?.data || {
           m.x += nx * overlap;
           m.y += ny * overlap;
 
-          // Impact speed check
           const speed = Math.hypot(m.vx, m.vy);
           sfx.playSpring();
 
-          // Add visual blast ring
           shockwaves.push({
             x: bn.x,
             y: bn.y,
@@ -1583,15 +1861,12 @@ const data = gameEntry?.data || {
             alpha: 1.0
           });
 
-          // Launch marble violently upward!
-          // The faster it approaches, the harder it gets catapulted back up!
           const upwardKick = Math.max(bn.power, speed * 1.55);
           m.vy = -upwardKick;
           m.vx = nx * 3.5 + (Math.random() - 0.5) * 3;
 
-          // Energy charge bonus
           if (energyGaugeEnabled) {
-            m.energy = Math.min(1.0, m.energy + 0.25);
+            m.energy = Math.min(1.0, m.energy + 0.12);
             if (m.energy >= 1.0) {
               triggerShockwave(m);
               m.energy = 0;
@@ -1603,7 +1878,6 @@ const data = gameEntry?.data || {
 
     // 6. Marble vs Course Segments (Walls, Ramps, Guides)
     marbles.forEach(m => {
-      // Gate segment at hopper bottom (open or closed)
       if (!isGateOpen) {
         const gateDist = distToSegment(m.x, m.y, 170, 220, 270, 220);
         if (gateDist.d < m.radius + 2) {
@@ -1652,40 +1926,106 @@ const data = gameEntry?.data || {
     return { d: Math.hypot(px - projX, py - projY), px: projX, py: projY };
   }
 
-  // Camera smoothly follows target
+  // Smart Camera: Shows focus on first runner until first runner passes the goal, then focuses dynamically!
   function updateCamera() {
+    const viewH = canvas.height / zoom;
     let targetY = 0;
 
-    if (winnerMode === 'last') {
-      // In 꼴찌 mode, track trailing active battle
-      const activeMarbles = marbles.filter(m => !m.finished);
-      if (activeMarbles.length > 0) {
-        const avgY = activeMarbles.reduce((acc, m) => acc + m.y, 0) / activeMarbles.length;
-        targetY = avgY - 260;
-      } else {
-        targetY = FINISH_LINE_Y - 200;
-      }
-    } else {
-      // Lead marble tracking
+    if (!isManualCam) {
       const active = marbles.filter(m => !m.finished);
-      if (active.length > 0) {
-        const lead = active.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), active[0]);
-        targetY = lead.y - 240;
-      } else {
-        targetY = FINISH_LINE_Y - 200;
+
+      if (camMode === 'auto') {
+        // SMART AUTO CAMERA:
+        // Rule: Focus on first runner until first runner passes the goal. Then focus dynamically!
+        if (finishRankCounter === 0) {
+          // No runner has crossed the finish line yet -> Focus on lead runner!
+          if (active.length > 0) {
+            const lead = active.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), active[0]);
+            targetY = lead.y - viewH * 0.38;
+          } else {
+            targetY = 0;
+          }
+        } else {
+          // First runner has passed the goal! Now dynamically focus based on game mode:
+          if (winnerMode === 'last') {
+            // In 꼴찌 mode, first runner finished -> shift focus smoothly to trailing runners!
+            if (active.length > 0) {
+              const lastRunner = active.reduce((prev, cur) => (cur.y < prev.y ? cur : prev), active[0]);
+              targetY = lastRunner.y - viewH * 0.42;
+            } else {
+              targetY = FINISH_LINE_Y - viewH * 0.35;
+            }
+          } else if (winnerMode === 'first') {
+            // In 1등 mode, stay focused near finish line to show podium & remaining finishes
+            targetY = FINISH_LINE_Y - viewH * 0.35;
+          } else {
+            // In multi or custom mode, track remaining pack
+            if (active.length > 0) {
+              const avgY = active.reduce((acc, m) => acc + m.y, 0) / active.length;
+              targetY = avgY - viewH * 0.4;
+            } else {
+              targetY = FINISH_LINE_Y - viewH * 0.35;
+            }
+          }
+        }
+      } else if (camMode === 'first') {
+        // Explicitly focus foremost active runner
+        if (active.length > 0) {
+          const lead = active.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), active[0]);
+          targetY = lead.y - viewH * 0.38;
+        } else {
+          targetY = FINISH_LINE_Y - viewH * 0.35;
+        }
+      } else if (camMode === 'last') {
+        // Explicitly focus rearmost active runner
+        if (active.length > 0) {
+          const tail = active.reduce((prev, cur) => (cur.y < prev.y ? cur : prev), active[0]);
+          targetY = tail.y - viewH * 0.42;
+        } else {
+          targetY = FINISH_LINE_Y - viewH * 0.35;
+        }
+      } else if (camMode === 'runner' && focusedMarbleId !== null) {
+        // Focus on a specific runner
+        const target = marbles.find(m => m.id === focusedMarbleId);
+        if (target) {
+          targetY = target.y - viewH * 0.4;
+        }
       }
+
+      // Smooth camera lerp
+      targetY = Math.max(0, Math.min(COURSE_HEIGHT - viewH + 80, targetY));
+      cameraY += (targetY - cameraY) * 0.09;
+    } else {
+      // Manual camera: strictly clamp bounds
+      cameraY = Math.max(0, Math.min(COURSE_HEIGHT - viewH + 80, cameraY));
     }
 
-    targetY = Math.max(0, Math.min(COURSE_HEIGHT - 620, targetY));
-    cameraY += (targetY - cameraY) * 0.08;
-
-    // Update live leader text
+    // Update live leader / status text
     const unfinished = marbles.filter(m => !m.finished);
     if (unfinished.length > 0) {
-      const top = unfinished.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), unfinished[0]);
-      if (leadNameElem) leadNameElem.textContent = `선두: ${top.name}`;
+      if (finishRankCounter === 0) {
+        const top = unfinished.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), unfinished[0]);
+        if (leadNameElem) leadNameElem.textContent = `선두: ${top.name}`;
+      } else if (winnerMode === 'last') {
+        const tail = unfinished.reduce((prev, cur) => (cur.y < prev.y ? cur : prev), unfinished[0]);
+        if (leadNameElem) leadNameElem.textContent = `💀 꼴찌 위기: ${tail.name}`;
+      } else {
+        const top = unfinished.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), unfinished[0]);
+        if (leadNameElem) leadNameElem.textContent = `다음 진입: ${top.name}`;
+      }
     } else {
       if (leadNameElem) leadNameElem.textContent = `레이스 종료!`;
+    }
+  }
+
+  function updateCamModeHUD() {
+    document.querySelectorAll('.cam-btn').forEach(btn => {
+      const mode = btn.getAttribute('data-cam');
+      btn.classList.toggle('active', !isManualCam && camMode === mode);
+    });
+
+    if (camResumeBtn) {
+      camResumeBtn.classList.toggle('hidden', !isManualCam);
     }
   }
 
@@ -1701,23 +2041,35 @@ const data = gameEntry?.data || {
 
       const item = document.createElement('div');
       item.className = 'finish-item';
+      item.style.cursor = 'pointer';
+      item.title = `${m.name} 시점으로 카메라 이동`;
       item.innerHTML = `
         <span class="finish-rank">${m.finishRank}위</span>
         <span class="finish-name">${m.name}</span>
         <span class="finish-time">${m.finishTime.toFixed(2)}s</span>
       `;
+      item.addEventListener('click', () => {
+        focusedMarbleId = m.id;
+        camMode = 'runner';
+        isManualCam = false;
+        updateCamModeHUD();
+      });
       finishListElem.appendChild(item);
       finishListElem.scrollTop = finishListElem.scrollHeight;
     }
   }
 
-  // Draw Course & Marbles
+  // Draw Course & Marbles with Zoom & Centered Track
   function render() {
     if (!ctx) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     ctx.save();
-    ctx.translate(0, -cameraY);
+    // Apply zoom scale
+    ctx.scale(zoom, zoom);
+    // Center the 440px course within the zoomed canvas view
+    const trackOffsetX = (canvas.width / zoom - COURSE_WIDTH) / 2;
+    ctx.translate(trackOffsetX, -cameraY);
 
     // Subtle dashed track center-line
     ctx.save();
@@ -1810,7 +2162,6 @@ const data = gameEntry?.data || {
       ctx.translate(sp.x, sp.y);
       ctx.rotate(sp.angle);
 
-      // Paddle body
       ctx.fillStyle = '#f59e0b';
       ctx.shadowColor = '#f59e0b';
       ctx.shadowBlur = 10;
@@ -1819,14 +2170,12 @@ const data = gameEntry?.data || {
       ctx.fill();
       ctx.shadowBlur = 0;
 
-      // Endcap dots
       ctx.fillStyle = '#fef08a';
       ctx.beginPath();
       ctx.arc(-sp.length + 5, 0, 3, 0, Math.PI * 2);
       ctx.arc(sp.length - 5, 0, 3, 0, Math.PI * 2);
       ctx.fill();
 
-      // Center pivot ring
       ctx.beginPath();
       ctx.arc(0, 0, 7.5, 0, Math.PI * 2);
       ctx.fillStyle = '#ffffff';
@@ -1838,11 +2187,10 @@ const data = gameEntry?.data || {
       ctx.restore();
     });
 
-    // 4. Draw Spring Bouncers (Comeback Reversal Devices)
+    // 4. Draw Spring Bouncers
     const timeNow = Date.now();
     bouncers.forEach(bn => {
       ctx.save();
-      // Outer animated pulsating halo
       const pulse = Math.sin(timeNow * 0.008 + bn.y * 0.1) * 3;
       ctx.beginPath();
       ctx.arc(bn.x, bn.y, bn.radius + pulse + 3, 0, Math.PI * 2);
@@ -1850,7 +2198,6 @@ const data = gameEntry?.data || {
       ctx.lineWidth = 2;
       ctx.stroke();
 
-      // Core sphere with rich radial gradient
       ctx.beginPath();
       ctx.arc(bn.x, bn.y, bn.radius, 0, Math.PI * 2);
       const grad = ctx.createRadialGradient(bn.x - 4, bn.y - 4, 2, bn.x, bn.y, bn.radius);
@@ -1866,7 +2213,6 @@ const data = gameEntry?.data || {
       ctx.lineWidth = 2;
       ctx.stroke();
 
-      // Spring coil symbol
       ctx.fillStyle = '#ffffff';
       ctx.font = '900 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
       ctx.textAlign = 'center';
@@ -1879,7 +2225,6 @@ const data = gameEntry?.data || {
     ctx.save();
     ctx.fillStyle = 'rgba(250, 204, 21, 0.15)';
     ctx.fillRect(20, FINISH_LINE_Y - 15, COURSE_WIDTH - 40, 30);
-    // Checkered pattern
     const squareSize = 15;
     for (let x = 20; x < COURSE_WIDTH - 20; x += squareSize * 2) {
       ctx.fillStyle = '#ffffff';
@@ -1901,9 +2246,9 @@ const data = gameEntry?.data || {
       ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2);
       ctx.strokeStyle = sw.color;
       ctx.globalAlpha = Math.max(0, sw.alpha);
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 3.5;
       ctx.shadowColor = sw.color;
-      ctx.shadowBlur = 10;
+      ctx.shadowBlur = 12;
       ctx.stroke();
       ctx.restore();
     });
@@ -1911,6 +2256,18 @@ const data = gameEntry?.data || {
     // 7. Draw Marbles
     marbles.forEach(m => {
       ctx.save();
+
+      // Focus spotlight ring if selected
+      if (focusedMarbleId === m.id) {
+        ctx.beginPath();
+        ctx.arc(m.x, m.y, m.radius + 7, 0, Math.PI * 2);
+        ctx.strokeStyle = '#facc15';
+        ctx.lineWidth = 2;
+        ctx.shadowColor = '#facc15';
+        ctx.shadowBlur = 10;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      }
 
       // Energy Gauge Arc around marble
       if (energyGaugeEnabled && !m.finished && m.energy > 0.03) {
@@ -1984,10 +2341,13 @@ const data = gameEntry?.data || {
       miniCtx.fill();
     });
 
-    // Camera viewport box
-    miniCtx.strokeStyle = 'rgba(56, 189, 248, 0.7)';
-    miniCtx.lineWidth = 1;
-    miniCtx.strokeRect(0, cameraY * scaleY, minimapCanvas.width, 620 * scaleY);
+    // Camera viewport box (scaled according to zoom)
+    const viewH = canvas.height / zoom;
+    miniCtx.strokeStyle = isManualCam ? 'rgba(250, 204, 21, 0.9)' : 'rgba(56, 189, 248, 0.85)';
+    miniCtx.lineWidth = 1.5;
+    miniCtx.strokeRect(0, cameraY * scaleY, minimapCanvas.width, viewH * scaleY);
+    miniCtx.fillStyle = isManualCam ? 'rgba(250, 204, 21, 0.1)' : 'rgba(56, 189, 248, 0.1)';
+    miniCtx.fillRect(0, cameraY * scaleY, minimapCanvas.width, viewH * scaleY);
 
     // Marbles dots
     marbles.forEach(m => {
@@ -2002,7 +2362,6 @@ const data = gameEntry?.data || {
   function showFinalResults() {
     if (!resultModal) return;
 
-    // Sort marbles by finishRank
     const sorted = [...marbles].sort((a, b) => a.finishRank - b.finishRank);
     let winners: Marble[] = [];
     let spotlightTitle = '최종 결과';
@@ -2054,6 +2413,168 @@ const data = gameEntry?.data || {
     resultModal.classList.remove('hidden');
   }
 
+  // --- Manual View Dragging & Minimap Navigation ---
+  let isDragging = false;
+  let dragStartY = 0;
+  let dragStartCamY = 0;
+  let totalDragDistance = 0;
+
+  function onDragStart(clientY: number) {
+    isDragging = true;
+    dragStartY = clientY;
+    dragStartCamY = cameraY;
+    totalDragDistance = 0;
+    canvasViewport?.classList.add('is-dragging');
+  }
+
+  function onDragMove(clientY: number) {
+    if (!isDragging) return;
+    const dy = (clientY - dragStartY) / zoom;
+    totalDragDistance += Math.abs(clientY - dragStartY);
+    dragStartY = clientY;
+    const viewH = canvas.height / zoom;
+    cameraY = Math.max(0, Math.min(COURSE_HEIGHT - viewH + 80, cameraY - dy));
+    if (totalDragDistance > 6) {
+      isManualCam = true;
+      updateCamModeHUD();
+    }
+  }
+
+  function onDragEnd() {
+    isDragging = false;
+    canvasViewport?.classList.remove('is-dragging');
+  }
+
+  // Canvas Mouse Drag
+  canvas?.addEventListener('mousedown', (e) => {
+    if (e.button !== 0) return;
+    onDragStart(e.clientY);
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (isDragging) onDragMove(e.clientY);
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (isDragging) onDragEnd();
+  });
+
+  // Canvas Touch Drag
+  canvas?.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      onDragStart(e.touches[0].clientY);
+    }
+  }, { passive: true });
+
+  canvas?.addEventListener('touchmove', (e) => {
+    if (isDragging && e.touches.length === 1) {
+      onDragMove(e.touches[0].clientY);
+    }
+  }, { passive: true });
+
+  canvas?.addEventListener('touchend', () => {
+    if (isDragging) onDragEnd();
+  });
+
+  // Canvas Wheel Scroll
+  canvasViewport?.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const viewH = canvas.height / zoom;
+    cameraY = Math.max(0, Math.min(COURSE_HEIGHT - viewH + 80, cameraY + e.deltaY * 0.9));
+    isManualCam = true;
+    updateCamModeHUD();
+  }, { passive: false });
+
+  // Minimap Click & Drag to Pan
+  let isMinimapDragging = false;
+  function handleMinimapEvent(clientY: number) {
+    const rect = minimapCanvas.getBoundingClientRect();
+    const relY = Math.max(0, Math.min(rect.height, clientY - rect.top));
+    const courseY = (relY / rect.height) * COURSE_HEIGHT;
+    const viewH = canvas.height / zoom;
+    cameraY = Math.max(0, Math.min(COURSE_HEIGHT - viewH + 80, courseY - viewH / 2));
+    isManualCam = true;
+    updateCamModeHUD();
+  }
+
+  minimapCanvas?.addEventListener('mousedown', (e) => {
+    isMinimapDragging = true;
+    handleMinimapEvent(e.clientY);
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (isMinimapDragging) handleMinimapEvent(e.clientY);
+  });
+
+  window.addEventListener('mouseup', () => {
+    isMinimapDragging = false;
+  });
+
+  minimapCanvas?.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      isMinimapDragging = true;
+      handleMinimapEvent(e.touches[0].clientY);
+    }
+  }, { passive: true });
+
+  minimapCanvas?.addEventListener('touchmove', (e) => {
+    if (isMinimapDragging && e.touches.length === 1) {
+      handleMinimapEvent(e.touches[0].clientY);
+    }
+  }, { passive: true });
+
+  minimapCanvas?.addEventListener('touchend', () => {
+    isMinimapDragging = false;
+  });
+
+  // Canvas Click: Pick Runner to focus
+  canvas?.addEventListener('click', (e) => {
+    if (totalDragDistance > 8) return; // Was a drag, not a click
+    const rect = canvas.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+
+    const trackOffsetX = (canvas.width / zoom - COURSE_WIDTH) / 2;
+    const worldX = clickX / zoom - trackOffsetX;
+    const worldY = clickY / zoom + cameraY;
+
+    const clicked = marbles.find(m => Math.hypot(m.x - worldX, m.y - worldY) < m.radius + 10);
+    if (clicked) {
+      focusedMarbleId = clicked.id;
+      camMode = 'runner';
+      isManualCam = false;
+      updateCamModeHUD();
+    }
+  });
+
+  // Camera Mode buttons
+  document.querySelectorAll('.cam-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = btn.getAttribute('data-cam') as 'auto' | 'first' | 'last';
+      camMode = mode;
+      isManualCam = false;
+      focusedMarbleId = null;
+      updateCamModeHUD();
+    });
+  });
+
+  // Resume Auto Camera button
+  camResumeBtn?.addEventListener('click', () => {
+    isManualCam = false;
+    camMode = 'auto';
+    focusedMarbleId = null;
+    updateCamModeHUD();
+  });
+
+  // Zoom Buttons (0.65x, 0.75x, 1.0x)
+  document.querySelectorAll('.zoom-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.zoom-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      zoom = parseFloat(btn.getAttribute('data-zoom') || '0.75');
+    });
+  });
+
   // Event Listeners
   startBtn?.addEventListener('click', startRace);
   resetBtn?.addEventListener('click', () => {
@@ -2070,7 +2591,6 @@ const data = gameEntry?.data || {
 
   shuffleBtn?.addEventListener('click', () => {
     const list = parseNamesList();
-    // Fisher-Yates shuffle
     for (let i = list.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [list[i], list[j]] = [list[j], list[i]];
@@ -2088,7 +2608,6 @@ const data = gameEntry?.data || {
       const p = PRESETS[key];
       if (p) {
         if (namesInput) namesInput.value = p.names.join('\n');
-        // Set mode
         const radio = document.querySelector(`input[name="winner-mode"][value="${p.mode}"]`) as HTMLInputElement;
         if (radio) {
           radio.checked = true;
