@@ -1,36 +1,36 @@
 ---
-title: "Streamer Roulette"
-tagline: "Customizable Wheel of Fortune for Live Streams & Raffles"
-description: "A broadcast-ready, customizable spinning wheel roulette designed for streamers, content creators, and party games. Add custom items, set probabilities, enjoy physics-based deceleration, ticker sound effects, and confetti celebrations."
-category: "arcade"
-badge: "🔴 Stream Tool"
+title: "방송용 돌림판 룰렛"
+tagline: "치지직·유튜브·SOOP 생방송을 위한 맞춤형 룰렛 추첨기"
+description: "스트리머와 시청자가 함께 즐기는 실시간 돌림판 룰렛. 물리 회전 감속 엔진, 기계식 눈금 틱 사운드, 승자 폭죽 이펙트와 야식/벌칙/이벤트 프리셋을 1초 만에 무료로 사용하세요."
+category: "stream"
+badge: "🔴 추천 방송도구"
 icon: "🎡"
-players: "1-100+ (Party / Chat)"
-playTime: "30s"
+players: "1~100인 (방송 참여)"
+playTime: "10초~30초"
 featured: true
-rating: 4.98
-plays: "32.1K"
+rating: 4.99
+plays: "45.2K"
 controls:
-  - "Click 'SPIN' or press Spacebar to spin the wheel"
-  - "Type or paste names/options in the text box (separated by lines or commas)"
-  - "Select quick streaming presets (Food, Penalties, Giveaways)"
-  - "Toggle Fullscreen / OBS mode for clean broadcast overlay"
+  - "스페이스바(Space) 또는 중앙 버튼을 눌러 룰렛 회전"
+  - "옵션 목록에 항목을 줄바꿈이나 쉼표로 입력"
+  - "야식 메뉴, 스트리머 벌칙, 시청자 추첨 등 1초 프리셋 버튼 제공"
+  - "OBS 브라우저 소스에 바로 띄울 수 있는 깔끔한 오버레이 모드"
 rules:
-  - "Each option on the wheel is assigned an equal or weighted slice."
-  - "The wheel spins with randomized physical torque and realistic deceleration."
-  - "The top arrow indicator points to the winning slice with confetti and fanfare!"
+  - "입력된 모든 항목이 돌림판에 고르게 배치됩니다."
+  - "랜덤 토크와 물리 감속 곡선을 적용하여 누구도 결과를 예측할 수 없습니다."
+  - "상단 붉은색 바늘이 가리킨 최종 항목이 당첨되며 축하 이펙트가 터집니다."
 features:
-  - "OBS & Stream-Ready clean broadcast layout"
-  - "Procedural mechanical ratchet ticking sound via Web Audio API"
-  - "Instant Korean & English streaming presets (벌칙 룰렛, 야식 추첨, 이벤트)"
-  - "Full custom slice weights and instant shuffle"
+  - "OBS Studio 및 라이브 방송 맞춤형 크로마키/오버레이"
+  - "Web Audio API 기반 찰진 래칫 틱 사운드 & 팡파레"
+  - "당첨된 항목 자동 제외(Eliminate) 기능 지원"
+  - "원클릭 항목 셔플 & 당첨 히스토리 기록"
 faqItems:
-  - q: "Can I use this roulette on OBS Studio for Twitch / Chzzk / YouTube?"
-    a: "Yes! Click the 'Fullscreen / OBS Mode' button to hide all controls and fit the spinning wheel cleanly into your stream scene."
-  - q: "Can I set different probabilities for each slice?"
-    a: "Yes. You can append counts like 'Item * 3' or add repeated entries to increase that slice's probability."
+  - q: "OBS 브라우저 소스로 어떻게 추가하나요?"
+    a: "OBS 소스 목록에서 [브라우저]를 추가하고 본 페이지 URL을 입력하세요. 너비 1280, 높이 720으로 설정하면 방송 화면에 완벽하게 들어맞습니다."
+  - q: "당첨된 사람을 다음 회차에서 뺄 수 있나요?"
+    a: "'당첨 항목 자동 제외' 체크박스를 켜두시면 당첨 즉시 해당 항목이 룰렛에서 자동으로 제거되어 중복 당첨을 방지합니다."
 ---
 
-## The Ultimate Live Stream Roulette
+## 방송의 긴장감을 극대화하는 실시간 돌림판
 
-Whether deciding viewer giveaway winners, choosing your next stream challenge, or picking dinner, this roulette delivers fair, verifiable, and suspenseful results for your community.
+치지직, 유튜브, 아프리카TV 생방송 중 야식 메뉴 결정, 미션 벌칙, 시청자 기프티콘 추첨 등 어떤 상황에서도 버벅임 없이 즉시 사용할 수 있습니다.

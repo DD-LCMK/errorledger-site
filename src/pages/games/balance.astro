@@ -1,0 +1,655 @@
+---
+import GameLayout from '../../layouts/GameLayout.astro';
+import { getEntry } from 'astro:content';
+
+const gameEntry = await getEntry('games', 'balance');
+const data = gameEntry?.data || {
+  title: '스트리머 밸런스 게임',
+  tagline: '저챗·소통 방송 치트키! 꿀잼 극단적 양자택일',
+  description: '시청자와 도네이션 채팅창이 폭발하는 밸런스 게임. 난감하고 유쾌한 100가지 이상의 방송용 질문과 실시간 투표 게이지 제공.',
+  icon: '⚖️',
+  category: 'stream',
+  badge: '🔥 저챗 필수',
+  players: '스트리머 & 시청자',
+  playTime: '자유',
+  controls: [
+    '왼쪽(A) 또는 오른쪽(B)을 클릭하여 선택',
+    '단축키: 숫자 [1] 키는 A, 숫자 [2] 키는 B 선택',
+    '스페이스바(Space)를 누르면 다음 질문으로 넘어갑니다',
+    '상단 카테고리(매운맛, 직장, 연애, 황당)로 질문 필터링'
+  ],
+  rules: [
+    '피하고 싶거나 탐나는 극단적인 두 선택지 중 무조건 하나만 골라야 합니다.',
+    '기권이나 둘 다 고르기는 절대 불가!'
+  ],
+  faqItems: [
+    {
+      q: '직접 질문을 만들어 띄울 수 있나요?',
+      a: '네! 하단의 [직접 입력] 버튼을 눌러 원하는 질문과 A/B 선택지를 작성하면 즉시 대형 카드로 띄울 수 있습니다.'
+    }
+  ]
+};
+---
+
+<GameLayout
+  title={data.title}
+  description={data.description}
+  tagline={data.tagline}
+  icon={data.icon}
+  category={data.category}
+  badge={data.badge}
+  players={data.players}
+  playTime={data.playTime}
+  controls={data.controls}
+  rules={data.rules}
+  faqItems={data.faqItems}
+>
+  <div class="balance-app-root" id="balance-root">
+    
+    <!-- Header Control Bar -->
+    <div class="balance-nav-bar">
+      <div class="category-pills" id="category-pills">
+        <button class="cat-pill active" data-cat="all">전체 질문</button>
+        <button class="cat-pill" data-cat="spicy">🌶️ 매운맛/현실</button>
+        <button class="cat-pill" data-cat="life">💼 직장 & 돈</button>
+        <button class="cat-pill" data-cat="love">💖 연애 & 친구</button>
+        <button class="cat-pill" data-cat="funny">🤡 황당 & 엽기</button>
+      </div>
+
+      <div class="timer-display-box" id="timer-box">
+        <span class="timer-icon">⏱️</span>
+        <span class="timer-digits" id="timer-text">30</span>초
+      </div>
+
+      <div class="nav-actions">
+        <button id="custom-modal-btn" class="mini-btn">✏️ 직접 입력</button>
+        <button id="next-btn" class="primary-action-btn">
+          <span>다음 질문 ▶ [Space]</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Dual Cards Arena -->
+    <div class="cards-arena">
+      <div class="vs-divider-circle">VS</div>
+
+      <!-- Card A -->
+      <button class="balance-choice-card choice-a" id="choice-a-btn">
+        <div class="card-tag">CHOICE A [키 1]</div>
+        <div class="card-icon-preview" id="icon-a">🍗</div>
+        <div class="choice-text" id="text-a">평생 치킨만 먹기</div>
+        <div class="vote-result-box hidden" id="result-a">
+          <div class="vote-percent" id="pct-a">50%</div>
+          <div class="vote-label">선택 비율</div>
+        </div>
+      </button>
+
+      <!-- Card B -->
+      <button class="balance-choice-card choice-b" id="choice-b-btn">
+        <div class="card-tag">CHOICE B [키 2]</div>
+        <div class="card-icon-preview" id="icon-b">🍕</div>
+        <div class="choice-text" id="text-b">평생 피자만 먹기</div>
+        <div class="vote-result-box hidden" id="result-b">
+          <div class="vote-percent" id="pct-b">50%</div>
+          <div class="vote-label">선택 비율</div>
+        </div>
+      </button>
+    </div>
+
+    <!-- Bottom Gauge Vote Bar -->
+    <div class="vote-gauge-container hidden" id="vote-gauge">
+      <div class="gauge-fill-a" id="gauge-fill-a" style="width: 50%;">A (50%)</div>
+      <div class="gauge-fill-b" id="gauge-fill-b" style="width: 50%;">B (50%)</div>
+    </div>
+
+    <!-- Custom Question Modal -->
+    <div class="custom-modal-overlay hidden" id="custom-modal">
+      <div class="custom-modal-card">
+        <h3>✏️ 직접 질문 만들기</h3>
+        <div class="input-row">
+          <label>선택지 A 내용</label>
+          <input type="text" id="custom-a" placeholder="예: 평생 탄산음료 금지" />
+        </div>
+        <div class="input-row">
+          <label>선택지 B 내용</label>
+          <input type="text" id="custom-b" placeholder="예: 평생 라면 금지" />
+        </div>
+        <div class="modal-btns">
+          <button id="apply-custom-btn" class="btn-confirm">적용하기</button>
+          <button id="close-modal-btn" class="btn-cancel">취소</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div slot="guide">
+    <h2>스트리머를 위한 밸런스 게임 활용 팁</h2>
+    <p>
+      밸런스 게임은 시청자와의 즉각적인 채팅 티키타카를 이끌어내는 최고의 소통 콘텐츠입니다.
+      단순히 선택지만 고르지 말고 <strong>"왜 이 선택을 할 수밖에 없는지"</strong>에 대한 처절한 이유를 덧붙일수록 채팅창과 도네이션 반응이 더욱 뜨거워집니다.
+    </p>
+  </div>
+</GameLayout>
+
+<style>
+  .balance-app-root {
+    background: #090d16;
+    border-radius: 16px;
+    padding: 1.5rem;
+    min-height: 640px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.25rem;
+    user-select: none;
+  }
+
+  /* Nav Bar */
+  .balance-nav-bar {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 0.85rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .category-pills {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+  }
+
+  .cat-pill {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    padding: 0.3rem 0.65rem;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .cat-pill:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .cat-pill.active {
+    background: linear-gradient(135deg, #a855f7, #38bdf8);
+    color: #ffffff;
+    border-color: transparent;
+  }
+
+  .timer-display-box {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.95rem;
+    font-weight: 900;
+    color: #facc15;
+    background: rgba(234, 179, 8, 0.12);
+    border: 1px solid rgba(234, 179, 8, 0.25);
+    padding: 0.3rem 0.75rem;
+    border-radius: 8px;
+  }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .mini-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+    padding: 0.45rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .primary-action-btn {
+    background: linear-gradient(135deg, #38bdf8, #2563eb);
+    color: #ffffff;
+    border: none;
+    padding: 0.5rem 1.1rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+    transition: transform 0.15s ease;
+  }
+
+  .primary-action-btn:hover {
+    transform: scale(1.04);
+  }
+
+  /* Main Cards Arena */
+  .cards-arena {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    flex: 1;
+    min-height: 420px;
+  }
+
+  .vs-divider-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: #020617;
+    border: 4px solid #ffffff;
+    color: #facc15;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: 900;
+    z-index: 10;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(250, 204, 21, 0.6);
+    pointer-events: none;
+  }
+
+  .balance-choice-card {
+    background: #0f172a;
+    border-radius: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    padding: 2.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .choice-a {
+    border-color: rgba(56, 189, 248, 0.35);
+  }
+
+  .choice-a:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: #38bdf8;
+    box-shadow: 0 0 35px rgba(56, 189, 248, 0.4);
+  }
+
+  .choice-b {
+    border-color: rgba(244, 63, 94, 0.35);
+  }
+
+  .choice-b:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: #f43f5e;
+    box-shadow: 0 0 35px rgba(244, 63, 94, 0.4);
+  }
+
+  .card-tag {
+    font-size: 0.82rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+  }
+
+  .choice-a .card-tag {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+  }
+
+  .choice-b .card-tag {
+    background: rgba(244, 63, 94, 0.15);
+    color: #f43f5e;
+  }
+
+  .card-icon-preview {
+    font-size: 4rem;
+    margin-bottom: 1.25rem;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+  }
+
+  .choice-text {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #f8fafc;
+    line-height: 1.4;
+    word-break: keep-all;
+  }
+
+  .vote-result-box {
+    margin-top: 1.5rem;
+    animation: popIn 0.3s ease-out;
+  }
+
+  @keyframes popIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .vote-percent {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #facc15;
+  }
+
+  .vote-label {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 700;
+  }
+
+  /* Bottom Gauge */
+  .vote-gauge-container {
+    height: 28px;
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    font-size: 0.8rem;
+    font-weight: 900;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  }
+
+  .gauge-fill-a {
+    background: linear-gradient(90deg, #38bdf8, #0284c7);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: width 0.4s ease;
+  }
+
+  .gauge-fill-b {
+    background: linear-gradient(90deg, #e11d48, #f43f5e);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: width 0.4s ease;
+  }
+
+  /* Custom Modal */
+  .custom-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(9, 13, 22, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+
+  .custom-modal-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 1.75rem;
+    width: 90%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .custom-modal-card h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #f8fafc;
+  }
+
+  .input-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .input-row label {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #94a3b8;
+  }
+
+  .input-row input {
+    background: #090d16;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    color: #ffffff;
+    font-size: 0.9rem;
+    outline: none;
+  }
+
+  .modal-btns {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .btn-confirm {
+    flex: 1;
+    background: linear-gradient(135deg, #a855f7, #38bdf8);
+    color: #ffffff;
+    font-weight: 900;
+    border: none;
+    padding: 0.65rem;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .btn-cancel {
+    background: rgba(255, 255, 255, 0.08);
+    color: #cbd5e1;
+    border: none;
+    padding: 0.65rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  @media (max-width: 768px) {
+    .cards-arena {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+    .vs-divider-circle {
+      position: static;
+      transform: none;
+      margin: 0 auto;
+    }
+  }
+</style>
+
+<script>
+  interface Question {
+    cat: string;
+    iconA: string;
+    textA: string;
+    iconB: string;
+    textB: string;
+    ratioA: number; // default baseline percent
+  }
+
+  const QUESTIONS: Question[] = [
+    { cat: 'life', iconA: '💰', textA: '평생 월 250만원 백수로 살기', iconB: '🏢', textB: '월 1200만원 대기업 주7일 야근', ratioA: 58 },
+    { cat: 'spicy', iconA: '🍜', textA: '평생 라면만 먹기 (밥/반찬 금지)', iconB: '🍚', textB: '평생 밥 없이 반찬만 먹기', ratioA: 44 },
+    { cat: 'love', iconA: '🥰', textA: '내가 미치도록 짝사랑하는 사람', iconB: '💖', textB: '나를 목숨 걸고 사랑해주는 사람', ratioA: 36 },
+    { cat: 'spicy', iconA: '📱', textA: '스마트폰 없이 1년 살기', iconB: '👥', textB: '친구/지인과 1년간 연락 끊기', ratioA: 41 },
+    { cat: 'funny', iconA: '🛁', textA: '양치 안 하고 1주일 버티기', iconB: '🚿', textB: '머리 안 감고 2주일 버티기', ratioA: 28 },
+    { cat: 'life', iconA: '⏳', textA: '과거로 돌아가기 (기억 유지)', iconB: '🚀', textB: '미래로 10년 워프 (100억 지급)', ratioA: 62 },
+    { cat: 'love', iconA: '💬', textA: '카톡 읽씹 당하기', iconB: '📴', textB: '카톡 1초도 안 읽고 안읽씹 당하기', ratioA: 47 },
+    { cat: 'spicy', iconA: '🍗', textA: '평생 치킨 못 먹기', iconB: '🥩', textB: '평생 삼겹살 못 먹기', ratioA: 52 },
+    { cat: 'funny', iconA: '🦘', textA: '평생 걸을 때 무조건 캥거루처럼 점프', iconB: '🦀', textB: '평생 옆으로 게걸음으로만 걷기', ratioA: 49 },
+    { cat: 'life', iconA: '🏖️', textA: '1년 동안 무인도 혼자 살기 (식량 완비)', iconB: '🏢', textB: '1년 동안 꼰대 상사와 한집 동거', ratioA: 71 },
+    { cat: 'funny', iconA: '🤡', textA: '모든 사람의 생각이 귓가에 들리기', iconB: '🙈', textB: '내 모든 생각이 전광판에 실시간 중계', ratioA: 82 },
+    { cat: 'spicy', iconA: '❄️', textA: '한겨울 영하 15도에 에어컨 풀가동', iconB: '🔥', textB: '한여름 38도 폭염에 보일러 풀가동', ratioA: 54 },
+    { cat: 'love', iconA: '🧠', textA: '애인의 전 애인이 내 절친', iconB: '💔', textB: '내 절친의 전 애인이 내 애인', ratioA: 33 }
+  ];
+
+  let currentCategory = 'all';
+  let currentIndex = 0;
+  let timerInterval: any = null;
+  let timeLeft = 30;
+
+  const choiceABtn = document.getElementById('choice-a-btn');
+  const choiceBBtn = document.getElementById('choice-b-btn');
+  const iconA = document.getElementById('icon-a');
+  const textA = document.getElementById('text-a');
+  const iconB = document.getElementById('icon-b');
+  const textB = document.getElementById('text-b');
+  const resultA = document.getElementById('result-a');
+  const resultB = document.getElementById('result-b');
+  const pctA = document.getElementById('pct-a');
+  const pctB = document.getElementById('pct-b');
+  const voteGauge = document.getElementById('vote-gauge');
+  const gaugeFillA = document.getElementById('gauge-fill-a');
+  const gaugeFillB = document.getElementById('gauge-fill-b');
+
+  const nextBtn = document.getElementById('next-btn');
+  const timerText = document.getElementById('timer-text');
+  const catPills = document.querySelectorAll('.cat-pill');
+
+  const customModal = document.getElementById('custom-modal');
+  const customModalBtn = document.getElementById('custom-modal-btn');
+  const applyCustomBtn = document.getElementById('apply-custom-btn');
+  const closeModalBtn = document.getElementById('close-modal-btn');
+  const inputCustomA = document.getElementById('custom-a') as HTMLInputElement;
+  const inputCustomB = document.getElementById('custom-b') as HTMLInputElement;
+
+  function getFilteredQuestions(): Question[] {
+    if (currentCategory === 'all') return QUESTIONS;
+    return QUESTIONS.filter(q => q.cat === currentCategory);
+  }
+
+  function loadQuestion() {
+    const list = getFilteredQuestions();
+    if (list.length === 0) return;
+    const q = list[currentIndex % list.length];
+
+    if (iconA) iconA.textContent = q.iconA;
+    if (textA) textA.textContent = q.textA;
+    if (iconB) iconB.textContent = q.iconB;
+    if (textB) textB.textContent = q.textB;
+
+    // Reset results view
+    resultA?.classList.add('hidden');
+    resultB?.classList.add('hidden');
+    voteGauge?.classList.add('hidden');
+
+    resetTimer();
+  }
+
+  function revealChoice(chosen: 'A' | 'B') {
+    const list = getFilteredQuestions();
+    const q = list[currentIndex % list.length];
+
+    const rA = q.ratioA;
+    const rB = 100 - rA;
+
+    if (pctA) pctA.textContent = `${rA}%`;
+    if (pctB) pctB.textContent = `${rB}%`;
+
+    resultA?.classList.remove('hidden');
+    resultB?.classList.remove('hidden');
+
+    if (voteGauge && gaugeFillA && gaugeFillB) {
+      voteGauge.classList.remove('hidden');
+      gaugeFillA.style.width = `${rA}%`;
+      gaugeFillA.textContent = `A (${rA}%)`;
+      gaugeFillB.style.width = `${rB}%`;
+      gaugeFillB.textContent = `B (${rB}%)`;
+    }
+
+    clearInterval(timerInterval);
+  }
+
+  function nextQuestion() {
+    const list = getFilteredQuestions();
+    currentIndex = (currentIndex + 1) % list.length;
+    loadQuestion();
+  }
+
+  function resetTimer() {
+    clearInterval(timerInterval);
+    timeLeft = 30;
+    if (timerText) timerText.textContent = String(timeLeft);
+
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      if (timerText) timerText.textContent = String(timeLeft);
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+      }
+    }, 1000);
+  }
+
+  // Event Listeners
+  choiceABtn?.addEventListener('click', () => revealChoice('A'));
+  choiceBBtn?.addEventListener('click', () => revealChoice('B'));
+  nextBtn?.addEventListener('click', nextQuestion);
+
+  catPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      catPills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      currentCategory = pill.getAttribute('data-cat') || 'all';
+      currentIndex = 0;
+      loadQuestion();
+    });
+  });
+
+  // Custom Modal
+  customModalBtn?.addEventListener('click', () => customModal?.classList.remove('hidden'));
+  closeModalBtn?.addEventListener('click', () => customModal?.classList.add('hidden'));
+  applyCustomBtn?.addEventListener('click', () => {
+    const aVal = inputCustomA?.value.trim();
+    const bVal = inputCustomB?.value.trim();
+    if (aVal && bVal) {
+      QUESTIONS.unshift({
+        cat: 'custom',
+        iconA: '✨',
+        textA: aVal,
+        iconB: '🔥',
+        textB: bVal,
+        ratioA: 50
+      });
+      currentCategory = 'all';
+      currentIndex = 0;
+      loadQuestion();
+      customModal?.classList.add('hidden');
+    }
+  });
+
+  // Keyboard Shortcuts: 1 (A), 2 (B), Space (Next)
+  window.addEventListener('keydown', (e) => {
+    if (customModal && !customModal.classList.contains('hidden')) return;
+
+    if (e.key === '1') {
+      revealChoice('A');
+    } else if (e.key === '2') {
+      revealChoice('B');
+    } else if (e.code === 'Space') {
+      e.preventDefault();
+      nextQuestion();
+    }
+  });
+
+  loadQuestion();
+</script>

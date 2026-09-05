@@ -1,36 +1,36 @@
 ---
-title: "Streamer Ladder Game"
-tagline: "Interactive Ghost Leg (사다리 타기) for Live Stream Bets & Raffles"
-description: "The classic Korean Ghost Leg / Amidakuji ladder game reimagined for live streams, office bets, and group decisions. Watch neon tracers descend down randomized branches with suspenseful step sounds and dramatic outcome reveals."
-category: "arcade"
-badge: "🪜 Stream Bet"
+title: "방송용 사다리 타기"
+tagline: "실시간 긴장감 200%! 2~8인 인터랙티브 사다리타기"
+description: "네온 발자국을 따라 실시간으로 내려가는 애니메이션 사다리 타기. 커피 내기, 밥값 내기, 방송 벌칙 추첨까지 1초 만에 설정하고 시청자와 함께 짜릿한 결과를 확인하세요."
+category: "stream"
+badge: "🪜 내기 전용"
 icon: "🪜"
-players: "2-10 Players"
-playTime: "1-2 mins"
+players: "2~8인"
+playTime: "30초~1분"
 featured: true
-rating: 4.96
-plays: "28.4K"
+rating: 4.97
+plays: "38.9K"
 controls:
-  - "Click any player name at the top to trace their ladder path individually"
-  - "Click 'Reveal All' to animate all players simultaneously in distinct neon colors"
-  - "Edit player names and bottom outcomes directly in the setup panel"
-  - "Click 'Shuffle Bridges' to re-roll random ladder rungs"
+  - "상단 참가자 이름을 클릭하여 개별 사다리 출발"
+  - "'전체 결과 보기'를 눌러 모든 참가자 동시 추적"
+  - "'사다리 다시 섞기'로 새로운 랜덤 가로선 생성"
+  - "참가자 이름과 하단 당첨/벌칙 상자 더블클릭으로 즉시 수정"
 rules:
-  - "Each participant starts at their designated vertical ladder pole."
-  - "The tracer moves downward. Whenever it encounters a horizontal cross-bridge, it MUST cross it."
-  - "The path terminates at the bottom prize or penalty box!"
+  - "모든 참가자는 고유한 세로선 상단에서 출발합니다."
+  - "아래로 진행하다가 가로 다리를 만나면 반드시 방향을 꺾어 이동합니다."
+  - "단 하나의 중복 없이 1:1로 정직하게 매칭됩니다."
 features:
-  - "Suspenseful step-by-step path walking animation with mechanical clicks"
-  - "Full 2 to 10 participant customization with emojis and outcome tags"
-  - "Korean & English stream presets (커피 쏘기, 벌칙 당첨, 밥값 내기)"
-  - "Instant reshuffle for back-to-back betting rounds"
+  - "스텝마다 심장을 쫄깃하게 만드는 실시간 효과음"
+  - "커피 쏘기, 치킨 내기, 벌칙, 당번 정하기 원클릭 프리셋"
+  - "2인부터 8인까지 인원수 원클릭 조절"
+  - "OBS 화면 캡처에 최적화된 고대비 다크 네온 그래픽"
 faqItems:
-  - q: "What is a Ladder Game (사다리 타기 / Amidakuji)?"
-    a: "It is a popular Asian lottery and betting game consisting of vertical lines with randomized horizontal rungs. Because every line has a unique, deterministic 1-to-1 mapping to a bottom outcome, it is completely fair and impossible to rig."
-  - q: "Can I use this for coffee bets or stream penalties?"
-    a: "Yes! Simply edit the bottom boxes to match your bet (e.g., 'Coffee', 'Safe', 'Penalty 1', 'Lunch Duty')."
+  - q: "사다리타기 결과는 조작이 불가능한가요?"
+    a: "네! 사다리타기 알고리즘은 수학적 전단사 함수(Bijective Mapping)로 설계되어 어떠한 중복이나 조작 없이 100% 정직하게 결과가 결정됩니다."
+  - q: "벌칙이나 항목 이름을 바꿀 수 있나요?"
+    a: "상단 참가자 이름과 하단 결과 상자 텍스트를 클릭하여 원하는 텍스트로 자유롭게 변경할 수 있습니다."
 ---
 
-## Fair, Visual, and High-Suspense Group Decisions
+## 방송 내기의 영원한 클래식, 실시간 사다리타기
 
-The Ladder Game is legendary across Korean streaming and workplace culture because everyone can watch the path twist and turn until the final moment of truth.
+스트리머와 매니저, 합방 멤버, 시청자 간의 치킨/커피 쏘기 및 벌칙 결정을 가장 공정하고 재미있게 진행할 수 있는 최적의 도구입니다.

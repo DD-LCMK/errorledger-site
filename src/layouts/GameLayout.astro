@@ -33,9 +33,9 @@ const {
 ---
 
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="ko" class="dark">
   <head>
-    <BaseHead title={`${title} - Free Online Browser Game | AetherArcade`} description={description} />
+    <BaseHead title={`${title} - 무료 방송용 웹게임 | 스트림아케이드`} description={description} />
   </head>
   <body class="game-page-body">
     <Header />
@@ -55,8 +55,8 @@ const {
             <span class="game-badge">{badge}</span>
             <span class="game-pill">⏱️ {playTime}</span>
             <span class="game-pill">👥 {players}</span>
-            <button id="fullscreen-btn" class="stage-btn" title="Toggle Fullscreen">
-              <span>⛶ Fullscreen</span>
+            <button id="fullscreen-btn" class="stage-btn" title="전체화면 전환">
+              <span>⛶ 전체화면</span>
             </button>
           </div>
         </div>
@@ -72,24 +72,24 @@ const {
         <div class="guide-grid">
           <!-- Controls & Rules -->
           <div class="guide-card">
-            <h3>🎮 How to Play & Controls</h3>
+            <h3>🎮 조작법 & 사용 방법</h3>
             {controls.length > 0 ? (
               <ul class="guide-list">
                 {controls.map(c => <li>{c}</li>)}
               </ul>
             ) : (
-              <p>Click, tap or use arrow keys to control gameplay.</p>
+              <p>마우스 클릭, 화면 터치 또는 키보드로 간편하게 조작할 수 있습니다.</p>
             )}
           </div>
 
           <div class="guide-card">
-            <h3>📜 Rules & Objectives</h3>
+            <h3>📜 규칙 & 방송 진행 팁</h3>
             {rules.length > 0 ? (
               <ul class="guide-list">
                 {rules.map(r => <li>{r}</li>)}
               </ul>
             ) : (
-              <p>Play through the game and aim for the highest score!</p>
+              <p>시청자와 함께 규칙을 정하고 재미있게 방송을 진행해보세요!</p>
             )}
           </div>
         </div>
@@ -102,7 +102,7 @@ const {
         <!-- FAQ Section for Rich Snippets -->
         {faqItems && faqItems.length > 0 && (
           <div class="game-faq-section">
-            <h2>Frequently Asked Questions</h2>
+            <h2>자주 묻는 질문 (FAQ)</h2>
             <div class="faq-accordion">
               {faqItems.map((item, idx) => (
                 <details class="faq-item" open={idx === 0}>

@@ -2,12 +2,11 @@
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import { SITE_TITLE, SITE_TAGLINE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
 
 const games = await getCollection('games');
-
-const priorityOrder = ['god-duel', 'roulette', 'ladder', 'gem-2048', 'cosmic-drop', 'word-sprint'];
+const priorityOrder = ['roulette', 'ladder', 'balance', 'crocodile', 'cosmic-drop', 'gem-2048'];
 const sortedGames = games.sort((a, b) => {
   const idxA = priorityOrder.indexOf(a.id);
   const idxB = priorityOrder.indexOf(b.id);
@@ -16,9 +15,9 @@ const sortedGames = games.sort((a, b) => {
 ---
 
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="ko" class="dark">
   <head>
-    <BaseHead title={`${SITE_TITLE} - Free Instant Browser Games & Tactical Puzzles`} description={SITE_DESCRIPTION} />
+    <BaseHead title={`${SITE_TITLE} - ${SITE_TAGLINE}`} description={SITE_DESCRIPTION} />
   </head>
   <body class="arcade-home-body">
     <Header />
@@ -29,17 +28,17 @@ const sortedGames = games.sort((a, b) => {
         <div class="hero-backdrop"></div>
         <div class="hero-content">
           <div class="hero-pill">
-            <span class="pill-spark">✨</span>
-            <span>100% Free Client-Side Gaming • Zero Downloads</span>
+            <span class="pill-spark">🔴</span>
+            <span>치지직(CHZZK) · 유튜브 라이브 · SOOP 방송 도구</span>
           </div>
 
           <h1 class="hero-headline">
-            Instant Web Games.<br />
-            <span class="gradient-text">Zero Waiting. Endless Fun.</span>
+            생방송의 긴장감을 극대화하는<br />
+            <span class="gradient-text">무료 방송용 인터랙티브 도구 모음</span>
           </h1>
 
           <p class="hero-subtext">
-            Play tactical turn card battles, satisfying tile mergers, and 60-second speed puzzles directly in your web browser. Free forever on mobile and desktop.
+            야식 추첨 돌림판, 커피 내기 사다리타기, 저챗 밸런스 게임, 악어 복불복까지! 설치 없이 OBS 브라우저 소스로 즉시 띄워 방송 텐션을 끌어올리세요.
           </p>
 
           <!-- Featured Game Hero Banner -->
@@ -47,18 +46,18 @@ const sortedGames = games.sort((a, b) => {
             <div class="featured-glow"></div>
             <div class="featured-inner">
               <div class="featured-badge-row">
-                <span class="flagship-badge">🔥 FLAGSHIP RELEASE</span>
-                <span class="rating-badge">★ 4.95 (24.8K plays)</span>
+                <span class="flagship-badge">🔥 실시간 인기 방송 도구</span>
+                <span class="rating-badge">★ 4.99 (45.2K회 사용)</span>
               </div>
               <div class="featured-main-row">
-                <div class="featured-icon-box">⚔️</div>
+                <div class="featured-icon-box">🎡</div>
                 <div class="featured-text">
-                  <h2>God Duel</h2>
-                  <p>Inspired by the legendary <em>God Field (갓필드)</em>. Duel chaos deities with swords, shields, divine miracles, and clutch comebacks.</p>
+                  <h2>방송용 돌림판 룰렛</h2>
+                  <p>실제 회전 물리 엔진, 찰진 래칫 눈금 틱 사운드, 승자 폭죽 이펙트와 야식/벌칙 1초 프리셋 지원.</p>
                 </div>
                 <div class="featured-action">
-                  <a href="/games/god-duel" class="btn-play-hero">
-                    <span>⚔️ Play God Duel</span>
+                  <a href="/games/roulette" class="btn-play-hero">
+                    <span>🎡 룰렛 돌리기</span>
                   </a>
                 </div>
               </div>
@@ -110,47 +109,48 @@ const sortedGames = games.sort((a, b) => {
         </div>
       </section>
 
-      <!-- Why AetherArcade Section -->
+      <!-- Why StreamArcade Section -->
       <section class="value-props-section">
         <div class="props-grid">
           <div class="prop-card">
-            <div class="prop-icon">⚡</div>
-            <h3>Zero Download Required</h3>
-            <p>Runs 100% client-side via lightweight HTML5 and JavaScript. No apps to install, no storage eaten, instant play in seconds.</p>
+            <div class="prop-icon">📺</div>
+            <h3>OBS 브라우저 소스 100% 호환</h3>
+            <p>프로그램 설치 없이 URL만 복사하여 OBS 스튜디오 브라우저 소스에 붙여넣으면 깔끔한 크로마키/오버레이로 즉시 방송에 띄울 수 있습니다.</p>
           </div>
           <div class="prop-card">
             <div class="prop-icon">📱</div>
-            <h3>Mobile & Desktop Ready</h3>
-            <p>Fully responsive with touch controls for smartphones and keyboard hotkeys for desktop. Pick up and play anywhere.</p>
+            <h3>PC & 모바일 완벽 지원</h3>
+            <p>PC 단축키(Space, 숫자키)와 스마트폰 터치 인터페이스를 모두 지원하여 생방송 중 끊김 없이 조작할 수 있습니다.</p>
           </div>
           <div class="prop-card">
-            <div class="prop-icon">🧠</div>
-            <h3>Quick Mental Refresh</h3>
-            <p>Designed for 2–5 minute tactical breaks during work, study, or commuting. Instant dopamine with zero predatory paywalls.</p>
+            <div class="prop-icon">🔒</div>
+            <h3>100% 무료 & 개인정보 수집 제로</h3>
+            <p>회원가입, 로그인, 유료 결제가 일절 없으며 모든 데이터는 브라우저 내부에서 안전하게 실행됩니다.</p>
           </div>
         </div>
       </section>
 
-      <!-- FAQ Section for Search Optimization -->
+      <!-- FAQ Section -->
       <section class="home-faq-section">
-        <div class="faq-inner">
-          <h2>Frequently Asked Questions</h2>
+        <div class="faq-container">
+          <span class="faq-tag">자주 묻는 질문</span>
+          <h2>스트리머 FAQ</h2>
           <div class="faq-grid">
             <div class="faq-box">
-              <h3>Are all games on AetherArcade completely free?</h3>
-              <p>Yes, 100% free forever. We do not have micro-transactions, pay-to-win cards, or paywalls. AetherArcade is an independent passion project built for fast, clean, and distraction-free browser entertainment.</p>
+              <h3>OBS Studio에서 어떻게 띄우나요?</h3>
+              <p>OBS 소스 목록에서 [+] 버튼을 누르고 [브라우저]를 추가한 뒤, 원하는 게임 페이지 URL(예: /games/roulette)을 입력하세요. 너비 1280, 높이 720으로 설정하시면 방송 화면에 완벽하게 표시됩니다.</p>
             </div>
             <div class="faq-box">
-              <h3>Do I need an account or login to play?</h3>
-              <p>No account required! Your high scores and preferences are securely saved in your browser's local storage so you can jump in and play instantly as a guest.</p>
+              <h3>회원가입이나 결제가 필요한가요?</h3>
+              <p>아닙니다! 스트림아케이드는 100% 무료이며 로그인이나 회원가입 없이 모든 방송 도구를 평생 무료로 사용하실 수 있습니다.</p>
             </div>
             <div class="faq-box">
-              <h3>What is God Duel?</h3>
-              <p>God Duel is our flagship turn-based card duel game inspired by the legendary web classic <em>God Field (갓필드)</em>. You manage Health and Miracle Points while bluffing, attacking, and guarding against an intelligent deity AI opponent.</p>
+              <h3>치지직(CHZZK), SOOP, 유튜브 모두 지원하나요?</h3>
+              <p>네! 웹 브라우저 기반으로 동작하므로 치지직, SOOP(아프리카TV), 유튜브 라이브, 트위치 등 모든 방송 플랫폼에서 완벽하게 작동합니다.</p>
             </div>
             <div class="faq-box">
-              <h3>Can I play these games unblocked at school or work?</h3>
-              <p>Yes. AetherArcade is a lightweight, standard HTTPS website without external heavyweight game launchers, making it accessible on almost any standard modern browser.</p>
+              <h3>사다리타기나 룰렛 결과는 조작이 불가능한가요?</h3>
+              <p>네, 모든 난수는 브라우저의 암호학적/물리 엔진 알고리즘에 의해 실시간으로 생성되므로 100% 공정합니다.</p>
             </div>
           </div>
         </div>
