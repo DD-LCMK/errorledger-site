@@ -81,10 +81,13 @@ const data = gameEntry?.data || {
         <button id="toggle-blind-btn" class="action-btn-blind" title="사다리 가림막 켜기/끄기">
           <span id="blind-btn-text">🔒 가림막 ON</span>
         </button>
-        <button id="reveal-all-btn" class="action-btn-primary">
-          <span>⚡ 전체 결과 보기</span>
+        <button id="start-all-btn" class="action-btn-primary" title="모든 참가자가 동시에 사다리를 타고 내려옵니다">
+          <span>🚀 전체 동시 출발</span>
         </button>
-        <button id="reroll-ladder-btn" class="action-btn-secondary">
+        <button id="reveal-all-btn" class="action-btn-secondary" title="애니메이션 없이 전체 결과를 즉시 표시합니다">
+          <span>⚡ 즉시 결과</span>
+        </button>
+        <button id="reroll-ladder-btn" class="action-btn-secondary" title="사다리 가로줄을 무작위로 다시 생성합니다">
           <span>🎲 사다리 다시 섞기</span>
         </button>
       </div>
@@ -707,6 +710,7 @@ const data = gameEntry?.data || {
   const ladderSvg = document.getElementById('ladder-svg') as SVGSVGElement | null;
   const ladderContainer = document.getElementById('ladder-container');
   const countBtns = document.querySelectorAll('.count-btn');
+  const startAllBtn = document.getElementById('start-all-btn');
   const revealAllBtn = document.getElementById('reveal-all-btn');
   const rerollBtn = document.getElementById('reroll-ladder-btn');
 
@@ -964,7 +968,117 @@ const data = gameEntry?.data || {
     }, 120);
   }
 
-  // Reveal all paths at once
+  // Trace ALL players simultaneously with real-time synchronized animation!
+  function startAll() {
+    if (isTracing || !ladderContainer) return;
+    unveilBlind();
+    isTracing = true;
+
+    const width = ladderContainer.clientWidth || 800;
+    const height = 380;
+
+    // Precalculate full path for each player
+    const fullPaths: { x: number; y: number }[][] = [];
+    const results: { player: string; outcome: string; color: string; emoji: string }[] = [];
+
+    for (let p = 0; p < playerCount; p++) {
+      const pts = calculatePath(p, width, height);
+      fullPaths.push(pts);
+
+      const lastX = pts[pts.length - 1].x;
+      let destPole = 0;
+      let minDist = Infinity;
+      for (let d = 0; d < playerCount; d++) {
+        const px = getPoleX(d, playerCount, width);
+        const dist = Math.abs(px - lastX);
+        if (dist < minDist) {
+          minDist = dist;
+          destPole = d;
+        }
+      }
+
+      results.push({
+        player: participantNames[p],
+        outcome: outcomeNames[destPole],
+        color: PLAYER_COLORS[p % PLAYER_COLORS.length],
+        emoji: EMOJIS[p % EMOJIS.length]
+      });
+    }
+
+    // Reset previous revealed states
+    for (let d = 0; d < playerCount; d++) {
+      const card = document.getElementById(`outcome-card-${d}`);
+      card?.classList.remove('revealed');
+      const badge = document.getElementById(`outcome-badge-${d}`);
+      if (badge) badge.textContent = '';
+    }
+
+    let currentStep = 0;
+
+    const interval = setInterval(() => {
+      currentStep++;
+      const currentActivePaths: { points: { x: number; y: number }[]; color: string }[] = [];
+      let allDone = true;
+
+      for (let p = 0; p < playerCount; p++) {
+        const color = PLAYER_COLORS[p % PLAYER_COLORS.length];
+        const pts = fullPaths[p];
+        const stepIndex = Math.min(currentStep, pts.length - 1);
+        const sliced = pts.slice(0, stepIndex + 1);
+        currentActivePaths.push({ points: sliced, color });
+
+        if (currentStep < pts.length) {
+          allDone = false;
+        } else {
+          // Player reached bottom
+          const lastX = pts[pts.length - 1].x;
+          let destPole = 0;
+          let minDist = Infinity;
+          for (let d = 0; d < playerCount; d++) {
+            const px = getPoleX(d, playerCount, width);
+            const dist = Math.abs(px - lastX);
+            if (dist < minDist) {
+              minDist = dist;
+              destPole = d;
+            }
+          }
+          const card = document.getElementById(`outcome-card-${destPole}`);
+          if (card && !card.classList.contains('revealed')) {
+            card.classList.add('revealed');
+            const badge = document.getElementById(`outcome-badge-${destPole}`);
+            if (badge) badge.textContent = `👑 ${participantNames[p]}`;
+          }
+        }
+      }
+
+      audio.playStep(420 + (currentStep % 8) * 35);
+      renderLadderSVG(currentActivePaths);
+
+      if (allDone) {
+        clearInterval(interval);
+        isTracing = false;
+        audio.playWin();
+
+        setTimeout(() => {
+          if (resultSummaryList && resultModal) {
+            resultSummaryList.innerHTML = results.map(r => `
+              <div class="summary-item" style="border-left: 4px solid ${r.color}">
+                <div class="summary-player">
+                  <span>${r.emoji}</span>
+                  <strong>${r.player}</strong>
+                </div>
+                <div class="summary-arrow">➔</div>
+                <div class="summary-outcome">${r.outcome}</div>
+              </div>
+            `).join('');
+            resultModal.classList.remove('hidden');
+          }
+        }, 600);
+      }
+    }, 110);
+  }
+
+  // Reveal all paths at once (Instant)
   function revealAll() {
     if (!ladderContainer) return;
     unveilBlind();
@@ -1050,6 +1164,7 @@ const data = gameEntry?.data || {
     });
   });
 
+  startAllBtn?.addEventListener('click', startAll);
   revealAllBtn?.addEventListener('click', revealAll);
   rerollBtn?.addEventListener('click', initLadder);
   closeResultBtn?.addEventListener('click', () => resultModal?.classList.add('hidden'));
