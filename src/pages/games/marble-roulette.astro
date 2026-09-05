@@ -87,12 +87,13 @@ const data = gameEntry?.data || {
                 <button class="speed-btn" data-speed="1.5">1.5x</button>
                 <button class="speed-btn" data-speed="2">2x</button>
               </div>
+              <button class="theater-btn" id="theater-toggle-btn" title="설정창 접기/펼치기 (게임 화면 집중 모드)">📺 집중 모드</button>
             </div>
           </div>
 
           <!-- Canvas Viewport -->
           <div class="canvas-viewport" id="canvas-viewport">
-            <canvas id="marble-canvas" width="540" height="780"></canvas>
+            <canvas id="marble-canvas" width="620" height="660"></canvas>
 
             <!-- Countdown Overlay -->
             <div class="countdown-overlay hidden" id="countdown-overlay">
@@ -290,14 +291,25 @@ const data = gameEntry?.data || {
     width: 100%;
   }
 
-  /* Main Two-Column Layout */
+  /* Main Two-Column Layout (68:32 Game Dominant Ratio) */
   .marble-main-layout {
     display: grid;
-    grid-template-columns: 540px 1fr;
+    grid-template-columns: minmax(620px, 1fr) 350px;
     gap: 1.25rem;
     width: 100%;
-    max-width: 1240px;
+    max-width: 1440px;
     align-items: start;
+    transition: all 0.25s ease;
+  }
+
+  .marble-main-layout.theater-mode {
+    grid-template-columns: 1fr;
+    max-width: 980px;
+    margin: 0 auto;
+  }
+
+  .marble-main-layout.theater-mode .control-column {
+    display: none;
   }
 
   @media (max-width: 1100px) {
@@ -311,8 +323,9 @@ const data = gameEntry?.data || {
   .track-column {
     display: flex;
     flex-direction: column;
-    gap: 0.65rem;
-    width: 540px;
+    gap: 0.5rem;
+    width: 100%;
+    min-width: 0;
   }
 
   @media (max-width: 600px) {
@@ -471,15 +484,43 @@ const data = gameEntry?.data || {
     border-color: #38bdf8;
   }
 
-  /* Canvas Viewport */
+  .theater-btn {
+    background: rgba(168, 85, 247, 0.15);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    color: #e9d5ff;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .theater-btn:hover {
+    background: rgba(168, 85, 247, 0.25);
+    color: #ffffff;
+  }
+
+  .theater-btn.active {
+    background: #a855f7;
+    color: #ffffff;
+    border-color: #c084fc;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+  }
+
+  /* Canvas Viewport (Zero-Scroll 660px Height) */
   .canvas-viewport {
     position: relative;
-    width: 540px;
-    height: 780px;
+    width: 100%;
+    height: 660px;
     background: #020617;
     overflow: hidden;
     cursor: grab;
     touch-action: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .canvas-viewport.is-dragging {
@@ -488,8 +529,8 @@ const data = gameEntry?.data || {
 
   canvas#marble-canvas {
     display: block;
-    width: 540px;
-    height: 780px;
+    width: 620px;
+    height: 660px;
   }
 
   /* Minimap */
@@ -608,8 +649,8 @@ const data = gameEntry?.data || {
   .control-column {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    max-height: 860px;
+    gap: 0.65rem;
+    max-height: 746px;
     overflow-y: auto;
     padding-right: 0.35rem;
   }
@@ -2584,6 +2625,17 @@ const data = gameEntry?.data || {
       btn.classList.add('active');
       zoom = parseFloat(btn.getAttribute('data-zoom') || '0.75');
     });
+  });
+
+  // Theater Mode (집중 모드)
+  const theaterBtn = document.getElementById('theater-toggle-btn');
+  const mainLayout = document.querySelector('.marble-main-layout');
+  let isTheater = false;
+  theaterBtn?.addEventListener('click', () => {
+    isTheater = !isTheater;
+    mainLayout?.classList.toggle('theater-mode', isTheater);
+    theaterBtn.classList.toggle('active', isTheater);
+    theaterBtn.textContent = isTheater ? '⚙️ 설정창 보기' : '📺 집중 모드';
   });
 
   // Event Listeners

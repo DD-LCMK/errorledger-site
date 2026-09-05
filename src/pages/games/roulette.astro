@@ -49,6 +49,8 @@ const data = gameEntry?.data || {
   rules={data.rules}
   faqItems={data.faqItems}
   layoutMode="full"
+  hideStageHeader={true}
+  hideFooter={true}
 >
   <div class="roulette-app-root" id="roulette-root">
 
@@ -186,13 +188,21 @@ const data = gameEntry?.data || {
   .roulette-app-root {
     position: relative;
     display: grid;
-    grid-template-columns: 1fr 360px;
-    gap: 1.5rem;
+    grid-template-columns: minmax(560px, 1fr) 340px;
+    gap: 1.25rem;
     background: #090d16;
     border-radius: 16px;
-    padding: 1.5rem;
-    min-height: 640px;
+    padding: 0.75rem 0.25rem;
+    max-width: 1440px;
+    margin: 0 auto;
     user-select: none;
+    align-items: start;
+  }
+
+  @media (max-width: 1000px) {
+    .roulette-app-root {
+      grid-template-columns: 1fr;
+    }
   }
 
   /* Wheel Stage */
@@ -204,35 +214,36 @@ const data = gameEntry?.data || {
     background: #0f172a;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 14px;
-    padding: 1.5rem 1rem;
+    padding: 1.25rem 1rem;
     position: relative;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    min-height: 660px;
   }
 
   .wheel-title-bar {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 900;
     color: #f8fafc;
     letter-spacing: -0.02em;
-    margin-bottom: 1.25rem;
+    margin-bottom: 0.75rem;
     text-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
     text-align: center;
   }
 
   .wheel-canvas-wrapper {
     position: relative;
-    width: 460px;
-    height: 460px;
+    width: 540px;
+    height: 540px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
   #roulette-canvas {
-    width: 440px;
-    height: 440px;
+    width: 520px;
+    height: 520px;
     border-radius: 50%;
-    box-shadow: 0 0 35px rgba(0, 0, 0, 0.7), 0 0 20px rgba(168, 85, 247, 0.25);
+    box-shadow: 0 0 35px rgba(0, 0, 0, 0.7), 0 0 25px rgba(168, 85, 247, 0.3);
   }
 
   /* Top Needle Pointer */
