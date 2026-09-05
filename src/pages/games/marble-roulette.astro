@@ -1194,7 +1194,7 @@ const data = gameEntry?.data || {
     { y: 260, title: 'ZONE 1 — 스타팅 핀 숲', sub: 'PLINKO FOREST FIELD' },
     { y: 800, title: 'ZONE 2 — 1차 쿼드 스피너', sub: 'QUAD SPINNER GAUNTLET' },
     { y: 1380, title: 'ZONE 3 — 1차 역전 스프링 트랩', sub: 'COMEBACK SPRING TRAP 1' },
-    { y: 1920, title: 'ZONE 4 — 6단 지그재그 슬로프', sub: 'SWITCHBACK RAMPS' },
+    { y: 1920, title: 'ZONE 4 — 하이퍼 슬라럼 & 트랩 드롭', sub: 'HYPER SLALOM, SPINNERS & TRAPDROP' },
     { y: 2700, title: 'ZONE 5 — 소용돌이 퍼널 & 2차 스피너', sub: 'VORTEX CHUTE & SPINNERS' },
     { y: 3420, title: 'ZONE 6 — 도박의 갈림길', sub: 'SPLIT-PATH GAMBLE (HIGH RISK CHUTE)' },
     { y: 4160, title: 'ZONE 7 — 2차 역전 메가 볼텍스 & 킥백', sub: 'REVERSE VORTEX & KICKBACKS' },
@@ -1269,19 +1269,44 @@ const data = gameEntry?.data || {
     segments.push({ x1: 310, y1: 1630, x2: 250, y2: 1750, type: 'ramp' });
     pins.push({ x: 220, y: 1820, radius: 8, isBumper: true });
 
-    // ZONE 4: 6단 지그재그 슬로프 (y: 1900 - 2650) - Steeper 90px slopes & wide 70px gaps to eliminate jams
-    segments.push({ x1: 20, y1: 1920, x2: 350, y2: 2010, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 2060, x2: 90, y2: 2150, type: 'ramp' });
-    segments.push({ x1: 20, y1: 2200, x2: 350, y2: 2290, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 2340, x2: 90, y2: 2430, type: 'ramp' });
-    segments.push({ x1: 20, y1: 2480, x2: 350, y2: 2570, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 2620, x2: 90, y2: 2710, type: 'ramp' });
+    // ZONE 4: 하이퍼 슬라럼 & 트랩 드롭 (y: 1900 - 2700) - Dynamic multi-path, rotary spinners, & center trapdoor
+    // Tier 1: High-speed launch ramp with neon ricochet bumpers & Spring Bouncer
+    segments.push({ x1: 20, y1: 1920, x2: 340, y2: 2020, type: 'ramp' });
+    pins.push({ x: 135, y: 1955, radius: 8, isBumper: true });
+    pins.push({ x: 245, y: 1990, radius: 8, isBumper: true });
+    bouncers.push({ x: 380, y: 2040, radius: 18, power: 7.2, label: 'BOUNCE' });
+    pins.push({ x: 345, y: 2065, radius: 7, isBumper: true });
 
-    pins.push({ x: 375, y: 2030, radius: 8, isBumper: true });
-    pins.push({ x: 65, y: 2170, radius: 8, isBumper: true });
-    pins.push({ x: 375, y: 2310, radius: 8, isBumper: true });
-    pins.push({ x: 65, y: 2450, radius: 8, isBumper: true });
-    pins.push({ x: 375, y: 2590, radius: 8, isBumper: true });
+    // Tier 2: Gravity Trapdoor Drop Chute (Wide gap between x:195 and x:275)
+    // Left entry ramp:
+    segments.push({ x1: 420, y1: 2085, x2: 275, y2: 2140, type: 'ramp' });
+    // Right exit ramp after gap:
+    segments.push({ x1: 195, y1: 2160, x2: 85, y2: 2225, type: 'ramp' });
+    
+    // Vertical Drop Shortcut Chute with angled funnel lips:
+    segments.push({ x1: 185, y1: 2160, x2: 195, y2: 2185, type: 'guide' });
+    segments.push({ x1: 195, y1: 2185, x2: 195, y2: 2360, type: 'guide' });
+    segments.push({ x1: 285, y1: 2145, x2: 275, y2: 2175, type: 'guide' });
+    segments.push({ x1: 275, y1: 2175, x2: 275, y2: 2360, type: 'guide' });
+    pins.push({ x: 235, y: 2265, radius: 6, isBumper: true }); // Pinball deflector inside drop chute with 34px clearance on each side
+
+    // Tier 3: Rotary Spinner Paddle across the ramp (swats passing marbles)
+    segments.push({ x1: 20, y1: 2235, x2: 345, y2: 2345, type: 'ramp' });
+    spinners.push({ x: 185, y: 2285, length: 65, angle: 0, speed: 0.052 });
+    pins.push({ x: 310, y: 2325, radius: 8, isBumper: true });
+    pins.push({ x: 380, y: 2365, radius: 8, isBumper: true });
+
+    // Tier 4: Dual Bumper Slalom & Convergence with Shortcut Chute
+    segments.push({ x1: 420, y1: 2390, x2: 85, y2: 2500, type: 'ramp' });
+    pins.push({ x: 320, y: 2420, radius: 8, isBumper: true });
+    pins.push({ x: 155, y: 2470, radius: 8, isBumper: true });
+    pins.push({ x: 60, y: 2520, radius: 8, isBumper: true });
+
+    // Tier 5: High-speed Rotary Launch into Zone 5
+    segments.push({ x1: 20, y1: 2530, x2: 350, y2: 2630, type: 'ramp' });
+    spinners.push({ x: 260, y: 2595, length: 60, angle: Math.PI / 3, speed: -0.055 });
+    segments.push({ x1: 420, y1: 2640, x2: 120, y2: 2710, type: 'ramp' });
+    pins.push({ x: 80, y: 2690, radius: 7, isBumper: true });
 
     // ZONE 5: 소용돌이 퍼널 & 2차 스피너 (y: 2700 - 3350) - 3 Spinners
     segments.push({ x1: 20, y1: 2730, x2: 180, y2: 2860, type: 'ramp' });
@@ -1693,18 +1718,19 @@ const data = gameEntry?.data || {
       const speed = Math.hypot(m.vx, m.vy);
       const movedDist = Math.hypot(m.x - m.lastSampleX, m.y - m.lastSampleY);
 
-      if (speed < 0.45 && movedDist < 8) {
+      if (speed < 0.55 && movedDist < 10) {
         m.stuckTimer += 0.016 * timeScale;
-        if (m.stuckTimer > 1.2) {
-          // Gentle nudge
-          m.vx += (Math.random() - 0.5) * 3.0;
-          m.vy += 2.0 + Math.random() * 1.5;
+        if (m.stuckTimer > 0.8) {
+          // Gentle nudge: lateral jiggle + downward push
+          m.vx += (Math.random() - 0.5) * 4.0;
+          m.vy += 2.5 + Math.random() * 1.8;
+          m.stuckTimer = 0.3; // keep moving if still caught
         }
-        if (m.stuckTimer > 2.5) {
+        if (m.stuckTimer > 1.8) {
           // Emergency escape burst & ejection
           triggerShockwave(m);
-          m.vy += 4.2;
-          m.vx += (m.x < COURSE_WIDTH / 2 ? 3.5 : -3.5);
+          m.vy += 4.8;
+          m.vx += (m.x < COURSE_WIDTH / 2 ? 4.0 : -4.0);
           m.stuckTimer = 0;
         }
       } else {
@@ -1931,90 +1957,74 @@ const data = gameEntry?.data || {
     const viewH = canvas.height / zoom;
     let targetY = 0;
 
-    if (!isManualCam) {
-      const active = marbles.filter(m => !m.finished);
+    const active = marbles.filter(m => !m.finished);
 
-      if (camMode === 'auto') {
+    if (!isManualCam) {
+      if (active.length === 0) {
+        // Everyone has finished: settle camera smoothly at the finish line / catch basin
+        targetY = FINISH_LINE_Y - viewH * 0.42;
+      } else if (camMode === 'auto') {
         // SMART AUTO CAMERA:
         // Rule: Focus on first runner until first runner passes the goal. Then focus dynamically!
         if (finishRankCounter === 0) {
           // No runner has crossed the finish line yet -> Focus on lead runner!
-          if (active.length > 0) {
-            const lead = active.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), active[0]);
-            targetY = lead.y - viewH * 0.38;
-          } else {
-            targetY = 0;
-          }
+          const lead = active.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), active[0]);
+          targetY = lead.y - viewH * 0.38;
         } else {
           // First runner has passed the goal! Now dynamically focus based on game mode:
           if (winnerMode === 'last') {
-            // In 꼴찌 mode, first runner finished -> shift focus smoothly to trailing runners!
-            if (active.length > 0) {
-              const lastRunner = active.reduce((prev, cur) => (cur.y < prev.y ? cur : prev), active[0]);
-              targetY = lastRunner.y - viewH * 0.42;
-            } else {
-              targetY = FINISH_LINE_Y - viewH * 0.35;
-            }
-          } else if (winnerMode === 'first') {
-            // In 1등 mode, stay focused near finish line to show podium & remaining finishes
-            targetY = FINISH_LINE_Y - viewH * 0.35;
+            // In 꼴찌 mode, first runner finished -> shift focus smoothly to trailing runners battling for last place!
+            const lastRunner = active.reduce((prev, cur) => (cur.y < prev.y ? cur : prev), active[0]);
+            targetY = lastRunner.y - viewH * 0.42;
           } else {
-            // In multi or custom mode, track remaining pack
-            if (active.length > 0) {
-              const avgY = active.reduce((acc, m) => acc + m.y, 0) / active.length;
-              targetY = avgY - viewH * 0.4;
-            } else {
-              targetY = FINISH_LINE_Y - viewH * 0.35;
-            }
+            // In 1등, multi, or custom mode:
+            // CRITICAL: NEVER stop at finish line while marbles are still running!
+            // Continue tracking the current leading active runner (2nd, 3rd, 4th place...)!
+            const lead = active.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), active[0]);
+            targetY = lead.y - viewH * 0.38;
           }
         }
       } else if (camMode === 'first') {
         // Explicitly focus foremost active runner
-        if (active.length > 0) {
-          const lead = active.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), active[0]);
-          targetY = lead.y - viewH * 0.38;
-        } else {
-          targetY = FINISH_LINE_Y - viewH * 0.35;
-        }
+        const lead = active.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), active[0]);
+        targetY = lead.y - viewH * 0.38;
       } else if (camMode === 'last') {
         // Explicitly focus rearmost active runner
-        if (active.length > 0) {
-          const tail = active.reduce((prev, cur) => (cur.y < prev.y ? cur : prev), active[0]);
-          targetY = tail.y - viewH * 0.42;
-        } else {
-          targetY = FINISH_LINE_Y - viewH * 0.35;
-        }
+        const tail = active.reduce((prev, cur) => (cur.y < prev.y ? cur : prev), active[0]);
+        targetY = tail.y - viewH * 0.42;
       } else if (camMode === 'runner' && focusedMarbleId !== null) {
         // Focus on a specific runner
         const target = marbles.find(m => m.id === focusedMarbleId);
         if (target) {
           targetY = target.y - viewH * 0.4;
+        } else if (active.length > 0) {
+          const lead = active.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), active[0]);
+          targetY = lead.y - viewH * 0.38;
         }
       }
 
       // Smooth camera lerp
       targetY = Math.max(0, Math.min(COURSE_HEIGHT - viewH + 80, targetY));
-      cameraY += (targetY - cameraY) * 0.09;
+      cameraY += (targetY - cameraY) * 0.085;
     } else {
       // Manual camera: strictly clamp bounds
       cameraY = Math.max(0, Math.min(COURSE_HEIGHT - viewH + 80, cameraY));
     }
 
     // Update live leader / status text
-    const unfinished = marbles.filter(m => !m.finished);
-    if (unfinished.length > 0) {
+    if (active.length > 0) {
       if (finishRankCounter === 0) {
-        const top = unfinished.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), unfinished[0]);
+        const top = active.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), active[0]);
         if (leadNameElem) leadNameElem.textContent = `선두: ${top.name}`;
       } else if (winnerMode === 'last') {
-        const tail = unfinished.reduce((prev, cur) => (cur.y < prev.y ? cur : prev), unfinished[0]);
-        if (leadNameElem) leadNameElem.textContent = `💀 꼴찌 위기: ${tail.name}`;
+        const tail = active.reduce((prev, cur) => (cur.y < prev.y ? cur : prev), active[0]);
+        if (leadNameElem) leadNameElem.textContent = `💀 꼴찌 경쟁: ${tail.name}`;
       } else {
-        const top = unfinished.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), unfinished[0]);
-        if (leadNameElem) leadNameElem.textContent = `다음 진입: ${top.name}`;
+        const top = active.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), active[0]);
+        if (leadNameElem) leadNameElem.textContent = `진행: ${top.name} (${finishRankCounter}/${marbles.length} 완주)`;
       }
     } else {
-      if (leadNameElem) leadNameElem.textContent = `레이스 종료!`;
+      if (leadNameElem) leadNameElem.textContent = `🏁 레이스 종료!`;
     }
   }
 
@@ -2319,6 +2329,7 @@ const data = gameEntry?.data || {
     renderMinimap();
 
     updatePhysics(1);
+    updateCamera();
     requestAnimationFrame(render);
   }
 
