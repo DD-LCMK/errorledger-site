@@ -61,18 +61,27 @@ const data = gameEntry?.data || {
       <!-- Left Column: Race Track Canvas & Minimap -->
       <div class="track-column">
         <div class="canvas-card">
-          <!-- Live Overlay Header -->
+          <!-- Live Overlay Header with Header Start/Reset Button followed by Camera Options -->
           <div class="track-hud-overlay">
             <div class="hud-left-items">
-              <div class="live-rank-chip" id="live-rank-chip">
-                <span class="rank-dot">● LIVE</span>
-                <span class="rank-text" id="lead-name">선두: 대기 중</span>
-              </div>
+              <!-- Dynamic Start / Reset Toggle Button (Header Section) -->
+              <button id="race-toggle-btn" class="hud-race-btn start-mode" title="레이스 시작 (단축키: Space)">
+                <span class="btn-icon">🚀</span>
+                <span class="btn-text">레이스 시작!</span>
+                <span class="btn-kbd">Space</span>
+              </button>
+
+              <!-- Camera View Options Follow Immediately -->
               <div class="cam-control-group">
                 <button class="cam-btn active" data-cam="auto" title="선두 완주 전까지 선두 추적, 완주 후 모드별 동적 전환">🎥 자동</button>
                 <button class="cam-btn" data-cam="first" title="선두 주자 집중 추적">🥇 선두</button>
                 <button class="cam-btn" data-cam="last" title="후미/꼴찌 주자 집중 추적">💀 꼴찌</button>
                 <button class="cam-resume-btn hidden" id="cam-resume-btn" title="자동 추적 카메라로 복귀">↩ 자동 복귀</button>
+              </div>
+
+              <div class="live-rank-chip" id="live-rank-chip">
+                <span class="rank-dot">● LIVE</span>
+                <span class="rank-text" id="lead-name">선두: 대기 중</span>
               </div>
             </div>
             
@@ -105,19 +114,6 @@ const data = gameEntry?.data || {
               <canvas id="minimap-canvas" width="40" height="460"></canvas>
             </div>
 
-            <!-- In-Map Floating Action Bar (Start & Reset Buttons Inside Map) -->
-            <div class="in-map-action-bar" id="in-map-action-bar">
-              <button id="start-race-btn" class="btn-in-map-primary" title="레이스 시작 (단축키: Space)">
-                <span class="btn-icon">🚀</span>
-                <span class="btn-text">레이스 시작!</span>
-                <span class="btn-kbd">Space</span>
-              </button>
-              <button id="reset-race-btn" class="btn-in-map-secondary" title="구슬 초기화">
-                <span class="btn-icon">🔄</span>
-                <span class="btn-text">리셋</span>
-              </button>
-            </div>
-
             <!-- Pan hint badge -->
             <div class="pan-hint-chip" id="pan-hint-chip">
               <span>🖱️ 드래그/휠로 맵 자유 탐색</span>
@@ -129,47 +125,18 @@ const data = gameEntry?.data || {
       <!-- Right Column: Settings, Inputs & Live Log -->
       <div class="control-column">
         
-        <!-- Winner Mode Selection Box -->
+        <!-- Winner Mode Dropdown Selection (Compact Space-Saving UI) -->
         <div class="panel-box">
-          <div class="panel-header">
+          <div class="panel-header compact-header">
             <span class="panel-title">🎯 당첨 방식 설정</span>
           </div>
-          <div class="winner-mode-grid">
-            <label class="mode-card active">
-              <input type="radio" name="winner-mode" value="last" checked />
-              <div class="mode-card-body">
-                <span class="mode-icon">💀</span>
-                <span class="mode-title">꼴찌 당첨</span>
-                <span class="mode-desc">마지막 통과자 (벌칙/내기)</span>
-              </div>
-            </label>
-
-            <label class="mode-card">
-              <input type="radio" name="winner-mode" value="first" />
-              <div class="mode-card-body">
-                <span class="mode-icon">🥇</span>
-                <span class="mode-title">1등 당첨</span>
-                <span class="mode-desc">가장 먼저 통과한 구슬</span>
-              </div>
-            </label>
-
-            <label class="mode-card">
-              <input type="radio" name="winner-mode" value="multi" />
-              <div class="mode-card-body">
-                <span class="mode-icon">🏆</span>
-                <span class="mode-title">다중 당첨</span>
-                <span class="mode-desc">상위 N명 (1~3등 등)</span>
-              </div>
-            </label>
-
-            <label class="mode-card">
-              <input type="radio" name="winner-mode" value="custom" />
-              <div class="mode-card-body">
-                <span class="mode-icon">🎯</span>
-                <span class="mode-title">특정 순위</span>
-                <span class="mode-desc">지정한 N번째 통과자</span>
-              </div>
-            </label>
+          <div class="mode-select-wrap">
+            <select id="winner-mode-select" class="mode-select">
+              <option value="last" selected>💀 꼴찌 당첨 (마지막 통과자 / 벌칙·내기)</option>
+              <option value="first">🥇 1등 당첨 (가장 먼저 통과한 구슬)</option>
+              <option value="multi">🏆 다중 당첨 (상위 N명 통과자)</option>
+              <option value="custom">🎯 특정 순위 (지정 N번째 통과자)</option>
+            </select>
           </div>
 
           <!-- Dynamic Mode Sub-settings -->
@@ -183,19 +150,6 @@ const data = gameEntry?.data || {
             <label>지정 당첨 순위:</label>
             <input type="number" id="custom-rank-input" value="7" min="1" max="50" class="sub-num-input" />
             <span>등 통과자 당첨</span>
-          </div>
-        </div>
-
-        <!-- Quick Presets -->
-        <div class="panel-box">
-          <div class="panel-header">
-            <span class="panel-title">⚡ 빠른 프리셋</span>
-          </div>
-          <div class="preset-chips">
-            <button class="preset-chip active" data-preset="coffee">☕ 커피 쏘기 (꼴찌)</button>
-            <button class="preset-chip" data-preset="chicken">🍗 치킨 내기 (꼴찌)</button>
-            <button class="preset-chip" data-preset="lunch">🍽️ 점심 메뉴</button>
-            <button class="preset-chip" data-preset="penalty">⚡ 벌칙 뽑기</button>
           </div>
         </div>
 
@@ -604,77 +558,59 @@ const data = gameEntry?.data || {
     100% { transform: scale(0.85); opacity: 0.8; }
   }
 
-  /* In-Map Floating Action Bar */
-  .in-map-action-bar {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-    padding: 0.35rem 0.5rem;
-    background: rgba(15, 23, 42, 0.88);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 9999px;
-    box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.65), 0 0 20px rgba(56, 189, 248, 0.2);
-    z-index: 25;
-    pointer-events: auto;
-  }
-
-  .btn-in-map-primary {
+  /* Dynamic Header Race Start/Reset Button */
+  .hud-race-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
-    padding: 0.6rem 1.35rem;
-    border-radius: 9999px;
-    background: linear-gradient(135deg, #0284c7 0%, #2563eb 50%, #4f46e5 100%);
-    color: #ffffff;
-    font-size: 0.95rem;
+    gap: 0.35rem;
+    padding: 0.28rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
     font-weight: 800;
-    border: 1px solid rgba(255, 255, 255, 0.3);
     cursor: pointer;
-    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
-    transition: all 0.15s ease;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+    border: 1px solid transparent;
   }
 
-  .btn-in-map-primary:hover {
-    transform: translateY(-1.5px);
-    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.55);
-    background: linear-gradient(135deg, #0369a1 0%, #1d4ed8 50%, #4338ca 100%);
+  .hud-race-btn.start-mode {
+    background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 2px 10px rgba(37, 99, 235, 0.45);
   }
 
-  .btn-in-map-primary:active {
+  .hud-race-btn.start-mode:hover {
+    transform: translateY(-1px);
+    background: linear-gradient(135deg, #0369a1 0%, #1d4ed8 100%);
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.6);
+  }
+
+  .hud-race-btn.start-mode:active {
     transform: translateY(0.5px);
   }
 
-  .btn-in-map-secondary {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.6rem 1.1rem;
-    border-radius: 9999px;
-    background: rgba(30, 41, 59, 0.9);
-    color: #cbd5e1;
-    font-size: 0.9rem;
-    font-weight: 700;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-
-  .btn-in-map-secondary:hover {
-    background: rgba(51, 65, 85, 0.95);
+  .hud-race-btn.reset-mode {
+    background: linear-gradient(135deg, #ea580c 0%, #dc2626 100%);
     color: #ffffff;
     border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 2px 10px rgba(220, 38, 38, 0.45);
   }
 
-  .btn-kbd {
-    font-size: 0.72rem;
-    padding: 0.15rem 0.35rem;
-    background: rgba(0, 0, 0, 0.3);
+  .hud-race-btn.reset-mode:hover {
+    transform: translateY(-1px);
+    background: linear-gradient(135deg, #c2410c 0%, #b91c1c 100%);
+    box-shadow: 0 4px 14px rgba(220, 38, 38, 0.6);
+  }
+
+  .hud-race-btn.reset-mode:active {
+    transform: translateY(0.5px);
+  }
+
+  .hud-race-btn .btn-kbd {
+    font-size: 0.65rem;
+    padding: 0.1rem 0.3rem;
+    background: rgba(0, 0, 0, 0.28);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 4px;
     color: #bae6fd;
@@ -740,105 +676,37 @@ const data = gameEntry?.data || {
     border-radius: 20px;
   }
 
-  /* Winner Mode Selection Cards */
-  .winner-mode-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.45rem;
+  /* Winner Mode Dropdown Select */
+  .mode-select-wrap {
+    position: relative;
+    width: 100%;
   }
 
-  .mode-card {
-    cursor: pointer;
-  }
-
-  .mode-card input {
-    display: none;
-  }
-
-  .mode-card-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+  .mode-select {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    background: #090d16;
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 8px;
-    padding: 0.5rem 0.4rem;
-    transition: all 0.15s ease;
-  }
-
-  .mode-card input:checked + .mode-card-body {
-    border-color: #facc15;
-    background: rgba(250, 204, 21, 0.12);
-    box-shadow: 0 0 12px rgba(250, 204, 21, 0.25);
-  }
-
-  .mode-icon {
-    font-size: 1.25rem;
-    margin-bottom: 0.15rem;
-  }
-
-  .mode-title {
-    font-size: 0.78rem;
-    font-weight: 900;
     color: #f8fafc;
-  }
-
-  .mode-desc {
-    font-size: 0.65rem;
-    color: #94a3b8;
-  }
-
-  .mode-sub-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.75rem;
-    color: #94a3b8;
-    background: rgba(255, 255, 255, 0.03);
-    padding: 0.4rem 0.6rem;
-    border-radius: 6px;
-  }
-
-  .sub-num-input {
-    width: 50px;
-    background: #020617;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    color: #facc15;
-    font-weight: 800;
-    padding: 0.2rem 0.4rem;
-    text-align: center;
-  }
-
-  /* Preset Chips */
-  .preset-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-  }
-
-  .preset-chip {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #cbd5e1;
-    font-size: 0.72rem;
-    font-weight: 800;
-    padding: 0.3rem 0.55rem;
-    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    outline: none;
     cursor: pointer;
     transition: all 0.15s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   }
 
-  .preset-chip:hover {
-    background: rgba(255, 255, 255, 0.12);
-    color: #f8fafc;
-  }
-
-  .preset-chip.active {
-    background: rgba(56, 189, 248, 0.2);
+  .mode-select:focus,
+  .mode-select:hover {
     border-color: #38bdf8;
-    color: #38bdf8;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
+  }
+
+  .mode-select option {
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 0.5rem;
   }
 
   /* Textarea */
@@ -1334,16 +1202,16 @@ const data = gameEntry?.data || {
     segments.push({ x1: 280, y1: 870, x2: 245, y2: 930, type: 'guide' });
     segments.push({ x1: 280, y1: 870, x2: 315, y2: 930, type: 'guide' });
 
-    // Twin Windmills: Length 125px, 40% slower speed 0.013
-    spinners.push({ x: 180, y: 970, length: 125, angle: 0, speed: 0.013 });
-    spinners.push({ x: 380, y: 1130, length: 125, angle: Math.PI / 2, speed: -0.013 });
+    // Twin Windmills: Length 125px, 15% slower speed 0.011
+    spinners.push({ x: 180, y: 970, length: 125, angle: 0, speed: 0.011 });
+    spinners.push({ x: 380, y: 1130, length: 125, angle: Math.PI / 2, speed: -0.011 });
 
     // Lower collection funnel
     segments.push({ x1: 20, y1: 1150, x2: 170, y2: 1240, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 1150, x2: 390, y2: 1240, type: 'ramp' });
 
-    // Center gatekeeper wheel (Length 135px, speed 0.015)
-    spinners.push({ x: 280, y: 1320, length: 135, angle: Math.PI / 4, speed: 0.015 });
+    // Center gatekeeper wheel (Length 135px, 15% slower speed 0.0128)
+    spinners.push({ x: 280, y: 1320, length: 135, angle: Math.PI / 4, speed: 0.0128 });
     segments.push({ x1: 20, y1: 1290, x2: 100, y2: 1340, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 1290, x2: 460, y2: 1340, type: 'ramp' });
 
@@ -1383,7 +1251,7 @@ const data = gameEntry?.data || {
     segments.push({ x1: 20, y1: 2990, x2: 190, y2: 3080, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 2990, x2: 370, y2: 3080, type: 'ramp' });
 
-    // ZONE 5: 소용돌이 볼텍스 퍼널 (y: 3100 - 3850) - Stepped Vortex Funnel & Swirling Hub (Length 125px, speed -0.015)
+    // ZONE 5: 소용돌이 볼텍스 퍼널 (y: 3100 - 3850) - Stepped Vortex Funnel & Swirling Hub (Length 125px, 15% slower speed -0.0128)
     segments.push({ x1: 20, y1: 3150, x2: 230, y2: 3270, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 3150, x2: 330, y2: 3270, type: 'ramp' });
 
@@ -1393,30 +1261,30 @@ const data = gameEntry?.data || {
     segments.push({ x1: 160, y1: 3380, x2: 380, y2: 3470, type: 'ramp' });
     segments.push({ x1: 400, y1: 3510, x2: 180, y2: 3600, type: 'ramp' });
 
-    spinners.push({ x: 280, y: 3670, length: 125, angle: 0, speed: -0.015 });
+    spinners.push({ x: 280, y: 3670, length: 125, angle: 0, speed: -0.0128 });
 
     segments.push({ x1: 20, y1: 3710, x2: 220, y2: 3810, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 3710, x2: 340, y2: 3810, type: 'ramp' });
 
-    // ZONE 6: 계단식 쾌속 캐스케이드 (y: 3900 - 4650) - 4 Alternating Steep Ramps + Speed Booster (Length 112px, speed 0.017)
+    // ZONE 6: 계단식 쾌속 캐스케이드 (y: 3900 - 4650) - 4 Alternating Steep Ramps + Speed Booster (Length 112px, 15% slower speed 0.0145)
     segments.push({ x1: 20, y1: 3930, x2: 440, y2: 4050, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 4100, x2: 120, y2: 4220, type: 'ramp' });
     segments.push({ x1: 20, y1: 4270, x2: 440, y2: 4390, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 4440, x2: 140, y2: 4560, type: 'ramp' });
 
-    spinners.push({ x: 285, y: 4610, length: 112, angle: Math.PI / 3, speed: 0.017 });
+    spinners.push({ x: 285, y: 4610, length: 112, angle: Math.PI / 3, speed: 0.0145 });
 
     segments.push({ x1: 20, y1: 4620, x2: 180, y2: 4680, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 4620, x2: 380, y2: 4680, type: 'ramp' });
 
-    // ZONE 7: 쿼드 크로스 스피너 & 킥백 (y: 4700 - 5450) - 4 Large Propellers (Length 110px, speed 0.013) + 3 Softened Bouncers
-    spinners.push({ x: 190, y: 4790, length: 110, angle: 0, speed: 0.013 });
-    spinners.push({ x: 370, y: 4940, length: 110, angle: 0, speed: -0.013 });
+    // ZONE 7: 쿼드 크로스 스피너 & 킥백 (y: 4700 - 5450) - 4 Large Propellers (Length 110px, 15% slower speed 0.011 - 0.012)
+    spinners.push({ x: 190, y: 4790, length: 110, angle: 0, speed: 0.011 });
+    spinners.push({ x: 370, y: 4940, length: 110, angle: 0, speed: -0.011 });
 
     bouncers.push({ x: 280, y: 4940, radius: 24, power: 4.8, label: 'KICKBACK' });
 
-    spinners.push({ x: 190, y: 5090, length: 110, angle: Math.PI / 4, speed: -0.014 });
-    spinners.push({ x: 370, y: 5230, length: 110, angle: -Math.PI / 4, speed: 0.014 });
+    spinners.push({ x: 190, y: 5090, length: 110, angle: Math.PI / 4, speed: -0.012 });
+    spinners.push({ x: 370, y: 5230, length: 110, angle: -Math.PI / 4, speed: 0.012 });
 
     bouncers.push({ x: 80, y: 5220, radius: 22, power: 4.2, label: 'BOUNCE' });
     bouncers.push({ x: 480, y: 5220, radius: 22, power: 4.2, label: 'BOUNCE' });
@@ -1450,8 +1318,8 @@ const data = gameEntry?.data || {
     segments.push({ x1: 20, y1: 6815, x2: 140, y2: 6870, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 6815, x2: 420, y2: 6870, type: 'ramp' });
 
-    // GIANT PROPELLER right before the finish line (Length 145px, 290px wingspan, SPINS THE OTHER WAY: speed -0.013)
-    spinners.push({ x: 280, y: 6850, length: 145, angle: 0, speed: -0.013 });
+    // GIANT PROPELLER right before the finish line (Length 145px, 290px wingspan, 15% slower speed: -0.011)
+    spinners.push({ x: 280, y: 6850, length: 145, angle: 0, speed: -0.011 });
 
     // 2 Decider Bumper Pins right below giant propeller corners (y: 6915)
     pins.push({ x: 180, y: 6915, radius: 9, isBumper: true });
@@ -1491,8 +1359,8 @@ const data = gameEntry?.data || {
 
   const namesInput = document.getElementById('names-input') as HTMLTextAreaElement;
   const marbleCountBadge = document.getElementById('marble-count-badge');
-  const startBtn = document.getElementById('start-race-btn');
-  const resetBtn = document.getElementById('reset-race-btn');
+  const raceToggleBtn = document.getElementById('race-toggle-btn');
+  const winnerModeSelect = document.getElementById('winner-mode-select') as HTMLSelectElement | null;
   const shuffleBtn = document.getElementById('shuffle-btn');
   const applyBtn = document.getElementById('apply-btn');
 
@@ -1604,19 +1472,47 @@ const data = gameEntry?.data || {
     }
   }
 
+  let countdownTimer: any = null;
+
+  function updateRaceButton() {
+    if (!raceToggleBtn) return;
+    if (isRacing || isCountingDown) {
+      raceToggleBtn.className = 'hud-race-btn reset-mode';
+      raceToggleBtn.innerHTML = '<span class="btn-icon">🔄</span><span class="btn-text">리셋</span>';
+      raceToggleBtn.title = '레이스 리셋 (처음 위치로 복귀)';
+    } else {
+      raceToggleBtn.className = 'hud-race-btn start-mode';
+      raceToggleBtn.innerHTML = '<span class="btn-icon">🚀</span><span class="btn-text">레이스 시작!</span><span class="btn-kbd">Space</span>';
+      raceToggleBtn.title = '레이스 시작 (단축키: Space)';
+    }
+  }
+
+  function resetRace() {
+    if (countdownTimer) {
+      clearInterval(countdownTimer);
+      countdownTimer = null;
+    }
+    isRacing = false;
+    isCountingDown = false;
+    if (countdownOverlay) countdownOverlay.classList.add('hidden');
+    spawnMarbles();
+    updateRaceButton();
+  }
+
   // Countdown & Start
   function startRace() {
     if (isRacing || isCountingDown) return;
     if (marbles.length === 0) spawnMarbles();
 
     isCountingDown = true;
+    updateRaceButton();
     if (countdownOverlay) countdownOverlay.classList.remove('hidden');
 
     let count = 3;
     if (countdownNumber) countdownNumber.textContent = '3';
     sfx.playBeep(440, 0.15);
 
-    const timer = setInterval(() => {
+    countdownTimer = setInterval(() => {
       count--;
       if (count > 0) {
         if (countdownNumber) countdownNumber.textContent = String(count);
@@ -1625,7 +1521,8 @@ const data = gameEntry?.data || {
         if (countdownNumber) countdownNumber.textContent = 'GO!';
         sfx.playBeep(880, 0.3);
       } else {
-        clearInterval(timer);
+        clearInterval(countdownTimer);
+        countdownTimer = null;
         isCountingDown = false;
         if (countdownOverlay) countdownOverlay.classList.add('hidden');
         
@@ -1633,15 +1530,17 @@ const data = gameEntry?.data || {
         isGateOpen = true;
         isRacing = true;
         raceStartTime = performance.now();
+        updateRaceButton();
       }
     }, 700);
   }
 
-  // Energy Shockwave Burst (3x Stronger Epic Blast, 3x Longer Charging)
+  // Energy Shockwave Burst (Only allowed after passing Zone 4 at y: 3080)
   function triggerShockwave(src: Marble) {
+    if (src.y < 3080) return; // Strictly restricted until passing Zone 4!
     const now = performance.now();
-    if (now - src.lastShockwaveTime < 12000) {
-      return; // Cooldown of 12 seconds per marble
+    if (now - src.lastShockwaveTime < 24000) {
+      return; // Cooldown of 24 seconds per marble (much lesser occurrence)
     }
     src.lastShockwaveTime = now;
     sfx.playPop();
@@ -1793,6 +1692,15 @@ const data = gameEntry?.data || {
         m.finishTime = (performance.now() - raceStartTime) / 1000;
         onMarbleFinished(m);
       }
+
+      // Energy Gauge Passive Trickle: very slowly fill up over time even when not bounced, only AFTER passing Zone 4 (y >= 3080)
+      if (energyGaugeEnabled && !m.finished && m.y >= 3080) {
+        m.energy = Math.min(1.0, m.energy + 0.00035 * timeScale);
+        if (m.energy >= 1.0) {
+          triggerShockwave(m);
+          m.energy = 0;
+        }
+      }
     });
 
     // Active Anti-Stuck Watchdog
@@ -1810,8 +1718,8 @@ const data = gameEntry?.data || {
           m.stuckTimer = 0.3; // keep moving if still caught
         }
         if (m.stuckTimer > 1.8) {
-          // Emergency escape burst & ejection
-          triggerShockwave(m);
+          // Emergency escape burst: shockwave only if passed Zone 4
+          if (m.y >= 3080) triggerShockwave(m);
           m.vy += 4.8;
           m.vx += (m.x < COURSE_WIDTH / 2 ? 4.0 : -4.0);
           m.stuckTimer = 0;
@@ -1852,17 +1760,21 @@ const data = gameEntry?.data || {
           m2.vx += p * nx * bounce;
           m2.vy += p * ny * bounce;
 
-          // 3x Longer collision energy charging (+0.015 instead of 0.045, takes ~67 collisions)
+          // Controlled collision energy charging: only after passing Zone 4 (y >= 3080)
           if (energyGaugeEnabled) {
-            m1.energy = Math.min(1.0, m1.energy + 0.015);
-            m2.energy = Math.min(1.0, m2.energy + 0.015);
-            if (m1.energy >= 1.0) {
-              triggerShockwave(m1);
-              m1.energy = 0;
+            if (m1.y >= 3080) {
+              m1.energy = Math.min(1.0, m1.energy + 0.003);
+              if (m1.energy >= 1.0) {
+                triggerShockwave(m1);
+                m1.energy = 0;
+              }
             }
-            if (m2.energy >= 1.0) {
-              triggerShockwave(m2);
-              m2.energy = 0;
+            if (m2.y >= 3080) {
+              m2.energy = Math.min(1.0, m2.energy + 0.003);
+              if (m2.energy >= 1.0) {
+                triggerShockwave(m2);
+                m2.energy = 0;
+              }
             }
           }
         }
@@ -2007,8 +1919,8 @@ const data = gameEntry?.data || {
             m.vy = (m.vy / bounceSpeed) * 5.2;
           }
 
-          if (energyGaugeEnabled) {
-            m.energy = Math.min(1.0, m.energy + 0.08);
+          if (energyGaugeEnabled && m.y >= 3080) {
+            m.energy = Math.min(1.0, m.energy + 0.02);
             if (m.energy >= 1.0) {
               triggerShockwave(m);
               m.energy = 0;
@@ -2052,6 +1964,7 @@ const data = gameEntry?.data || {
     const allFinished = marbles.every(m => m.finished);
     if (allFinished && isRacing) {
       isRacing = false;
+      updateRaceButton();
       setTimeout(() => {
         showFinalResults();
       }, 700);
@@ -2769,18 +2682,17 @@ const data = gameEntry?.data || {
     theaterBtn.textContent = isTheater ? '⚙️ 설정창 보기' : '📺 집중 모드';
   });
 
-  // Event Listeners
-  startBtn?.addEventListener('click', startRace);
-  resetBtn?.addEventListener('click', () => {
-    isRacing = false;
-    isCountingDown = false;
-    if (countdownOverlay) countdownOverlay.classList.add('hidden');
-    spawnMarbles();
+  // Dynamic Race Toggle Button (Start <-> Reset)
+  raceToggleBtn?.addEventListener('click', () => {
+    if (isRacing || isCountingDown) {
+      resetRace();
+    } else {
+      startRace();
+    }
   });
 
   applyBtn?.addEventListener('click', () => {
-    isRacing = false;
-    spawnMarbles();
+    resetRace();
   });
 
   shuffleBtn?.addEventListener('click', () => {
@@ -2790,44 +2702,23 @@ const data = gameEntry?.data || {
       [list[i], list[j]] = [list[j], list[i]];
     }
     if (namesInput) namesInput.value = list.join('\n');
-    spawnMarbles();
+    resetRace();
   });
 
-  // Presets click
-  document.querySelectorAll('.preset-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      document.querySelectorAll('.preset-chip').forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      const key = chip.getAttribute('data-preset') || 'coffee';
-      const p = PRESETS[key];
-      if (p) {
-        if (namesInput) namesInput.value = p.names.join('\n');
-        const radio = document.querySelector(`input[name="winner-mode"][value="${p.mode}"]`) as HTMLInputElement;
-        if (radio) {
-          radio.checked = true;
-          winnerMode = p.mode;
-        }
-        spawnMarbles();
-      }
-    });
+  // Winner Mode Dropdown Select Change
+  winnerModeSelect?.addEventListener('change', (e) => {
+    winnerMode = (e.target as HTMLSelectElement).value;
+    if (multiSettingsRow) {
+      multiSettingsRow.classList.toggle('hidden', winnerMode !== 'multi');
+    }
+    if (customSettingsRow) {
+      customSettingsRow.classList.toggle('hidden', winnerMode !== 'custom');
+    }
   });
 
   // Energy Gauge Toggle
   energyToggle?.addEventListener('change', (e) => {
     energyGaugeEnabled = (e.target as HTMLInputElement).checked;
-  });
-
-  // Winner Mode Radios
-  document.querySelectorAll('input[name="winner-mode"]').forEach(radio => {
-    radio.addEventListener('change', (e) => {
-      winnerMode = (e.target as HTMLInputElement).value;
-      if (multiSettingsRow) {
-        multiSettingsRow.classList.toggle('hidden', winnerMode !== 'multi');
-      }
-      if (customSettingsRow) {
-        customSettingsRow.classList.toggle('hidden', winnerMode !== 'custom');
-      }
-    });
   });
 
   // Speed buttons
@@ -2842,7 +2733,7 @@ const data = gameEntry?.data || {
   // Modal actions
   modalRestartBtn?.addEventListener('click', () => {
     resultModal?.classList.add('hidden');
-    spawnMarbles();
+    resetRace();
     startRace();
   });
 
@@ -2854,8 +2745,11 @@ const data = gameEntry?.data || {
   window.addEventListener('keydown', (e) => {
     if (e.code === 'Space' && e.target !== namesInput) {
       e.preventDefault();
-      if (isRacing) return;
-      startRace();
+      if (isRacing || isCountingDown) {
+        resetRace();
+      } else {
+        startRace();
+      }
     }
   });
 
