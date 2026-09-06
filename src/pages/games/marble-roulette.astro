@@ -105,20 +105,23 @@ const data = gameEntry?.data || {
               <canvas id="minimap-canvas" width="40" height="460"></canvas>
             </div>
 
+            <!-- In-Map Floating Action Bar (Start & Reset Buttons Inside Map) -->
+            <div class="in-map-action-bar" id="in-map-action-bar">
+              <button id="start-race-btn" class="btn-in-map-primary" title="레이스 시작 (단축키: Space)">
+                <span class="btn-icon">🚀</span>
+                <span class="btn-text">레이스 시작!</span>
+                <span class="btn-kbd">Space</span>
+              </button>
+              <button id="reset-race-btn" class="btn-in-map-secondary" title="구슬 초기화">
+                <span class="btn-icon">🔄</span>
+                <span class="btn-text">리셋</span>
+              </button>
+            </div>
+
             <!-- Pan hint badge -->
             <div class="pan-hint-chip" id="pan-hint-chip">
               <span>🖱️ 드래그/휠로 맵 자유 탐색</span>
             </div>
-          </div>
-
-          <!-- Bottom Action Bar under Canvas -->
-          <div class="track-controls-bottom">
-            <button id="start-race-btn" class="btn-race-primary">
-              <span>🚀 레이스 시작! (Space)</span>
-            </button>
-            <button id="reset-race-btn" class="btn-race-secondary">
-              <span>🔄 리셋</span>
-            </button>
           </div>
         </div>
       </div>
@@ -601,48 +604,80 @@ const data = gameEntry?.data || {
     100% { transform: scale(0.85); opacity: 0.8; }
   }
 
-  /* Track Bottom Action Controls */
-  .track-controls-bottom {
+  /* In-Map Floating Action Bar */
+  .in-map-action-bar {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
-    gap: 0.5rem;
-    padding: 0.65rem 0.75rem;
-    background: #0f172a;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  .btn-race-primary {
-    flex: 2;
-    background: linear-gradient(135deg, #38bdf8, #2563eb);
-    color: #ffffff;
-    border: none;
-    padding: 0.75rem;
-    border-radius: 10px;
-    font-size: 1rem;
-    font-weight: 900;
-    cursor: pointer;
-    box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
-    transition: transform 0.15s ease;
-  }
-
-  .btn-race-primary:hover {
-    transform: scale(1.02);
-  }
-
-  .btn-race-secondary {
-    flex: 1;
-    background: rgba(255, 255, 255, 0.08);
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.35rem 0.5rem;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #f8fafc;
-    padding: 0.75rem;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    font-weight: 800;
-    cursor: pointer;
-    transition: background 0.15s ease;
+    border-radius: 9999px;
+    box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.65), 0 0 20px rgba(56, 189, 248, 0.2);
+    z-index: 25;
+    pointer-events: auto;
   }
 
-  .btn-race-secondary:hover {
-    background: rgba(255, 255, 255, 0.15);
+  .btn-in-map-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.6rem 1.35rem;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, #0284c7 0%, #2563eb 50%, #4f46e5 100%);
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 800;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+    transition: all 0.15s ease;
+  }
+
+  .btn-in-map-primary:hover {
+    transform: translateY(-1.5px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.55);
+    background: linear-gradient(135deg, #0369a1 0%, #1d4ed8 50%, #4338ca 100%);
+  }
+
+  .btn-in-map-primary:active {
+    transform: translateY(0.5px);
+  }
+
+  .btn-in-map-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.1rem;
+    border-radius: 9999px;
+    background: rgba(30, 41, 59, 0.9);
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-in-map-secondary:hover {
+    background: rgba(51, 65, 85, 0.95);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+
+  .btn-kbd {
+    font-size: 0.72rem;
+    padding: 0.15rem 0.35rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    color: #bae6fd;
   }
 
   /* Right Control Column */
@@ -1226,8 +1261,8 @@ const data = gameEntry?.data || {
     alpha: number;
   }
 
-  // Course Dimensions (Mega 7,200px track)
-  const COURSE_WIDTH = 440;
+  // Course Dimensions (Wider 560px track for larger marbles & broadcast presence)
+  const COURSE_WIDTH = 560;
   const COURSE_HEIGHT = 7200;
   const FINISH_LINE_Y = 6950;
 
@@ -1259,167 +1294,168 @@ const data = gameEntry?.data || {
     bouncers = [];
     segments = [];
 
-    // Outer Boundary Walls (Left & Right)
-    segments.push({ x1: 20, y1: 0, x2: 20, y2: COURSE_HEIGHT, type: 'wall' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 0, x2: COURSE_WIDTH - 20, y2: COURSE_HEIGHT, type: 'wall' });
+    // Outer Boundary Walls (Left, Right & Top Enclosure Ceiling)
+    segments.push({ x1: 20, y1: 45, x2: 20, y2: COURSE_HEIGHT, type: 'wall' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 45, x2: COURSE_WIDTH - 20, y2: COURSE_HEIGHT, type: 'wall' });
 
-    // Starting Hopper (y: 60 - 220)
-    segments.push({ x1: 20, y1: 180, x2: 170, y2: 220, type: 'guide' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 180, x2: 270, y2: 220, type: 'guide' });
+    // Top Enclosed Ceiling: completely covers the top so marbles cannot bounce off
+    segments.push({ x1: 20, y1: 45, x2: COURSE_WIDTH - 20, y2: 45, type: 'wall' });
+    segments.push({ x1: 20, y1: 45, x2: 90, y2: 70, type: 'guide' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 45, x2: COURSE_WIDTH - 90, y2: 70, type: 'guide' });
 
-    // ZONE 1: 스타팅 호퍼 & 다이아몬드 파친코 (y: 280 - 750) - 10 Staggered Diamond Rows (Pure Galton Lattice - NO ramps)
+    // Starting Hopper (y: 60 - 220) - 140px wide gate
+    segments.push({ x1: 20, y1: 180, x2: 210, y2: 220, type: 'guide' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 180, x2: 350, y2: 220, type: 'guide' });
+
+    // ZONE 1: 스타팅 호퍼 & 다이아몬드 파친코 (y: 280 - 750) - 10 Staggered Diamond Rows across 560px width
     const galtonRows = [
-      [130, 175, 220, 265, 310],
-      [105, 151, 197, 243, 289, 335],
-      [80, 126, 173, 220, 267, 314, 360],
-      [60, 105, 151, 197, 243, 289, 335, 380],
-      [80, 126, 173, 220, 267, 314, 360],
-      [60, 105, 151, 197, 243, 289, 335, 380],
-      [80, 126, 173, 220, 267, 314, 360],
-      [60, 105, 151, 197, 243, 289, 335, 380],
-      [80, 126, 173, 220, 267, 314, 360],
-      [105, 151, 197, 243, 289, 335]
+      [165, 222, 280, 338, 395],
+      [135, 193, 251, 309, 367, 425],
+      [105, 163, 222, 280, 338, 397, 455],
+      [75, 133, 192, 251, 309, 368, 427, 485],
+      [105, 163, 222, 280, 338, 397, 455],
+      [75, 133, 192, 251, 309, 368, 427, 485],
+      [105, 163, 222, 280, 338, 397, 455],
+      [75, 133, 192, 251, 309, 368, 427, 485],
+      [105, 163, 222, 280, 338, 397, 455],
+      [135, 193, 251, 309, 367, 425]
     ];
     galtonRows.forEach((rowPins, rIdx) => {
       const y = 280 + rIdx * 48;
       rowPins.forEach(x => {
-        pins.push({ x, y, radius: 7.5 });
+        pins.push({ x, y, radius: 8.5 });
       });
     });
 
-    // ZONE 2: 트윈 윈드밀 회전차 (y: 800 - 1450) - 50% Longer & 20% Slower Synchronized Windmills + Center Gatekeeper
-    // Funnel entry ramps
-    segments.push({ x1: 20, y1: 820, x2: 120, y2: 900, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 820, x2: 320, y2: 900, type: 'ramp' });
+    // ZONE 2: 트윈 윈드밀 회전차 (y: 800 - 1450) - 5% Longer & 40% Slower Windmills
+    segments.push({ x1: 20, y1: 820, x2: 150, y2: 900, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 820, x2: 410, y2: 900, type: 'ramp' });
 
-    // Mid guide wedge (deflects into the two spinners)
-    segments.push({ x1: 220, y1: 870, x2: 190, y2: 930, type: 'guide' });
-    segments.push({ x1: 220, y1: 870, x2: 250, y2: 930, type: 'guide' });
+    segments.push({ x1: 280, y1: 870, x2: 245, y2: 930, type: 'guide' });
+    segments.push({ x1: 280, y1: 870, x2: 315, y2: 930, type: 'guide' });
 
-    // Staggered Twin Windmills (Length 115px, 20% slower speed 0.022)
-    spinners.push({ x: 160, y: 970, length: 115, angle: 0, speed: 0.022 });
-    spinners.push({ x: 280, y: 1130, length: 115, angle: Math.PI / 2, speed: -0.022 });
+    // Twin Windmills: Length 125px, 40% slower speed 0.013
+    spinners.push({ x: 180, y: 970, length: 125, angle: 0, speed: 0.013 });
+    spinners.push({ x: 380, y: 1130, length: 125, angle: Math.PI / 2, speed: -0.013 });
 
     // Lower collection funnel
-    segments.push({ x1: 20, y1: 1140, x2: 140, y2: 1230, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 1140, x2: 300, y2: 1230, type: 'ramp' });
+    segments.push({ x1: 20, y1: 1150, x2: 170, y2: 1240, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 1150, x2: 390, y2: 1240, type: 'ramp' });
 
-    // Center gatekeeper wheel (Length 125px, speed 0.025)
-    spinners.push({ x: 220, y: 1320, length: 125, angle: Math.PI / 4, speed: 0.025 });
-    segments.push({ x1: 20, y1: 1290, x2: 80, y2: 1340, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 1290, x2: 360, y2: 1340, type: 'ramp' });
+    // Center gatekeeper wheel (Length 135px, speed 0.015)
+    spinners.push({ x: 280, y: 1320, length: 135, angle: Math.PI / 4, speed: 0.015 });
+    segments.push({ x1: 20, y1: 1290, x2: 100, y2: 1340, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 1290, x2: 460, y2: 1340, type: 'ramp' });
 
     // ZONE 3: 운명의 갈림길 (y: 1500 - 2250) - High-Risk Shortcut vs Safe S-Loop
-    // Divider walls creating left shortcut chute (x: 140 to 210)
-    segments.push({ x1: 140, y1: 1560, x2: 140, y2: 1980, type: 'wall' });
-    segments.push({ x1: 210, y1: 1560, x2: 210, y2: 1980, type: 'wall' });
+    segments.push({ x1: 180, y1: 1560, x2: 180, y2: 1980, type: 'wall' });
+    segments.push({ x1: 270, y1: 1560, x2: 270, y2: 1980, type: 'wall' });
 
-    // Entry guide to left chute
-    segments.push({ x1: 20, y1: 1520, x2: 140, y2: 1560, type: 'guide' });
+    segments.push({ x1: 20, y1: 1520, x2: 180, y2: 1560, type: 'guide' });
 
     // Left Chute REVERSAL Spring Bouncer (Softer power: 5.2)
-    bouncers.push({ x: 175, y: 2050, radius: 20, power: 5.2, label: 'REVERSAL' });
-    segments.push({ x1: 20, y1: 2080, x2: 130, y2: 2170, type: 'ramp' });
+    bouncers.push({ x: 225, y: 2050, radius: 24, power: 5.2, label: 'REVERSAL' });
+    segments.push({ x1: 20, y1: 2080, x2: 170, y2: 2170, type: 'ramp' });
 
     // Right Lane Safe S-Loop
-    segments.push({ x1: 210, y1: 1560, x2: 360, y2: 1650, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 1720, x2: 260, y2: 1810, type: 'ramp' });
-    segments.push({ x1: 220, y1: 1880, x2: 370, y2: 1980, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 2050, x2: 260, y2: 2160, type: 'ramp' });
+    segments.push({ x1: 270, y1: 1560, x2: 470, y2: 1650, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 1720, x2: 340, y2: 1810, type: 'ramp' });
+    segments.push({ x1: 280, y1: 1880, x2: 480, y2: 1980, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 2050, x2: 340, y2: 2160, type: 'ramp' });
 
     // Convergence funnel into Zone 4
-    segments.push({ x1: 20, y1: 2210, x2: 160, y2: 2290, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 2210, x2: 280, y2: 2290, type: 'ramp' });
+    segments.push({ x1: 20, y1: 2210, x2: 210, y2: 2290, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 2210, x2: 350, y2: 2290, type: 'ramp' });
 
     // ZONE 4: 네온 핀볼 범퍼 아레나 (y: 2300 - 3050) - 7 Pulsating Spring Bouncers (Softened power: 4.2 - 4.8)
-    segments.push({ x1: 20, y1: 2340, x2: 70, y2: 2370, type: 'guide' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 2340, x2: 370, y2: 2370, type: 'guide' });
+    segments.push({ x1: 20, y1: 2340, x2: 90, y2: 2370, type: 'guide' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 2340, x2: 470, y2: 2370, type: 'guide' });
 
-    bouncers.push({ x: 130, y: 2430, radius: 20, power: 4.5, label: 'BOUNCE' });
-    bouncers.push({ x: 310, y: 2430, radius: 20, power: 4.5, label: 'BOUNCE' });
-    bouncers.push({ x: 220, y: 2610, radius: 22, power: 4.8, label: 'MEGA' });
-    bouncers.push({ x: 80, y: 2760, radius: 19, power: 4.2, label: 'KICK' });
-    bouncers.push({ x: 360, y: 2760, radius: 19, power: 4.2, label: 'KICK' });
-    bouncers.push({ x: 160, y: 2930, radius: 19, power: 4.4, label: 'BOUNCE' });
-    bouncers.push({ x: 280, y: 2930, radius: 19, power: 4.4, label: 'BOUNCE' });
+    bouncers.push({ x: 160, y: 2430, radius: 24, power: 4.5, label: 'BOUNCE' });
+    bouncers.push({ x: 400, y: 2430, radius: 24, power: 4.5, label: 'BOUNCE' });
+    bouncers.push({ x: 280, y: 2610, radius: 26, power: 4.8, label: 'MEGA' });
+    bouncers.push({ x: 100, y: 2760, radius: 22, power: 4.2, label: 'KICK' });
+    bouncers.push({ x: 460, y: 2760, radius: 22, power: 4.2, label: 'KICK' });
+    bouncers.push({ x: 200, y: 2930, radius: 22, power: 4.4, label: 'BOUNCE' });
+    bouncers.push({ x: 360, y: 2930, radius: 22, power: 4.4, label: 'BOUNCE' });
 
     // Arena exit funnel
-    segments.push({ x1: 20, y1: 2990, x2: 150, y2: 3080, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 2990, x2: 290, y2: 3080, type: 'ramp' });
+    segments.push({ x1: 20, y1: 2990, x2: 190, y2: 3080, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 2990, x2: 370, y2: 3080, type: 'ramp' });
 
-    // ZONE 5: 소용돌이 볼텍스 퍼널 (y: 3100 - 3850) - Stepped Vortex Funnel & Swirling Hub (Length 115px, speed -0.025)
-    segments.push({ x1: 20, y1: 3150, x2: 180, y2: 3270, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 3150, x2: 260, y2: 3270, type: 'ramp' });
+    // ZONE 5: 소용돌이 볼텍스 퍼널 (y: 3100 - 3850) - Stepped Vortex Funnel & Swirling Hub (Length 125px, speed -0.015)
+    segments.push({ x1: 20, y1: 3150, x2: 230, y2: 3270, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 3150, x2: 330, y2: 3270, type: 'ramp' });
 
-    segments.push({ x1: 180, y1: 3270, x2: 120, y2: 3380, type: 'guide' });
-    segments.push({ x1: 260, y1: 3270, x2: 320, y2: 3380, type: 'guide' });
+    segments.push({ x1: 230, y1: 3270, x2: 160, y2: 3380, type: 'guide' });
+    segments.push({ x1: 330, y1: 3270, x2: 400, y2: 3380, type: 'guide' });
 
-    segments.push({ x1: 120, y1: 3380, x2: 300, y2: 3470, type: 'ramp' });
-    segments.push({ x1: 320, y1: 3510, x2: 140, y2: 3600, type: 'ramp' });
+    segments.push({ x1: 160, y1: 3380, x2: 380, y2: 3470, type: 'ramp' });
+    segments.push({ x1: 400, y1: 3510, x2: 180, y2: 3600, type: 'ramp' });
 
-    spinners.push({ x: 220, y: 3670, length: 115, angle: 0, speed: -0.025 });
+    spinners.push({ x: 280, y: 3670, length: 125, angle: 0, speed: -0.015 });
 
-    segments.push({ x1: 20, y1: 3710, x2: 170, y2: 3810, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 3710, x2: 270, y2: 3810, type: 'ramp' });
+    segments.push({ x1: 20, y1: 3710, x2: 220, y2: 3810, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 3710, x2: 340, y2: 3810, type: 'ramp' });
 
-    // ZONE 6: 계단식 쾌속 캐스케이드 (y: 3900 - 4650) - 4 Alternating Steep Ramps + Speed Booster (Length 105px, speed 0.028)
-    segments.push({ x1: 20, y1: 3930, x2: 350, y2: 4050, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 4100, x2: 90, y2: 4220, type: 'ramp' });
-    segments.push({ x1: 20, y1: 4270, x2: 350, y2: 4390, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 4440, x2: 110, y2: 4560, type: 'ramp' });
+    // ZONE 6: 계단식 쾌속 캐스케이드 (y: 3900 - 4650) - 4 Alternating Steep Ramps + Speed Booster (Length 112px, speed 0.017)
+    segments.push({ x1: 20, y1: 3930, x2: 440, y2: 4050, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 4100, x2: 120, y2: 4220, type: 'ramp' });
+    segments.push({ x1: 20, y1: 4270, x2: 440, y2: 4390, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 4440, x2: 140, y2: 4560, type: 'ramp' });
 
-    spinners.push({ x: 225, y: 4610, length: 105, angle: Math.PI / 3, speed: 0.028 });
+    spinners.push({ x: 285, y: 4610, length: 112, angle: Math.PI / 3, speed: 0.017 });
 
-    segments.push({ x1: 20, y1: 4620, x2: 140, y2: 4680, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 4620, x2: 300, y2: 4680, type: 'ramp' });
+    segments.push({ x1: 20, y1: 4620, x2: 180, y2: 4680, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 4620, x2: 380, y2: 4680, type: 'ramp' });
 
-    // ZONE 7: 쿼드 크로스 스피너 & 킥백 (y: 4700 - 5450) - 4 Large Propellers (Length 100px) + 3 Softened Bouncers (power: 4.2 - 4.8)
-    spinners.push({ x: 150, y: 4790, length: 100, angle: 0, speed: 0.021 });
-    spinners.push({ x: 290, y: 4940, length: 100, angle: 0, speed: -0.021 });
+    // ZONE 7: 쿼드 크로스 스피너 & 킥백 (y: 4700 - 5450) - 4 Large Propellers (Length 110px, speed 0.013) + 3 Softened Bouncers
+    spinners.push({ x: 190, y: 4790, length: 110, angle: 0, speed: 0.013 });
+    spinners.push({ x: 370, y: 4940, length: 110, angle: 0, speed: -0.013 });
 
-    bouncers.push({ x: 220, y: 4940, radius: 20, power: 4.8, label: 'KICKBACK' });
+    bouncers.push({ x: 280, y: 4940, radius: 24, power: 4.8, label: 'KICKBACK' });
 
-    spinners.push({ x: 150, y: 5090, length: 100, angle: Math.PI / 4, speed: -0.022 });
-    spinners.push({ x: 290, y: 5230, length: 100, angle: -Math.PI / 4, speed: 0.022 });
+    spinners.push({ x: 190, y: 5090, length: 110, angle: Math.PI / 4, speed: -0.014 });
+    spinners.push({ x: 370, y: 5230, length: 110, angle: -Math.PI / 4, speed: 0.014 });
 
-    bouncers.push({ x: 65, y: 5220, radius: 18, power: 4.2, label: 'BOUNCE' });
-    bouncers.push({ x: 375, y: 5220, radius: 18, power: 4.2, label: 'BOUNCE' });
+    bouncers.push({ x: 80, y: 5220, radius: 22, power: 4.2, label: 'BOUNCE' });
+    bouncers.push({ x: 480, y: 5220, radius: 22, power: 4.2, label: 'BOUNCE' });
 
-    segments.push({ x1: 20, y1: 5320, x2: 150, y2: 5420, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 5320, x2: 290, y2: 5420, type: 'ramp' });
+    segments.push({ x1: 20, y1: 5320, x2: 190, y2: 5420, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 5320, x2: 370, y2: 5420, type: 'ramp' });
 
-    // ZONE 8: 네온 범퍼 웨이브 숲 (y: 5500 - 6200) - 7 Staggered Glowing Bumper Rows (Wide 66px+ spacing, Pure Bumper Field)
+    // ZONE 8: 네온 범퍼 웨이브 숲 (y: 5500 - 6200) - 7 Staggered Glowing Bumper Rows across 560px
     for (let r = 0; r < 7; r++) {
       const y = 5520 + r * 90;
-      const count = (r % 2 === 0) ? 6 : 5;
-      const spacing = count === 6 ? 66 : 68;
-      const startX = count === 6 ? 55 : 85;
+      const count = (r % 2 === 0) ? 7 : 6;
+      const spacing = count === 7 ? 75 : 80;
+      const startX = count === 7 ? 55 : 80;
       for (let c = 0; c < count; c++) {
-        pins.push({ x: startX + c * spacing, y, radius: 8, isBumper: true });
+        pins.push({ x: startX + c * spacing, y, radius: 9.5, isBumper: true });
       }
     }
 
-    segments.push({ x1: 20, y1: 6150, x2: 100, y2: 6220, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 6150, x2: 340, y2: 6220, type: 'ramp' });
+    segments.push({ x1: 20, y1: 6150, x2: 130, y2: 6220, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 6150, x2: 430, y2: 6220, type: 'ramp' });
 
     // ZONE 9: 파이널 스피드웨이 & 자이언트 프로펠러 (y: 6250 - 6920) - Steeper High-Octane Runway & Giant Propeller Gate
     // Steep Ramp 1 (30° grade)
-    segments.push({ x1: 20, y1: 6260, x2: 330, y2: 6440, type: 'ramp' });
+    segments.push({ x1: 20, y1: 6260, x2: 420, y2: 6450, type: 'ramp' });
     // Steep Ramp 2 (30° grade)
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 6470, x2: 110, y2: 6650, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 6480, x2: 140, y2: 6670, type: 'ramp' });
     // Steep Ramp 3 (30° grade)
-    segments.push({ x1: 20, y1: 6670, x2: 320, y2: 6800, type: 'ramp' });
+    segments.push({ x1: 20, y1: 6690, x2: 400, y2: 6815, type: 'ramp' });
 
     // Funnel guides into the giant propeller gate
-    segments.push({ x1: 20, y1: 6810, x2: 110, y2: 6870, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 6810, x2: 330, y2: 6870, type: 'ramp' });
+    segments.push({ x1: 20, y1: 6815, x2: 140, y2: 6870, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 6815, x2: 420, y2: 6870, type: 'ramp' });
 
-    // GIANT PROPELLER right before the finish line (y: 6850, FINISH_LINE_Y is 6950, length 135px)
-    spinners.push({ x: 220, y: 6850, length: 135, angle: 0, speed: 0.022 });
+    // GIANT PROPELLER right before the finish line (Length 145px, 290px wingspan, SPINS THE OTHER WAY: speed -0.013)
+    spinners.push({ x: 280, y: 6850, length: 145, angle: 0, speed: -0.013 });
 
     // 2 Decider Bumper Pins right below giant propeller corners (y: 6915)
-    pins.push({ x: 140, y: 6915, radius: 8, isBumper: true });
-    pins.push({ x: 300, y: 6915, radius: 8, isBumper: true });
+    pins.push({ x: 180, y: 6915, radius: 9, isBumper: true });
+    pins.push({ x: 380, y: 6915, radius: 9, isBumper: true });
 
     // ZONE 10: 결승선 & 피니시 베이슨 (y: 6950 - 7200)
     segments.push({ x1: 20, y1: 7150, x2: COURSE_WIDTH - 20, y2: 7150, type: 'wall' });
@@ -1519,19 +1555,23 @@ const data = gameEntry?.data || {
       marbleCountBadge.textContent = `총 ${names.length}개 구슬 대기`;
     }
 
-    // Distribute in starting hopper (y: 60 - 160)
-    const cols = Math.min(10, Math.ceil(Math.sqrt(names.length * 2)));
-    const startX = 60;
-    const endX = COURSE_WIDTH - 60;
-    const spacingX = (endX - startX) / (cols - 1 || 1);
+    // Distribute in starting hopper (y: 65 - 200) with safe padding under ceiling y: 45
+    const totalCount = names.length;
+    const cols = Math.max(8, Math.min(16, Math.ceil(Math.sqrt(totalCount * 3.5))));
+    const totalRows = Math.ceil(totalCount / cols);
+    const startX = 65;
+    const endX = COURSE_WIDTH - 65;
+    const spacingX = cols > 1 ? (endX - startX) / (cols - 1) : 0;
+    const rowSpacing = Math.min(26, Math.max(14, 125 / Math.max(1, totalRows)));
 
     names.forEach((name, idx) => {
       const row = Math.floor(idx / cols);
       const col = idx % cols;
-      const jitterX = (Math.random() - 0.5) * 6;
-      const jitterY = (Math.random() - 0.5) * 6;
-      const spawnX = startX + col * spacingX + jitterX;
-      const spawnY = 65 + row * 22 + jitterY;
+      const staggerX = (row % 2 === 1) ? (spacingX * 0.25) : 0;
+      const jitterX = (Math.random() - 0.5) * 4;
+      const jitterY = (Math.random() - 0.5) * 3;
+      const spawnX = Math.max(35, Math.min(COURSE_WIDTH - 35, startX + col * spacingX + staggerX + jitterX));
+      const spawnY = Math.max(68, Math.min(200, 72 + row * rowSpacing + jitterY));
 
       marbles.push({
         id: idx,
@@ -1540,7 +1580,7 @@ const data = gameEntry?.data || {
         y: spawnY,
         vx: (Math.random() - 0.5) * 0.4,
         vy: 0,
-        radius: 9,
+        radius: 11.25, // 25% larger marbles (was 9)
         color: MARBLE_COLORS[idx % MARBLE_COLORS.length],
         finished: false,
         finishTime: 0,
@@ -1731,6 +1771,20 @@ const data = gameEntry?.data || {
       m.x += m.vx * timeScale;
       m.y += m.vy * timeScale;
 
+      // Top Ceiling Enclosure Constraint: never allow marble to bounce off or escape top (y = 45)
+      if (m.y < 45 + m.radius) {
+        m.y = 45 + m.radius;
+        if (m.vy < 0) m.vy = -m.vy * 0.35;
+      }
+      // Lateral Boundary Enclosure Constraint
+      if (m.x < 20 + m.radius) {
+        m.x = 20 + m.radius;
+        if (m.vx < 0) m.vx = -m.vx * 0.35;
+      } else if (m.x > COURSE_WIDTH - 20 - m.radius) {
+        m.x = COURSE_WIDTH - 20 - m.radius;
+        if (m.vx > 0) m.vx = -m.vx * 0.35;
+      }
+
       // Finish line check
       if (!m.finished && m.y >= FINISH_LINE_Y) {
         m.finished = true;
@@ -1814,6 +1868,21 @@ const data = gameEntry?.data || {
         }
       }
     }
+
+    // Top Enclosure & Boundary Enforcement after dense circle-circle collision resolutions
+    marbles.forEach(m => {
+      if (m.y < 45 + m.radius) {
+        m.y = 45 + m.radius;
+        if (m.vy < 0) m.vy = -m.vy * 0.35;
+      }
+      if (m.x < 20 + m.radius) {
+        m.x = 20 + m.radius;
+        if (m.vx < 0) m.vx = -m.vx * 0.35;
+      } else if (m.x > COURSE_WIDTH - 20 - m.radius) {
+        m.x = COURSE_WIDTH - 20 - m.radius;
+        if (m.vx > 0) m.vx = -m.vx * 0.35;
+      }
+    });
 
     // 3. Marble vs Static Pins
     marbles.forEach(m => {
@@ -1952,7 +2021,7 @@ const data = gameEntry?.data || {
     // 6. Marble vs Course Segments (Walls, Ramps, Guides)
     marbles.forEach(m => {
       if (!isGateOpen) {
-        const gateDist = distToSegment(m.x, m.y, 170, 220, 270, 220);
+        const gateDist = distToSegment(m.x, m.y, 210, 220, 350, 220);
         if (gateDist.d < m.radius + 2) {
           m.y = 220 - m.radius - 2;
           m.vy = -m.vy * 0.4;
@@ -2177,15 +2246,41 @@ const data = gameEntry?.data || {
       }
     });
 
-    // Hopper starting gate
+    // Hopper starting gate (140px wide opening across 210px - 350px)
     if (!isGateOpen) {
       ctx.strokeStyle = '#ef4444';
       ctx.lineWidth = 6;
       ctx.beginPath();
-      ctx.moveTo(170, 220);
-      ctx.lineTo(270, 220);
+      ctx.moveTo(210, 220);
+      ctx.lineTo(350, 220);
       ctx.stroke();
     }
+
+    // Top Enclosure Roof Barrier Rendering (Glowing Enclosed Ceiling)
+    ctx.save();
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 8;
+    ctx.lineCap = 'round';
+    ctx.shadowColor = 'rgba(56, 189, 248, 0.7)';
+    ctx.shadowBlur = 10;
+    ctx.beginPath();
+    ctx.moveTo(18, 45);
+    ctx.lineTo(COURSE_WIDTH - 18, 45);
+    ctx.stroke();
+
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(20, 45);
+    ctx.lineTo(COURSE_WIDTH - 20, 45);
+    ctx.stroke();
+
+    ctx.textAlign = 'center';
+    ctx.font = '800 10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.fillStyle = 'rgba(186, 230, 253, 0.75)';
+    ctx.shadowBlur = 0;
+    ctx.fillText('⚡ TOP ENCLOSURE ROOF ⚡', COURSE_WIDTH / 2, 38);
+    ctx.restore();
 
     // 2. Draw Pins (Plinko & Neon Bumpers)
     pins.forEach(p => {
