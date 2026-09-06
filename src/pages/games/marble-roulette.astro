@@ -1217,7 +1217,9 @@ const data = gameEntry?.data || {
 
   const MARBLE_COLORS = [
     '#38bdf8', '#f43f5e', '#10b981', '#facc15', '#a855f7',
-    '#f97316', '#06b6d4', '#ec4899', '#84cc16', '#6366f1'
+    '#f97316', '#06b6d4', '#ec4899', '#84cc16', '#6366f1',
+    '#14b8a6', '#e11d48', '#8b5cf6', '#fb923c', '#22c55e',
+    '#0ea5e9', '#d946ef', '#eab308', '#2dd4bf', '#f472b6'
   ];
 
   interface Marble {
@@ -1639,6 +1641,7 @@ const data = gameEntry?.data || {
 
   // State
   let marbles: Marble[] = [];
+  let activeMarbleNames: string[] = [];
   let isRacing = false;
   let isCountingDown = false;
   let raceStartTime = 0;
@@ -1703,7 +1706,7 @@ const data = gameEntry?.data || {
       const match = line.match(/^(.+?)\s*\*\s*(\d+)$/);
       if (match) {
         const name = match[1].trim();
-        const count = Math.min(20, Math.max(1, parseInt(match[2], 10)));
+        const count = Math.min(50, Math.max(1, parseInt(match[2], 10)));
         for (let i = 0; i < count; i++) {
           parsed.push(name);
         }
@@ -1715,8 +1718,41 @@ const data = gameEntry?.data || {
     return parsed.length > 0 ? parsed : PRESETS.coffee.names;
   }
 
+  // Map each unique participant name to a stable dedicated color
+  function getParticipantColorMap(): Map<string, string> {
+    const raw = namesInput?.value || '';
+    const lines = raw.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
+    const colorMap = new Map<string, string>();
+    let colorIdx = 0;
+
+    lines.forEach(line => {
+      const match = line.match(/^(.+?)\s*\*\s*(\d+)$/);
+      const name = match ? match[1].trim() : line.trim();
+      if (name && !colorMap.has(name)) {
+        colorMap.set(name, MARBLE_COLORS[colorIdx % MARBLE_COLORS.length]);
+        colorIdx++;
+      }
+    });
+
+    if (colorMap.size === 0) {
+      PRESETS.coffee.names.forEach((name, i) => {
+        if (!colorMap.has(name)) {
+          colorMap.set(name, MARBLE_COLORS[i % MARBLE_COLORS.length]);
+        }
+      });
+    }
+
+    return colorMap;
+  }
+
   function spawnMarbles() {
-    const names = parseNamesList();
+    if (activeMarbleNames.length === 0) {
+      activeMarbleNames = parseNamesList();
+    }
+    const names = activeMarbleNames;
+    const colorMap = getParticipantColorMap();
+    let fallbackIdx = colorMap.size;
+
     marbles = [];
     shockwaves = [];
     finishRankCounter = 0;
@@ -1748,6 +1784,13 @@ const data = gameEntry?.data || {
       const spawnX = Math.max(35, Math.min(COURSE_WIDTH - 35, startX + col * spacingX + staggerX + jitterX));
       const spawnY = Math.max(68, Math.min(200, 72 + row * rowSpacing + jitterY));
 
+      let marbleColor = colorMap.get(name);
+      if (!marbleColor) {
+        marbleColor = MARBLE_COLORS[fallbackIdx % MARBLE_COLORS.length];
+        colorMap.set(name, marbleColor);
+        fallbackIdx++;
+      }
+
       marbles.push({
         id: idx,
         name,
@@ -1756,7 +1799,7 @@ const data = gameEntry?.data || {
         vx: (Math.random() - 0.5) * 0.4,
         vy: 0,
         radius: 11.25, // 25% larger marbles (was 9)
-        color: MARBLE_COLORS[idx % MARBLE_COLORS.length],
+        color: marbleColor,
         finished: false,
         finishTime: 0,
         finishRank: 0,
@@ -2565,7 +2608,7 @@ const data = gameEntry?.data || {
       item.title = `${m.name} 시점으로 카메라 이동`;
       item.innerHTML = `
         <span class="finish-rank">${m.finishRank}위</span>
-        <span class="finish-name">${m.name}</span>
+        <span class="finish-name"><span class="finish-color-dot" style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${m.color};box-shadow:0 0 6px ${m.color};margin-right:6px;vertical-align:middle;"></span>${m.name}</span>
         <span class="finish-time">${m.finishTime.toFixed(2)}s</span>
       `;
       item.addEventListener('click', () => {
@@ -3285,7 +3328,7 @@ const data = gameEntry?.data || {
         return `
           <div class="finish-item" style="${isWinner ? 'border: 1px solid #facc15; background: rgba(250, 204, 21, 0.15);' : ''}">
             <span class="finish-rank">${medal}</span>
-            <span class="finish-name">${m.name} ${isWinner ? '👑' : ''}</span>
+            <span class="finish-name"><span class="finish-color-dot" style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${m.color};box-shadow:0 0 6px ${m.color};margin-right:6px;vertical-align:middle;"></span>${m.name} ${isWinner ? '👑' : ''}</span>
             <span class="finish-time">${m.finishTime.toFixed(2)}s</span>
           </div>
         `;
@@ -3478,16 +3521,24 @@ const data = gameEntry?.data || {
   });
 
   applyBtn?.addEventListener('click', () => {
+    activeMarbleNames = [];
+    resetRace();
+  });
+
+  namesInput?.addEventListener('input', () => {
+    activeMarbleNames = [];
     resetRace();
   });
 
   shuffleBtn?.addEventListener('click', () => {
-    const list = parseNamesList();
-    for (let i = list.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [list[i], list[j]] = [list[j], list[i]];
+    if (activeMarbleNames.length === 0) {
+      activeMarbleNames = parseNamesList();
     }
-    if (namesInput) namesInput.value = list.join('\n');
+    for (let i = activeMarbleNames.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [activeMarbleNames[i], activeMarbleNames[j]] = [activeMarbleNames[j], activeMarbleNames[i]];
+    }
+    sfx.playPop();
     resetRace();
   });
 
