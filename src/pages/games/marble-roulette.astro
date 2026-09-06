@@ -1134,8 +1134,8 @@ const data = gameEntry?.data || {
 
   // Course Dimensions (Wider 560px track for larger marbles & broadcast presence)
   const COURSE_WIDTH = 560;
-  const COURSE_HEIGHT = 7900;
-  const FINISH_LINE_Y = 7540;
+  const COURSE_HEIGHT = 8060;
+  const FINISH_LINE_Y = 7700;
 
   const ZONE_MARKERS: ZoneMarker[] = [
     { y: 260, title: 'ZONE 1 — 스타팅 호퍼 & 파친코', sub: 'GRAND HOPPER & GALTON LATTICE' },
@@ -1147,7 +1147,8 @@ const data = gameEntry?.data || {
     { y: 4680, title: 'ZONE 7 — 쿼드 크로스 스피너 & 킥백', sub: 'QUAD CROSS GAUNTLET & KICKBACKS' },
     { y: 5480, title: 'ZONE 8 — 네온 범퍼 웨이브 숲', sub: 'NEON BUMPER WAVE FIELD' },
     { y: 6240, title: 'ZONE 9 — 파이널 바운스 아레나 & 자이언트 프로펠러', sub: 'FINAL BOUNCE ARENA & GIANT PROPELLER' },
-    { y: 7530, title: 'ZONE 10 — 결승선 & 챔피언 존', sub: 'FINISH LINE & CHAMPION BASIN' }
+    { y: 7040, title: 'ZONE 10 — 마블 댐 & 럭키 캐논 하이퍼 터널', sub: 'MARBLE DAM CHOKEPOINT & LUCKY CANNON' },
+    { y: 7690, title: 'ZONE 11 — 결승선 & 챔피언 존', sub: 'FINISH LINE & CHAMPION BASIN' }
   ];
 
   // Track Entities
@@ -1158,6 +1159,18 @@ const data = gameEntry?.data || {
   let shockwaves: Shockwave[] = [];
   let isGateOpen = false;
   let energyGaugeEnabled = true;
+
+  // Secret Gate & Lucky Cannon State (Option C: Marble Dam Chokepoint & Lucky Cannon)
+  interface SecretGate {
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+    locked: boolean;
+    unlockTimer: number;
+  }
+  let secretGate: SecretGate = { x1: 20, y1: 7060, x2: 80, y2: 7100, locked: true, unlockTimer: 0 };
+  let cannonAlertTimer = 0;
 
   function buildCourse() {
     pins = [];
@@ -1390,37 +1403,64 @@ const data = gameEntry?.data || {
     pins.push({ x: 190, y: 6915, radius: 9, isBumper: true });
     pins.push({ x: 370, y: 6915, radius: 9, isBumper: true });
 
-    // POST-PROPELLER RE-CENTERING FUNNEL (y: 6950 - 7040)
-    // Catches marbles flung right by counter-clockwise blade and re-centers all marbles through a 140px neck
-    segments.push({ x1: 60, y1: 6950, x2: 210, y2: 7040, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 60, y1: 6950, x2: 350, y2: 7040, type: 'ramp' });
+    // POST-PROPELLER RE-CENTERING FUNNEL (y: 6950 - 7050)
+    // Smoothly collects all marbles from the propeller exit and directs them into the grand finale approach
+    segments.push({ x1: 50, y1: 6950, x2: 170, y2: 7040, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 50, y1: 6950, x2: 390, y2: 7040, type: 'ramp' });
 
-    // ZONE 9 to 10 Transition: Balanced Multi-Lane Obstacles & Sprint Runway (y: 7040 - 7540)
-    segments.push({ x1: 70, y1: 7040, x2: 70, y2: 7530, type: 'wall' });
-    segments.push({ x1: COURSE_WIDTH - 70, y1: 7040, x2: COURSE_WIDTH - 70, y2: 7530, type: 'wall' });
+    // ZONE 10: 마블 댐 & 럭키 캐논 하이퍼 터널 (y: 7040 - 7700)
 
-    // Center Splitter Diamond below funnel exit: evenly distributes 50% left and 50% right
-    pins.push({ x: 280, y: 7060, radius: 9.5, isBumper: true });
-    segments.push({ x1: 280, y1: 7065, x2: 190, y2: 7135, type: 'guide' });
-    segments.push({ x1: 280, y1: 7065, x2: 370, y2: 7135, type: 'guide' });
+    // 1. FLANK ENTRANCE: LUCKY CANNON LAUNCHPAD (Left Flank, x: 20 to 80, y: 7060 to 7130)
+    // Left outer boundary wall down to merge point
+    segments.push({ x1: 20, y1: 7040, x2: 20, y2: 7460, type: 'wall' });
+    // Internal dividing wall between Secret Tunnel (x: 20 to 80) and Main Track (x: 80 to 540)
+    segments.push({ x1: 80, y1: 7120, x2: 80, y2: 7440, type: 'wall' });
 
-    // LEFT WING DYNAMIC OBSTACLES (Active and balanced!)
-    segments.push({ x1: 75, y1: 7150, x2: 175, y2: 7210, type: 'booster', boostPower: 0.5 });
-    pins.push({ x: 125, y: 7240, radius: 9, isBumper: true });
+    // Secret Tunnel Accelerator Booster Tracks (⏩ High-Speed Cyan Hyper-Conduit)
+    segments.push({ x1: 50, y1: 7130, x2: 50, y2: 7420, type: 'booster', boostPower: 0.85 });
 
-    // RIGHT WING DYNAMIC OBSTACLES (Active and balanced!)
-    segments.push({ x1: COURSE_WIDTH - 75, y1: 7150, x2: COURSE_WIDTH - 175, y2: 7210, type: 'booster', boostPower: 0.5 });
-    pins.push({ x: COURSE_WIDTH - 125, y: 7240, radius: 9, isBumper: true });
+    // Secret Tunnel Exit Ramp (Smooth 45° merge back into the sprint track)
+    segments.push({ x1: 80, y1: 7440, x2: 140, y2: 7500, type: 'ramp' });
+    // Precision timing exit pin to balance risk
+    pins.push({ x: 110, y: 7475, radius: 8 });
 
-    // Center Chute Drafting Pin
-    pins.push({ x: 280, y: 7160, radius: 8 });
+    // 2. MAIN TRACK: THE MARBLE DAM (x: 80 to 540, y: 7060 to 7200)
+    // Heavy funnel walls compressing traffic into the 50px central throat (x: 255 to 305)
+    segments.push({ x1: 80, y1: 7060, x2: 255, y2: 7170, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 7060, x2: 305, y2: 7170, type: 'ramp' });
 
-    // FREE FALL SPRINT RUNWAY (y: 7240 to 7540) - 300px unobstructed free fall under gravity right before the line!
+    // Dual Rotating Timing Gates at the 50px Dam Throat (Synchronous sweeps releasing 1-2 marbles)
+    spinners.push({ x: 255, y: 7170, length: 16, angle: 0, speed: 0.007 });
+    spinners.push({ x: 305, y: 7170, length: 16, angle: Math.PI, speed: -0.007 });
 
-    // ZONE 10: 결승선 (FINISH_LINE_Y = 7540) & 피니시 베이슨 (y: 7540 - 7900)
-    segments.push({ x1: 70, y1: 7550, x2: 20, y2: 7670, type: 'guide' });
-    segments.push({ x1: COURSE_WIDTH - 70, y1: 7550, x2: COURSE_WIDTH - 20, y2: 7670, type: 'guide' });
-    segments.push({ x1: 20, y1: 7860, x2: COURSE_WIDTH - 20, y2: 7860, type: 'wall' });
+    // 3. POST-DAM RE-EXPANSION & PINBALL SPRINT CHICANE (y: 7180 to 7500)
+    // Center Diamond Splitter below dam exit
+    pins.push({ x: 280, y: 7215, radius: 9.5, isBumper: true });
+    segments.push({ x1: 280, y1: 7220, x2: 190, y2: 7285, type: 'guide' });
+    segments.push({ x1: 280, y1: 7220, x2: 370, y2: 7285, type: 'guide' });
+
+    // Left & Right Wing Accelerators & Decider Pins
+    segments.push({ x1: 140, y1: 7300, x2: 210, y2: 7365, type: 'booster', boostPower: 0.5 });
+    pins.push({ x: 175, y: 7390, radius: 9, isBumper: true });
+
+    segments.push({ x1: COURSE_WIDTH - 80, y1: 7300, x2: COURSE_WIDTH - 150, y2: 7365, type: 'booster', boostPower: 0.5 });
+    pins.push({ x: COURSE_WIDTH - 115, y: 7390, radius: 9, isBumper: true });
+
+    // Center Corridor Drafting Pin
+    pins.push({ x: 280, y: 7330, radius: 8.5 });
+
+    // Right track outer boundary wall
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 7060, x2: COURSE_WIDTH - 20, y2: 7510, type: 'wall' });
+    // Right merge guide
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 7510, x2: COURSE_WIDTH - 60, y2: 7550, type: 'guide' });
+
+    // 4. FREE FALL SPRINT RUNWAY (y: 7500 to 7700)
+    // 200px of wide, open, unobstructed sprint straight into the finish line!
+
+    // ZONE 11: 결승선 (FINISH_LINE_Y = 7700) & 피니시 베이슨 (y: 7700 - 8060)
+    segments.push({ x1: 60, y1: 7710, x2: 20, y2: 7820, type: 'guide' });
+    segments.push({ x1: COURSE_WIDTH - 60, y1: 7710, x2: COURSE_WIDTH - 20, y2: 7820, type: 'guide' });
+    segments.push({ x1: 20, y1: 8020, x2: COURSE_WIDTH - 20, y2: 8020, type: 'wall' });
   }
 
   buildCourse();
@@ -1591,6 +1631,9 @@ const data = gameEntry?.data || {
     isRacing = false;
     isCountingDown = false;
     lastRunnerCountdown = null;
+    secretGate.locked = true;
+    secretGate.unlockTimer = 0;
+    cannonAlertTimer = 0;
     if (countdownOverlay) countdownOverlay.classList.add('hidden');
     spawnMarbles();
     updateRaceButton();
@@ -1603,6 +1646,9 @@ const data = gameEntry?.data || {
 
     isCountingDown = true;
     lastRunnerCountdown = null;
+    secretGate.locked = true;
+    secretGate.unlockTimer = 0;
+    cannonAlertTimer = 0;
     updateRaceButton();
     if (countdownOverlay) countdownOverlay.classList.remove('hidden');
 
@@ -1718,6 +1764,29 @@ const data = gameEntry?.data || {
       // General strong forward boost if triggered in open space
       src.vy += 10.0;
       src.vx += (Math.random() - 0.5) * 14.0;
+    }
+
+    // 3. Lucky Cannon & Secret Tunnel Gate Activation (Zone 10 approach, y: 6950 - 7220)
+    const distToCannon = Math.hypot(src.x - 50, src.y - 7080);
+    if (distToCannon < 300) {
+      secretGate.locked = false;
+      secretGate.unlockTimer = 8.0; // 8.0s open window
+      cannonAlertTimer = 4.5;
+      sfx.playBlast();
+
+      // Big electric cyan shockwave burst centered at Cannon Mouth
+      shockwaves.push({
+        x: 50,
+        y: 7080,
+        radius: 18,
+        maxRadius: 220,
+        color: '#06b6d4',
+        alpha: 1.0
+      });
+
+      // The lucky marble that triggered the explosion gets a direct kinetic cannon slingshot into the tunnel!
+      src.vx = -4.2;
+      src.vy = Math.max(src.vy, 9.5);
     }
   }
 
@@ -2078,6 +2147,22 @@ const data = gameEntry?.data || {
         }
       }
 
+      // Secret Gate Barrier (when locked, blocks access into the Lucky Cannon)
+      if (secretGate.locked) {
+        const gateHit = distToSegment(m.x, m.y, secretGate.x1, secretGate.y1, secretGate.x2, secretGate.y2);
+        if (gateHit.d < m.radius + 2) {
+          const nx = (m.x - gateHit.px) / (gateHit.d || 1);
+          const ny = (m.y - gateHit.py) / (gateHit.d || 1);
+          m.x = gateHit.px + nx * (m.radius + 2);
+          m.y = gateHit.py + ny * (m.radius + 2);
+          const dot = m.vx * nx + m.vy * ny;
+          if (dot < 0) {
+            m.vx -= 1.35 * dot * nx;
+            m.vy -= 1.35 * dot * ny;
+          }
+        }
+      }
+
       segments.forEach(seg => {
         const res = distToSegment(m.x, m.y, seg.x1, seg.y1, seg.x2, seg.y2);
         if (res.d < m.radius + 2) {
@@ -2153,6 +2238,17 @@ const data = gameEntry?.data || {
       }
     } else {
       lastRunnerCountdown = null;
+    }
+
+    // Secret Gate & Cannon Alert Timers
+    if (!secretGate.locked) {
+      secretGate.unlockTimer -= 0.016 * timeScale;
+      if (secretGate.unlockTimer <= 0) {
+        secretGate.locked = true;
+      }
+    }
+    if (cannonAlertTimer > 0) {
+      cannonAlertTimer -= 0.016 * timeScale;
     }
 
     // Camera tracking
@@ -2539,6 +2635,88 @@ const data = gameEntry?.data || {
       ctx.restore();
     });
 
+    // 4.5 Draw Secret Hyper-Tunnel & Lucky Cannon & Marble Dam
+    ctx.save();
+    // A. Secret Hyper-Tunnel Conduit along left wall (x: 20 to 80, y: 7060 to 7450)
+    ctx.fillStyle = secretGate.locked ? 'rgba(6, 182, 212, 0.05)' : 'rgba(6, 182, 212, 0.16)';
+    ctx.fillRect(20, 7060, 60, 390);
+
+    // Glowing Divider Wall at x=80
+    ctx.strokeStyle = secretGate.locked ? 'rgba(6, 182, 212, 0.45)' : '#06b6d4';
+    ctx.lineWidth = 3;
+    ctx.shadowColor = '#06b6d4';
+    ctx.shadowBlur = secretGate.locked ? 4 : 14;
+    ctx.beginPath();
+    ctx.moveTo(80, 7120);
+    ctx.lineTo(80, 7440);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // Tunnel Chevrons & Badges down the tube
+    ctx.font = '900 10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.fillStyle = secretGate.locked ? 'rgba(6, 182, 212, 0.35)' : '#67e8f9';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('⚡ SHORTCUT', 50, 7220);
+    ctx.fillText('⏩ SPEED TUBE', 50, 7320);
+
+    // B. Lucky Cannon Entrance & Gate Barrier (x: 20 to 80, y: 7060 to 7100)
+    ctx.beginPath();
+    ctx.arc(50, 7075, 20, 0, Math.PI * 2);
+    ctx.fillStyle = secretGate.locked ? 'rgba(239, 68, 68, 0.15)' : 'rgba(6, 182, 212, 0.3)';
+    ctx.strokeStyle = secretGate.locked ? '#ef4444' : '#06b6d4';
+    ctx.lineWidth = 2.5;
+    ctx.shadowColor = ctx.strokeStyle;
+    ctx.shadowBlur = 10;
+    ctx.fill();
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    if (secretGate.locked) {
+      // Locked Barrier Bar
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 5;
+      ctx.shadowColor = '#ef4444';
+      ctx.shadowBlur = 8;
+      ctx.beginPath();
+      ctx.moveTo(secretGate.x1, secretGate.y1);
+      ctx.lineTo(secretGate.x2, secretGate.y2);
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      // Padlock Label
+      ctx.font = '900 10px sans-serif';
+      ctx.fillStyle = '#fca5a5';
+      ctx.textAlign = 'center';
+      ctx.fillText('🔒 LOCKED', 50, 7072);
+      ctx.font = '800 8px sans-serif';
+      ctx.fillText('(폭발 시 개방)', 50, 7085);
+    } else {
+      ctx.font = '900 10px sans-serif';
+      ctx.fillStyle = '#67e8f9';
+      ctx.textAlign = 'center';
+      ctx.fillText('⚡ OPEN! ⏩', 50, 7075);
+    }
+
+    // C. Marble Dam Graphics & Caution Signs (x: 80 to 540, y: 7060 to 7180)
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 3.5;
+    ctx.shadowColor = '#f59e0b';
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.moveTo(80, 7060);
+    ctx.lineTo(255, 7170);
+    ctx.moveTo(COURSE_WIDTH - 20, 7060);
+    ctx.lineTo(305, 7170);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    ctx.font = '900 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.fillStyle = '#fbbf24';
+    ctx.textAlign = 'center';
+    ctx.fillText('⚠️ MARBLE DAM (CHOKEPOINT 50px) ⚠️', 280, 7140);
+    ctx.restore();
+
     // 5. Finish Line Banner
     ctx.save();
     ctx.fillStyle = 'rgba(250, 204, 21, 0.15)';
@@ -2678,6 +2856,39 @@ const data = gameEntry?.data || {
         ctx.fillText(msg, canvas.width / 2, by + bh / 2);
         ctx.restore();
       }
+    }
+
+    // Screen-space Lucky Cannon Unlocked Toast Alert
+    if (cannonAlertTimer > 0) {
+      ctx.save();
+      const msg = `⚡ 비밀 캐논 터널 개방! (LUCKY CANNON UNLOCKED!) ⏩`;
+      ctx.font = '900 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      const tw = ctx.measureText(msg).width;
+      const bw = tw + 36;
+      const bh = 32;
+      const bx = (canvas.width - bw) / 2;
+      const by = (isRacing && lastRunnerCountdown !== null && lastRunnerCountdown > 0) ? 54 : 16;
+
+      ctx.fillStyle = 'rgba(8, 51, 68, 0.92)';
+      ctx.strokeStyle = '#06b6d4';
+      ctx.lineWidth = 2;
+      ctx.shadowColor = '#06b6d4';
+      ctx.shadowBlur = 14;
+      ctx.beginPath();
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(bx, by, bw, bh, 16);
+      } else {
+        ctx.rect(bx, by, bw, bh);
+      }
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#cffafe';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(msg, canvas.width / 2, by + bh / 2);
+      ctx.restore();
     }
 
     // Render Minimap
