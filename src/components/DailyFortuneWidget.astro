@@ -56,7 +56,7 @@ const {
         <div class="sign-meta">
           <div class="sign-name-row">
             <h3 class="sign-name" id="fortune-sign-name">호랑이띠</h3>
-            <span class="sign-sub" id="fortune-sign-sub">74, 86, 98년생</span>
+            <span class="sign-sub" id="fortune-sign-sub">50, 62, 74, 86, 98, 10년생</span>
           </div>
           <span class="fortune-date-display" id="fortune-card-date">2026년 9월 6일 일요일</span>
         </div>
@@ -131,13 +131,34 @@ const {
       </div>
     </div>
 
+    <!-- Today's Do & Don't Section -->
+    <div class="fortune-dodont-grid">
+      <div class="dodont-card do-card">
+        <div class="dodont-header">
+          <span class="dodont-badge do-badge">⭕ 오늘의 추천 (DO)</span>
+        </div>
+        <p class="dodont-text" id="fortune-do-text">동료에게 먼저 따뜻한 격려 건네기</p>
+      </div>
+      <div class="dodont-card dont-card">
+        <div class="dodont-header">
+          <span class="dodont-badge dont-badge">❌ 오늘의 주의 (DON'T)</span>
+        </div>
+        <p class="dodont-text" id="fortune-dont-text">확인되지 않은 소문에 섣부른 동요</p>
+      </div>
+    </div>
+
+    <!-- Dynamic Section: Birth Years (Eastern) OR Astrological Analysis (Western) -->
+    <div class="fortune-dynamic-container" id="fortune-dynamic-container">
+      <!-- Injected via JavaScript -->
+    </div>
+
     <!-- Lucky Items Pill Row -->
     <div class="lucky-items-container">
-      <div class="lucky-items-title">🍀 오늘의 행운 아이템</div>
+      <div class="lucky-items-title">🍀 오늘의 행운 아이템 & 키워드</div>
       <div class="lucky-pills-row">
         <div class="lucky-pill">
           <span class="pill-label">🔢 행운의 숫자</span>
-          <strong class="pill-val" id="pill-number">7</strong>
+          <strong class="pill-val" id="pill-number">7, 21</strong>
         </div>
         <div class="lucky-pill">
           <span class="pill-label">🎨 행운의 색상</span>
@@ -154,6 +175,10 @@ const {
         <div class="lucky-pill">
           <span class="pill-label">🎒 행운의 물건</span>
           <strong class="pill-val" id="pill-item">따뜻한 차</strong>
+        </div>
+        <div class="lucky-pill">
+          <span class="pill-label">🍲 행운의 음식</span>
+          <strong class="pill-val" id="pill-food">비빔밥</strong>
         </div>
       </div>
     </div>
@@ -248,107 +273,98 @@ const {
     background: rgba(15, 23, 42, 0.8);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
-    padding: 0.3rem;
-    gap: 0.3rem;
+    padding: 4px;
+    gap: 4px;
   }
 
   .fortune-tab {
-    background: transparent;
-    border: none;
-    color: #94a3b8;
-    padding: 0.5rem 1.2rem;
-    border-radius: 8px;
-    font-size: 0.86rem;
-    font-weight: 800;
-    cursor: pointer;
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 0.4rem;
-    transition: all 0.15s ease;
+    gap: 0.45rem;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 0.88rem;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
 
   .fortune-tab:hover {
     color: #f8fafc;
-    background: rgba(255, 255, 255, 0.04);
   }
 
   .fortune-tab.active {
-    background: linear-gradient(135deg, #a855f7, #38bdf8);
-    color: #ffffff;
-    box-shadow: 0 0 16px rgba(56, 189, 248, 0.35);
+    background: #1e293b;
+    color: #38bdf8;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+  }
+
+  .tab-icon {
+    font-size: 1.1rem;
   }
 
   /* Signs Grid */
   .signs-grid-wrapper {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.75rem;
   }
 
   .signs-grid {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 0.5rem;
-  }
-
-  @media (max-width: 768px) {
-    .signs-grid {
-      grid-template-columns: repeat(4, 1fr);
-    }
-  }
-
-  @media (max-width: 480px) {
-    .signs-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
+    gap: 0.6rem;
   }
 
   :global(.sign-btn) {
-    background: #0f172a;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 10px;
-    padding: 0.5rem 0.3rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.2rem;
+    justify-content: center;
+    padding: 0.75rem 0.4rem;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
     text-align: center;
-    box-sizing: border-box;
-    width: 100%;
   }
 
   :global(.sign-btn:hover) {
-    border-color: rgba(56, 189, 248, 0.4);
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(30, 41, 59, 0.8);
+    border-color: rgba(56, 189, 248, 0.3);
     transform: translateY(-2px);
   }
 
   :global(.sign-btn.active) {
-    background: rgba(56, 189, 248, 0.14);
+    background: rgba(56, 189, 248, 0.12);
     border-color: #38bdf8;
-    box-shadow: 0 0 14px rgba(56, 189, 248, 0.3);
-    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
   }
 
   :global(.sign-btn-icon) {
-    font-size: 1.4rem;
-    line-height: 1;
+    font-size: 1.6rem;
+    margin-bottom: 0.3rem;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
   }
 
   :global(.sign-btn-title) {
-    font-size: 0.76rem;
+    font-size: 0.85rem;
     font-weight: 800;
-    color: #f8fafc;
-  }
-
-  :global(.sign-btn-desc) {
-    font-size: 0.62rem;
-    font-weight: 600;
-    color: #64748b;
+    color: #f1f5f9;
+    margin-bottom: 0.15rem;
   }
 
   :global(.sign-btn.active .sign-btn-title) {
     color: #38bdf8;
+  }
+
+  :global(.sign-btn-desc) {
+    font-size: 0.68rem;
+    color: #64748b;
+    white-space: nowrap;
   }
 
   :global(.sign-btn.active .sign-btn-desc) {
@@ -357,83 +373,82 @@ const {
 
   /* Fortune Card */
   .fortune-card {
+    position: relative;
     background: #0f172a;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     padding: 1.75rem;
-    position: relative;
     overflow: hidden;
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
   }
 
   .card-glow-bg {
     position: absolute;
     top: -50px;
     right: -50px;
-    width: 250px;
-    height: 250px;
-    background: radial-gradient(circle, rgba(168, 85, 247, 0.18) 0%, rgba(56, 189, 248, 0.05) 50%, transparent 70%);
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, transparent 70%);
     pointer-events: none;
+    z-index: 0;
   }
 
+  /* Card Header */
   .card-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 1.25rem;
+    position: relative;
+    z-index: 1;
     flex-wrap: wrap;
     gap: 1rem;
-    margin-bottom: 1.2rem;
   }
 
   .sign-identity {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.9rem;
   }
 
   .sign-avatar {
-    font-size: 2.4rem;
-    width: 60px;
-    height: 60px;
-    background: rgba(56, 189, 248, 0.12);
-    border: 2px solid rgba(56, 189, 248, 0.3);
+    width: 58px;
+    height: 58px;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(168, 85, 247, 0.15));
+    border: 1px solid rgba(56, 189, 248, 0.3);
     border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-    box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
-  }
-
-  .sign-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
+    font-size: 2.2rem;
   }
 
   .sign-name-row {
     display: flex;
     align-items: baseline;
-    gap: 0.5rem;
+    gap: 0.6rem;
+    margin-bottom: 0.2rem;
   }
 
   .sign-name {
-    font-size: 1.45rem;
+    font-size: 1.4rem;
     font-weight: 900;
     color: #f8fafc;
     margin: 0;
+    letter-spacing: -0.01em;
   }
 
   .sign-sub {
     font-size: 0.78rem;
     color: #94a3b8;
-    font-weight: 700;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
   }
 
   .fortune-date-display {
     font-size: 0.78rem;
     color: #64748b;
-    font-weight: 600;
   }
 
   .score-badge-box {
@@ -444,83 +459,82 @@ const {
   }
 
   .score-label {
-    font-size: 0.72rem;
-    font-weight: 800;
+    font-size: 0.75rem;
+    font-weight: 700;
     color: #94a3b8;
   }
 
   .score-pill {
-    background: rgba(250, 204, 21, 0.15);
-    border: 1px solid rgba(250, 204, 21, 0.35);
-    border-radius: 8px;
-    padding: 0.25rem 0.65rem;
-    display: flex;
+    display: inline-flex;
     align-items: baseline;
-    gap: 0.3rem;
+    gap: 0.35rem;
+    background: rgba(250, 204, 21, 0.15);
+    border: 1px solid rgba(250, 204, 21, 0.4);
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
   }
 
   .score-num {
-    font-size: 1.3rem;
+    font-size: 1.45rem;
     font-weight: 900;
     color: #facc15;
+    line-height: 1;
   }
 
   .score-unit {
-    font-size: 0.75rem;
-    color: #fde68a;
+    font-size: 0.85rem;
+    color: #facc15;
     font-weight: 800;
   }
 
   .score-grade {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: 800;
-    color: #fde68a;
-    padding-left: 0.25rem;
+    color: #fef08a;
     border-left: 1px solid rgba(250, 204, 21, 0.3);
+    padding-left: 0.4rem;
   }
 
-  /* Luck Meter Track */
+  /* Luck Meter Bar */
   .luck-meter-box {
-    margin-bottom: 1.3rem;
+    margin-bottom: 1.25rem;
+    position: relative;
+    z-index: 1;
   }
 
   .luck-meter-track {
     width: 100%;
-    height: 10px;
+    height: 7px;
     background: rgba(255, 255, 255, 0.08);
-    border-radius: 5px;
+    border-radius: 4px;
     overflow: hidden;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
   }
 
   .luck-meter-fill {
     height: 100%;
-    background: linear-gradient(90deg, #38bdf8 0%, #a855f7 50%, #facc15 100%);
-    border-radius: 5px;
-    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 0 10px rgba(250, 204, 21, 0.4);
+    background: linear-gradient(90deg, #38bdf8, #a855f7, #f59e0b);
+    border-radius: 4px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Card Content */
+  /* Headline & Body */
   .card-content {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    padding: 1.15rem 1.25rem;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.35rem;
+    position: relative;
+    z-index: 1;
   }
 
   .fortune-headline {
     font-size: 1.15rem;
     font-weight: 800;
-    color: #facc15;
-    margin: 0 0 0.5rem;
+    color: #38bdf8;
+    margin: 0 0 0.65rem;
     line-height: 1.4;
   }
 
   .fortune-body {
     font-size: 0.92rem;
-    color: #e2e8f0;
+    color: #cbd5e1;
     line-height: 1.65;
     margin: 0;
   }
@@ -529,24 +543,20 @@ const {
   .sub-luck-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 0.75rem;
+    gap: 0.85rem;
     margin-bottom: 1.25rem;
-  }
-
-  @media (max-width: 768px) {
-    .sub-luck-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
+    position: relative;
+    z-index: 1;
   }
 
   .sub-luck-item {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 10px;
-    padding: 0.85rem 0.9rem;
+    padding: 0.75rem 0.85rem;
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.45rem;
   }
 
   .sub-luck-top {
@@ -586,6 +596,140 @@ const {
     font-size: 0.72rem;
     color: #94a3b8;
     line-height: 1.35;
+    margin: 0;
+  }
+
+  /* Do & Don't */
+  .fortune-dodont-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.85rem;
+    margin-bottom: 1.25rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .dodont-card {
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .do-card {
+    background: rgba(34, 197, 94, 0.08);
+    border: 1px solid rgba(34, 197, 94, 0.25);
+  }
+
+  .dont-card {
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+  }
+
+  .dodont-badge {
+    font-size: 0.75rem;
+    font-weight: 800;
+  }
+
+  .do-badge {
+    color: #4ade80;
+  }
+
+  .dont-badge {
+    color: #f87171;
+  }
+
+  .dodont-text {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin: 0;
+    line-height: 1.45;
+  }
+
+  /* Dynamic Section (Birth Years / Horoscope Details) */
+  .fortune-dynamic-container {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 1.15rem;
+    margin-bottom: 1.25rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  :global(.dynamic-section-title) {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #facc15;
+    margin: 0 0 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  :global(.year-fortune-list) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  :global(.year-fortune-row) {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0.5rem 0.65rem;
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    font-size: 0.82rem;
+  }
+
+  :global(.year-badge) {
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: #38bdf8;
+    font-weight: 800;
+    font-size: 0.72rem;
+    padding: 0.12rem 0.45rem;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  :global(.year-fortune-text) {
+    color: #cbd5e1;
+    line-height: 1.45;
+    margin: 0;
+    flex: 1;
+  }
+
+  /* Western Horoscope Extra Details */
+  :global(.western-info-grid) {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+
+  :global(.western-info-card) {
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    padding: 0.75rem;
+  }
+
+  :global(.western-info-label) {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #94a3b8;
+    margin-bottom: 0.3rem;
+  }
+
+  :global(.western-info-val) {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: #f1f5f9;
+    line-height: 1.4;
     margin: 0;
   }
 
@@ -649,17 +793,16 @@ const {
     color: #38bdf8;
     font-size: 0.82rem;
     font-weight: 800;
-    padding: 0.5rem 1rem;
+    padding: 0.55rem 1.15rem;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
   }
 
   .btn-copy-fortune:hover {
     background: rgba(56, 189, 248, 0.22);
-    color: #ffffff;
     border-color: #38bdf8;
-    box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+    transform: translateY(-1px);
   }
 
   .fortune-disclaimer {
@@ -673,22 +816,57 @@ const {
     bottom: 2rem;
     left: 50%;
     transform: translateX(-50%);
-    background: #0f172a;
-    border: 1px solid #10b981;
-    color: #10b981;
-    padding: 0.65rem 1.4rem;
-    border-radius: 10px;
+    background: #0284c7;
+    color: #ffffff;
     font-size: 0.85rem;
     font-weight: 800;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
-    z-index: 1000;
+    padding: 0.65rem 1.4rem;
+    border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    z-index: 9999;
+    pointer-events: none;
     transition: opacity 0.3s ease, transform 0.3s ease;
   }
 
   .fortune-toast.hidden {
     opacity: 0;
-    pointer-events: none;
     transform: translate(-50%, 15px);
+  }
+
+  /* Responsive Adjustments */
+  @media (max-width: 860px) {
+    .signs-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .sub-luck-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    :global(.western-info-grid) {
+      grid-template-columns: 1fr;
+    }
+    .fortune-dodont-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 540px) {
+    .fortune-widget-root {
+      padding: 1.5rem 1rem;
+    }
+    .signs-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .sub-luck-grid {
+      grid-template-columns: 1fr;
+    }
+    .card-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .score-badge-box {
+      align-items: flex-start;
+      width: 100%;
+    }
   }
 </style>
 
@@ -699,113 +877,256 @@ const {
     icon: string;
     sub: string;
     type: 'eastern' | 'western';
+    birthYears?: number[];
+    planet?: string;
+    element?: string;
+    elementDesc?: string;
+    bestMatch?: string;
+    cautionMatch?: string;
   }
 
-  // 12 띠 (Eastern Zodiac)
+  // 12 띠 (Eastern Zodiac) with full birth years (1948 ~ 2019)
   const EASTERN_SIGNS: SignData[] = [
-    { id: 'rat', name: '쥐띠', icon: '🐭', sub: '72, 84, 96, 08년', type: 'eastern' },
-    { id: 'ox', name: '소띠', icon: '🐂', sub: '73, 85, 97, 09년', type: 'eastern' },
-    { id: 'tiger', name: '호랑이띠', icon: '🐯', sub: '74, 86, 98, 10년', type: 'eastern' },
-    { id: 'rabbit', name: '토끼띠', icon: '🐰', sub: '75, 87, 99, 11년', type: 'eastern' },
-    { id: 'dragon', name: '용띠', icon: '🐲', sub: '76, 88, 00, 12년', type: 'eastern' },
-    { id: 'snake', name: '뱀띠', icon: '🐍', sub: '77, 89, 01, 13년', type: 'eastern' },
-    { id: 'horse', name: '말띠', icon: '🐴', sub: '78, 90, 02, 14년', type: 'eastern' },
-    { id: 'sheep', name: '양띠', icon: '🐑', sub: '79, 91, 03, 15년', type: 'eastern' },
-    { id: 'monkey', name: '원숭이띠', icon: '🐵', sub: '80, 92, 04, 16년', type: 'eastern' },
-    { id: 'rooster', name: '닭띠', icon: '🐔', sub: '81, 93, 05, 17년', type: 'eastern' },
-    { id: 'dog', name: '개띠', icon: '🐶', sub: '82, 94, 06, 18년', type: 'eastern' },
-    { id: 'pig', name: '돼지띠', icon: '🐷', sub: '83, 95, 07, 19년', type: 'eastern' }
+    { id: 'rat', name: '쥐띠', icon: '🐭', sub: '48, 60, 72, 84, 96, 08년', type: 'eastern', birthYears: [1948, 1960, 1972, 1984, 1996, 2008] },
+    { id: 'ox', name: '소띠', icon: '🐂', sub: '49, 61, 73, 85, 97, 09년', type: 'eastern', birthYears: [1949, 1961, 1973, 1985, 1997, 2009] },
+    { id: 'tiger', name: '호랑이띠', icon: '🐯', sub: '50, 62, 74, 86, 98, 10년', type: 'eastern', birthYears: [1950, 1962, 1974, 1986, 1998, 2010] },
+    { id: 'rabbit', name: '토끼띠', icon: '🐰', sub: '51, 63, 75, 87, 99, 11년', type: 'eastern', birthYears: [1951, 1963, 1975, 1987, 1999, 2011] },
+    { id: 'dragon', name: '용띠', icon: '🐲', sub: '52, 64, 76, 88, 00, 12년', type: 'eastern', birthYears: [1952, 1964, 1976, 1988, 2000, 2012] },
+    { id: 'snake', name: '뱀띠', icon: '🐍', sub: '53, 65, 77, 89, 01, 13년', type: 'eastern', birthYears: [1953, 1965, 1977, 1989, 2001, 2013] },
+    { id: 'horse', name: '말띠', icon: '🐴', sub: '54, 66, 78, 90, 02, 14년', type: 'eastern', birthYears: [1954, 1966, 1978, 1990, 2002, 2014] },
+    { id: 'sheep', name: '양띠', icon: '🐑', sub: '55, 67, 79, 91, 03, 15년', type: 'eastern', birthYears: [1955, 1967, 1979, 1991, 2003, 2015] },
+    { id: 'monkey', name: '원숭이띠', icon: '🐵', sub: '56, 68, 80, 92, 04, 16년', type: 'eastern', birthYears: [1956, 1968, 1980, 1992, 2004, 2016] },
+    { id: 'rooster', name: '닭띠', icon: '🐔', sub: '57, 69, 81, 93, 05, 17년', type: 'eastern', birthYears: [1957, 1969, 1981, 1993, 2005, 2017] },
+    { id: 'dog', name: '개띠', icon: '🐶', sub: '58, 70, 82, 94, 06, 18년', type: 'eastern', birthYears: [1958, 1970, 1982, 1994, 2006, 2018] },
+    { id: 'pig', name: '돼지띠', icon: '🐷', sub: '59, 71, 83, 95, 07, 19년', type: 'eastern', birthYears: [1959, 1971, 1983, 1995, 2007, 2019] }
   ];
 
-  // 12 별자리 (Western Zodiac)
+  // 12 별자리 (Western Zodiac) with ruling planets and elements
   const WESTERN_SIGNS: SignData[] = [
-    { id: 'aquarius', name: '물병자리', icon: '🏺', sub: '01.20 ~ 02.18', type: 'western' },
-    { id: 'pisces', name: '물고기자리', icon: '🐟', sub: '02.19 ~ 03.20', type: 'western' },
-    { id: 'aries', name: '양자리', icon: '🐏', sub: '03.21 ~ 04.19', type: 'western' },
-    { id: 'taurus', name: '황소자리', icon: '🐂', sub: '04.20 ~ 05.20', type: 'western' },
-    { id: 'gemini', name: '쌍둥이자리', icon: '👥', sub: '05.21 ~ 06.21', type: 'western' },
-    { id: 'cancer', name: '게자리', icon: '🦀', sub: '06.22 ~ 07.22', type: 'western' },
-    { id: 'leo', name: '사자자리', icon: '🦁', sub: '07.23 ~ 08.22', type: 'western' },
-    { id: 'virgo', name: '처녀자리', icon: '🌾', sub: '08.23 ~ 09.22', type: 'western' },
-    { id: 'libra', name: '천칭자리', icon: '⚖️', sub: '09.23 ~ 10.22', type: 'western' },
-    { id: 'scorpio', name: '전갈자리', icon: '🦂', sub: '10.23 ~ 11.22', type: 'western' },
-    { id: 'sagittarius', name: '사수자리', icon: '🏹', sub: '11.23 ~ 12.24', type: 'western' },
-    { id: 'capricorn', name: '염소자리', icon: '🐐', sub: '12.25 ~ 01.19', type: 'western' }
+    { id: 'aquarius', name: '물병자리', icon: '🏺', sub: '01.20 ~ 02.18', type: 'western', planet: '천왕성 (자유, 독창성)', element: '바람 (지성)', elementDesc: '논리적이고 창의적인 발상이 빛나는 날', bestMatch: '쌍둥이자리', cautionMatch: '황소자리' },
+    { id: 'pisces', name: '물고기자리', icon: '🐟', sub: '02.19 ~ 03.20', type: 'western', planet: '해왕성 (직관, 예술)', element: '물 (감성)', elementDesc: '따뜻한 공감과 예술적 영감이 풍부한 날', bestMatch: '게자리', cautionMatch: '사수자리' },
+    { id: 'aries', name: '양자리', icon: '🐏', sub: '03.21 ~ 04.19', type: 'western', planet: '화성 (도전, 용기)', element: '불 (열정)', elementDesc: '추진력과 과감한 실행이 성공을 부르는 날', bestMatch: '사자자리', cautionMatch: '염소자리' },
+    { id: 'taurus', name: '황소자리', icon: '🐂', sub: '04.20 ~ 05.20', type: 'western', planet: '금성 (풍요, 안정)', element: '흙 (현실)', elementDesc: '차분한 내실 다지기와 실속이 보장되는 날', bestMatch: '처녀자리', cautionMatch: '물병자리' },
+    { id: 'gemini', name: '쌍둥이자리', icon: '👥', sub: '05.21 ~ 06.21', type: 'western', planet: '수성 (소통, 재치)', element: '바람 (지성)', elementDesc: '다양한 정보 교류와 기분 좋은 만남의 날', bestMatch: '천칭자리', cautionMatch: '물고기자리' },
+    { id: 'cancer', name: '게자리', icon: '🦀', sub: '06.22 ~ 07.22', type: 'western', planet: '달 (보호, 애정)', element: '물 (감성)', elementDesc: '가족과 가까운 이들에게서 포근한 안식을 얻는 날', bestMatch: '전갈자리', cautionMatch: '양자리' },
+    { id: 'leo', name: '사자자리', icon: '🦁', sub: '07.23 ~ 08.22', type: 'western', planet: '태양 (존재감, 리더십)', element: '불 (열정)', elementDesc: '당당한 매력과 리더십으로 주목받는 하루', bestMatch: '사수자리', cautionMatch: '전갈자리' },
+    { id: 'virgo', name: '처녀자리', icon: '🌾', sub: '08.23 ~ 09.22', type: 'western', planet: '수성 (분석, 질서)', element: '흙 (현실)', elementDesc: '치밀한 계획과 꼼꼼한 마무리가 돋보이는 날', bestMatch: '염소자리', cautionMatch: '쌍둥이자리' },
+    { id: 'libra', name: '천칭자리', icon: '⚖️', sub: '09.23 ~ 10.22', type: 'western', planet: '금성 (조화, 미적 감각)', element: '바람 (지성)', elementDesc: '원만한 중재와 세련된 감각이 인정받는 하루', bestMatch: '물병자리', cautionMatch: '게자리' },
+    { id: 'scorpio', name: '전갈자리', icon: '🦂', sub: '10.23 ~ 11.22', type: 'western', planet: '명왕성 (통찰, 집념)', element: '물 (감성)', elementDesc: '깊은 통찰력으로 본질을 꿰뚫어 보는 결정적 날', bestMatch: '물고기자리', cautionMatch: '사자자리' },
+    { id: 'sagittarius', name: '사수자리', icon: '🏹', sub: '11.23 ~ 12.24', type: 'western', planet: '목성 (확장, 낙천성)', element: '불 (열정)', elementDesc: '넓은 시야와 긍정적인 모험심이 활로를 여는 날', bestMatch: '양자리', cautionMatch: '처녀자리' },
+    { id: 'capricorn', name: '염소자리', icon: '🐐', sub: '12.25 ~ 01.19', type: 'western', planet: '토성 (인내, 성실)', element: '흙 (현실)', elementDesc: '우직한 성실함이 단단한 신뢰와 보상을 낳는 날', bestMatch: '황소자리', cautionMatch: '천칭자리' }
   ];
 
-  // Content Pool for Fortunes
+  // -------------------------------------------------------------
+  // Massive Authentic Korean Fortune Content Dataset (Fixed Data)
+  // -------------------------------------------------------------
+
   const FORTUNE_TITLES = [
     "노력의 결실이 눈앞에 다가오는 황금빛 하루",
-    "뜻밖의 귀인을 만나 막혔던 활로가 열리는 날",
-    "새로운 기회가 찾아오니 주저하지 말고 도전하세요",
+    "뜻밖의 귀인을 만나 막혔던 활로가 시원하게 열리는 날",
+    "새로운 기회가 찾아오니 주저하지 말고 힘차게 도전하세요",
     "차분한 마음과 내실 있는 준비가 행운을 부르는 하루",
-    "직관과 통찰력이 빛을 발해 난관을 쉽게 돌파하는 날",
+    "직관과 통찰력이 빛을 발해 난관을 손쉽게 돌파하는 날",
     "주변의 찬사와 인정을 한 몸에 받으며 위상이 높아지는 때",
-    "긍정적인 에너지가 넘쳐 모든 일이 순조롭게 풀리는 하루",
-    "작은 친절과 배려가 큰 행운의 눈덩이로 돌아오는 날",
-    "오랫동안 고심하던 고민거리가 시원하게 해결되는 하루",
-    "마음먹은 대로 행동하면 기대 이상의 기쁨을 맛볼 시간",
-    "서두르지 않고 한 걸음씩 나아갈 때 가장 안전한 날",
-    "지혜로운 판단으로 실속과 명예를 동시에 챙기는 하루"
+    "긍정적인 에너지가 넘쳐 모든 일이 순풍에 돛 단 듯 풀리는 하루",
+    "작은 친절과 배려가 커다란 복과 결실로 되돌아오는 날",
+    "오랫동안 고심하던 고민거리가 말끔히 해결되는 상쾌한 하루",
+    "마음먹은 대로 행동하면 기대 이상의 기쁨과 성취를 맛볼 시간",
+    "서두르지 않고 한 걸음씩 나아갈 때 가장 안전하고 확실한 날",
+    "지혜로운 판단으로 실속과 명예를 동시에 챙기는 하루",
+    "흩어졌던 에너지가 하나로 모여 강력한 추진력을 얻는 날",
+    "주변 사람들과의 소통이 원활하여 큰 힘과 위로를 얻는 시간",
+    "잠재되어 있던 재능이 멋지게 발휘되어 박수를 받는 하루",
+    "작은 성취가 모여 큰 자신감의 디딤돌이 되어주는 길일",
+    "흐리던 시야가 걷히고 나아가야 할 명확한 길이 보이는 날",
+    "마음의 여유를 가질수록 복과 행운이 풍성하게 찾아오는 하루",
+    "오랜 시간의 인내가 마침내 값진 보답으로 꽃을 피우는 때",
+    "새로운 인연과의 만남에서 뜻밖의 희망찬 활력을 얻는 날",
+    "생각의 전환 하나로 막혀있던 상황을 시원하게 반전시키는 하루",
+    "온화한 미소와 긍정적인 태도가 모든 장애물을 녹이는 날",
+    "계획했던 일들이 빈틈없이 착착 맞아떨어지는 보람찬 하루",
+    "자기 자신을 신뢰하고 전진할 때 가장 빛나는 성과를 거둘 시간",
+    "예상치 못한 반가운 소식이 문을 두드리며 웃음을 선사하는 날",
+    "성실하게 쌓아온 평판이 든든한 방패이자 무기가 되어주는 하루",
+    "복잡했던 머릿속이 맑아지며 중요한 결정에 확신이 서는 날",
+    "주변의 조언을 열린 마음으로 수용할 때 더 큰 지혜를 얻는 때",
+    "당신의 따뜻한 말 한마디가 상대방에게 감동과 신뢰를 심는 하루",
+    "작은 디테일에 신경 쓸수록 큰 실수를 막고 완벽을 기하는 날",
+    "기분 좋은 우연이 연이어 겹치며 하루 종일 웃음이 넘치는 날",
+    "어려운 과제를 슬기롭게 해결하여 스스로의 성장을 체감하는 하루",
+    "새로운 환경이나 변화를 두려워하지 않을 때 행운이 배가되는 날",
+    "감사하는 마음을 품을수록 더 감사할 일들이 풍성해지는 시간",
+    "순간의 충동을 다스리고 장기적인 이익을 지혜롭게 선택하는 날",
+    "동료들과 한마음으로 뭉쳐 큰 성과를 자축하게 되는 훈훈한 하루",
+    "마음속 응어리가 풀리고 평화로운 안정감이 깃드는 시간",
+    "예술적 감각과 번뜩이는 센스가 주변을 매료시키는 멋진 하루",
+    "서로 양보하고 배려하는 자세에서 최고의 조화가 피어나는 날",
+    "스스로를 칭찬하고 격려할 자격이 충분한 뿌듯한 결실의 하루"
   ];
 
   const FORTUNE_OVERVIEWS = [
-    "그동안 묵묵히 쏟아부은 노력과 정성이 값진 결실로 이어지는 뜻깊은 하루입니다. 주변 사람들의 지지와 응원이 더해져 새로운 프로젝트나 도전에 탄력이 붙게 됩니다.",
-    "예상치 못한 자리에서 귀인을 만나 오랜 고민에 대한 명쾌한 해답을 얻게 됩니다. 솔직하고 겸손한 태도를 보인다면 더 큰 신뢰와 기회가 활짝 열릴 것입니다.",
-    "망설이던 결정을 내리기에 더없이 좋은 날입니다. 자신의 직감을 믿고 과감하게 첫발을 내딛으면 순풍에 돛을 단 듯 매끄럽게 진행될 것입니다.",
-    "화려한 외면보다는 내실을 차분히 다져야 하는 지혜로운 하루입니다. 급하게 서두르기보다 주변 정리를 깔끔히 하고 기본에 충실하면 뜻밖의 행운이 찾아옵니다.",
-    "대인관계에서 큰 행운이 따르는 날입니다. 평소 서먹했던 사람과 오해를 풀거나 소중한 인연을 맺을 수 있으니 따뜻한 안부 한마디를 먼저 건네보세요.",
-    "두뇌 회전이 빠르고 창의적인 아이디어가 샘솟는 하루입니다. 막혔던 일에 색다른 관점으로 접근하면 놀랍도록 손쉽게 돌파구를 마련할 수 있습니다.",
-    "정체되었던 기운이 풀리며 시원한 변화의 바람이 불어옵니다. 긍정적인 마음가짐으로 사람들을 대하면 당신의 밝은 에너지가 주변 모두에게 전염될 것입니다.",
-    "신중함과 과감함의 조화가 필요한 시점입니다. 작은 지출이나 사소한 감정 소비를 줄이고 정말 중요한 목표에 에너지를 집중하면 큰 보람을 누리게 됩니다."
+    "그동안 묵묵히 쏟아부은 정성과 땀방울이 값진 결실로 이어지는 보람찬 하루입니다. 주변 사람들의 지지와 응원이 더해져 새로운 프로젝트나 도전에 탄력이 붙게 됩니다. 자긍심을 가지세요.",
+    "예상치 못한 자리에서 귀인을 만나 오랜 고민에 대한 명쾌한 해답을 얻게 됩니다. 솔직하고 겸손한 태도를 보인다면 더 큰 신뢰와 기회가 활짝 열릴 것입니다. 좋은 인연을 소중히 다루세요.",
+    "망설이던 결정을 내리기에 더없이 좋은 날입니다. 자신의 직감과 축적된 경험을 믿고 과감하게 첫발을 내딛으면 순풍에 돛을 단 듯 매끄럽게 진행될 것입니다. 용기를 내어보세요.",
+    "화려한 외면보다는 내실을 차분히 다져야 하는 지혜로운 하루입니다. 급하게 서두르기보다 주변 정리를 깔끔히 하고 기본에 충실하면 뜻밖의 귀중한 행운이 찾아옵니다. 차분함이 무기입니다.",
+    "대인관계에서 큰 행운이 따르는 날입니다. 평소 서먹했던 사람과 오해를 풀거나 소중한 협력자를 얻을 수 있으니 따뜻한 안부 한마디를 먼저 건네보세요. 미소가 복을 부릅니다.",
+    "두뇌 회전이 빠르고 창의적인 아이디어가 샘솟는 하루입니다. 막혔던 일에 색다른 관점으로 접근하면 놀랍도록 손쉽게 돌파구를 마련할 수 있습니다. 메모하는 습관을 잊지 마세요.",
+    "정체되었던 기운이 풀리며 시원한 변화의 바람이 불어옵니다. 긍정적인 마음가짐으로 사람들을 대하면 당신의 밝은 에너지가 주변 모두에게 활력을 주며 자신에게로 되돌아옵니다.",
+    "신중함과 과감함의 조화가 필요한 시점입니다. 작은 지출이나 사소한 감정 소비를 줄이고 정말 중요한 목표에 에너지를 집중하면 기대 이상의 큰 보람과 안정을 누리게 됩니다.",
+    "주변에서 당신의 성실함을 높이 평가하며 신뢰를 보내옵니다. 맡은 일에 작은 책임감만 더 발휘해도 자신의 입지를 단단히 굳힐 수 있는 기분 좋은 성장의 날입니다.",
+    "마음의 여유를 갖고 한 발짝 물러서서 상황을 조망해 보세요. 복잡하게 얽혀 있던 문제들의 실마리가 생각보다 훨씬 단순한 곳에 숨겨져 있음을 발견하게 됩니다.",
+    "작은 친절이 큰 행운의 나비효과가 되어 돌아옵니다. 누군가의 짐을 가볍게 덜어주거나 따뜻한 격려를 전하면, 그 이상의 든든한 조력자를 얻게 되는 뜻깊은 날입니다.",
+    "불필요한 걱정은 훌훌 털어버리고 현재 눈앞의 과제에만 집중하세요. 생각보다 상황은 당신에게 훨씬 유리하게 돌아가고 있으니 스스로를 더 믿고 격려해도 좋습니다.",
+    "오랜 시간 갈고닦아온 기술이나 지식이 빛을 발하는 순간이 찾아옵니다. 자신의 주장을 명확하고 당당하게 피력할 때 주변의 강력한 지지와 인정을 이끌어낼 수 있습니다.",
+    "새로운 제안이나 연락이 오면 긍정적으로 검토해 보세요. 낯설게 느껴질 수 있지만, 당신의 지평을 넓혀주고 삶의 활력을 불어넣어 줄 훌륭한 터닝포인트가 될 수 있습니다.",
+    "급한 불을 끄기보다 근본적인 원인을 다스리는 지혜가 빛납니다. 차분히 계획을 재점검하고 기본기를 단단히 다지면 앞으로 다가올 큰 기회를 안전하게 포착하게 됩니다.",
+    "사람들과의 대화 속에서 뜻밖의 번뜩이는 영감을 얻게 됩니다. 열린 귀로 타인의 의견을 경청하면 혼자 끙끙 앓던 문제의 명쾌한 돌파구가 자연스럽게 열릴 것입니다."
   ];
 
+  // Birth Year Fortunes (Organized across life stages and themes)
+  const YEAR_FORTUNE_POOL = [
+    "경험과 지혜를 발휘하여 후배나 가족들에게 든든한 버팀목이 되어주는 날입니다.",
+    "차분하게 건강을 챙기고 무리한 활동보다는 마음의 여유와 안정을 즐기세요.",
+    "오랜 친구나 지인과의 따뜻한 안부 전화 한 통이 큰 기쁨과 온기를 줍니다.",
+    "주변의 사소한 참견에 마음 쓰지 말고 본인의 페이스를 온화하게 유지하세요.",
+    "마음이 평온하니 집안에 웃음꽃이 피고 매사가 순조롭게 흘러가는 하루입니다.",
+    "중요한 계약이나 금전 거래는 서류를 꼼꼼히 재확인한 후 결정하는 것이 안전합니다.",
+    "동료 및 가족과의 협력이 최고의 성과를 낳습니다. 솔직한 대화를 나눠보세요.",
+    "그동안의 헌신과 노력이 주위로부터 진심 어린 감사와 존경으로 되돌아옵니다.",
+    "작은 지출을 줄이고 내실을 다지면 재정적으로 한층 더 든든해지는 시점입니다.",
+    "성급한 감정 표현은 삼가고 한 박자 쉬어가는 지혜가 갈등을 예방해 줍니다.",
+    "새로운 프로젝트나 업무에서 당신의 주도적인 리더십이 크게 빛을 발합니다.",
+    "뜻밖의 반가운 제안이나 소식이 찾아오니 자신감을 갖고 기회를 잡으세요.",
+    "동료들과의 활발한 소통이 막혔던 업무의 실마리를 시원하게 풀어줍니다.",
+    "자신의 전문성을 업그레이드할 좋은 배움이나 세미나의 기회가 열리는 때입니다.",
+    "일과 휴식의 균형을 잘 맞추면 피로 없이 최고의 집중력을 유지할 수 있습니다.",
+    "목표를 향해 한 걸음 전진할 때입니다. 주저하지 말고 준비한 실력을 발휘하세요.",
+    "새로운 인연과의 만남에서 긍정적인 자극과 설레는 동기부여를 얻게 됩니다.",
+    "작은 성공 경험들이 모여 큰 도전을 감당할 수 있는 단단한 자신감이 됩니다.",
+    "충동적인 소비나 감정 소비를 주의하고 가치 있는 자기계발에 투자하세요.",
+    "솔직하고 당당한 태도가 면접이나 발표에서 상대방의 마음을 강하게 사로잡습니다.",
+    "학업이나 새로운 스킬 습득에서 놀라운 습득력과 성취도를 보이는 날입니다.",
+    "친구들과의 신뢰가 돈독해지고 서로의 고민을 나누며 큰 위로를 받게 됩니다.",
+    "사소한 일에 일희일비하지 말고 긴 호흡으로 미래를 계획하면 성운이 따릅니다.",
+    "창의적인 취미나 활동을 통해 숨겨진 재능을 발견하고 활력을 얻는 하루입니다.",
+    "선배나 멘토의 진솔한 조언을 귀담아들으면 뜻밖의 큰 지름길을 발견하게 됩니다."
+  ];
+
+  // Sub-Luck Tips (40 items each)
   const WEALTH_TIPS = [
-    "뜻밖의 작은 수익이나 보너스가 기대되는 날입니다.",
-    "계획에 없던 충동구매를 피하면 재정이 탄탄해집니다.",
-    "장기적인 투자나 저축 계획을 세우기에 좋은 시점입니다.",
-    "빌려준 돈이나 미수금이 원활하게 회수될 조짐이 있습니다."
+    "뜻밖의 작은 부수입이나 보너스가 기분 좋은 활력을 불어넣어 줍니다.",
+    "계획에 없던 충동구매를 절제하면 이번 달 재정이 매우 탄탄해집니다.",
+    "장기적인 저축이나 실속 있는 자산 계획을 세우기에 최적의 타이밍입니다.",
+    "빌려준 돈이나 지연되던 정산금이 원활하게 회수될 좋은 징조가 있습니다.",
+    "작은 할인 혜택이나 포인트 적립도 꼼꼼히 챙기면 쏠쏠한 보탬이 됩니다.",
+    "투자 관련 정보는 주변 소문보다 객관적인 지표를 직접 검증하세요.",
+    "주변 사람들에게 베푼 작은 베풂이 훗날 더 큰 재물 복으로 되돌아옵니다.",
+    "가성비보다는 가심비를 따져 꼭 필요한 곳에만 똑똑하게 소비하세요.",
+    "중고 거래나 안 쓰는 물건 정리를 통해 쏠쏠한 용돈을 챙길 수 있습니다.",
+    "새로운 수익 파이프라인에 대한 아이디어가 떠오르면 즉시 메모해 두세요."
   ];
 
   const LOVE_TIPS = [
-    "솔직한 대화로 서로의 마음을 확인하기 좋은 날입니다.",
-    "우연한 만남에서 설레는 인연이 시작될 수 있습니다.",
-    "상대방의 입장을 먼저 헤아려주면 애정이 더 깊어집니다.",
-    "사소한 일로 다투지 말고 넓은 포용력을 발휘하세요."
+    "솔직하고 따뜻한 대화로 서로의 진심을 확인하기에 더없이 좋은 날입니다.",
+    "우연한 만남이나 모임에서 심장을 두근거리게 할 인연이 스칠 수 있습니다.",
+    "상대방의 입장을 먼저 헤아려주는 배려심이 애정 전선을 더욱 화창하게 만듭니다.",
+    "사소한 의견 차이로 다투지 말고 넓은 포용력으로 감싸주는 지혜를 발휘하세요.",
+    "평소 쑥스러워 전하지 못했던 고마움과 사랑을 짧은 메시지로 전해보세요.",
+    "자신만의 솔직한 매력을 숨김없이 드러낼 때 상대방의 호감도가 급상승합니다.",
+    "연인과 함께 새로운 맛집이나 산책로를 찾아가면 특별한 추억이 쌓입니다.",
+    "과거의 서운했던 감정은 훌훌 털어내고 현재의 행복에만 온전히 집중하세요.",
+    "상대방의 사소한 변화를 알아채고 칭찬해 주면 두 사람 사이가 더욱 돈독해집니다.",
+    "혼자만의 시간도 존중해 줄 때 서로에 대한 애착과 신뢰가 더욱 깊어집니다."
   ];
 
   const WORK_TIPS = [
-    "집중력이 최고조에 달해 빠른 성과를 얻을 수 있습니다.",
-    "동료들과의 협업에서 당신의 리더십이 돋보이는 날입니다.",
-    "새로운 지식이나 기술을 배우면 큰 무기가 될 것입니다.",
-    "꼼꼼한 서류 검토와 일정 관리가 실수를 사전에 막아줍니다."
+    "놀라운 몰입도와 집중력이 발휘되어 까다로운 업무를 속전속결로 끝냅니다.",
+    "동료들과의 협업에서 당신의 유연한 조율 능력과 리더십이 돋보입니다.",
+    "새로운 도구나 업무 자동화 기법을 도입하면 작업 효율이 배로 뜁니다.",
+    "꼼꼼한 서류 검토와 스케줄 재확인이 결정적인 실수를 미연에 방지합니다.",
+    "상사나 파트너와의 미팅에서 핵심만을 명확히 전달해 큰 신임을 얻습니다.",
+    "오랫동안 미뤄두었던 정리 작업이나 문서 정돈을 끝내기에 아주 좋습니다.",
+    "창의적인 아이디어를 당당하게 제안하면 팀 전체의 분위기가 살아납니다.",
+    "혼자 짊어지려 하지 말고 동료에게 도움을 요청하면 훨씬 쉽게 해결됩니다.",
+    "우선순위를 정해 중요한 일부터 차례대로 처리하면 퇴근길이 가볍습니다.",
+    "자신의 성과를 겸손하면서도 객관적인 수치로 당당히 어필할 좋은 기회입니다."
   ];
 
   const HEALTH_TIPS = [
-    "가벼운 스트레칭과 수분 섭취로 컨디션을 관리하세요.",
-    "충분한 수면과 균형 잡힌 식사가 활력을 불어넣어 줍니다.",
-    "과도한 카페인 섭취를 줄이고 산책으로 머리를 식히세요.",
-    "눈의 피로를 풀어주고 바른 자세를 유지하도록 신경 쓰세요."
+    "가벼운 전신 스트레칭과 규칙적인 수분 섭취로 몸의 활력을 깨우세요.",
+    "충분하고 질 높은 수면이 오늘 하루 최고의 보약이자 에너지원입니다.",
+    "과도한 카페인 섭취를 줄이고 따뜻한 차 한 잔으로 속을 달래주세요.",
+    "모니터에서 잠시 눈을 떼고 먼 풍경을 바라보며 눈의 피로를 풀어주세요.",
+    "바른 자세를 유지하려는 작은 의식이 허리와 어깨의 부담을 줄여줍니다.",
+    "점심 식사 후 가벼운 산책이 뇌를 맑게 하고 오후의 집중력을 높여줍니다.",
+    "기름진 음식보다는 소화가 잘되는 신선한 제철 채소와 과일을 즐기세요.",
+    "스트레스가 쌓일 때는 좋아하는 음악을 듣거나 심호흡으로 마음을 비우세요.",
+    "과식을 피하고 소식하는 습관이 몸을 한결 가볍고 상쾌하게 만듭니다.",
+    "자기 전 따뜻한 물로 샤워를 하면 뭉쳤던 근육이 부드럽게 이완됩니다."
   ];
 
+  // Today's Do's & Don'ts Pools
+  const DOS_POOL = [
+    "오랜 지인에게 따뜻한 안부 메시지 먼저 보내기",
+    "책상 위와 가방 속을 깔끔하게 정리정돈하기",
+    "약속 장소에 10분 일찍 도착해 여유를 누리기",
+    "동료나 가족의 사소한 노력에 진심으로 감사 표하기",
+    "하루 동안 물 1.5리터 이상 충분히 마시기",
+    "떠오르는 영감이나 좋은 문장을 메모장에 기록하기",
+    "점심 식사 후 햇볕을 쬐며 15분간 가볍게 걷기",
+    "중요한 일정을 다이어리에 우선순위별로 체크하기",
+    "평소 읽고 싶었던 책이나 아티클을 30분 이상 정독하기",
+    "웃는 얼굴로 먼저 인사 건네며 긍정적인 기운 퍼뜨리기"
+  ];
+
+  const DONTS_POOL = [
+    "감정이 격해진 상태에서 성급하게 결론 내리기",
+    "확인되지 않은 소문이나 타인의 험담에 동조하기",
+    "계획에 없던 충동구매나 불필요한 과소비하기",
+    "피로가 누적되었는데 무리하게 늦은 밤까지 스마트폰 보기",
+    "타인과의 비교로 스스로의 자존감 깎아내리기",
+    "사소한 말실수에 온종일 얽매여 자책하기",
+    "약속 시간을 촉박하게 잡아 헐레벌떡 서두르기",
+    "식사를 대충 거르고 자극적인 간식으로 때우기",
+    "귀찮다는 이유로 중요한 서류나 계약 대충 훑어보기",
+    "혼자 모든 짐을 다 짊어지려 끙끙 앓기"
+  ];
+
+  // Lucky Attributes
   const LUCKY_COLORS = [
     "골드 옐로우", "스카이 블루", "에메랄드 그린", "샴페인 베이지",
     "라벤더 퍼플", "로즈 핑크", "네이비 블루", "올리브 그린",
-    "선셋 오렌지", "펄 화이트", "버건디 와인", "민트 그린"
+    "선셋 오렌지", "펄 화이트", "버건디 와인", "민트 그린",
+    "코랄 피치", "아이보리 크림", "차콜 그레이", "터콰이즈 블루",
+    "애프리콧 옐로우", "라일락 바이올렛", "포레스트 딥그린", "로열 사파이어"
   ];
 
   const LUCKY_DIRECTIONS = ["동쪽", "남동쪽", "남쪽", "남서쪽", "서쪽", "북서쪽", "북쪽", "북동쪽"];
 
   const LUCKY_TIMES = [
-    "07:00 ~ 09:00", "09:00 ~ 11:00", "11:00 ~ 13:00",
-    "13:00 ~ 15:00", "15:00 ~ 17:00", "17:00 ~ 19:00",
-    "19:00 ~ 21:00", "21:00 ~ 23:00"
+    "07:00 ~ 09:00 (아침 활력 시간)",
+    "09:00 ~ 11:00 (오전 골든타임)",
+    "11:00 ~ 13:00 (점심 충전 시간)",
+    "13:00 ~ 15:00 (오후 집중타임)",
+    "15:00 ~ 17:00 (달콤한 티타임)",
+    "17:00 ~ 19:00 (퇴근길 정리시간)",
+    "19:00 ~ 21:00 (저녁 교류시간)",
+    "21:00 ~ 23:00 (차분한 힐링시간)"
   ];
 
   const LUCKY_ITEMS = [
-    "따뜻한 차", "메모 수첩", "향수 / 디퓨저", "스마트 워치",
-    "푸른색 손수건", "다이어리", "편안한 운동화", "텀블러",
-    "클래식 볼펜", "민트 사탕", "가죽 지갑", "은색 열쇠고리"
+    "따뜻한 차 텀블러", "가죽 다이어리", "스마트 워치", "푸른색 손수건",
+    "클래식 만년필", "은색 키링", "민트 캔디", "무선 이어폰",
+    "미니 탁상 달력", "편안한 운동화", "핸드크림", "북마크 (책갈피)",
+    "향수 / 롤온 오일", "부드러운 머플러", "손거울", "에코백"
+  ];
+
+  const LUCKY_FOODS = [
+    "신선한 야채 비빔밥", "따뜻한 바닐라 라떼", "다크 초콜릿 한 조각",
+    "닭가슴살 아보카도 샐러드", "따뜻한 국물의 우동", "향긋한 얼그레이 홍차",
+    "바삭한 크루아상", "영양 가득 삼계탕", "달콤한 제철 생과일",
+    "담백한 두부 요리", "따뜻한 된장찌개", "상큼한 레모네이드",
+    "바나나 요거트 볼", "갓 구운 토스트", "말차 라떼", "견과류 한 줌"
   ];
 
   // Deterministic Seeded PRNG Algorithm (Mulberry32 + FNV-1a Hash)
@@ -848,17 +1169,19 @@ const {
   let currentSignId: string = 'tiger';
 
   // DOM references
-  const signsGrid = document.getElementById('signs-grid');
-  const tabs = document.querySelectorAll('.fortune-tab');
   const fortuneDateTag = document.getElementById('fortune-current-date');
+  const fortuneCardDate = document.getElementById('fortune-card-date');
+  const signsGrid = document.getElementById('signs-grid');
+
   const fortuneAvatar = document.getElementById('fortune-avatar');
   const fortuneSignName = document.getElementById('fortune-sign-name');
   const fortuneSignSub = document.getElementById('fortune-sign-sub');
-  const fortuneCardDate = document.getElementById('fortune-card-date');
+
   const fortuneScoreNum = document.getElementById('fortune-score-num');
   const fortuneScoreGrade = document.getElementById('fortune-score-grade');
   const fortuneScorePill = document.getElementById('fortune-score-pill');
   const fortuneMeterFill = document.getElementById('fortune-meter-fill');
+
   const fortuneHeadline = document.getElementById('fortune-headline');
   const fortuneBody = document.getElementById('fortune-body');
 
@@ -878,18 +1201,23 @@ const {
   const luckHealthBar = document.getElementById('luck-health-bar');
   const luckHealthTip = document.getElementById('luck-health-tip');
 
+  const fortuneDoText = document.getElementById('fortune-do-text');
+  const fortuneDontText = document.getElementById('fortune-dont-text');
+  const fortuneDynamicContainer = document.getElementById('fortune-dynamic-container');
+
   const pillNumber = document.getElementById('pill-number');
   const pillColor = document.getElementById('pill-color');
   const pillDirection = document.getElementById('pill-direction');
   const pillTime = document.getElementById('pill-time');
   const pillItem = document.getElementById('pill-item');
+  const pillFood = document.getElementById('pill-food');
 
   const btnCopyFortune = document.getElementById('btn-copy-fortune');
   const fortuneToast = document.getElementById('fortune-toast');
 
   // Compute Fortune for a given sign and date
   function computeFortune(sign: SignData, dateKey: string) {
-    const seed = hashString(`${dateKey}_${sign.id}`);
+    const seed = hashString(`${dateKey}_${sign.id}_v2`);
     const rng = createSeededRNG(seed);
 
     // Overall Score: 60 ~ 98
@@ -901,14 +1229,14 @@ const {
       grade = '대길 (大吉) 🌟';
       gradeColor = '#facc15';
     } else if (overallScore >= 80) {
-      grade = '길 (吉) ✨';
+      grade = '중길 (中吉) ✨';
       gradeColor = '#a855f7';
     } else if (overallScore >= 70) {
       grade = '소길 (小吉) 🍀';
       gradeColor = '#38bdf8';
     }
 
-    // Sub-scores: range around overallScore ± 15, clamped 50..100
+    // Sub-scores: clamped 50..100
     const wScore = Math.max(50, Math.min(100, Math.floor(overallScore + (rng() - 0.5) * 25)));
     const lScore = Math.max(50, Math.min(100, Math.floor(overallScore + (rng() - 0.5) * 25)));
     const kScore = Math.max(50, Math.min(100, Math.floor(overallScore + (rng() - 0.5) * 25)));
@@ -922,12 +1250,30 @@ const {
     const kTipIdx = Math.floor(rng() * WORK_TIPS.length);
     const hTipIdx = Math.floor(rng() * HEALTH_TIPS.length);
 
+    // Do & Don't
+    const doIdx = Math.floor(rng() * DOS_POOL.length);
+    const dontIdx = Math.floor(rng() * DONTS_POOL.length);
+
     // Lucky pills
-    const luckyNum = Math.floor(rng() * 89) + 7;
+    const luckyNum1 = Math.floor(rng() * 45) + 1;
+    const luckyNum2 = Math.floor(rng() * 50) + 10;
     const luckyColor = LUCKY_COLORS[Math.floor(rng() * LUCKY_COLORS.length)];
     const luckyDir = LUCKY_DIRECTIONS[Math.floor(rng() * LUCKY_DIRECTIONS.length)];
     const luckyTime = LUCKY_TIMES[Math.floor(rng() * LUCKY_TIMES.length)];
     const luckyItem = LUCKY_ITEMS[Math.floor(rng() * LUCKY_ITEMS.length)];
+    const luckyFood = LUCKY_FOODS[Math.floor(rng() * LUCKY_FOODS.length)];
+
+    // Birth-year fortunes (for Eastern Zodiac)
+    const yearFortunes = (sign.birthYears || []).map((year, idx) => {
+      const yearSeed = hashString(`${dateKey}_${sign.id}_${year}`);
+      const yearRng = createSeededRNG(yearSeed);
+      const yearTextIdx = Math.floor(yearRng() * YEAR_FORTUNE_POOL.length);
+      return {
+        year,
+        shortYear: String(year).slice(2),
+        text: YEAR_FORTUNE_POOL[(yearTextIdx + idx) % YEAR_FORTUNE_POOL.length]
+      };
+    });
 
     return {
       overallScore,
@@ -939,11 +1285,15 @@ const {
       love: { score: lScore, tip: LOVE_TIPS[lTipIdx] },
       work: { score: kScore, tip: WORK_TIPS[kTipIdx] },
       health: { score: hScore, tip: HEALTH_TIPS[hTipIdx] },
-      luckyNum,
+      doText: DOS_POOL[doIdx],
+      dontText: DONTS_POOL[dontIdx],
+      luckyNums: `${luckyNum1}, ${luckyNum2}`,
       luckyColor,
       luckyDir,
       luckyTime,
-      luckyItem
+      luckyItem,
+      luckyFood,
+      yearFortunes
     };
   }
 
@@ -1026,27 +1376,76 @@ const {
     if (luckHealthBar) luckHealthBar.style.width = `${data.health.score}%`;
     if (luckHealthTip) luckHealthTip.textContent = data.health.tip;
 
+    // Do & Don't
+    if (fortuneDoText) fortuneDoText.textContent = data.doText;
+    if (fortuneDontText) fortuneDontText.textContent = data.dontText;
+
+    // Dynamic Section: Eastern (Birth Years) vs Western (Horoscope Profile)
+    if (fortuneDynamicContainer) {
+      if (currentTab === 'eastern') {
+        const rowsHtml = data.yearFortunes.map(item => `
+          <div class="year-fortune-row">
+            <span class="year-badge">${item.year}년 (${item.shortYear}년생)</span>
+            <p class="year-fortune-text">${item.text}</p>
+          </div>
+        `).join('');
+
+        fortuneDynamicContainer.innerHTML = `
+          <div class="dynamic-section-title">
+            <span>📅 출생 연도별 맞춤 운세</span>
+          </div>
+          <div class="year-fortune-list">
+            ${rowsHtml}
+          </div>
+        `;
+      } else {
+        fortuneDynamicContainer.innerHTML = `
+          <div class="dynamic-section-title">
+            <span>🌌 별자리 심층 분석 & 궁합</span>
+          </div>
+          <div class="western-info-grid">
+            <div class="western-info-card">
+              <div class="western-info-label">🪐 수호행성 & 기질</div>
+              <p class="western-info-val">${sign.planet || '수호성'}</p>
+            </div>
+            <div class="western-info-card">
+              <div class="western-info-label">💖 오늘의 찰떡 궁합</div>
+              <p class="western-info-val" style="color: #f472b6;">${sign.bestMatch || '사수자리'} (상승 시너지)</p>
+            </div>
+            <div class="western-info-card">
+              <div class="western-info-label">⚠️ 오늘의 주의 궁합</div>
+              <p class="western-info-val" style="color: #fb923c;">${sign.cautionMatch || '황소자리'} (소통 배려 필요)</p>
+            </div>
+          </div>
+        `;
+      }
+    }
+
     // Pills
-    if (pillNumber) pillNumber.textContent = String(data.luckyNum);
+    if (pillNumber) pillNumber.textContent = data.luckyNums;
     if (pillColor) pillColor.textContent = data.luckyColor;
     if (pillDirection) pillDirection.textContent = data.luckyDir;
     if (pillTime) pillTime.textContent = data.luckyTime;
     if (pillItem) pillItem.textContent = data.luckyItem;
+    if (pillFood) pillFood.textContent = data.luckyFood;
   }
 
-  // Tab switching
-  tabs.forEach(tab => {
+  // Segmented Tabs Switch
+  document.querySelectorAll('.fortune-tab').forEach(tab => {
     tab.addEventListener('click', () => {
-      tabs.forEach(t => {
+      const target = tab.getAttribute('data-tab') as 'eastern' | 'western';
+      if (target === currentTab) return;
+
+      currentTab = target;
+      document.querySelectorAll('.fortune-tab').forEach(t => {
         t.classList.remove('active');
         t.setAttribute('aria-selected', 'false');
       });
       tab.classList.add('active');
       tab.setAttribute('aria-selected', 'true');
 
-      currentTab = (tab.getAttribute('data-tab') || 'eastern') as 'eastern' | 'western';
-      // Default to first item of new tab
-      currentSignId = currentTab === 'eastern' ? 'rat' : 'aquarius';
+      // Set default sign for tab
+      currentSignId = currentTab === 'eastern' ? 'tiger' : 'leo';
 
       renderSignsGrid();
       renderSelectedFortune();
@@ -1063,15 +1462,20 @@ const {
     const grade = fortuneScoreGrade?.textContent || '대길';
     const title = fortuneHeadline?.textContent || '';
     const body = fortuneBody?.textContent || '';
+    const doAct = fortuneDoText?.textContent || '';
+    const dontAct = fortuneDontText?.textContent || '';
     const num = pillNumber?.textContent || '';
     const color = pillColor?.textContent || '';
     const dir = pillDirection?.textContent || '';
+    const food = pillFood?.textContent || '';
 
     const textToCopy = `[오늘의 운세 - ${humanDate}]\n` +
       `✨ ${sign.name} (${sign.icon}): 종합운 ${score}점 (${grade})\n` +
       `${title}\n\n` +
       `${body}\n\n` +
-      `🍀 행운의 숫자: ${num} | 색상: ${color} | 방향: ${dir}`;
+      `⭕ 오늘의 추천: ${doAct}\n` +
+      `❌ 오늘의 주의: ${dontAct}\n` +
+      `🍀 행운의 숫자: ${num} | 색상: ${color} | 방향: ${dir} | 음식: ${food}`;
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(textToCopy).then(() => {
