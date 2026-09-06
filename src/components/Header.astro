@@ -188,21 +188,35 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 </style>
 
 <script>
-  // Client-side sound toggle
+  // Client-side global sound toggle
   const soundBtn = document.getElementById('global-sound-toggle');
   const soundIcon = document.getElementById('sound-icon');
 
   function updateSoundUI() {
     const muted = localStorage.getItem('aether_sound_muted') === 'true';
     if (soundIcon) soundIcon.textContent = muted ? '🔇' : '🔊';
+    if (soundBtn) {
+      soundBtn.setAttribute('title', muted ? '소리 켜기' : '소리 끄기');
+      soundBtn.setAttribute('aria-label', muted ? '소리 켜기' : '소리 끄기');
+      soundBtn.classList.toggle('muted', muted);
+    }
   }
 
   if (soundBtn) {
     soundBtn.addEventListener('click', () => {
       const current = localStorage.getItem('aether_sound_muted') === 'true';
-      localStorage.setItem('aether_sound_muted', String(!current));
+      const nextMuted = !current;
+      localStorage.setItem('aether_sound_muted', String(nextMuted));
       updateSoundUI();
+      window.dispatchEvent(new CustomEvent('sound-toggle', { detail: { muted: nextMuted } }));
     });
     updateSoundUI();
   }
+
+  window.addEventListener('sound-toggle', () => {
+    updateSoundUI();
+  });
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'aether_sound_muted') updateSoundUI();
+  });
 </script>
