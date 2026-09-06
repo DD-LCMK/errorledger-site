@@ -1132,8 +1132,8 @@ const data = gameEntry?.data || {
 
   // Course Dimensions (Wider 560px track for larger marbles & broadcast presence)
   const COURSE_WIDTH = 560;
-  const COURSE_HEIGHT = 7560;
-  const FINISH_LINE_Y = 7240;
+  const COURSE_HEIGHT = 7900;
+  const FINISH_LINE_Y = 7540;
 
   const ZONE_MARKERS: ZoneMarker[] = [
     { y: 260, title: 'ZONE 1 — 스타팅 호퍼 & 파친코', sub: 'GRAND HOPPER & GALTON LATTICE' },
@@ -1145,7 +1145,7 @@ const data = gameEntry?.data || {
     { y: 4680, title: 'ZONE 7 — 쿼드 크로스 스피너 & 킥백', sub: 'QUAD CROSS GAUNTLET & KICKBACKS' },
     { y: 5480, title: 'ZONE 8 — 네온 범퍼 웨이브 숲', sub: 'NEON BUMPER WAVE FIELD' },
     { y: 6240, title: 'ZONE 9 — 파이널 스피드웨이 & 자이언트 프로펠러', sub: 'STEEP SPEEDWAY & GIANT PROPELLER' },
-    { y: 7230, title: 'ZONE 10 — 결승선 & 챔피언 존', sub: 'FINISH LINE & CHAMPION BASIN' }
+    { y: 7530, title: 'ZONE 10 — 결승선 & 챔피언 존', sub: 'FINISH LINE & CHAMPION BASIN' }
   ];
 
   // Track Entities
@@ -1353,54 +1353,54 @@ const data = gameEntry?.data || {
     // Steep Ramp 2 (30° grade)
     segments.push({ x1: COURSE_WIDTH - 20, y1: 6480, x2: 140, y2: 6670, type: 'ramp' });
     // Steep Ramp 3 (30° grade) - feeds into multi-route approach
-    segments.push({ x1: 20, y1: 6690, x2: 380, y2: 6795, type: 'ramp' });
+    segments.push({ x1: 20, y1: 6690, x2: 390, y2: 6805, type: 'ramp' });
 
-    // Approach Splitter Pin & Guides: distributes incoming marbles across Left Flank, Center Gate, and Right Flank
-    pins.push({ x: 280, y: 6805, radius: 9.5, isBumper: true });
-    segments.push({ x1: 280, y1: 6810, x2: 210, y2: 6845, type: 'guide' });
-    segments.push({ x1: 280, y1: 6810, x2: 350, y2: 6845, type: 'guide' });
+    // Approach Guide Ramp
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 6790, x2: 440, y2: 6835, type: 'ramp' });
 
-    // Wide outer approach walls into the giant propeller chamber (420px wide track)
-    segments.push({ x1: 20, y1: 6815, x2: 70, y2: 6865, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 6815, x2: 490, y2: 6865, type: 'ramp' });
+    // Outer approach walls into the giant propeller chamber
+    segments.push({ x1: 20, y1: 6815, x2: 60, y2: 6865, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 6815, x2: 500, y2: 6865, type: 'ramp' });
 
-    // GIANT PROPELLER right before the finish line (Length 145px, 290px wingspan, 15% slower speed: -0.0075)
-    // Acts as the dramatic clogged bottleneck where balls cluster together right before the final line
-    spinners.push({ x: 280, y: 6850, length: 145, angle: 0, speed: -0.0075 });
+    // GIANT PROPELLER (Length 138px - 5% shorter, 276px wingspan, speed: -0.0075)
+    // 5% shorter length ensures lone marbles have 82px wall clearance and never get trapped or batted back
+    spinners.push({ x: 280, y: 6850, length: 138, angle: 0, speed: -0.0075 });
 
-    // Flank Deflector Bumper Pins: adds tension to outer bypass channels
-    pins.push({ x: 105, y: 6860, radius: 9, isBumper: true });
-    pins.push({ x: 455, y: 6860, radius: 9, isBumper: true });
+    // Decider Bumper Pins right below giant propeller corners
+    pins.push({ x: 190, y: 6915, radius: 9, isBumper: true });
+    pins.push({ x: 370, y: 6915, radius: 9, isBumper: true });
 
-    // 2 Decider Bumper Pins right below giant propeller corners
-    pins.push({ x: 190, y: 6920, radius: 9.5, isBumper: true });
-    pins.push({ x: 370, y: 6920, radius: 9.5, isBumper: true });
+    // POST-PROPELLER RE-CENTERING FUNNEL (y: 6950 - 7040)
+    // Catches marbles flung right by counter-clockwise blade and re-centers all marbles through a 140px neck
+    segments.push({ x1: 60, y1: 6950, x2: 210, y2: 7040, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 60, y1: 6950, x2: 350, y2: 7040, type: 'ramp' });
 
-    // ZONE 9 to 10 Transition: Dynamic 3-Lane Sprint Runway (Width 420px, from y: 6865 to 7230)
-    segments.push({ x1: 70, y1: 6865, x2: 70, y2: 7230, type: 'wall' });
-    segments.push({ x1: COURSE_WIDTH - 70, y1: 6865, x2: COURSE_WIDTH - 70, y2: 7230, type: 'wall' });
+    // ZONE 9 to 10 Transition: Balanced Multi-Lane Obstacles & Sprint Runway (y: 7040 - 7540)
+    segments.push({ x1: 70, y1: 7040, x2: 70, y2: 7530, type: 'wall' });
+    segments.push({ x1: COURSE_WIDTH - 70, y1: 7040, x2: COURSE_WIDTH - 70, y2: 7530, type: 'wall' });
 
-    // Dynamic Sprint Splitters: creates 3 distinct overtaking sprint lines to the finish line
-    // Left Sprint Divider
-    pins.push({ x: 175, y: 7010, radius: 8.5, isBumper: true });
-    segments.push({ x1: 175, y1: 7015, x2: 155, y2: 7110, type: 'guide' });
-    segments.push({ x1: 175, y1: 7015, x2: 195, y2: 7110, type: 'guide' });
-    pins.push({ x: 175, y: 7115, radius: 7 });
+    // Center Splitter Diamond below funnel exit: evenly distributes 50% left and 50% right
+    pins.push({ x: 280, y: 7060, radius: 9.5, isBumper: true });
+    segments.push({ x1: 280, y1: 7065, x2: 190, y2: 7135, type: 'guide' });
+    segments.push({ x1: 280, y1: 7065, x2: 370, y2: 7135, type: 'guide' });
 
-    // Right Sprint Divider
-    pins.push({ x: 385, y: 7010, radius: 8.5, isBumper: true });
-    segments.push({ x1: 385, y1: 7015, x2: 365, y2: 7110, type: 'guide' });
-    segments.push({ x1: 385, y1: 7015, x2: 405, y2: 7110, type: 'guide' });
-    pins.push({ x: 385, y: 7115, radius: 7 });
+    // LEFT WING DYNAMIC OBSTACLES (Active and balanced!)
+    segments.push({ x1: 75, y1: 7150, x2: 175, y2: 7210, type: 'booster', boostPower: 0.5 });
+    pins.push({ x: 125, y: 7240, radius: 9, isBumper: true });
 
-    // Center Lane Drafting Deflector & Mini Booster (gives trailing marbles overtaking power!)
-    pins.push({ x: 280, y: 7040, radius: 7.5 });
-    segments.push({ x1: 250, y1: 7130, x2: 310, y2: 7175, type: 'booster', boostPower: 0.45 });
+    // RIGHT WING DYNAMIC OBSTACLES (Active and balanced!)
+    segments.push({ x1: COURSE_WIDTH - 75, y1: 7150, x2: COURSE_WIDTH - 175, y2: 7210, type: 'booster', boostPower: 0.5 });
+    pins.push({ x: COURSE_WIDTH - 125, y: 7240, radius: 9, isBumper: true });
 
-    // ZONE 10: 결승선 (FINISH_LINE_Y = 7240) & 피니시 베이슨 (y: 7240 - 7560)
-    segments.push({ x1: 70, y1: 7250, x2: 20, y2: 7350, type: 'guide' });
-    segments.push({ x1: COURSE_WIDTH - 70, y1: 7250, x2: COURSE_WIDTH - 20, y2: 7350, type: 'guide' });
-    segments.push({ x1: 20, y1: 7520, x2: COURSE_WIDTH - 20, y2: 7520, type: 'wall' });
+    // Center Chute Drafting Pin
+    pins.push({ x: 280, y: 7160, radius: 8 });
+
+    // FREE FALL SPRINT RUNWAY (y: 7240 to 7540) - 300px unobstructed free fall under gravity right before the line!
+
+    // ZONE 10: 결승선 (FINISH_LINE_Y = 7540) & 피니시 베이슨 (y: 7540 - 7900)
+    segments.push({ x1: 70, y1: 7550, x2: 20, y2: 7670, type: 'guide' });
+    segments.push({ x1: COURSE_WIDTH - 70, y1: 7550, x2: COURSE_WIDTH - 20, y2: 7670, type: 'guide' });
+    segments.push({ x1: 20, y1: 7860, x2: COURSE_WIDTH - 20, y2: 7860, type: 'wall' });
   }
 
   buildCourse();
