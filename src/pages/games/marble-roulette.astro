@@ -2335,20 +2335,17 @@ const data = gameEntry?.data || {
         // Everyone has finished: settle camera smoothly at the finish line / catch basin
         targetY = FINISH_LINE_Y - viewH * 0.42;
       } else if (camMode === 'auto') {
-        // SMART 3-STAGE AUTO CAMERA:
-        // 1. First look at the first runner (Early race: opening sprint down to Zone 4)
-        // 2. Then focus on where the most marbles are (Mid race: main pack cluster center)
-        // 3. Then focus on the last runner (Late race / Endgame: battle for last place)
+        // SMART AUTO CAMERA:
+        // 1. Focus on the first runner until the first runner passes the finish line (finishRankCounter === 0)
+        // 2. Once the first runner has passed the finish line, focus on the most populated area of remaining marbles!
 
         const lead = active.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), active[0]);
-        const lastRunner = active.reduce((prev, cur) => (cur.y < prev.y ? cur : prev), active[0]);
 
-        if (finishRankCounter > 0 || lead.y >= 6300) {
-          // STAGE 3: Endgame & finish line approach -> Focus on the last runner!
-          targetY = lastRunner.y - viewH * 0.42;
-        } else if (lead.y >= 2400) {
-          // STAGE 2: Mid race -> Focus on where the most marbles are!
-          // Sliding window cluster search: find the center of the densest pack of active marbles
+        if (finishRankCounter === 0) {
+          // STAGE 1: Follow the 1st runner down the entire course until finish line!
+          targetY = lead.y - viewH * 0.38;
+        } else {
+          // STAGE 2: 1st runner finished -> Focus on the most populated area (densest cluster)
           let bestClusterY = lead.y;
           let maxCount = -1;
           const clusterSpan = viewH * 0.45;
@@ -2371,9 +2368,6 @@ const data = gameEntry?.data || {
           }
 
           targetY = bestClusterY - viewH * 0.40;
-        } else {
-          // STAGE 1: Early race -> Look at the first runner!
-          targetY = lead.y - viewH * 0.38;
         }
       } else if (camMode === 'first') {
         // Explicitly focus foremost active runner
@@ -2412,12 +2406,10 @@ const data = gameEntry?.data || {
         const tail = active.reduce((prev, cur) => (cur.y < prev.y ? cur : prev), active[0]);
 
         if (camMode === 'auto') {
-          if (finishRankCounter > 0 || lead.y >= 6300) {
-            if (leadNameElem) leadNameElem.textContent = `💀 꼴찌 타겟: ${tail.name} (결승선 접전)`;
-          } else if (lead.y >= 2400) {
-            if (leadNameElem) leadNameElem.textContent = `📍 메인 팩 밀집 (선두: ${lead.name})`;
-          } else {
+          if (finishRankCounter === 0) {
             if (leadNameElem) leadNameElem.textContent = `선두: ${lead.name}`;
+          } else {
+            if (leadNameElem) leadNameElem.textContent = `📍 메인 팩 밀집 (선두: ${lead.name})`;
           }
         } else if (camMode === 'first') {
           if (leadNameElem) leadNameElem.textContent = `선두: ${lead.name}`;
