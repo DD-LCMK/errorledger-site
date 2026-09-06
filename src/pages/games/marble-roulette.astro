@@ -1427,27 +1427,27 @@ const data = gameEntry?.data || {
     segments.push({ x1: 20, y1: 6540, x2: 85, y2: 6600, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 6620, x2: COURSE_WIDTH - 85, y2: 6680, type: 'ramp' });
 
-    // Wide Open Bounce Arena: High-power spring bouncers & glowing bumper pins for explosive ricochets
+    // Wide Open Bounce Arena: High-power spring bouncers & oscillating bumper pins (bubbles) for anti-stuck & rich ricochets
     // Tier 1 (y: 6300 - 6370)
-    pins.push({ x: 280, y: 6300, radius: 10, isBumper: true });
+    pins.push({ x: 280, y: 6300, radius: 10, isBumper: true, baseX: 280, oscAmp: 24, oscSpeed: 0.0022, oscPhase: 0 });
     bouncers.push({ x: 175, y: 6365, radius: 24, power: 5.2, label: 'BOUNCE' });
     bouncers.push({ x: 385, y: 6365, radius: 24, power: 5.2, label: 'BOUNCE' });
 
     // Tier 2 (y: 6460 - 6510)
-    pins.push({ x: 110, y: 6485, radius: 9.5, isBumper: true });
-    pins.push({ x: COURSE_WIDTH - 110, y: 6485, radius: 9.5, isBumper: true });
+    pins.push({ x: 110, y: 6485, radius: 9.5, isBumper: true, baseX: 110, oscAmp: 20, oscSpeed: 0.0024, oscPhase: 1.2 });
+    pins.push({ x: COURSE_WIDTH - 110, y: 6485, radius: 9.5, isBumper: true, baseX: COURSE_WIDTH - 110, oscAmp: 20, oscSpeed: 0.0024, oscPhase: 2.4 });
     bouncers.push({ x: 280, y: 6495, radius: 26, power: 5.8, label: 'BOUNCE' });
 
     // Tier 3 (y: 6580 - 6650)
-    pins.push({ x: 215, y: 6575, radius: 9.5, isBumper: true });
-    pins.push({ x: 345, y: 6575, radius: 9.5, isBumper: true });
+    pins.push({ x: 215, y: 6575, radius: 9.5, isBumper: true, baseX: 215, oscAmp: 22, oscSpeed: 0.0021, oscPhase: 3.5 });
+    pins.push({ x: 345, y: 6575, radius: 9.5, isBumper: true, baseX: 345, oscAmp: 22, oscSpeed: 0.0021, oscPhase: 4.8 });
     bouncers.push({ x: 155, y: 6635, radius: 24, power: 5.4, label: 'BOUNCE' });
     bouncers.push({ x: 405, y: 6635, radius: 24, power: 5.4, label: 'BOUNCE' });
 
     // Tier 4: Propeller approach decider pins (y: 6730 - 6780)
-    pins.push({ x: 280, y: 6725, radius: 10, isBumper: true });
-    pins.push({ x: 185, y: 6770, radius: 9.5, isBumper: true });
-    pins.push({ x: 375, y: 6770, radius: 9.5, isBumper: true });
+    pins.push({ x: 280, y: 6725, radius: 10, isBumper: true, baseX: 280, oscAmp: 25, oscSpeed: 0.0025, oscPhase: 1.0 });
+    pins.push({ x: 185, y: 6770, radius: 9.5, isBumper: true, baseX: 185, oscAmp: 20, oscSpeed: 0.0022, oscPhase: 2.8 });
+    pins.push({ x: 375, y: 6770, radius: 9.5, isBumper: true, baseX: 375, oscAmp: 20, oscSpeed: 0.0022, oscPhase: 5.0 });
 
     // Outer approach walls into the giant propeller chamber
     segments.push({ x1: 20, y1: 6805, x2: 60, y2: 6865, type: 'ramp' });
@@ -1458,8 +1458,8 @@ const data = gameEntry?.data || {
     spinners.push({ x: 280, y: 6850, length: 145, angle: 0, speed: -0.0075 });
 
     // Decider Bumper Pins right below giant propeller corners
-    pins.push({ x: 190, y: 6915, radius: 9, isBumper: true });
-    pins.push({ x: 370, y: 6915, radius: 9, isBumper: true });
+    pins.push({ x: 190, y: 6915, radius: 9, isBumper: true, baseX: 190, oscAmp: 18, oscSpeed: 0.0020, oscPhase: 0.7 });
+    pins.push({ x: 370, y: 6915, radius: 9, isBumper: true, baseX: 370, oscAmp: 18, oscSpeed: 0.0020, oscPhase: 3.8 });
 
     // POST-PROPELLER RE-CENTERING FUNNEL (y: 6950 - 7050)
     // Smoothly collects all marbles from the propeller exit and directs them into the grand finale approach
@@ -1697,10 +1697,9 @@ const data = gameEntry?.data || {
     updateRaceButton();
   }
 
-  // Countdown & Start
+  // Countdown & Start (always resets first before starting)
   function startRace() {
-    if (isRacing || isCountingDown) return;
-    if (marbles.length === 0) spawnMarbles();
+    resetRace();
 
     isCountingDown = true;
     lastRunnerCountdown = null;
@@ -3001,7 +3000,7 @@ const data = gameEntry?.data || {
       ctx.restore();
     }
 
-    // Update oscillating pins (Zone 8 neon bubbles)
+    // Update oscillating pins (Zone 8 & Zone 9 neon bubbles)
     const animNow = performance.now();
     pins.forEach(p => {
       if (p.baseX !== undefined && p.oscAmp) {
