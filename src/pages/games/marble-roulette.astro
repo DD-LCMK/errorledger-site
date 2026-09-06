@@ -1414,6 +1414,7 @@ const data = gameEntry?.data || {
   let timeScale = 1.0;
   let cameraY = 0;
   let winnerMode = 'last'; // 'last', 'first', 'multi', 'custom'
+  let lastRunnerCountdown: number | null = null;
 
   // Camera & Viewport State
   let zoom = 0.75; // Default 0.75x: shows ~1,040px of course vertically on 780px canvas
@@ -1544,6 +1545,7 @@ const data = gameEntry?.data || {
     if (leadNameElem) {
       leadNameElem.textContent = '선두: 대기 중';
     }
+    lastRunnerCountdown = null;
   }
 
   let countdownTimer: any = null;
@@ -1568,6 +1570,7 @@ const data = gameEntry?.data || {
     }
     isRacing = false;
     isCountingDown = false;
+    lastRunnerCountdown = null;
     if (countdownOverlay) countdownOverlay.classList.add('hidden');
     spawnMarbles();
     updateRaceButton();
@@ -1579,6 +1582,7 @@ const data = gameEntry?.data || {
     if (marbles.length === 0) spawnMarbles();
 
     isCountingDown = true;
+    lastRunnerCountdown = null;
     updateRaceButton();
     if (countdownOverlay) countdownOverlay.classList.remove('hidden');
 
@@ -1603,6 +1607,7 @@ const data = gameEntry?.data || {
         // Open gate!
         isGateOpen = true;
         isRacing = true;
+        lastRunnerCountdown = null;
         raceStartTime = performance.now();
         updateRaceButton();
       }
@@ -2107,6 +2112,29 @@ const data = gameEntry?.data || {
       });
     });
 
+    // 5-Second Last Runner Auto-Finish Timer:
+    // If only 1 marble is left running, automatically end the race in 5 seconds without waiting for it to cross the finish line
+    const active = marbles.filter(m => !m.finished);
+    if (isRacing && marbles.length > 1 && active.length === 1) {
+      const loneRunner = active[0];
+      if (lastRunnerCountdown === null) {
+        lastRunnerCountdown = 5.0;
+      } else {
+        lastRunnerCountdown -= 0.016 * timeScale;
+      }
+
+      if (lastRunnerCountdown <= 0) {
+        lastRunnerCountdown = null;
+        loneRunner.finished = true;
+        finishRankCounter++;
+        loneRunner.finishRank = finishRankCounter;
+        loneRunner.finishTime = (performance.now() - raceStartTime) / 1000;
+        onMarbleFinished(loneRunner);
+      }
+    } else {
+      lastRunnerCountdown = null;
+    }
+
     // Camera tracking
     updateCamera();
 
@@ -2192,7 +2220,10 @@ const data = gameEntry?.data || {
 
     // Update live leader / status text
     if (active.length > 0) {
-      if (finishRankCounter === 0) {
+      if (lastRunnerCountdown !== null && active.length === 1) {
+        const secsLeft = Math.max(1, Math.ceil(lastRunnerCountdown));
+        if (leadNameElem) leadNameElem.textContent = `⏱️ 최후의 1명 (${active[0].name})! ${secsLeft}초 후 종료`;
+      } else if (finishRankCounter === 0) {
         const top = active.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), active[0]);
         if (leadNameElem) leadNameElem.textContent = `선두: ${top.name}`;
       } else if (winnerMode === 'last') {
@@ -2591,6 +2622,43 @@ const data = gameEntry?.data || {
     });
 
     ctx.restore();
+
+    // Screen-space Last Runner Auto-Finish Countdown Badge
+    if (isRacing && lastRunnerCountdown !== null && lastRunnerCountdown > 0) {
+      const active = marbles.filter(m => !m.finished);
+      if (active.length === 1) {
+        ctx.save();
+        const secs = Math.max(1, Math.ceil(lastRunnerCountdown));
+        const msg = `⏱️ 최후의 1명 (${active[0].name}) 확정! ${secs}초 후 레이스 종료`;
+        ctx.font = '900 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        const tw = ctx.measureText(msg).width;
+        const bw = tw + 36;
+        const bh = 32;
+        const bx = (canvas.width - bw) / 2;
+        const by = 16;
+
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 1.8;
+        ctx.shadowColor = '#f59e0b';
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        if (typeof ctx.roundRect === 'function') {
+          ctx.roundRect(bx, by, bw, bh, 16);
+        } else {
+          ctx.rect(bx, by, bw, bh);
+        }
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = '#fde68a';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(msg, canvas.width / 2, by + bh / 2);
+        ctx.restore();
+      }
+    }
 
     // Render Minimap
     renderMinimap();
