@@ -1,5 +1,7 @@
 ---
 import { SITE_TITLE } from '../consts';
+
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 ---
 
 <header class="arcade-header">
@@ -12,19 +14,35 @@ import { SITE_TITLE } from '../consts';
     </div>
 
     <nav class="header-nav">
-      <a href="/games/marble-roulette" class="nav-item highlight">
+      <a 
+        href="/games/marble-roulette" 
+        class={`nav-item ${currentPath.startsWith('/games/marble-roulette') ? 'highlight active' : ''}`}
+        aria-current={currentPath.startsWith('/games/marble-roulette') ? 'page' : undefined}
+      >
         <span class="nav-icon">🔮</span>
         <span class="nav-label">구슬 룰렛</span>
       </a>
-      <a href="/games/roulette" class="nav-item">
+      <a 
+        href="/games/roulette" 
+        class={`nav-item ${currentPath.startsWith('/games/roulette') ? 'highlight active' : ''}`}
+        aria-current={currentPath.startsWith('/games/roulette') ? 'page' : undefined}
+      >
         <span class="nav-icon">🎡</span>
         <span class="nav-label">돌림판</span>
       </a>
-      <a href="/games/ladder" class="nav-item">
+      <a 
+        href="/games/ladder" 
+        class={`nav-item ${currentPath.startsWith('/games/ladder') ? 'highlight active' : ''}`}
+        aria-current={currentPath.startsWith('/games/ladder') ? 'page' : undefined}
+      >
         <span class="nav-icon">🪜</span>
         <span class="nav-label">사다리타기</span>
       </a>
-      <a href="/fortune" class="nav-item">
+      <a 
+        href="/fortune" 
+        class={`nav-item ${currentPath.startsWith('/fortune') ? 'highlight active' : ''}`}
+        aria-current={currentPath.startsWith('/fortune') ? 'page' : undefined}
+      >
         <span class="nav-icon">✨</span>
         <span class="nav-label">오늘의 운세</span>
       </a>

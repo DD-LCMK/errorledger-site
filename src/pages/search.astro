@@ -30,7 +30,7 @@ const allGames = await getCollection('games');
           <article class="search-game-card" data-title={game.data.title.toLowerCase()} data-cat={game.data.category.toLowerCase()} data-desc={game.data.description.toLowerCase()}>
             <div class="card-icon">{game.data.icon}</div>
             <div class="card-text">
-              <h3><a href={`/games/${game.id}`}>{game.data.title}</a></h3>
+              <h3><a href={game.id === 'fortune' ? '/fortune' : `/games/${game.id}`}>{game.data.title}</a></h3>
               <p class="tagline">{game.data.tagline}</p>
               <p class="desc">{game.data.description}</p>
               <div class="badge-row">

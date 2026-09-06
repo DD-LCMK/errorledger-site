@@ -7,7 +7,7 @@ import { SITE_TITLE, SITE_TAGLINE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
 
 const games = await getCollection('games');
-const priorityOrder = ['marble-roulette', 'roulette', 'ladder'];
+const priorityOrder = ['marble-roulette', 'roulette', 'ladder', 'fortune'];
 const sortedGames = games.sort((a, b) => {
   const idxA = priorityOrder.indexOf(a.id);
   const idxB = priorityOrder.indexOf(b.id);
@@ -71,28 +71,32 @@ const CATEGORY_MAP: Record<string, string> = {
         </div>
 
         <div class="games-grid">
-          {sortedGames.map(game => (
-            <article class="game-card">
-              <div class="card-top-row">
-                <span class="card-icon">{game.data.icon}</span>
-                <span class="badge-accent">{game.data.badge}</span>
-              </div>
+          {sortedGames.map(game => {
+            const href = game.id === 'fortune' ? '/fortune' : `/games/${game.id}`;
+            const btnText = game.id === 'fortune' ? '운세 보기 →' : '시작하기 →';
+            return (
+              <article class="game-card">
+                <div class="card-top-row">
+                  <span class="card-icon">{game.data.icon}</span>
+                  <span class="badge-accent">{game.data.badge}</span>
+                </div>
 
-              <div class="card-body">
-                <h3 class="card-title">
-                  <a href={`/games/${game.id}`}>{game.data.title}</a>
-                </h3>
-                <p class="card-tagline">{game.data.tagline}</p>
-              </div>
+                <div class="card-body">
+                  <h3 class="card-title">
+                    <a href={href}>{game.data.title}</a>
+                  </h3>
+                  <p class="card-tagline">{game.data.tagline}</p>
+                </div>
 
-              <div class="card-footer">
-                <span class="meta-item">⏱️ {game.data.playTime}</span>
-                <a href={`/games/${game.id}`} class="btn-play-card">
-                  <span>시작하기 →</span>
-                </a>
-              </div>
-            </article>
-          ))}
+                <div class="card-footer">
+                  <span class="meta-item">⏱️ {game.data.playTime}</span>
+                  <a href={href} class="btn-play-card">
+                    <span>{btnText}</span>
+                  </a>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </section>
 
