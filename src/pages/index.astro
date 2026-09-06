@@ -2,6 +2,7 @@
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import DailyFortuneWidget from '../components/DailyFortuneWidget.astro';
 import { SITE_TITLE, SITE_TAGLINE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
 
@@ -93,6 +94,11 @@ const CATEGORY_MAP: Record<string, string> = {
             </article>
           ))}
         </div>
+      </section>
+
+      <!-- Daily Fortune Widget Section -->
+      <section class="home-fortune-section">
+        <DailyFortuneWidget />
       </section>
 
       <!-- FAQ Section -->
@@ -475,6 +481,13 @@ const CATEGORY_MAP: Record<string, string> = {
     color: #94a3b8;
     line-height: 1.6;
     margin: 0;
+  }
+
+  /* Daily Fortune Widget Section */
+  .home-fortune-section {
+    margin: 4.5rem auto 2rem;
+    max-width: 1040px;
+    width: 100%;
   }
 
   /* FAQ */

@@ -1,0 +1,1113 @@
+---
+interface Props {
+  title?: string;
+  subtitle?: string;
+  showSectionHeader?: boolean;
+}
+
+const {
+  title = "오늘의 운세 (Daily Fortune)",
+  subtitle = "매일 자정 자동으로 갱신되는 띠별 & 별자리별 맞춤형 하루 운세",
+  showSectionHeader = true
+} = Astro.props;
+---
+
+<div class="fortune-widget-root" id="daily-fortune-widget">
+  {showSectionHeader && (
+    <div class="fortune-header">
+      <div class="fortune-badge-row">
+        <span class="fortune-badge">✨ 100% 무료 일일 운세</span>
+        <span class="fortune-date-tag" id="fortune-current-date">로딩 중...</span>
+      </div>
+      <h2 class="fortune-title">{title}</h2>
+      <p class="fortune-subtitle">{subtitle}</p>
+    </div>
+  )}
+
+  <!-- Segmented Control (Tabs) -->
+  <div class="fortune-tabs-container">
+    <div class="fortune-tabs" role="tablist">
+      <button class="fortune-tab active" data-tab="eastern" role="tab" aria-selected="true">
+        <span class="tab-icon">🐾</span>
+        <span class="tab-label">십이지간 (12 띠)</span>
+      </button>
+      <button class="fortune-tab" data-tab="western" role="tab" aria-selected="false">
+        <span class="tab-icon">🌌</span>
+        <span class="tab-label">서양 별자리 (12 별자리)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Sign Selection Grid -->
+  <div class="signs-grid-wrapper">
+    <div class="signs-grid" id="signs-grid">
+      <!-- Injected via JavaScript -->
+    </div>
+  </div>
+
+  <!-- Fortune Display Card -->
+  <div class="fortune-card" id="fortune-card">
+    <div class="card-glow-bg"></div>
+
+    <!-- Card Header -->
+    <div class="card-header">
+      <div class="sign-identity">
+        <div class="sign-avatar" id="fortune-avatar">🐯</div>
+        <div class="sign-meta">
+          <div class="sign-name-row">
+            <h3 class="sign-name" id="fortune-sign-name">호랑이띠</h3>
+            <span class="sign-sub" id="fortune-sign-sub">74, 86, 98년생</span>
+          </div>
+          <span class="fortune-date-display" id="fortune-card-date">2026년 9월 6일 일요일</span>
+        </div>
+      </div>
+
+      <div class="score-badge-box">
+        <span class="score-label">오늘의 종합운</span>
+        <div class="score-pill" id="fortune-score-pill">
+          <span class="score-num" id="fortune-score-num">95</span><span class="score-unit">점</span>
+          <span class="score-grade" id="fortune-score-grade">대길 (大吉)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Overall Luck Meter Bar -->
+    <div class="luck-meter-box">
+      <div class="luck-meter-track">
+        <div class="luck-meter-fill" id="fortune-meter-fill" style="width: 95%;"></div>
+      </div>
+    </div>
+
+    <!-- Overview Text -->
+    <div class="card-content">
+      <h4 class="fortune-headline" id="fortune-headline">
+        "노력의 결실이 눈앞에 다가오는 황금빛 하루"
+      </h4>
+      <p class="fortune-body" id="fortune-body">
+        그동안 묵묵히 쏟아부은 노력과 정성이 값진 결실로 이어지는 뜻깊은 하루입니다. 주변 사람들의 지지와 응원이 더해져 새로운 프로젝트나 도전에 탄력이 붙게 됩니다.
+      </p>
+    </div>
+
+    <!-- Sub-Luck Metrics Grid -->
+    <div class="sub-luck-grid">
+      <div class="sub-luck-item">
+        <div class="sub-luck-top">
+          <span class="sub-luck-icon">💰</span>
+          <span class="sub-luck-name">금전운</span>
+          <span class="sub-luck-score" id="luck-wealth-score">90%</span>
+        </div>
+        <div class="sub-luck-bar"><div class="sub-luck-fill" id="luck-wealth-bar" style="width: 90%;"></div></div>
+        <p class="sub-luck-tip" id="luck-wealth-tip">뜻밖의 작은 수익이나 보너스가 기대되는 날입니다.</p>
+      </div>
+
+      <div class="sub-luck-item">
+        <div class="sub-luck-top">
+          <span class="sub-luck-icon">❤️</span>
+          <span class="sub-luck-name">애정운</span>
+          <span class="sub-luck-score" id="luck-love-score">85%</span>
+        </div>
+        <div class="sub-luck-bar"><div class="sub-luck-fill" id="luck-love-bar" style="width: 85%;"></div></div>
+        <p class="sub-luck-tip" id="luck-love-tip">솔직한 대화로 서로의 마음을 확인하기 좋은 날입니다.</p>
+      </div>
+
+      <div class="sub-luck-item">
+        <div class="sub-luck-top">
+          <span class="sub-luck-icon">💼</span>
+          <span class="sub-luck-name">사업/학업</span>
+          <span class="sub-luck-score" id="luck-work-score">95%</span>
+        </div>
+        <div class="sub-luck-bar"><div class="sub-luck-fill" id="luck-work-bar" style="width: 95%;"></div></div>
+        <p class="sub-luck-tip" id="luck-work-tip">집중력이 최고조에 달해 빠른 성과를 얻을 수 있습니다.</p>
+      </div>
+
+      <div class="sub-luck-item">
+        <div class="sub-luck-top">
+          <span class="sub-luck-icon">🌿</span>
+          <span class="sub-luck-name">건강운</span>
+          <span class="sub-luck-score" id="luck-health-score">80%</span>
+        </div>
+        <div class="sub-luck-bar"><div class="sub-luck-fill" id="luck-health-bar" style="width: 80%;"></div></div>
+        <p class="sub-luck-tip" id="luck-health-tip">가벼운 스트레칭과 수분 섭취로 컨디션을 관리하세요.</p>
+      </div>
+    </div>
+
+    <!-- Lucky Items Pill Row -->
+    <div class="lucky-items-container">
+      <div class="lucky-items-title">🍀 오늘의 행운 아이템</div>
+      <div class="lucky-pills-row">
+        <div class="lucky-pill">
+          <span class="pill-label">🔢 행운의 숫자</span>
+          <strong class="pill-val" id="pill-number">7</strong>
+        </div>
+        <div class="lucky-pill">
+          <span class="pill-label">🎨 행운의 색상</span>
+          <strong class="pill-val" id="pill-color">골드 옐로우</strong>
+        </div>
+        <div class="lucky-pill">
+          <span class="pill-label">🧭 행운의 방향</span>
+          <strong class="pill-val" id="pill-direction">동남쪽</strong>
+        </div>
+        <div class="lucky-pill">
+          <span class="pill-label">⏰ 행운의 시간</span>
+          <strong class="pill-val" id="pill-time">14:00 ~ 16:00</strong>
+        </div>
+        <div class="lucky-pill">
+          <span class="pill-label">🎒 행운의 물건</span>
+          <strong class="pill-val" id="pill-item">따뜻한 차</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card Action Buttons -->
+    <div class="card-footer-actions">
+      <button class="btn-copy-fortune" id="btn-copy-fortune" title="오늘의 운세를 클립보드에 복사">
+        <span>📋 오늘 운세 텍스트 복사</span>
+      </button>
+      <span class="fortune-disclaimer">※ 오늘의 운세는 매일 자정 갱신되며, 하루의 활력을 위한 엔터테인먼트 정보입니다.</span>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="fortune-toast hidden" id="fortune-toast">
+    <span>✅ 오늘의 운세가 클립보드에 복사되었습니다!</span>
+  </div>
+</div>
+
+<style>
+  .fortune-widget-root {
+    background: #0b1120;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 2rem 1.5rem;
+    max-width: 1040px;
+    margin: 0 auto;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  .fortune-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .fortune-badge-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .fortune-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    letter-spacing: -0.01em;
+  }
+
+  .fortune-date-tag {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.18rem 0.55rem;
+    border-radius: 6px;
+  }
+
+  .fortune-title {
+    font-size: 1.85rem;
+    font-weight: 900;
+    color: #f8fafc;
+    margin: 0.2rem 0 0.4rem;
+    letter-spacing: -0.02em;
+  }
+
+  .fortune-subtitle {
+    font-size: 0.92rem;
+    color: #94a3b8;
+    margin: 0;
+  }
+
+  /* Segmented Tabs */
+  .fortune-tabs-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+  }
+
+  .fortune-tabs {
+    display: inline-flex;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 0.3rem;
+    gap: 0.3rem;
+  }
+
+  .fortune-tab {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    padding: 0.5rem 1.2rem;
+    border-radius: 8px;
+    font-size: 0.86rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.15s ease;
+  }
+
+  .fortune-tab:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .fortune-tab.active {
+    background: linear-gradient(135deg, #a855f7, #38bdf8);
+    color: #ffffff;
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.35);
+  }
+
+  /* Signs Grid */
+  .signs-grid-wrapper {
+    margin-bottom: 1.5rem;
+  }
+
+  .signs-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .signs-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .signs-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  :global(.sign-btn) {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 0.5rem 0.3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: center;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  :global(.sign-btn:hover) {
+    border-color: rgba(56, 189, 248, 0.4);
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
+  }
+
+  :global(.sign-btn.active) {
+    background: rgba(56, 189, 248, 0.14);
+    border-color: #38bdf8;
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.3);
+    transform: translateY(-2px);
+  }
+
+  :global(.sign-btn-icon) {
+    font-size: 1.4rem;
+    line-height: 1;
+  }
+
+  :global(.sign-btn-title) {
+    font-size: 0.76rem;
+    font-weight: 800;
+    color: #f8fafc;
+  }
+
+  :global(.sign-btn-desc) {
+    font-size: 0.62rem;
+    font-weight: 600;
+    color: #64748b;
+  }
+
+  :global(.sign-btn.active .sign-btn-title) {
+    color: #38bdf8;
+  }
+
+  :global(.sign-btn.active .sign-btn-desc) {
+    color: #94a3b8;
+  }
+
+  /* Fortune Card */
+  .fortune-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1.75rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+  }
+
+  .card-glow-bg {
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.18) 0%, rgba(56, 189, 248, 0.05) 50%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .sign-identity {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .sign-avatar {
+    font-size: 2.4rem;
+    width: 60px;
+    height: 60px;
+    background: rgba(56, 189, 248, 0.12);
+    border: 2px solid rgba(56, 189, 248, 0.3);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+  }
+
+  .sign-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .sign-name-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  .sign-name {
+    font-size: 1.45rem;
+    font-weight: 900;
+    color: #f8fafc;
+    margin: 0;
+  }
+
+  .sign-sub {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    font-weight: 700;
+  }
+
+  .fortune-date-display {
+    font-size: 0.78rem;
+    color: #64748b;
+    font-weight: 600;
+  }
+
+  .score-badge-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+  }
+
+  .score-label {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #94a3b8;
+  }
+
+  .score-pill {
+    background: rgba(250, 204, 21, 0.15);
+    border: 1px solid rgba(250, 204, 21, 0.35);
+    border-radius: 8px;
+    padding: 0.25rem 0.65rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+  }
+
+  .score-num {
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #facc15;
+  }
+
+  .score-unit {
+    font-size: 0.75rem;
+    color: #fde68a;
+    font-weight: 800;
+  }
+
+  .score-grade {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #fde68a;
+    padding-left: 0.25rem;
+    border-left: 1px solid rgba(250, 204, 21, 0.3);
+  }
+
+  /* Luck Meter Track */
+  .luck-meter-box {
+    margin-bottom: 1.3rem;
+  }
+
+  .luck-meter-track {
+    width: 100%;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+  }
+
+  .luck-meter-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #38bdf8 0%, #a855f7 50%, #facc15 100%);
+    border-radius: 5px;
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 0 10px rgba(250, 204, 21, 0.4);
+  }
+
+  /* Card Content */
+  .card-content {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.15rem 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .fortune-headline {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #facc15;
+    margin: 0 0 0.5rem;
+    line-height: 1.4;
+  }
+
+  .fortune-body {
+    font-size: 0.92rem;
+    color: #e2e8f0;
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  /* Sub-Luck Grid */
+  .sub-luck-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  @media (max-width: 768px) {
+    .sub-luck-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .sub-luck-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 0.85rem 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .sub-luck-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    font-weight: 800;
+  }
+
+  .sub-luck-name {
+    color: #f8fafc;
+    flex: 1;
+    margin-left: 0.35rem;
+  }
+
+  .sub-luck-score {
+    color: #38bdf8;
+  }
+
+  .sub-luck-bar {
+    width: 100%;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .sub-luck-fill {
+    height: 100%;
+    background: #38bdf8;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+
+  .sub-luck-tip {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    line-height: 1.35;
+    margin: 0;
+  }
+
+  /* Lucky Items Pills */
+  .lucky-items-container {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1rem 1.15rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .lucky-items-title {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #facc15;
+    margin-bottom: 0.65rem;
+  }
+
+  .lucky-pills-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .lucky-pill {
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 0.35rem 0.65rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+  }
+
+  .pill-label {
+    color: #94a3b8;
+    font-weight: 600;
+  }
+
+  .pill-val {
+    color: #f8fafc;
+    font-weight: 800;
+  }
+
+  /* Card Footer Actions */
+  .card-footer-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .btn-copy-fortune {
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: #38bdf8;
+    font-size: 0.82rem;
+    font-weight: 800;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-copy-fortune:hover {
+    background: rgba(56, 189, 248, 0.22);
+    color: #ffffff;
+    border-color: #38bdf8;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+  }
+
+  .fortune-disclaimer {
+    font-size: 0.72rem;
+    color: #64748b;
+  }
+
+  /* Toast */
+  .fortune-toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0f172a;
+    border: 1px solid #10b981;
+    color: #10b981;
+    padding: 0.65rem 1.4rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .fortune-toast.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 15px);
+  }
+</style>
+
+<script>
+  interface SignData {
+    id: string;
+    name: string;
+    icon: string;
+    sub: string;
+    type: 'eastern' | 'western';
+  }
+
+  // 12 띠 (Eastern Zodiac)
+  const EASTERN_SIGNS: SignData[] = [
+    { id: 'rat', name: '쥐띠', icon: '🐭', sub: '72, 84, 96, 08년', type: 'eastern' },
+    { id: 'ox', name: '소띠', icon: '🐂', sub: '73, 85, 97, 09년', type: 'eastern' },
+    { id: 'tiger', name: '호랑이띠', icon: '🐯', sub: '74, 86, 98, 10년', type: 'eastern' },
+    { id: 'rabbit', name: '토끼띠', icon: '🐰', sub: '75, 87, 99, 11년', type: 'eastern' },
+    { id: 'dragon', name: '용띠', icon: '🐲', sub: '76, 88, 00, 12년', type: 'eastern' },
+    { id: 'snake', name: '뱀띠', icon: '🐍', sub: '77, 89, 01, 13년', type: 'eastern' },
+    { id: 'horse', name: '말띠', icon: '🐴', sub: '78, 90, 02, 14년', type: 'eastern' },
+    { id: 'sheep', name: '양띠', icon: '🐑', sub: '79, 91, 03, 15년', type: 'eastern' },
+    { id: 'monkey', name: '원숭이띠', icon: '🐵', sub: '80, 92, 04, 16년', type: 'eastern' },
+    { id: 'rooster', name: '닭띠', icon: '🐔', sub: '81, 93, 05, 17년', type: 'eastern' },
+    { id: 'dog', name: '개띠', icon: '🐶', sub: '82, 94, 06, 18년', type: 'eastern' },
+    { id: 'pig', name: '돼지띠', icon: '🐷', sub: '83, 95, 07, 19년', type: 'eastern' }
+  ];
+
+  // 12 별자리 (Western Zodiac)
+  const WESTERN_SIGNS: SignData[] = [
+    { id: 'aquarius', name: '물병자리', icon: '🏺', sub: '01.20 ~ 02.18', type: 'western' },
+    { id: 'pisces', name: '물고기자리', icon: '🐟', sub: '02.19 ~ 03.20', type: 'western' },
+    { id: 'aries', name: '양자리', icon: '🐏', sub: '03.21 ~ 04.19', type: 'western' },
+    { id: 'taurus', name: '황소자리', icon: '🐂', sub: '04.20 ~ 05.20', type: 'western' },
+    { id: 'gemini', name: '쌍둥이자리', icon: '👥', sub: '05.21 ~ 06.21', type: 'western' },
+    { id: 'cancer', name: '게자리', icon: '🦀', sub: '06.22 ~ 07.22', type: 'western' },
+    { id: 'leo', name: '사자자리', icon: '🦁', sub: '07.23 ~ 08.22', type: 'western' },
+    { id: 'virgo', name: '처녀자리', icon: '🌾', sub: '08.23 ~ 09.22', type: 'western' },
+    { id: 'libra', name: '천칭자리', icon: '⚖️', sub: '09.23 ~ 10.22', type: 'western' },
+    { id: 'scorpio', name: '전갈자리', icon: '🦂', sub: '10.23 ~ 11.22', type: 'western' },
+    { id: 'sagittarius', name: '사수자리', icon: '🏹', sub: '11.23 ~ 12.24', type: 'western' },
+    { id: 'capricorn', name: '염소자리', icon: '🐐', sub: '12.25 ~ 01.19', type: 'western' }
+  ];
+
+  // Content Pool for Fortunes
+  const FORTUNE_TITLES = [
+    "노력의 결실이 눈앞에 다가오는 황금빛 하루",
+    "뜻밖의 귀인을 만나 막혔던 활로가 열리는 날",
+    "새로운 기회가 찾아오니 주저하지 말고 도전하세요",
+    "차분한 마음과 내실 있는 준비가 행운을 부르는 하루",
+    "직관과 통찰력이 빛을 발해 난관을 쉽게 돌파하는 날",
+    "주변의 찬사와 인정을 한 몸에 받으며 위상이 높아지는 때",
+    "긍정적인 에너지가 넘쳐 모든 일이 순조롭게 풀리는 하루",
+    "작은 친절과 배려가 큰 행운의 눈덩이로 돌아오는 날",
+    "오랫동안 고심하던 고민거리가 시원하게 해결되는 하루",
+    "마음먹은 대로 행동하면 기대 이상의 기쁨을 맛볼 시간",
+    "서두르지 않고 한 걸음씩 나아갈 때 가장 안전한 날",
+    "지혜로운 판단으로 실속과 명예를 동시에 챙기는 하루"
+  ];
+
+  const FORTUNE_OVERVIEWS = [
+    "그동안 묵묵히 쏟아부은 노력과 정성이 값진 결실로 이어지는 뜻깊은 하루입니다. 주변 사람들의 지지와 응원이 더해져 새로운 프로젝트나 도전에 탄력이 붙게 됩니다.",
+    "예상치 못한 자리에서 귀인을 만나 오랜 고민에 대한 명쾌한 해답을 얻게 됩니다. 솔직하고 겸손한 태도를 보인다면 더 큰 신뢰와 기회가 활짝 열릴 것입니다.",
+    "망설이던 결정을 내리기에 더없이 좋은 날입니다. 자신의 직감을 믿고 과감하게 첫발을 내딛으면 순풍에 돛을 단 듯 매끄럽게 진행될 것입니다.",
+    "화려한 외면보다는 내실을 차분히 다져야 하는 지혜로운 하루입니다. 급하게 서두르기보다 주변 정리를 깔끔히 하고 기본에 충실하면 뜻밖의 행운이 찾아옵니다.",
+    "대인관계에서 큰 행운이 따르는 날입니다. 평소 서먹했던 사람과 오해를 풀거나 소중한 인연을 맺을 수 있으니 따뜻한 안부 한마디를 먼저 건네보세요.",
+    "두뇌 회전이 빠르고 창의적인 아이디어가 샘솟는 하루입니다. 막혔던 일에 색다른 관점으로 접근하면 놀랍도록 손쉽게 돌파구를 마련할 수 있습니다.",
+    "정체되었던 기운이 풀리며 시원한 변화의 바람이 불어옵니다. 긍정적인 마음가짐으로 사람들을 대하면 당신의 밝은 에너지가 주변 모두에게 전염될 것입니다.",
+    "신중함과 과감함의 조화가 필요한 시점입니다. 작은 지출이나 사소한 감정 소비를 줄이고 정말 중요한 목표에 에너지를 집중하면 큰 보람을 누리게 됩니다."
+  ];
+
+  const WEALTH_TIPS = [
+    "뜻밖의 작은 수익이나 보너스가 기대되는 날입니다.",
+    "계획에 없던 충동구매를 피하면 재정이 탄탄해집니다.",
+    "장기적인 투자나 저축 계획을 세우기에 좋은 시점입니다.",
+    "빌려준 돈이나 미수금이 원활하게 회수될 조짐이 있습니다."
+  ];
+
+  const LOVE_TIPS = [
+    "솔직한 대화로 서로의 마음을 확인하기 좋은 날입니다.",
+    "우연한 만남에서 설레는 인연이 시작될 수 있습니다.",
+    "상대방의 입장을 먼저 헤아려주면 애정이 더 깊어집니다.",
+    "사소한 일로 다투지 말고 넓은 포용력을 발휘하세요."
+  ];
+
+  const WORK_TIPS = [
+    "집중력이 최고조에 달해 빠른 성과를 얻을 수 있습니다.",
+    "동료들과의 협업에서 당신의 리더십이 돋보이는 날입니다.",
+    "새로운 지식이나 기술을 배우면 큰 무기가 될 것입니다.",
+    "꼼꼼한 서류 검토와 일정 관리가 실수를 사전에 막아줍니다."
+  ];
+
+  const HEALTH_TIPS = [
+    "가벼운 스트레칭과 수분 섭취로 컨디션을 관리하세요.",
+    "충분한 수면과 균형 잡힌 식사가 활력을 불어넣어 줍니다.",
+    "과도한 카페인 섭취를 줄이고 산책으로 머리를 식히세요.",
+    "눈의 피로를 풀어주고 바른 자세를 유지하도록 신경 쓰세요."
+  ];
+
+  const LUCKY_COLORS = [
+    "골드 옐로우", "스카이 블루", "에메랄드 그린", "샴페인 베이지",
+    "라벤더 퍼플", "로즈 핑크", "네이비 블루", "올리브 그린",
+    "선셋 오렌지", "펄 화이트", "버건디 와인", "민트 그린"
+  ];
+
+  const LUCKY_DIRECTIONS = ["동쪽", "남동쪽", "남쪽", "남서쪽", "서쪽", "북서쪽", "북쪽", "북동쪽"];
+
+  const LUCKY_TIMES = [
+    "07:00 ~ 09:00", "09:00 ~ 11:00", "11:00 ~ 13:00",
+    "13:00 ~ 15:00", "15:00 ~ 17:00", "17:00 ~ 19:00",
+    "19:00 ~ 21:00", "21:00 ~ 23:00"
+  ];
+
+  const LUCKY_ITEMS = [
+    "따뜻한 차", "메모 수첩", "향수 / 디퓨저", "스마트 워치",
+    "푸른색 손수건", "다이어리", "편안한 운동화", "텀블러",
+    "클래식 볼펜", "민트 사탕", "가죽 지갑", "은색 열쇠고리"
+  ];
+
+  // Deterministic Seeded PRNG Algorithm (Mulberry32 + FNV-1a Hash)
+  function hashString(str: string): number {
+    let h = 2166136261 >>> 0;
+    for (let i = 0; i < str.length; i++) {
+      h = Math.imul(h ^ str.charCodeAt(i), 16777619);
+    }
+    return h >>> 0;
+  }
+
+  function createSeededRNG(seed: number) {
+    let s = seed >>> 0;
+    return function() {
+      s = (s + 0x6D2B79F5) >>> 0;
+      let t = Math.imul(s ^ (s >>> 15), 1 | s);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  // Get current date string (YYYY-MM-DD) and Korean human formatted date
+  function getTodayInfo() {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+    const dayName = days[d.getDay()];
+
+    const dateKey = `${year}-${month}-${day}`;
+    const humanDate = `${year}년 ${d.getMonth() + 1}월 ${d.getDate()}일 ${dayName}`;
+    const tagDate = `${year}.${month}.${day} (${dayName[0]})`;
+
+    return { dateKey, humanDate, tagDate };
+  }
+
+  // State
+  let currentTab: 'eastern' | 'western' = 'eastern';
+  let currentSignId: string = 'tiger';
+
+  // DOM references
+  const signsGrid = document.getElementById('signs-grid');
+  const tabs = document.querySelectorAll('.fortune-tab');
+  const fortuneDateTag = document.getElementById('fortune-current-date');
+  const fortuneAvatar = document.getElementById('fortune-avatar');
+  const fortuneSignName = document.getElementById('fortune-sign-name');
+  const fortuneSignSub = document.getElementById('fortune-sign-sub');
+  const fortuneCardDate = document.getElementById('fortune-card-date');
+  const fortuneScoreNum = document.getElementById('fortune-score-num');
+  const fortuneScoreGrade = document.getElementById('fortune-score-grade');
+  const fortuneScorePill = document.getElementById('fortune-score-pill');
+  const fortuneMeterFill = document.getElementById('fortune-meter-fill');
+  const fortuneHeadline = document.getElementById('fortune-headline');
+  const fortuneBody = document.getElementById('fortune-body');
+
+  const luckWealthScore = document.getElementById('luck-wealth-score');
+  const luckWealthBar = document.getElementById('luck-wealth-bar');
+  const luckWealthTip = document.getElementById('luck-wealth-tip');
+
+  const luckLoveScore = document.getElementById('luck-love-score');
+  const luckLoveBar = document.getElementById('luck-love-bar');
+  const luckLoveTip = document.getElementById('luck-love-tip');
+
+  const luckWorkScore = document.getElementById('luck-work-score');
+  const luckWorkBar = document.getElementById('luck-work-bar');
+  const luckWorkTip = document.getElementById('luck-work-tip');
+
+  const luckHealthScore = document.getElementById('luck-health-score');
+  const luckHealthBar = document.getElementById('luck-health-bar');
+  const luckHealthTip = document.getElementById('luck-health-tip');
+
+  const pillNumber = document.getElementById('pill-number');
+  const pillColor = document.getElementById('pill-color');
+  const pillDirection = document.getElementById('pill-direction');
+  const pillTime = document.getElementById('pill-time');
+  const pillItem = document.getElementById('pill-item');
+
+  const btnCopyFortune = document.getElementById('btn-copy-fortune');
+  const fortuneToast = document.getElementById('fortune-toast');
+
+  // Compute Fortune for a given sign and date
+  function computeFortune(sign: SignData, dateKey: string) {
+    const seed = hashString(`${dateKey}_${sign.id}`);
+    const rng = createSeededRNG(seed);
+
+    // Overall Score: 60 ~ 98
+    const overallScore = Math.floor(rng() * 38) + 60;
+
+    let grade = '보통 (平)';
+    let gradeColor = '#38bdf8';
+    if (overallScore >= 90) {
+      grade = '대길 (大吉) 🌟';
+      gradeColor = '#facc15';
+    } else if (overallScore >= 80) {
+      grade = '길 (吉) ✨';
+      gradeColor = '#a855f7';
+    } else if (overallScore >= 70) {
+      grade = '소길 (小吉) 🍀';
+      gradeColor = '#38bdf8';
+    }
+
+    // Sub-scores: range around overallScore ± 15, clamped 50..100
+    const wScore = Math.max(50, Math.min(100, Math.floor(overallScore + (rng() - 0.5) * 25)));
+    const lScore = Math.max(50, Math.min(100, Math.floor(overallScore + (rng() - 0.5) * 25)));
+    const kScore = Math.max(50, Math.min(100, Math.floor(overallScore + (rng() - 0.5) * 25)));
+    const hScore = Math.max(50, Math.min(100, Math.floor(overallScore + (rng() - 0.5) * 25)));
+
+    // Pick content deterministically
+    const titleIdx = Math.floor(rng() * FORTUNE_TITLES.length);
+    const bodyIdx = Math.floor(rng() * FORTUNE_OVERVIEWS.length);
+    const wTipIdx = Math.floor(rng() * WEALTH_TIPS.length);
+    const lTipIdx = Math.floor(rng() * LOVE_TIPS.length);
+    const kTipIdx = Math.floor(rng() * WORK_TIPS.length);
+    const hTipIdx = Math.floor(rng() * HEALTH_TIPS.length);
+
+    // Lucky pills
+    const luckyNum = Math.floor(rng() * 89) + 7;
+    const luckyColor = LUCKY_COLORS[Math.floor(rng() * LUCKY_COLORS.length)];
+    const luckyDir = LUCKY_DIRECTIONS[Math.floor(rng() * LUCKY_DIRECTIONS.length)];
+    const luckyTime = LUCKY_TIMES[Math.floor(rng() * LUCKY_TIMES.length)];
+    const luckyItem = LUCKY_ITEMS[Math.floor(rng() * LUCKY_ITEMS.length)];
+
+    return {
+      overallScore,
+      grade,
+      gradeColor,
+      headline: FORTUNE_TITLES[titleIdx],
+      body: FORTUNE_OVERVIEWS[bodyIdx],
+      wealth: { score: wScore, tip: WEALTH_TIPS[wTipIdx] },
+      love: { score: lScore, tip: LOVE_TIPS[lTipIdx] },
+      work: { score: kScore, tip: WORK_TIPS[kTipIdx] },
+      health: { score: hScore, tip: HEALTH_TIPS[hTipIdx] },
+      luckyNum,
+      luckyColor,
+      luckyDir,
+      luckyTime,
+      luckyItem
+    };
+  }
+
+  // Render Signs Grid (12 items)
+  function renderSignsGrid() {
+    if (!signsGrid) return;
+    const list = currentTab === 'eastern' ? EASTERN_SIGNS : WESTERN_SIGNS;
+
+    signsGrid.innerHTML = '';
+    list.forEach(sign => {
+      const btn = document.createElement('button');
+      btn.className = `sign-btn ${sign.id === currentSignId ? 'active' : ''}`;
+      btn.setAttribute('data-id', sign.id);
+      btn.setAttribute('type', 'button');
+
+      btn.innerHTML = `
+        <span class="sign-btn-icon">${sign.icon}</span>
+        <span class="sign-btn-title">${sign.name}</span>
+        <span class="sign-btn-desc">${sign.sub}</span>
+      `;
+
+      btn.addEventListener('click', () => {
+        currentSignId = sign.id;
+        document.querySelectorAll('.sign-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderSelectedFortune();
+      });
+
+      signsGrid.appendChild(btn);
+    });
+  }
+
+  // Render Selected Fortune
+  function renderSelectedFortune() {
+    const list = currentTab === 'eastern' ? EASTERN_SIGNS : WESTERN_SIGNS;
+    let sign = list.find(s => s.id === currentSignId);
+    if (!sign) {
+      sign = list[0];
+      currentSignId = sign.id;
+    }
+
+    const { dateKey, humanDate, tagDate } = getTodayInfo();
+    if (fortuneDateTag) fortuneDateTag.textContent = `📅 ${tagDate}`;
+    if (fortuneCardDate) fortuneCardDate.textContent = humanDate;
+
+    const data = computeFortune(sign, dateKey);
+
+    if (fortuneAvatar) fortuneAvatar.textContent = sign.icon;
+    if (fortuneSignName) fortuneSignName.textContent = sign.name;
+    if (fortuneSignSub) fortuneSignSub.textContent = sign.sub;
+
+    if (fortuneScoreNum) fortuneScoreNum.textContent = String(data.overallScore);
+    if (fortuneScoreGrade) fortuneScoreGrade.textContent = data.grade;
+    if (fortuneScorePill) {
+      fortuneScorePill.style.borderColor = `${data.gradeColor}60`;
+      fortuneScorePill.style.backgroundColor = `${data.gradeColor}20`;
+    }
+
+    if (fortuneMeterFill) {
+      fortuneMeterFill.style.width = `${data.overallScore}%`;
+    }
+
+    if (fortuneHeadline) fortuneHeadline.textContent = `"${data.headline}"`;
+    if (fortuneBody) fortuneBody.textContent = data.body;
+
+    // Sub metrics
+    if (luckWealthScore) luckWealthScore.textContent = `${data.wealth.score}%`;
+    if (luckWealthBar) luckWealthBar.style.width = `${data.wealth.score}%`;
+    if (luckWealthTip) luckWealthTip.textContent = data.wealth.tip;
+
+    if (luckLoveScore) luckLoveScore.textContent = `${data.love.score}%`;
+    if (luckLoveBar) luckLoveBar.style.width = `${data.love.score}%`;
+    if (luckLoveTip) luckLoveTip.textContent = data.love.tip;
+
+    if (luckWorkScore) luckWorkScore.textContent = `${data.work.score}%`;
+    if (luckWorkBar) luckWorkBar.style.width = `${data.work.score}%`;
+    if (luckWorkTip) luckWorkTip.textContent = data.work.tip;
+
+    if (luckHealthScore) luckHealthScore.textContent = `${data.health.score}%`;
+    if (luckHealthBar) luckHealthBar.style.width = `${data.health.score}%`;
+    if (luckHealthTip) luckHealthTip.textContent = data.health.tip;
+
+    // Pills
+    if (pillNumber) pillNumber.textContent = String(data.luckyNum);
+    if (pillColor) pillColor.textContent = data.luckyColor;
+    if (pillDirection) pillDirection.textContent = data.luckyDir;
+    if (pillTime) pillTime.textContent = data.luckyTime;
+    if (pillItem) pillItem.textContent = data.luckyItem;
+  }
+
+  // Tab switching
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+
+      currentTab = (tab.getAttribute('data-tab') || 'eastern') as 'eastern' | 'western';
+      // Default to first item of new tab
+      currentSignId = currentTab === 'eastern' ? 'rat' : 'aquarius';
+
+      renderSignsGrid();
+      renderSelectedFortune();
+    });
+  });
+
+  // Copy to Clipboard
+  btnCopyFortune?.addEventListener('click', () => {
+    const list = currentTab === 'eastern' ? EASTERN_SIGNS : WESTERN_SIGNS;
+    const sign = list.find(s => s.id === currentSignId) || list[0];
+    const { humanDate } = getTodayInfo();
+
+    const score = fortuneScoreNum?.textContent || '90';
+    const grade = fortuneScoreGrade?.textContent || '대길';
+    const title = fortuneHeadline?.textContent || '';
+    const body = fortuneBody?.textContent || '';
+    const num = pillNumber?.textContent || '';
+    const color = pillColor?.textContent || '';
+    const dir = pillDirection?.textContent || '';
+
+    const textToCopy = `[오늘의 운세 - ${humanDate}]\n` +
+      `✨ ${sign.name} (${sign.icon}): 종합운 ${score}점 (${grade})\n` +
+      `${title}\n\n` +
+      `${body}\n\n` +
+      `🍀 행운의 숫자: ${num} | 색상: ${color} | 방향: ${dir}`;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        showToast();
+      }).catch(() => {
+        fallbackCopy(textToCopy);
+      });
+    } else {
+      fallbackCopy(textToCopy);
+    }
+  });
+
+  function fallbackCopy(text: string) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      showToast();
+    } finally {
+      document.body.removeChild(ta);
+    }
+  }
+
+  function showToast() {
+    if (!fortuneToast) return;
+    fortuneToast.classList.remove('hidden');
+    setTimeout(() => {
+      fortuneToast.classList.add('hidden');
+    }, 2400);
+  }
+
+  // Initial render
+  renderSignsGrid();
+  renderSelectedFortune();
+</script>
