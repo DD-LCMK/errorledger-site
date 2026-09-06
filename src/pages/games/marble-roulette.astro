@@ -1627,9 +1627,9 @@ const data = gameEntry?.data || {
       y: 7450,
       length: 140,
       angle: 0,
-      speed: -0.013,
+      speed: -0.015,
       isFinaleKeeper: true,
-      upwardBatPower: 7.2
+      upwardBatPower: 14.8
     });
 
     // ZONE 11: 결승선 (FINISH_LINE_Y = 7730) & 피니시 베이슨 (y: 7730 - 8120)
@@ -2023,11 +2023,11 @@ const data = gameEntry?.data || {
       if (m.vy > 5.2) {
         m.vy = 5.2;
       }
-      // Safety speed clamp (allows powerful explosive bounces off red bubbles before friction naturally slows them)
+      // Safety speed clamp (allows powerful explosive bounces off red bubbles and finale propeller before friction naturally slows them)
       const currentSpeed = Math.hypot(m.vx, m.vy);
-      if (currentSpeed > 11.5) {
-        m.vx = (m.vx / currentSpeed) * 11.5;
-        m.vy = (m.vy / currentSpeed) * 11.5;
+      if (currentSpeed > 16.0) {
+        m.vx = (m.vx / currentSpeed) * 16.0;
+        m.vy = (m.vy / currentSpeed) * 16.0;
       }
 
       m.x += m.vx * timeScale;
@@ -2227,24 +2227,26 @@ const data = gameEntry?.data || {
           const bladeVx = -sp.speed * 0.70 * 60 * ry;
           const bladeVy = sp.speed * 0.70 * 60 * rx;
 
-          // Special Finale Gatekeeper Propeller: Upward Bat Mechanism
+          // Special Finale Gatekeeper Propeller: High-Power Upward Bat Mechanism
           if (sp.isFinaleKeeper) {
             // Blade is sweeping UPWARDS through the funnel throat!
-            // Launch the caught marble back up the funnel! (35% slower marble impulse)
-            const upwardPower = (sp.upwardBatPower || 7.2) * 0.65;
-            m.vy = -Math.abs(upwardPower) * timeScale; // Controlled upward impulse back up the funnel!
-            m.vx = (2.0 + Math.random() * 2.5) * 0.65; // Deflect upward and toward the lucky hole on the right!
-            m.y = Math.min(m.y, dist.py - contactRadius - 2);
+            // Launch the caught marble vigorously BACK UP into the funnel with powerful impact!
+            const upwardPower = Math.max(13.5, (sp.upwardBatPower || 14.8));
+            m.vy = -Math.abs(upwardPower);
+            m.vx = (nx >= 0 ? 1 : -1) * (6.5 + Math.random() * 4.5);
+            m.y = Math.min(m.y, dist.py - contactRadius - 10);
 
+            sfx.playBlast();
             sfx.playBumper();
             shockwaves.push({
               x: m.x,
               y: m.y,
-              radius: 14,
-              maxRadius: 75,
-              color: '#f97316',
+              radius: 18,
+              maxRadius: 110,
+              color: '#ea580c',
               alpha: 1.0
             });
+            return;
           } else {
             // Normal rotational sweep for standard spinners
             m.vx += bladeVx * 0.008;
