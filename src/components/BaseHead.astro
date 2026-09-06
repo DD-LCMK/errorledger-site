@@ -2,7 +2,7 @@
 import '../styles/global.css';
 import type { ImageMetadata } from 'astro';
 import FallbackImage from '../assets/blog-placeholder-1.jpg';
-import { SITE_TITLE } from '../consts';
+import { SITE_TITLE, SITE_TAGLINE, SITE_DESCRIPTION, SITE_KEYWORDS, SITE_AUTHOR } from '../consts';
 import { Font } from 'astro:assets';
 
 interface Props {
@@ -15,24 +15,27 @@ interface Props {
 	// DYNAMIC BREADCRUMB: Array of {name, url} items. Last item is current page (no url needed).
 	breadcrumb?: { name: string; url?: string }[];
 	lang?: string;
+	keywords?: string;
 }
 
 // Strip `.html` and trailing slashes so canonical URLs are always clean
 const rawPath = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '');
 const siteBase = Astro.site || 'https://errorledger.com';
 
-const { title, description, image = FallbackImage, type = 'website', breadcrumb, lang } = Astro.props;
-
-const isKorean = (lang === 'ko') || rawPath === '/ko' || rawPath.startsWith('/ko/');
-const enPath = (isKorean ? rawPath.replace(/^\/ko/, '') : rawPath) || '/';
-const koPath = isKorean ? (rawPath || '/ko') : (enPath === '/' ? '/ko' : `/ko${enPath}`);
+const {
+	title,
+	description,
+	image = FallbackImage,
+	type = 'website',
+	breadcrumb,
+	lang = 'ko',
+	keywords = SITE_KEYWORDS
+} = Astro.props;
 
 const canonicalURL = new URL(rawPath || '/', siteBase);
-const enHref = new URL(enPath, siteBase).href;
-const koHref = new URL(koPath, siteBase).href;
 
-const ogLocale = isKorean ? 'ko_KR' : 'en_US';
-const ogLocaleAlternate = isKorean ? 'en_US' : 'ko_KR';
+const ogLocale = 'ko_KR';
+const ogLocaleAlternate = 'en_US';
 
 // Truncate title to 70 characters for SEO (Google supports up to ~70 before truncating)
 const truncatedTitle = title && title.length > 70 ? title.substring(0, 67) + '...' : title;
@@ -50,9 +53,12 @@ const ogImage = typeof image === 'string'
 // Builds a dynamic BreadcrumbList for rich results.
 const breadcrumbItems = breadcrumb && breadcrumb.length > 0
 	? breadcrumb
-	: (isKorean
-		? [{ name: '홈', url: 'https://errorledger.com/ko' }, { name: '보관소', url: 'https://errorledger.com/ko/blog' }]
-		: [{ name: 'Home', url: 'https://errorledger.com' }, { name: 'Blog', url: 'https://errorledger.com/blog' }]);
+	: (rawPath === '' || rawPath === '/'
+		? [{ name: '홈 (Home)', url: siteBase.toString() }]
+		: [
+			{ name: '홈 (Home)', url: siteBase.toString() },
+			{ name: title.replace(` - ${SITE_TITLE}`, '').replace(` | ${SITE_TITLE}`, ''), url: canonicalURL.href }
+		  ]);
 
 const breadcrumbSchema = JSON.stringify({
 	"@context": "https://schema.org",
@@ -63,6 +69,46 @@ const breadcrumbSchema = JSON.stringify({
 		"name": item.name,
 		"item": item.url ? (item.url.startsWith('http') ? item.url : new URL(item.url, siteBase).href) : canonicalURL.href
 	}))
+});
+
+// Rich WebSite Schema for Search Engines (Google, Naver Yeti, Bing)
+const websiteSchema = JSON.stringify({
+	"@context": "https://schema.org",
+	"@type": "WebSite",
+	"name": "스트림아케이드",
+	"alternateName": ["StreamArcade", "Stream Arcade", "스트림 아케이드"],
+	"url": siteBase.toString(),
+	"description": SITE_DESCRIPTION,
+	"inLanguage": ["ko-KR", "en-US"],
+	"publisher": {
+		"@type": "Organization",
+		"name": SITE_AUTHOR,
+		"url": siteBase.toString(),
+		"logo": {
+			"@type": "ImageObject",
+			"url": new URL('/favicon.svg', siteBase).href
+		}
+	},
+	"potentialAction": {
+		"@type": "SearchAction",
+		"target": {
+			"@type": "EntryPoint",
+			"urlTemplate": `${new URL('/search', siteBase).href}?q={search_term_string}`
+		},
+		"query-input": "required name=search_term_string"
+	}
+});
+
+// Organization Schema
+const organizationSchema = JSON.stringify({
+	"@context": "https://schema.org",
+	"@type": "Organization",
+	"name": "스트림아케이드 (StreamArcade)",
+	"alternateName": "StreamArcade",
+	"url": siteBase.toString(),
+	"logo": new URL('/favicon.svg', siteBase).href,
+	"description": "치지직, 유튜브, SOOP 생방송을 위한 무료 인터랙티브 웹게임 및 추첨 도구 플랫폼",
+	"email": "support@streamarcade.net"
 });
 ---
 
@@ -79,12 +125,7 @@ const breadcrumbSchema = JSON.stringify({
 />
 <meta name="generator" content={Astro.generator} />
 
-<!-- Multilingual Alternate Annotations (hreflang) -->
-<link rel="alternate" hreflang="en" href={enHref} />
-<link rel="alternate" hreflang="ko" href={koHref} />
-<link rel="alternate" hreflang="x-default" href={enHref} />
-
-<!-- Preconnect for performance (reduces DNS lookup time for external resources) -->
+<!-- Preconnect for performance -->
 <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
 
@@ -96,14 +137,18 @@ const breadcrumbSchema = JSON.stringify({
 <!-- Primary Meta Tags -->
 <title>{truncatedTitle}</title>
 <meta name="description" content={truncatedDescription} />
-<meta name="author" content="ErrorLedger Systems Team" />
+<meta name="keywords" content={keywords} />
+<meta name="author" content={SITE_AUTHOR} />
+<meta name="application-name" content="스트림아케이드 (StreamArcade)" />
+<meta name="theme-color" content="#0f172a" />
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
 
-<!-- Invisible Structured Search Schemas Injection -->
+<!-- Structured Data Schemas (JSON-LD) -->
 <script type="application/ld+json" set:html={breadcrumbSchema}></script>
+<script type="application/ld+json" set:html={websiteSchema}></script>
+<script type="application/ld+json" set:html={organizationSchema}></script>
 
 <!-- Open Graph / Facebook -->
-<!-- RESOLVES P1 ISSUE: Dynamically sets "article" for blog posts and "website" for the homepage -->
 <meta property="og:type" content={type} />
 <meta property="og:url" content={canonicalURL.href} />
 <meta property="og:title" content={truncatedTitle} />
@@ -112,7 +157,7 @@ const breadcrumbSchema = JSON.stringify({
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta property="og:image:alt" content={truncatedTitle} />
-<meta property="og:site_name" content="ErrorLedger" />
+<meta property="og:site_name" content={SITE_TITLE} />
 <meta property="og:locale" content={ogLocale} />
 <meta property="og:locale:alternate" content={ogLocaleAlternate} />
 

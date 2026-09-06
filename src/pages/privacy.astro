@@ -6,11 +6,11 @@ import { SITE_TITLE } from '../consts';
 ---
 
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="ko" class="dark">
   <head>
     <BaseHead 
-      title={`Privacy Policy | ${SITE_TITLE}`} 
-      description="Privacy policy and data telemetry disclosures for AetherArcade, including Google AdSense cookies and local storage." 
+      title={`개인정보처리방침 | ${SITE_TITLE}`} 
+      description="스트림아케이드(StreamArcade)의 개인정보처리방침, 로컬 스토리지 이용 및 데이터 보안 안내입니다." 
     />
   </head>
   <body class="static-page-body">
@@ -18,58 +18,53 @@ import { SITE_TITLE } from '../consts';
 
     <main class="static-page-main">
       <div class="content-container">
-        <span class="pill-label">LEGAL & PRIVACY</span>
-        <h1>Privacy Policy</h1>
-        <p class="updated-date"><em>Last Updated: September 2026</em></p>
+        <span class="pill-label">법적 고지 & 개인정보보호</span>
+        <h1>개인정보처리방침</h1>
+        <p class="updated-date"><em>최종 개정일: 2026년 9월</em></p>
 
         <p>
-          At <strong>AetherArcade</strong>, accessible from our website, the privacy of our visitors is of paramount importance to us. This Privacy Policy document outlines the types of information that is collected and recorded by AetherArcade and how we use it.
+          <strong>스트림아케이드(StreamArcade)</strong>는 이용자의 개인정보 보호를 매우 중요하게 생각하며, 관련 법령을 준수합니다. 본 방침은 스트림아케이드가 웹 서비스를 제공하는 과정에서 어떤 정보가 처리되고 어떻게 보호되는지 설명합니다.
         </p>
 
         <hr class="divider" />
 
-        <h2>1. Client-Side Architecture & Local Storage</h2>
+        <h2>1. 클라이언트 중심 아키텍처 & 로컬 스토리지 (localStorage)</h2>
         <p>
-          AetherArcade operates on a 100% client-side gaming model. We do not require accounts, logins, or server-side database profiles.
+          스트림아케이드는 100% 클라이언트 사이드 웹 기술로 동작합니다. 서비스 이용을 위해 별도의 회원가입이나 로그인 절차를 요구하지 않으며, 이용자의 개인 프로필을 원격 서버 데이터베이스에 저장하지 않습니다.
         </p>
         <p>
-          We utilize standard HTML5 <strong>localStorage</strong> directly within your browser solely for:
+          오직 이용자의 편의를 돕기 위해 브라우저 표준 <strong>로컬 스토리지(localStorage)</strong>에 다음과 같은 환경 설정값만을 로컬에 보관합니다:
         </p>
         <ul>
-          <li>Saving your local settings and game configurations (e.g., custom participants, roulette items).</li>
-          <li>Preserving your sound mute preferences (<code>aether_sound_muted</code>).</li>
-          <li>Saving your visual theme choice (dark mode vs. light mode).</li>
+          <li>이용자가 직접 입력한 게임별 참가자 명단 및 룰렛 옵션 설정</li>
+          <li>배경음 및 효과음 음소거 상태값 (<code>aether_sound_muted</code>)</li>
+          <li>다크 모드 등 시각 테마 설정값</li>
         </ul>
-        <p>This data never leaves your device and can be cleared at any time by clearing your browser cache.</p>
+        <p>이 데이터는 사용자의 기기 외부로 일절 전송되지 않으며, 브라우저 캐시 및 방문 기록을 지우시면 언제든지 즉시 삭제할 수 있습니다.</p>
 
-        <h2>2. Third-Party Advertising & Cookies</h2>
+        <h2>2. 광고 및 쿠키(Cookie) 정책</h2>
         <p>
-          AetherArcade currently operates completely ad-free. We do not run display banners, video interstitials, or sponsored tracking scripts. Should third-party advertising partners (such as Google AdSense) be introduced in future updates to support server infrastructure, standard cookie opt-out disclosures (including <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer">Google Ads Settings</a> and <a href="https://www.aboutads.info" target="_blank" rel="noopener noreferrer">AboutAds.info</a>) will apply.
+          스트림아케이드는 쾌적한 방송 환경을 위해 로그인 없는 무료 이용을 보장합니다. 지속 가능한 서버 운영을 위해 향후 Google AdSense 등 타사 광고 서비스가 연동될 수 있으며, 이 경우 서비스 통계 분석 및 광고 게재를 위한 표준 쿠키가 사용될 수 있습니다. 이용자는 <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer">Google 광고 설정</a> 등을 통해 맞춤형 광고 쿠키 사용을 언제든지 거부할 수 있습니다.
         </p>
 
-        <h2>3. Log Files</h2>
+        <h2>3. 접속 로그 파일</h2>
         <p>
-          Like almost all modern websites, AetherArcade uses standard server log files. These files merely log visitors to the site—usually a standard procedure for hosting services and analytics. The information collected by log files includes internet protocol (IP) addresses, browser type, Internet Service Provider (ISP), date and time stamps, referring/exit pages, and possibly the number of clicks. These are not linked to any information that is personally identifiable.
+          대부분의 웹 호스팅 서비스와 마찬가지로, 서비스의 안정적인 네트워크 운영 및 트래픽 보안 유지를 위해 표준 웹 서버 로그가 자동 기록될 수 있습니다. 여기에는 IP 주소, 브라우저 종류, 방문 일시, 참조 페이지 등이 포함되며, 이는 개인을 특정할 수 없는 비식별 기술 정보로만 취급됩니다.
         </p>
 
-        <h2>4. Children's Privacy</h2>
+        <h2>4. 아동의 개인정보 보호</h2>
         <p>
-          Another part of our priority is adding protection for children while using the internet. We encourage parents and guardians to observe, participate in, and/or monitor and guide their online activity. AetherArcade does not knowingly collect any Personal Identifiable Information from children under the age of 13.
+          스트림아케이드는 만 14세 미만 아동의 개인 식별 정보를 고의로 수집하거나 저장하지 않습니다.
         </p>
 
-        <h2>5. CCPA Privacy Rights (Do Not Sell My Personal Information)</h2>
+        <h2>5. 이용자의 권리 및 데이터 삭제</h2>
         <p>
-          Under the CCPA, California consumers have the right to request that a business disclose what personal data it collects, delete any collected personal data, and not sell the consumer's personal data. We do not sell any personal information.
+          이용자는 언제든지 본인의 웹 브라우저 설정을 통해 쿠키 및 로컬 저장 데이터를 삭제하거나 차단할 권리를 보유합니다.
         </p>
 
-        <h2>6. GDPR Data Protection Rights</h2>
+        <h2>6. 문의처</h2>
         <p>
-          We want to ensure you are fully aware of all of your data protection rights. Every user is entitled to the right of access, rectification, erasure, restrict processing, and data portability.
-        </p>
-
-        <h2>7. Contact Us</h2>
-        <p>
-          If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact us at <code>privacy@aetherarcade.com</code> or via our <a href="/contact">Contact Page</a>.
+          본 개인정보처리방침에 대해 질문이나 의견이 있으신 경우, <code>privacy@streamarcade.net</code> 또는 <a href="/contact">문의하기 페이지</a>를 통해 언제든지 연락해 주시기 바랍니다.
         </p>
       </div>
     </main>

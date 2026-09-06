@@ -21,12 +21,59 @@ const CATEGORY_MAP: Record<string, string> = {
   card: '카드/보드',
   strategy: '전략'
 };
+const homeFaqSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "방송 화면(OBS/프리즘)에 어떻게 띄우나요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "OBS Studio나 프리즘 라이브 스튜디오에서 [브라우저 소스] 또는 [윈도우 캡처]를 추가하고, 우측 상단의 [⛶ 전체화면] 버튼을 누르면 군더더기 없이 방송 화면 가득 띄워 송출할 수 있습니다."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "비용이나 회원가입이 필요한가요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "아닙니다. 로그인이나 회원가입 없이 마블 룰렛, 돌림판, 사다리타기 등 모든 방송 도구를 평생 100% 무료로 사용할 수 있습니다."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "치지직, SOOP(아프리카TV), 유튜브 라이브 모두 지원하나요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "네. 표준 웹 브라우저 기반으로 동작하므로 치지직(CHZZK), SOOP, 유튜브, 트위치 등 모든 1인 미디어 및 스트리밍 플랫폼에서 완벽하게 호환됩니다."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "추첨 결과는 공정한가요? (조작 방지)",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "구슬 룰렛은 매 프레임 정밀 2D 강체 물리 엔진(중력, 마찰, 탄성 충돌)으로 계산되며, 사다리타기와 돌림판은 암호학적 의사 난수(PRNG) 및 일대일 전단사 알고리즘으로 설계되어 누구도 결과를 조작할 수 없습니다."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is StreamArcade (Marble Roulette & Stream Tools)?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "StreamArcade provides 100% free, client-side interactive tools including Marble Roulette (physics marble race simulator), Random Wheel Picker, and Ghost Leg Ladder Game for global livestreamers and creators on Twitch, YouTube, and Chzzk."
+      }
+    }
+  ]
+});
 ---
 
 <!doctype html>
 <html lang="ko" class="dark">
   <head>
     <BaseHead title={`${SITE_TITLE} - ${SITE_TAGLINE}`} description={SITE_DESCRIPTION} />
+    <script type="application/ld+json" set:html={homeFaqSchema}></script>
   </head>
   <body class="arcade-home-body">
     <Header />
@@ -99,26 +146,81 @@ const CATEGORY_MAP: Record<string, string> = {
         </div>
       </section>
 
-      <!-- FAQ Section -->
+      <!-- SEO Overview & Platform Features Section -->
+      <section class="seo-overview-section">
+        <div class="overview-container">
+          <div class="overview-header">
+            <span class="overview-pill">STREAM ARCADE PLATFORM</span>
+            <h2>방송인을 위한 무료 웹게임 & 인터랙티브 추첨 도구 모음</h2>
+            <p class="overview-sub">
+              스트림아케이드(StreamArcade)는 치지직(CHZZK), SOOP(숲/아프리카TV), 유튜브 라이브(YouTube Live) 스트리머와 크리에이터를 위한 설치 없는 무료 방송 도구 플랫폼입니다.
+            </p>
+          </div>
+
+          <div class="overview-grid">
+            <div class="overview-card">
+              <span class="overview-icon">🔮</span>
+              <h3>구슬 레이스 마블 룰렛 (Marble Roulette)</h3>
+              <p>
+                단순한 원판 돌림판을 뛰어넘는 초대형 물리 엔진 기반 구슬 굴리기 레이스! 핀볼 범퍼, 지름길 터널, 역회전 프로펠러 등 다양한 반전 기믹으로 1등 당첨부터 꼴찌 벌칙 뽑기까지 생방송의 텐션을 극대화합니다.
+              </p>
+            </div>
+
+            <div class="overview-card">
+              <span class="overview-icon">🎡</span>
+              <h3>돌림판 룰렛 (Random Wheel Picker)</h3>
+              <p>
+                찰진 래칫 눈금 회전음, 승자 축하 폭죽 이펙트, 당첨 항목 자동 제외 기능과 야식·벌칙·이벤트 1초 프리셋을 갖춘 방송 맞춤형 룰렛 추첨기입니다.
+              </p>
+            </div>
+
+            <div class="overview-card">
+              <span class="overview-icon">🪜</span>
+              <h3>실시간 사다리타기 (Ghost Leg Ladder Game)</h3>
+              <p>
+                네온 발자국을 따라 실시간으로 내려가는 2~20인 인터랙티브 사다리타기. 커피 쏘기, 치킨 내기, 방송 벌칙 등 모든 내기 결과를 1:1로 정직하고 공정하게 결정합니다.
+              </p>
+            </div>
+
+            <div class="overview-card">
+              <span class="overview-icon">✨</span>
+              <h3>오늘의 운세 & 행운 가이드 (Daily Fortune)</h3>
+              <p>
+                매일 자정 자동으로 갱신되는 십이지간 12띠 운세와 12 서양 별자리 운세. 오늘의 추천 행동(DO/DON'T)과 행운의 번호, 색상을 확인하고 방송 오프닝 토크로 활용해 보세요.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ Section (Rich Search Snippets for Google & Naver) -->
       <section class="home-faq-section">
         <div class="faq-container">
-          <h2>자주 묻는 질문</h2>
+          <h2>자주 묻는 질문 (FAQ)</h2>
           <div class="faq-grid">
             <div class="faq-box">
-              <h3>방송 화면에 어떻게 띄우나요?</h3>
-              <p>브라우저 창 캡처 또는 우측 상단의 [전체화면] 버튼으로 OBS에 깔끔하게 송출할 수 있습니다.</p>
+              <h3>방송 화면(OBS/프리즘)에 어떻게 띄우나요?</h3>
+              <p>OBS Studio나 프리즘 라이브 스튜디오에서 [브라우저 소스] 또는 [윈도우 캡처]를 추가하고, 우측 상단의 [⛶ 전체화면] 버튼을 누르면 군더더기 없이 방송 화면 가득 띄워 송출할 수 있습니다.</p>
             </div>
             <div class="faq-box">
               <h3>비용이나 회원가입이 필요한가요?</h3>
-              <p>아닙니다. 로그인이나 회원가입 없이 모든 기능을 평생 100% 무료로 사용할 수 있습니다.</p>
+              <p>아닙니다. 로그인이나 회원가입 없이 마블 룰렛, 돌림판, 사다리타기 등 모든 방송 도구를 평생 100% 무료로 사용할 수 있습니다.</p>
             </div>
             <div class="faq-box">
               <h3>치지직, SOOP, 유튜브 모두 지원하나요?</h3>
-              <p>네. 웹 브라우저 기반으로 동작하므로 모든 생방송 플랫폼에서 자유롭게 사용 가능합니다.</p>
+              <p>네. 웹 브라우저 표준 기술로 동작하므로 치지직(CHZZK), SOOP, 유튜브 라이브, 트위치 등 모든 생방송 플랫폼에서 자유롭게 호환됩니다.</p>
             </div>
             <div class="faq-box">
-              <h3>추첨 결과는 공정한가요?</h3>
-              <p>실시간 물리 엔진 및 난수 알고리즘에 의해 연산되므로 조작 없이 100% 공정합니다.</p>
+              <h3>추첨 결과는 공정한가요? (조작 방지)</h3>
+              <p>구슬 룰렛은 매 프레임 순수 2D 물리 엔진(중력, 마찰, 탄성 충돌)에 의해 연산되며, 돌림판과 사다리타기는 수학적 전단사 매핑과 의사 난수(PRNG) 알고리즘으로 설계되어 누구도 결과를 임의 조작할 수 없습니다.</p>
+            </div>
+            <div class="faq-box">
+              <h3>한 명에게 여러 개의 구슬을 줄 수 있나요?</h3>
+              <p>네! 구슬 룰렛 참가자 목록 입력 시 이름 뒤에 <code>* 3</code> 또는 <code>* 5</code>를 적으면 해당 인원에게 여러 개의 구슬이 배정되어 당첨 확률을 손쉽게 조절할 수 있습니다.</p>
+            </div>
+            <div class="faq-box">
+              <h3>What is StreamArcade (Marble Roulette & Stream Tools)?</h3>
+              <p>StreamArcade provides 100% free, client-side interactive web games and stream tools including Marble Roulette (physics marble race simulator), Random Wheel Picker, and Ghost Leg Ladder Game for global livestreamers and creators on Twitch and YouTube.</p>
             </div>
           </div>
         </div>
@@ -475,6 +577,91 @@ const CATEGORY_MAP: Record<string, string> = {
   }
 
   .prop-card p {
+    font-size: 0.88rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* SEO Overview & Platform Features */
+  .seo-overview-section {
+    margin: 4.5rem 0 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .overview-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .overview-header {
+    text-align: center;
+    max-width: 820px;
+    margin: 0 auto 2.5rem;
+  }
+
+  .overview-pill {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .overview-header h2 {
+    font-size: 1.85rem;
+    font-weight: 900;
+    color: #f8fafc;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.75rem;
+  }
+
+  .overview-sub {
+    font-size: 1rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .overview-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 14px;
+    padding: 1.75rem 1.5rem;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+
+  .overview-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(56, 189, 248, 0.35);
+  }
+
+  .overview-icon {
+    font-size: 2.2rem;
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+
+  .overview-card h3 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 0.5rem;
+  }
+
+  .overview-card p {
     font-size: 0.88rem;
     color: #94a3b8;
     line-height: 1.6;

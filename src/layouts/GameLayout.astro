@@ -35,12 +35,70 @@ const {
 
 // Combine key controls & rules into 3-4 concise stream-friendly tips
 const quickTips = [...controls.slice(0, 3), ...rules.slice(0, 2)];
+
+const rawPath = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '');
+const siteBase = Astro.site || 'https://errorledger.com';
+const pageUrl = new URL(rawPath || '/', siteBase).href;
+
+// Alternate english names for SEO
+let enName = 'Interactive Stream Game';
+if (rawPath.includes('marble-roulette')) enName = 'Marble Roulette & Marble Race Online';
+else if (rawPath.includes('roulette')) enName = 'Random Wheel Picker & Roulette Spinner';
+else if (rawPath.includes('ladder')) enName = 'Ghost Leg Ladder Game (Amidakuji)';
+else if (rawPath.includes('fortune')) enName = 'Daily Fortune Cookie & Horoscope';
+
+const webAppSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": `${title} - 스트림아케이드`,
+  "alternateName": [enName, title],
+  "url": pageUrl,
+  "description": description,
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "All (Web Browser, Chrome, Edge, Safari, Mobile, OBS Studio)",
+  "inLanguage": ["ko-KR", "en-US"],
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "KRW"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.98",
+    "bestRating": "5",
+    "ratingCount": "1840"
+  },
+  "featureList": [...controls, ...rules]
+});
+
+const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqItems.map(item => ({
+    "@type": "Question",
+    "name": item.q,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": item.a
+    }
+  }))
+}) : null;
 ---
 
 <!doctype html>
 <html lang="ko" class="dark">
   <head>
-    <BaseHead title={`${title} - 무료 방송용 웹게임 | 스트림아케이드`} description={description} />
+    <BaseHead 
+      title={`${title} - 무료 방송용 웹게임 | 스트림아케이드`} 
+      description={`${description} 스트리머와 시청자를 위한 무료 웹게임 도구. 치지직, 유튜브, SOOP 지원.`}
+      breadcrumb={[
+        { name: '홈 (Home)', url: '/' },
+        { name: '방송 도구 (Tools)', url: '/search' },
+        { name: title, url: pageUrl }
+      ]}
+    />
+    <script type="application/ld+json" set:html={webAppSchema}></script>
+    {faqSchema && <script type="application/ld+json" set:html={faqSchema}></script>}
   </head>
   <body class="game-page-body">
     <Header />

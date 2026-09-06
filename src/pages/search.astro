@@ -6,22 +6,40 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
 
 const allGames = await getCollection('games');
+
+const CATEGORY_MAP: Record<string, string> = {
+  stream: '방송/추첨',
+  arcade: '아케이드',
+  puzzle: '퍼즐',
+  word: '단어/두뇌',
+  card: '카드/보드',
+  strategy: '전략'
+};
 ---
 
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="ko" class="dark">
   <head>
-    <BaseHead title={`Search Games | ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+    <BaseHead 
+      title={`방송 도구 및 게임 검색 | ${SITE_TITLE}`} 
+      description="스트림아케이드의 구슬 룰렛, 돌림판, 사다리타기, 오늘의 운세 등 무료 웹게임 및 방송 도구를 검색하세요." 
+    />
   </head>
   <body class="search-page-body">
     <Header />
 
     <main class="search-main">
       <div class="search-header">
-        <h1>Find a Game</h1>
-        <p>Search our library of free, client-side web games and puzzles.</p>
+        <h1>방송 도구 검색</h1>
+        <p>설치 없이 브라우저에서 바로 실행 가능한 방송용 웹게임과 추첨 도구를 검색해보세요.</p>
         <div class="search-input-wrapper">
-          <input type="text" id="game-search-input" placeholder="Search by name, category, or keyword..." autocomplete="off" autofocus />
+          <input 
+            type="text" 
+            id="game-search-input" 
+            placeholder="게임 이름, 카테고리, 키워드로 검색 (예: 룰렛, 사다리, 구슬, 추첨...)" 
+            autocomplete="off" 
+            autofocus 
+          />
         </div>
       </div>
 
@@ -34,7 +52,7 @@ const allGames = await getCollection('games');
               <p class="tagline">{game.data.tagline}</p>
               <p class="desc">{game.data.description}</p>
               <div class="badge-row">
-                <span class="pill">{game.data.category}</span>
+                <span class="pill">{CATEGORY_MAP[game.data.category] || game.data.category}</span>
                 <span class="pill">{game.data.playTime}</span>
               </div>
             </div>

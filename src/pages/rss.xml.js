@@ -4,10 +4,10 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 
 export async function GET(context) {
 	const games = await getCollection('games');
-	const siteUrl = context.site || 'https://aetherarcade.com';
+	const siteUrl = context.site || 'https://errorledger.com';
 
 	return rss({
-		title: `${SITE_TITLE} - New Games & Puzzles`,
+		title: `${SITE_TITLE} - 방송용 웹게임 & 도구 모음`,
 		description: SITE_DESCRIPTION,
 		site: siteUrl,
 		items: games.map((game) => ({

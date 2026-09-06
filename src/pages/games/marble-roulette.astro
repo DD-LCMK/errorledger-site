@@ -1184,17 +1184,17 @@ const data = gameEntry?.data || {
   const FINISH_LINE_Y = 7730;
 
   const ZONE_MARKERS: ZoneMarker[] = [
-    { y: 260, title: 'ZONE 1 — 스타팅 호퍼 & 파친코', sub: 'GRAND HOPPER & GALTON LATTICE' },
-    { y: 790, title: 'ZONE 2 — 트윈 윈드밀 회전차', sub: 'TWIN WINDMILL GAUNTLET' },
-    { y: 1480, title: 'ZONE 3 — 운명의 갈림길 (지름길 vs 안전로)', sub: 'SPLIT-PATH GAMBLE & REVERSAL TRAP' },
-    { y: 2280, title: 'ZONE 4 — 네온 핀볼 범퍼 아레나', sub: 'NEON PINBALL BUMPER ARENA' },
-    { y: 3080, title: 'ZONE 5 — 소용돌이 볼텍스 퍼널', sub: 'VORTEX FUNNEL BOWL' },
-    { y: 3880, title: 'ZONE 6 — 하이퍼 터보 슬라롬 & 가속 부스터', sub: 'HYPER TURBO SLALOM & SPEED BOOSTERS' },
-    { y: 4680, title: 'ZONE 7 — 쿼드 크로스 스피너 & 킥백', sub: 'QUAD CROSS GAUNTLET & KICKBACKS' },
-    { y: 5480, title: 'ZONE 8 — 네온 범퍼 웨이브 숲', sub: 'NEON BUMPER WAVE FIELD' },
-    { y: 6240, title: 'ZONE 9 — 파이널 바운스 아레나 & 자이언트 프로펠러', sub: 'FINAL BOUNCE ARENA & GIANT PROPELLER' },
-    { y: 7040, title: 'ZONE 10 — 파이널 퍼널 & 자이언트 프로펠러 (럭키 홀)', sub: 'FINAL FUNNEL, GIANT PROPELLER & LUCKY HOLE' },
-    { y: 7720, title: 'ZONE 11 — 결승선 & 챔피언 존', sub: 'FINISH LINE & CHAMPION BASIN' }
+    { y: 260, title: 'ZONE 1 — 스타팅 호퍼 & 파친코', sub: '스타트 호퍼 & 갈톤 핀 격자망' },
+    { y: 790, title: 'ZONE 2 — 트윈 윈드밀 회전차', sub: '트윈 윈드밀 2연속 회전차 코스' },
+    { y: 1480, title: 'ZONE 3 — 운명의 갈림길 (지름길 vs 안전로)', sub: '지름길 배팅 & 역전 함정 코스' },
+    { y: 2280, title: 'ZONE 4 — 네온 핀볼 범퍼 아레나', sub: '네온 핀볼 고반발 범퍼 아레나' },
+    { y: 3080, title: 'ZONE 5 — 소용돌이 볼텍스 퍼널', sub: '회전 소용돌이 볼텍스 보울' },
+    { y: 3880, title: 'ZONE 6 — 하이퍼 터보 슬라롬 & 가속 부스터', sub: '하이퍼 슬라롬 & 가속 부스터' },
+    { y: 4680, title: 'ZONE 7 — 쿼드 크로스 스피너 & 킥백', sub: '4연속 크로스 스피너 & 킥백' },
+    { y: 5480, title: 'ZONE 8 — 네온 범퍼 웨이브 숲', sub: '네온 범퍼 지그재그 웨이브' },
+    { y: 6240, title: 'ZONE 9 — 파이널 바운스 아레나 & 자이언트 프로펠러', sub: '파이널 바운스 아레나 & 대형 프로펠러' },
+    { y: 7040, title: 'ZONE 10 — 파이널 퍼널 & 자이언트 프로펠러 (럭키 홀)', sub: '최종 깔때기, 역회전 프로펠러 & 행운의 홀' },
+    { y: 7720, title: 'ZONE 11 — 결승선 & 챔피언 존', sub: '최종 결승선 & 영광의 챔피언 존' }
   ];
 
   // Track Entities
@@ -2597,7 +2597,7 @@ const data = gameEntry?.data || {
     ctx.font = '800 10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
     ctx.fillStyle = 'rgba(186, 230, 253, 0.75)';
     ctx.shadowBlur = 0;
-    ctx.fillText('⚡ TOP ENCLOSURE ROOF ⚡', COURSE_WIDTH / 2, 38);
+    ctx.fillText('⚡ 상단 이탈 방지 루프 ⚡', COURSE_WIDTH / 2, 38);
     ctx.restore();
 
     // 2. Draw Pins (Plinko & Neon Bumpers)
@@ -2781,10 +2781,10 @@ const data = gameEntry?.data || {
     ctx.textBaseline = 'middle';
     ctx.fillText('★ 럭키 홀 ★', 507, 7085);
     ctx.font = '800 9px sans-serif';
-    ctx.fillText('LUCKY HOLE', 507, 7140);
+    ctx.fillText('행운의 홀', 507, 7140);
     ctx.fillText('⚡ 직행 ⚡', 507, 7260);
     ctx.fillText('⬇ ⬇ ⬇', 507, 7380);
-    ctx.fillText('⚡ SPEED ⚡', 507, 7500);
+    ctx.fillText('⚡ 가속 ⚡', 507, 7500);
     ctx.fillText('⬇ ⬇ ⬇', 507, 7620);
 
     // B. Main Final Funnel (y: 7060 to 7360)
@@ -2804,7 +2804,7 @@ const data = gameEntry?.data || {
     ctx.font = '900 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
     ctx.fillStyle = '#fbbf24';
     ctx.textAlign = 'center';
-    ctx.fillText('⚡ 파이널 퍼널 (FINAL FUNNEL) ⚡', 260, 7180);
+    ctx.fillText('⚡ 최종 깔때기 (파이널 퍼널) ⚡', 260, 7180);
 
     // C. Central Throat & Giant Keeper Propeller (y: 7360 to 7700)
     ctx.strokeStyle = '#f97316';
@@ -2820,7 +2820,7 @@ const data = gameEntry?.data || {
     ctx.font = '900 10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
     ctx.fillStyle = '#fed7aa';
     ctx.textAlign = 'center';
-    ctx.fillText('↺ 자이언트 리버스 배트 (REVERSE BAT)', 260, 7430);
+    ctx.fillText('↺ 자이언트 리버스 프로펠러 (역회전)', 260, 7430);
     ctx.font = '800 8.5px sans-serif';
     ctx.fillStyle = '#fdba74';
     ctx.fillText('(구슬을 위로 쳐올림 - 타이밍 통과)', 260, 7445);
@@ -2841,7 +2841,7 @@ const data = gameEntry?.data || {
     }
     ctx.font = '900 12px sans-serif';
     ctx.fillStyle = '#facc15';
-    ctx.fillText('FINISH LINE 결승선', COURSE_WIDTH / 2 - 55, FINISH_LINE_Y - 22);
+    ctx.fillText('🏁 결승선 (FINISH LINE)', COURSE_WIDTH / 2 - 60, FINISH_LINE_Y - 22);
     ctx.restore();
 
     // 6. Draw Shockwaves (3x Stronger Visual Blast with Double Neon Ripple)
@@ -2970,7 +2970,7 @@ const data = gameEntry?.data || {
     // Screen-space Lucky Cannon Unlocked Toast Alert
     if (cannonAlertTimer > 0) {
       ctx.save();
-      const msg = `⚡ 비밀 캐논 터널 개방! (LUCKY CANNON UNLOCKED!) ⏩`;
+      const msg = `⚡ 행운의 비밀 캐논 터널 개방! ⏩`;
       ctx.font = '900 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
       const tw = ctx.measureText(msg).width;
       const bw = tw + 36;

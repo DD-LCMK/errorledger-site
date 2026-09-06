@@ -6,9 +6,12 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 ---
 
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="ko" class="dark">
   <head>
-    <BaseHead title={`404 - Level Not Found | ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+    <BaseHead 
+      title={`페이지를 찾을 수 없습니다 (404) | ${SITE_TITLE}`} 
+      description="요청하신 페이지나 게임이 존재하지 않거나 이동되었습니다." 
+    />
   </head>
   <body class="arcade-404-body">
     <Header />
@@ -16,15 +19,16 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
     <main class="arcade-404-main">
       <div class="box-404">
         <div class="icon-404">👾</div>
-        <h1>GAME OVER (404)</h1>
-        <p class="msg-404">Target stage not found. The level you are trying to load does not exist or has been warped to another dimension.</p>
+        <h1>페이지를 찾을 수 없습니다 (404)</h1>
+        <p class="msg-404">요청하신 게임 스테이지나 페이지가 존재하지 않거나 다른 주소로 이동되었습니다. 입력하신 주소를 다시 한번 확인해 주세요.</p>
         
         <div class="recommendations">
-          <span>RECOMMENDED WARP DESTINATIONS:</span>
+          <span>추천 방송 도구 바로가기:</span>
           <div class="links-row">
-            <a href="/games/marble-roulette" class="btn-warp">🔮 Marble Roulette</a>
-            <a href="/games/roulette" class="btn-warp">🎡 Roulette</a>
-            <a href="/" class="btn-home">🏠 Arcade Lobby</a>
+            <a href="/games/marble-roulette" class="btn-warp">🔮 구슬 룰렛</a>
+            <a href="/games/roulette" class="btn-warp">🎡 돌림판 룰렛</a>
+            <a href="/games/ladder" class="btn-warp">🪜 사다리타기</a>
+            <a href="/" class="btn-home">🏠 홈 로비</a>
           </div>
         </div>
       </div>
