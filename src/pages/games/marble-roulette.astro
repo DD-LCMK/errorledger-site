@@ -1146,7 +1146,7 @@ const data = gameEntry?.data || {
     { y: 3880, title: 'ZONE 6 — 하이퍼 터보 슬라롬 & 가속 부스터', sub: 'HYPER TURBO SLALOM & SPEED BOOSTERS' },
     { y: 4680, title: 'ZONE 7 — 쿼드 크로스 스피너 & 킥백', sub: 'QUAD CROSS GAUNTLET & KICKBACKS' },
     { y: 5480, title: 'ZONE 8 — 네온 범퍼 웨이브 숲', sub: 'NEON BUMPER WAVE FIELD' },
-    { y: 6240, title: 'ZONE 9 — 파이널 스피드웨이 & 자이언트 프로펠러', sub: 'STEEP SPEEDWAY & GIANT PROPELLER' },
+    { y: 6240, title: 'ZONE 9 — 파이널 바운스 아레나 & 자이언트 프로펠러', sub: 'FINAL BOUNCE ARENA & GIANT PROPELLER' },
     { y: 7530, title: 'ZONE 10 — 결승선 & 챔피언 존', sub: 'FINISH LINE & CHAMPION BASIN' }
   ];
 
@@ -1349,20 +1349,38 @@ const data = gameEntry?.data || {
     segments.push({ x1: 20, y1: 6150, x2: 130, y2: 6220, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 6150, x2: 430, y2: 6220, type: 'ramp' });
 
-    // ZONE 9: 파이널 스피드웨이 & 자이언트 프로펠러 (y: 6250 - 6920) - Steeper High-Octane Runway & Dynamic Propeller Gate
-    // Steep Ramp 1 (30° grade)
-    segments.push({ x1: 20, y1: 6260, x2: 420, y2: 6450, type: 'ramp' });
-    // Steep Ramp 2 (30° grade)
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 6480, x2: 140, y2: 6670, type: 'ramp' });
-    // Steep Ramp 3 (30° grade) - feeds into multi-route approach
-    segments.push({ x1: 20, y1: 6690, x2: 390, y2: 6805, type: 'ramp' });
+    // ZONE 9: 파이널 바운스 아레나 & 자이언트 프로펠러 (y: 6250 - 6920) - Open High-Energy Pinball Bounce Field & Giant Propeller Gate
+    // Short edge deflectors keep marbles moving downward without blocking horizontal flight
+    segments.push({ x1: 20, y1: 6330, x2: 85, y2: 6390, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 6410, x2: COURSE_WIDTH - 85, y2: 6470, type: 'ramp' });
+    segments.push({ x1: 20, y1: 6540, x2: 85, y2: 6600, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 6620, x2: COURSE_WIDTH - 85, y2: 6680, type: 'ramp' });
 
-    // Approach Guide Ramp
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 6790, x2: 440, y2: 6835, type: 'ramp' });
+    // Wide Open Bounce Arena: High-power spring bouncers & glowing bumper pins for explosive ricochets
+    // Tier 1 (y: 6300 - 6370)
+    pins.push({ x: 280, y: 6300, radius: 10, isBumper: true });
+    bouncers.push({ x: 175, y: 6365, radius: 24, power: 5.2, label: 'BOUNCE' });
+    bouncers.push({ x: 385, y: 6365, radius: 24, power: 5.2, label: 'BOUNCE' });
+
+    // Tier 2 (y: 6460 - 6510)
+    pins.push({ x: 110, y: 6485, radius: 9.5, isBumper: true });
+    pins.push({ x: COURSE_WIDTH - 110, y: 6485, radius: 9.5, isBumper: true });
+    bouncers.push({ x: 280, y: 6495, radius: 26, power: 5.8, label: 'BOUNCE' });
+
+    // Tier 3 (y: 6580 - 6650)
+    pins.push({ x: 215, y: 6575, radius: 9.5, isBumper: true });
+    pins.push({ x: 345, y: 6575, radius: 9.5, isBumper: true });
+    bouncers.push({ x: 155, y: 6635, radius: 24, power: 5.4, label: 'BOUNCE' });
+    bouncers.push({ x: 405, y: 6635, radius: 24, power: 5.4, label: 'BOUNCE' });
+
+    // Tier 4: Propeller approach decider pins (y: 6730 - 6780)
+    pins.push({ x: 280, y: 6725, radius: 10, isBumper: true });
+    pins.push({ x: 185, y: 6770, radius: 9.5, isBumper: true });
+    pins.push({ x: 375, y: 6770, radius: 9.5, isBumper: true });
 
     // Outer approach walls into the giant propeller chamber
-    segments.push({ x1: 20, y1: 6815, x2: 60, y2: 6865, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 6815, x2: 500, y2: 6865, type: 'ramp' });
+    segments.push({ x1: 20, y1: 6805, x2: 60, y2: 6865, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 6805, x2: 500, y2: 6865, type: 'ramp' });
 
     // GIANT PROPELLER (Length 145px - increased 5% from 138px, 290px wingspan, speed: -0.0075)
     // Leaves 75px open clearance on both sides so marbles never get trapped or batted back
