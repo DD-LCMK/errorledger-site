@@ -1040,8 +1040,8 @@ const data = gameEntry?.data || {
     }
 
     // Determine row count and discrete spacing
-    const numRows = Math.min(18, Math.max(9, Math.floor(playerCount * 1.0) + 5));
-    ladderHeight = Math.min(560, Math.max(480, 430 + numRows * 7));
+    const numRows = Math.min(32, Math.max(12, Math.floor(playerCount * 1.3) + 5));
+    ladderHeight = Math.min(580, Math.max(480, 420 + numRows * 5.5));
     if (ladderContainer) {
       ladderContainer.style.height = `${ladderHeight}px`;
     }
@@ -1049,28 +1049,53 @@ const data = gameEntry?.data || {
     bridges = [];
     const rowSpacing = ladderHeight / (numRows + 1);
 
-    // Guarantee that every pole pair has at least one connecting bridge
-    const guaranteedRows = new Map<number, number>();
-    for (let p = 0; p < playerCount - 1; p++) {
-      let r = (p % numRows) + 1;
-      guaranteedRows.set(p, r);
-      bridges.push({ poleA: p, poleB: p + 1, y: r * rowSpacing });
-    }
+    // Track occupied poles per row to mathematically guarantee 100% Bijection (Transposition)
+    // In any valid Amidakuji, NO TWO BRIDGES ON THE SAME ROW CAN SHARE AN ENDPOINT.
+    const occupiedAtRow: Set<number>[] = Array.from({ length: numRows + 1 }, () => new Set<number>());
 
-    // Add additional randomized bridges for rich suspense
-    for (let row = 1; row <= numRows; row++) {
-      const y = row * rowSpacing;
-      let p = 0;
-      while (p < playerCount - 1) {
-        // Don't duplicate guaranteed bridge on same row
-        const alreadyHas = bridges.some(b => b.y === y && b.poleA === p);
-        if (!alreadyHas && Math.random() < 0.55) {
-          bridges.push({ poleA: p, poleB: p + 1, y });
-          p += 2; // Skip next to avoid 3-way adjacent conflicts at exact same height
-        } else {
-          p += 1;
+    // Phase 1: Ensure every adjacent pair (p, p+1) has at least 1 connecting bridge
+    for (let p = 0; p < playerCount - 1; p++) {
+      const candidates: number[] = [];
+      for (let r = 1; r <= numRows; r++) {
+        if (!occupiedAtRow[r].has(p) && !occupiedAtRow[r].has(p + 1)) {
+          candidates.push(r);
         }
       }
+      if (candidates.length > 0) {
+        const chosenRow = candidates[Math.floor(Math.random() * candidates.length)];
+        occupiedAtRow[chosenRow].add(p);
+        occupiedAtRow[chosenRow].add(p + 1);
+        bridges.push({ poleA: p, poleB: p + 1, y: chosenRow * rowSpacing });
+      }
+    }
+
+    // Phase 2: Add additional randomized bridges with strict disjointness
+    for (let r = 1; r <= numRows; r++) {
+      let p = 0;
+      while (p < playerCount - 1) {
+        if (!occupiedAtRow[r].has(p) && !occupiedAtRow[r].has(p + 1)) {
+          if (Math.random() < 0.5) {
+            occupiedAtRow[r].add(p);
+            occupiedAtRow[r].add(p + 1);
+            bridges.push({ poleA: p, poleB: p + 1, y: r * rowSpacing });
+            p += 2; // Jump past p+1 to prevent any adjacent collision at the exact same row
+            continue;
+          }
+        }
+        p += 1;
+      }
+    }
+
+    // Mathematical Invariant Assertion: Verify all player destinations are 100% unique (Strict 1-to-1 Bijection)
+    const testDestinations = new Set<number>();
+    for (let p = 0; p < playerCount; p++) {
+      const { destPole } = calculatePath(p, 800, ladderHeight);
+      if (testDestinations.has(destPole)) {
+        console.warn(`[Amidakuji Invariant Check] Duplicate at pole ${destPole}. Re-generating ladder...`);
+        initLadder();
+        return;
+      }
+      testDestinations.add(destPole);
     }
 
     // Reset outcome cards
@@ -1223,8 +1248,8 @@ const data = gameEntry?.data || {
     ladderSvg.innerHTML = svgContent;
   }
 
-  // Calculate full discrete vertex path for a given start pole
-  function calculatePath(startPole: number, width: number, height: number): { x: number; y: number }[] {
+  // Calculate full discrete vertex path and exact integer destination pole for a given start pole
+  function calculatePath(startPole: number, width: number, height: number): { points: { x: number; y: number }[]; destPole: number } {
     const points: { x: number; y: number }[] = [];
     let curPole = startPole;
     let curY = 0;
@@ -1238,14 +1263,14 @@ const data = gameEntry?.data || {
         if (b.poleA === curPole) {
           // Move down to bridge
           points.push({ x: getPoleX(curPole, playerCount, width), y: b.y });
-          // Cross bridge
+          // Cross bridge to poleB
           curPole = b.poleB;
           points.push({ x: getPoleX(curPole, playerCount, width), y: b.y });
           curY = b.y;
         } else if (b.poleB === curPole) {
           // Move down to bridge
           points.push({ x: getPoleX(curPole, playerCount, width), y: b.y });
-          // Cross bridge
+          // Cross bridge to poleA
           curPole = b.poleA;
           points.push({ x: getPoleX(curPole, playerCount, width), y: b.y });
           curY = b.y;
@@ -1255,7 +1280,7 @@ const data = gameEntry?.data || {
 
     // Move to bottom
     points.push({ x: getPoleX(curPole, playerCount, width), y: height });
-    return points;
+    return { points, destPole: curPole };
   }
 
   // Precompute cumulative lengths along a discrete path for smooth interpolation
@@ -1313,7 +1338,7 @@ const data = gameEntry?.data || {
 
     const width = ladderContainer.clientWidth || 800;
     const height = ladderHeight;
-    const fullPoints = calculatePath(playerIdx, width, height);
+    const { points: fullPoints, destPole } = calculatePath(playerIdx, width, height);
     const pathData = computePathSegments(fullPoints);
     const color = PLAYER_COLORS[playerIdx % PLAYER_COLORS.length];
 
@@ -1348,19 +1373,7 @@ const data = gameEntry?.data || {
         isTracing = false;
         audio.playWin();
 
-        // Reveal final destination card
-        const lastX = fullPoints[fullPoints.length - 1].x;
-        let destPole = 0;
-        let minDist = Infinity;
-        for (let p = 0; p < playerCount; p++) {
-          const px = getPoleX(p, playerCount, width);
-          const d = Math.abs(px - lastX);
-          if (d < minDist) {
-            minDist = d;
-            destPole = p;
-          }
-        }
-
+        // Reveal exact destination card directly from destPole
         const outcomeCard = document.getElementById(`outcome-card-${destPole}`);
         if (outcomeCard) {
           outcomeCard.classList.add('revealed');
@@ -1384,23 +1397,13 @@ const data = gameEntry?.data || {
     const height = ladderHeight;
 
     const allPaths = [];
+    const playerDestinations: number[] = [];
     const results: { player: string; outcome: string; color: string; emoji: string }[] = [];
 
     for (let p = 0; p < playerCount; p++) {
-      const pts = calculatePath(p, width, height);
+      const { points: pts, destPole } = calculatePath(p, width, height);
       allPaths.push(computePathSegments(pts));
-
-      const lastX = pts[pts.length - 1].x;
-      let destPole = 0;
-      let minDist = Infinity;
-      for (let d = 0; d < playerCount; d++) {
-        const px = getPoleX(d, playerCount, width);
-        const dist = Math.abs(px - lastX);
-        if (dist < minDist) {
-          minDist = dist;
-          destPole = d;
-        }
-      }
+      playerDestinations.push(destPole);
 
       results.push({
         player: participantNames[p],
@@ -1450,20 +1453,9 @@ const data = gameEntry?.data || {
         isTracing = false;
         audio.playWin();
 
-        // Reveal all outcome cards with badges
+        // Reveal all outcome cards with unique 1-to-1 winner badges
         for (let p = 0; p < playerCount; p++) {
-          const pts = allPaths[p].points;
-          const lastX = pts[pts.length - 1].x;
-          let destPole = 0;
-          let minDist = Infinity;
-          for (let d = 0; d < playerCount; d++) {
-            const px = getPoleX(d, playerCount, width);
-            const dist = Math.abs(px - lastX);
-            if (dist < minDist) {
-              minDist = dist;
-              destPole = d;
-            }
-          }
+          const destPole = playerDestinations[p];
           const card = document.getElementById(`outcome-card-${destPole}`);
           if (card) {
             card.classList.add('revealed');
@@ -1504,23 +1496,19 @@ const data = gameEntry?.data || {
     const allPaths: { points: { x: number; y: number }[]; color: string }[] = [];
     const results: { player: string; outcome: string; color: string; emoji: string }[] = [];
 
+    // Reset previous revealed states
+    for (let d = 0; d < playerCount; d++) {
+      const card = document.getElementById(`outcome-card-${d}`);
+      card?.classList.remove('revealed');
+      const badge = document.getElementById(`outcome-badge-${d}`);
+      if (badge) badge.textContent = '';
+    }
+
     for (let p = 0; p < playerCount; p++) {
       const color = PLAYER_COLORS[p % PLAYER_COLORS.length];
       const emoji = EMOJIS[p % EMOJIS.length];
-      const points = calculatePath(p, width, height);
+      const { points, destPole } = calculatePath(p, width, height);
       allPaths.push({ points, color });
-
-      const lastX = points[points.length - 1].x;
-      let destPole = 0;
-      let minDist = Infinity;
-      for (let d = 0; d < playerCount; d++) {
-        const px = getPoleX(d, playerCount, width);
-        const dist = Math.abs(px - lastX);
-        if (dist < minDist) {
-          minDist = dist;
-          destPole = d;
-        }
-      }
 
       results.push({
         player: participantNames[p],
