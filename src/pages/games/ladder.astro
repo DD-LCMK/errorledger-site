@@ -5,12 +5,12 @@ import { getEntry } from 'astro:content';
 const gameEntry = await getEntry('games', 'ladder');
 const data = gameEntry?.data || {
   title: '방송용 사다리 타기',
-  tagline: '실시간 긴장감 200%! 2~8인 인터랙티브 사다리타기',
+  tagline: '실시간 긴장감 200%! 2~20인 인터랙티브 사다리타기',
   description: '네온 발자국을 따라 실시간으로 내려가는 애니메이션 사다리 타기. 커피 내기, 밥값 내기, 방송 벌칙 추첨까지 1초 만에 설정하고 시청자와 함께 짜릿한 결과를 확인하세요.',
   icon: '🪜',
   category: 'stream',
   badge: '🪜 내기 전용',
-  players: '2~8인',
+  players: '2~20인',
   playTime: '30초~1분',
   controls: [
     '상단 참가자 이름을 클릭하여 개별 사다리 타기 애니메이션 시작',
@@ -30,7 +30,7 @@ const data = gameEntry?.data || {
     },
     {
       q: '최대 몇 명까지 지원되나요?',
-      a: '2인부터 최대 8인까지 인원수를 자유롭게 조절할 수 있습니다.'
+      a: '2인부터 최대 20인까지 인원수를 자유롭게 조절할 수 있습니다.'
     }
   ]
 };
@@ -57,15 +57,34 @@ const data = gameEntry?.data || {
     <!-- Top Action & Config Bar -->
     <div class="ladder-toolbar">
       <div class="toolbar-left">
+        <!-- Player Count Controls (Stepper + Quick Buttons) -->
         <div class="player-count-select">
           <label>참여 인원:</label>
+          <div class="count-stepper">
+            <button id="count-dec-btn" class="stepper-btn" title="1명 감소" aria-label="1명 감소">−</button>
+            <span id="count-display" class="count-number">4명</span>
+            <button id="count-inc-btn" class="stepper-btn" title="1명 증가" aria-label="1명 증가">+</button>
+          </div>
           <div class="count-btns" id="count-btns">
-            <button class="count-btn" data-count="2">2명</button>
-            <button class="count-btn" data-count="3">3명</button>
-            <button class="count-btn active" data-count="4">4명</button>
-            <button class="count-btn" data-count="5">5명</button>
-            <button class="count-btn" data-count="6">6명</button>
-            <button class="count-btn" data-count="8">8명</button>
+            <button class="count-btn" data-count="2">2</button>
+            <button class="count-btn" data-count="3">3</button>
+            <button class="count-btn active" data-count="4">4</button>
+            <button class="count-btn" data-count="6">6</button>
+            <button class="count-btn" data-count="8">8</button>
+            <button class="count-btn" data-count="10">10</button>
+            <button class="count-btn" data-count="12">12</button>
+            <button class="count-btn" data-count="16">16</button>
+            <button class="count-btn" data-count="20">20</button>
+          </div>
+        </div>
+
+        <!-- Animation Speed Selector -->
+        <div class="speed-select">
+          <label>애니메이션 속도:</label>
+          <div class="speed-btns" id="speed-btns">
+            <button class="speed-btn" data-speed="slow" title="긴장감 극대화 (약 6.2초)">🐢 느리게</button>
+            <button class="speed-btn active" data-speed="normal" title="표준 긴장감 (약 4초)">🚶 보통</button>
+            <button class="speed-btn" data-speed="fast" title="빠른 진행 (약 2초)">⚡ 빠르게</button>
           </div>
         </div>
       </div>
@@ -97,30 +116,31 @@ const data = gameEntry?.data || {
 
     <!-- The Interactive Ladder Stage -->
     <div class="ladder-canvas-stage" id="ladder-stage">
-      
-      <!-- Top Participants Row -->
-      <div class="participants-top-row" id="participants-row">
-        <!-- Injected dynamically -->
-      </div>
+      <div class="ladder-stage-inner" id="ladder-stage-inner">
+        <!-- Top Participants Row -->
+        <div class="participants-top-row" id="participants-row">
+          <!-- Injected dynamically -->
+        </div>
 
-      <!-- Main Ladder SVG / Canvas Container -->
-      <div class="ladder-grid-container" id="ladder-container">
-        <svg id="ladder-svg" class="ladder-svg"></svg>
+        <!-- Main Ladder SVG / Canvas Container -->
+        <div class="ladder-grid-container" id="ladder-container">
+          <svg id="ladder-svg" class="ladder-svg"></svg>
 
-        <!-- Blurring Suspense Blind (가림막) -->
-        <div class="ladder-blind-overlay" id="ladder-blind">
-          <div class="blind-content">
-            <span class="blind-icon">🔒</span>
-            <span class="blind-title">사다리 가림막 ON</span>
-            <span class="blind-sub">결과를 미리 예측할 수 없도록 다리가 완전히 가려져 있습니다 (출발 시 자동 공개)</span>
-            <button id="blind-unveil-center-btn" class="btn-blind-unveil">👁️ 가림막 걷기</button>
+          <!-- Blurring Suspense Blind (가림막) -->
+          <div class="ladder-blind-overlay" id="ladder-blind">
+            <div class="blind-content">
+              <span class="blind-icon">🔒</span>
+              <span class="blind-title">사다리 가림막 ON</span>
+              <span class="blind-sub">결과를 미리 예측할 수 없도록 다리가 완전히 가려져 있습니다 (출발 시 자동 공개)</span>
+              <button id="blind-unveil-center-btn" class="btn-blind-unveil">👁️ 가림막 걷기</button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Bottom Outcomes Row -->
-      <div class="outcomes-bottom-row" id="outcomes-row">
-        <!-- Injected dynamically -->
+        <!-- Bottom Outcomes Row -->
+        <div class="outcomes-bottom-row" id="outcomes-row">
+          <!-- Injected dynamically -->
+        </div>
       </div>
     </div>
 
@@ -142,8 +162,10 @@ const data = gameEntry?.data || {
       각 가로 다리는 인접한 세로줄 간의 전치(Transposition) 연산으로 작동하여, 출발지와 도착지가 완벽하게 1:1로 대응되는 수학적 전단사 함수(Bijection)를 형성합니다. 따라서 두 명의 참가자가 동일한 결과 칸에 중복 도착하는 일이 없으며, 방송이나 모임에서 가장 공평하고 투명한 결정을 내릴 수 있습니다.
     </p>
     <ul>
+      <li><strong>최대 20인 지원:</strong> 2명부터 최대 20명까지 인원수를 자유롭게 설정할 수 있습니다.</li>
+      <li><strong>긴장감 넘치는 감속 애니메이션:</strong> 경로를 한눈에 따라갈 수 있도록 부드러운 속도 조절(느리게/보통/빠르게)을 지원합니다.</li>
       <li><strong>실시간 보안 가림막(Blind):</strong> 사다리 경로를 미리 보고 결과를 유추하지 못하도록 출발 전까지 가로선이 완벽히 차단됩니다.</li>
-      <li><strong>원클릭 프리셋:</strong> 커피 쏘기, 치킨 내기, 벌칙 뽑기, 당번 정하기를 버튼 하나로 간편하게 설정할 수 있습니다.</li>
+      <li><strong>원클릭 프리셋:</strong> 커피 쏘기, 치킨 내기, 벌칙 뽑기, 당번 정하기를 인원수에 맞춰 자동으로 똑똑하게 배정합니다.</li>
       <li><strong>실시간 편집:</strong> 참가자 닉네임과 하단 당첨/벌칙 칸을 클릭하여 원하는 내용으로 자유롭게 수정하세요.</li>
     </ul>
   </div>
@@ -180,52 +202,90 @@ const data = gameEntry?.data || {
   .toolbar-left {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1.25rem;
     flex-wrap: wrap;
   }
 
-  .toolbar-title {
-    font-size: 1.2rem;
-    font-weight: 900;
-    color: #f8fafc;
-    letter-spacing: -0.02em;
-  }
-
-  .player-count-select {
+  .player-count-select,
+  .speed-select {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.82rem;
+    gap: 0.45rem;
+    font-size: 0.8rem;
     color: #94a3b8;
     font-weight: 700;
   }
 
-  .count-btns {
+  /* Stepper */
+  .count-stepper {
     display: flex;
-    gap: 0.3rem;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    overflow: hidden;
   }
 
-  .count-btn {
+  .stepper-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    color: #f8fafc;
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
+    font-weight: 900;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+  }
+
+  .stepper-btn:hover {
+    background: rgba(56, 189, 248, 0.3);
+    color: #38bdf8;
+  }
+
+  .count-number {
+    padding: 0 0.55rem;
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: #38bdf8;
+    min-width: 36px;
+    text-align: center;
+  }
+
+  .count-btns,
+  .speed-btns {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+  }
+
+  .count-btn,
+  .speed-btn {
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: #e2e8f0;
-    padding: 0.3rem 0.65rem;
+    padding: 0.25rem 0.55rem;
     border-radius: 6px;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 800;
     cursor: pointer;
     transition: all 0.15s ease;
   }
 
-  .count-btn:hover {
-    background: rgba(255, 255, 255, 0.12);
+  .count-btn:hover,
+  .speed-btn:hover {
+    background: rgba(255, 255, 255, 0.14);
   }
 
-  .count-btn.active {
+  .count-btn.active,
+  .speed-btn.active {
     background: linear-gradient(135deg, #a855f7, #38bdf8);
     color: #ffffff;
     border-color: transparent;
-    box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
   }
 
   .toolbar-presets {
@@ -261,6 +321,7 @@ const data = gameEntry?.data || {
   .toolbar-actions {
     display: flex;
     gap: 0.6rem;
+    flex-wrap: wrap;
   }
 
   .action-btn-primary {
@@ -274,6 +335,10 @@ const data = gameEntry?.data || {
     cursor: pointer;
     box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
     transition: transform 0.15s ease;
+  }
+
+  .action-btn-primary:hover {
+    transform: scale(1.03);
   }
 
   .action-btn-blind {
@@ -298,10 +363,6 @@ const data = gameEntry?.data || {
     color: #94a3b8;
   }
 
-  .action-btn-primary:hover {
-    transform: scale(1.03);
-  }
-
   .action-btn-secondary {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.15);
@@ -318,56 +379,75 @@ const data = gameEntry?.data || {
     background: rgba(255, 255, 255, 0.14);
   }
 
-  /* Ladder Stage */
+  /* Ladder Stage & Layout */
   .ladder-canvas-stage {
     background: #0f172a;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 16px;
-    padding: 1.75rem 1.25rem;
+    padding: 1.5rem 1rem;
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    justify-content: center;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     overflow-x: auto;
+    width: 100%;
+  }
+
+  .ladder-stage-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    margin: 0 auto;
+    transition: min-width 0.2s ease;
   }
 
   /* Participants Top Row */
   .participants-top-row {
     display: flex;
-    justify-content: space-around;
     width: 100%;
-    max-width: 900px;
     margin-bottom: 0.5rem;
+    justify-content: stretch;
+  }
+
+  :global(.participant-slot) {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 0;
   }
 
   :global(.participant-card) {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.25rem;
     cursor: pointer;
     transition: transform 0.15s ease;
-    padding: 0.35rem 0.6rem;
+    padding: 0.3rem 0.2rem;
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.03);
     border: 2px solid transparent;
-    width: 95px;
+    width: 100%;
+    max-width: 76px;
+    min-width: 52px;
   }
 
   :global(.participant-card:hover) {
-    transform: translateY(-4px);
+    transform: translateY(-3px);
     background: rgba(255, 255, 255, 0.08);
   }
 
   :global(.participant-avatar) {
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    font-size: 1.25rem;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+    flex-shrink: 0;
   }
 
   :global(.participant-name-input) {
@@ -375,12 +455,14 @@ const data = gameEntry?.data || {
     border: 1px dashed rgba(255, 255, 255, 0.2);
     border-radius: 4px;
     color: #f8fafc;
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     font-weight: 800;
     text-align: center;
-    width: 80px;
-    padding: 0.15rem 0.2rem;
+    width: 100%;
+    max-width: 68px;
+    padding: 0.12rem 0.15rem;
     outline: none;
+    box-sizing: border-box;
   }
 
   :global(.participant-name-input:focus) {
@@ -389,23 +471,28 @@ const data = gameEntry?.data || {
   }
 
   :global(.participant-trace-btn) {
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     font-weight: 800;
     color: #38bdf8;
     background: rgba(56, 189, 248, 0.12);
     border: 1px solid rgba(56, 189, 248, 0.3);
     border-radius: 4px;
-    padding: 0.15rem 0.45rem;
+    padding: 0.12rem 0.35rem;
     cursor: pointer;
+    white-space: nowrap;
+  }
+
+  :global(.participant-trace-btn:hover) {
+    background: rgba(56, 189, 248, 0.25);
+    color: #ffffff;
   }
 
   /* Ladder Grid Container */
   .ladder-grid-container {
     position: relative;
     width: 100%;
-    max-width: 960px;
-    height: 490px;
-    margin: 0.5rem 0;
+    height: 500px;
+    margin: 0.4rem 0;
   }
 
   .ladder-svg {
@@ -489,30 +576,40 @@ const data = gameEntry?.data || {
   /* Outcomes Bottom Row */
   .outcomes-bottom-row {
     display: flex;
-    justify-content: space-around;
     width: 100%;
-    max-width: 900px;
-    margin-top: 0.5rem;
+    margin-top: 0.4rem;
+    justify-content: stretch;
+  }
+
+  :global(.outcome-slot) {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 0;
   }
 
   :global(.outcome-card) {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 95px;
-    padding: 0.5rem 0.4rem;
+    width: 100%;
+    max-width: 76px;
+    min-width: 52px;
+    padding: 0.4rem 0.2rem;
     border-radius: 10px;
     background: #1e293b;
     border: 2px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     text-align: center;
+    transition: transform 0.2s ease, border-color 0.2s ease;
   }
 
   :global(.outcome-card.revealed) {
     border-color: #facc15;
-    background: rgba(234, 179, 8, 0.15);
-    box-shadow: 0 0 20px rgba(234, 179, 8, 0.4);
-    transform: scale(1.08);
+    background: rgba(234, 179, 8, 0.18);
+    box-shadow: 0 0 16px rgba(234, 179, 8, 0.4);
+    transform: scale(1.06);
   }
 
   :global(.outcome-name-input) {
@@ -520,12 +617,14 @@ const data = gameEntry?.data || {
     border: 1px dashed rgba(255, 255, 255, 0.2);
     border-radius: 4px;
     color: #f8fafc;
-    font-size: 0.8rem;
+    font-size: 0.72rem;
     font-weight: 800;
     text-align: center;
-    width: 80px;
-    padding: 0.2rem;
+    width: 100%;
+    max-width: 68px;
+    padding: 0.15rem;
     outline: none;
+    box-sizing: border-box;
   }
 
   :global(.outcome-name-input:focus) {
@@ -534,10 +633,15 @@ const data = gameEntry?.data || {
   }
 
   :global(.outcome-winner-badge) {
-    font-size: 0.65rem;
-    font-weight: 800;
+    font-size: 0.62rem;
+    font-weight: 900;
     color: #facc15;
-    margin-top: 0.25rem;
+    margin-top: 0.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 68px;
+    min-height: 14px;
   }
 
   /* Result Modal */
@@ -557,8 +661,8 @@ const data = gameEntry?.data || {
     border: 2px solid rgba(56, 189, 248, 0.5);
     border-radius: 20px;
     padding: 2.25rem;
-    max-width: 440px;
-    width: 90%;
+    max-width: 480px;
+    width: 92%;
     text-align: center;
     box-shadow: 0 0 40px rgba(56, 189, 248, 0.3);
   }
@@ -580,11 +684,11 @@ const data = gameEntry?.data || {
     flex-direction: column;
     gap: 0.5rem;
     margin-bottom: 1.5rem;
-    max-height: 240px;
+    max-height: 300px;
     overflow-y: auto;
   }
 
-  :global(.result-row) {
+  :global(.summary-item) {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -592,21 +696,21 @@ const data = gameEntry?.data || {
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 8px;
     padding: 0.5rem 0.85rem;
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     font-weight: 800;
   }
 
-  :global(.result-p-name) {
+  :global(.summary-player) {
     display: flex;
     align-items: center;
     gap: 0.4rem;
   }
 
-  :global(.result-arrow) {
+  :global(.summary-arrow) {
     color: #64748b;
   }
 
-  :global(.result-dest) {
+  :global(.summary-outcome) {
     color: #facc15;
   }
 
@@ -628,81 +732,134 @@ const data = gameEntry?.data || {
 </style>
 
 <script>
-  // Presets Data
-  const PRESETS: Record<string, { participants: string[]; outcomes: string[] }> = {
+  // Extended 24 distinct neon colors and avatars for up to 20+ players
+  const PLAYER_COLORS = [
+    '#38bdf8', '#f43f5e', '#10b981', '#facc15',
+    '#a855f7', '#f97316', '#06b6d4', '#ec4899',
+    '#84cc16', '#6366f1', '#14b8a6', '#e11d48',
+    '#eab308', '#8b5cf6', '#3b82f6', '#d946ef',
+    '#22c55e', '#fb923c', '#0284c7', '#f472b6',
+    '#a3e635', '#c084fc', '#2dd4bf', '#fb7185'
+  ];
+
+  const EMOJIS = [
+    '🦊', '🐼', '🐯', '🐰', '🦁', '🐨', '🐸', '🦄',
+    '🐵', '🐧', '🐶', '🐱', '🐮', '🐷', '🐙', '🐺',
+    '🐹', '🐻', '🦝', '🐗', '🦉', '🦋', '🐥', '🐲'
+  ];
+
+  // Presets Data Generator supporting dynamic player counts
+  const PRESET_TEMPLATES: Record<string, { title: string; defaultOutcome: string; penalties: string[] }> = {
     coffee: {
-      participants: ['김팀장', '이대리', '박사원', '최인턴'],
-      outcomes: ['커피 쏘기 ☕', '통과 🎉', '통과 🎉', '통과 🎉']
+      title: '커피 쏘기',
+      defaultOutcome: '통과 🎉',
+      penalties: ['커피 쏘기 ☕', '디저트 쏘기 🍰', '커피 쏘기 ☕']
     },
     chicken: {
-      participants: ['호스트', '게스트A', '게스트B', '시청자대표'],
-      outcomes: ['치킨 쏘기 🍗', '생존 ✨', '생존 ✨', '생존 ✨']
+      title: '치킨 내기',
+      defaultOutcome: '생존 ✨',
+      penalties: ['치킨 쏘기 🍗', '피자 쏘기 🍕', '치킨 쏘기 🍗']
     },
     penalty: {
-      participants: ['철수', '영희', '민수', '지은'],
-      outcomes: ['애교 3종 💖', '물 원샷 💧', '팔굽혀펴기 10개', '벌칙 면제 🎉']
+      title: '벌칙 뽑기',
+      defaultOutcome: '벌칙 면제 🎉',
+      penalties: [
+        '애교 3종 💖', '물 원샷 💧', '팔굽혀펴기 10개',
+        '노래 한 곡 🎤', '음료수 쏘기 🥤', '엉덩이로 이름쓰기 🍑',
+        '막춤 30초 💃', '다음 게임 심판 👮'
+      ]
     },
     duty: {
-      participants: ['1번 참가자', '2번 참가자', '3번 참가자', '4번 참가자'],
-      outcomes: ['설거지 당번 🧼', '청소 당번 🧹', '간식 사오기 🍪', '휴식 (면제) 🛋️']
+      title: '청소/당번',
+      defaultOutcome: '휴식 (면제) 🛋️',
+      penalties: [
+        '청소 당번 🧹', '설거지 당번 🧼', '분리수거 당번 ♻️',
+        '간식 사오기 🍪', '회의록 작성 ✍️', '정리 당번 📦'
+      ]
     }
   };
 
-  const PLAYER_COLORS = [
-    '#38bdf8', // Cyan
-    '#f43f5e', // Rose
-    '#10b981', // Emerald
-    '#facc15', // Amber
-    '#a855f7', // Purple
-    '#f97316', // Orange
-    '#06b6d4', // Teal
-    '#ec4899'  // Pink
-  ];
+  // Speed Durations in milliseconds
+  const SPEED_DURATIONS = {
+    slow: 6200,   // ~6.2s for maximum suspense
+    normal: 4000, // ~4.0s for clear, enjoyable pacing
+    fast: 2000    // ~2.0s for quick resolution
+  };
 
-  const EMOJIS = ['🦊', '🐼', '🐯', '🐰', '🦁', '🐨', '🐸', '🦄'];
-  const LADDER_HEIGHT = 490;
-
+  let speedMode: 'slow' | 'normal' | 'fast' = 'normal';
   let playerCount = 4;
-  let participantNames = ['참가자 1', '참가자 2', '참가자 3', '참가자 4'];
-  let outcomeNames = ['당첨 🍗', '꽝 💨', '커피 ☕', '생존 ✨'];
+  let participantNames: string[] = ['참가자 1', '참가자 2', '참가자 3', '참가자 4'];
+  let outcomeNames: string[] = ['당첨 🍗', '꽝 💨', '커피 ☕', '생존 ✨'];
   let bridges: { poleA: number; poleB: number; y: number }[] = [];
   let isTracing = false;
+  let animFrameId: number | null = null;
+  let ladderHeight = 500;
 
-  // Web Audio Synth for footsteps
+  // Web Audio Synth for footsteps and turns
   class StepAudio {
     private ctx: AudioContext | null = null;
-    playStep(freq = 400) {
+    private lastStepTime = 0;
+
+    private getContext(): AudioContext | null {
       if (!this.ctx) {
         const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
         if (AudioCtx) this.ctx = new AudioCtx();
       }
-      if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
-      if (!this.ctx) return;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-      gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.06);
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-      osc.start();
-      osc.stop(this.ctx.currentTime + 0.06);
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+      return this.ctx;
     }
+
+    playStep(freq = 400) {
+      const now = performance.now();
+      if (now - this.lastStepTime < 50) return; // Throttle sound playback
+      this.lastStepTime = now;
+
+      const ctx = this.getContext();
+      if (!ctx) return;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.005, ctx.currentTime + 0.05);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.05);
+    }
+
+    playTurn(freq = 550) {
+      const ctx = this.getContext();
+      if (!ctx) return;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+      gain.gain.setValueAtTime(0.18, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.005, ctx.currentTime + 0.08);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.08);
+    }
+
     playWin() {
-      if (!this.ctx) return;
+      const ctx = this.getContext();
+      if (!ctx) return;
       const notes = [440, 554.37, 659.25, 880];
       notes.forEach((f, i) => {
-        const osc = this.ctx!.createOscillator();
-        const gain = this.ctx!.createGain();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(f, this.ctx!.currentTime + i * 0.09);
-        gain.gain.setValueAtTime(0.25, this.ctx!.currentTime + i * 0.09);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx!.currentTime + i * 0.09 + 0.25);
+        osc.frequency.setValueAtTime(f, ctx.currentTime + i * 0.09);
+        gain.gain.setValueAtTime(0.22, ctx.currentTime + i * 0.09);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.09 + 0.25);
         osc.connect(gain);
-        gain.connect(this.ctx!.destination);
-        osc.start(this.ctx!.currentTime + i * 0.09);
-        osc.stop(this.ctx!.currentTime + i * 0.09 + 0.25);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime + i * 0.09);
+        osc.stop(ctx.currentTime + i * 0.09 + 0.25);
       });
     }
   }
@@ -710,11 +867,18 @@ const data = gameEntry?.data || {
   const audio = new StepAudio();
 
   // DOM Elements
+  const ladderStageInner = document.getElementById('ladder-stage-inner');
   const participantsRow = document.getElementById('participants-row');
   const outcomesRow = document.getElementById('outcomes-row');
   const ladderSvg = document.getElementById('ladder-svg') as SVGSVGElement | null;
   const ladderContainer = document.getElementById('ladder-container');
+
+  const countDisplay = document.getElementById('count-display');
+  const countDecBtn = document.getElementById('count-dec-btn');
+  const countIncBtn = document.getElementById('count-inc-btn');
   const countBtns = document.querySelectorAll('.count-btn');
+  const speedBtns = document.querySelectorAll('.speed-btn');
+
   const startAllBtn = document.getElementById('start-all-btn');
   const revealAllBtn = document.getElementById('reveal-all-btn');
   const rerollBtn = document.getElementById('reroll-ladder-btn');
@@ -724,7 +888,19 @@ const data = gameEntry?.data || {
   const blindBtnText = document.getElementById('blind-btn-text');
   const blindUnveilCenterBtn = document.getElementById('blind-unveil-center-btn');
 
+  const resultModal = document.getElementById('result-modal');
+  const resultSummaryList = document.getElementById('result-summary-list');
+  const closeResultBtn = document.getElementById('close-result-btn');
+
   let isBlindActive = true;
+
+  function cancelActiveAnimation() {
+    if (animFrameId !== null) {
+      cancelAnimationFrame(animFrameId);
+      animFrameId = null;
+    }
+    isTracing = false;
+  }
 
   function coverBlind() {
     isBlindActive = true;
@@ -749,29 +925,68 @@ const data = gameEntry?.data || {
       coverBlind();
     }
   }
-  const resultModal = document.getElementById('result-modal');
-  const resultSummaryList = document.getElementById('result-summary-list');
-  const closeResultBtn = document.getElementById('close-result-btn');
+
+  // Ensure names and outcomes match playerCount
+  function syncArrays() {
+    while (participantNames.length < playerCount) {
+      participantNames.push(`참가자 ${participantNames.length + 1}`);
+    }
+    while (outcomeNames.length < playerCount) {
+      outcomeNames.push(`결과 ${outcomeNames.length + 1}`);
+    }
+  }
 
   function initLadder() {
-    // Generate random horizontal bridges
-    bridges = [];
-    const height = LADDER_HEIGHT;
-    const numRows = 9; // Discrete rows of bridge opportunities
-    const rowSpacing = height / (numRows + 1);
+    cancelActiveAnimation();
+    syncArrays();
 
+    // Scale stage width and SVG height based on player count
+    const minWidth = Math.max(760, playerCount * 82);
+    if (ladderStageInner) {
+      ladderStageInner.style.maxWidth = `${Math.max(900, minWidth)}px`;
+      ladderStageInner.style.minWidth = `${minWidth}px`;
+    }
+
+    // Determine row count and discrete spacing
+    const numRows = Math.min(18, Math.max(9, Math.floor(playerCount * 1.0) + 5));
+    ladderHeight = Math.min(560, Math.max(480, 430 + numRows * 7));
+    if (ladderContainer) {
+      ladderContainer.style.height = `${ladderHeight}px`;
+    }
+
+    bridges = [];
+    const rowSpacing = ladderHeight / (numRows + 1);
+
+    // Guarantee that every pole pair has at least one connecting bridge
+    const guaranteedRows = new Map<number, number>();
+    for (let p = 0; p < playerCount - 1; p++) {
+      let r = (p % numRows) + 1;
+      guaranteedRows.set(p, r);
+      bridges.push({ poleA: p, poleB: p + 1, y: r * rowSpacing });
+    }
+
+    // Add additional randomized bridges for rich suspense
     for (let row = 1; row <= numRows; row++) {
       const y = row * rowSpacing;
-      // Add random bridges without adjacent overlapping bridges
       let p = 0;
       while (p < playerCount - 1) {
-        if (Math.random() < 0.6) {
+        // Don't duplicate guaranteed bridge on same row
+        const alreadyHas = bridges.some(b => b.y === y && b.poleA === p);
+        if (!alreadyHas && Math.random() < 0.55) {
           bridges.push({ poleA: p, poleB: p + 1, y });
-          p += 2; // Skip next to avoid 3-way conflict at same height
+          p += 2; // Skip next to avoid 3-way adjacent conflicts at exact same height
         } else {
           p += 1;
         }
       }
+    }
+
+    // Reset outcome cards
+    for (let d = 0; d < playerCount; d++) {
+      const card = document.getElementById(`outcome-card-${d}`);
+      card?.classList.remove('revealed');
+      const badge = document.getElementById(`outcome-badge-${d}`);
+      if (badge) badge.textContent = '';
     }
 
     renderUI();
@@ -782,12 +997,21 @@ const data = gameEntry?.data || {
   function renderUI() {
     if (!participantsRow || !outcomesRow) return;
 
+    // Update count display and button active classes
+    if (countDisplay) countDisplay.textContent = `${playerCount}명`;
+    countBtns.forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-count') === String(playerCount));
+    });
+
     // Render Top Participants
     participantsRow.innerHTML = '';
     for (let i = 0; i < playerCount; i++) {
       const color = PLAYER_COLORS[i % PLAYER_COLORS.length];
       const emoji = EMOJIS[i % EMOJIS.length];
       const name = participantNames[i] || `참가자 ${i + 1}`;
+
+      const slot = document.createElement('div');
+      slot.className = 'participant-slot';
 
       const card = document.createElement('div');
       card.className = 'participant-card';
@@ -797,7 +1021,7 @@ const data = gameEntry?.data || {
         <div class="participant-avatar" style="background: ${color}25; border: 2px solid ${color};">
           ${emoji}
         </div>
-        <input type="text" class="participant-name-input" data-idx="${i}" value="${name}" />
+        <input type="text" class="participant-name-input" data-idx="${i}" value="${name}" spellcheck="false" />
         <button class="participant-trace-btn" data-idx="${i}">출발 ▶</button>
       `;
 
@@ -810,19 +1034,23 @@ const data = gameEntry?.data || {
         participantNames[i] = (e.target as HTMLInputElement).value;
       });
 
-      participantsRow.appendChild(card);
+      slot.appendChild(card);
+      participantsRow.appendChild(slot);
     }
 
     // Render Bottom Outcomes
     outcomesRow.innerHTML = '';
     for (let i = 0; i < playerCount; i++) {
       const name = outcomeNames[i] || `결과 ${i + 1}`;
+      const slot = document.createElement('div');
+      slot.className = 'outcome-slot';
+
       const card = document.createElement('div');
       card.className = 'outcome-card';
       card.id = `outcome-card-${i}`;
 
       card.innerHTML = `
-        <input type="text" class="outcome-name-input" data-idx="${i}" value="${name}" />
+        <input type="text" class="outcome-name-input" data-idx="${i}" value="${name}" spellcheck="false" />
         <span class="outcome-winner-badge" id="outcome-badge-${i}"></span>
       `;
 
@@ -830,20 +1058,21 @@ const data = gameEntry?.data || {
         outcomeNames[i] = (e.target as HTMLInputElement).value;
       });
 
-      outcomesRow.appendChild(card);
+      slot.appendChild(card);
+      outcomesRow.appendChild(slot);
     }
   }
 
   function getPoleX(poleIdx: number, totalPoles: number, width: number): number {
-    const margin = width / (totalPoles * 2);
-    const spacing = (width - margin * 2) / (totalPoles - 1);
-    return margin + poleIdx * spacing;
+    return (poleIdx + 0.5) * (width / totalPoles);
   }
 
-  function renderLadderSVG(activePaths: { points: { x: number; y: number }[]; color: string }[] = []) {
+  function renderLadderSVG(
+    activePaths: { points: { x: number; y: number }[]; color: string; head?: { x: number; y: number } }[] = []
+  ) {
     if (!ladderSvg || !ladderContainer) return;
     const width = ladderContainer.clientWidth || 800;
-    const height = LADDER_HEIGHT;
+    const height = ladderHeight;
     ladderSvg.setAttribute('viewBox', `0 0 ${width} ${height}`);
 
     let svgContent = '';
@@ -851,7 +1080,6 @@ const data = gameEntry?.data || {
     // Draw Vertical Poles
     for (let i = 0; i < playerCount; i++) {
       const x = getPoleX(i, playerCount, width);
-      const color = PLAYER_COLORS[i % PLAYER_COLORS.length];
       svgContent += `
         <line x1="${x}" y1="0" x2="${x}" y2="${height}" 
               stroke="#334155" stroke-width="4" stroke-linecap="round" />
@@ -878,9 +1106,17 @@ const data = gameEntry?.data || {
           d += ` L ${path.points[j].x} ${path.points[j].y}`;
         }
         svgContent += `
-          <path d="${d}" fill="none" stroke="${path.color}" stroke-width="6" 
+          <path d="${d}" fill="none" stroke="${path.color}" stroke-width="5" 
                 stroke-linecap="round" stroke-linejoin="round"
                 filter="drop-shadow(0 0 8px ${path.color})" />
+        `;
+      }
+
+      // Draw Glowing Runner Head
+      if (path.head) {
+        svgContent += `
+          <circle cx="${path.head.x}" cy="${path.head.y}" r="8" fill="#ffffff" stroke="${path.color}" stroke-width="3" 
+                  filter="drop-shadow(0 0 10px ${path.color})" />
         `;
       }
     }
@@ -888,7 +1124,7 @@ const data = gameEntry?.data || {
     ladderSvg.innerHTML = svgContent;
   }
 
-  // Calculate full route path for a given start pole
+  // Calculate full discrete vertex path for a given start pole
   function calculatePath(startPole: number, width: number, height: number): { x: number; y: number }[] {
     const points: { x: number; y: number }[] = [];
     let curPole = startPole;
@@ -896,7 +1132,6 @@ const data = gameEntry?.data || {
 
     points.push({ x: getPoleX(curPole, playerCount, width), y: curY });
 
-    // Sort bridges by Y descending
     const sortedBridges = [...bridges].sort((a, b) => a.y - b.y);
 
     for (const b of sortedBridges) {
@@ -924,34 +1159,98 @@ const data = gameEntry?.data || {
     return points;
   }
 
-  // Trace one player path with animated steps
+  // Precompute cumulative lengths along a discrete path for smooth interpolation
+  function computePathSegments(points: { x: number; y: number }[]) {
+    const cumulative: number[] = [0];
+    let total = 0;
+    for (let i = 0; i < points.length - 1; i++) {
+      const p1 = points[i];
+      const p2 = points[i + 1];
+      const segLen = Math.abs(p2.x - p1.x) + Math.abs(p2.y - p1.y);
+      total += segLen;
+      cumulative.push(total);
+    }
+    return { points, cumulative, totalLength: total };
+  }
+
+  // Interpolate along path at a given distance d
+  function getSubPathAtDistance(
+    pathData: { points: { x: number; y: number }[]; cumulative: number[]; totalLength: number },
+    dist: number
+  ): { subPoints: { x: number; y: number }[]; head: { x: number; y: number }; segmentIndex: number } {
+    const { points, cumulative, totalLength } = pathData;
+    const clampedDist = Math.max(0, Math.min(totalLength, dist));
+
+    let segIdx = 0;
+    while (segIdx < cumulative.length - 1 && cumulative[segIdx + 1] < clampedDist) {
+      segIdx++;
+    }
+
+    const segStartDist = cumulative[segIdx];
+    const segEndDist = cumulative[segIdx + 1] || segStartDist + 1;
+    const segLen = segEndDist - segStartDist;
+    const u = segLen > 0 ? (clampedDist - segStartDist) / segLen : 0;
+
+    const pA = points[segIdx];
+    const pB = points[segIdx + 1] || pA;
+
+    const head = {
+      x: pA.x + u * (pB.x - pA.x),
+      y: pA.y + u * (pB.y - pA.y)
+    };
+
+    const subPoints = points.slice(0, segIdx + 1);
+    subPoints.push(head);
+
+    return { subPoints, head, segmentIndex: segIdx };
+  }
+
+  // Trace one player path with buttery-smooth continuous animation
   function tracePlayer(playerIdx: number) {
     if (isTracing || !ladderContainer) return;
+    cancelActiveAnimation();
     unveilBlind();
     isTracing = true;
 
     const width = ladderContainer.clientWidth || 800;
-    const height = LADDER_HEIGHT;
+    const height = ladderHeight;
     const fullPoints = calculatePath(playerIdx, width, height);
+    const pathData = computePathSegments(fullPoints);
     const color = PLAYER_COLORS[playerIdx % PLAYER_COLORS.length];
 
-    let currentStep = 0;
-    const animatedPoints: { x: number; y: number }[] = [fullPoints[0]];
+    const duration = SPEED_DURATIONS[speedMode];
+    const startTime = performance.now();
+    let lastSegIdx = 0;
+    let lastStepDist = 0;
 
-    const interval = setInterval(() => {
-      currentStep++;
-      if (currentStep < fullPoints.length) {
-        animatedPoints.push(fullPoints[currentStep]);
-        audio.playStep(450 + currentStep * 30);
-        renderLadderSVG([{ points: animatedPoints, color }]);
+    function step() {
+      const now = performance.now();
+      const elapsed = now - startTime;
+      const progress = Math.min(1.0, elapsed / duration);
+      const currentDist = progress * pathData.totalLength;
+
+      const { subPoints, head, segmentIndex } = getSubPathAtDistance(pathData, currentDist);
+
+      // Play chime on bridge turn
+      if (segmentIndex !== lastSegIdx) {
+        audio.playTurn(520 + (segmentIndex % 6) * 40);
+        lastSegIdx = segmentIndex;
+      } else if (currentDist - lastStepDist > 45) {
+        audio.playStep(380 + (Math.floor(currentDist / 45) % 6) * 30);
+        lastStepDist = currentDist;
+      }
+
+      renderLadderSVG([{ points: subPoints, color, head }]);
+
+      if (progress < 1.0) {
+        animFrameId = requestAnimationFrame(step);
       } else {
-        clearInterval(interval);
+        animFrameId = null;
         isTracing = false;
         audio.playWin();
 
-        // Reveal bottom outcome
+        // Reveal final destination card
         const lastX = fullPoints[fullPoints.length - 1].x;
-        // Determine which pole lastX corresponds to
         let destPole = 0;
         let minDist = Infinity;
         for (let p = 0; p < playerCount; p++) {
@@ -970,25 +1269,27 @@ const data = gameEntry?.data || {
           if (badge) badge.textContent = `👑 ${participantNames[playerIdx]}`;
         }
       }
-    }, 120);
+    }
+
+    animFrameId = requestAnimationFrame(step);
   }
 
-  // Trace ALL players simultaneously with real-time synchronized animation!
+  // Trace ALL players simultaneously with synchronized smooth animation
   function startAll() {
     if (isTracing || !ladderContainer) return;
+    cancelActiveAnimation();
     unveilBlind();
     isTracing = true;
 
     const width = ladderContainer.clientWidth || 800;
-    const height = LADDER_HEIGHT;
+    const height = ladderHeight;
 
-    // Precalculate full path for each player
-    const fullPaths: { x: number; y: number }[][] = [];
+    const allPaths = [];
     const results: { player: string; outcome: string; color: string; emoji: string }[] = [];
 
     for (let p = 0; p < playerCount; p++) {
       const pts = calculatePath(p, width, height);
-      fullPaths.push(pts);
+      allPaths.push(computePathSegments(pts));
 
       const lastX = pts[pts.length - 1].x;
       let destPole = 0;
@@ -1018,24 +1319,41 @@ const data = gameEntry?.data || {
       if (badge) badge.textContent = '';
     }
 
-    let currentStep = 0;
+    const duration = SPEED_DURATIONS[speedMode];
+    const startTime = performance.now();
+    let lastStepSoundTime = 0;
 
-    const interval = setInterval(() => {
-      currentStep++;
-      const currentActivePaths: { points: { x: number; y: number }[]; color: string }[] = [];
-      let allDone = true;
+    function step() {
+      const now = performance.now();
+      const elapsed = now - startTime;
+      const progress = Math.min(1.0, elapsed / duration);
 
+      const activePaths = [];
       for (let p = 0; p < playerCount; p++) {
         const color = PLAYER_COLORS[p % PLAYER_COLORS.length];
-        const pts = fullPaths[p];
-        const stepIndex = Math.min(currentStep, pts.length - 1);
-        const sliced = pts.slice(0, stepIndex + 1);
-        currentActivePaths.push({ points: sliced, color });
+        const pData = allPaths[p];
+        const curDist = progress * pData.totalLength;
+        const { subPoints, head } = getSubPathAtDistance(pData, curDist);
+        activePaths.push({ points: subPoints, color, head });
+      }
 
-        if (currentStep < pts.length) {
-          allDone = false;
-        } else {
-          // Player reached bottom
+      if (now - lastStepSoundTime > 140) {
+        audio.playStep(400 + (Math.floor(elapsed / 140) % 8) * 35);
+        lastStepSoundTime = now;
+      }
+
+      renderLadderSVG(activePaths);
+
+      if (progress < 1.0) {
+        animFrameId = requestAnimationFrame(step);
+      } else {
+        animFrameId = null;
+        isTracing = false;
+        audio.playWin();
+
+        // Reveal all outcome cards with badges
+        for (let p = 0; p < playerCount; p++) {
+          const pts = allPaths[p].points;
           const lastX = pts[pts.length - 1].x;
           let destPole = 0;
           let minDist = Infinity;
@@ -1048,21 +1366,12 @@ const data = gameEntry?.data || {
             }
           }
           const card = document.getElementById(`outcome-card-${destPole}`);
-          if (card && !card.classList.contains('revealed')) {
+          if (card) {
             card.classList.add('revealed');
             const badge = document.getElementById(`outcome-badge-${destPole}`);
             if (badge) badge.textContent = `👑 ${participantNames[p]}`;
           }
         }
-      }
-
-      audio.playStep(420 + (currentStep % 8) * 35);
-      renderLadderSVG(currentActivePaths);
-
-      if (allDone) {
-        clearInterval(interval);
-        isTracing = false;
-        audio.playWin();
 
         setTimeout(() => {
           if (resultSummaryList && resultModal) {
@@ -1078,17 +1387,20 @@ const data = gameEntry?.data || {
             `).join('');
             resultModal.classList.remove('hidden');
           }
-        }, 600);
+        }, 500);
       }
-    }, 110);
+    }
+
+    animFrameId = requestAnimationFrame(step);
   }
 
   // Reveal all paths at once (Instant)
   function revealAll() {
+    cancelActiveAnimation();
     if (!ladderContainer) return;
     unveilBlind();
     const width = ladderContainer.clientWidth || 800;
-    const height = 380;
+    const height = ladderHeight;
 
     const allPaths: { points: { x: number; y: number }[]; color: string }[] = [];
     const results: { player: string; outcome: string; color: string; emoji: string }[] = [];
@@ -1122,48 +1434,80 @@ const data = gameEntry?.data || {
       if (outcomeCard) {
         outcomeCard.classList.add('revealed');
         const badge = document.getElementById(`outcome-badge-${destPole}`);
-        if (badge) badge.textContent = participantNames[p];
+        if (badge) badge.textContent = `👑 ${participantNames[p]}`;
       }
     }
 
     renderLadderSVG(allPaths);
     audio.playWin();
 
-    // Show Results Modal
     if (resultSummaryList && resultModal) {
       resultSummaryList.innerHTML = results.map(r => `
-        <div class="result-row">
-          <span class="result-p-name" style="color: ${r.color};">${r.emoji} ${r.player}</span>
-          <span class="result-arrow">➔</span>
-          <span class="result-dest">${r.outcome}</span>
+        <div class="summary-item" style="border-left: 4px solid ${r.color}">
+          <div class="summary-player">
+            <span>${r.emoji}</span>
+            <strong>${r.player}</strong>
+          </div>
+          <div class="summary-arrow">➔</div>
+          <div class="summary-outcome">${r.outcome}</div>
         </div>
       `).join('');
       resultModal.classList.remove('hidden');
     }
   }
 
-  // Count buttons
+  // Change Player Count
+  function setPlayerCount(newCount: number) {
+    newCount = Math.max(2, Math.min(20, newCount));
+    if (newCount === playerCount) return;
+    playerCount = newCount;
+    initLadder();
+  }
+
+  countDecBtn?.addEventListener('click', () => setPlayerCount(playerCount - 1));
+  countIncBtn?.addEventListener('click', () => setPlayerCount(playerCount + 1));
+
   countBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-      countBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      playerCount = parseInt(btn.getAttribute('data-count') || '4', 10);
-      initLadder();
+      const cnt = parseInt(btn.getAttribute('data-count') || '4', 10);
+      setPlayerCount(cnt);
     });
   });
 
-  // Presets
+  // Speed selection
+  speedBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      speedBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      speedMode = (btn.getAttribute('data-speed') || 'normal') as 'slow' | 'normal' | 'fast';
+    });
+  });
+
+  // Presets with smart dynamic array generation for any player count
   document.querySelectorAll('.preset-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const key = btn.getAttribute('data-preset') || 'coffee';
-      const preset = PRESETS[key];
-      if (preset) {
-        playerCount = preset.participants.length;
-        participantNames = [...preset.participants];
-        outcomeNames = [...preset.outcomes];
-        countBtns.forEach(b => {
-          b.classList.toggle('active', b.getAttribute('data-count') === String(playerCount));
-        });
+      const template = PRESET_TEMPLATES[key];
+      if (template) {
+        // Build outcomes tailored for current playerCount
+        const newOutcomes: string[] = [];
+        const penaltyCount = key === 'coffee' || key === 'chicken' ? 1 : Math.max(1, Math.floor(playerCount / 3));
+
+        for (let i = 0; i < playerCount; i++) {
+          if (i < penaltyCount) {
+            newOutcomes.push(template.penalties[i % template.penalties.length]);
+          } else {
+            newOutcomes.push(template.defaultOutcome);
+          }
+        }
+
+        // Shuffle outcomes so penalty isn't always at index 0
+        for (let i = newOutcomes.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [newOutcomes[i], newOutcomes[j]] = [newOutcomes[j], newOutcomes[i]];
+        }
+
+        outcomeNames = newOutcomes;
         initLadder();
       }
     });
