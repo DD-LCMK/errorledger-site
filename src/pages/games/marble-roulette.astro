@@ -1029,13 +1029,53 @@ const data = gameEntry?.data || {
 
     playFinish() {
       if (!this.ctx) return;
-      this.resume();
-      const notes = [523.25, 659.25, 783.99, 1046.50];
-      notes.forEach((freq, i) => {
-        setTimeout(() => {
-          this.playBeep(freq, 0.25);
-        }, i * 90);
-      });
+      try {
+        this.resume();
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, i) => {
+          setTimeout(() => {
+            this.playBeep(freq, 0.25);
+          }, i * 90);
+        });
+      } catch (e) {}
+    }
+
+    playBumper() {
+      if (!this.ctx) return;
+      try {
+        this.resume();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        const now = this.ctx.currentTime;
+        osc.frequency.setValueAtTime(320, now);
+        osc.frequency.exponentialRampToValueAtTime(140, now + 0.12);
+        gain.gain.setValueAtTime(0.22, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(now + 0.12);
+      } catch (e) {}
+    }
+
+    playBlast() {
+      if (!this.ctx) return;
+      try {
+        this.resume();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        const now = this.ctx.currentTime;
+        osc.frequency.setValueAtTime(160, now);
+        osc.frequency.exponentialRampToValueAtTime(45, now + 0.28);
+        gain.gain.setValueAtTime(0.28, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.28);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(now + 0.28);
+      } catch (e) {}
     }
   }
 
@@ -1090,6 +1130,10 @@ const data = gameEntry?.data || {
     y: number;
     radius: number;
     isBumper?: boolean;
+    baseX?: number;
+    oscAmp?: number;
+    oscSpeed?: number;
+    oscPhase?: number;
   }
 
   interface Spinner {
@@ -1098,6 +1142,8 @@ const data = gameEntry?.data || {
     length: number;
     angle: number;
     speed: number;
+    isFinaleKeeper?: boolean;
+    upwardBatPower?: number;
   }
 
   interface Bouncer {
@@ -1134,8 +1180,8 @@ const data = gameEntry?.data || {
 
   // Course Dimensions (Wider 560px track for larger marbles & broadcast presence)
   const COURSE_WIDTH = 560;
-  const COURSE_HEIGHT = 8060;
-  const FINISH_LINE_Y = 7700;
+  const COURSE_HEIGHT = 8120;
+  const FINISH_LINE_Y = 7730;
 
   const ZONE_MARKERS: ZoneMarker[] = [
     { y: 260, title: 'ZONE 1 — 스타팅 호퍼 & 파친코', sub: 'GRAND HOPPER & GALTON LATTICE' },
@@ -1147,8 +1193,8 @@ const data = gameEntry?.data || {
     { y: 4680, title: 'ZONE 7 — 쿼드 크로스 스피너 & 킥백', sub: 'QUAD CROSS GAUNTLET & KICKBACKS' },
     { y: 5480, title: 'ZONE 8 — 네온 범퍼 웨이브 숲', sub: 'NEON BUMPER WAVE FIELD' },
     { y: 6240, title: 'ZONE 9 — 파이널 바운스 아레나 & 자이언트 프로펠러', sub: 'FINAL BOUNCE ARENA & GIANT PROPELLER' },
-    { y: 7040, title: 'ZONE 10 — 마블 댐 & 럭키 캐논 하이퍼 터널', sub: 'MARBLE DAM CHOKEPOINT & LUCKY CANNON' },
-    { y: 7690, title: 'ZONE 11 — 결승선 & 챔피언 존', sub: 'FINISH LINE & CHAMPION BASIN' }
+    { y: 7040, title: 'ZONE 10 — 파이널 퍼널 & 자이언트 프로펠러 (럭키 홀)', sub: 'FINAL FUNNEL, GIANT PROPELLER & LUCKY HOLE' },
+    { y: 7720, title: 'ZONE 11 — 결승선 & 챔피언 존', sub: 'FINISH LINE & CHAMPION BASIN' }
   ];
 
   // Track Entities
@@ -1218,7 +1264,7 @@ const data = gameEntry?.data || {
     segments.push({ x1: 280, y1: 870, x2: 245, y2: 930, type: 'guide' });
     segments.push({ x1: 280, y1: 870, x2: 315, y2: 930, type: 'guide' });
 
-    // Twin Windmills: Length 125px, 15% slower speed 0.011
+    // Twin Windmills: Length 125px, spinning in opposite/different directions (CW & CCW)
     spinners.push({ x: 180, y: 970, length: 125, angle: 0, speed: 0.011 });
     spinners.push({ x: 380, y: 1130, length: 125, angle: Math.PI / 2, speed: -0.011 });
 
@@ -1226,8 +1272,8 @@ const data = gameEntry?.data || {
     segments.push({ x1: 20, y1: 1150, x2: 170, y2: 1240, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 1150, x2: 390, y2: 1240, type: 'ramp' });
 
-    // Center gatekeeper wheel (Length 135px, 15% slower speed 0.0128)
-    spinners.push({ x: 280, y: 1320, length: 135, angle: Math.PI / 4, speed: 0.0128 });
+    // Center gatekeeper wheel (Length 135px, reversed direction)
+    spinners.push({ x: 280, y: 1320, length: 135, angle: Math.PI / 4, speed: -0.0128 });
     segments.push({ x1: 20, y1: 1290, x2: 100, y2: 1340, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 1290, x2: 460, y2: 1340, type: 'ramp' });
 
@@ -1325,17 +1371,17 @@ const data = gameEntry?.data || {
     // 4. Fourth Down-Left Speed Track (Catches dropping balls at x=530, glides smoothly into twin turbines at y=4600)
     segments.push({ x1: 530, y1: 4475, x2: 160, y2: 4575, type: 'booster', boostPower: 0.6 });
 
-    // Twin High-Speed Intake Accelerator Turbines (Smooth feeder speed)
-    spinners.push({ x: 215, y: 4600, length: 90, angle: Math.PI / 4, speed: 0.016 });
-    spinners.push({ x: 345, y: 4600, length: 90, angle: -Math.PI / 4, speed: -0.016 });
+    // Twin High-Speed Intake Accelerator Turbines (Sweeping upwards in center)
+    spinners.push({ x: 215, y: 4600, length: 90, angle: Math.PI / 4, speed: -0.016 });
+    spinners.push({ x: 345, y: 4600, length: 90, angle: -Math.PI / 4, speed: 0.016 });
 
     // Lower exit funnel into Zone 7
     segments.push({ x1: 20, y1: 4630, x2: 180, y2: 4690, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 4630, x2: 380, y2: 4690, type: 'ramp' });
 
     // ZONE 7: 쿼드 크로스 스피너 & 킥백 (y: 4700 - 5450) - 4 Extra Long Propellers (Length 121px - 10% longer, 242px wingspan)
-    spinners.push({ x: 190, y: 4790, length: 121, angle: 0, speed: 0.011 });
-    spinners.push({ x: 370, y: 4940, length: 121, angle: 0, speed: -0.011 });
+    spinners.push({ x: 190, y: 4790, length: 121, angle: 0, speed: -0.011 });
+    spinners.push({ x: 370, y: 4940, length: 121, angle: 0, speed: 0.011 });
 
     bouncers.push({ x: 280, y: 4940, radius: 24, power: 4.8, label: 'KICKBACK' });
 
@@ -1349,13 +1395,25 @@ const data = gameEntry?.data || {
     segments.push({ x1: COURSE_WIDTH - 20, y1: 5320, x2: 370, y2: 5420, type: 'ramp' });
 
     // ZONE 8: 네온 범퍼 웨이브 숲 (y: 5500 - 6200) - 7 Staggered Glowing Bumper Rows across 560px
+    // The glowing neon bubbles oscillate left to right slowly, creating a living bumper wave
     for (let r = 0; r < 7; r++) {
       const y = 5520 + r * 90;
       const count = (r % 2 === 0) ? 7 : 6;
-      const spacing = count === 7 ? 75 : 80;
-      const startX = count === 7 ? 55 : 80;
+      const spacing = count === 7 ? 68 : 76;
+      const startX = count === 7 ? 75 : 90;
+      const phase = r * 0.85; // Cascading sinusoidal wave across rows
       for (let c = 0; c < count; c++) {
-        pins.push({ x: startX + c * spacing, y, radius: 9.5, isBumper: true });
+        const bx = startX + c * spacing;
+        pins.push({
+          x: bx,
+          y,
+          radius: 9.5,
+          isBumper: true,
+          baseX: bx,
+          oscAmp: 22, // 22px slow sway
+          oscSpeed: 0.0018, // Slow, hypnotic oscillation
+          oscPhase: phase
+        });
       }
     }
 
@@ -1408,59 +1466,59 @@ const data = gameEntry?.data || {
     segments.push({ x1: 50, y1: 6950, x2: 170, y2: 7040, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 50, y1: 6950, x2: 390, y2: 7040, type: 'ramp' });
 
-    // ZONE 10: 마블 댐 & 럭키 캐논 하이퍼 터널 (y: 7040 - 7700)
+    // ZONE 10: 파이널 퍼널 & 자이언트 프로펠러 + 럭키 홀 (y: 7040 - 7730)
+    // 1 funnel with giant propeller and side hole that leads straight down to finish line for lucky marbles
 
-    // 1. FLANK ENTRANCE: LUCKY CANNON LAUNCHPAD (Left Flank, x: 20 to 80, y: 7060 to 7130)
-    // Left outer boundary wall down to merge point
-    segments.push({ x1: 20, y1: 7040, x2: 20, y2: 7460, type: 'wall' });
-    // Internal dividing wall between Secret Tunnel (x: 20 to 80) and Main Track (x: 80 to 540)
-    segments.push({ x1: 80, y1: 7120, x2: 80, y2: 7440, type: 'wall' });
+    // 1. LUCKY SIDE HOLE & DIRECT CHUTE (Right Flank: x: 475 to 540, y: 7050 to 7730)
+    // Outer boundary wall
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 7040, x2: COURSE_WIDTH - 20, y2: 7730, type: 'wall' });
+    // Inner divider wall: straight vertical separation down to finish line
+    segments.push({ x1: 475, y1: 7120, x2: 475, y2: 7710, type: 'wall' });
+    // High-speed booster track in Lucky Chute (propels lucky marbles straight across the finish line!)
+    segments.push({ x1: 507, y1: 7120, x2: 507, y2: 7700, type: 'booster', boostPower: 0.85 });
 
-    // Secret Tunnel Accelerator Booster Tracks (⏩ High-Speed Cyan Hyper-Conduit)
-    segments.push({ x1: 50, y1: 7130, x2: 50, y2: 7420, type: 'booster', boostPower: 0.85 });
+    // Entrance Decider / Bounce Pin near Lucky Hole mouth
+    pins.push({ x: 440, y: 7080, radius: 9.5, isBumper: true });
 
-    // Secret Tunnel Exit Ramp (Smooth 45° merge back into the sprint track)
-    segments.push({ x1: 80, y1: 7440, x2: 140, y2: 7500, type: 'ramp' });
-    // Precision timing exit pin to balance risk
-    pins.push({ x: 110, y: 7475, radius: 8 });
+    // 2. MAIN TRACK: GRAND FINAL FUNNEL (Compresses from x: 20..475 into central throat)
+    // Left outer wall
+    segments.push({ x1: 20, y1: 7040, x2: 20, y2: 7730, type: 'wall' });
+    // Left funnel slope
+    segments.push({ x1: 20, y1: 7060, x2: 210, y2: 7360, type: 'ramp' });
+    // Right funnel slope (from lucky hole divider down to throat)
+    segments.push({ x1: 475, y1: 7120, x2: 310, y2: 7360, type: 'ramp' });
 
-    // 2. MAIN TRACK: THE MARBLE DAM (x: 80 to 540, y: 7060 to 7200)
-    // Heavy funnel walls compressing traffic into the 50px central throat (x: 255 to 305)
-    segments.push({ x1: 80, y1: 7060, x2: 255, y2: 7170, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 7060, x2: 305, y2: 7170, type: 'ramp' });
+    // Central Throat Walls (x: 210 to 310, width 100px)
+    // Right throat guide
+    segments.push({ x1: 310, y1: 7360, x2: 310, y2: 7680, type: 'wall' });
+    // Left throat lower guide
+    segments.push({ x1: 210, y1: 7520, x2: 210, y2: 7680, type: 'wall' });
+    // Deflector ramp below giant propeller hub (guides marbles from hub back into throat)
+    segments.push({ x1: 90, y1: 7520, x2: 210, y2: 7560, type: 'ramp' });
 
-    // Dual Rotating Timing Gates at the 50px Dam Throat (Synchronous sweeps releasing 1-2 marbles)
-    spinners.push({ x: 255, y: 7170, length: 16, angle: 0, speed: 0.007 });
-    spinners.push({ x: 305, y: 7170, length: 16, angle: Math.PI, speed: -0.007 });
+    // Mid-funnel bumper pin: adds tension and deflection into lucky hole
+    pins.push({ x: 260, y: 7220, radius: 9, isBumper: true });
 
-    // 3. POST-DAM RE-EXPANSION & PINBALL SPRINT CHICANE (y: 7180 to 7500)
-    // Center Diamond Splitter below dam exit
-    pins.push({ x: 280, y: 7215, radius: 9.5, isBumper: true });
-    segments.push({ x1: 280, y1: 7220, x2: 190, y2: 7285, type: 'guide' });
-    segments.push({ x1: 280, y1: 7220, x2: 370, y2: 7285, type: 'guide' });
+    // 3. GIANT FINALE PROPELLER (REVERSE KEEPER BAT)
+    // Placed at x: 170, y: 7450 (left of the throat x: 210..310)
+    // Length: 140px (10%+ longer, wingspan 280px). Extends x: 170 - 140 = 30px to 170 + 140 = 310px.
+    // Perfectly covers the entire 100px funnel throat width (x: 210 to 310) with zero gap!
+    // Spinning ANTICLOCKWISE (speed: -0.013).
+    // In the throat (x > 170), the blade ALWAYS sweeps UPWARDS, batting marbles BACK UP into the funnel!
+    spinners.push({
+      x: 170,
+      y: 7450,
+      length: 140,
+      angle: 0,
+      speed: -0.013,
+      isFinaleKeeper: true,
+      upwardBatPower: 7.2
+    });
 
-    // Left & Right Wing Accelerators & Decider Pins
-    segments.push({ x1: 140, y1: 7300, x2: 210, y2: 7365, type: 'booster', boostPower: 0.5 });
-    pins.push({ x: 175, y: 7390, radius: 9, isBumper: true });
-
-    segments.push({ x1: COURSE_WIDTH - 80, y1: 7300, x2: COURSE_WIDTH - 150, y2: 7365, type: 'booster', boostPower: 0.5 });
-    pins.push({ x: COURSE_WIDTH - 115, y: 7390, radius: 9, isBumper: true });
-
-    // Center Corridor Drafting Pin
-    pins.push({ x: 280, y: 7330, radius: 8.5 });
-
-    // Right track outer boundary wall
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 7060, x2: COURSE_WIDTH - 20, y2: 7510, type: 'wall' });
-    // Right merge guide
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 7510, x2: COURSE_WIDTH - 60, y2: 7550, type: 'guide' });
-
-    // 4. FREE FALL SPRINT RUNWAY (y: 7500 to 7700)
-    // 200px of wide, open, unobstructed sprint straight into the finish line!
-
-    // ZONE 11: 결승선 (FINISH_LINE_Y = 7700) & 피니시 베이슨 (y: 7700 - 8060)
-    segments.push({ x1: 60, y1: 7710, x2: 20, y2: 7820, type: 'guide' });
-    segments.push({ x1: COURSE_WIDTH - 60, y1: 7710, x2: COURSE_WIDTH - 20, y2: 7820, type: 'guide' });
-    segments.push({ x1: 20, y1: 8020, x2: COURSE_WIDTH - 20, y2: 8020, type: 'wall' });
+    // ZONE 11: 결승선 (FINISH_LINE_Y = 7730) & 피니시 베이슨 (y: 7730 - 8120)
+    segments.push({ x1: 60, y1: 7740, x2: 20, y2: 7850, type: 'guide' });
+    segments.push({ x1: COURSE_WIDTH - 60, y1: 7740, x2: COURSE_WIDTH - 20, y2: 7850, type: 'guide' });
+    segments.push({ x1: 20, y1: 8080, x2: COURSE_WIDTH - 20, y2: 8080, type: 'wall' });
   }
 
   buildCourse();
@@ -1765,37 +1823,14 @@ const data = gameEntry?.data || {
       src.vy += 10.0;
       src.vx += (Math.random() - 0.5) * 14.0;
     }
-
-    // 3. Lucky Cannon & Secret Tunnel Gate Activation (Zone 10 approach, y: 6950 - 7220)
-    const distToCannon = Math.hypot(src.x - 50, src.y - 7080);
-    if (distToCannon < 300) {
-      secretGate.locked = false;
-      secretGate.unlockTimer = 8.0; // 8.0s open window
-      cannonAlertTimer = 4.5;
-      sfx.playBlast();
-
-      // Big electric cyan shockwave burst centered at Cannon Mouth
-      shockwaves.push({
-        x: 50,
-        y: 7080,
-        radius: 18,
-        maxRadius: 220,
-        color: '#06b6d4',
-        alpha: 1.0
-      });
-
-      // The lucky marble that triggered the explosion gets a direct kinetic cannon slingshot into the tunnel!
-      src.vx = -4.2;
-      src.vy = Math.max(src.vy, 9.5);
-    }
   }
 
   // Physics Update
   function updatePhysics(dt: number) {
     if (!isRacing) return;
 
-    const gravity = 0.082 * timeScale; // ~25% slower gravity acceleration (was 0.11)
-    const friction = Math.pow(0.974, timeScale); // balanced air drag (was 0.978)
+    const gravity = 0.0902 * timeScale; // 10% faster acceleration (was 0.082)
+    const friction = Math.pow(0.976, timeScale); // balanced air drag
     const bounce = 0.36; // (was 0.38)
 
     // Spinners angular update
@@ -1829,7 +1864,7 @@ const data = gameEntry?.data || {
 
       // Speed clamp for viewable, suspenseful racing
       const currentSpeed = Math.hypot(m.vx, m.vy);
-      const maxSpeed = 5.8 * timeScale; // Controlled terminal velocity for readable descent (was 7.2)
+      const maxSpeed = 6.38 * timeScale; // 10% faster terminal velocity (was 5.8)
       if (currentSpeed > maxSpeed) {
         m.vx = (m.vx / currentSpeed) * maxSpeed;
         m.vy = (m.vy / currentSpeed) * maxSpeed;
@@ -2026,17 +2061,44 @@ const data = gameEntry?.data || {
             m.vy -= dot * ny;
           }
 
-          // Rotational sweep: rotating blade gently pushes/sweeps the marble along without bouncing
-          const tanX = -sin * sp.speed * 60;
-          const tanY = cos * sp.speed * 60;
-          m.vx += tanX * 0.35;
-          m.vy += tanY * 0.35;
+          // Linear velocity of the blade at the exact contact point (dist.px, dist.py)
+          const rx = dist.px - sp.x;
+          const ry = dist.py - sp.y;
+          const bladeVx = -sp.speed * 60 * ry;
+          const bladeVy = sp.speed * 60 * rx;
 
-          // If blade is rotating towards the marble, push forward with blade surface velocity (no bounce)
-          const bladeNormalPush = tanX * nx + tanY * ny;
-          if (bladeNormalPush > 0) {
-            m.vx += nx * bladeNormalPush * 0.75;
-            m.vy += ny * bladeNormalPush * 0.75;
+          // Special Finale Gatekeeper Propeller: Upward Bat Mechanism
+          if (sp.isFinaleKeeper) {
+            // Blade is sweeping UPWARDS through the funnel throat!
+            // Launch the caught marble back up the funnel!
+            const upwardPower = sp.upwardBatPower || 7.2;
+            m.vy = -Math.abs(upwardPower) * timeScale; // Strong upward impulse back up the funnel!
+            m.vx = 2.0 + Math.random() * 2.5; // Deflect upward and toward the lucky hole on the right!
+            m.y = Math.min(m.y, dist.py - contactRadius - 2);
+
+            sfx.playBumper();
+            shockwaves.push({
+              x: m.x,
+              y: m.y,
+              radius: 14,
+              maxRadius: 75,
+              color: '#f97316',
+              alpha: 1.0
+            });
+          } else {
+            // Normal rotational sweep for standard spinners
+            m.vx += bladeVx * 0.008;
+            if (bladeVy < 0) {
+              m.vy += bladeVy * 0.010; // Upward batting
+            } else if (m.y < sp.y) {
+              m.vy = Math.min(m.vy, -0.6 * timeScale); // Deflect up rather than pulling down when hit from above
+            }
+
+            const bladeNormalPush = (bladeVx * nx + bladeVy * ny) * 0.015;
+            if (bladeNormalPush > 0) {
+              m.vx += nx * bladeNormalPush;
+              m.vy += ny * bladeNormalPush;
+            }
           }
 
           m.vx *= 0.98;
@@ -2147,21 +2209,7 @@ const data = gameEntry?.data || {
         }
       }
 
-      // Secret Gate Barrier (when locked, blocks access into the Lucky Cannon)
-      if (secretGate.locked) {
-        const gateHit = distToSegment(m.x, m.y, secretGate.x1, secretGate.y1, secretGate.x2, secretGate.y2);
-        if (gateHit.d < m.radius + 2) {
-          const nx = (m.x - gateHit.px) / (gateHit.d || 1);
-          const ny = (m.y - gateHit.py) / (gateHit.d || 1);
-          m.x = gateHit.px + nx * (m.radius + 2);
-          m.y = gateHit.py + ny * (m.radius + 2);
-          const dot = m.vx * nx + m.vy * ny;
-          if (dot < 0) {
-            m.vx -= 1.35 * dot * nx;
-            m.vy -= 1.35 * dot * ny;
-          }
-        }
-      }
+      // Secret Gate barrier removed: Lucky Hole is always open direct to finish line
 
       segments.forEach(seg => {
         const res = distToSegment(m.x, m.y, seg.x1, seg.y1, seg.x2, seg.y2);
@@ -2287,25 +2335,45 @@ const data = gameEntry?.data || {
         // Everyone has finished: settle camera smoothly at the finish line / catch basin
         targetY = FINISH_LINE_Y - viewH * 0.42;
       } else if (camMode === 'auto') {
-        // SMART AUTO CAMERA:
-        // Rule: Focus on first runner until first runner passes the goal. Then focus dynamically!
-        if (finishRankCounter === 0) {
-          // No runner has crossed the finish line yet -> Focus on lead runner!
-          const lead = active.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), active[0]);
-          targetY = lead.y - viewH * 0.38;
-        } else {
-          // First runner has passed the goal! Now dynamically focus based on game mode:
-          if (winnerMode === 'last') {
-            // In 꼴찌 mode, first runner finished -> shift focus smoothly to trailing runners battling for last place!
-            const lastRunner = active.reduce((prev, cur) => (cur.y < prev.y ? cur : prev), active[0]);
-            targetY = lastRunner.y - viewH * 0.42;
-          } else {
-            // In 1등, multi, or custom mode:
-            // CRITICAL: NEVER stop at finish line while marbles are still running!
-            // Continue tracking the current leading active runner (2nd, 3rd, 4th place...)!
-            const lead = active.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), active[0]);
-            targetY = lead.y - viewH * 0.38;
+        // SMART 3-STAGE AUTO CAMERA:
+        // 1. First look at the first runner (Early race: opening sprint down to Zone 4)
+        // 2. Then focus on where the most marbles are (Mid race: main pack cluster center)
+        // 3. Then focus on the last runner (Late race / Endgame: battle for last place)
+
+        const lead = active.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), active[0]);
+        const lastRunner = active.reduce((prev, cur) => (cur.y < prev.y ? cur : prev), active[0]);
+
+        if (finishRankCounter > 0 || lead.y >= 6300) {
+          // STAGE 3: Endgame & finish line approach -> Focus on the last runner!
+          targetY = lastRunner.y - viewH * 0.42;
+        } else if (lead.y >= 2400) {
+          // STAGE 2: Mid race -> Focus on where the most marbles are!
+          // Sliding window cluster search: find the center of the densest pack of active marbles
+          let bestClusterY = lead.y;
+          let maxCount = -1;
+          const clusterSpan = viewH * 0.45;
+
+          for (let i = 0; i < active.length; i++) {
+            const centerM = active[i];
+            let count = 0;
+            let sumY = 0;
+            for (let j = 0; j < active.length; j++) {
+              const other = active[j];
+              if (Math.abs(other.y - centerM.y) <= clusterSpan) {
+                count++;
+                sumY += other.y;
+              }
+            }
+            if (count > maxCount) {
+              maxCount = count;
+              bestClusterY = sumY / count;
+            }
           }
+
+          targetY = bestClusterY - viewH * 0.40;
+        } else {
+          // STAGE 1: Early race -> Look at the first runner!
+          targetY = lead.y - viewH * 0.38;
         }
       } else if (camMode === 'first') {
         // Explicitly focus foremost active runner
@@ -2339,15 +2407,26 @@ const data = gameEntry?.data || {
       if (lastRunnerCountdown !== null && active.length === 1) {
         const secsLeft = Math.max(1, Math.ceil(lastRunnerCountdown));
         if (leadNameElem) leadNameElem.textContent = `⏱️ 최후의 1명 (${active[0].name})! ${secsLeft}초 후 종료`;
-      } else if (finishRankCounter === 0) {
-        const top = active.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), active[0]);
-        if (leadNameElem) leadNameElem.textContent = `선두: ${top.name}`;
-      } else if (winnerMode === 'last') {
-        const tail = active.reduce((prev, cur) => (cur.y < prev.y ? cur : prev), active[0]);
-        if (leadNameElem) leadNameElem.textContent = `💀 꼴찌 경쟁: ${tail.name}`;
       } else {
-        const top = active.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), active[0]);
-        if (leadNameElem) leadNameElem.textContent = `진행: ${top.name} (${finishRankCounter}/${marbles.length} 완주)`;
+        const lead = active.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), active[0]);
+        const tail = active.reduce((prev, cur) => (cur.y < prev.y ? cur : prev), active[0]);
+
+        if (camMode === 'auto') {
+          if (finishRankCounter > 0 || lead.y >= 6300) {
+            if (leadNameElem) leadNameElem.textContent = `💀 꼴찌 타겟: ${tail.name} (결승선 접전)`;
+          } else if (lead.y >= 2400) {
+            if (leadNameElem) leadNameElem.textContent = `📍 메인 팩 밀집 (선두: ${lead.name})`;
+          } else {
+            if (leadNameElem) leadNameElem.textContent = `선두: ${lead.name}`;
+          }
+        } else if (camMode === 'first') {
+          if (leadNameElem) leadNameElem.textContent = `선두: ${lead.name}`;
+        } else if (camMode === 'last') {
+          if (leadNameElem) leadNameElem.textContent = `💀 꼴찌: ${tail.name}`;
+        } else if (camMode === 'runner' && focusedMarbleId !== null) {
+          const target = marbles.find(m => m.id === focusedMarbleId);
+          if (leadNameElem && target) leadNameElem.textContent = `🎯 추적: ${target.name}`;
+        }
       }
     } else {
       if (leadNameElem) leadNameElem.textContent = `🏁 레이스 종료!`;
@@ -2562,32 +2641,72 @@ const data = gameEntry?.data || {
       ctx.translate(sp.x, sp.y);
       ctx.rotate(sp.angle);
 
+      const isKeeper = sp.isFinaleKeeper;
       const isGiant = sp.length >= 130;
-      const bladeH = isGiant ? 15 : 12;
+      const bladeH = isKeeper ? 14 : (isGiant ? 15 : 12);
 
-      ctx.fillStyle = isGiant ? '#ea580c' : '#f59e0b';
-      ctx.shadowColor = isGiant ? '#f97316' : '#f59e0b';
-      ctx.shadowBlur = isGiant ? 16 : 10;
-      ctx.beginPath();
-      ctx.roundRect(-sp.length, -bladeH / 2, sp.length * 2, bladeH, 6);
-      ctx.fill();
-      ctx.shadowBlur = 0;
+      if (isKeeper) {
+        // High-stakes crimson/amber hazard styling for the reverse bat propeller
+        ctx.fillStyle = '#dc2626';
+        ctx.shadowColor = '#f97316';
+        ctx.shadowBlur = 16;
+        ctx.beginPath();
+        ctx.roundRect(-sp.length, -bladeH / 2, sp.length * 2, bladeH, 6);
+        ctx.fill();
+        ctx.shadowBlur = 0;
 
-      // Glowing tip indicators
-      ctx.fillStyle = '#fef08a';
-      ctx.beginPath();
-      ctx.arc(-sp.length + 6, 0, isGiant ? 4.5 : 3, 0, Math.PI * 2);
-      ctx.arc(sp.length - 6, 0, isGiant ? 4.5 : 3, 0, Math.PI * 2);
-      ctx.fill();
+        // Diagonal hazard stripes along the blades
+        ctx.fillStyle = '#fef08a';
+        for (let s = -sp.length + 12; s < sp.length - 12; s += 22) {
+          ctx.fillRect(s, -bladeH / 2 + 2, 7, bladeH - 4);
+        }
 
-      // Center Hub
-      ctx.beginPath();
-      ctx.arc(0, 0, isGiant ? 10 : 8, 0, Math.PI * 2);
-      ctx.fillStyle = '#ffffff';
-      ctx.fill();
-      ctx.strokeStyle = isGiant ? '#c2410c' : '#d97706';
-      ctx.lineWidth = 2.5;
-      ctx.stroke();
+        // Blade tip beacons
+        ctx.fillStyle = '#facc15';
+        ctx.beginPath();
+        ctx.arc(-sp.length + 6, 0, 4, 0, Math.PI * 2);
+        ctx.arc(sp.length - 6, 0, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Metallic Center Hub with anticlockwise symbol
+        ctx.beginPath();
+        ctx.arc(0, 0, 10, 0, Math.PI * 2);
+        ctx.fillStyle = '#1e293b';
+        ctx.fill();
+        ctx.strokeStyle = '#f97316';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        ctx.fillStyle = '#facc15';
+        ctx.font = '900 9px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('↺', 0, 0);
+      } else {
+        ctx.fillStyle = isGiant ? '#ea580c' : '#f59e0b';
+        ctx.shadowColor = isGiant ? '#f97316' : '#f59e0b';
+        ctx.shadowBlur = isGiant ? 16 : 10;
+        ctx.beginPath();
+        ctx.roundRect(-sp.length, -bladeH / 2, sp.length * 2, bladeH, 6);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Glowing tip indicators
+        ctx.fillStyle = '#fef08a';
+        ctx.beginPath();
+        ctx.arc(-sp.length + 6, 0, isGiant ? 4.5 : 3, 0, Math.PI * 2);
+        ctx.arc(sp.length - 6, 0, isGiant ? 4.5 : 3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Center Hub
+        ctx.beginPath();
+        ctx.arc(0, 0, isGiant ? 10 : 8, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.strokeStyle = isGiant ? '#c2410c' : '#d97706';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+      }
 
       ctx.restore();
     });
@@ -2635,86 +2754,85 @@ const data = gameEntry?.data || {
       ctx.restore();
     });
 
-    // 4.5 Draw Secret Hyper-Tunnel & Lucky Cannon & Marble Dam
+    // 4.5 Draw Final Zone: 1 Giant Funnel, Giant Reverse Keeper Propeller, and Lucky Side Hole
     ctx.save();
-    // A. Secret Hyper-Tunnel Conduit along left wall (x: 20 to 80, y: 7060 to 7450)
-    ctx.fillStyle = secretGate.locked ? 'rgba(6, 182, 212, 0.05)' : 'rgba(6, 182, 212, 0.16)';
-    ctx.fillRect(20, 7060, 60, 390);
 
-    // Glowing Divider Wall at x=80
-    ctx.strokeStyle = secretGate.locked ? 'rgba(6, 182, 212, 0.45)' : '#06b6d4';
-    ctx.lineWidth = 3;
+    // A. Lucky Side Hole & Chute (x: 475 to 540, y: 7060 to 7730)
+    // Ambient lane fill
+    ctx.fillStyle = 'rgba(6, 182, 212, 0.12)';
+    ctx.fillRect(475, 7060, 65, 670);
+
+    // Glowing Divider Wall at x=475
+    ctx.strokeStyle = '#06b6d4';
+    ctx.lineWidth = 3.5;
     ctx.shadowColor = '#06b6d4';
-    ctx.shadowBlur = secretGate.locked ? 4 : 14;
-    ctx.beginPath();
-    ctx.moveTo(80, 7120);
-    ctx.lineTo(80, 7440);
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-
-    // Tunnel Chevrons & Badges down the tube
-    ctx.font = '900 10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    ctx.fillStyle = secretGate.locked ? 'rgba(6, 182, 212, 0.35)' : '#67e8f9';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('⚡ SHORTCUT', 50, 7220);
-    ctx.fillText('⏩ SPEED TUBE', 50, 7320);
-
-    // B. Lucky Cannon Entrance & Gate Barrier (x: 20 to 80, y: 7060 to 7100)
-    ctx.beginPath();
-    ctx.arc(50, 7075, 20, 0, Math.PI * 2);
-    ctx.fillStyle = secretGate.locked ? 'rgba(239, 68, 68, 0.15)' : 'rgba(6, 182, 212, 0.3)';
-    ctx.strokeStyle = secretGate.locked ? '#ef4444' : '#06b6d4';
-    ctx.lineWidth = 2.5;
-    ctx.shadowColor = ctx.strokeStyle;
     ctx.shadowBlur = 10;
+    ctx.beginPath();
+    ctx.moveTo(475, 7120);
+    ctx.lineTo(475, 7710);
+    ctx.stroke();
+
+    // Lucky Hole Mouth Target Ring at y: 7085
+    ctx.beginPath();
+    ctx.arc(507, 7085, 20, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(6, 182, 212, 0.28)';
+    ctx.strokeStyle = '#22d3ee';
+    ctx.lineWidth = 2.5;
+    ctx.shadowBlur = 12;
     ctx.fill();
     ctx.stroke();
     ctx.shadowBlur = 0;
 
-    if (secretGate.locked) {
-      // Locked Barrier Bar
-      ctx.strokeStyle = '#ef4444';
-      ctx.lineWidth = 5;
-      ctx.shadowColor = '#ef4444';
-      ctx.shadowBlur = 8;
-      ctx.beginPath();
-      ctx.moveTo(secretGate.x1, secretGate.y1);
-      ctx.lineTo(secretGate.x2, secretGate.y2);
-      ctx.stroke();
-      ctx.shadowBlur = 0;
+    // Lucky Chute Labels & Chevrons
+    ctx.font = '900 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.fillStyle = '#67e8f9';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('★ 럭키 홀 ★', 507, 7085);
+    ctx.font = '800 9px sans-serif';
+    ctx.fillText('LUCKY HOLE', 507, 7140);
+    ctx.fillText('⚡ 직행 ⚡', 507, 7260);
+    ctx.fillText('⬇ ⬇ ⬇', 507, 7380);
+    ctx.fillText('⚡ SPEED ⚡', 507, 7500);
+    ctx.fillText('⬇ ⬇ ⬇', 507, 7620);
 
-      // Padlock Label
-      ctx.font = '900 10px sans-serif';
-      ctx.fillStyle = '#fca5a5';
-      ctx.textAlign = 'center';
-      ctx.fillText('🔒 LOCKED', 50, 7072);
-      ctx.font = '800 8px sans-serif';
-      ctx.fillText('(폭발 시 개방)', 50, 7085);
-    } else {
-      ctx.font = '900 10px sans-serif';
-      ctx.fillStyle = '#67e8f9';
-      ctx.textAlign = 'center';
-      ctx.fillText('⚡ OPEN! ⏩', 50, 7075);
-    }
-
-    // C. Marble Dam Graphics & Caution Signs (x: 80 to 540, y: 7060 to 7180)
+    // B. Main Final Funnel (y: 7060 to 7360)
     ctx.strokeStyle = '#f59e0b';
     ctx.lineWidth = 3.5;
     ctx.shadowColor = '#f59e0b';
-    ctx.shadowBlur = 8;
+    ctx.shadowBlur = 10;
     ctx.beginPath();
-    ctx.moveTo(80, 7060);
-    ctx.lineTo(255, 7170);
-    ctx.moveTo(COURSE_WIDTH - 20, 7060);
-    ctx.lineTo(305, 7170);
+    ctx.moveTo(20, 7060);
+    ctx.lineTo(210, 7360);
+    ctx.moveTo(475, 7120);
+    ctx.lineTo(310, 7360);
     ctx.stroke();
     ctx.shadowBlur = 0;
 
+    // Funnel Entrance Label
     ctx.font = '900 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
     ctx.fillStyle = '#fbbf24';
     ctx.textAlign = 'center';
-    ctx.fillText('⚠️ MARBLE DAM (CHOKEPOINT 50px) ⚠️', 280, 7140);
+    ctx.fillText('⚡ 파이널 퍼널 (FINAL FUNNEL) ⚡', 260, 7180);
+
+    // C. Central Throat & Giant Keeper Propeller (y: 7360 to 7700)
+    ctx.strokeStyle = '#f97316';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(310, 7360);
+    ctx.lineTo(310, 7680);
+    ctx.moveTo(210, 7520);
+    ctx.lineTo(210, 7680);
+    ctx.stroke();
+
+    // Propeller Upward Bat Badge
+    ctx.font = '900 10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.fillStyle = '#fed7aa';
+    ctx.textAlign = 'center';
+    ctx.fillText('↺ 자이언트 리버스 배트 (REVERSE BAT)', 260, 7430);
+    ctx.font = '800 8.5px sans-serif';
+    ctx.fillStyle = '#fdba74';
+    ctx.fillText('(구슬을 위로 쳐올림 - 타이밍 통과)', 260, 7445);
     ctx.restore();
 
     // 5. Finish Line Banner
@@ -2891,10 +3009,22 @@ const data = gameEntry?.data || {
       ctx.restore();
     }
 
+    // Update oscillating pins (Zone 8 neon bubbles)
+    const animNow = performance.now();
+    pins.forEach(p => {
+      if (p.baseX !== undefined && p.oscAmp) {
+        p.x = p.baseX + Math.sin(animNow * (p.oscSpeed || 0.0018) + (p.oscPhase || 0)) * p.oscAmp;
+      }
+    });
+
     // Render Minimap
     renderMinimap();
 
-    updatePhysics(1);
+    try {
+      updatePhysics(1);
+    } catch (err) {
+      console.error('[MarbleRoulette] Physics error:', err);
+    }
     updateCamera();
     requestAnimationFrame(render);
   }
