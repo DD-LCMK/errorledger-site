@@ -87,8 +87,10 @@ const data = gameEntry?.data || {
             
             <div class="hud-right-items">
               <div class="zoom-control-group">
-                <button class="zoom-btn" data-zoom="0.65" title="초광각 뷰 (코스 1200px 표시)">0.65x</button>
-                <button class="zoom-btn active" data-zoom="0.75" title="표준 방송 와이드 뷰 (코스 1040px 표시)">0.75x</button>
+                <button class="zoom-btn" data-zoom="0.5" title="파노라마 울트라 뷰 (코스 1320px 표시)">0.5x</button>
+                <button class="zoom-btn active" data-zoom="0.55" title="초광각 뷰 (코스 1200px 표시)">0.55x</button>
+                <button class="zoom-btn" data-zoom="0.65" title="광각 뷰 (코스 1015px 표시)">0.65x</button>
+                <button class="zoom-btn" data-zoom="0.75" title="표준 뷰 (코스 880px 표시)">0.75x</button>
                 <button class="zoom-btn" data-zoom="1.0" title="1:1 실제 배율">1.0x</button>
               </div>
               <div class="speed-control-group">
@@ -1362,9 +1364,9 @@ const data = gameEntry?.data || {
     segments.push({ x1: 20, y1: 6815, x2: 60, y2: 6865, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 6815, x2: 500, y2: 6865, type: 'ramp' });
 
-    // GIANT PROPELLER (Length 138px - 5% shorter, 276px wingspan, speed: -0.0075)
-    // 5% shorter length ensures lone marbles have 82px wall clearance and never get trapped or batted back
-    spinners.push({ x: 280, y: 6850, length: 138, angle: 0, speed: -0.0075 });
+    // GIANT PROPELLER (Length 145px - increased 5% from 138px, 290px wingspan, speed: -0.0075)
+    // Leaves 75px open clearance on both sides so marbles never get trapped or batted back
+    spinners.push({ x: 280, y: 6850, length: 145, angle: 0, speed: -0.0075 });
 
     // Decider Bumper Pins right below giant propeller corners
     pins.push({ x: 190, y: 6915, radius: 9, isBumper: true });
@@ -1417,7 +1419,7 @@ const data = gameEntry?.data || {
   let lastRunnerCountdown: number | null = null;
 
   // Camera & Viewport State
-  let zoom = 0.75; // Default 0.75x: shows ~1,040px of course vertically on 780px canvas
+  let zoom = 0.55; // Default 0.55x: zoomed out view showing ~1,200px of course vertically on 660px canvas
   let camMode: 'auto' | 'first' | 'last' | 'runner' = 'auto';
   let focusedMarbleId: number | null = null;
   let isManualCam = false;
@@ -1705,9 +1707,9 @@ const data = gameEntry?.data || {
   function updatePhysics(dt: number) {
     if (!isRacing) return;
 
-    const gravity = 0.11 * timeScale;
-    const friction = Math.pow(0.978, timeScale);
-    const bounce = 0.38;
+    const gravity = 0.082 * timeScale; // ~25% slower gravity acceleration (was 0.11)
+    const friction = Math.pow(0.974, timeScale); // balanced air drag (was 0.978)
+    const bounce = 0.36; // (was 0.38)
 
     // Spinners angular update
     spinners.forEach(sp => {
@@ -1740,7 +1742,7 @@ const data = gameEntry?.data || {
 
       // Speed clamp for viewable, suspenseful racing
       const currentSpeed = Math.hypot(m.vx, m.vy);
-      const maxSpeed = 7.2 * timeScale;
+      const maxSpeed = 5.8 * timeScale; // Controlled terminal velocity for readable descent (was 7.2)
       if (currentSpeed > maxSpeed) {
         m.vx = (m.vx / currentSpeed) * maxSpeed;
         m.vy = (m.vy / currentSpeed) * maxSpeed;
@@ -2982,12 +2984,12 @@ const data = gameEntry?.data || {
     updateCamModeHUD();
   });
 
-  // Zoom Buttons (0.65x, 0.75x, 1.0x)
+  // Zoom Buttons (0.5x, 0.55x, 0.65x, 0.75x, 1.0x)
   document.querySelectorAll('.zoom-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.zoom-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      zoom = parseFloat(btn.getAttribute('data-zoom') || '0.75');
+      zoom = parseFloat(btn.getAttribute('data-zoom') || '0.55');
     });
   });
 
