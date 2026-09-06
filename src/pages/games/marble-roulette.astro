@@ -1265,22 +1265,22 @@ const data = gameEntry?.data || {
     segments.push({ x1: 20, y1: 2990, x2: 190, y2: 3080, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 2990, x2: 370, y2: 3080, type: 'ramp' });
 
-    // ZONE 5: 소용돌이 볼텍스 퍼널 (y: 3100 - 3850) - Dual-Wing Split Flow (Both Left & Right Active)
-    // Upper entry funnel
-    segments.push({ x1: 20, y1: 3140, x2: 220, y2: 3230, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 3140, x2: 340, y2: 3230, type: 'ramp' });
+    // ZONE 5: 소용돌이 볼텍스 퍼널 (y: 3100 - 3850) - Dual-Wing Split Flow (Both Left & Right Active, Wider Multi-Ball Gap)
+    // Upper entry funnel (widened gap: ends at x=180 and x=380)
+    segments.push({ x1: 20, y1: 3140, x2: 180, y2: 3215, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 3140, x2: 380, y2: 3215, type: 'ramp' });
 
-    // Center Splitter Wedge Pin & Guides: actively splits marbles into Left & Right wings
-    pins.push({ x: 280, y: 3205, radius: 9.5, isBumper: true });
-    segments.push({ x1: 280, y1: 3215, x2: 210, y2: 3280, type: 'guide' });
-    segments.push({ x1: 280, y1: 3215, x2: 350, y2: 3280, type: 'guide' });
+    // Center Splitter Wedge Pin & Guides: actively splits marbles into Left & Right wings with 95px throat clearance
+    pins.push({ x: 280, y: 3200, radius: 9.5, isBumper: true });
+    segments.push({ x1: 280, y1: 3210, x2: 220, y2: 3275, type: 'guide' });
+    segments.push({ x1: 280, y1: 3210, x2: 340, y2: 3275, type: 'guide' });
 
     // LEFT WING: Wide chutes actively carrying marbles through the far left of Zone 5
-    segments.push({ x1: 210, y1: 3290, x2: 50, y2: 3380, type: 'ramp' });
+    segments.push({ x1: 220, y1: 3285, x2: 50, y2: 3380, type: 'ramp' });
     segments.push({ x1: 20, y1: 3430, x2: 220, y2: 3520, type: 'ramp' });
 
     // RIGHT WING: Symmetrical chutes carrying marbles through the right of Zone 5
-    segments.push({ x1: 350, y1: 3290, x2: 510, y2: 3380, type: 'ramp' });
+    segments.push({ x1: 340, y1: 3285, x2: 510, y2: 3380, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 3430, x2: 340, y2: 3520, type: 'ramp' });
 
     // Both left and right streams converge smoothly into the central vortex bowl
@@ -1347,35 +1347,59 @@ const data = gameEntry?.data || {
     segments.push({ x1: 20, y1: 6150, x2: 130, y2: 6220, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 6150, x2: 430, y2: 6220, type: 'ramp' });
 
-    // ZONE 9: 파이널 스피드웨이 & 자이언트 프로펠러 (y: 6250 - 6920) - Steeper High-Octane Runway & Giant Propeller Gate
+    // ZONE 9: 파이널 스피드웨이 & 자이언트 프로펠러 (y: 6250 - 6920) - Steeper High-Octane Runway & Dynamic Propeller Gate
     // Steep Ramp 1 (30° grade)
     segments.push({ x1: 20, y1: 6260, x2: 420, y2: 6450, type: 'ramp' });
     // Steep Ramp 2 (30° grade)
     segments.push({ x1: COURSE_WIDTH - 20, y1: 6480, x2: 140, y2: 6670, type: 'ramp' });
-    // Steep Ramp 3 (30° grade)
-    segments.push({ x1: 20, y1: 6690, x2: 400, y2: 6815, type: 'ramp' });
+    // Steep Ramp 3 (30° grade) - feeds into multi-route approach
+    segments.push({ x1: 20, y1: 6690, x2: 380, y2: 6795, type: 'ramp' });
 
-    // Funnel guides into the giant propeller gate
-    segments.push({ x1: 20, y1: 6815, x2: 140, y2: 6870, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 6815, x2: 420, y2: 6870, type: 'ramp' });
+    // Approach Splitter Pin & Guides: distributes incoming marbles across Left Flank, Center Gate, and Right Flank
+    pins.push({ x: 280, y: 6805, radius: 9.5, isBumper: true });
+    segments.push({ x1: 280, y1: 6810, x2: 210, y2: 6845, type: 'guide' });
+    segments.push({ x1: 280, y1: 6810, x2: 350, y2: 6845, type: 'guide' });
 
-    // GIANT PROPELLER right before the finish line (Length 145px, 290px wingspan, 20% slower speed: -0.0088)
-    spinners.push({ x: 280, y: 6850, length: 145, angle: 0, speed: -0.0088 });
+    // Wide outer approach walls into the giant propeller chamber (420px wide track)
+    segments.push({ x1: 20, y1: 6815, x2: 70, y2: 6865, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 20, y1: 6815, x2: 490, y2: 6865, type: 'ramp' });
 
-    // 2 Decider Bumper Pins right below giant propeller corners (y: 6915)
-    pins.push({ x: 180, y: 6915, radius: 9, isBumper: true });
-    pins.push({ x: 380, y: 6915, radius: 9, isBumper: true });
+    // GIANT PROPELLER right before the finish line (Length 145px, 290px wingspan, 15% slower speed: -0.0075)
+    // Acts as the dramatic clogged bottleneck where balls cluster together right before the final line
+    spinners.push({ x: 280, y: 6850, length: 145, angle: 0, speed: -0.0075 });
 
-    // ZONE 9 to 10 Transition: High-Speed Sprint Runway (Width 400px, from y: 6920 to 7230)
-    segments.push({ x1: 20, y1: 6920, x2: 80, y2: 7040, type: 'guide' });
-    segments.push({ x1: COURSE_WIDTH - 20, y1: 6920, x2: 480, y2: 7040, type: 'guide' });
+    // Flank Deflector Bumper Pins: adds tension to outer bypass channels
+    pins.push({ x: 105, y: 6860, radius: 9, isBumper: true });
+    pins.push({ x: 455, y: 6860, radius: 9, isBumper: true });
 
-    segments.push({ x1: 80, y1: 7040, x2: 80, y2: 7230, type: 'wall' });
-    segments.push({ x1: COURSE_WIDTH - 80, y1: 7040, x2: COURSE_WIDTH - 80, y2: 7230, type: 'wall' });
+    // 2 Decider Bumper Pins right below giant propeller corners
+    pins.push({ x: 190, y: 6920, radius: 9.5, isBumper: true });
+    pins.push({ x: 370, y: 6920, radius: 9.5, isBumper: true });
+
+    // ZONE 9 to 10 Transition: Dynamic 3-Lane Sprint Runway (Width 420px, from y: 6865 to 7230)
+    segments.push({ x1: 70, y1: 6865, x2: 70, y2: 7230, type: 'wall' });
+    segments.push({ x1: COURSE_WIDTH - 70, y1: 6865, x2: COURSE_WIDTH - 70, y2: 7230, type: 'wall' });
+
+    // Dynamic Sprint Splitters: creates 3 distinct overtaking sprint lines to the finish line
+    // Left Sprint Divider
+    pins.push({ x: 175, y: 7010, radius: 8.5, isBumper: true });
+    segments.push({ x1: 175, y1: 7015, x2: 155, y2: 7110, type: 'guide' });
+    segments.push({ x1: 175, y1: 7015, x2: 195, y2: 7110, type: 'guide' });
+    pins.push({ x: 175, y: 7115, radius: 7 });
+
+    // Right Sprint Divider
+    pins.push({ x: 385, y: 7010, radius: 8.5, isBumper: true });
+    segments.push({ x1: 385, y1: 7015, x2: 365, y2: 7110, type: 'guide' });
+    segments.push({ x1: 385, y1: 7015, x2: 405, y2: 7110, type: 'guide' });
+    pins.push({ x: 385, y: 7115, radius: 7 });
+
+    // Center Lane Drafting Deflector & Mini Booster (gives trailing marbles overtaking power!)
+    pins.push({ x: 280, y: 7040, radius: 7.5 });
+    segments.push({ x1: 250, y1: 7130, x2: 310, y2: 7175, type: 'booster', boostPower: 0.45 });
 
     // ZONE 10: 결승선 (FINISH_LINE_Y = 7240) & 피니시 베이슨 (y: 7240 - 7560)
-    segments.push({ x1: 80, y1: 7250, x2: 20, y2: 7350, type: 'guide' });
-    segments.push({ x1: COURSE_WIDTH - 80, y1: 7250, x2: COURSE_WIDTH - 20, y2: 7350, type: 'guide' });
+    segments.push({ x1: 70, y1: 7250, x2: 20, y2: 7350, type: 'guide' });
+    segments.push({ x1: COURSE_WIDTH - 70, y1: 7250, x2: COURSE_WIDTH - 20, y2: 7350, type: 'guide' });
     segments.push({ x1: 20, y1: 7520, x2: COURSE_WIDTH - 20, y2: 7520, type: 'wall' });
   }
 
