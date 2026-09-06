@@ -1833,7 +1833,7 @@ const data = gameEntry?.data || {
       });
     });
 
-    // 4. Marble vs Rotating Spinners (11 Spinners)
+    // 4. Marble vs Rotating Spinners (Non-bouncy physical contact & rotational sweep)
     marbles.forEach(m => {
       spinners.forEach(sp => {
         const cos = Math.cos(sp.angle);
@@ -1844,22 +1844,39 @@ const data = gameEntry?.data || {
         const y2 = sp.y + sin * sp.length;
 
         const dist = distToSegment(m.x, m.y, x1, y1, x2, y2);
-        if (dist.d < m.radius + 6) {
+        const contactRadius = m.radius + 4;
+        if (dist.d < contactRadius) {
           const nx = (m.x - dist.px) / (dist.d || 1);
           const ny = (m.y - dist.py) / (dist.d || 1);
-          m.x = dist.px + nx * (m.radius + 6);
-          m.y = dist.py + ny * (m.radius + 6);
+          m.x = dist.px + nx * contactRadius;
+          m.y = dist.py + ny * contactRadius;
 
-          // Tangential force from spinner rotation
+          // Zero-bounce contact: remove normal velocity moving into the blade (restitution = 0)
+          const dot = m.vx * nx + m.vy * ny;
+          if (dot < 0) {
+            m.vx -= dot * nx;
+            m.vy -= dot * ny;
+          }
+
+          // Rotational sweep: rotating blade gently pushes/sweeps the marble along without bouncing
           const tanX = -sin * sp.speed * 60;
           const tanY = cos * sp.speed * 60;
-          m.vx = nx * 3.5 + tanX * 0.65;
-          m.vy = ny * 3.5 + tanY * 0.65;
-          sfx.playPop();
+          m.vx += tanX * 0.35;
+          m.vy += tanY * 0.35;
 
-          // Energy charge (+0.05)
-          if (energyGaugeEnabled) {
-            m.energy = Math.min(1.0, m.energy + 0.05);
+          // If blade is rotating towards the marble, push forward with blade surface velocity (no bounce)
+          const bladeNormalPush = tanX * nx + tanY * ny;
+          if (bladeNormalPush > 0) {
+            m.vx += nx * bladeNormalPush * 0.75;
+            m.vy += ny * bladeNormalPush * 0.75;
+          }
+
+          m.vx *= 0.98;
+          m.vy *= 0.98;
+
+          // Energy charge (only after Zone 4, tiny increment)
+          if (energyGaugeEnabled && m.y >= 3080) {
+            m.energy = Math.min(1.0, m.energy + 0.005);
             if (m.energy >= 1.0) {
               triggerShockwave(m);
               m.energy = 0;
