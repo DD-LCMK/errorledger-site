@@ -384,12 +384,13 @@ const data = gameEntry?.data || {
     background: #0f172a;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 16px;
-    padding: 1.5rem 1rem;
+    padding: 1.25rem 0.5rem;
     display: flex;
     justify-content: center;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    overflow-x: auto;
+    overflow: hidden; /* Auto-fit in one screen without horizontal scrollbar */
     width: 100%;
+    box-sizing: border-box;
   }
 
   .ladder-stage-inner {
@@ -397,8 +398,9 @@ const data = gameEntry?.data || {
     flex-direction: column;
     align-items: stretch;
     width: 100%;
+    min-width: 0;
     margin: 0 auto;
-    transition: min-width 0.2s ease;
+    transition: max-width 0.2s ease;
   }
 
   /* Participants Top Row */
@@ -410,11 +412,11 @@ const data = gameEntry?.data || {
   }
 
   :global(.participant-slot) {
-    flex: 1;
+    flex: 1 1 0%;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-width: 0;
+    min-width: 0; /* Allows flex items to shrink below content width */
   }
 
   :global(.participant-card) {
@@ -430,7 +432,8 @@ const data = gameEntry?.data || {
     border: 2px solid transparent;
     width: 100%;
     max-width: 76px;
-    min-width: 52px;
+    min-width: 0;
+    box-sizing: border-box;
   }
 
   :global(.participant-card:hover) {
@@ -463,6 +466,7 @@ const data = gameEntry?.data || {
     padding: 0.12rem 0.15rem;
     outline: none;
     box-sizing: border-box;
+    text-overflow: ellipsis;
   }
 
   :global(.participant-name-input:focus) {
@@ -582,7 +586,7 @@ const data = gameEntry?.data || {
   }
 
   :global(.outcome-slot) {
-    flex: 1;
+    flex: 1 1 0%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -595,7 +599,7 @@ const data = gameEntry?.data || {
     align-items: center;
     width: 100%;
     max-width: 76px;
-    min-width: 52px;
+    min-width: 0;
     padding: 0.4rem 0.2rem;
     border-radius: 10px;
     background: #1e293b;
@@ -603,6 +607,7 @@ const data = gameEntry?.data || {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     text-align: center;
     transition: transform 0.2s ease, border-color 0.2s ease;
+    box-sizing: border-box;
   }
 
   :global(.outcome-card.revealed) {
@@ -625,6 +630,7 @@ const data = gameEntry?.data || {
     padding: 0.15rem;
     outline: none;
     box-sizing: border-box;
+    text-overflow: ellipsis;
   }
 
   :global(.outcome-name-input:focus) {
@@ -642,6 +648,77 @@ const data = gameEntry?.data || {
     text-overflow: ellipsis;
     max-width: 68px;
     min-height: 14px;
+  }
+
+  /* Adaptive Densities to Fit Any Player Count (2-20) Seamlessly */
+  .ladder-stage-inner.density-compact :global(.participant-card),
+  .ladder-stage-inner.density-compact :global(.outcome-card) {
+    max-width: 64px;
+    padding: 0.25rem 0.15rem;
+  }
+  .ladder-stage-inner.density-compact :global(.participant-avatar) {
+    width: 32px;
+    height: 32px;
+    font-size: 1.15rem;
+  }
+  .ladder-stage-inner.density-compact :global(.participant-name-input),
+  .ladder-stage-inner.density-compact :global(.outcome-name-input) {
+    max-width: 58px;
+    font-size: 0.68rem;
+  }
+
+  .ladder-stage-inner.density-dense :global(.participant-card),
+  .ladder-stage-inner.density-dense :global(.outcome-card) {
+    max-width: 50px;
+    padding: 0.2rem 0.1rem;
+    border-radius: 8px;
+    gap: 0.2rem;
+  }
+  .ladder-stage-inner.density-dense :global(.participant-avatar) {
+    width: 28px;
+    height: 28px;
+    font-size: 1.05rem;
+  }
+  .ladder-stage-inner.density-dense :global(.participant-name-input),
+  .ladder-stage-inner.density-dense :global(.outcome-name-input) {
+    max-width: 46px;
+    font-size: 0.64rem;
+    padding: 0.08rem 0.05rem;
+  }
+  .ladder-stage-inner.density-dense :global(.participant-trace-btn) {
+    font-size: 0.58rem;
+    padding: 0.08rem 0.22rem;
+  }
+  .ladder-stage-inner.density-dense :global(.outcome-winner-badge) {
+    font-size: 0.58rem;
+    max-width: 46px;
+  }
+
+  .ladder-stage-inner.density-micro :global(.participant-card),
+  .ladder-stage-inner.density-micro :global(.outcome-card) {
+    max-width: 44px;
+    padding: 0.15rem 0.05rem;
+    border-radius: 6px;
+    gap: 0.15rem;
+  }
+  .ladder-stage-inner.density-micro :global(.participant-avatar) {
+    width: 22px;
+    height: 22px;
+    font-size: 0.9rem;
+  }
+  .ladder-stage-inner.density-micro :global(.participant-name-input),
+  .ladder-stage-inner.density-micro :global(.outcome-name-input) {
+    max-width: 40px;
+    font-size: 0.58rem;
+    padding: 0.06rem 0.02rem;
+  }
+  .ladder-stage-inner.density-micro :global(.participant-trace-btn) {
+    font-size: 0.52rem;
+    padding: 0.05rem 0.16rem;
+  }
+  .ladder-stage-inner.density-micro :global(.outcome-winner-badge) {
+    font-size: 0.52rem;
+    max-width: 40px;
   }
 
   /* Result Modal */
@@ -940,11 +1017,26 @@ const data = gameEntry?.data || {
     cancelActiveAnimation();
     syncArrays();
 
-    // Scale stage width and SVG height based on player count
-    const minWidth = Math.max(760, playerCount * 82);
+    // Scale stage width and SVG height based on player count so all participants fit in 1 screen
+    const stageContainer = ladderContainer?.parentElement?.parentElement || document.getElementById('ladder-stage');
+    const containerWidth = stageContainer?.clientWidth ? (stageContainer.clientWidth - 24) : 1000;
+    const idealWidth = playerCount <= 6 
+      ? Math.min(containerWidth, Math.max(460, playerCount * 125))
+      : Math.min(containerWidth, Math.max(640, playerCount * (playerCount >= 16 ? 46 : (playerCount >= 11 ? 54 : 68))));
+
     if (ladderStageInner) {
-      ladderStageInner.style.maxWidth = `${Math.max(900, minWidth)}px`;
-      ladderStageInner.style.minWidth = `${minWidth}px`;
+      let densityClass = 'density-normal';
+      if (playerCount >= 16) {
+        densityClass = 'density-micro';
+      } else if (playerCount >= 11) {
+        densityClass = 'density-dense';
+      } else if (playerCount >= 7) {
+        densityClass = 'density-compact';
+      }
+      ladderStageInner.className = `ladder-stage-inner ${densityClass}`;
+      ladderStageInner.style.width = '100%';
+      ladderStageInner.style.maxWidth = `${idealWidth}px`;
+      ladderStageInner.style.minWidth = '0';
     }
 
     // Determine row count and discrete spacing
@@ -1077,12 +1169,19 @@ const data = gameEntry?.data || {
 
     let svgContent = '';
 
+    const isMicro = playerCount >= 16;
+    const isDense = playerCount >= 11;
+    const poleStroke = isMicro ? 2.2 : (isDense ? 3 : 4);
+    const bridgeStroke = isMicro ? 2.2 : (isDense ? 3 : 4);
+    const pathStroke = isMicro ? 3.4 : (isDense ? 4.2 : 5);
+    const headRadius = isMicro ? 5.5 : (isDense ? 6.5 : 8);
+
     // Draw Vertical Poles
     for (let i = 0; i < playerCount; i++) {
       const x = getPoleX(i, playerCount, width);
       svgContent += `
         <line x1="${x}" y1="0" x2="${x}" y2="${height}" 
-              stroke="#334155" stroke-width="4" stroke-linecap="round" />
+              stroke="#334155" stroke-width="${poleStroke}" stroke-linecap="round" />
       `;
     }
 
@@ -1093,7 +1192,7 @@ const data = gameEntry?.data || {
         const x2 = getPoleX(b.poleB, playerCount, width);
         svgContent += `
           <line x1="${x1}" y1="${b.y}" x2="${x2}" y2="${b.y}" 
-                stroke="#475569" stroke-width="4" stroke-linecap="round" />
+                stroke="#475569" stroke-width="${bridgeStroke}" stroke-linecap="round" />
         `;
       }
     }
@@ -1106,7 +1205,7 @@ const data = gameEntry?.data || {
           d += ` L ${path.points[j].x} ${path.points[j].y}`;
         }
         svgContent += `
-          <path d="${d}" fill="none" stroke="${path.color}" stroke-width="5" 
+          <path d="${d}" fill="none" stroke="${path.color}" stroke-width="${pathStroke}" 
                 stroke-linecap="round" stroke-linejoin="round"
                 filter="drop-shadow(0 0 8px ${path.color})" />
         `;
@@ -1115,7 +1214,7 @@ const data = gameEntry?.data || {
       // Draw Glowing Runner Head
       if (path.head) {
         svgContent += `
-          <circle cx="${path.head.x}" cy="${path.head.y}" r="8" fill="#ffffff" stroke="${path.color}" stroke-width="3" 
+          <circle cx="${path.head.x}" cy="${path.head.y}" r="${headRadius}" fill="#ffffff" stroke="${path.color}" stroke-width="2.5" 
                   filter="drop-shadow(0 0 10px ${path.color})" />
         `;
       }
@@ -1521,7 +1620,17 @@ const data = gameEntry?.data || {
   blindUnveilCenterBtn?.addEventListener('click', unveilBlind);
 
   // Window resize re-draw
-  window.addEventListener('resize', () => renderLadderSVG());
+  window.addEventListener('resize', () => {
+    if (ladderStageInner) {
+      const stageContainer = ladderContainer?.parentElement?.parentElement || document.getElementById('ladder-stage');
+      const containerWidth = stageContainer?.clientWidth ? (stageContainer.clientWidth - 24) : 1000;
+      const idealWidth = playerCount <= 6 
+        ? Math.min(containerWidth, Math.max(460, playerCount * 125))
+        : Math.min(containerWidth, Math.max(640, playerCount * (playerCount >= 16 ? 46 : (playerCount >= 11 ? 54 : 68))));
+      ladderStageInner.style.maxWidth = `${idealWidth}px`;
+    }
+    renderLadderSVG();
+  });
 
   // Launch
   initLadder();
