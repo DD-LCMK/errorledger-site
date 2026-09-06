@@ -1129,7 +1129,7 @@ const data = gameEntry?.data || {
         osc.frequency.setValueAtTime(180, now);
         osc.frequency.exponentialRampToValueAtTime(850, now + 0.08);
         osc.frequency.exponentialRampToValueAtTime(280, now + 0.22);
-        gain.gain.setValueAtTime(0.24, now);
+        gain.gain.setValueAtTime(0.32, now);
         gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
         osc.connect(gain);
         gain.connect(this.masterGain);
@@ -1268,6 +1268,7 @@ const data = gameEntry?.data || {
     radius: number;
     power: number;
     label?: string;
+    lastHitTime?: number;
   }
 
   interface Segment {
@@ -1399,8 +1400,8 @@ const data = gameEntry?.data || {
 
     segments.push({ x1: 20, y1: 1520, x2: 180, y2: 1560, type: 'guide' });
 
-    // Left Chute REVERSAL Spring Bouncer (Softer power: 5.2)
-    bouncers.push({ x: 225, y: 2050, radius: 24, power: 5.2, label: 'REVERSAL' });
+    // Left Chute REVERSAL Spring Bouncer
+    bouncers.push({ x: 225, y: 2050, radius: 24, power: 6.5, label: 'REVERSAL' });
     segments.push({ x1: 20, y1: 2080, x2: 170, y2: 2170, type: 'ramp' });
 
     // Right Lane Safe S-Loop
@@ -1418,25 +1419,25 @@ const data = gameEntry?.data || {
     segments.push({ x1: COURSE_WIDTH - 20, y1: 2340, x2: 470, y2: 2370, type: 'guide' });
 
     // 1. Entrance gate decider bouncer (Center top - larger radius 32)
-    bouncers.push({ x: 280, y: 2370, radius: 32, power: 4.6, label: 'BOUNCE' });
+    bouncers.push({ x: 280, y: 2370, radius: 32, power: 6.2, label: 'BOUNCE' });
 
     // 2 & 3. Upper Left and Right bouncers (larger radius 32)
-    bouncers.push({ x: 160, y: 2460, radius: 32, power: 4.5, label: 'BOUNCE' });
-    bouncers.push({ x: 400, y: 2460, radius: 32, power: 4.5, label: 'BOUNCE' });
+    bouncers.push({ x: 160, y: 2460, radius: 32, power: 6.0, label: 'BOUNCE' });
+    bouncers.push({ x: 400, y: 2460, radius: 32, power: 6.0, label: 'BOUNCE' });
 
     // 4. Core Mega Bouncer (Center - extra large radius 36)
-    bouncers.push({ x: 280, y: 2610, radius: 36, power: 4.8, label: 'MEGA' });
+    bouncers.push({ x: 280, y: 2610, radius: 36, power: 7.2, label: 'MEGA' });
 
     // 5 & 6. Side Flank Kickers (larger radius 28)
-    bouncers.push({ x: 95, y: 2740, radius: 28, power: 4.2, label: 'KICK' });
-    bouncers.push({ x: 465, y: 2740, radius: 28, power: 4.2, label: 'KICK' });
+    bouncers.push({ x: 95, y: 2740, radius: 28, power: 5.8, label: 'KICK' });
+    bouncers.push({ x: 465, y: 2740, radius: 28, power: 5.8, label: 'KICK' });
 
     // 7. Mid-Lower Arena Center Bouncer (larger radius 34)
-    bouncers.push({ x: 280, y: 2820, radius: 34, power: 4.6, label: 'MEGA' });
+    bouncers.push({ x: 280, y: 2820, radius: 34, power: 6.8, label: 'MEGA' });
 
     // 8 & 9. Bottom Funnel Guides (larger radius 28)
-    bouncers.push({ x: 195, y: 2940, radius: 28, power: 4.4, label: 'BOUNCE' });
-    bouncers.push({ x: 365, y: 2940, radius: 28, power: 4.4, label: 'BOUNCE' });
+    bouncers.push({ x: 195, y: 2940, radius: 28, power: 6.0, label: 'BOUNCE' });
+    bouncers.push({ x: 365, y: 2940, radius: 28, power: 6.0, label: 'BOUNCE' });
 
     // Arena exit funnel into Zone 5
     segments.push({ x1: 20, y1: 2990, x2: 190, y2: 3080, type: 'ramp' });
@@ -1499,13 +1500,13 @@ const data = gameEntry?.data || {
     spinners.push({ x: 190, y: 4790, length: 121, angle: 0, speed: -0.011 });
     spinners.push({ x: 370, y: 4940, length: 121, angle: 0, speed: 0.011 });
 
-    bouncers.push({ x: 280, y: 4940, radius: 24, power: 4.8, label: 'KICKBACK' });
+    bouncers.push({ x: 280, y: 4940, radius: 24, power: 6.8, label: 'KICKBACK' });
 
     spinners.push({ x: 190, y: 5090, length: 121, angle: Math.PI / 4, speed: -0.012 });
     spinners.push({ x: 370, y: 5230, length: 121, angle: -Math.PI / 4, speed: 0.012 });
 
-    bouncers.push({ x: 80, y: 5220, radius: 22, power: 4.2, label: 'BOUNCE' });
-    bouncers.push({ x: 480, y: 5220, radius: 22, power: 4.2, label: 'BOUNCE' });
+    bouncers.push({ x: 80, y: 5220, radius: 22, power: 5.8, label: 'BOUNCE' });
+    bouncers.push({ x: 480, y: 5220, radius: 22, power: 5.8, label: 'BOUNCE' });
 
     segments.push({ x1: 20, y1: 5320, x2: 190, y2: 5420, type: 'ramp' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 5320, x2: 370, y2: 5420, type: 'ramp' });
@@ -1546,19 +1547,19 @@ const data = gameEntry?.data || {
     // Wide Open Bounce Arena: High-power spring bouncers & oscillating bumper pins (bubbles) for anti-stuck & rich ricochets
     // Tier 1 (y: 6300 - 6370)
     pins.push({ x: 280, y: 6300, radius: 10, isBumper: true, baseX: 280, oscAmp: 24, oscSpeed: 0.0022, oscPhase: 0 });
-    bouncers.push({ x: 175, y: 6365, radius: 24, power: 5.2, label: 'BOUNCE' });
-    bouncers.push({ x: 385, y: 6365, radius: 24, power: 5.2, label: 'BOUNCE' });
+    bouncers.push({ x: 175, y: 6365, radius: 24, power: 6.5, label: 'BOUNCE' });
+    bouncers.push({ x: 385, y: 6365, radius: 24, power: 6.5, label: 'BOUNCE' });
 
     // Tier 2 (y: 6460 - 6510)
     pins.push({ x: 110, y: 6485, radius: 9.5, isBumper: true, baseX: 110, oscAmp: 20, oscSpeed: 0.0024, oscPhase: 1.2 });
     pins.push({ x: COURSE_WIDTH - 110, y: 6485, radius: 9.5, isBumper: true, baseX: COURSE_WIDTH - 110, oscAmp: 20, oscSpeed: 0.0024, oscPhase: 2.4 });
-    bouncers.push({ x: 280, y: 6495, radius: 26, power: 5.8, label: 'BOUNCE' });
+    bouncers.push({ x: 280, y: 6495, radius: 26, power: 7.2, label: 'BOUNCE' });
 
     // Tier 3 (y: 6580 - 6650)
     pins.push({ x: 215, y: 6575, radius: 9.5, isBumper: true, baseX: 215, oscAmp: 22, oscSpeed: 0.0021, oscPhase: 3.5 });
     pins.push({ x: 345, y: 6575, radius: 9.5, isBumper: true, baseX: 345, oscAmp: 22, oscSpeed: 0.0021, oscPhase: 4.8 });
-    bouncers.push({ x: 155, y: 6635, radius: 24, power: 5.4, label: 'BOUNCE' });
-    bouncers.push({ x: 405, y: 6635, radius: 24, power: 5.4, label: 'BOUNCE' });
+    bouncers.push({ x: 155, y: 6635, radius: 24, power: 6.6, label: 'BOUNCE' });
+    bouncers.push({ x: 405, y: 6635, radius: 24, power: 6.6, label: 'BOUNCE' });
 
     // Tier 4: Propeller approach decider pins (y: 6730 - 6780)
     pins.push({ x: 280, y: 6725, radius: 10, isBumper: true, baseX: 280, oscAmp: 25, oscSpeed: 0.0025, oscPhase: 1.0 });
@@ -2018,12 +2019,15 @@ const data = gameEntry?.data || {
       m.vy += gravity;
       m.vx *= friction;
 
-      // Speed clamp for viewable, suspenseful racing (35% slower terminal velocity)
+      // Free-fall terminal velocity clamp (keeps normal rolling pace readable and suspenseful)
+      if (m.vy > 5.2) {
+        m.vy = 5.2;
+      }
+      // Safety speed clamp (allows powerful explosive bounces off red bubbles before friction naturally slows them)
       const currentSpeed = Math.hypot(m.vx, m.vy);
-      const maxSpeed = 4.15 * timeScale; // 35% slower max speed (6.38 * 0.65)
-      if (currentSpeed > maxSpeed) {
-        m.vx = (m.vx / currentSpeed) * maxSpeed;
-        m.vy = (m.vy / currentSpeed) * maxSpeed;
+      if (currentSpeed > 11.5) {
+        m.vx = (m.vx / currentSpeed) * 11.5;
+        m.vy = (m.vy / currentSpeed) * 11.5;
       }
 
       m.x += m.vx * timeScale;
@@ -2310,37 +2314,43 @@ const data = gameEntry?.data || {
               m.vy = (m.vy / turboSpeed) * 5.85;
             }
           } else {
+            bn.lastHitTime = performance.now();
             sfx.playSpring();
             shockwaves.push({
               x: bn.x,
               y: bn.y,
               radius: bn.radius,
-              maxRadius: 50,
+              maxRadius: bn.radius * 2.2,
               color: '#f43f5e',
-              alpha: 0.85
+              alpha: 1.0
             });
 
-            // Controlled normal bounce instead of violent upward launch
+            // HIGH-POWER ELASTIC REBOUND (Powerful Red Spring Bubble)
             const dot = m.vx * nx + m.vy * ny;
             if (dot < 0) {
-              // Gentle restitution (less bouncy)
-              const restitution = 0.70;
+              const restitution = 1.75;
               m.vx -= (1 + restitution) * dot * nx;
               m.vy -= (1 + restitution) * dot * ny;
             } else {
-              m.vx += nx * 1.17;
-              m.vy += ny * 0.78;
+              m.vx += nx * 3.2;
+              m.vy += ny * 2.8;
             }
 
-            // Gentle outward impulse scaled by bn.power (scaled 0.65x)
-            m.vx += nx * (bn.power * 0.228);
-            m.vy += ny * (bn.power * 0.228);
+            // Strong explosive outward launch proportional to bouncer power
+            const launchPower = Math.max(6.5, bn.power * 1.55);
+            m.vx += nx * launchPower;
+            m.vy += ny * launchPower;
 
-            // Speed cap to prevent bouncing off-screen (scaled 0.65x)
+            // Extra upward spring kick if marble impacts top half of the red bubble
+            if (ny < -0.25) {
+              m.vy -= Math.abs(ny) * 2.8;
+            }
+
+            // Generous bounce speed ceiling (up to 11.5 px/frame) so marbles visibly rocket off
             const bounceSpeed = Math.hypot(m.vx, m.vy);
-            if (bounceSpeed > 3.38) {
-              m.vx = (m.vx / bounceSpeed) * 3.38;
-              m.vy = (m.vy / bounceSpeed) * 3.38;
+            if (bounceSpeed > 11.5) {
+              m.vx = (m.vx / bounceSpeed) * 11.5;
+              m.vy = (m.vy / bounceSpeed) * 11.5;
             }
           }
 
@@ -2864,16 +2874,19 @@ const data = gameEntry?.data || {
     bouncers.forEach(bn => {
       ctx.save();
       const isTurbo = bn.label === 'TURBO';
-      const pulse = Math.sin(timeNow * 0.0056 + bn.y * 0.1) * 3;
+      const hitElapsed = bn.lastHitTime ? (timeNow - bn.lastHitTime) : 9999;
+      const hitPop = hitElapsed < 240 ? Math.sin((hitElapsed / 240) * Math.PI) * 7 : 0;
+      const pulse = Math.sin(timeNow * 0.0056 + bn.y * 0.1) * 3 + hitPop;
+
       ctx.beginPath();
       ctx.arc(bn.x, bn.y, bn.radius + pulse + 3, 0, Math.PI * 2);
-      ctx.strokeStyle = isTurbo ? 'rgba(6, 182, 212, 0.5)' : 'rgba(244, 63, 94, 0.45)';
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = isTurbo ? 'rgba(6, 182, 212, 0.5)' : (hitPop > 0 ? 'rgba(255, 255, 255, 0.9)' : 'rgba(244, 63, 94, 0.45)');
+      ctx.lineWidth = hitPop > 0 ? 3.5 : 2;
       ctx.stroke();
 
       ctx.beginPath();
-      ctx.arc(bn.x, bn.y, bn.radius, 0, Math.PI * 2);
-      const grad = ctx.createRadialGradient(bn.x - 4, bn.y - 4, 2, bn.x, bn.y, bn.radius);
+      ctx.arc(bn.x, bn.y, bn.radius + hitPop * 0.5, 0, Math.PI * 2);
+      const grad = ctx.createRadialGradient(bn.x - 4, bn.y - 4, 2, bn.x, bn.y, bn.radius + hitPop);
       if (isTurbo) {
         grad.addColorStop(0, '#cffafe');
         grad.addColorStop(0.4, '#06b6d4');
@@ -2881,17 +2894,17 @@ const data = gameEntry?.data || {
         ctx.fillStyle = grad;
         ctx.shadowColor = '#06b6d4';
       } else {
-        grad.addColorStop(0, '#fecdd3');
-        grad.addColorStop(0.4, '#f43f5e');
+        grad.addColorStop(0, hitPop > 0 ? '#ffffff' : '#fecdd3');
+        grad.addColorStop(0.4, hitPop > 0 ? '#ff1e56' : '#f43f5e');
         grad.addColorStop(1, '#881337');
         ctx.fillStyle = grad;
-        ctx.shadowColor = '#f43f5e';
+        ctx.shadowColor = hitPop > 0 ? '#ff0055' : '#f43f5e';
       }
-      ctx.shadowBlur = 14;
+      ctx.shadowBlur = hitPop > 0 ? 28 : 14;
       ctx.fill();
       ctx.shadowBlur = 0;
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = hitPop > 0 ? '#fef08a' : '#ffffff';
+      ctx.lineWidth = hitPop > 0 ? 3 : 2;
       ctx.stroke();
 
       ctx.fillStyle = '#ffffff';
