@@ -86,16 +86,14 @@ const data = gameEntry?.data || {
             
             <div class="hud-right-items">
               <div class="zoom-control-group">
-                <button class="zoom-btn" data-zoom="0.5" title="파노라마 울트라 뷰 (코스 1320px 표시)">0.5x</button>
-                <button class="zoom-btn active" data-zoom="0.55" title="초광각 뷰 (코스 1200px 표시)">0.55x</button>
-                <button class="zoom-btn" data-zoom="0.65" title="광각 뷰 (코스 1015px 표시)">0.65x</button>
+                <button class="zoom-btn active" data-zoom="0.5" title="파노라마 뷰 (코스 1320px 표시)">0.5x</button>
                 <button class="zoom-btn" data-zoom="0.75" title="표준 뷰 (코스 880px 표시)">0.75x</button>
-                <button class="zoom-btn" data-zoom="1.0" title="1:1 실제 배율">1.0x</button>
+                <button class="zoom-btn" data-zoom="1.0" title="1:1 실제 배율">1x</button>
               </div>
               <div class="speed-control-group">
-                <button class="speed-btn active" data-speed="1">1x</button>
-                <button class="speed-btn" data-speed="1.5">1.5x</button>
-                <button class="speed-btn" data-speed="2">2x</button>
+                <button class="speed-btn active" data-speed="0.5" title="0.5배속 (슬로우 모션)">0.5x</button>
+                <button class="speed-btn" data-speed="1" title="1배속 (기본 속도)">1x</button>
+                <button class="speed-btn" data-speed="1.5" title="1.5배속 (빠른 진행)">1.5x</button>
               </div>
               <button class="sound-hud-btn" id="sound-toggle-hud-btn" title="음향 켜기/끄기" aria-label="음향 켜기/끄기">
                 <span id="hud-sound-icon">🔊</span>
@@ -1645,13 +1643,13 @@ const data = gameEntry?.data || {
   let isCountingDown = false;
   let raceStartTime = 0;
   let finishRankCounter = 0;
-  let timeScale = 1.0;
+  let timeScale = 0.5; // Default 0.5x speed
   let cameraY = 0;
   let winnerMode = 'last'; // 'last', 'first', 'multi', 'custom'
   let lastRunnerCountdown: number | null = null;
 
   // Camera & Viewport State
-  let zoom = 0.55; // Default 0.55x: zoomed out view showing ~1,200px of course vertically on 660px canvas
+  let zoom = 0.5; // Default 0.5x: zoomed out view showing ~1,320px of course vertically on 660px canvas
   let camMode: 'auto' | 'first' | 'last' | 'runner' = 'auto';
   let focusedMarbleId: number | null = null;
   let isManualCam = false;
@@ -3450,12 +3448,12 @@ const data = gameEntry?.data || {
     updateCamModeHUD();
   });
 
-  // Zoom Buttons (0.5x, 0.55x, 0.65x, 0.75x, 1.0x)
+  // Zoom Buttons (0.5x, 0.75x, 1x)
   document.querySelectorAll('.zoom-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.zoom-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      zoom = parseFloat(btn.getAttribute('data-zoom') || '0.55');
+      zoom = parseFloat(btn.getAttribute('data-zoom') || '0.5');
     });
   });
 
@@ -3540,12 +3538,12 @@ const data = gameEntry?.data || {
   });
   updateHudSoundUI();
 
-  // Speed buttons
+  // Speed buttons (0.5x, 1x, 1.5x)
   document.querySelectorAll('.speed-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      timeScale = parseFloat(btn.getAttribute('data-speed') || '1');
+      timeScale = parseFloat(btn.getAttribute('data-speed') || '0.5');
     });
   });
 
