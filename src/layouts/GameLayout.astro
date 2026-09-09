@@ -2,6 +2,8 @@
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import StickyBannerAd from '../components/ads/StickyBannerAd.astro';
+import { getLang, getKoUrl, getEnUrl, t } from '../i18n';
 
 interface Props {
   title: string;
@@ -18,6 +20,9 @@ interface Props {
   layoutMode?: 'full' | 'split';
   hideStageHeader?: boolean;
   hideFooter?: boolean;
+  // hreflang pair (auto-derived if omitted)
+  hreflangKo?: string;
+  hreflangEn?: string;
 }
 
 const {
@@ -30,8 +35,21 @@ const {
   faqItems = [],
   layoutMode = 'full',
   hideStageHeader = false,
-  hideFooter = false
+  hideFooter = false,
+  hreflangKo,
+  hreflangEn,
 } = Astro.props;
+
+// Detect streamer / OBS mode — disable ads when present
+const urlParams = Astro.url.searchParams;
+const streamerMode = urlParams.has('stream') || urlParams.has('obs');
+
+// Locale
+const lang = getLang(Astro.url);
+const rawPathForLang = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '');
+const siteBaseStr = (Astro.site || 'https://errorledger.com').toString();
+const koUrl = hreflangKo ?? getKoUrl(siteBaseStr, rawPathForLang || '/');
+const enUrl = hreflangEn ?? getEnUrl(siteBaseStr, rawPathForLang || '/');
 
 // Combine key controls & rules into 3-4 concise stream-friendly tips
 const quickTips = [...controls.slice(0, 3), ...rules.slice(0, 2)];
@@ -86,14 +104,21 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
 ---
 
 <!doctype html>
-<html lang="ko" class="dark">
+<html lang={lang} class="dark">
   <head>
     <BaseHead 
-      title={`${title} - 무료 방송용 웹게임 | 스트림아케이드`} 
-      description={`${description} 스트리머와 시청자를 위한 무료 웹게임 도구. 치지직, 유튜브, SOOP 지원.`}
+      title={lang === 'en'
+        ? `${title} - Free Stream Tool | StreamArcade`
+        : `${title} - 무료 방송용 웹게임 | 스트림아케이드`}
+      description={lang === 'en'
+        ? `${description} Free interactive stream tool for Twitch, YouTube, CHZZK & SOOP streamers.`
+        : `${description} 스트리머와 시청자를 위한 무료 웹게임 도구. 치지직, 유튜브, SOOP 지원.`}
+      lang={lang}
+      hreflangKo={koUrl}
+      hreflangEn={enUrl}
       breadcrumb={[
-        { name: '홈 (Home)', url: '/' },
-        { name: '방송 도구 (Tools)', url: '/search' },
+        { name: lang === 'en' ? 'Home' : '홈 (Home)', url: lang === 'en' ? '/en' : '/' },
+        { name: lang === 'en' ? 'Stream Tools' : '방송 도구 (Tools)', url: lang === 'en' ? '/en' : '/search' },
         { name: title, url: pageUrl }
       ]}
     />
@@ -178,6 +203,9 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
     </main>
 
     {!hideFooter && <Footer />}
+
+    <!-- Sticky bottom ad — hidden in streamer/OBS mode -->
+    <StickyBannerAd streamerMode={streamerMode} />
 
     <style>
       .game-page-body {

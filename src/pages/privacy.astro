@@ -3,6 +3,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE } from '../consts';
+import { getKoUrl, getEnUrl } from '../i18n';
 ---
 
 <!doctype html>
@@ -11,6 +12,9 @@ import { SITE_TITLE } from '../consts';
     <BaseHead 
       title={`개인정보처리방침 | ${SITE_TITLE}`} 
       description="스트림아케이드(StreamArcade)의 개인정보처리방침, 로컬 스토리지 이용 및 데이터 보안 안내입니다." 
+      lang="ko"
+      hreflangKo={getKoUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
+      hreflangEn={getEnUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
     />
   </head>
   <body class="static-page-body">

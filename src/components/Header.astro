@@ -1,13 +1,22 @@
 ---
 import { SITE_TITLE } from '../consts';
+import { getLang, t, getAlternateUrl } from '../i18n';
+
+const lang = getLang(Astro.url);
+const isEn = lang === 'en';
 
 const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+const prefix = isEn ? '/en' : '';
+
+// Determine where the language switcher links to
+const alternateLang = isEn ? 'ko' : 'en';
+const alternateUrl = getAlternateUrl(currentPath, alternateLang);
 ---
 
 <header class="arcade-header">
   <div class="header-inner">
     <div class="header-left">
-      <a href="/" class="brand-link">
+      <a href={isEn ? '/en' : '/'} class="brand-link">
         <span class="brand-icon">🔴</span>
         <span class="brand-text-main">스트림</span><span class="brand-text-accent">아케이드</span>
       </a>
@@ -15,43 +24,53 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 
     <nav class="header-nav">
       <a 
-        href="/games/marble-roulette" 
-        class={`nav-item ${currentPath.startsWith('/games/marble-roulette') ? 'highlight active' : ''}`}
-        aria-current={currentPath.startsWith('/games/marble-roulette') ? 'page' : undefined}
+        href={`${prefix}/games/marble-roulette`} 
+        class={`nav-item ${currentPath.includes('/games/marble-roulette') ? 'highlight active' : ''}`}
+        aria-current={currentPath.includes('/games/marble-roulette') ? 'page' : undefined}
       >
         <span class="nav-icon">🔮</span>
-        <span class="nav-label">구슬 룰렛</span>
+        <span class="nav-label">{t(lang, 'nav.marble')}</span>
       </a>
       <a 
-        href="/games/roulette" 
-        class={`nav-item ${currentPath.startsWith('/games/roulette') ? 'highlight active' : ''}`}
-        aria-current={currentPath.startsWith('/games/roulette') ? 'page' : undefined}
+        href={`${prefix}/games/roulette`} 
+        class={`nav-item ${currentPath.includes('/games/roulette') && !currentPath.includes('marble') ? 'highlight active' : ''}`}
+        aria-current={currentPath.includes('/games/roulette') && !currentPath.includes('marble') ? 'page' : undefined}
       >
         <span class="nav-icon">🎡</span>
-        <span class="nav-label">돌림판</span>
+        <span class="nav-label">{t(lang, 'nav.roulette')}</span>
       </a>
       <a 
-        href="/games/ladder" 
-        class={`nav-item ${currentPath.startsWith('/games/ladder') ? 'highlight active' : ''}`}
-        aria-current={currentPath.startsWith('/games/ladder') ? 'page' : undefined}
+        href={`${prefix}/games/ladder`} 
+        class={`nav-item ${currentPath.includes('/games/ladder') ? 'highlight active' : ''}`}
+        aria-current={currentPath.includes('/games/ladder') ? 'page' : undefined}
       >
         <span class="nav-icon">🪜</span>
-        <span class="nav-label">사다리타기</span>
+        <span class="nav-label">{t(lang, 'nav.ladder')}</span>
       </a>
       <a 
-        href="/fortune" 
-        class={`nav-item ${currentPath.startsWith('/fortune') ? 'highlight active' : ''}`}
-        aria-current={currentPath.startsWith('/fortune') ? 'page' : undefined}
+        href={`${prefix}/fortune`} 
+        class={`nav-item ${currentPath.endsWith('/fortune') ? 'highlight active' : ''}`}
+        aria-current={currentPath.endsWith('/fortune') ? 'page' : undefined}
       >
         <span class="nav-icon">✨</span>
-        <span class="nav-label">오늘의 운세</span>
+        <span class="nav-label">{t(lang, 'nav.fortune')}</span>
       </a>
     </nav>
 
     <div class="header-actions">
-      <button id="global-sound-toggle" class="action-btn" title="소리 켜기/끄기" aria-label="소리 켜기/끄기">
+      <button id="global-sound-toggle" class="action-btn" title={t(lang, 'nav.sound.off')} aria-label={t(lang, 'nav.sound.off')}>
         <span id="sound-icon">🔊</span>
       </button>
+      <!-- Language Switcher -->
+      <a 
+        href={alternateUrl} 
+        class="action-btn lang-btn" 
+        title={t(lang, 'nav.lang.title')}
+        aria-label={t(lang, 'nav.lang.title')}
+        id="lang-switcher"
+      >
+        {t(lang, 'nav.lang.label')}
+      </a>
     </div>
   </div>
 </header>
@@ -165,12 +184,31 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
     cursor: pointer;
     font-size: 1rem;
     transition: all 0.15s ease;
+    text-decoration: none;
   }
 
   .action-btn:hover {
     background: rgba(255, 255, 255, 0.12);
     border-color: rgba(255, 255, 255, 0.2);
     transform: scale(1.05);
+  }
+
+  /* Language switcher — slightly wider to fit text */
+  .lang-btn {
+    width: auto;
+    min-width: 36px;
+    padding: 0 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #a5b4fc;
+    border-color: rgba(165, 180, 252, 0.25);
+  }
+
+  .lang-btn:hover {
+    color: #ffffff;
+    background: rgba(165, 180, 252, 0.15);
+    border-color: rgba(165, 180, 252, 0.4);
   }
 
   @media (max-width: 640px) {
@@ -196,8 +234,8 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
     const muted = localStorage.getItem('aether_sound_muted') === 'true';
     if (soundIcon) soundIcon.textContent = muted ? '🔇' : '🔊';
     if (soundBtn) {
-      soundBtn.setAttribute('title', muted ? '소리 켜기' : '소리 끄기');
-      soundBtn.setAttribute('aria-label', muted ? '소리 켜기' : '소리 끄기');
+      soundBtn.setAttribute('title', muted ? '소리 켜기 / Unmute' : '소리 끄기 / Mute');
+      soundBtn.setAttribute('aria-label', muted ? '소리 켜기 / Unmute' : '소리 끄기 / Mute');
       soundBtn.classList.toggle('muted', muted);
     }
   }
@@ -219,4 +257,14 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
   window.addEventListener('storage', (e) => {
     if (e.key === 'aether_sound_muted') updateSoundUI();
   });
+
+  // Persist language preference
+  const langSwitcher = document.getElementById('lang-switcher') as HTMLAnchorElement | null;
+  if (langSwitcher) {
+    langSwitcher.addEventListener('click', () => {
+      const href = langSwitcher.getAttribute('href') || '/';
+      const nextLang = href.startsWith('/en') ? 'en' : 'ko';
+      localStorage.setItem('preferred_lang', nextLang);
+    });
+  }
 </script>

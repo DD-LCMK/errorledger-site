@@ -4,6 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_TAGLINE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
+import { getKoUrl, getEnUrl } from '../i18n';
 
 const games = await getCollection('games');
 const priorityOrder = ['marble-roulette', 'roulette', 'ladder', 'fortune'];
@@ -72,7 +73,10 @@ const homeFaqSchema = JSON.stringify({
 <!doctype html>
 <html lang="ko" class="dark">
   <head>
-    <BaseHead title={`${SITE_TITLE} - ${SITE_TAGLINE}`} description={SITE_DESCRIPTION} />
+    <BaseHead title={`${SITE_TITLE} - ${SITE_TAGLINE}`} description={SITE_DESCRIPTION} lang="ko"
+      hreflangKo={getKoUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
+      hreflangEn={getEnUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
+    />
     <script type="application/ld+json" set:html={homeFaqSchema}></script>
   </head>
   <body class="arcade-home-body">

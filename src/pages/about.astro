@@ -3,6 +3,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE } from '../consts';
+import { getKoUrl, getEnUrl } from '../i18n';
 ---
 
 <!doctype html>
@@ -11,6 +12,9 @@ import { SITE_TITLE } from '../consts';
     <BaseHead 
       title={`서비스 소개 - ${SITE_TITLE}`} 
       description="치지직, 유튜브, SOOP 스트리머를 위한 무료 방송용 웹게임 및 추첨 도구 플랫폼 스트림아케이드 소개입니다." 
+      lang="ko"
+      hreflangKo={getKoUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
+      hreflangEn={getEnUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
     />
   </head>
   <body class="static-page-body">

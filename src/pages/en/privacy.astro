@@ -1,0 +1,168 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { getKoUrl, getEnUrl } from '../../i18n';
+
+const siteBase = Astro.site?.toString() || 'https://errorledger.com';
+const rawPath = Astro.url.pathname.replace(/\/$/, '');
+const koUrl = getKoUrl(siteBase, rawPath);
+const enUrl = getEnUrl(siteBase, rawPath);
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead
+      title="Privacy Policy | StreamArcade"
+      description="StreamArcade's privacy policy. We collect no personal data, require no login, and store only local browser preferences (localStorage). 100% client-side."
+      lang="en"
+      hreflangKo={koUrl}
+      hreflangEn={enUrl}
+    />
+  </head>
+  <body class="static-page-body">
+    <Header />
+
+    <main class="static-page-main">
+      <div class="content-container">
+        <span class="pill-label">Legal & Privacy</span>
+        <h1>Privacy Policy</h1>
+        <p class="updated-date"><em>Last updated: September 2026</em></p>
+
+        <p>
+          <strong>StreamArcade</strong> takes your privacy seriously. This policy explains what information is handled when you use our service and how it is protected.
+        </p>
+
+        <hr class="divider" />
+
+        <h2>1. Client-Side Architecture & Local Storage</h2>
+        <p>
+          StreamArcade runs entirely in your browser. No account registration or login is required, and no personal profiles are stored on remote servers.
+        </p>
+        <p>
+          Solely to improve your experience, the following preferences are saved locally in your browser's <strong>localStorage</strong>:
+        </p>
+        <ul>
+          <li>Participant lists and game settings you enter</li>
+          <li>Sound mute state (<code>aether_sound_muted</code>)</li>
+          <li>Language preference (<code>preferred_lang</code>)</li>
+          <li>Dark mode setting (<code>theme</code>)</li>
+        </ul>
+        <p>This data never leaves your device. You can clear it at any time via your browser's developer tools or site data settings.</p>
+
+        <hr class="divider" />
+
+        <h2>2. Google AdSense</h2>
+        <p>
+          StreamArcade uses Google AdSense to display advertisements. Google may use cookies and collect data to serve personalized ads in accordance with <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google's Privacy Policy</a>.
+        </p>
+        <p>
+          <strong>Streamer Mode:</strong> Appending <code>?stream=true</code> or <code>?obs=true</code> to any game URL completely disables ad scripts — no cookies are set and no ad data is collected during broadcast sessions.
+        </p>
+
+        <hr class="divider" />
+
+        <h2>3. No Analytics or Tracking</h2>
+        <p>
+          StreamArcade does not use Google Analytics, Facebook Pixel, or any third-party user-tracking services beyond what Google AdSense requires.
+        </p>
+
+        <hr class="divider" />
+
+        <h2>4. Contact</h2>
+        <p>
+          For privacy-related questions, contact us at <a href="mailto:contact@errorledger.com">contact@errorledger.com</a>.
+        </p>
+      </div>
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .static-page-body {
+    background: #090d16;
+    color: #e2e8f0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .static-page-main {
+    flex: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 6rem;
+    width: 100%;
+  }
+
+  .content-container {
+    max-width: 720px;
+  }
+
+  .pill-label {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #a855f7;
+    background: rgba(168, 85, 247, 0.12);
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #f8fafc;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.03em;
+  }
+
+  .updated-date {
+    font-size: 0.82rem;
+    color: #64748b;
+    margin-bottom: 1.5rem;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    margin: 2rem 0;
+  }
+
+  h2 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #f1f5f9;
+    margin: 1.5rem 0 0.75rem;
+  }
+
+  p, li {
+    font-size: 0.92rem;
+    color: #94a3b8;
+    line-height: 1.75;
+  }
+
+  ul {
+    padding-left: 1.4rem;
+    margin: 0.5rem 0 1rem;
+  }
+
+  li { margin-bottom: 0.4rem; }
+
+  a { color: #38bdf8; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  code {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.1rem 0.3rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: #38bdf8;
+  }
+</style>

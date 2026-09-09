@@ -1,0 +1,190 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import { getKoUrl, getEnUrl } from '../../../i18n';
+
+const siteBase = Astro.site?.toString() || 'https://errorledger.com';
+const rawPath = Astro.url.pathname.replace(/\/$/, '');
+const koUrl = getKoUrl(siteBase, rawPath);
+const enUrl = getEnUrl(siteBase, rawPath);
+
+const urlParams = Astro.url.searchParams;
+const streamerMode = urlParams.has('stream') || urlParams.has('obs');
+const gameUrl = streamerMode ? '/games/ladder?stream=true' : '/games/ladder';
+
+const webAppSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Ghost Leg Ladder Game (Amidakuji) — StreamArcade",
+  "alternateName": ["Ghost Leg", "Amidakuji", "Ladder Game Online", "사다리타기"],
+  "url": enUrl,
+  "description": "Free browser-based Ghost Leg Ladder Game (Amidakuji) for 2–20 players. Real-time animated neon footstep trail for a fair, one-to-one result. Perfect for stream challenges, giveaways, and penalties.",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "All (Web Browser, Chrome, Edge, Safari, OBS Studio)",
+  "inLanguage": ["en-US", "ko-KR"],
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+});
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead
+      title="Ghost Leg Ladder Game (Amidakuji) — Free Stream Ladder for 2-20 Players | StreamArcade"
+      description="Free browser Ghost Leg Ladder Game (Amidakuji) for 2–20 players. Animated neon footstep trail, fair bijective result, instant OBS capture. No install. No login."
+      lang="en"
+      hreflangKo={koUrl}
+      hreflangEn={enUrl}
+      keywords="Ghost Leg Ladder Game, Amidakuji Online, Free Ladder Game, Stream Ladder Game, Twitch Ladder, Random Ladder Picker, Amidakuji Simulator, Ghost Leg Online Free"
+    />
+    <script type="application/ld+json" set:html={webAppSchema}></script>
+  </head>
+  <body class="en-game-body">
+    <Header />
+
+    <main class="en-game-main">
+      <div class="en-game-intro">
+        <h1 class="en-game-title">🪜 Ghost Leg Ladder Game</h1>
+        <p class="en-game-desc">Free Amidakuji for streamers — add players, reveal results with a neon animated trail.</p>
+      </div>
+
+      <div class="en-game-frame-wrap">
+        <iframe
+          src={gameUrl}
+          class="en-game-iframe"
+          title="Ghost Leg Ladder Game — StreamArcade"
+          allowfullscreen
+          loading="eager"
+          scrolling="no"
+        ></iframe>
+      </div>
+
+      <section class="en-faq-section">
+        <h2>Ghost Leg Ladder FAQ</h2>
+        <div class="en-faq-grid">
+          <div class="en-faq-card">
+            <strong>What is Ghost Leg / Amidakuji?</strong>
+            <p>Ghost Leg (Amidakuji) is a traditional Japanese lottery where players follow vertical lines connected by random horizontal rungs. Each player maps to exactly one result — completely fair and tamper-proof.</p>
+          </div>
+          <div class="en-faq-card">
+            <strong>How many players can join?</strong>
+            <p>2 to 20 players per round. Enter names on the left and outcomes on the right, then reveal each path one by one or all at once.</p>
+          </div>
+          <div class="en-faq-card">
+            <strong>How do I use it on OBS?</strong>
+            <p>Add a Browser Source in OBS pointing to this page, then click ⛶ Fullscreen. Append <code>?stream=true</code> to disable ads for broadcast.</p>
+          </div>
+          <div class="en-faq-card">
+            <strong>Is the result fair?</strong>
+            <p>Yes. The ladder uses a bijective (one-to-one) mapping — every player maps to exactly one outcome and no two players can share a result.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    {!streamerMode && <Footer />}
+  </body>
+</html>
+
+<style>
+  .en-game-body {
+    background: #090d16;
+    color: #f1f5f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .en-game-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .en-game-intro {
+    padding: 0.6rem 1rem 0.4rem;
+    max-width: 1440px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .en-game-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 0.2rem;
+  }
+
+  .en-game-desc {
+    font-size: 0.82rem;
+    color: #64748b;
+    margin: 0;
+  }
+
+  .en-game-frame-wrap {
+    flex: 1;
+    width: 100%;
+    min-height: 85vh;
+  }
+
+  .en-game-iframe {
+    width: 100%;
+    height: 100%;
+    min-height: 85vh;
+    border: none;
+    display: block;
+    background: #090d16;
+  }
+
+  .en-faq-section {
+    padding: 2rem 1rem 3rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .en-faq-section h2 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 1.25rem;
+  }
+
+  .en-faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+  .en-faq-card {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 1rem;
+  }
+
+  .en-faq-card strong {
+    display: block;
+    font-size: 0.87rem;
+    color: #e2e8f0;
+    margin-bottom: 0.4rem;
+  }
+
+  .en-faq-card p {
+    font-size: 0.8rem;
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  code {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.1rem 0.3rem;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    color: #38bdf8;
+  }
+</style>

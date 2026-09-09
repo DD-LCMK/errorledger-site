@@ -1,0 +1,157 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { SITE_TITLE } from '../../consts';
+import { getKoUrl, getEnUrl } from '../../i18n';
+
+const siteBase = Astro.site?.toString() || 'https://errorledger.com';
+const rawPath = Astro.url.pathname.replace(/\/$/, '');
+const koUrl = getKoUrl(siteBase, rawPath);
+const enUrl = getEnUrl(siteBase, rawPath);
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead
+      title={`About StreamArcade — Free Stream Tools for Twitch & YouTube`}
+      description="Learn about StreamArcade: a free, no-login platform delivering interactive browser-based stream games and tools for live creators on Twitch, YouTube, CHZZK, and SOOP."
+      lang="en"
+      hreflangKo={koUrl}
+      hreflangEn={enUrl}
+    />
+  </head>
+  <body class="static-page-body">
+    <Header />
+
+    <main class="static-page-main">
+      <div class="content-container">
+        <span class="pill-label">About StreamArcade</span>
+        <h1>Interactive Stream Tools for Creators & Viewers</h1>
+
+        <p class="lead-text">
+          <strong>StreamArcade</strong> is a free, browser-based platform of interactive games and random-draw tools designed for live streamers on <em>Twitch, YouTube Live, CHZZK, and SOOP (AfreecaTV)</em>.
+        </p>
+
+        <hr class="divider" />
+
+        <h2>Our Core Values</h2>
+        <p>
+          We built StreamArcade to eliminate the friction of heavy installs, complicated logins, and paid subscriptions for tools streamers need in real time.
+        </p>
+        <ul>
+          <li><strong>Zero Install, Instant Launch:</strong> A single URL loads in under a second and is ready to capture via OBS Browser Source.</li>
+          <li><strong>Broadcast-Optimized UI:</strong> High-contrast dark mode, large clickable controls, real-time sound effects, and fullscreen mode.</li>
+          <li><strong>Zero Data Collection:</strong> No sign-up, no tracking, no personal data stored. All settings are kept locally in your browser.</li>
+          <li><strong>100% Free:</strong> StreamArcade is a free project for the streaming community with no paywalls, ever.</li>
+        </ul>
+
+        <h2>Tool Lineup</h2>
+        <ul>
+          <li><strong>Marble Race Roulette:</strong> A real-time physics marble race with a 7,200px long track, Galton pins, twin windmills, pinball bumpers, a vortex funnel, and a dramatic finale propeller.</li>
+          <li><strong>Random Spin Wheel:</strong> Satisfying ratchet-click audio, winner confetti, automatic item removal, and one-click presets for food, penalties, and giveaways.</li>
+          <li><strong>Ghost Leg Ladder Game:</strong> Animated neon footstep Amidakuji for 2–20 players — fair, one-to-one bijective result for every round.</li>
+          <li><strong>Daily Fortune:</strong> Auto-updated at midnight: 12 Eastern zodiac animals and 12 Western star signs each with lucky numbers, colors, and DO/DON'T tips.</li>
+        </ul>
+
+        <h2>Feedback & Contact</h2>
+        <p>
+          Have an idea for a new tool or spotted a bug? We'd love to hear from you at
+          <a href="mailto:contact@errorledger.com">contact@errorledger.com</a> or via the
+          <a href="/en/contact">Contact page</a>.
+        </p>
+      </div>
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .static-page-body {
+    background: #090d16;
+    color: #e2e8f0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .static-page-main {
+    flex: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 6rem;
+    width: 100%;
+  }
+
+  .content-container {
+    max-width: 720px;
+  }
+
+  .pill-label {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #a855f7;
+    background: rgba(168, 85, 247, 0.12);
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #f8fafc;
+    margin: 0 0 1.25rem;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+  }
+
+  .lead-text {
+    font-size: 1.05rem;
+    color: #94a3b8;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    margin: 2rem 0;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #f1f5f9;
+    margin: 2rem 0 0.75rem;
+  }
+
+  p, li {
+    font-size: 0.92rem;
+    color: #94a3b8;
+    line-height: 1.75;
+  }
+
+  ul {
+    padding-left: 1.4rem;
+    margin: 0.5rem 0 1rem;
+  }
+
+  li {
+    margin-bottom: 0.5rem;
+  }
+
+  a {
+    color: #38bdf8;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+</style>

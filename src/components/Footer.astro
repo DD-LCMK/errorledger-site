@@ -1,4 +1,9 @@
 ---
+import { getLang, t } from '../i18n';
+
+const lang = getLang(Astro.url);
+const isEn = lang === 'en';
+const prefix = isEn ? '/en' : '';
 const currentYear = new Date().getFullYear();
 ---
 
@@ -10,35 +15,43 @@ const currentYear = new Date().getFullYear();
         <span class="brand-text-main">스트림</span><span class="brand-text-accent">아케이드</span>
       </div>
       <p class="footer-desc">
-        스트림아케이드는 치지직(CHZZK), SOOP(아프리카TV), 유튜브 라이브 스트리머와 시청자를 위한 무료 방송용 인터랙티브 웹게임 플랫폼입니다. 언제 어디서나 간편하게 띄워 생방송 텐션을 올려보세요.
+        {t(lang, 'footer.desc')}
       </p>
       <div class="footer-badge">
-        <span>⚡ 100% 무료 • 로그인 없는 즉시 실행</span>
+        <span>{t(lang, 'footer.badge')}</span>
       </div>
+      <a
+        href="https://www.profitableratecpmnetwork.com/wf4mrbwzm?key=7e7a892e1143f427ce896b7cdd946495"
+        target="_blank"
+        rel="noopener noreferrer sponsored"
+        class="footer-support-link"
+      >
+        {isEn ? '☕ Support StreamArcade' : '☕ 스트림아케이드 후원하기'}
+      </a>
     </div>
 
     <div class="footer-links-col">
-      <h4>추천 방송 도구</h4>
+      <h4>{t(lang, 'footer.tools.title')}</h4>
       <ul>
-        <li><a href="/games/roulette">🎡 돌림판 룰렛 (추첨/벌칙)</a></li>
-        <li><a href="/games/marble-roulette">🔮 구슬 레이스 룰렛 (마블 레이스)</a></li>
-        <li><a href="/games/ladder">🪜 사다리타기 (커피/치킨 내기)</a></li>
+        <li><a href={`${prefix}/games/roulette`}>{t(lang, 'footer.tools.roulette')}</a></li>
+        <li><a href={`${prefix}/games/marble-roulette`}>{t(lang, 'footer.tools.marble')}</a></li>
+        <li><a href={`${prefix}/games/ladder`}>{t(lang, 'footer.tools.ladder')}</a></li>
       </ul>
     </div>
 
     <div class="footer-links-col">
-      <h4>고객지원 & 안내</h4>
+      <h4>{t(lang, 'footer.support.title')}</h4>
       <ul>
-        <li><a href="/privacy">개인정보처리방침</a></li>
-        <li><a href="/terms">이용약관</a></li>
-        <li><a href="/about">서비스 소개</a></li>
-        <li><a href="/contact">문의하기</a></li>
+        <li><a href="/privacy">{t(lang, 'footer.support.privacy')}</a></li>
+        <li><a href="/terms">{t(lang, 'footer.support.terms')}</a></li>
+        <li><a href={`${prefix}/about`}>{t(lang, 'footer.support.about')}</a></li>
+        <li><a href={`${prefix}/contact`}>{t(lang, 'footer.support.contact')}</a></li>
       </ul>
     </div>
   </div>
 
   <div class="footer-bottom">
-    <p>&copy; {currentYear} 스트림아케이드 (StreamArcade). All rights reserved. 방송인을 위한 무료 인터랙티브 도구.</p>
+    <p>&copy; {currentYear} {t(lang, 'footer.copyright')}</p>
   </div>
 </footer>
 
@@ -99,6 +112,29 @@ const currentYear = new Date().getFullYear();
     padding: 0.25rem 0.6rem;
     border-radius: 999px;
     font-weight: 600;
+  }
+
+  .footer-support-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.85rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    width: fit-content;
+  }
+
+  .footer-support-link:hover {
+    background: rgba(245, 158, 11, 0.16);
+    border-color: rgba(245, 158, 11, 0.4);
+    color: #fbbf24;
   }
 
   .footer-links-col h4 {

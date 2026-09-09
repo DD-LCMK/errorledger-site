@@ -1,0 +1,626 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { getCollection } from 'astro:content';
+import { getKoUrl, getEnUrl } from '../../i18n';
+
+const games = await getCollection('games');
+const priorityOrder = ['marble-roulette', 'roulette', 'ladder', 'fortune'];
+const sortedGames = games.sort((a, b) => {
+  const idxA = priorityOrder.indexOf(a.id);
+  const idxB = priorityOrder.indexOf(b.id);
+  return (idxA !== -1 ? idxA : 99) - (idxB !== -1 ? idxB : 99);
+});
+
+const siteBase = Astro.site?.toString() || 'https://errorledger.com';
+const rawPath = Astro.url.pathname.replace(/\/$/, '') || '/en';
+const koUrl = getKoUrl(siteBase, rawPath);
+const enUrl = getEnUrl(siteBase, rawPath);
+
+const homeFaqSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I use StreamArcade on OBS Studio or Prism Live?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "In OBS Studio or Prism Live Studio, add a [Browser Source] or [Window Capture], then click the [⛶ Fullscreen] button in the top-right of any game. It will fill your capture area cleanly without any browser chrome."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is StreamArcade free? Do I need to sign up?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes — 100% free, forever. No login, no account, no download required. Every tool is ready to use in your browser within seconds."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does it work on Twitch, YouTube Live, and other platforms?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. StreamArcade is a standard web app that works in any browser, making it compatible with Twitch, YouTube Live, CHZZK, SOOP (AfreecaTV), Kick, and any other streaming platform."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are the results fair? Can results be manipulated?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Marble Roulette uses a real 2D rigid-body physics engine (gravity, friction, elastic collisions) calculated every frame. The Spin Wheel and Ladder Game use cryptographically seeded pseudo-random algorithms. No one can predict or manipulate the outcome."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is StreamArcade (Marble Roulette & Stream Tools)?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "StreamArcade provides 100% free, client-side interactive web games and stream tools including Marble Roulette (physics marble race simulator), Random Wheel Picker, and Ghost Leg Ladder Game for global livestreamers and creators on Twitch and YouTube."
+      }
+    }
+  ]
+});
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead
+      title="StreamArcade — Free Marble Roulette, Spin Wheel & Ladder Game for Streamers"
+      description="Free browser-based stream tools for Twitch, YouTube, CHZZK & SOOP streamers. Marble Race Roulette, Random Wheel Picker, Ghost Leg Ladder Game — no install, no login."
+      lang="en"
+      hreflangKo={koUrl}
+      hreflangEn={enUrl}
+      keywords="Marble Roulette, Marble Race, Stream Arcade, StreamArcade, Random Wheel Picker, Ghost Leg Ladder, Amidakuji, Streamer Tools, Twitch Tools, YouTube Live Games, Free Stream Overlay, OBS Browser Source Games"
+    />
+    <script type="application/ld+json" set:html={homeFaqSchema}></script>
+  </head>
+  <body class="arcade-home-body">
+    <Header />
+
+    <main class="arcade-home-main">
+      <!-- Hero Section -->
+      <section class="hero-showcase">
+        <div class="hero-backdrop"></div>
+        <div class="hero-content">
+          <h1 class="hero-headline">
+            Free <span class="gradient-text">Stream Tools</span> for Live Creators
+          </h1>
+
+          <p class="hero-subtext">
+            Launch in 1 second — no install, no login. Marble race, spin wheel, and ladder game built for streamers.
+          </p>
+
+          <!-- Featured Game Hero Banner -->
+          <div class="featured-hero-card">
+            <div class="featured-main-row">
+              <div class="featured-icon-box">🔮</div>
+              <div class="featured-text">
+                <span class="flagship-label">🔥 #1 Featured Tool</span>
+                <h2>Marble Race Roulette</h2>
+                <p>A 7,200px long track with physics pins, spinners, and a finale propeller — the most exciting way to pick a winner live.</p>
+              </div>
+              <div class="featured-action">
+                <a href="/en/games/marble-roulette" class="btn-play-hero">
+                  <span>Start Marble Race →</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Games Grid -->
+      <section class="games-directory-section">
+        <div class="section-header">
+          <h2>Stream Tool Lineup</h2>
+        </div>
+
+        <div class="games-grid">
+          {sortedGames.map(game => {
+            const href = game.id === 'fortune' ? '/en/fortune' : `/en/games/${game.id}`;
+            const btnText = game.id === 'fortune' ? 'View Fortune →' : 'Launch →';
+            const enTitle: Record<string, string> = {
+              'marble-roulette': 'Marble Race Roulette',
+              'roulette': 'Random Spin Wheel',
+              'ladder': 'Ghost Leg Ladder Game',
+              'fortune': 'Daily Fortune',
+            };
+            const enTagline: Record<string, string> = {
+              'marble-roulette': 'Physics-based marble race with live track, pins & spinners',
+              'roulette': 'Ratchet-click spin wheel with confetti winner reveal',
+              'ladder': 'Real-time animated ghost-leg (Amidakuji) for 2–20 players',
+              'fortune': 'Daily auto-updated horoscope & zodiac fortune for stream openers',
+            };
+            return (
+              <article class="game-card">
+                <div class="card-top-row">
+                  <span class="card-icon">{game.data.icon}</span>
+                  <span class="badge-accent">{game.data.badge}</span>
+                </div>
+
+                <div class="card-body">
+                  <h3 class="card-title">
+                    <a href={href}>{enTitle[game.id] ?? game.data.title}</a>
+                  </h3>
+                  <p class="card-tagline">{enTagline[game.id] ?? game.data.tagline}</p>
+                </div>
+
+                <div class="card-footer">
+                  <span class="meta-item">⏱️ {game.data.playTime}</span>
+                  <a href={href} class="btn-play-card">
+                    <span>{btnText}</span>
+                  </a>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      <!-- Platform Overview -->
+      <section class="seo-overview-section">
+        <div class="overview-container">
+          <div class="overview-header">
+            <span class="overview-pill">STREAM ARCADE PLATFORM</span>
+            <h2>Free Interactive Web Games & Random Draw Tools for Streamers</h2>
+            <p class="overview-sub">
+              StreamArcade is a no-install, no-login platform delivering broadcast-ready interactive games for Twitch, YouTube Live, CHZZK, SOOP (AfreecaTV), and Kick streamers.
+            </p>
+          </div>
+
+          <div class="overview-grid">
+            <div class="overview-card">
+              <span class="overview-icon">🔮</span>
+              <h3>Marble Race Roulette</h3>
+              <p>
+                More thrilling than a plain spin wheel — a real-time physics marble race with Galton pin boards, twin windmills, pinball bumpers, vortex bowls, and a giant finale propeller that bats marbles back for dramatic reversals.
+              </p>
+            </div>
+
+            <div class="overview-card">
+              <span class="overview-icon">🎡</span>
+              <h3>Random Spin Wheel (Roulette)</h3>
+              <p>
+                Satisfying ratchet-click audio, winner confetti explosion, automatic removal of picked items, and one-click presets for food, penalties, and giveaways. Built for broadcast.
+              </p>
+            </div>
+
+            <div class="overview-card">
+              <span class="overview-icon">🪜</span>
+              <h3>Ghost Leg Ladder Game (Amidakuji)</h3>
+              <p>
+                Animated neon footstep trail through a real-time Amidakuji ladder for 2–20 players. Fair, one-to-one bijective mapping ensures nobody can predict or rig the result.
+              </p>
+            </div>
+
+            <div class="overview-card">
+              <span class="overview-icon">✨</span>
+              <h3>Daily Fortune & Horoscope</h3>
+              <p>
+                Auto-refreshed at midnight: 12 Eastern zodiac animal fortunes and 12 Western star sign readings, each with lucky numbers, colors, and daily DO/DON'T tips for stream openers.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section class="home-faq-section">
+        <div class="faq-container">
+          <h2>Frequently Asked Questions</h2>
+          <div class="faq-grid">
+            <div class="faq-box">
+              <h3>How do I use this on OBS or Prism?</h3>
+              <p>Add a Browser Source or Window Capture in OBS Studio / Prism Live Studio, then click the [⛶ Fullscreen] button in the top-right of any game to go borderless for clean capture.</p>
+            </div>
+            <div class="faq-box">
+              <h3>Is it free? Do I need to sign up?</h3>
+              <p>100% free, forever. No account, no login, no download. Open the link and it works instantly in any browser.</p>
+            </div>
+            <div class="faq-box">
+              <h3>Does it work on Twitch, YouTube, and CHZZK?</h3>
+              <p>Yes. It runs in any standard web browser, so it works with Twitch, YouTube Live, CHZZK, SOOP, Kick, and any other platform.</p>
+            </div>
+            <div class="faq-box">
+              <h3>Are results fair? Can anyone manipulate them?</h3>
+              <p>Marble Roulette uses a real per-frame 2D physics engine; no one can influence the outcome. The Wheel and Ladder use cryptographically seeded PRNG with bijective mapping — fully tamper-proof.</p>
+            </div>
+            <div class="faq-box">
+              <h3>Can I give one person multiple marbles?</h3>
+              <p>Yes! In the participant list, type <code>Alice * 3</code> or <code>Bob * 5</code> to give that person multiple marbles and increase their winning odds proportionally.</p>
+            </div>
+            <div class="faq-box">
+              <h3>What is StreamArcade?</h3>
+              <p>StreamArcade provides 100% free, client-side interactive web games and stream tools — Marble Roulette, Random Wheel Picker, and Ghost Leg Ladder Game — for global livestreamers and creators.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .arcade-home-body {
+    background: #090d16 !important;
+    color: #f1f5f9 !important;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .arcade-home-main {
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem 5rem;
+    width: 100%;
+  }
+
+  .hero-showcase {
+    position: relative;
+    padding: 3rem 1rem 2.5rem;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .hero-backdrop {
+    position: absolute;
+    top: -30%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 650px;
+    height: 450px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.22) 0%, rgba(56, 189, 248, 0.1) 50%, transparent 80%);
+    filter: blur(60px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 850px;
+    margin: 0 auto;
+  }
+
+  .hero-headline {
+    font-size: clamp(1.9rem, 5vw, 3.2rem);
+    font-weight: 900;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+    color: #f8fafc;
+    letter-spacing: -0.03em;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #a855f7 0%, #38bdf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-subtext {
+    font-size: 1.05rem;
+    color: #94a3b8;
+    margin-bottom: 2rem;
+    max-width: 560px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .featured-hero-card {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.12) 0%, rgba(56, 189, 248, 0.08) 100%);
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: left;
+  }
+
+  .featured-main-row {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .featured-icon-box {
+    font-size: 2.8rem;
+    flex-shrink: 0;
+  }
+
+  .featured-text {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .flagship-label {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #fb923c;
+    background: rgba(251, 146, 60, 0.12);
+    border: 1px solid rgba(251, 146, 60, 0.3);
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.04em;
+  }
+
+  .featured-text h2 {
+    font-size: 1.35rem;
+    font-weight: 900;
+    color: #f8fafc;
+    margin: 0 0 0.35rem;
+  }
+
+  .featured-text p {
+    font-size: 0.88rem;
+    color: #94a3b8;
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  .featured-action {
+    flex-shrink: 0;
+  }
+
+  .btn-play-hero {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: linear-gradient(135deg, #a855f7 0%, #38bdf8 100%);
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 800;
+    padding: 0.65rem 1.3rem;
+    border-radius: 10px;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .btn-play-hero:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(168, 85, 247, 0.35);
+  }
+
+  .games-directory-section {
+    margin-top: 3.5rem;
+  }
+
+  .section-header {
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .section-header h2 {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #f8fafc;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+
+  .game-card {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 14px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    transition: all 0.2s ease;
+  }
+
+  .game-card:hover {
+    border-color: rgba(168, 85, 247, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  }
+
+  .card-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-icon {
+    font-size: 2rem;
+  }
+
+  .badge-accent {
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: rgba(168, 85, 247, 0.15);
+    color: #c084fc;
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+  }
+
+  .card-title a {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #f8fafc;
+    text-decoration: none;
+  }
+
+  .card-title a:hover {
+    color: #a855f7;
+  }
+
+  .card-tagline {
+    font-size: 0.82rem;
+    color: #64748b;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+  }
+
+  .meta-item {
+    font-size: 0.76rem;
+    color: #64748b;
+  }
+
+  .btn-play-card {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #a855f7;
+    text-decoration: none;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    padding: 0.3rem 0.7rem;
+    border-radius: 7px;
+    background: rgba(168, 85, 247, 0.08);
+    transition: all 0.15s ease;
+  }
+
+  .btn-play-card:hover {
+    background: rgba(168, 85, 247, 0.18);
+    border-color: rgba(168, 85, 247, 0.5);
+    color: #d8b4fe;
+  }
+
+  .seo-overview-section {
+    margin-top: 4rem;
+    padding: 3rem 1.5rem;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+  }
+
+  .overview-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .overview-pill {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    margin-bottom: 0.75rem;
+  }
+
+  .overview-header h2 {
+    font-size: 1.55rem;
+    font-weight: 900;
+    color: #f8fafc;
+    margin: 0 0 0.75rem;
+    letter-spacing: -0.02em;
+  }
+
+  .overview-sub {
+    font-size: 0.93rem;
+    color: #64748b;
+    max-width: 680px;
+    margin: 0 auto;
+    line-height: 1.65;
+  }
+
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .overview-card {
+    background: rgba(9, 13, 22, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+
+  .overview-icon {
+    font-size: 1.8rem;
+    display: block;
+    margin-bottom: 0.65rem;
+  }
+
+  .overview-card h3 {
+    font-size: 0.97rem;
+    font-weight: 800;
+    color: #f1f5f9;
+    margin: 0 0 0.5rem;
+  }
+
+  .overview-card p {
+    font-size: 0.82rem;
+    color: #64748b;
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  .home-faq-section {
+    margin-top: 4rem;
+  }
+
+  .faq-container h2 {
+    font-size: 1.55rem;
+    font-weight: 900;
+    color: #f8fafc;
+    text-align: center;
+    margin-bottom: 1.75rem;
+    letter-spacing: -0.02em;
+  }
+
+  .faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .faq-box {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+
+  .faq-box h3 {
+    font-size: 0.93rem;
+    font-weight: 800;
+    color: #e2e8f0;
+    margin: 0 0 0.5rem;
+  }
+
+  .faq-box p {
+    font-size: 0.83rem;
+    color: #64748b;
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  .faq-box code {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.1rem 0.3rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: #38bdf8;
+  }
+</style>

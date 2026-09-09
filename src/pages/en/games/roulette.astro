@@ -1,0 +1,190 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import { getKoUrl, getEnUrl } from '../../../i18n';
+
+const siteBase = Astro.site?.toString() || 'https://errorledger.com';
+const rawPath = Astro.url.pathname.replace(/\/$/, '');
+const koUrl = getKoUrl(siteBase, rawPath);
+const enUrl = getEnUrl(siteBase, rawPath);
+
+const urlParams = Astro.url.searchParams;
+const streamerMode = urlParams.has('stream') || urlParams.has('obs');
+const gameUrl = streamerMode ? '/games/roulette?stream=true' : '/games/roulette';
+
+const webAppSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Random Spin Wheel — StreamArcade",
+  "alternateName": ["Spin Wheel", "Random Wheel Picker", "Roulette Spinner", "돌림판 룰렛"],
+  "url": enUrl,
+  "description": "Free browser spin wheel with ratchet-click audio, winner confetti, and one-click presets for food, penalties, and giveaways. No install. No login.",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "All (Web Browser, Chrome, Edge, Safari, OBS Studio)",
+  "inLanguage": ["en-US", "ko-KR"],
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+});
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead
+      title="Random Spin Wheel — Free Online Roulette Picker for Streamers | StreamArcade"
+      description="Free browser spin wheel with satisfying ratchet-click audio, winner confetti, automatic item removal, and one-click presets. Perfect for Twitch & YouTube giveaways. No install."
+      lang="en"
+      hreflangKo={koUrl}
+      hreflangEn={enUrl}
+      keywords="Random Spin Wheel, Free Spin Wheel, Wheel Picker Online, Twitch Roulette, YouTube Giveaway Wheel, Random Name Picker, Random Wheel Spinner, Stream Roulette Tool"
+    />
+    <script type="application/ld+json" set:html={webAppSchema}></script>
+  </head>
+  <body class="en-game-body">
+    <Header />
+
+    <main class="en-game-main">
+      <div class="en-game-intro">
+        <h1 class="en-game-title">🎡 Random Spin Wheel</h1>
+        <p class="en-game-desc">Free stream roulette — add items, spin, and reveal the winner live.</p>
+      </div>
+
+      <div class="en-game-frame-wrap">
+        <iframe
+          src={gameUrl}
+          class="en-game-iframe"
+          title="Random Spin Wheel — StreamArcade"
+          allowfullscreen
+          loading="eager"
+          scrolling="no"
+        ></iframe>
+      </div>
+
+      <section class="en-faq-section">
+        <h2>Spin Wheel FAQ</h2>
+        <div class="en-faq-grid">
+          <div class="en-faq-card">
+            <strong>How do I use it on OBS?</strong>
+            <p>Add a Browser Source in OBS pointing to this page. Click ⛶ Fullscreen for clean capture. Append <code>?stream=true</code> to disable ads.</p>
+          </div>
+          <div class="en-faq-card">
+            <strong>Can items be removed after picking?</strong>
+            <p>Yes. Enable "Remove winner after pick" in the settings panel to automatically exclude the picked item from the next spin.</p>
+          </div>
+          <div class="en-faq-card">
+            <strong>Can I save my list?</strong>
+            <p>Paste your item list before spinning. The list stays in the session. Copy it to a text file to save permanently.</p>
+          </div>
+          <div class="en-faq-card">
+            <strong>Is the result random?</strong>
+            <p>Yes. The spinner uses a cryptographically seeded PRNG for the stop angle, so no one can predict or manipulate the result.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    {!streamerMode && <Footer />}
+  </body>
+</html>
+
+<style>
+  .en-game-body {
+    background: #090d16;
+    color: #f1f5f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .en-game-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .en-game-intro {
+    padding: 0.6rem 1rem 0.4rem;
+    max-width: 1440px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .en-game-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 0.2rem;
+  }
+
+  .en-game-desc {
+    font-size: 0.82rem;
+    color: #64748b;
+    margin: 0;
+  }
+
+  .en-game-frame-wrap {
+    flex: 1;
+    width: 100%;
+    min-height: 85vh;
+  }
+
+  .en-game-iframe {
+    width: 100%;
+    height: 100%;
+    min-height: 85vh;
+    border: none;
+    display: block;
+    background: #090d16;
+  }
+
+  .en-faq-section {
+    padding: 2rem 1rem 3rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .en-faq-section h2 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 1.25rem;
+  }
+
+  .en-faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+  .en-faq-card {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 1rem;
+  }
+
+  .en-faq-card strong {
+    display: block;
+    font-size: 0.87rem;
+    color: #e2e8f0;
+    margin-bottom: 0.4rem;
+  }
+
+  .en-faq-card p {
+    font-size: 0.8rem;
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  code {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.1rem 0.3rem;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    color: #38bdf8;
+  }
+</style>

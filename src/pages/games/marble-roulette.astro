@@ -86,13 +86,13 @@ const data = gameEntry?.data || {
             
             <div class="hud-right-items">
               <div class="zoom-control-group">
-                <button class="zoom-btn active" data-zoom="0.5" title="파노라마 뷰 (코스 1320px 표시)">0.5x</button>
+                <button class="zoom-btn" data-zoom="0.5" title="파노라마 뷰 (코스 1320px 표시)">0.5x</button>
                 <button class="zoom-btn" data-zoom="0.75" title="표준 뷰 (코스 880px 표시)">0.75x</button>
-                <button class="zoom-btn" data-zoom="1.0" title="1:1 실제 배율">1x</button>
+                <button class="zoom-btn active" data-zoom="1.0" title="1:1 실제 배율">1x</button>
               </div>
               <div class="speed-control-group">
-                <button class="speed-btn active" data-speed="0.5" title="0.5배속 (슬로우 모션)">0.5x</button>
-                <button class="speed-btn" data-speed="1" title="1배속 (기본 속도)">1x</button>
+                <button class="speed-btn" data-speed="0.5" title="0.5배속 (슬로우 모션)">0.5x</button>
+                <button class="speed-btn active" data-speed="1" title="1배속 (기본 속도)">1x</button>
                 <button class="speed-btn" data-speed="1.5" title="1.5배속 (빠른 진행)">1.5x</button>
               </div>
               <button class="sound-hud-btn" id="sound-toggle-hud-btn" title="음향 켜기/끄기" aria-label="음향 켜기/끄기">
@@ -216,6 +216,14 @@ const data = gameEntry?.data || {
         <div class="modal-btn-row">
           <button id="modal-restart-btn" class="btn-modal-primary">🔄 다시 달리기</button>
           <button id="modal-close-btn" class="btn-modal-secondary">닫기</button>
+        </div>
+        <div class="modal-support-row">
+          <a
+            href="https://www.profitableratecpmnetwork.com/wf4mrbwzm?key=7e7a892e1143f427ce896b7cdd946495"
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            class="modal-support-link"
+          >☕ 개발자 후원하기</a>
         </div>
       </div>
     </div>
@@ -989,6 +997,30 @@ const data = gameEntry?.data || {
     cursor: pointer;
   }
 
+  .modal-support-row {
+    margin-top: 0.75rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  .modal-support-link {
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .modal-support-link:hover {
+    background: rgba(245, 158, 11, 0.16);
+    border-color: rgba(245, 158, 11, 0.4);
+    color: #fbbf24;
+  }
+
   .hidden {
     display: none !important;
   }
@@ -1647,13 +1679,13 @@ const data = gameEntry?.data || {
   let isCountingDown = false;
   let raceStartTime = 0;
   let finishRankCounter = 0;
-  let timeScale = 0.5; // Default 0.5x speed
+  let timeScale = 1.0; // Default 1x speed
   let cameraY = 0;
   let winnerMode = 'last'; // 'last', 'first', 'multi', 'custom'
   let lastRunnerCountdown: number | null = null;
 
   // Camera & Viewport State
-  let zoom = 0.5; // Default 0.5x: zoomed out view showing ~1,320px of course vertically on 660px canvas
+  let zoom = 1.0; // Default 1x: 1:1 view showing course at native resolution
   let camMode: 'auto' | 'first' | 'last' | 'runner' = 'auto';
   let focusedMarbleId: number | null = null;
   let isManualCam = false;
