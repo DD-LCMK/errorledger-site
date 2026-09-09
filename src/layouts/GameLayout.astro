@@ -124,27 +124,24 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
     />
     <script type="application/ld+json" set:html={webAppSchema}></script>
     {faqSchema && <script type="application/ld+json" set:html={faqSchema}></script>}
-    <!-- Bare mode: suppress chrome when page is loaded inside an iframe with ?bare=1 -->
+    <!-- Bare mode: suppress all page chrome when loaded inside an iframe with ?bare=1 -->
     <script is:inline>
       if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('bare')) {
-        document.documentElement.classList.add('bare-mode');
+        var s = document.createElement('style');
+        s.textContent = [
+          '.arcade-header { display: none !important; }',
+          'footer { display: none !important; }',
+          '.stream-bottom-details { display: none !important; }',
+          '.sticky-banner-ad-wrap { display: none !important; }',
+          '.game-top-bar { display: none !important; }',
+          '.game-main-container { padding-top: 0 !important; }',
+          'body.game-page-body { overflow: hidden !important; }'
+        ].join(' ');
+        document.head.appendChild(s);
       }
     </script>
-    <style>
-      /* Bare mode hides all page chrome so only the game renders in the iframe */
-      html.bare-mode .arcade-header,
-      html.bare-mode footer,
-      html.bare-mode .stream-bottom-details,
-      html.bare-mode .sticky-banner-ad-wrap,
-      html.bare-mode .game-top-bar {
-        display: none !important;
-      }
-      html.bare-mode body.game-page-body {
-        min-height: 100vh;
-        overflow: hidden;
-      }
-    </style>
   </head>
+
   <body class="game-page-body">
     <Header />
 
