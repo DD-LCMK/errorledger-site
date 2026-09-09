@@ -134,13 +134,17 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
           '.stream-bottom-details { display: none !important; }',
           '.sticky-banner-ad-wrap { display: none !important; }',
           '.game-top-bar { display: none !important; }',
-          '.game-main-container { padding-top: 0 !important; }',
-          'body.game-page-body { overflow: hidden !important; }'
+          /* zero out all padding/margin so game fills edge-to-edge */
+          '.game-main-container { padding: 0 !important; margin: 0 !important; }',
+          '.game-full-layout { padding: 0 !important; }',
+          '.game-viewport-container { border: none !important; border-radius: 0 !important; background: transparent !important; }',
+          'body.game-page-body { overflow: hidden !important; margin: 0 !important; padding: 0 !important; }'
         ].join(' ');
         document.head.appendChild(s);
       }
     </script>
   </head>
+
 
   <body class="game-page-body">
     <Header />

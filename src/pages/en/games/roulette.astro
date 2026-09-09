@@ -46,11 +46,6 @@ const webAppSchema = JSON.stringify({
     <Header />
 
     <main class="en-game-main">
-      <div class="en-game-intro">
-        <h1 class="en-game-title">🎡 Random Spin Wheel</h1>
-        <p class="en-game-desc">Free stream roulette — add items, spin, and reveal the winner live.</p>
-      </div>
-
       <div class="en-game-frame-wrap">
         <iframe
           src={gameUrl}
@@ -106,37 +101,16 @@ const webAppSchema = JSON.stringify({
     flex-direction: column;
   }
 
-  .en-game-intro {
-    padding: 0.5rem 1rem 0.3rem;
-    max-width: 1440px;
-    margin: 0 auto;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .en-game-title {
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: #f8fafc;
-    margin: 0 0 0.2rem;
-  }
-
-  .en-game-desc {
-    font-size: 0.82rem;
-    color: #64748b;
-    margin: 0;
-  }
-
   .en-game-frame-wrap {
     flex: 1;
     width: 100%;
-    min-height: 80vh;
+    min-height: calc(100vh - 52px);
   }
 
   .en-game-iframe {
     width: 100%;
     height: 100%;
-    min-height: 80vh;
+    min-height: calc(100vh - 52px);
     border: none;
     display: block;
     background: #090d16;
