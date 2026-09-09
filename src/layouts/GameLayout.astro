@@ -124,6 +124,26 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
     />
     <script type="application/ld+json" set:html={webAppSchema}></script>
     {faqSchema && <script type="application/ld+json" set:html={faqSchema}></script>}
+    <!-- Bare mode: suppress chrome when page is loaded inside an iframe with ?bare=1 -->
+    <script is:inline>
+      if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('bare')) {
+        document.documentElement.classList.add('bare-mode');
+      }
+    </script>
+    <style>
+      /* Bare mode hides all page chrome so only the game renders in the iframe */
+      html.bare-mode .arcade-header,
+      html.bare-mode footer,
+      html.bare-mode .stream-bottom-details,
+      html.bare-mode .sticky-banner-ad-wrap,
+      html.bare-mode .game-top-bar {
+        display: none !important;
+      }
+      html.bare-mode body.game-page-body {
+        min-height: 100vh;
+        overflow: hidden;
+      }
+    </style>
   </head>
   <body class="game-page-body">
     <Header />
@@ -137,8 +157,8 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
             <h1 class="game-bar-h1">{title}</h1>
           </div>
           <div class="game-bar-actions">
-            <button id="fullscreen-btn" class="stage-fullscreen-btn" title="전체화면 전환">
-              <span>⛶ 전체화면</span>
+            <button id="fullscreen-btn" class="stage-fullscreen-btn" title={lang === 'en' ? 'Toggle Fullscreen' : '전체화면 전환'}>
+              <span>{lang === 'en' ? '⛶ Fullscreen' : '⛶ 전체화면'}</span>
             </button>
           </div>
         </div>
@@ -158,7 +178,7 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
               <div class="clean-tips-card">
                 <div class="tips-title-row">
                   <span class="tips-icon">💡</span>
-                  <h3>방송 안내 &amp; 조작법</h3>
+                  <h3>{lang === 'en' ? 'How to Play' : '방송 안내 & 조작법'}</h3>
                 </div>
                 <ul class="clean-tips-list">
                   {quickTips.map(t => <li>{t}</li>)}
@@ -179,14 +199,14 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
       {(Astro.slots.has('guide') || (faqItems && faqItems.length > 0)) && (
         <details class="stream-bottom-details">
           <summary class="details-summary">
-            <span>📖 상세 가이드 및 FAQ 보기</span>
+            <span>{lang === 'en' ? '📖 Detailed Guide & FAQ' : '📖 상세 가이드 및 FAQ 보기'}</span>
             <span class="chevron">▼</span>
           </summary>
           <div class="details-content">
             <slot name="guide" />
             {faqItems && faqItems.length > 0 && (
               <div class="details-faq-section">
-                <h3>자주 묻는 질문 (FAQ)</h3>
+                <h3>{lang === 'en' ? 'Frequently Asked Questions (FAQ)' : '자주 묻는 질문 (FAQ)'}</h3>
                 <div class="details-faq-grid">
                   {faqItems.map(f => (
                     <div class="details-faq-card">

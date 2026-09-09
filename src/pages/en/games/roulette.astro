@@ -11,7 +11,9 @@ const enUrl = getEnUrl(siteBase, rawPath);
 
 const urlParams = Astro.url.searchParams;
 const streamerMode = urlParams.has('stream') || urlParams.has('obs');
-const gameUrl = streamerMode ? '/games/roulette?stream=true' : '/games/roulette';
+const gameUrl = streamerMode
+  ? '/games/roulette?bare=1&stream=true'
+  : '/games/roulette?bare=1';
 
 const webAppSchema = JSON.stringify({
   "@context": "https://schema.org",
@@ -60,27 +62,29 @@ const webAppSchema = JSON.stringify({
         ></iframe>
       </div>
 
-      <section class="en-faq-section">
-        <h2>Spin Wheel FAQ</h2>
-        <div class="en-faq-grid">
-          <div class="en-faq-card">
-            <strong>How do I use it on OBS?</strong>
-            <p>Add a Browser Source in OBS pointing to this page. Click ⛶ Fullscreen for clean capture. Append <code>?stream=true</code> to disable ads.</p>
+      {!streamerMode && (
+        <section class="en-faq-section">
+          <h2>Spin Wheel FAQ</h2>
+          <div class="en-faq-grid">
+            <div class="en-faq-card">
+              <strong>How do I use it on OBS?</strong>
+              <p>Add a Browser Source in OBS pointing to this page. Click ⛶ Fullscreen for clean capture. Append <code>?stream=true</code> to disable ads.</p>
+            </div>
+            <div class="en-faq-card">
+              <strong>Can items be removed after picking?</strong>
+              <p>Yes. Enable "Remove winner after pick" in the settings panel to automatically exclude the picked item from the next spin.</p>
+            </div>
+            <div class="en-faq-card">
+              <strong>Can I save my list?</strong>
+              <p>Paste your item list before spinning. The list stays in the session. Copy it to a text file to save permanently.</p>
+            </div>
+            <div class="en-faq-card">
+              <strong>Is the result random?</strong>
+              <p>Yes. The spinner uses a cryptographically seeded PRNG for the stop angle, so no one can predict or manipulate the result.</p>
+            </div>
           </div>
-          <div class="en-faq-card">
-            <strong>Can items be removed after picking?</strong>
-            <p>Yes. Enable "Remove winner after pick" in the settings panel to automatically exclude the picked item from the next spin.</p>
-          </div>
-          <div class="en-faq-card">
-            <strong>Can I save my list?</strong>
-            <p>Paste your item list before spinning. The list stays in the session. Copy it to a text file to save permanently.</p>
-          </div>
-          <div class="en-faq-card">
-            <strong>Is the result random?</strong>
-            <p>Yes. The spinner uses a cryptographically seeded PRNG for the stop angle, so no one can predict or manipulate the result.</p>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
     </main>
 
     {!streamerMode && <Footer />}
@@ -103,7 +107,7 @@ const webAppSchema = JSON.stringify({
   }
 
   .en-game-intro {
-    padding: 0.6rem 1rem 0.4rem;
+    padding: 0.5rem 1rem 0.3rem;
     max-width: 1440px;
     margin: 0 auto;
     width: 100%;
@@ -126,13 +130,13 @@ const webAppSchema = JSON.stringify({
   .en-game-frame-wrap {
     flex: 1;
     width: 100%;
-    min-height: 85vh;
+    min-height: 80vh;
   }
 
   .en-game-iframe {
     width: 100%;
     height: 100%;
-    min-height: 85vh;
+    min-height: 80vh;
     border: none;
     display: block;
     background: #090d16;

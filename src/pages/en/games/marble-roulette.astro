@@ -9,10 +9,13 @@ const rawPath = Astro.url.pathname.replace(/\/$/, '');
 const koUrl = getKoUrl(siteBase, rawPath);
 const enUrl = getEnUrl(siteBase, rawPath);
 
-// Streamer mode: pass ?stream or ?obs through to the iframe
+// Streamer mode: pass ?stream or ?obs through to the embedded game
 const urlParams = Astro.url.searchParams;
 const streamerMode = urlParams.has('stream') || urlParams.has('obs');
-const gameUrl = streamerMode ? '/games/marble-roulette?stream=true' : '/games/marble-roulette';
+// ?bare=1 hides the Korean page chrome (header/footer) inside the iframe
+const gameUrl = streamerMode
+  ? '/games/marble-roulette?bare=1&stream=true'
+  : '/games/marble-roulette?bare=1';
 
 const webAppSchema = JSON.stringify({
   "@context": "https://schema.org",
@@ -91,46 +94,49 @@ const faqSchema = JSON.stringify({
     <Header />
 
     <main class="en-game-main">
-      <!-- SEO intro strip (visible above game, collapses to minimal height) -->
+      <!-- SEO intro strip (compact, above game) -->
       <div class="en-game-intro">
         <h1 class="en-game-title">🔮 Marble Race Roulette</h1>
         <p class="en-game-desc">Free physics marble race for streamers — enter names, click Start, watch the race live.</p>
       </div>
 
-      <!-- Full-height game iframe -->
+      <!-- Full-height game embed (Korean game page in bare mode — no double header) -->
       <div class="en-game-frame-wrap">
         <iframe
           src={gameUrl}
           class="en-game-iframe"
+          id="game-iframe"
           title="Marble Race Roulette — StreamArcade"
           allowfullscreen
           loading="eager"
-          scrolling="no"
+          scrolling="yes"
         ></iframe>
       </div>
 
       <!-- FAQ section for SEO (below the game) -->
-      <section class="en-faq-section">
-        <h2>Marble Race Roulette — FAQ</h2>
-        <div class="en-faq-grid">
-          <div class="en-faq-card">
-            <strong>What is Marble Roulette?</strong>
-            <p>A free, browser-based physics marble race. Participants race as colored marbles down a 7,200px track with Galton pins, twin windmills, pinball bumpers, a vortex funnel, and a giant finale propeller.</p>
+      {!streamerMode && (
+        <section class="en-faq-section">
+          <h2>Marble Race Roulette — FAQ</h2>
+          <div class="en-faq-grid">
+            <div class="en-faq-card">
+              <strong>What is Marble Roulette?</strong>
+              <p>A free, browser-based physics marble race. Participants race as colored marbles down a 7,200px track with Galton pins, twin windmills, pinball bumpers, a vortex funnel, and a giant finale propeller.</p>
+            </div>
+            <div class="en-faq-card">
+              <strong>How do I use it on OBS?</strong>
+              <p>Add a Browser Source in OBS pointing to this page, or use Window Capture. Click the ⛶ Fullscreen button for clean, borderless broadcast capture. Add <code>?stream=true</code> to the URL to disable ads.</p>
+            </div>
+            <div class="en-faq-card">
+              <strong>Multiple marbles per person?</strong>
+              <p>Type <code>Alice * 3</code> in the participant list to give Alice three marbles — all the same color. More marbles = higher winning chance.</p>
+            </div>
+            <div class="en-faq-card">
+              <strong>Is the result fair?</strong>
+              <p>Every frame runs a real 2D rigid-body physics simulation. No one can predict or manipulate the outcome.</p>
+            </div>
           </div>
-          <div class="en-faq-card">
-            <strong>How do I use it on OBS?</strong>
-            <p>Add a Browser Source in OBS pointing to this page, or use Window Capture. Click the ⛶ Fullscreen button for clean, borderless broadcast capture. Add <code>?stream=true</code> to the URL to disable ads.</p>
-          </div>
-          <div class="en-faq-card">
-            <strong>Multiple marbles per person?</strong>
-            <p>Type <code>Alice * 3</code> in the participant list to give Alice three marbles — all the same color. More marbles = higher winning chance.</p>
-          </div>
-          <div class="en-faq-card">
-            <strong>Is the result fair?</strong>
-            <p>Every frame runs a real 2D rigid-body physics simulation. No one can predict or manipulate the outcome.</p>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
     </main>
 
     {!streamerMode && <Footer />}
@@ -153,7 +159,7 @@ const faqSchema = JSON.stringify({
   }
 
   .en-game-intro {
-    padding: 0.6rem 1rem 0.4rem;
+    padding: 0.5rem 1rem 0.3rem;
     max-width: 1440px;
     margin: 0 auto;
     width: 100%;
@@ -174,16 +180,16 @@ const faqSchema = JSON.stringify({
   }
 
   .en-game-frame-wrap {
-    flex: 1;
     width: 100%;
-    min-height: 85vh;
-    position: relative;
+    /* Use a tall fixed height so the marble track is fully playable */
+    height: calc(100vh - 60px);
+    min-height: 600px;
+    flex-shrink: 0;
   }
 
   .en-game-iframe {
     width: 100%;
     height: 100%;
-    min-height: 85vh;
     border: none;
     display: block;
     background: #090d16;

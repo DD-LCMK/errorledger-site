@@ -11,7 +11,9 @@ const enUrl = getEnUrl(siteBase, rawPath);
 
 const urlParams = Astro.url.searchParams;
 const streamerMode = urlParams.has('stream') || urlParams.has('obs');
-const gameUrl = streamerMode ? '/games/ladder?stream=true' : '/games/ladder';
+const gameUrl = streamerMode
+  ? '/games/ladder?bare=1&stream=true'
+  : '/games/ladder?bare=1';
 
 const webAppSchema = JSON.stringify({
   "@context": "https://schema.org",
@@ -60,27 +62,29 @@ const webAppSchema = JSON.stringify({
         ></iframe>
       </div>
 
-      <section class="en-faq-section">
-        <h2>Ghost Leg Ladder FAQ</h2>
-        <div class="en-faq-grid">
-          <div class="en-faq-card">
-            <strong>What is Ghost Leg / Amidakuji?</strong>
-            <p>Ghost Leg (Amidakuji) is a traditional Japanese lottery where players follow vertical lines connected by random horizontal rungs. Each player maps to exactly one result — completely fair and tamper-proof.</p>
+      {!streamerMode && (
+        <section class="en-faq-section">
+          <h2>Ghost Leg Ladder FAQ</h2>
+          <div class="en-faq-grid">
+            <div class="en-faq-card">
+              <strong>What is Ghost Leg / Amidakuji?</strong>
+              <p>Ghost Leg (Amidakuji) is a traditional Japanese lottery where players follow vertical lines connected by random horizontal rungs. Each player maps to exactly one result — completely fair and tamper-proof.</p>
+            </div>
+            <div class="en-faq-card">
+              <strong>How many players can join?</strong>
+              <p>2 to 20 players per round. Enter names on the left and outcomes on the right, then reveal each path one by one or all at once.</p>
+            </div>
+            <div class="en-faq-card">
+              <strong>How do I use it on OBS?</strong>
+              <p>Add a Browser Source in OBS pointing to this page, then click ⛶ Fullscreen. Append <code>?stream=true</code> to disable ads for broadcast.</p>
+            </div>
+            <div class="en-faq-card">
+              <strong>Is the result fair?</strong>
+              <p>Yes. The ladder uses a bijective (one-to-one) mapping — every player maps to exactly one outcome and no two players can share a result.</p>
+            </div>
           </div>
-          <div class="en-faq-card">
-            <strong>How many players can join?</strong>
-            <p>2 to 20 players per round. Enter names on the left and outcomes on the right, then reveal each path one by one or all at once.</p>
-          </div>
-          <div class="en-faq-card">
-            <strong>How do I use it on OBS?</strong>
-            <p>Add a Browser Source in OBS pointing to this page, then click ⛶ Fullscreen. Append <code>?stream=true</code> to disable ads for broadcast.</p>
-          </div>
-          <div class="en-faq-card">
-            <strong>Is the result fair?</strong>
-            <p>Yes. The ladder uses a bijective (one-to-one) mapping — every player maps to exactly one outcome and no two players can share a result.</p>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
     </main>
 
     {!streamerMode && <Footer />}
@@ -103,7 +107,7 @@ const webAppSchema = JSON.stringify({
   }
 
   .en-game-intro {
-    padding: 0.6rem 1rem 0.4rem;
+    padding: 0.5rem 1rem 0.3rem;
     max-width: 1440px;
     margin: 0 auto;
     width: 100%;
@@ -126,13 +130,13 @@ const webAppSchema = JSON.stringify({
   .en-game-frame-wrap {
     flex: 1;
     width: 100%;
-    min-height: 85vh;
+    min-height: 80vh;
   }
 
   .en-game-iframe {
     width: 100%;
     height: 100%;
-    min-height: 85vh;
+    min-height: 80vh;
     border: none;
     display: block;
     background: #090d16;
