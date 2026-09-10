@@ -2,9 +2,15 @@
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import StickyBannerAd from '../components/ads/StickyBannerAd.astro';
+import RectangleAd from '../components/ads/RectangleAd.astro';
+import NativeAd from '../components/ads/NativeAd.astro';
 import { SITE_TITLE, SITE_TAGLINE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
 import { getKoUrl, getEnUrl } from '../i18n';
+
+const urlParams = Astro.url.searchParams;
+const streamerMode = urlParams.has('stream') || urlParams.has('obs');
 
 const games = await getCollection('games');
 const priorityOrder = ['marble-roulette', 'roulette', 'ladder', 'fortune'];
@@ -150,6 +156,9 @@ const homeFaqSchema = JSON.stringify({
         </div>
       </section>
 
+      <!-- Content Rectangle Ad -->
+      <RectangleAd streamerMode={streamerMode} />
+
       <!-- SEO Overview & Platform Features Section -->
       <section class="seo-overview-section">
         <div class="overview-container">
@@ -197,6 +206,9 @@ const homeFaqSchema = JSON.stringify({
         </div>
       </section>
 
+      <!-- Native Recommendation Widget -->
+      <NativeAd streamerMode={streamerMode} />
+
       <!-- FAQ Section (Rich Search Snippets for Google & Naver) -->
       <section class="home-faq-section">
         <div class="faq-container">
@@ -231,7 +243,10 @@ const homeFaqSchema = JSON.stringify({
       </section>
     </main>
 
-    <Footer />
+    {!streamerMode && <Footer />}
+
+    <!-- Sticky bottom ad -->
+    <StickyBannerAd streamerMode={streamerMode} />
   </body>
 </html>
 
@@ -248,7 +263,7 @@ const homeFaqSchema = JSON.stringify({
     flex: 1;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem 1rem 5rem;
+    padding: 2rem 1rem 7rem;
     width: 100%;
   }
 

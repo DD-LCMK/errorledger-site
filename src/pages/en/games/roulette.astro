@@ -2,6 +2,7 @@
 import BaseHead from '../../../components/BaseHead.astro';
 import Header from '../../../components/Header.astro';
 import Footer from '../../../components/Footer.astro';
+import StickyBannerAd from '../../../components/ads/StickyBannerAd.astro';
 import { getKoUrl, getEnUrl } from '../../../i18n';
 
 const siteBase = Astro.site?.toString() || 'https://errorledger.com';
@@ -57,32 +58,71 @@ const webAppSchema = JSON.stringify({
         ></iframe>
       </div>
 
+      <!-- Unobtrusive Expandable Information Drawer (for Guide & FAQ) -->
       {!streamerMode && (
-        <section class="en-faq-section">
-          <h2>Spin Wheel FAQ</h2>
-          <div class="en-faq-grid">
-            <div class="en-faq-card">
-              <strong>How do I use it on OBS?</strong>
-              <p>Add a Browser Source in OBS pointing to this page. Click ⛶ Fullscreen for clean capture. Append <code>?stream=true</code> to disable ads.</p>
-            </div>
-            <div class="en-faq-card">
-              <strong>Can items be removed after picking?</strong>
-              <p>Yes. Enable "Remove winner after pick" in the settings panel to automatically exclude the picked item from the next spin.</p>
-            </div>
-            <div class="en-faq-card">
-              <strong>Can I save my list?</strong>
-              <p>Paste your item list before spinning. The list stays in the session. Copy it to a text file to save permanently.</p>
-            </div>
-            <div class="en-faq-card">
-              <strong>Is the result random?</strong>
-              <p>Yes. The spinner uses a cryptographically seeded PRNG for the stop angle, so no one can predict or manipulate the result.</p>
+        <details class="stream-bottom-details">
+          <summary class="details-summary">
+            <span>📖 Detailed Guide & FAQ</span>
+            <span class="chevron">▼</span>
+          </summary>
+          <div class="details-content">
+            <div class="details-faq-section">
+              <h3>Spin Wheel FAQ</h3>
+              <div class="details-faq-grid">
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. How do I use it on OBS?</strong>
+                  <p class="faq-a">Add a Browser Source in OBS pointing to this page. Click ⛶ Fullscreen for clean capture. Append <code>?stream=true</code> to disable ads.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Can items be removed after picking?</strong>
+                  <p class="faq-a">Yes. Enable "Remove winner after pick" in the settings panel to automatically exclude the picked item from the next spin.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Can I save my list?</strong>
+                  <p class="faq-a">Paste your item list before spinning. The list stays in the session. Copy it to a text file to save permanently.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Is the result random?</strong>
+                  <p class="faq-a">Yes. The spinner uses a cryptographically seeded PRNG for the stop angle, so no one can predict or manipulate the result.</p>
+                </div>
+              </div>
             </div>
           </div>
-        </section>
+        </details>
       )}
     </main>
 
     {!streamerMode && <Footer />}
+
+    <!-- Sticky bottom ad — hidden in streamer/OBS mode -->
+    <StickyBannerAd streamerMode={streamerMode} />
+
+    <script>
+      const iframe = document.getElementById('game-iframe') as HTMLIFrameElement;
+      function syncHeight() {
+        try {
+          if (iframe && iframe.contentDocument && iframe.contentDocument.body) {
+            const h = iframe.contentDocument.body.scrollHeight;
+            if (h > 400) {
+              iframe.style.height = h + 'px';
+            }
+          }
+        } catch (e) {}
+      }
+      if (iframe) {
+        iframe.addEventListener('load', () => {
+          syncHeight();
+          try {
+            const doc = iframe.contentDocument;
+            if (doc && doc.body) {
+              const obs = new MutationObserver(syncHeight);
+              obs.observe(doc.body, { childList: true, subtree: true, attributes: true });
+            }
+          } catch(e) {}
+        });
+        window.addEventListener('resize', syncHeight);
+      }
+    </script>
   </body>
 </html>
 
@@ -100,69 +140,115 @@ const webAppSchema = JSON.stringify({
   .en-game-main {
     /* Override global.css which sets padding:3em and margin:auto on all <main> */
     width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    max-width: 1440px !important;
+    margin: 0 auto !important;
+    padding: 0 0.75rem 7rem !important;
     flex: 1;
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
   }
 
   .en-game-frame-wrap {
     flex: 1;
     width: 100%;
-    min-height: calc(100vh - 52px);
+    min-height: max(750px, calc(100vh - 52px));
   }
 
   .en-game-iframe {
     width: 100%;
     height: 100%;
-    min-height: calc(100vh - 52px);
+    min-height: max(750px, calc(100vh - 52px));
     border: none;
     display: block;
     background: #090d16;
   }
 
-  .en-faq-section {
-    padding: 2rem 1rem 3rem;
-    max-width: 1000px;
-    margin: 0 auto;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .en-faq-section h2 {
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: #f8fafc;
-    margin: 0 0 1.25rem;
-  }
-
-  .en-faq-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1rem;
-  }
-
-  .en-faq-card {
-    background: rgba(15, 23, 42, 0.7);
+  /* Unobtrusive Bottom Drawer matching GameLayout */
+  .stream-bottom-details {
+    margin-top: 1.5rem;
+    background: #0f172a;
     border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 10px;
-    padding: 1rem;
+    overflow: hidden;
+    transition: border-color 0.15s ease;
   }
 
-  .en-faq-card strong {
-    display: block;
-    font-size: 0.87rem;
+  .stream-bottom-details[open] {
+    border-color: rgba(168, 85, 247, 0.3);
+  }
+
+  .details-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #94a3b8;
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+    transition: color 0.15s ease;
+  }
+
+  .details-summary:hover {
     color: #e2e8f0;
-    margin-bottom: 0.4rem;
   }
 
-  .en-faq-card p {
-    font-size: 0.8rem;
-    color: #64748b;
-    line-height: 1.6;
+  .details-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .chevron {
+    font-size: 0.65rem;
+    color: #a855f7;
+    transition: transform 0.2s ease;
+  }
+
+  .stream-bottom-details[open] .chevron {
+    transform: rotate(180deg);
+  }
+
+  .details-content {
+    padding: 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    color: #cbd5e1;
+    font-size: 0.85rem;
+    line-height: 1.7;
+  }
+
+  .details-faq-section h3 {
+    font-size: 0.95rem;
+    color: #f8fafc;
+    margin: 0 0 0.75rem;
+  }
+
+  .details-faq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .details-faq-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+  }
+
+  .faq-q {
+    display: block;
+    font-size: 0.82rem;
+    color: #e2e8f0;
+    margin-bottom: 0.35rem;
+  }
+
+  .faq-a {
     margin: 0;
+    font-size: 0.78rem;
+    color: #94a3b8;
+    line-height: 1.55;
   }
 
   code {
@@ -171,5 +257,11 @@ const webAppSchema = JSON.stringify({
     border-radius: 4px;
     font-size: 0.78rem;
     color: #38bdf8;
+  }
+
+  @media (max-width: 900px) {
+    .details-faq-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

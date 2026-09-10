@@ -3,8 +3,14 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import DailyFortuneWidget from '../components/DailyFortuneWidget.astro';
+import StickyBannerAd from '../components/ads/StickyBannerAd.astro';
+import RectangleAd from '../components/ads/RectangleAd.astro';
+import NativeAd from '../components/ads/NativeAd.astro';
 import { SITE_TITLE } from '../consts';
 import { getKoUrl, getEnUrl } from '../i18n';
+
+const urlParams = Astro.url.searchParams;
+const streamerMode = urlParams.has('stream') || urlParams.has('obs');
 
 const PAGE_TITLE = `오늘의 운세 - 100% 무료 띠별 & 별자리 하루 운세 | ${SITE_TITLE}`;
 const PAGE_DESCRIPTION = "매일 자정 자동으로 갱신되는 100% 무료 오늘의 운세. 십이지간(12간지) 띠별 운세와 서양 12별자리 운세, 종합운, 금전운, 애정운, 사업운, 건강운, 출생연도별 운세, 오늘의 추천 행동(DO/DON'T), 행운의 숫자와 음식을 지금 확인하세요.";
@@ -46,6 +52,9 @@ const PAGE_DESCRIPTION = "매일 자정 자동으로 갱신되는 100% 무료 �
       <section class="fortune-widget-section">
         <DailyFortuneWidget showSectionHeader={false} />
       </section>
+
+      <!-- Content Rectangle Ad -->
+      <RectangleAd streamerMode={streamerMode} />
 
       <!-- Fortune Guide & Info Section -->
       <section class="fortune-info-section">
@@ -103,9 +112,15 @@ const PAGE_DESCRIPTION = "매일 자정 자동으로 갱신되는 100% 무료 �
           </div>
         </div>
       </section>
+
+      <!-- Native Recommendation Widget -->
+      <NativeAd streamerMode={streamerMode} />
     </main>
 
-    <Footer />
+    {!streamerMode && <Footer />}
+
+    <!-- Sticky bottom ad -->
+    <StickyBannerAd streamerMode={streamerMode} />
   </body>
 </html>
 
@@ -122,7 +137,7 @@ const PAGE_DESCRIPTION = "매일 자정 자동으로 갱신되는 100% 무료 �
     flex: 1;
     max-width: 1140px;
     margin: 0 auto;
-    padding: 2rem 1rem 5rem;
+    padding: 2rem 1rem 7rem;
     width: 100%;
     box-sizing: border-box;
   }

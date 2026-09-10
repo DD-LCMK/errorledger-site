@@ -2,6 +2,10 @@
 import BaseHead from '../../components/BaseHead.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import DailyFortuneWidget from '../../components/DailyFortuneWidget.astro';
+import StickyBannerAd from '../../components/ads/StickyBannerAd.astro';
+import RectangleAd from '../../components/ads/RectangleAd.astro';
+import NativeAd from '../../components/ads/NativeAd.astro';
 import { getKoUrl, getEnUrl } from '../../i18n';
 
 const siteBase = Astro.site?.toString() || 'https://errorledger.com';
@@ -11,94 +15,373 @@ const enUrl = getEnUrl(siteBase, rawPath);
 
 const urlParams = Astro.url.searchParams;
 const streamerMode = urlParams.has('stream') || urlParams.has('obs');
-const gameUrl = streamerMode ? '/fortune?stream=true' : '/fortune';
+
+const PAGE_TITLE = "Daily Fortune & Horoscope — Free Stream Opener Tool | StreamArcade";
+const PAGE_DESCRIPTION = "Free daily fortune widget for streamers — 12 Eastern zodiac animals and 12 Western star signs with lucky numbers, colors, and DO/DON'T tips. Auto-updated at midnight.";
 ---
 
 <!doctype html>
 <html lang="en" class="dark">
   <head>
     <BaseHead
-      title="Daily Fortune & Horoscope — Free Stream Opener Tool | StreamArcade"
-      description="Free daily fortune widget for streamers — 12 Eastern zodiac animals and 12 Western star signs with lucky numbers, colors, and DO/DON'T tips. Auto-updated at midnight."
+      title={PAGE_TITLE}
+      description={PAGE_DESCRIPTION}
       lang="en"
       hreflangKo={koUrl}
       hreflangEn={enUrl}
       keywords="Daily Fortune, Daily Horoscope, Eastern Zodiac Fortune, Western Horoscope, Stream Fortune Tool, Twitch Fortune, Lucky Number Generator, Daily Lucky Color"
     />
   </head>
-  <body class="en-game-body">
+  <body class="fortune-page-body">
     <Header />
 
-    <main class="en-game-main">
-      <div class="en-game-intro">
-        <h1 class="en-game-title">✨ Daily Fortune & Horoscope</h1>
-        <p class="en-game-desc">Auto-updated at midnight — Eastern zodiac & Western star sign fortunes for your stream opener.</p>
-      </div>
+    <main class="fortune-page-main">
+      <!-- Fortune Hero Section -->
+      <section class="fortune-page-hero">
+        <div class="hero-backdrop"></div>
+        <div class="hero-content">
+          <div class="hero-pill">
+            <span>✨ 100% Free Daily Horoscope & Zodiac</span>
+          </div>
+          <h1 class="hero-headline">
+            Daily Fortune <span class="gradient-text">(Horoscope & Zodiac)</span>
+          </h1>
+          <p class="hero-subtext">
+            Auto-updated at midnight — Eastern 12 zodiac animals and Western 12 star signs. Check your daily luck, lucky numbers, colors, and DO/DON'T tips to kick off your live stream talk.
+          </p>
+        </div>
+      </section>
 
-      <div class="en-game-frame-wrap">
-        <iframe
-          src={gameUrl}
-          class="en-game-iframe"
-          title="Daily Fortune — StreamArcade"
-          allowfullscreen
-          loading="eager"
-          scrolling="no"
-        ></iframe>
-      </div>
+      <!-- Main Widget Section -->
+      <section class="fortune-widget-section">
+        <DailyFortuneWidget showSectionHeader={false} />
+      </section>
+
+      <!-- Content Rectangle Ad -->
+      <RectangleAd streamerMode={streamerMode} />
+
+      <!-- Fortune Guide & Info Section -->
+      <section class="fortune-info-section">
+        <div class="info-card">
+          <h2>🔮 Daily Fortune Guide</h2>
+          <div class="info-grid">
+            <div class="info-box">
+              <span class="info-icon">🐾</span>
+              <h3>Eastern Zodiac (12 Animals)</h3>
+              <p>Rat, Ox, Tiger, Rabbit, Dragon, Snake, Horse, Sheep, Monkey, Rooster, Dog, and Boar. View age-specific fortunes for birth years 1948 through 2019.</p>
+            </div>
+            <div class="info-box">
+              <span class="info-icon">🌌</span>
+              <h3>Western Zodiac (12 Sun Signs)</h3>
+              <p>From Aquarius to Capricorn — discover your daily ruling element, energy flow, and best compatibility matches for the day.</p>
+            </div>
+            <div class="info-box">
+              <span class="info-icon">🍀</span>
+              <h3>Lucky Elements & DO / DON'T</h3>
+              <p>Daily recommended actions, things to avoid, lucky numbers, lucky colors, compass directions, and lucky foods to power your day.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="fortune-faq">
+          <h2>Frequently Asked Questions (FAQ)</h2>
+          <div class="faq-grid">
+            <div class="faq-item">
+              <h3>What time does the fortune reset?</h3>
+              <p>The daily horoscope automatically recalculates and resets at midnight (00:00) according to your device's local calendar time.</p>
+            </div>
+            <div class="faq-item">
+              <h3>Can I capture this on OBS for streaming?</h3>
+              <p>Yes! Add a Browser Source pointing to this URL in OBS Studio, Streamlabs, or PRISM Live. Append <code>?stream=true</code> to hide all ads.</p>
+            </div>
+            <div class="faq-item">
+              <h3>Is any account or payment required?</h3>
+              <p>Never. StreamArcade tools are 100% free with no login, no subscription, and no personal data collection.</p>
+            </div>
+            <div class="faq-item">
+              <h3>Can I share results with my viewers?</h3>
+              <p>Yes, click the copy button on the card to copy your full fortune text to your clipboard and paste it into Twitch/YouTube chat or Discord.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Back to Arcade Tools CTA -->
+        <div class="arcade-cta-box">
+          <h3>🎮 Need Stream Games & Random Pickers?</h3>
+          <p>Explore our physics marble race roulette, live ladder game, and random wheel spinner — 100% free in your browser.</p>
+          <div class="cta-btns">
+            <a href="/en/games/marble-roulette" class="btn-cta primary">Play Marble Roulette →</a>
+            <a href="/en/games/ladder" class="btn-cta secondary">Play Ladder Game →</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Native Recommendation Widget -->
+      <NativeAd streamerMode={streamerMode} />
     </main>
 
     {!streamerMode && <Footer />}
+
+    <!-- Sticky bottom ad -->
+    <StickyBannerAd streamerMode={streamerMode} />
   </body>
 </html>
 
 <style>
-  .en-game-body {
-    background: #090d16;
-    color: #f1f5f9;
+  .fortune-page-body {
+    background: #090d16 !important;
+    color: #f1f5f9 !important;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
   }
 
-  .en-game-main {
+  .fortune-page-main {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .en-game-intro {
-    padding: 0.6rem 1rem 0.4rem;
-    max-width: 1440px;
+    max-width: 1140px;
     margin: 0 auto;
+    padding: 2rem 1rem 7rem;
     width: 100%;
     box-sizing: border-box;
   }
 
-  .en-game-title {
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: #f8fafc;
-    margin: 0 0 0.2rem;
+  /* Hero Section */
+  .fortune-page-hero {
+    position: relative;
+    text-align: center;
+    padding: 2.5rem 1rem 2rem;
+    margin-bottom: 2rem;
+    overflow: hidden;
+    border-radius: 20px;
+    background: radial-gradient(circle at 50% 0%, rgba(168, 85, 247, 0.15) 0%, rgba(56, 189, 248, 0.05) 50%, transparent 100%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
   }
 
-  .en-game-desc {
-    font-size: 0.82rem;
-    color: #64748b;
+  .hero-backdrop {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .hero-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.9rem;
+    background: rgba(168, 85, 247, 0.12);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #c084fc;
+    margin-bottom: 1rem;
+    box-shadow: 0 0 16px rgba(168, 85, 247, 0.2);
+  }
+
+  .hero-headline {
+    font-size: 2.3rem;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    color: #f8fafc;
+    margin: 0 0 1rem;
+    line-height: 1.25;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #a855f7 0%, #38bdf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-subtext {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: #94a3b8;
     margin: 0;
   }
 
-  .en-game-frame-wrap {
-    flex: 1;
-    width: 100%;
-    min-height: 85vh;
+  /* Main Widget Section */
+  .fortune-widget-section {
+    margin-bottom: 3rem;
   }
 
-  .en-game-iframe {
-    width: 100%;
-    height: 100%;
-    min-height: 85vh;
-    border: none;
+  /* Info Guide Section */
+  .fortune-info-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .info-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  .info-card h2 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 1.5rem;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .info-box {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+
+  .info-icon {
+    font-size: 1.8rem;
     display: block;
-    background: #090d16;
+    margin-bottom: 0.75rem;
+  }
+
+  .info-box h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin: 0 0 0.5rem;
+  }
+
+  .info-box p {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* FAQ */
+  .fortune-faq {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  .fortune-faq h2 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 1.5rem;
+  }
+
+  .faq-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .faq-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+
+  .faq-item h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin: 0 0 0.5rem;
+  }
+
+  .faq-item p {
+    font-size: 0.84rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .faq-item code {
+    background: rgba(56, 189, 248, 0.1);
+    color: #38bdf8;
+    padding: 0.15rem 0.35rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+  }
+
+  /* CTA */
+  .arcade-cta-box {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.12) 0%, rgba(56, 189, 248, 0.08) 100%);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 16px;
+    padding: 2.25rem;
+    text-align: center;
+  }
+
+  .arcade-cta-box h3 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 0.5rem;
+  }
+
+  .arcade-cta-box p {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin: 0 0 1.5rem;
+  }
+
+  .cta-btns {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-cta {
+    padding: 0.7rem 1.4rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn-cta.primary {
+    background: linear-gradient(135deg, #a855f7 0%, #38bdf8 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 16px rgba(168, 85, 247, 0.3);
+  }
+
+  .btn-cta.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(168, 85, 247, 0.45);
+  }
+
+  .btn-cta.secondary {
+    background: rgba(255, 255, 255, 0.06);
+    color: #cbd5e1;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .btn-cta.secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+  }
+
+  @media (max-width: 900px) {
+    .info-grid, .faq-grid {
+      grid-template-columns: 1fr;
+    }
+    .hero-headline {
+      font-size: 1.8rem;
+    }
   }
 </style>
