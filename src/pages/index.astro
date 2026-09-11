@@ -2,6 +2,7 @@
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import DesktopWingAd from '../components/ads/DesktopWingAd.astro';
 import RectangleAd from '../components/ads/RectangleAd.astro';
 import NativeAd from '../components/ads/NativeAd.astro';
 import { SITE_TITLE, SITE_TAGLINE, SITE_DESCRIPTION } from '../consts';
@@ -243,6 +244,9 @@ const homeFaqSchema = JSON.stringify({
     </main>
 
     {!streamerMode && <Footer />}
+
+    <!-- Desktop-Only Wing Ad (Left Gutter) -->
+    <DesktopWingAd streamerMode={streamerMode} side="left" />
   </body>
 </html>
 

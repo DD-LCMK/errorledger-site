@@ -2,6 +2,7 @@
 import BaseHead from '../../../components/BaseHead.astro';
 import Header from '../../../components/Header.astro';
 import Footer from '../../../components/Footer.astro';
+import DesktopWingAd from '../../../components/ads/DesktopWingAd.astro';
 import { getKoUrl, getEnUrl } from '../../../i18n';
 
 const siteBase = Astro.site?.toString() || 'https://errorledger.com';
@@ -93,6 +94,9 @@ const webAppSchema = JSON.stringify({
     </main>
 
     {!streamerMode && <Footer />}
+
+    <!-- Desktop-Only Wing Ad (Left Gutter) -->
+    <DesktopWingAd streamerMode={streamerMode} side="left" />
 
     <script>
       const iframe = document.getElementById('game-iframe') as HTMLIFrameElement;

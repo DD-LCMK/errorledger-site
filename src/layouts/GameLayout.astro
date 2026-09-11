@@ -2,6 +2,7 @@
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import DesktopWingAd from '../components/ads/DesktopWingAd.astro';
 import { getLang, getKoUrl, getEnUrl, t } from '../i18n';
 
 interface Props {
@@ -240,6 +241,9 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
     </main>
 
     {!hideFooter && <Footer />}
+
+    <!-- Desktop-Only Wing Ad (Left Gutter) -->
+    <DesktopWingAd streamerMode={streamerMode} side="left" />
 
     <style>
       .game-page-body {
