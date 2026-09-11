@@ -2,7 +2,6 @@
 import BaseHead from '../../components/BaseHead.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
-import DesktopWingAd from '../../components/ads/DesktopWingAd.astro';
 import RectangleAd from '../../components/ads/RectangleAd.astro';
 import NativeAd from '../../components/ads/NativeAd.astro';
 import { getCollection } from 'astro:content';
@@ -142,11 +141,17 @@ const homeFaqSchema = JSON.stringify({
               'ladder': 'Real-time animated ghost-leg (Amidakuji) for 2–20 players',
               'fortune': 'Daily auto-updated horoscope & zodiac fortune for stream openers',
             };
+            const enBadge: Record<string, string> = {
+              'marble-roulette': 'Marble Race',
+              'roulette': 'Featured Tool',
+              'ladder': 'Bets & Penalties',
+              'fortune': 'Daily Free',
+            };
             return (
               <article class="game-card">
                 <div class="card-top-row">
                   <span class="card-icon">{game.data.icon}</span>
-                  <span class="badge-accent">{game.data.badge}</span>
+                  <span class="badge-accent">{enBadge[game.id] ?? game.data.badge}</span>
                 </div>
 
                 <div class="card-body">
@@ -256,9 +261,6 @@ const homeFaqSchema = JSON.stringify({
     </main>
 
     {!streamerMode && <Footer />}
-
-    <!-- Desktop-Only Wing Ad (Left Gutter) -->
-    <DesktopWingAd streamerMode={streamerMode} side="left" />
   </body>
 </html>
 
@@ -273,10 +275,10 @@ const homeFaqSchema = JSON.stringify({
 
   .arcade-home-main {
     flex: 1;
-    max-width: 100% !important;
-    margin: 0 !important;
-    padding: 0.5rem 0.75rem 7rem !important;
-    width: 100% !important;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 7rem;
+    width: 100%;
     box-sizing: border-box;
   }
 
@@ -426,8 +428,20 @@ const homeFaqSchema = JSON.stringify({
 
   .games-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+  }
+
+  @media (max-width: 1080px) {
+    .games-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .games-grid {
+      grid-template-columns: 1fr;
+    }
   }
 
   .game-card {
