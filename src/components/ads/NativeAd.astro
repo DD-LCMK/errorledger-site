@@ -12,6 +12,16 @@ const { streamerMode = false } = Astro.props;
 
 {!streamerMode && (
   <div class="native-ad-wrap">
+    <script is:inline>
+      if (typeof window !== 'undefined') {
+        var sp = new URLSearchParams(window.location.search);
+        if (sp.has('stream') || sp.has('obs')) {
+          var s = document.createElement('style');
+          s.textContent = '.native-ad-wrap { display: none !important; }';
+          document.head.appendChild(s);
+        }
+      }
+    </script>
     <script async data-cfasync="false" is:inline
       src="https://russiaexternalknew.com/b7dc3adf1eee8de5f60eb73f9ef808a1/invoke.js">
     </script>

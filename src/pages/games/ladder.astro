@@ -826,6 +826,8 @@ const data = gameEntry?.data || {
   ];
 
   // Presets Data Generator supporting dynamic player counts
+  const isEn = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('lang') === 'en';
+
   const PRESET_TEMPLATES: Record<string, { title: string; defaultOutcome: string; penalties: string[] }> = {
     coffee: {
       title: '커피 쏘기',
@@ -856,6 +858,36 @@ const data = gameEntry?.data || {
     }
   };
 
+  const PRESET_TEMPLATES_EN: Record<string, { title: string; defaultOutcome: string; penalties: string[] }> = {
+    coffee: {
+      title: 'Coffee Bet',
+      defaultOutcome: 'Safe 🎉',
+      penalties: ['Buy Coffee ☕', 'Buy Dessert 🍰', 'Buy Coffee ☕']
+    },
+    chicken: {
+      title: 'Dinner Bet',
+      defaultOutcome: 'Safe ✨',
+      penalties: ['Buy Chicken 🍗', 'Buy Pizza 🍕', 'Buy Dinner 🍗']
+    },
+    penalty: {
+      title: 'Penalty Draw',
+      defaultOutcome: 'Pass 🎉',
+      penalties: [
+        'Sing a song 🎤', 'Drink water 💧', '10 Push-ups 💪',
+        'Tell a secret 🤫', 'Buy drinks 🥤', 'Dance 20s 💃',
+        'Next game referee 👮'
+      ]
+    },
+    duty: {
+      title: 'Chores & Duty',
+      defaultOutcome: 'Exempt 🛋️',
+      penalties: [
+        'Cleaning duty 🧹', 'Dishwashing 🧼', 'Recycling ♻️',
+        'Snack errand 🍪', 'Meeting notes ✍️'
+      ]
+    }
+  };
+
   // Speed Durations in milliseconds
   const SPEED_DURATIONS = {
     slow: 6200,   // ~6.2s for maximum suspense
@@ -865,8 +897,12 @@ const data = gameEntry?.data || {
 
   let speedMode: 'slow' | 'normal' | 'fast' = 'normal';
   let playerCount = 4;
-  let participantNames: string[] = ['참가자 1', '참가자 2', '참가자 3', '참가자 4'];
-  let outcomeNames: string[] = ['당첨 🍗', '꽝 💨', '커피 ☕', '생존 ✨'];
+  let participantNames: string[] = isEn 
+    ? ['Player 1', 'Player 2', 'Player 3', 'Player 4']
+    : ['참가자 1', '참가자 2', '참가자 3', '참가자 4'];
+  let outcomeNames: string[] = isEn
+    ? ['Win 🍗', 'Pass 💨', 'Coffee ☕', 'Safe ✨']
+    : ['당첨 🍗', '꽝 💨', '커피 ☕', '생존 ✨'];
   let bridges: { poleA: number; poleB: number; y: number }[] = [];
   let isTracing = false;
   let animFrameId: number | null = null;
@@ -992,7 +1028,8 @@ const data = gameEntry?.data || {
     isBlindActive = true;
     ladderBlind?.classList.remove('unveiled');
     toggleBlindBtn?.classList.remove('off');
-    if (blindBtnText) blindBtnText.textContent = '🔒 가림막 ON';
+    if (blindBtnText) blindBtnText.textContent = isEn ? '🔒 Blind ON' : '🔒 가림막 ON';
+    if (toggleBlindBtn) toggleBlindBtn.setAttribute('title', isEn ? 'Toggle ladder blind (hide/show rungs)' : '사다리 가림막 켜기/끄기');
     renderLadderSVG();
   }
 
@@ -1000,7 +1037,8 @@ const data = gameEntry?.data || {
     isBlindActive = false;
     ladderBlind?.classList.add('unveiled');
     toggleBlindBtn?.classList.add('off');
-    if (blindBtnText) blindBtnText.textContent = '👁️ 가림막 OFF';
+    if (blindBtnText) blindBtnText.textContent = isEn ? '👁️ Blind OFF' : '👁️ 가림막 OFF';
+    if (toggleBlindBtn) toggleBlindBtn.setAttribute('title', isEn ? 'Toggle ladder blind (hide/show rungs)' : '사다리 가림막 켜기/끄기');
     renderLadderSVG();
   }
 
@@ -1015,10 +1053,10 @@ const data = gameEntry?.data || {
   // Ensure names and outcomes match playerCount
   function syncArrays() {
     while (participantNames.length < playerCount) {
-      participantNames.push(`참가자 ${participantNames.length + 1}`);
+      participantNames.push(isEn ? `Player ${participantNames.length + 1}` : `참가자 ${participantNames.length + 1}`);
     }
     while (outcomeNames.length < playerCount) {
-      outcomeNames.push(`결과 ${outcomeNames.length + 1}`);
+      outcomeNames.push(isEn ? `Result ${outcomeNames.length + 1}` : `결과 ${outcomeNames.length + 1}`);
     }
   }
 
@@ -1124,7 +1162,7 @@ const data = gameEntry?.data || {
     if (!participantsRow || !outcomesRow) return;
 
     // Update count display and button active classes
-    if (countDisplay) countDisplay.textContent = `${playerCount}명`;
+    if (countDisplay) countDisplay.textContent = isEn ? `${playerCount}P` : `${playerCount}명`;
     countBtns.forEach(btn => {
       btn.classList.toggle('active', btn.getAttribute('data-count') === String(playerCount));
     });
@@ -1134,7 +1172,7 @@ const data = gameEntry?.data || {
     for (let i = 0; i < playerCount; i++) {
       const color = PLAYER_COLORS[i % PLAYER_COLORS.length];
       const emoji = EMOJIS[i % EMOJIS.length];
-      const name = participantNames[i] || `참가자 ${i + 1}`;
+      const name = participantNames[i] || (isEn ? `Player ${i + 1}` : `참가자 ${i + 1}`);
 
       const slot = document.createElement('div');
       slot.className = 'participant-slot';
@@ -1148,7 +1186,7 @@ const data = gameEntry?.data || {
           ${emoji}
         </div>
         <input type="text" class="participant-name-input" data-idx="${i}" value="${name}" spellcheck="false" />
-        <button class="participant-trace-btn" data-idx="${i}">출발 ▶</button>
+        <button class="participant-trace-btn" data-idx="${i}">${isEn ? 'GO ▶' : '출발 ▶'}</button>
       `;
 
       card.querySelector('.participant-trace-btn')?.addEventListener('click', (e) => {
@@ -1167,7 +1205,7 @@ const data = gameEntry?.data || {
     // Render Bottom Outcomes
     outcomesRow.innerHTML = '';
     for (let i = 0; i < playerCount; i++) {
-      const name = outcomeNames[i] || `결과 ${i + 1}`;
+      const name = outcomeNames[i] || (isEn ? `Result ${i + 1}` : `결과 ${i + 1}`);
       const slot = document.createElement('div');
       slot.className = 'outcome-slot';
 
@@ -1583,7 +1621,7 @@ const data = gameEntry?.data || {
   document.querySelectorAll('.preset-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const key = btn.getAttribute('data-preset') || 'coffee';
-      const template = PRESET_TEMPLATES[key];
+      const template = isEn ? PRESET_TEMPLATES_EN[key] : PRESET_TEMPLATES[key];
       if (template) {
         // Build outcomes tailored for current playerCount
         const newOutcomes: string[] = [];
@@ -1628,6 +1666,87 @@ const data = gameEntry?.data || {
     }
     renderLadderSVG();
   });
+
+  // English UI Localization
+  if (isEn) {
+    const countLabel = document.querySelector('.player-count-select label');
+    if (countLabel) countLabel.textContent = 'Players:';
+
+    const speedLabel = document.querySelector('.speed-select label');
+    if (speedLabel) speedLabel.textContent = 'Speed:';
+
+    const sSlow = document.querySelector('[data-speed="slow"]');
+    if (sSlow) {
+      sSlow.textContent = '🐢 Slow';
+      sSlow.setAttribute('title', 'Maximum suspense (~6.2s)');
+    }
+    const sNormal = document.querySelector('[data-speed="normal"]');
+    if (sNormal) {
+      sNormal.textContent = '🚶 Normal';
+      sNormal.setAttribute('title', 'Standard suspense (~4s)');
+    }
+    const sFast = document.querySelector('[data-speed="fast"]');
+    if (sFast) {
+      sFast.textContent = '⚡ Fast';
+      sFast.setAttribute('title', 'Quick pace (~2s)');
+    }
+
+    const presetLabel = document.querySelector('.toolbar-presets .preset-label');
+    if (presetLabel) presetLabel.textContent = 'Presets:';
+
+    const pCoffee = document.querySelector('[data-preset="coffee"]');
+    if (pCoffee) pCoffee.textContent = '☕ Coffee Bet';
+    const pChicken = document.querySelector('[data-preset="chicken"]');
+    if (pChicken) pChicken.textContent = '🍗 Dinner Bet';
+    const pPenalty = document.querySelector('[data-preset="penalty"]');
+    if (pPenalty) pPenalty.textContent = '⚡ Penalties';
+    const pDuty = document.querySelector('[data-preset="duty"]');
+    if (pDuty) pDuty.textContent = '🧹 Chores';
+
+    const countDecBtn = document.getElementById('count-dec-btn');
+    if (countDecBtn) countDecBtn.setAttribute('title', 'Decrease player count');
+    const countIncBtn = document.getElementById('count-inc-btn');
+    if (countIncBtn) countIncBtn.setAttribute('title', 'Increase player count');
+
+    const blindText = document.getElementById('blind-btn-text');
+    if (blindText) blindText.textContent = '🔒 Blind ON';
+
+    const startAllBtn = document.getElementById('start-all-btn');
+    if (startAllBtn) {
+      startAllBtn.setAttribute('title', 'Simultaneously start all player paths');
+      const startAllSpan = startAllBtn.querySelector('span');
+      if (startAllSpan) startAllSpan.textContent = '🚀 Start All';
+    }
+
+    const revealAllBtn = document.getElementById('reveal-all-btn');
+    if (revealAllBtn) {
+      revealAllBtn.setAttribute('title', 'Instantly calculate and show all results');
+      const revealAllSpan = revealAllBtn.querySelector('span');
+      if (revealAllSpan) revealAllSpan.textContent = '⚡ Instant Result';
+    }
+
+    const rerollBtn = document.getElementById('reroll-ladder-btn');
+    if (rerollBtn) {
+      rerollBtn.setAttribute('title', 'Generate new random ladder rungs');
+      const rerollSpan = rerollBtn.querySelector('span');
+      if (rerollSpan) rerollSpan.textContent = '🎲 Shuffle Ladder';
+    }
+
+    const blindTitle = document.querySelector('.ladder-blind-overlay .blind-title');
+    if (blindTitle) blindTitle.textContent = 'Ladder Blind ON';
+
+    const blindSub = document.querySelector('.ladder-blind-overlay .blind-sub');
+    if (blindSub) blindSub.textContent = 'Rungs are hidden to keep results suspenseful (auto-revealed on start)';
+
+    const blindUnveilBtn = document.getElementById('blind-unveil-center-btn');
+    if (blindUnveilBtn) blindUnveilBtn.textContent = '👁️ Unveil Blind';
+
+    const modalH2 = document.querySelector('.result-modal-card h2');
+    if (modalH2) modalH2.textContent = 'Ladder Results';
+
+    const closeResultBtn = document.getElementById('close-result-btn');
+    if (closeResultBtn) closeResultBtn.textContent = 'Close';
+  }
 
   // Launch
   initLadder();

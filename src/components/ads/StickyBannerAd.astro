@@ -11,6 +11,18 @@ const { streamerMode = false } = Astro.props;
 
 {!streamerMode && (
   <div class="sticky-banner-ad-wrap" id="sticky-banner-ad">
+    <script is:inline>
+      if (typeof window !== 'undefined') {
+        var sp = new URLSearchParams(window.location.search);
+        if (sp.has('stream') || sp.has('obs')) {
+          var adWrap = document.getElementById('sticky-banner-ad');
+          if (adWrap) adWrap.style.display = 'none';
+          var s = document.createElement('style');
+          s.textContent = '.sticky-banner-ad-wrap { display: none !important; }';
+          document.head.appendChild(s);
+        }
+      }
+    </script>
     <button class="ad-close-btn" id="sticky-close-btn" aria-label="Close ad">✕</button>
     <div class="ad-inner">
       <!-- Adsterra 728x90 sticky banner -->

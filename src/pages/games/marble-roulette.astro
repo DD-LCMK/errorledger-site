@@ -1227,7 +1227,9 @@ const data = gameEntry?.data || {
 
   const sfx = new MarbleAudio();
 
-  // Presets Data (Streamer preset removed)
+  // Presets Data (Korean & English)
+  const isEn = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('lang') === 'en';
+
   const PRESETS: Record<string, { mode: string; names: string[] }> = {
     coffee: {
       mode: 'last',
@@ -1244,6 +1246,25 @@ const data = gameEntry?.data || {
     penalty: {
       mode: 'last',
       names: ['애교 3종', '노래 1곡', '딱밤 한 대', '팔굽혀펴기 20개', '벌칙 면제', '음료수 쏘기', '엉덩이 춤', '물 원샷']
+    }
+  };
+
+  const PRESETS_EN: Record<string, { mode: string; names: string[] }> = {
+    coffee: {
+      mode: 'last',
+      names: ['Alice', 'Bob', 'Charlie', 'David', 'Emma', 'Frank', 'Grace', 'Henry']
+    },
+    chicken: {
+      mode: 'last',
+      names: ['Host', 'Guest 1', 'Guest 2', 'Mod A', 'Viewer 1', 'Viewer 2', 'VIP', 'Newbie']
+    },
+    lunch: {
+      mode: 'first',
+      names: ['Pizza', 'Burger', 'Tacos', 'Pasta', 'Sushi', 'Steak', 'Ramen', 'Salad']
+    },
+    penalty: {
+      mode: 'last',
+      names: ['Sing Song', '20 Push-ups', 'Pass', 'Drink Water', 'Dance 15s', 'Tell Secret', 'Buy Drinks', 'Stream +30m']
     }
   };
 
@@ -1344,6 +1365,20 @@ const data = gameEntry?.data || {
     { y: 6240, title: 'ZONE 9 — 파이널 바운스 아레나 & 자이언트 프로펠러', sub: '파이널 바운스 아레나 & 대형 프로펠러' },
     { y: 7040, title: 'ZONE 10 — 파이널 퍼널 & 자이언트 프로펠러 (럭키 홀)', sub: '최종 깔때기, 역회전 프로펠러 & 행운의 홀' },
     { y: 7720, title: 'ZONE 11 — 결승선 & 챔피언 존', sub: '최종 결승선 & 영광의 챔피언 존' }
+  ];
+
+  const ZONE_MARKERS_EN: ZoneMarker[] = [
+    { y: 260, title: 'ZONE 1 — Starting Hopper & Pachinko', sub: 'Start Hopper & Galton Pin Grid' },
+    { y: 790, title: 'ZONE 2 — Twin Windmill Rotors', sub: 'Dual Synchronized Windmill Obstacles' },
+    { y: 1480, title: 'ZONE 3 — Fork of Destiny (Shortcut vs Safe)', sub: 'High-Risk Shortcut & Reversal Traps' },
+    { y: 2280, title: 'ZONE 4 — Neon Pinball Bumper Arena', sub: 'High-Bounce Pinball Bumpers' },
+    { y: 3080, title: 'ZONE 5 — Whirlpool Vortex Funnel', sub: 'Centripetal Vortex Bowl' },
+    { y: 3880, title: 'ZONE 6 — Hyper Turbo Slalom & Boosters', sub: 'High-Speed Slalom & Speed Boosters' },
+    { y: 4680, title: 'ZONE 7 — Quad Cross Spinners & Kickbacks', sub: '4-Way Cross Spinners & Rebounders' },
+    { y: 5480, title: 'ZONE 8 — Neon Bumper Wave Forest', sub: 'Zigzag Bumper Wave Slalom' },
+    { y: 6240, title: 'ZONE 9 — Final Bounce Arena & Giant Propeller', sub: 'Final Bounce Arena & Giant Rotor' },
+    { y: 7040, title: 'ZONE 10 — Final Funnel & Propeller (Lucky Hole)', sub: 'Finale Funnel, Counter-Rotor & Lucky Hole' },
+    { y: 7720, title: 'ZONE 11 — Finish Line & Champion Zone', sub: 'Final Finish Line & Hall of Champions' }
   ];
 
   // Track Entities
@@ -1796,7 +1831,7 @@ const data = gameEntry?.data || {
     updateCamModeHUD();
 
     if (marbleCountBadge) {
-      marbleCountBadge.textContent = `총 ${names.length}개 구슬 대기`;
+      marbleCountBadge.textContent = isEn ? `Total ${names.length} marbles` : `총 ${names.length}개 구슬 대기`;
     }
 
     // Distribute in starting hopper (y: 65 - 200) with safe padding under ceiling y: 45
@@ -1845,13 +1880,13 @@ const data = gameEntry?.data || {
     });
 
     if (finishListElem) {
-      finishListElem.innerHTML = '<div class="finish-empty-hint">레이스가 시작되면 결승선을 통과한 순서가 기록됩니다.</div>';
+      finishListElem.innerHTML = `<div class="finish-empty-hint">${isEn ? 'Finishing order will appear here live.' : '레이스가 시작되면 결승선을 통과한 순서가 기록됩니다.'}</div>`;
     }
     if (finishProgressElem) {
-      finishProgressElem.textContent = `0 / ${marbles.length} 완주`;
+      finishProgressElem.textContent = isEn ? `0 / ${marbles.length} Finished` : `0 / ${marbles.length} 완주`;
     }
     if (leadNameElem) {
-      leadNameElem.textContent = '선두: 대기 중';
+      leadNameElem.textContent = isEn ? 'Leader: Waiting' : '선두: 대기 중';
     }
     lastRunnerCountdown = null;
   }
@@ -1862,12 +1897,12 @@ const data = gameEntry?.data || {
     if (!raceToggleBtn) return;
     if (isRacing || isCountingDown) {
       raceToggleBtn.className = 'hud-race-btn reset-mode';
-      raceToggleBtn.innerHTML = '<span class="btn-icon">🔄</span><span class="btn-text">리셋</span>';
-      raceToggleBtn.title = '레이스 리셋 (처음 위치로 복귀)';
+      raceToggleBtn.innerHTML = `<span class="btn-icon">🔄</span><span class="btn-text">${isEn ? 'Reset' : '리셋'}</span>`;
+      raceToggleBtn.title = isEn ? 'Reset race' : '레이스 리셋 (처음 위치로 복귀)';
     } else {
       raceToggleBtn.className = 'hud-race-btn start-mode';
-      raceToggleBtn.innerHTML = '<span class="btn-icon">🚀</span><span class="btn-text">시작</span>';
-      raceToggleBtn.title = '레이스 시작 (단축키: Space)';
+      raceToggleBtn.innerHTML = `<span class="btn-icon">🚀</span><span class="btn-text">${isEn ? 'Start' : '시작'}</span>`;
+      raceToggleBtn.title = isEn ? 'Start race (Space)' : '레이스 시작 (단축키: Space)';
     }
   }
 
@@ -2600,28 +2635,30 @@ const data = gameEntry?.data || {
     if (active.length > 0) {
       if (lastRunnerCountdown !== null && active.length === 1) {
         const secsLeft = Math.max(1, Math.ceil(lastRunnerCountdown));
-        if (leadNameElem) leadNameElem.textContent = `⏱️ 최후의 1명 (${active[0].name})! ${secsLeft}초 후 종료`;
+        if (leadNameElem) leadNameElem.textContent = isEn
+          ? `⏱️ Last marble (${active[0].name})! ${secsLeft}s left`
+          : `⏱️ 최후의 1명 (${active[0].name})! ${secsLeft}초 후 종료`;
       } else {
         const lead = active.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), active[0]);
         const tail = active.reduce((prev, cur) => (cur.y < prev.y ? cur : prev), active[0]);
 
         if (camMode === 'auto') {
           if (finishRankCounter === 0) {
-            if (leadNameElem) leadNameElem.textContent = `선두: ${lead.name}`;
+            if (leadNameElem) leadNameElem.textContent = isEn ? `Leader: ${lead.name}` : `선두: ${lead.name}`;
           } else {
-            if (leadNameElem) leadNameElem.textContent = `📍 메인 팩 밀집 (선두: ${lead.name})`;
+            if (leadNameElem) leadNameElem.textContent = isEn ? `📍 Pack bunched (Lead: ${lead.name})` : `📍 메인 팩 밀집 (선두: ${lead.name})`;
           }
         } else if (camMode === 'first') {
-          if (leadNameElem) leadNameElem.textContent = `선두: ${lead.name}`;
+          if (leadNameElem) leadNameElem.textContent = isEn ? `Leader: ${lead.name}` : `선두: ${lead.name}`;
         } else if (camMode === 'last') {
-          if (leadNameElem) leadNameElem.textContent = `💀 꼴찌: ${tail.name}`;
+          if (leadNameElem) leadNameElem.textContent = isEn ? `💀 Last: ${tail.name}` : `💀 꼴찌: ${tail.name}`;
         } else if (camMode === 'runner' && focusedMarbleId !== null) {
           const target = marbles.find(m => m.id === focusedMarbleId);
-          if (leadNameElem && target) leadNameElem.textContent = `🎯 추적: ${target.name}`;
+          if (leadNameElem && target) leadNameElem.textContent = isEn ? `🎯 Tracking: ${target.name}` : `🎯 추적: ${target.name}`;
         }
       }
     } else {
-      if (leadNameElem) leadNameElem.textContent = `🏁 레이스 종료!`;
+      if (leadNameElem) leadNameElem.textContent = isEn ? '🏁 Race Finished!' : '🏁 레이스 종료!';
     }
   }
 
@@ -2639,7 +2676,9 @@ const data = gameEntry?.data || {
   function onMarbleFinished(m: Marble) {
     sfx.playFinish();
     if (finishProgressElem) {
-      finishProgressElem.textContent = `${finishRankCounter} / ${marbles.length} 완주`;
+      finishProgressElem.textContent = isEn 
+        ? `${finishRankCounter} / ${marbles.length} Finished` 
+        : `${finishRankCounter} / ${marbles.length} 완주`;
     }
 
     if (finishListElem) {
@@ -2649,9 +2688,9 @@ const data = gameEntry?.data || {
       const item = document.createElement('div');
       item.className = 'finish-item';
       item.style.cursor = 'pointer';
-      item.title = `${m.name} 시점으로 카메라 이동`;
+      item.title = isEn ? `Focus camera on ${m.name}` : `${m.name} 시점으로 카메라 이동`;
       item.innerHTML = `
-        <span class="finish-rank">${m.finishRank}위</span>
+        <span class="finish-rank">${isEn ? '#' + m.finishRank : m.finishRank + '위'}</span>
         <span class="finish-name"><span class="finish-color-dot" style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${m.color};box-shadow:0 0 6px ${m.color};margin-right:6px;vertical-align:middle;"></span>${m.name}</span>
         <span class="finish-time">${m.finishTime.toFixed(2)}s</span>
       `;
@@ -2690,7 +2729,7 @@ const data = gameEntry?.data || {
     ctx.restore();
 
     // Zone Background Markers
-    ZONE_MARKERS.forEach(zm => {
+    (isEn ? ZONE_MARKERS_EN : ZONE_MARKERS).forEach(zm => {
       ctx.save();
       ctx.textAlign = 'center';
       ctx.font = '900 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
@@ -2798,7 +2837,7 @@ const data = gameEntry?.data || {
     ctx.font = '800 10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
     ctx.fillStyle = 'rgba(186, 230, 253, 0.75)';
     ctx.shadowBlur = 0;
-    ctx.fillText('⚡ 상단 이탈 방지 루프 ⚡', COURSE_WIDTH / 2, 38);
+    ctx.fillText(isEn ? '⚡ UPPER BOUNDARY LOOP ⚡' : '⚡ 상단 이탈 방지 루프 ⚡', COURSE_WIDTH / 2, 38);
     ctx.restore();
 
     // 2. Draw Pins (Plinko & Neon Bumpers)
@@ -2983,12 +3022,12 @@ const data = gameEntry?.data || {
     ctx.fillStyle = '#67e8f9';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('★ 럭키 홀 ★', 507, 7085);
+    ctx.fillText(isEn ? '★ LUCKY HOLE ★' : '★ 럭키 홀 ★', 507, 7085);
     ctx.font = '800 9px sans-serif';
-    ctx.fillText('행운의 홀', 507, 7140);
-    ctx.fillText('⚡ 직행 ⚡', 507, 7260);
+    ctx.fillText(isEn ? 'Lucky Chute' : '행운의 홀', 507, 7140);
+    ctx.fillText(isEn ? '⚡ DIRECT ⚡' : '⚡ 직행 ⚡', 507, 7260);
     ctx.fillText('⬇ ⬇ ⬇', 507, 7380);
-    ctx.fillText('⚡ 가속 ⚡', 507, 7500);
+    ctx.fillText(isEn ? '⚡ BOOST ⚡' : '⚡ 가속 ⚡', 507, 7500);
     ctx.fillText('⬇ ⬇ ⬇', 507, 7620);
 
     // B. Main Final Funnel (y: 7060 to 7360)
@@ -3008,7 +3047,7 @@ const data = gameEntry?.data || {
     ctx.font = '900 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
     ctx.fillStyle = '#fbbf24';
     ctx.textAlign = 'center';
-    ctx.fillText('⚡ 최종 깔때기 (파이널 퍼널) ⚡', 260, 7180);
+    ctx.fillText(isEn ? '⚡ FINALE FUNNEL ⚡' : '⚡ 최종 깔때기 (파이널 퍼널) ⚡', 260, 7180);
 
     // C. Central Throat & Giant Keeper Propeller (y: 7360 to 7700)
     ctx.strokeStyle = '#f97316';
@@ -3024,10 +3063,10 @@ const data = gameEntry?.data || {
     ctx.font = '900 10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
     ctx.fillStyle = '#fed7aa';
     ctx.textAlign = 'center';
-    ctx.fillText('↺ 자이언트 리버스 프로펠러 (역회전)', 260, 7430);
+    ctx.fillText(isEn ? '↺ GIANT REVERSE PROPELLER' : '↺ 자이언트 리버스 프로펠러 (역회전)', 260, 7430);
     ctx.font = '800 8.5px sans-serif';
     ctx.fillStyle = '#fdba74';
-    ctx.fillText('(구슬을 위로 쳐올림 - 타이밍 통과)', 260, 7445);
+    ctx.fillText(isEn ? '(Knocks marbles up — time your pass)' : '(구슬을 위로 쳐올림 - 타이밍 통과)', 260, 7445);
     ctx.restore();
 
     // 5. Finish Line Banner
@@ -3045,7 +3084,7 @@ const data = gameEntry?.data || {
     }
     ctx.font = '900 12px sans-serif';
     ctx.fillStyle = '#facc15';
-    ctx.fillText('🏁 결승선 (FINISH LINE)', COURSE_WIDTH / 2 - 60, FINISH_LINE_Y - 22);
+    ctx.fillText(isEn ? '🏁 FINISH LINE' : '🏁 결승선 (FINISH LINE)', COURSE_WIDTH / 2 - 60, FINISH_LINE_Y - 22);
     ctx.restore();
 
     // 6. Draw Shockwaves (3x Stronger Visual Blast with Double Neon Ripple)
@@ -3140,7 +3179,7 @@ const data = gameEntry?.data || {
       if (active.length === 1) {
         ctx.save();
         const secs = Math.max(1, Math.ceil(lastRunnerCountdown));
-        const msg = `⏱️ 최후의 1명 (${active[0].name}) 확정! ${secs}초 후 레이스 종료`;
+        const msg = isEn ? `⏱️ Last marble (${active[0].name}) locked! Race ends in ${secs}s` : `⏱️ 최후의 1명 (${active[0].name}) 확정! ${secs}초 후 레이스 종료`;
         ctx.font = '900 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         const tw = ctx.measureText(msg).width;
         const bw = tw + 36;
@@ -3174,7 +3213,7 @@ const data = gameEntry?.data || {
     // Screen-space Lucky Cannon Unlocked Toast Alert
     if (cannonAlertTimer > 0) {
       ctx.save();
-      const msg = `⚡ 행운의 비밀 캐논 터널 개방! ⏩`;
+      const msg = isEn ? '⚡ Secret Lucky Cannon Tunnel Opened! ⏩' : '⚡ 행운의 비밀 캐논 터널 개방! ⏩';
       ctx.font = '900 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
       const tw = ctx.measureText(msg).width;
       const bw = tw + 36;
@@ -3341,37 +3380,43 @@ const data = gameEntry?.data || {
 
     if (winnerMode === 'first') {
       winners = [sorted[0]];
-      spotlightTitle = '🏆 1등 우승 축하드립니다!';
-      badgeText = '🥇 1등 당첨';
+      spotlightTitle = isEn ? '🏆 1st Place Winner!' : '🏆 1등 우승 축하드립니다!';
+      badgeText = isEn ? '🥇 1st Place' : '🥇 1등 당첨';
     } else if (winnerMode === 'last') {
       winners = [sorted[sorted.length - 1]];
-      spotlightTitle = '💀 꼴찌 당첨! (벌칙/당번)';
-      badgeText = '꼴찌 당첨';
+      spotlightTitle = isEn ? '💀 Last Place Loser / Penalty!' : '💀 꼴찌 당첨! (벌칙/당번)';
+      badgeText = isEn ? 'Last Place' : '꼴찌 당첨';
     } else if (winnerMode === 'multi') {
       const count = Math.min(sorted.length, Math.max(1, parseInt(multiCountInput.value, 10) || 3));
       winners = sorted.slice(0, count);
-      spotlightTitle = `🏆 상위 ${count}명 당첨!`;
-      badgeText = '다중 당첨';
+      spotlightTitle = isEn ? `🏆 Top ${count} Winners!` : `🏆 상위 ${count}명 당첨!`;
+      badgeText = isEn ? 'Top Winners' : '다중 당첨';
     } else if (winnerMode === 'custom') {
       const targetRank = Math.min(sorted.length, Math.max(1, parseInt(customRankInput.value, 10) || 7));
       winners = [sorted[targetRank - 1]];
-      spotlightTitle = `🎯 행운의 ${targetRank}등 당첨!`;
-      badgeText = `${targetRank}등 당첨`;
+      spotlightTitle = isEn ? `🎯 Lucky #${targetRank} Winner!` : `🎯 행운의 ${targetRank}등 당첨!`;
+      badgeText = isEn ? `#${targetRank} Finisher` : `${targetRank}등 당첨`;
     }
 
     if (modalWinnerTitle) modalWinnerTitle.textContent = spotlightTitle;
     if (spotlightBadge) spotlightBadge.textContent = badgeText;
     if (spotlightName) spotlightName.textContent = winners.map(w => w.name).join(', ');
     if (spotlightSub) {
-      spotlightSub.textContent = winnerMode === 'last' 
-        ? '치킨 또는 커피를 쏘실 시간입니다! ☕🍗' 
-        : '축하합니다! 행운의 당첨자로 선정되셨습니다!';
+      if (isEn) {
+        spotlightSub.textContent = winnerMode === 'last' 
+          ? 'Time to buy coffee/dinner or take the penalty! ☕🍕' 
+          : 'Congratulations! You are the lucky winner!';
+      } else {
+        spotlightSub.textContent = winnerMode === 'last' 
+          ? '치킨 또는 커피를 쏘실 시간입니다! ☕🍗' 
+          : '축하합니다! 행운의 당첨자로 선정되셨습니다!';
+      }
     }
 
     if (modalRanksScroll) {
       modalRanksScroll.innerHTML = sorted.map((m, idx) => {
         const isWinner = winners.some(w => w.id === m.id);
-        const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}위`;
+        const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : (isEn ? '#' + (idx + 1) : `${idx + 1}위`);
         return `
           <div class="finish-item" style="${isWinner ? 'border: 1px solid #facc15; background: rgba(250, 204, 21, 0.15);' : ''}">
             <span class="finish-rank">${medal}</span>
@@ -3668,9 +3713,142 @@ const data = gameEntry?.data || {
     }
   });
 
+  // English UI Localization
+  function applyEnglishMarbleUI() {
+    // HUD
+    const raceToggleBtn = document.getElementById('race-toggle-btn');
+    if (raceToggleBtn) {
+      const btnText = raceToggleBtn.querySelector('.btn-text');
+      if (btnText) btnText.textContent = 'Start';
+      raceToggleBtn.setAttribute('title', 'Start Race (Space)');
+    }
+    const camAuto = document.querySelector('.cam-btn[data-cam="auto"]');
+    if (camAuto) {
+      camAuto.textContent = '🎥 Auto';
+      camAuto.setAttribute('title', 'Auto track leader, dynamic switch after finish');
+    }
+    const camFirst = document.querySelector('.cam-btn[data-cam="first"]');
+    if (camFirst) {
+      camFirst.textContent = '🥇 Lead';
+      camFirst.setAttribute('title', 'Focus on race leader');
+    }
+    const camLast = document.querySelector('.cam-btn[data-cam="last"]');
+    if (camLast) {
+      camLast.textContent = '💀 Last';
+      camLast.setAttribute('title', 'Focus on last place marble');
+    }
+    const camResume = document.getElementById('cam-resume-btn');
+    if (camResume) {
+      camResume.textContent = '↩ Resume';
+      camResume.setAttribute('title', 'Resume auto tracking camera');
+    }
+    const leadName = document.getElementById('lead-name');
+    if (leadName) leadName.textContent = 'Leader: Waiting';
+
+    const theaterBtn = document.getElementById('theater-toggle-btn');
+    if (theaterBtn) {
+      theaterBtn.textContent = '📺 Focus Mode';
+      theaterBtn.setAttribute('title', 'Collapse settings for focus mode');
+    }
+
+    const panHint = document.querySelector('#pan-hint-chip span');
+    if (panHint) panHint.textContent = '🖱️ Drag / Wheel to explore map';
+
+    // Zoom, Speed & Sound Tooltips
+    const z05 = document.querySelector('.zoom-btn[data-zoom="0.5"]');
+    if (z05) z05.setAttribute('title', 'Panorama View (Show 1320px course)');
+    const z075 = document.querySelector('.zoom-btn[data-zoom="0.75"]');
+    if (z075) z075.setAttribute('title', 'Standard View (Show 880px course)');
+    const z10 = document.querySelector('.zoom-btn[data-zoom="1.0"]');
+    if (z10) z10.setAttribute('title', '1:1 Actual Scale');
+
+    const sp05 = document.querySelector('.speed-btn[data-speed="0.5"]');
+    if (sp05) sp05.setAttribute('title', '0.5x Speed (Slow Motion)');
+    const sp10 = document.querySelector('.speed-btn[data-speed="1"]');
+    if (sp10) sp10.setAttribute('title', '1x Speed (Standard)');
+    const sp15 = document.querySelector('.speed-btn[data-speed="1.5"]');
+    if (sp15) sp15.setAttribute('title', '1.5x Speed (Fast Pace)');
+
+    const soundBtn = document.getElementById('sound-toggle-hud-btn');
+    if (soundBtn) {
+      soundBtn.setAttribute('title', 'Toggle Sound On/Off');
+      soundBtn.setAttribute('aria-label', 'Toggle Sound On/Off');
+    }
+
+    // Panels
+    const panels = document.querySelectorAll('.control-column .panel-title');
+    if (panels.length >= 4) {
+      panels[0].textContent = '🎯 Winner Mode';
+      panels[1].textContent = '👥 Participants';
+      panels[2].textContent = '🏁 Finish Order (Live)';
+      panels[3].textContent = '⚡ Energy Gauge Settings';
+    }
+
+    const modeSelect = document.getElementById('winner-mode-select') as HTMLSelectElement | null;
+    if (modeSelect) {
+      const optLast = modeSelect.querySelector('option[value="last"]');
+      if (optLast) optLast.textContent = '💀 Last Place (Penalty / Bets)';
+      const optFirst = modeSelect.querySelector('option[value="first"]');
+      if (optFirst) optFirst.textContent = '🥇 1st Place (First to Finish)';
+      const optMulti = modeSelect.querySelector('option[value="multi"]');
+      if (optMulti) optMulti.textContent = '🏆 Top N Finishers';
+      const optCustom = modeSelect.querySelector('option[value="custom"]');
+      if (optCustom) optCustom.textContent = '🎯 Specific Rank (Nth to Finish)';
+    }
+
+    const multiRow = document.getElementById('multi-settings-row');
+    if (multiRow) {
+      const lbl = multiRow.querySelector('label');
+      if (lbl) lbl.textContent = 'Winner count:';
+      const sp = multiRow.querySelector('span');
+      if (sp) sp.textContent = 'players (in order)';
+    }
+
+    const customRow = document.getElementById('custom-settings-row');
+    if (customRow) {
+      const lbl = customRow.querySelector('label');
+      if (lbl) lbl.textContent = 'Rank to win:';
+      const sp = customRow.querySelector('span');
+      if (sp) sp.textContent = 'th finisher wins';
+    }
+
+    if (namesInput) {
+      namesInput.value = PRESETS_EN.coffee.names.join('\n');
+      namesInput.placeholder = 'Enter participant names, one per line.\nExample:\nAlice\nBob\nCharlie * 2 (2 marbles)\nDiana';
+    }
+
+    const shuffleBtn = document.getElementById('shuffle-btn');
+    if (shuffleBtn) shuffleBtn.textContent = '🔀 Shuffle';
+
+    const applyBtn = document.getElementById('apply-btn');
+    if (applyBtn) applyBtn.textContent = '✓ Place Marbles';
+
+    const finishEmptyHint = document.querySelector('.finish-empty-hint');
+    if (finishEmptyHint) finishEmptyHint.textContent = 'Finishing order will appear here live.';
+
+    const energyStrong = document.querySelector('.energy-toggle-text strong');
+    if (energyStrong) energyStrong.textContent = 'Collision Blast Effect';
+
+    const energyDesc = document.querySelector('.energy-toggle-desc');
+    if (energyDesc) energyDesc.textContent = 'Marbles charge kinetic energy on collision and unleash shockwaves when full.';
+
+    const restartBtn = document.getElementById('modal-restart-btn');
+    if (restartBtn) restartBtn.textContent = '🔄 Race Again';
+
+    const closeBtn = document.getElementById('modal-close-btn');
+    if (closeBtn) closeBtn.textContent = 'Close';
+
+    const supportLink = document.querySelector('.modal-support-link');
+    if (supportLink) supportLink.textContent = '☕ Support StreamArcade';
+  }
+
   // Init
-  if (namesInput) {
-    namesInput.value = PRESETS.coffee.names.join('\n');
+  if (isEn) {
+    applyEnglishMarbleUI();
+  } else {
+    if (namesInput) {
+      namesInput.value = PRESETS.coffee.names.join('\n');
+    }
   }
   spawnMarbles();
   requestAnimationFrame(render);

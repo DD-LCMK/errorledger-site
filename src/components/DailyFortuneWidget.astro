@@ -3,24 +3,30 @@ interface Props {
   title?: string;
   subtitle?: string;
   showSectionHeader?: boolean;
+  lang?: 'ko' | 'en';
 }
 
 const {
-  title = "오늘의 운세 (Daily Fortune)",
-  subtitle = "매일 자정 자동으로 갱신되는 띠별 & 별자리별 맞춤형 하루 운세",
-  showSectionHeader = true
+  title,
+  subtitle,
+  showSectionHeader = true,
+  lang = 'ko'
 } = Astro.props;
+
+const isEn = lang === 'en';
+const widgetTitle = title ?? (isEn ? "Daily Horoscope & Fortune" : "오늘의 운세 (Daily Fortune)");
+const widgetSubtitle = subtitle ?? (isEn ? "Personalized daily fortune for 12 Zodiac animals & 12 Astrological signs updated daily at midnight" : "매일 자정 자동으로 갱신되는 띠별 & 별자리별 맞춤형 하루 운세");
 ---
 
-<div class="fortune-widget-root" id="daily-fortune-widget">
+<div class="fortune-widget-root" id="daily-fortune-widget" data-lang={lang}>
   {showSectionHeader && (
     <div class="fortune-header">
       <div class="fortune-badge-row">
-        <span class="fortune-badge">✨ 100% 무료 일일 운세</span>
-        <span class="fortune-date-tag" id="fortune-current-date">로딩 중...</span>
+        <span class="fortune-badge">{isEn ? '✨ 100% Free Daily Horoscope' : '✨ 100% 무료 일일 운세'}</span>
+        <span class="fortune-date-tag" id="fortune-current-date">{isEn ? 'Loading...' : '로딩 중...'}</span>
       </div>
-      <h2 class="fortune-title">{title}</h2>
-      <p class="fortune-subtitle">{subtitle}</p>
+      <h2 class="fortune-title">{widgetTitle}</h2>
+      <p class="fortune-subtitle">{widgetSubtitle}</p>
     </div>
   )}
 
@@ -29,11 +35,11 @@ const {
     <div class="fortune-tabs" role="tablist">
       <button class="fortune-tab active" data-tab="eastern" role="tab" aria-selected="true">
         <span class="tab-icon">🐾</span>
-        <span class="tab-label">십이지간 (12 띠)</span>
+        <span class="tab-label">{isEn ? 'Zodiac Animals (12 Signs)' : '십이지간 (12 띠)'}</span>
       </button>
       <button class="fortune-tab" data-tab="western" role="tab" aria-selected="false">
         <span class="tab-icon">🌌</span>
-        <span class="tab-label">서양 별자리 (12 별자리)</span>
+        <span class="tab-label">{isEn ? 'Western Horoscope (12 Signs)' : '서양 별자리 (12 별자리)'}</span>
       </button>
     </div>
   </div>
@@ -55,18 +61,18 @@ const {
         <div class="sign-avatar" id="fortune-avatar">🐯</div>
         <div class="sign-meta">
           <div class="sign-name-row">
-            <h3 class="sign-name" id="fortune-sign-name">호랑이띠</h3>
-            <span class="sign-sub" id="fortune-sign-sub">50, 62, 74, 86, 98, 10년생</span>
+            <h3 class="sign-name" id="fortune-sign-name">{isEn ? 'Tiger' : '호랑이띠'}</h3>
+            <span class="sign-sub" id="fortune-sign-sub">{isEn ? "'50, '62, '74, '86, '98, '10" : '50, 62, 74, 86, 98, 10년생'}</span>
           </div>
-          <span class="fortune-date-display" id="fortune-card-date">2026년 9월 6일 일요일</span>
+          <span class="fortune-date-display" id="fortune-card-date">{isEn ? 'Sunday, September 6, 2026' : '2026년 9월 6일 일요일'}</span>
         </div>
       </div>
 
       <div class="score-badge-box">
-        <span class="score-label">오늘의 종합운</span>
+        <span class="score-label">{isEn ? "Today's Overall Luck" : "오늘의 종합운"}</span>
         <div class="score-pill" id="fortune-score-pill">
-          <span class="score-num" id="fortune-score-num">95</span><span class="score-unit">점</span>
-          <span class="score-grade" id="fortune-score-grade">대길 (大吉)</span>
+          <span class="score-num" id="fortune-score-num">95</span><span class="score-unit">{isEn ? 'pts' : '점'}</span>
+          <span class="score-grade" id="fortune-score-grade">{isEn ? 'Great Fortune 🌟' : '대길 (大吉)'}</span>
         </div>
       </div>
     </div>
@@ -81,10 +87,12 @@ const {
     <!-- Overview Text -->
     <div class="card-content">
       <h4 class="fortune-headline" id="fortune-headline">
-        "노력의 결실이 눈앞에 다가오는 황금빛 하루"
+        {isEn ? '"A golden day where your dedicated efforts bear bountiful fruits"' : '"노력의 결실이 눈앞에 다가오는 황금빛 하루"'}
       </h4>
       <p class="fortune-body" id="fortune-body">
-        그동안 묵묵히 쏟아부은 노력과 정성이 값진 결실로 이어지는 뜻깊은 하루입니다. 주변 사람들의 지지와 응원이 더해져 새로운 프로젝트나 도전에 탄력이 붙게 됩니다.
+        {isEn
+          ? 'The sincere devotion and energy you have poured in quietly are culminating into meaningful achievements. With support and encouragement from those around you, new initiatives gain remarkable momentum.'
+          : '그동안 묵묵히 쏟아부은 노력과 정성이 값진 결실로 이어지는 뜻깊은 하루입니다. 주변 사람들의 지지와 응원이 더해져 새로운 프로젝트나 도전에 탄력이 붙게 됩니다.'}
       </p>
     </div>
 
@@ -93,41 +101,41 @@ const {
       <div class="sub-luck-item">
         <div class="sub-luck-top">
           <span class="sub-luck-icon">💰</span>
-          <span class="sub-luck-name">금전운</span>
+          <span class="sub-luck-name">{isEn ? 'Wealth' : '금전운'}</span>
           <span class="sub-luck-score" id="luck-wealth-score">90%</span>
         </div>
         <div class="sub-luck-bar"><div class="sub-luck-fill" id="luck-wealth-bar" style="width: 90%;"></div></div>
-        <p class="sub-luck-tip" id="luck-wealth-tip">뜻밖의 작은 수익이나 보너스가 기대되는 날입니다.</p>
+        <p class="sub-luck-tip" id="luck-wealth-tip">{isEn ? 'Unexpected extra returns or pleasing financial bonuses are anticipated.' : '뜻밖의 작은 수익이나 보너스가 기대되는 날입니다.'}</p>
       </div>
 
       <div class="sub-luck-item">
         <div class="sub-luck-top">
           <span class="sub-luck-icon">❤️</span>
-          <span class="sub-luck-name">애정운</span>
+          <span class="sub-luck-name">{isEn ? 'Love' : '애정운'}</span>
           <span class="sub-luck-score" id="luck-love-score">85%</span>
         </div>
         <div class="sub-luck-bar"><div class="sub-luck-fill" id="luck-love-bar" style="width: 85%;"></div></div>
-        <p class="sub-luck-tip" id="luck-love-tip">솔직한 대화로 서로의 마음을 확인하기 좋은 날입니다.</p>
+        <p class="sub-luck-tip" id="luck-love-tip">{isEn ? 'An ideal day for open, sincere dialogue to strengthen emotional trust.' : '솔직한 대화로 서로의 마음을 확인하기 좋은 날입니다.'}</p>
       </div>
 
       <div class="sub-luck-item">
         <div class="sub-luck-top">
           <span class="sub-luck-icon">💼</span>
-          <span class="sub-luck-name">사업/학업</span>
+          <span class="sub-luck-name">{isEn ? 'Career & Work' : '사업/학업'}</span>
           <span class="sub-luck-score" id="luck-work-score">95%</span>
         </div>
         <div class="sub-luck-bar"><div class="sub-luck-fill" id="luck-work-bar" style="width: 95%;"></div></div>
-        <p class="sub-luck-tip" id="luck-work-tip">집중력이 최고조에 달해 빠른 성과를 얻을 수 있습니다.</p>
+        <p class="sub-luck-tip" id="luck-work-tip">{isEn ? 'High focus and clarity enable rapid, efficient breakthroughs.' : '집중력이 최고조에 달해 빠른 성과를 얻을 수 있습니다.'}</p>
       </div>
 
       <div class="sub-luck-item">
         <div class="sub-luck-top">
           <span class="sub-luck-icon">🌿</span>
-          <span class="sub-luck-name">건강운</span>
+          <span class="sub-luck-name">{isEn ? 'Health' : '건강운'}</span>
           <span class="sub-luck-score" id="luck-health-score">80%</span>
         </div>
         <div class="sub-luck-bar"><div class="sub-luck-fill" id="luck-health-bar" style="width: 80%;"></div></div>
-        <p class="sub-luck-tip" id="luck-health-tip">가벼운 스트레칭과 수분 섭취로 컨디션을 관리하세요.</p>
+        <p class="sub-luck-tip" id="luck-health-tip">{isEn ? 'Maintain top physical condition with light stretching and plenty of water.' : '가벼운 스트레칭과 수분 섭취로 컨디션을 관리하세요.'}</p>
       </div>
     </div>
 
@@ -135,15 +143,15 @@ const {
     <div class="fortune-dodont-grid">
       <div class="dodont-card do-card">
         <div class="dodont-header">
-          <span class="dodont-badge do-badge">⭕ 오늘의 추천 (DO)</span>
+          <span class="dodont-badge do-badge">{isEn ? "⭕ Today's DO" : "⭕ 오늘의 추천 (DO)"}</span>
         </div>
-        <p class="dodont-text" id="fortune-do-text">동료에게 먼저 따뜻한 격려 건네기</p>
+        <p class="dodont-text" id="fortune-do-text">{isEn ? 'Offer warm words of encouragement first' : '동료에게 먼저 따뜻한 격려 건네기'}</p>
       </div>
       <div class="dodont-card dont-card">
         <div class="dodont-header">
-          <span class="dodont-badge dont-badge">❌ 오늘의 주의 (DON'T)</span>
+          <span class="dodont-badge dont-badge">{isEn ? "❌ Today's DON'T" : "❌ 오늘의 주의 (DON'T)"}</span>
         </div>
-        <p class="dodont-text" id="fortune-dont-text">확인되지 않은 소문에 섣부른 동요</p>
+        <p class="dodont-text" id="fortune-dont-text">{isEn ? 'Hasty reactions to unverified rumors' : '확인되지 않은 소문에 섣부른 동요'}</p>
       </div>
     </div>
 
@@ -154,47 +162,47 @@ const {
 
     <!-- Lucky Items Pill Row -->
     <div class="lucky-items-container">
-      <div class="lucky-items-title">🍀 오늘의 행운 아이템 & 키워드</div>
+      <div class="lucky-items-title">{isEn ? "🍀 Today's Lucky Items & Keywords" : "🍀 오늘의 행운 아이템 & 키워드"}</div>
       <div class="lucky-pills-row">
         <div class="lucky-pill">
-          <span class="pill-label">🔢 행운의 숫자</span>
+          <span class="pill-label">{isEn ? '🔢 Lucky Numbers' : '🔢 행운의 숫자'}</span>
           <strong class="pill-val" id="pill-number">7, 21</strong>
         </div>
         <div class="lucky-pill">
-          <span class="pill-label">🎨 행운의 색상</span>
-          <strong class="pill-val" id="pill-color">골드 옐로우</strong>
+          <span class="pill-label">{isEn ? '🎨 Lucky Color' : '🎨 행운의 색상'}</span>
+          <strong class="pill-val" id="pill-color">{isEn ? 'Gold Yellow' : '골드 옐로우'}</strong>
         </div>
         <div class="lucky-pill">
-          <span class="pill-label">🧭 행운의 방향</span>
-          <strong class="pill-val" id="pill-direction">동남쪽</strong>
+          <span class="pill-label">{isEn ? '🧭 Lucky Direction' : '🧭 행운의 방향'}</span>
+          <strong class="pill-val" id="pill-direction">{isEn ? 'Southeast' : '동남쪽'}</strong>
         </div>
         <div class="lucky-pill">
-          <span class="pill-label">⏰ 행운의 시간</span>
+          <span class="pill-label">{isEn ? '⏰ Lucky Time' : '⏰ 행운의 시간'}</span>
           <strong class="pill-val" id="pill-time">14:00 ~ 16:00</strong>
         </div>
         <div class="lucky-pill">
-          <span class="pill-label">🎒 행운의 물건</span>
-          <strong class="pill-val" id="pill-item">따뜻한 차</strong>
+          <span class="pill-label">{isEn ? '🎒 Lucky Item' : '🎒 행운의 물건'}</span>
+          <strong class="pill-val" id="pill-item">{isEn ? 'Warm Tea' : '따뜻한 차'}</strong>
         </div>
         <div class="lucky-pill">
-          <span class="pill-label">🍲 행운의 음식</span>
-          <strong class="pill-val" id="pill-food">비빔밥</strong>
+          <span class="pill-label">{isEn ? '🍲 Lucky Food' : '🍲 행운의 음식'}</span>
+          <strong class="pill-val" id="pill-food">{isEn ? 'Healthy Bowl' : '비빔밥'}</strong>
         </div>
       </div>
     </div>
 
     <!-- Card Action Buttons -->
     <div class="card-footer-actions">
-      <button class="btn-copy-fortune" id="btn-copy-fortune" title="오늘의 운세를 클립보드에 복사">
-        <span>📋 오늘 운세 텍스트 복사</span>
+      <button class="btn-copy-fortune" id="btn-copy-fortune" title={isEn ? "Copy today's fortune to clipboard" : "오늘의 운세를 클립보드에 복사"}>
+        <span>{isEn ? '📋 Copy Fortune Text' : '📋 오늘 운세 텍스트 복사'}</span>
       </button>
-      <span class="fortune-disclaimer">※ 오늘의 운세는 매일 자정 갱신되며, 하루의 활력을 위한 엔터테인먼트 정보입니다.</span>
+      <span class="fortune-disclaimer">{isEn ? '※ Daily fortune is updated at midnight every day for entertainment purposes.' : '※ 오늘의 운세는 매일 자정 갱신되며, 하루의 활력을 위한 엔터테인먼트 정보입니다.'}</span>
     </div>
   </div>
 
   <!-- Toast Notification -->
   <div class="fortune-toast hidden" id="fortune-toast">
-    <span>✅ 오늘의 운세가 클립보드에 복사되었습니다!</span>
+    <span>{isEn ? "✅ Today's fortune copied to clipboard!" : '✅ 오늘의 운세가 클립보드에 복사되었습니다!'}</span>
   </div>
 </div>
 
@@ -871,6 +879,8 @@ const {
 </style>
 
 <script>
+  const isEn = typeof window !== 'undefined' && document.getElementById('daily-fortune-widget')?.dataset.lang === 'en';
+
   interface SignData {
     id: string;
     name: string;
@@ -901,6 +911,21 @@ const {
     { id: 'pig', name: '돼지띠', icon: '🐷', sub: '59, 71, 83, 95, 07, 19년', type: 'eastern', birthYears: [1959, 1971, 1983, 1995, 2007, 2019] }
   ];
 
+  const EASTERN_SIGNS_EN: SignData[] = [
+    { id: 'rat', name: 'Rat', icon: '🐭', sub: "'48, '60, '72, '84, '96, '08", type: 'eastern', birthYears: [1948, 1960, 1972, 1984, 1996, 2008] },
+    { id: 'ox', name: 'Ox', icon: '🐂', sub: "'49, '61, '73, '85, '97, '09", type: 'eastern', birthYears: [1949, 1961, 1973, 1985, 1997, 2009] },
+    { id: 'tiger', name: 'Tiger', icon: '🐯', sub: "'50, '62, '74, '86, '98, '10", type: 'eastern', birthYears: [1950, 1962, 1974, 1986, 1998, 2010] },
+    { id: 'rabbit', name: 'Rabbit', icon: '🐰', sub: "'51, '63, '75, '87, '99, '11", type: 'eastern', birthYears: [1951, 1963, 1975, 1987, 1999, 2011] },
+    { id: 'dragon', name: 'Dragon', icon: '🐲', sub: "'52, '64, '76, '88, '00, '12", type: 'eastern', birthYears: [1952, 1964, 1976, 1988, 2000, 2012] },
+    { id: 'snake', name: 'Snake', icon: '🐍', sub: "'53, '65, '77, '89, '01, '13", type: 'eastern', birthYears: [1953, 1965, 1977, 1989, 2001, 2013] },
+    { id: 'horse', name: 'Horse', icon: '🐴', sub: "'54, '66, '78, '90, '02, '14", type: 'eastern', birthYears: [1954, 1966, 1978, 1990, 2002, 2014] },
+    { id: 'sheep', name: 'Sheep', icon: '🐑', sub: "'55, '67, '79, '91, '03, '15", type: 'eastern', birthYears: [1955, 1967, 1979, 1991, 2003, 2015] },
+    { id: 'monkey', name: 'Monkey', icon: '🐵', sub: "'56, '68, '80, '92, '04, '16", type: 'eastern', birthYears: [1956, 1968, 1980, 1992, 2004, 2016] },
+    { id: 'rooster', name: 'Rooster', icon: '🐔', sub: "'57, '69, '81, '93, '05, '17", type: 'eastern', birthYears: [1957, 1969, 1981, 1993, 2005, 2017] },
+    { id: 'dog', name: 'Dog', icon: '🐶', sub: "'58, '70, '82, '94, '06, '18", type: 'eastern', birthYears: [1958, 1970, 1982, 1994, 2006, 2018] },
+    { id: 'pig', name: 'Pig', icon: '🐷', sub: "'59, '71, '83, '95, '07, '19", type: 'eastern', birthYears: [1959, 1971, 1983, 1995, 2007, 2019] }
+  ];
+
   // 12 별자리 (Western Zodiac) with ruling planets and elements
   const WESTERN_SIGNS: SignData[] = [
     { id: 'aquarius', name: '물병자리', icon: '🏺', sub: '01.20 ~ 02.18', type: 'western', planet: '천왕성 (자유, 독창성)', element: '바람 (지성)', elementDesc: '논리적이고 창의적인 발상이 빛나는 날', bestMatch: '쌍둥이자리', cautionMatch: '황소자리' },
@@ -915,6 +940,21 @@ const {
     { id: 'scorpio', name: '전갈자리', icon: '🦂', sub: '10.23 ~ 11.22', type: 'western', planet: '명왕성 (통찰, 집념)', element: '물 (감성)', elementDesc: '깊은 통찰력으로 본질을 꿰뚫어 보는 결정적 날', bestMatch: '물고기자리', cautionMatch: '사자자리' },
     { id: 'sagittarius', name: '사수자리', icon: '🏹', sub: '11.23 ~ 12.24', type: 'western', planet: '목성 (확장, 낙천성)', element: '불 (열정)', elementDesc: '넓은 시야와 긍정적인 모험심이 활로를 여는 날', bestMatch: '양자리', cautionMatch: '처녀자리' },
     { id: 'capricorn', name: '염소자리', icon: '🐐', sub: '12.25 ~ 01.19', type: 'western', planet: '토성 (인내, 성실)', element: '흙 (현실)', elementDesc: '우직한 성실함이 단단한 신뢰와 보상을 낳는 날', bestMatch: '황소자리', cautionMatch: '천칭자리' }
+  ];
+
+  const WESTERN_SIGNS_EN: SignData[] = [
+    { id: 'aquarius', name: 'Aquarius', icon: '🏺', sub: '01.20 ~ 02.18', type: 'western', planet: 'Uranus (Freedom, Originality)', element: 'Air (Intellect)', elementDesc: 'Logical and creative ideas illuminate your day', bestMatch: 'Gemini', cautionMatch: 'Taurus' },
+    { id: 'pisces', name: 'Pisces', icon: '🐟', sub: '02.19 ~ 03.20', type: 'western', planet: 'Neptune (Intuition, Empathy)', element: 'Water (Emotion)', elementDesc: 'Warm empathy and artistic inspiration abound', bestMatch: 'Cancer', cautionMatch: 'Sagittarius' },
+    { id: 'aries', name: 'Aries', icon: '🐏', sub: '03.21 ~ 04.19', type: 'western', planet: 'Mars (Courage, Action)', element: 'Fire (Passion)', elementDesc: 'Decisive initiative and bold drive bring victory', bestMatch: 'Leo', cautionMatch: 'Capricorn' },
+    { id: 'taurus', name: 'Taurus', icon: '🐂', sub: '04.20 ~ 05.20', type: 'western', planet: 'Venus (Harmony, Stability)', element: 'Earth (Practical)', elementDesc: 'Steady patience and practical progress guarantee gains', bestMatch: 'Virgo', cautionMatch: 'Aquarius' },
+    { id: 'gemini', name: 'Gemini', icon: '👥', sub: '05.21 ~ 06.21', type: 'western', planet: 'Mercury (Wit, Communication)', element: 'Air (Intellect)', elementDesc: 'Lively communication and delightful encounters', bestMatch: 'Libra', cautionMatch: 'Pisces' },
+    { id: 'cancer', name: 'Cancer', icon: '🦀', sub: '06.22 ~ 07.22', type: 'western', planet: 'Moon (Care, Intuition)', element: 'Water (Emotion)', elementDesc: 'Heartfelt comfort from family and closest friends', bestMatch: 'Scorpio', cautionMatch: 'Aries' },
+    { id: 'leo', name: 'Leo', icon: '🦁', sub: '07.23 ~ 08.22', type: 'western', planet: 'Sun (Vitality, Leadership)', element: 'Fire (Passion)', elementDesc: 'Charismatic confidence and natural leadership shine', bestMatch: 'Sagittarius', cautionMatch: 'Scorpio' },
+    { id: 'virgo', name: 'Virgo', icon: '🌾', sub: '08.23 ~ 09.22', type: 'western', planet: 'Mercury (Analysis, Order)', element: 'Earth (Practical)', elementDesc: 'Meticulous planning and careful execution prevail', bestMatch: 'Capricorn', cautionMatch: 'Gemini' },
+    { id: 'libra', name: 'Libra', icon: '⚖️', sub: '09.23 ~ 10.22', type: 'western', planet: 'Venus (Balance, Aesthetics)', element: 'Air (Intellect)', elementDesc: 'Diplomatic charm and balanced harmony earn admiration', bestMatch: 'Aquarius', cautionMatch: 'Cancer' },
+    { id: 'scorpio', name: 'Scorpio', icon: '🦂', sub: '10.23 ~ 11.22', type: 'western', planet: 'Pluto (Insight, Focus)', element: 'Water (Emotion)', elementDesc: 'Deep insight cuts through complications effortlessly', bestMatch: 'Pisces', cautionMatch: 'Leo' },
+    { id: 'sagittarius', name: 'Sagittarius', icon: '🏹', sub: '11.23 ~ 12.24', type: 'western', planet: 'Jupiter (Optimism, Growth)', element: 'Fire (Passion)', elementDesc: 'Broad vision and an adventurous spirit open new pathways', bestMatch: 'Aries', cautionMatch: 'Virgo' },
+    { id: 'capricorn', name: 'Capricorn', icon: '🐐', sub: '12.25 ~ 01.19', type: 'western', planet: 'Saturn (Discipline, Trust)', element: 'Earth (Practical)', elementDesc: 'Diligent effort and integrity build rock-solid trust', bestMatch: 'Taurus', cautionMatch: 'Libra' }
   ];
 
   // -------------------------------------------------------------
@@ -1129,6 +1169,130 @@ const {
     "바나나 요거트 볼", "갓 구운 토스트", "말차 라떼", "견과류 한 줌"
   ];
 
+  // English Fortune Content Dataset
+  const FORTUNE_TITLES_EN = [
+    "A golden day where your dedicated efforts bear bountiful fruits",
+    "A valuable benefactor opens clear pathways where hurdles once stood",
+    "New exciting opportunities emerge — step forward with confidence",
+    "Calm reflection and steady preparation summon great fortune",
+    "Sharp intuition and clarity effortlessly resolve complex questions",
+    "Warm recognition and praise elevate your standing among peers",
+    "Vibrant energy ensures all endeavors sail smoothly with the wind",
+    "Small acts of kindness blossom into abundant joy and goodwill",
+    "Long-standing worries dissolve into a refreshing breath of relief",
+    "Decisive action today yields achievements far beyond expectations",
+    "Steady pacing ensures the safest and most triumphant path",
+    "Wise discernment secures both practical success and honor",
+    "Gathered energies combine into formidable forward momentum",
+    "Heartfelt communication brings immense strength and encouragement",
+    "Latent talents shine brilliantly, earning sincere applause",
+    "Small wins accumulate into a solid foundation of self-belief",
+    "Lingering doubts clear, revealing a bright, unobstructed path",
+    "Peace of mind invites continuous luck and harmonious blessings",
+    "Patience throughout the journey is rewarded with splendid blooms",
+    "Inspirational new connections infuse your day with fresh vigor"
+  ];
+
+  const FORTUNE_OVERVIEWS_EN = [
+    "The sincere devotion and energy you have poured in quietly are culminating into meaningful achievements. With support and encouragement from those around you, new initiatives gain remarkable momentum.",
+    "You may encounter someone whose wise insight provides a crisp answer to an old dilemma. Maintain an authentic, humble attitude and doors of trust and opportunity will swing wide open.",
+    "Today is an opportune moment to make that lingering decision. Trust your instincts and accumulated experience; stepping forward boldly will feel as seamless as sailing with a tailwind.",
+    "Prioritize quiet stability over flashy displays. Tending to fundamentals and organizing your immediate environment will attract delightful serendipity.",
+    "Great fortune blesses your personal relationships. Clearing up misunderstandings with warmth and extending genuine greetings will create invaluable bonds.",
+    "Your creative intellect and analytical agility are at their peak. Approaching challenges with a novel angle will unlock effortless breakthroughs.",
+    "Stagnant energy gives way to a refreshing breeze of renewal. A bright smile and positive attitude will energize everyone you meet and return multiplied.",
+    "Balance prudence with decisive action. Channel your energy into primary goals rather than minor distractions to enjoy profound satisfaction."
+  ];
+
+  const WEALTH_TIPS_EN = [
+    "Unexpected modest returns or pleasing financial bonuses are anticipated.",
+    "Prudent budgeting today forms the cornerstone of lasting abundance.",
+    "Favorable circumstances surround negotiations and value investments.",
+    "Steady financial balance brings long-term peace of mind."
+  ];
+
+  const LOVE_TIPS_EN = [
+    "An ideal day for open, sincere dialogue to strengthen emotional trust.",
+    "A considerate gesture or warm compliment sparks romantic chemistry.",
+    "Shared laughter and comfortable silences deepen affection.",
+    "Express your gratitude generously to those who matter most."
+  ];
+
+  const WORK_TIPS_EN = [
+    "High focus and mental clarity enable rapid, efficient breakthroughs.",
+    "Collaborative synergy with colleagues drives impressive team milestones.",
+    "Your leadership and initiative stand out brightly in key meetings.",
+    "Organized planning shields you from oversights and ensures excellence."
+  ];
+
+  const HEALTH_TIPS_EN = [
+    "Maintain top physical condition with light stretching and plenty of water.",
+    "A brisk walk in fresh air revitalizes both body and spirit.",
+    "Quality rest and mindful breathing keep fatigue completely at bay.",
+    "Nourishing, balanced meals replenish your natural vitality."
+  ];
+
+  const DOS_POOL_EN = [
+    "Offer warm words of encouragement first",
+    "Keep notes on sudden creative inspirations",
+    "Organize your workspace for crisp mental clarity",
+    "Express heartfelt gratitude to a loyal colleague",
+    "Take mindful deep breaths during brief pauses",
+    "Listen attentively before offering opinions"
+  ];
+
+  const DONTS_POOL_EN = [
+    "Hasty reactions to unverified rumors",
+    "Overcommitting to unrealistic short deadlines",
+    "Letting minor irritations derail your composure",
+    "Skipping proper meals or hydration while busy",
+    "Hesitating excessively when opportunity knocks",
+    "Attempting to carry every burden alone"
+  ];
+
+  const LUCKY_COLORS_EN = [
+    "Gold Yellow", "Sky Blue", "Emerald Green", "Champagne Beige",
+    "Lavender Purple", "Rose Pink", "Navy Blue", "Olive Green",
+    "Sunset Orange", "Pearl White", "Burgundy Wine", "Mint Green"
+  ];
+
+  const LUCKY_DIRECTIONS_EN = ["East", "Southeast", "South", "Southwest", "West", "Northwest", "North", "Northeast"];
+
+  const LUCKY_TIMES_EN = [
+    "07:00 ~ 09:00 (Morning Boost)",
+    "09:00 ~ 11:00 (Golden Focus Window)",
+    "11:00 ~ 13:00 (Lunch Recharge)",
+    "13:00 ~ 15:00 (Peak Afternoon Flow)",
+    "15:00 ~ 17:00 (Tea & Reflection)",
+    "17:00 ~ 19:00 (Evening Wrap-up)",
+    "19:00 ~ 21:00 (Social Warmth)",
+    "21:00 ~ 23:00 (Serene Healing Hour)"
+  ];
+
+  const LUCKY_ITEMS_EN = [
+    "Thermal Tea Tumbler", "Leather Journal", "Smartwatch", "Classic Fountain Pen",
+    "Silver Keyring", "Wireless Earbuds", "Comfortable Sneakers", "Hand Cream",
+    "Favorite Book", "Subtle Fragrance", "Cozy Scarf", "Canvas Tote"
+  ];
+
+  const LUCKY_FOODS_EN = [
+    "Fresh Salad Bowl", "Warm Vanilla Latte", "Dark Chocolate",
+    "Avocado Toast", "Hearty Noodle Soup", "Earl Grey Tea",
+    "Crisp Croissant", "Gourmet Fruit Parfait", "Steamed Dumplings",
+    "Matcha Latte", "Handful of Roasted Nuts", "Fresh Lemonade"
+  ];
+
+  const YEAR_FORTUNE_POOL_EN = [
+    "Your seasoned wisdom and calm presence serve as an anchor for others.",
+    "Prioritize gentle wellbeing and enjoy steady tranquility over rush.",
+    "A heartwarming message with an old friend brightens your spirit.",
+    "Keep your own peaceful rhythm regardless of outside chatter.",
+    "Serenity within invites laughter and smooth harmony throughout your day.",
+    "Careful review of details ensures airtight reliability in agreements.",
+    "Cooperation with peers and family delivers the most gratifying outcome.",
+    "Past dedication and diligence return as heartfelt appreciation."
+  ];
+
   // Deterministic Seeded PRNG Algorithm (Mulberry32 + FNV-1a Hash)
   function hashString(str: string): number {
     let h = 2166136261 >>> 0;
@@ -1148,18 +1312,24 @@ const {
     };
   }
 
-  // Get current date string (YYYY-MM-DD) and Korean human formatted date
+  // Get current date string (YYYY-MM-DD) and localized human formatted date
   function getTodayInfo() {
     const d = new Date();
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
-    const days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
-    const dayName = days[d.getDay()];
+    const daysKo = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+    const daysEn = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const monthsEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const fullMonthsEn = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
     const dateKey = `${year}-${month}-${day}`;
-    const humanDate = `${year}년 ${d.getMonth() + 1}월 ${d.getDate()}일 ${dayName}`;
-    const tagDate = `${year}.${month}.${day} (${dayName[0]})`;
+    const humanDate = isEn
+      ? `${fullMonthsEn[d.getMonth()]} ${d.getDate()}, ${year} (${daysEn[d.getDay()]})`
+      : `${year}년 ${d.getMonth() + 1}월 ${d.getDate()}일 ${daysKo[d.getDay()]}`;
+    const tagDate = isEn
+      ? `${monthsEn[d.getMonth()]} ${day}, ${year}`
+      : `${year}.${month}.${day} (${daysKo[d.getDay()][0]})`;
 
     return { dateKey, humanDate, tagDate };
   }
@@ -1223,16 +1393,16 @@ const {
     // Overall Score: 60 ~ 98
     const overallScore = Math.floor(rng() * 38) + 60;
 
-    let grade = '보통 (平)';
+    let grade = isEn ? 'Steady & Calm 🌿' : '보통 (平)';
     let gradeColor = '#38bdf8';
     if (overallScore >= 90) {
-      grade = '대길 (大吉) 🌟';
+      grade = isEn ? 'Great Fortune 🌟' : '대길 (大吉) 🌟';
       gradeColor = '#facc15';
     } else if (overallScore >= 80) {
-      grade = '중길 (中吉) ✨';
+      grade = isEn ? 'Good Fortune ✨' : '중길 (中吉) ✨';
       gradeColor = '#a855f7';
     } else if (overallScore >= 70) {
-      grade = '소길 (小吉) 🍀';
+      grade = isEn ? 'Moderate Fortune 🍀' : '소길 (小吉) 🍀';
       gradeColor = '#38bdf8';
     }
 
@@ -1243,35 +1413,50 @@ const {
     const hScore = Math.max(50, Math.min(100, Math.floor(overallScore + (rng() - 0.5) * 25)));
 
     // Pick content deterministically
-    const titleIdx = Math.floor(rng() * FORTUNE_TITLES.length);
-    const bodyIdx = Math.floor(rng() * FORTUNE_OVERVIEWS.length);
-    const wTipIdx = Math.floor(rng() * WEALTH_TIPS.length);
-    const lTipIdx = Math.floor(rng() * LOVE_TIPS.length);
-    const kTipIdx = Math.floor(rng() * WORK_TIPS.length);
-    const hTipIdx = Math.floor(rng() * HEALTH_TIPS.length);
+    const titles = isEn ? FORTUNE_TITLES_EN : FORTUNE_TITLES;
+    const overviews = isEn ? FORTUNE_OVERVIEWS_EN : FORTUNE_OVERVIEWS;
+    const wTips = isEn ? WEALTH_TIPS_EN : WEALTH_TIPS;
+    const lTips = isEn ? LOVE_TIPS_EN : LOVE_TIPS;
+    const kTips = isEn ? WORK_TIPS_EN : WORK_TIPS;
+    const hTips = isEn ? HEALTH_TIPS_EN : HEALTH_TIPS;
+    const dos = isEn ? DOS_POOL_EN : DOS_POOL;
+    const donts = isEn ? DONTS_POOL_EN : DONTS_POOL;
+    const colors = isEn ? LUCKY_COLORS_EN : LUCKY_COLORS;
+    const dirs = isEn ? LUCKY_DIRECTIONS_EN : LUCKY_DIRECTIONS;
+    const times = isEn ? LUCKY_TIMES_EN : LUCKY_TIMES;
+    const items = isEn ? LUCKY_ITEMS_EN : LUCKY_ITEMS;
+    const foods = isEn ? LUCKY_FOODS_EN : LUCKY_FOODS;
+    const yearPool = isEn ? YEAR_FORTUNE_POOL_EN : YEAR_FORTUNE_POOL;
+
+    const titleIdx = Math.floor(rng() * titles.length);
+    const bodyIdx = Math.floor(rng() * overviews.length);
+    const wTipIdx = Math.floor(rng() * wTips.length);
+    const lTipIdx = Math.floor(rng() * lTips.length);
+    const kTipIdx = Math.floor(rng() * kTips.length);
+    const hTipIdx = Math.floor(rng() * hTips.length);
 
     // Do & Don't
-    const doIdx = Math.floor(rng() * DOS_POOL.length);
-    const dontIdx = Math.floor(rng() * DONTS_POOL.length);
+    const doIdx = Math.floor(rng() * dos.length);
+    const dontIdx = Math.floor(rng() * donts.length);
 
     // Lucky pills
     const luckyNum1 = Math.floor(rng() * 45) + 1;
     const luckyNum2 = Math.floor(rng() * 50) + 10;
-    const luckyColor = LUCKY_COLORS[Math.floor(rng() * LUCKY_COLORS.length)];
-    const luckyDir = LUCKY_DIRECTIONS[Math.floor(rng() * LUCKY_DIRECTIONS.length)];
-    const luckyTime = LUCKY_TIMES[Math.floor(rng() * LUCKY_TIMES.length)];
-    const luckyItem = LUCKY_ITEMS[Math.floor(rng() * LUCKY_ITEMS.length)];
-    const luckyFood = LUCKY_FOODS[Math.floor(rng() * LUCKY_FOODS.length)];
+    const luckyColor = colors[Math.floor(rng() * colors.length)];
+    const luckyDir = dirs[Math.floor(rng() * dirs.length)];
+    const luckyTime = times[Math.floor(rng() * times.length)];
+    const luckyItem = items[Math.floor(rng() * items.length)];
+    const luckyFood = foods[Math.floor(rng() * foods.length)];
 
     // Birth-year fortunes (for Eastern Zodiac)
     const yearFortunes = (sign.birthYears || []).map((year, idx) => {
       const yearSeed = hashString(`${dateKey}_${sign.id}_${year}`);
       const yearRng = createSeededRNG(yearSeed);
-      const yearTextIdx = Math.floor(yearRng() * YEAR_FORTUNE_POOL.length);
+      const yearTextIdx = Math.floor(yearRng() * yearPool.length);
       return {
         year,
         shortYear: String(year).slice(2),
-        text: YEAR_FORTUNE_POOL[(yearTextIdx + idx) % YEAR_FORTUNE_POOL.length]
+        text: yearPool[(yearTextIdx + idx) % yearPool.length]
       };
     });
 
@@ -1279,14 +1464,14 @@ const {
       overallScore,
       grade,
       gradeColor,
-      headline: FORTUNE_TITLES[titleIdx],
-      body: FORTUNE_OVERVIEWS[bodyIdx],
-      wealth: { score: wScore, tip: WEALTH_TIPS[wTipIdx] },
-      love: { score: lScore, tip: LOVE_TIPS[lTipIdx] },
-      work: { score: kScore, tip: WORK_TIPS[kTipIdx] },
-      health: { score: hScore, tip: HEALTH_TIPS[hTipIdx] },
-      doText: DOS_POOL[doIdx],
-      dontText: DONTS_POOL[dontIdx],
+      headline: titles[titleIdx],
+      body: overviews[bodyIdx],
+      wealth: { score: wScore, tip: wTips[wTipIdx] },
+      love: { score: lScore, tip: lTips[lTipIdx] },
+      work: { score: kScore, tip: kTips[kTipIdx] },
+      health: { score: hScore, tip: hTips[hTipIdx] },
+      doText: dos[doIdx],
+      dontText: donts[dontIdx],
       luckyNums: `${luckyNum1}, ${luckyNum2}`,
       luckyColor,
       luckyDir,
@@ -1300,7 +1485,7 @@ const {
   // Render Signs Grid (12 items)
   function renderSignsGrid() {
     if (!signsGrid) return;
-    const list = currentTab === 'eastern' ? EASTERN_SIGNS : WESTERN_SIGNS;
+    const list = currentTab === 'eastern' ? (isEn ? EASTERN_SIGNS_EN : EASTERN_SIGNS) : (isEn ? WESTERN_SIGNS_EN : WESTERN_SIGNS);
 
     signsGrid.innerHTML = '';
     list.forEach(sign => {
@@ -1328,7 +1513,7 @@ const {
 
   // Render Selected Fortune
   function renderSelectedFortune() {
-    const list = currentTab === 'eastern' ? EASTERN_SIGNS : WESTERN_SIGNS;
+    const list = currentTab === 'eastern' ? (isEn ? EASTERN_SIGNS_EN : EASTERN_SIGNS) : (isEn ? WESTERN_SIGNS_EN : WESTERN_SIGNS);
     let sign = list.find(s => s.id === currentSignId);
     if (!sign) {
       sign = list[0];
@@ -1385,14 +1570,14 @@ const {
       if (currentTab === 'eastern') {
         const rowsHtml = data.yearFortunes.map(item => `
           <div class="year-fortune-row">
-            <span class="year-badge">${item.year}년 (${item.shortYear}년생)</span>
+            <span class="year-badge">${isEn ? `Year ${item.year} ('${item.shortYear})` : `${item.year}년 (${item.shortYear}년생)`}</span>
             <p class="year-fortune-text">${item.text}</p>
           </div>
         `).join('');
 
         fortuneDynamicContainer.innerHTML = `
           <div class="dynamic-section-title">
-            <span>📅 출생 연도별 맞춤 운세</span>
+            <span>${isEn ? '📅 Personalized Fortune by Birth Year' : '📅 출생 연도별 맞춤 운세'}</span>
           </div>
           <div class="year-fortune-list">
             ${rowsHtml}
@@ -1401,20 +1586,20 @@ const {
       } else {
         fortuneDynamicContainer.innerHTML = `
           <div class="dynamic-section-title">
-            <span>🌌 별자리 심층 분석 & 궁합</span>
+            <span>${isEn ? '🌌 In-Depth Astrological Profile & Compatibility' : '🌌 별자리 심층 분석 & 궁합'}</span>
           </div>
           <div class="western-info-grid">
             <div class="western-info-card">
-              <div class="western-info-label">🪐 수호행성 & 기질</div>
-              <p class="western-info-val">${sign.planet || '수호성'}</p>
+              <div class="western-info-label">${isEn ? '🪐 Ruling Planet & Nature' : '🪐 수호행성 & 기질'}</div>
+              <p class="western-info-val">${sign.planet || (isEn ? 'Ruling Planet' : '수호성')}</p>
             </div>
             <div class="western-info-card">
-              <div class="western-info-label">💖 오늘의 찰떡 궁합</div>
-              <p class="western-info-val" style="color: #f472b6;">${sign.bestMatch || '사수자리'} (상승 시너지)</p>
+              <div class="western-info-label">${isEn ? '💖 Best Match' : '💖 오늘의 찰떡 궁합'}</div>
+              <p class="western-info-val" style="color: #f472b6;">${sign.bestMatch || (isEn ? 'Sagittarius' : '사수자리')} ${isEn ? '(High Synergy)' : '(상승 시너지)'}</p>
             </div>
             <div class="western-info-card">
-              <div class="western-info-label">⚠️ 오늘의 주의 궁합</div>
-              <p class="western-info-val" style="color: #fb923c;">${sign.cautionMatch || '황소자리'} (소통 배려 필요)</p>
+              <div class="western-info-label">${isEn ? '⚠️ Caution Match' : '⚠️ 오늘의 주의 궁합'}</div>
+              <p class="western-info-val" style="color: #fb923c;">${sign.cautionMatch || (isEn ? 'Taurus' : '황소자리')} ${isEn ? '(Careful Communication)' : '(소통 배려 필요)'}</p>
             </div>
           </div>
         `;
@@ -1454,12 +1639,12 @@ const {
 
   // Copy to Clipboard
   btnCopyFortune?.addEventListener('click', () => {
-    const list = currentTab === 'eastern' ? EASTERN_SIGNS : WESTERN_SIGNS;
+    const list = currentTab === 'eastern' ? (isEn ? EASTERN_SIGNS_EN : EASTERN_SIGNS) : (isEn ? WESTERN_SIGNS_EN : WESTERN_SIGNS);
     const sign = list.find(s => s.id === currentSignId) || list[0];
     const { humanDate } = getTodayInfo();
 
     const score = fortuneScoreNum?.textContent || '90';
-    const grade = fortuneScoreGrade?.textContent || '대길';
+    const grade = fortuneScoreGrade?.textContent || (isEn ? 'Great Fortune' : '대길');
     const title = fortuneHeadline?.textContent || '';
     const body = fortuneBody?.textContent || '';
     const doAct = fortuneDoText?.textContent || '';
@@ -1469,13 +1654,21 @@ const {
     const dir = pillDirection?.textContent || '';
     const food = pillFood?.textContent || '';
 
-    const textToCopy = `[오늘의 운세 - ${humanDate}]\n` +
-      `✨ ${sign.name} (${sign.icon}): 종합운 ${score}점 (${grade})\n` +
-      `${title}\n\n` +
-      `${body}\n\n` +
-      `⭕ 오늘의 추천: ${doAct}\n` +
-      `❌ 오늘의 주의: ${dontAct}\n` +
-      `🍀 행운의 숫자: ${num} | 색상: ${color} | 방향: ${dir} | 음식: ${food}`;
+    const textToCopy = isEn
+      ? `[Daily Fortune - ${humanDate}]\n` +
+        `✨ ${sign.name} (${sign.icon}): Overall Luck ${score} pts (${grade})\n` +
+        `${title}\n\n` +
+        `${body}\n\n` +
+        `⭕ Today's DO: ${doAct}\n` +
+        `❌ Today's DON'T: ${dontAct}\n` +
+        `🍀 Lucky Numbers: ${num} | Color: ${color} | Direction: ${dir} | Food: ${food}`
+      : `[오늘의 운세 - ${humanDate}]\n` +
+        `✨ ${sign.name} (${sign.icon}): 종합운 ${score}점 (${grade})\n` +
+        `${title}\n\n` +
+        `${body}\n\n` +
+        `⭕ 오늘의 추천: ${doAct}\n` +
+        `❌ 오늘의 주의: ${dontAct}\n` +
+        `🍀 행운의 숫자: ${num} | 색상: ${color} | 방향: ${dir} | 음식: ${food}`;
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(textToCopy).then(() => {

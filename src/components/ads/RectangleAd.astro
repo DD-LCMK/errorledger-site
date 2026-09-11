@@ -13,6 +13,16 @@ const { streamerMode = false } = Astro.props;
 
 {!streamerMode && (
   <div class="rect-ad-wrap">
+    <script is:inline>
+      if (typeof window !== 'undefined') {
+        var sp = new URLSearchParams(window.location.search);
+        if (sp.has('stream') || sp.has('obs')) {
+          var s = document.createElement('style');
+          s.textContent = '.rect-ad-wrap { display: none !important; }';
+          document.head.appendChild(s);
+        }
+      }
+    </script>
     <!-- Adsterra 300x250 rectangle -->
     <script is:inline>
       atOptions = {

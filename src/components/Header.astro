@@ -18,7 +18,11 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
     <div class="header-left">
       <a href={isEn ? '/en' : '/'} class="brand-link">
         <span class="brand-icon">🔴</span>
-        <span class="brand-text-main">스트림</span><span class="brand-text-accent">아케이드</span>
+        {isEn ? (
+          <span class="brand-text-main">Stream</span><span class="brand-text-accent">Arcade</span>
+        ) : (
+          <span class="brand-text-main">스트림</span><span class="brand-text-accent">아케이드</span>
+        )}
       </a>
     </div>
 

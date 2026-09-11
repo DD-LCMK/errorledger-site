@@ -15,8 +15,8 @@ const urlParams = Astro.url.searchParams;
 const streamerMode = urlParams.has('stream') || urlParams.has('obs');
 // ?bare=1 hides the Korean page chrome (header/footer) inside the iframe
 const gameUrl = streamerMode
-  ? '/games/marble-roulette?bare=1&stream=true'
-  : '/games/marble-roulette?bare=1';
+  ? '/games/marble-roulette?bare=1&stream=true&lang=en'
+  : '/games/marble-roulette?bare=1&lang=en';
 
 const webAppSchema = JSON.stringify({
   "@context": "https://schema.org",
@@ -154,12 +154,32 @@ const faqSchema = JSON.stringify({
           if (iframe && iframe.contentDocument && iframe.contentDocument.body) {
             const h = iframe.contentDocument.body.scrollHeight;
             if (h > 400) {
-              iframe.style.height = h + 'px';
+              iframe.style.height = (h + 30) + 'px';
             }
           }
         } catch (e) {}
       }
       if (iframe) {
+        // Streamer / OBS mode client-side check
+        var sp = new URLSearchParams(window.location.search);
+        if (sp.has('stream') || sp.has('obs')) {
+          var s = document.createElement('style');
+          s.textContent = [
+            '.sticky-banner-ad-wrap { display: none !important; }',
+            'footer { display: none !important; }',
+            '.stream-bottom-details { display: none !important; }',
+            '.arcade-header { display: none !important; }',
+            '.en-game-main { padding: 0 !important; margin: 0 !important; max-width: none !important; }',
+            '.en-game-frame-wrap { min-height: 100vh !important; }',
+            '.en-game-iframe { min-height: 100vh !important; }'
+          ].join(' ');
+          document.head.appendChild(s);
+
+          if (!iframe.src.includes('stream=true')) {
+            iframe.src = iframe.src + '&stream=true';
+          }
+        }
+
         iframe.addEventListener('load', () => {
           syncHeight();
           try {

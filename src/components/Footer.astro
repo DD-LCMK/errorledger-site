@@ -12,7 +12,11 @@ const currentYear = new Date().getFullYear();
     <div class="footer-brand-col">
       <div class="footer-logo">
         <span class="brand-icon">🔴</span>
-        <span class="brand-text-main">스트림</span><span class="brand-text-accent">아케이드</span>
+        {isEn ? (
+          <span class="brand-text-main">Stream</span><span class="brand-text-accent">Arcade</span>
+        ) : (
+          <span class="brand-text-main">스트림</span><span class="brand-text-accent">아케이드</span>
+        )}
       </div>
       <p class="footer-desc">
         {t(lang, 'footer.desc')}
@@ -42,8 +46,8 @@ const currentYear = new Date().getFullYear();
     <div class="footer-links-col">
       <h4>{t(lang, 'footer.support.title')}</h4>
       <ul>
-        <li><a href="/privacy">{t(lang, 'footer.support.privacy')}</a></li>
-        <li><a href="/terms">{t(lang, 'footer.support.terms')}</a></li>
+        <li><a href={`${prefix}/privacy`}>{t(lang, 'footer.support.privacy')}</a></li>
+        <li><a href={`${prefix}/terms`}>{t(lang, 'footer.support.terms')}</a></li>
         <li><a href={`${prefix}/about`}>{t(lang, 'footer.support.about')}</a></li>
         <li><a href={`${prefix}/contact`}>{t(lang, 'footer.support.contact')}</a></li>
       </ul>

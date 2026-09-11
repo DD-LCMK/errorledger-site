@@ -124,26 +124,40 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
     />
     <script type="application/ld+json" set:html={webAppSchema}></script>
     {faqSchema && <script type="application/ld+json" set:html={faqSchema}></script>}
-    <!-- Bare mode: suppress all page chrome when loaded inside an iframe with ?bare=1 -->
+    <!-- Bare mode or Streamer/OBS mode: suppress ads and chrome client-side when ?bare=1, ?stream=true, or ?obs=true -->
     <script is:inline>
-      if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('bare')) {
-        var s = document.createElement('style');
-        s.textContent = [
-          /* Reset browser default 8px body margin */
-          'html, body { margin: 0 !important; padding: 0 !important; }',
-          '.arcade-header { display: none !important; }',
-          'footer { display: none !important; }',
-          '.stream-bottom-details { display: none !important; }',
-          '.sticky-banner-ad-wrap { display: none !important; }',
-          '.game-top-bar { display: none !important; }',
-          /* Zero padding, margin, and max-width so game fills full iframe */
-          '.game-main-container { padding: 0 !important; margin: 0 !important; max-width: none !important; }',
-          '.game-full-layout { padding: 0 !important; }',
-          '.game-viewport-container { border: none !important; border-radius: 0 !important; background: transparent !important; }',
-          'body.game-page-body { overflow: hidden !important; }'
-        ].join(' ');
-        document.head.appendChild(s);
-      }
+      (function() {
+        if (typeof window === 'undefined') return;
+        var p = new URLSearchParams(window.location.search);
+        var isBare = p.has('bare');
+        var isStream = p.has('stream') || p.has('obs');
+        if (isBare || isStream) {
+          var s = document.createElement('style');
+          var rules = [
+            '.sticky-banner-ad-wrap { display: none !important; }',
+            '.rect-ad-wrap { display: none !important; }',
+            '.native-ad-wrap { display: none !important; }'
+          ];
+          if (isStream) {
+            rules.push('footer { display: none !important; }');
+            rules.push('.stream-bottom-details { display: none !important; }');
+            rules.push('.arcade-header { display: none !important; }');
+          }
+          if (isBare) {
+            rules.push('html, body { margin: 0 !important; padding: 0 !important; }');
+            rules.push('.arcade-header { display: none !important; }');
+            rules.push('footer { display: none !important; }');
+            rules.push('.stream-bottom-details { display: none !important; }');
+            rules.push('.game-top-bar { display: none !important; }');
+            rules.push('.game-main-container { padding: 0 !important; margin: 0 !important; max-width: none !important; }');
+            rules.push('.game-full-layout { padding: 0 !important; }');
+            rules.push('.game-viewport-container { border: none !important; border-radius: 0 !important; background: transparent !important; }');
+            rules.push('body.game-page-body { overflow: hidden !important; }');
+          }
+          s.textContent = rules.join(' ');
+          document.head.appendChild(s);
+        }
+      })();
     </script>
   </head>
 
