@@ -174,10 +174,10 @@ hr {
 
 /* Ultra-Wide Technical Layout Extensions */
 main {
-  max-width: 1280px !important;
-  width: 100% !important;
-  margin: 0 auto !important;
-  box-sizing: border-box !important;
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 
