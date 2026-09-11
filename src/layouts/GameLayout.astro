@@ -42,6 +42,7 @@ const {
 
 // Detect streamer / OBS mode — disable ads when present
 const urlParams = Astro.url.searchParams;
+const isBare = urlParams.has('bare');
 const streamerMode = urlParams.has('stream') || urlParams.has('obs');
 
 // Locale
@@ -136,7 +137,8 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
           var rules = [
             '.sticky-banner-ad-wrap { display: none !important; }',
             '.rect-ad-wrap { display: none !important; }',
-            '.native-ad-wrap { display: none !important; }'
+            '.native-ad-wrap { display: none !important; }',
+            '.leaderboard-ad-wrap { display: none !important; }'
           ];
           if (isStream) {
             rules.push('footer { display: none !important; }');
@@ -213,8 +215,8 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
         </div>
       )}
 
-      <!-- Horizontal single-line ad directly beneath game -->
-      <LeaderboardAd streamerMode={streamerMode} />
+      <!-- Horizontal single-line ad directly beneath game (suppressed in bare embed) -->
+      {!isBare && <LeaderboardAd streamerMode={streamerMode} />}
 
       <!-- Unobtrusive Expandable Information Drawer (for Guide & FAQ) -->
       {(Astro.slots.has('guide') || (faqItems && faqItems.length > 0)) && (
@@ -257,7 +259,7 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
       .game-main-container {
         max-width: 1440px;
         margin: 0 auto;
-        padding: 0.4rem 0.75rem 7rem;
+        padding: 0.5rem 0.5rem 2rem;
         width: 100%;
         flex: 1;
         box-sizing: border-box;
@@ -342,13 +344,13 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
         flex-direction: column;
       }
 
-      /* Viewport container */
+      /* Viewport container — clean, borderless, full-width */
       .game-viewport-container {
         position: relative;
-        background: #020617;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 12px;
-        overflow: hidden;
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        overflow: visible;
       }
 
       .game-viewport-container:fullscreen {

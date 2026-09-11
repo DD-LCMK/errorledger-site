@@ -149,29 +149,19 @@ const faqSchema = JSON.stringify({
 
     <script>
       const iframe = document.getElementById('game-iframe') as HTMLIFrameElement;
-      function syncHeight() {
-        try {
-          if (iframe && iframe.contentDocument && iframe.contentDocument.body) {
-            const h = iframe.contentDocument.body.scrollHeight;
-            if (h > 400) {
-              iframe.style.height = (h + 30) + 'px';
-            }
-          }
-        } catch (e) {}
-      }
       if (iframe) {
         // Streamer / OBS mode client-side check
         var sp = new URLSearchParams(window.location.search);
         if (sp.has('stream') || sp.has('obs')) {
           var s = document.createElement('style');
           s.textContent = [
-            '.sticky-banner-ad-wrap { display: none !important; }',
+            '.leaderboard-ad-wrap { display: none !important; }',
             'footer { display: none !important; }',
             '.stream-bottom-details { display: none !important; }',
             '.arcade-header { display: none !important; }',
             '.en-game-main { padding: 0 !important; margin: 0 !important; max-width: none !important; }',
-            '.en-game-frame-wrap { min-height: 100vh !important; }',
-            '.en-game-iframe { min-height: 100vh !important; }'
+            '.en-game-frame-wrap { height: 100vh !important; }',
+            '.en-game-iframe { height: 100vh !important; }'
           ].join(' ');
           document.head.appendChild(s);
 
@@ -179,18 +169,6 @@ const faqSchema = JSON.stringify({
             iframe.src = iframe.src + '&stream=true';
           }
         }
-
-        iframe.addEventListener('load', () => {
-          syncHeight();
-          try {
-            const doc = iframe.contentDocument;
-            if (doc && doc.body) {
-              const obs = new MutationObserver(syncHeight);
-              obs.observe(doc.body, { childList: true, subtree: true, attributes: true });
-            }
-          } catch(e) {}
-        });
-        window.addEventListener('resize', syncHeight);
       }
     </script>
   </body>
@@ -212,7 +190,7 @@ const faqSchema = JSON.stringify({
     width: 100% !important;
     max-width: 1440px !important;
     margin: 0 auto !important;
-    padding: 0 0.75rem 7rem !important;
+    padding: 0.5rem 0.5rem 2rem !important;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -220,18 +198,22 @@ const faqSchema = JSON.stringify({
   }
 
   .en-game-frame-wrap {
-    flex: 1;
     width: 100%;
-    min-height: max(750px, calc(100vh - 52px));
+    height: 870px;
   }
 
   .en-game-iframe {
     width: 100%;
     height: 100%;
-    min-height: max(750px, calc(100vh - 52px));
     border: none;
     display: block;
     background: #090d16;
+  }
+
+  @media (min-width: 1400px) {
+    .en-game-frame-wrap {
+      height: max(860px, calc(100vh - 110px));
+    }
   }
 
   /* Unobtrusive Bottom Drawer matching GameLayout */
