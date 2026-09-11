@@ -989,30 +989,6 @@ const data = gameEntry?.data || {
     cursor: pointer;
   }
 
-  .modal-support-row {
-    margin-top: 0.75rem;
-    display: flex;
-    justify-content: center;
-  }
-
-  .modal-support-link {
-    font-size: 0.74rem;
-    font-weight: 700;
-    color: #f59e0b;
-    background: rgba(245, 158, 11, 0.08);
-    border: 1px solid rgba(245, 158, 11, 0.2);
-    padding: 0.25rem 0.65rem;
-    border-radius: 999px;
-    text-decoration: none;
-    transition: all 0.15s ease;
-  }
-
-  .modal-support-link:hover {
-    background: rgba(245, 158, 11, 0.16);
-    border-color: rgba(245, 158, 11, 0.4);
-    color: #fbbf24;
-  }
-
   .hidden {
     display: none !important;
   }
@@ -3829,9 +3805,6 @@ const data = gameEntry?.data || {
 
     const closeBtn = document.getElementById('modal-close-btn');
     if (closeBtn) closeBtn.textContent = 'Close';
-
-    const supportLink = document.querySelector('.modal-support-link');
-    if (supportLink) supportLink.textContent = '☕ Support StreamArcade';
   }
 
   // Init
