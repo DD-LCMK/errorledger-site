@@ -3,7 +3,6 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import DailyFortuneWidget from '../components/DailyFortuneWidget.astro';
-import StickyBannerAd from '../components/ads/StickyBannerAd.astro';
 import RectangleAd from '../components/ads/RectangleAd.astro';
 import NativeAd from '../components/ads/NativeAd.astro';
 import { SITE_TITLE } from '../consts';
@@ -118,9 +117,6 @@ const PAGE_DESCRIPTION = "매일 자정 자동으로 갱신되는 100% 무료 �
     </main>
 
     {!streamerMode && <Footer />}
-
-    <!-- Sticky bottom ad -->
-    <StickyBannerAd streamerMode={streamerMode} />
   </body>
 </html>
 
