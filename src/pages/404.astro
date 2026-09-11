@@ -2,6 +2,7 @@
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import RectangleAd from '../components/ads/RectangleAd.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 ---
 
@@ -30,6 +31,11 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
             <a href="/games/ladder" class="btn-warp">🪜 사다리타기</a>
             <a href="/" class="btn-home">🏠 홈 로비</a>
           </div>
+        </div>
+
+        <!-- Simple Clean Ad on Error Page -->
+        <div class="error-ad-slot">
+          <RectangleAd />
         </div>
       </div>
     </main>
@@ -63,6 +69,14 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
     text-align: center;
     max-width: 520px;
     box-shadow: 0 0 35px rgba(239, 68, 68, 0.2);
+  }
+
+  .error-ad-slot {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    justify-content: center;
   }
 
   .icon-404 {

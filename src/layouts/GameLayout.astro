@@ -2,7 +2,7 @@
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import DesktopWingAd from '../components/ads/DesktopWingAd.astro';
+import LeaderboardAd from '../components/ads/LeaderboardAd.astro';
 import { getLang, getKoUrl, getEnUrl, t } from '../i18n';
 
 interface Props {
@@ -213,6 +213,9 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
         </div>
       )}
 
+      <!-- Horizontal single-line ad directly beneath game -->
+      <LeaderboardAd streamerMode={streamerMode} />
+
       <!-- Unobtrusive Expandable Information Drawer (for Guide & FAQ) -->
       {(Astro.slots.has('guide') || (faqItems && faqItems.length > 0)) && (
         <details class="stream-bottom-details">
@@ -241,9 +244,6 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
     </main>
 
     {!hideFooter && <Footer />}
-
-    <!-- Desktop-Only Wing Ad (Left Gutter) -->
-    <DesktopWingAd streamerMode={streamerMode} side="left" />
 
     <style>
       .game-page-body {
