@@ -61,7 +61,8 @@ const pageUrl = new URL(rawPath || '/', siteBase).href;
 
 // Alternate english names for SEO
 let enName = 'Interactive Stream Game';
-if (rawPath.includes('marble-roulette')) enName = 'Marble Roulette & Marble Race Online';
+if (rawPath.includes('drinking-marble')) enName = 'Blossom Board — Drinking & Penalty Dice Game';
+else if (rawPath.includes('marble-roulette')) enName = 'Marble Roulette & Marble Race Online';
 else if (rawPath.includes('roulette')) enName = 'Random Wheel Picker & Roulette Spinner';
 else if (rawPath.includes('ladder')) enName = 'Ghost Leg Ladder Game (Amidakuji)';
 else if (rawPath.includes('fortune')) enName = 'Daily Fortune Cookie & Horoscope';
