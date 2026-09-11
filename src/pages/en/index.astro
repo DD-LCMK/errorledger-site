@@ -11,7 +11,7 @@ const urlParams = Astro.url.searchParams;
 const streamerMode = urlParams.has('stream') || urlParams.has('obs');
 
 const games = await getCollection('games');
-const priorityOrder = ['marble-roulette', 'roulette', 'ladder', 'fortune'];
+const priorityOrder = ['marble-roulette', 'roulette', 'ladder', 'drinking-marble', 'fortune'];
 const sortedGames = games.sort((a, b) => {
   const idxA = priorityOrder.indexOf(a.id);
   const idxB = priorityOrder.indexOf(b.id);
@@ -29,10 +29,10 @@ const homeFaqSchema = JSON.stringify({
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "How do I use StreamArcade on OBS Studio or Prism Live?",
+      "name": "How do I use fullscreen or focus mode?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "In OBS Studio or Prism Live Studio, add a [Browser Source] or [Window Capture], then click the [⛶ Fullscreen] button in the top-right of any game. It will fill your capture area cleanly without any browser chrome."
+        "text": "Click the [⛶ Fullscreen] or [📺 Focus Mode] button in any game to fill your screen cleanly without any browser chrome for a distraction-free experience."
       }
     },
     {
@@ -80,7 +80,7 @@ const homeFaqSchema = JSON.stringify({
       lang="en"
       hreflangKo={koUrl}
       hreflangEn={enUrl}
-      keywords="Marble Roulette, Marble Race, Stream Arcade, StreamArcade, Random Wheel Picker, Ghost Leg Ladder, Amidakuji, Streamer Tools, Twitch Tools, YouTube Live Games, Free Stream Overlay, OBS Browser Source Games"
+      keywords="Marble Roulette, Marble Race, Stream Arcade, StreamArcade, Random Wheel Picker, Ghost Leg Ladder, Amidakuji, Streamer Tools, Twitch Tools, YouTube Live Games, Free Stream Overlay, Fullscreen Browser Games"
     />
     <script type="application/ld+json" set:html={homeFaqSchema}></script>
   </head>
@@ -133,18 +133,21 @@ const homeFaqSchema = JSON.stringify({
               'marble-roulette': 'Marble Race Roulette',
               'roulette': 'Random Spin Wheel',
               'ladder': 'Ghost Leg Ladder Game',
+              'drinking-marble': 'Blossom Board (Drinking & Penalty)',
               'fortune': 'Daily Fortune',
             };
             const enTagline: Record<string, string> = {
               'marble-roulette': 'Physics-based marble race with live track, pins & spinners',
               'roulette': 'Ratchet-click spin wheel with confetti winner reveal',
               'ladder': 'Real-time animated ghost-leg (Amidakuji) for 2–20 players',
+              'drinking-marble': 'Monopoly-style drinking & penalty board with 3D rolling dice',
               'fortune': 'Daily auto-updated horoscope & zodiac fortune for stream openers',
             };
             const enBadge: Record<string, string> = {
               'marble-roulette': 'Marble Race',
               'roulette': 'Featured Tool',
               'ladder': 'Bets & Penalties',
+              'drinking-marble': '🌸 New Game',
               'fortune': 'Daily Free',
             };
             return (
@@ -232,8 +235,8 @@ const homeFaqSchema = JSON.stringify({
           <h2>Frequently Asked Questions</h2>
           <div class="faq-grid">
             <div class="faq-box">
-              <h3>How do I use this on OBS or Prism?</h3>
-              <p>Add a Browser Source or Window Capture in OBS Studio / Prism Live Studio, then click the [⛶ Fullscreen] button in the top-right of any game to go borderless for clean capture.</p>
+              <h3>How do I use fullscreen or focus mode?</h3>
+              <p>Click the [⛶ Fullscreen] or [📺 Focus Mode] button in the top-right of any game to go borderless for clean, distraction-free play.</p>
             </div>
             <div class="faq-box">
               <h3>Is it free? Do I need to sign up?</h3>
@@ -428,7 +431,7 @@ const homeFaqSchema = JSON.stringify({
 
   .games-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
     gap: 1.25rem;
   }
 

@@ -52,6 +52,14 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
         <span class="nav-label">{t(lang, 'nav.ladder')}</span>
       </a>
       <a 
+        href={`${prefix}/games/drinking-marble`} 
+        class={`nav-item ${currentPath.includes('/games/drinking-marble') ? 'highlight active' : ''}`}
+        aria-current={currentPath.includes('/games/drinking-marble') ? 'page' : undefined}
+      >
+        <span class="nav-icon">🌸</span>
+        <span class="nav-label">{t(lang, 'nav.drinking_marble')}</span>
+      </a>
+      <a 
         href={`${prefix}/fortune`} 
         class={`nav-item ${currentPath.endsWith('/fortune') ? 'highlight active' : ''}`}
         aria-current={currentPath.endsWith('/fortune') ? 'page' : undefined}

@@ -74,7 +74,7 @@ const webAppSchema = JSON.stringify({
   "url": pageUrl,
   "description": description,
   "applicationCategory": "GameApplication",
-  "operatingSystem": "All (Web Browser, Chrome, Edge, Safari, Mobile, OBS Studio)",
+  "operatingSystem": "All (Web Browser, Chrome, Edge, Safari, Mobile)",
   "inLanguage": ["ko-KR", "en-US"],
   "offers": {
     "@type": "Offer",
@@ -215,9 +215,6 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
         </div>
       )}
 
-      <!-- Horizontal single-line ad directly beneath game (suppressed in bare embed) -->
-      {!isBare && <LeaderboardAd streamerMode={streamerMode} />}
-
       <!-- Unobtrusive Expandable Information Drawer (for Guide & FAQ) -->
       {(Astro.slots.has('guide') || (faqItems && faqItems.length > 0)) && (
         <details class="stream-bottom-details">
@@ -243,6 +240,9 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
           </div>
         </details>
       )}
+
+      <!-- Horizontal single-line ad below detail guide & FAQ (suppressed in bare embed) -->
+      {!isBare && <LeaderboardAd streamerMode={streamerMode} />}
     </main>
 
     {!hideFooter && <Footer />}

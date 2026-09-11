@@ -24,7 +24,7 @@ const webAppSchema = JSON.stringify({
   "url": enUrl,
   "description": "Free browser spin wheel with ratchet-click audio, winner confetti, and one-click presets for food, penalties, and giveaways. No install. No login.",
   "applicationCategory": "GameApplication",
-  "operatingSystem": "All (Web Browser, Chrome, Edge, Safari, OBS Studio)",
+  "operatingSystem": "All (Web Browser, Chrome, Edge, Safari, Mobile)",
   "inLanguage": ["en-US", "ko-KR"],
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
 });
@@ -59,9 +59,6 @@ const webAppSchema = JSON.stringify({
         ></iframe>
       </div>
 
-      <!-- Horizontal single-line ad directly beneath game -->
-      <LeaderboardAd streamerMode={streamerMode} />
-
       <!-- Unobtrusive Expandable Information Drawer (for Guide & FAQ) -->
       {!streamerMode && (
         <details class="stream-bottom-details">
@@ -74,8 +71,8 @@ const webAppSchema = JSON.stringify({
               <h3>Spin Wheel FAQ</h3>
               <div class="details-faq-grid">
                 <div class="details-faq-card">
-                  <strong class="faq-q">Q. How do I use it on OBS?</strong>
-                  <p class="faq-a">Add a Browser Source in OBS pointing to this page. Click ⛶ Fullscreen for clean capture. Append <code>?stream=true</code> to disable ads.</p>
+                  <strong class="faq-q">Q. How do I use fullscreen mode?</strong>
+                  <p class="faq-a">Click the [⛶ Fullscreen] button in the top bar or [📺 Focus Mode] below the wheel to expand the spin wheel across your screen for clean presentation.</p>
                 </div>
                 <div class="details-faq-card">
                   <strong class="faq-q">Q. Can items be removed after picking?</strong>
@@ -94,6 +91,9 @@ const webAppSchema = JSON.stringify({
           </div>
         </details>
       )}
+
+      <!-- Horizontal single-line ad below detail guide & FAQ -->
+      <LeaderboardAd streamerMode={streamerMode} />
     </main>
 
     {!streamerMode && <Footer />}
@@ -158,7 +158,7 @@ const webAppSchema = JSON.stringify({
     height: 100%;
     border: none;
     display: block;
-    background: #090d16;
+    background: transparent;
   }
 
   @media (min-width: 1400px) {

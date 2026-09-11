@@ -1,0 +1,2295 @@
+---
+import GameLayout from '../../layouts/GameLayout.astro';
+import { getEntry } from 'astro:content';
+
+const gameEntry = await getEntry('games', 'drinking-marble');
+const data = gameEntry?.data || {
+  title: '주루마블 (블라썸 에디션)',
+  tagline: '생방송 술게임 & 벌칙 주사위 말판 게임',
+  description: '치지직, 유튜브, SOOP 생방송 맞춤형 주루마블! 3D 주사위 굴리기, 24칸 한눈에 들어오는 맞춤형 말판, 벚꽃 블라썸 테마와 술게임·방송벌칙·스트리머 토크 원클릭 템플릿을 무료로 즐기세요.',
+  icon: '🌸',
+  category: 'stream',
+  badge: '🌸 신규 출시',
+  players: '1~4인 (솔로/합방)',
+  playTime: '5분~25분',
+  controls: [
+    '스페이스바(Space) 또는 [주사위 굴리기] 버튼으로 3D 주사위 투척',
+    '말판의 칸을 클릭하여 벌칙 내용, 아이콘, 텍스트 직접 커스텀',
+    '상단 프리셋 버튼으로 주루마블 / 매운맛 벌칙 / 카페 토크 1초 변경',
+    '1~4인 참가자 모드로 솔로 방송 및 디스코드 합방 완벽 지원'
+  ],
+  rules: [
+    '주사위를 굴려 나온 눈(1~6)만큼 말이 시계 방향으로 칸을 이동합니다.',
+    '도착한 칸에 적힌 지령(한 모금, 원샷, 안주, 벌칙 미션 등)을 수행합니다.',
+    '출발점을 통과하거나 무인도, 골든벨 등 특수 구역에 걸리면 보너스/특수 룰이 발동합니다.'
+  ],
+  faqItems: [
+    {
+      q: '술을 마시지 않는 일반 방송에서도 사용할 수 있나요?',
+      a: '네! 상단 프리셋에서 [🌶️ 방송 매운맛 벌칙] 또는 [☕ 스트리머 토크]를 선택하시면 무알콜 방송, 시청자 미션 수행, 잡담 방송용으로 건전하고 유쾌하게 즐기실 수 있습니다.'
+    },
+    {
+      q: '내가 수정한 말판 내용이 나중에도 유지되나요?',
+      a: '네! 브라우저 로컬 저장소(localStorage)에 실시간 자동 저장되므로 페이지를 새로고침하거나 브라우저를 껐다 켜도 커스텀 내용이 그대로 유지됩니다.'
+    },
+    {
+      q: '전체화면이나 집중 모드는 어떻게 사용하나요?',
+      a: '상단의 [⛶ 전체화면] 또는 [📺 집중 모드]를 누르면 상하단 여백 없이 브라우저 화면 가득 말판을 깔끔하게 띄워 시원하게 플레이할 수 있습니다.'
+    }
+  ]
+};
+---
+
+<GameLayout
+  title={data.title}
+  description={data.description}
+  tagline={data.tagline}
+  icon={data.icon}
+  category={data.category}
+  badge={data.badge}
+  players={data.players}
+  playTime={data.playTime}
+  controls={data.controls}
+  rules={data.rules}
+  faqItems={data.faqItems}
+  layoutMode="full"
+  hideStageHeader={true}
+  hideFooter={false}
+>
+  <div class="blossom-app-root" id="blossom-root">
+    <!-- Floating Sakura Petals Background Canvas -->
+    <canvas id="sakura-canvas" class="sakura-canvas"></canvas>
+
+    <div class="board-layout-container side-by-side">
+      <!-- Left: Main Monopoly Board Grid (7x7 Grid with 24 perimeter tiles + Center Stage) -->
+      <div class="board-grid-wrapper">
+        <div class="monopoly-board" id="monopoly-board">
+          <!-- 24 Tiles will be rendered dynamically by JavaScript -->
+          <!-- Center Arena: 3D Dice Stage -->
+          <div class="center-arena" id="center-arena">
+            <div class="arena-header">
+              <div class="current-player-badge" id="current-player-badge">
+                <span class="player-icon" id="turn-player-icon">🌸</span>
+                <span class="player-name" id="turn-player-name">플레이어 1</span>
+                <span class="turn-label" id="turn-label">차례</span>
+              </div>
+              <div class="lap-counter" id="lap-counter">바퀴: 1Lap</div>
+            </div>
+
+            <!-- 3D CSS Dice Container -->
+            <div class="dice-scene" id="dice-scene">
+              <div class="cube-dice" id="cube-dice">
+                <div class="dice-face front" data-face="1">
+                  <div class="dot dot-center"></div>
+                </div>
+                <div class="dice-face back" data-face="6">
+                  <div class="dot dot-top-left"></div>
+                  <div class="dot dot-top-right"></div>
+                  <div class="dot dot-mid-left"></div>
+                  <div class="dot dot-mid-right"></div>
+                  <div class="dot dot-bot-left"></div>
+                  <div class="dot dot-bot-right"></div>
+                </div>
+                <div class="dice-face right" data-face="3">
+                  <div class="dot dot-top-left"></div>
+                  <div class="dot dot-center"></div>
+                  <div class="dot dot-bot-right"></div>
+                </div>
+                <div class="dice-face left" data-face="4">
+                  <div class="dot dot-top-left"></div>
+                  <div class="dot dot-top-right"></div>
+                  <div class="dot dot-bot-left"></div>
+                  <div class="dot dot-bot-right"></div>
+                </div>
+                <div class="dice-face top" data-face="2">
+                  <div class="dot dot-top-left"></div>
+                  <div class="dot dot-bot-right"></div>
+                </div>
+                <div class="dice-face bottom" data-face="5">
+                  <div class="dot dot-top-left"></div>
+                  <div class="dot dot-top-right"></div>
+                  <div class="dot dot-center"></div>
+                  <div class="dot dot-bot-left"></div>
+                  <div class="dot dot-bot-right"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Roll Action Button -->
+            <div class="roll-action-box">
+              <button class="btn-roll-dice" id="btn-roll-dice">
+                <span class="roll-dice-icon">🎲</span>
+                <span class="roll-dice-text" id="btn-roll-text">주사위 굴리기</span>
+                <span class="roll-shortcut-hint">(Space)</span>
+              </button>
+              <div class="roll-status-message" id="roll-status-message">주사위를 굴려 말판을 전진하세요!</div>
+            </div>
+
+            <!-- Players Bar in Center -->
+            <div class="arena-players-bar" id="arena-players-bar">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Streamer Control Panel Sidebar -->
+      <aside class="board-side-panel">
+        <div class="panel-section panel-brand">
+          <span class="brand-badge">🌸 Blossom Suite</span>
+          <h3 class="panel-heading">방송 제어판</h3>
+        </div>
+
+        <!-- Presets Section -->
+        <div class="panel-section">
+          <label class="panel-label" id="lbl-preset">🎨 템플릿 프리셋</label>
+          <div class="preset-buttons vertical">
+            <button class="preset-btn active" data-preset="drinking">
+              <span class="btn-icon">🍶</span>
+              <span class="btn-text">주루마블 기본</span>
+            </button>
+            <button class="preset-btn" data-preset="penalty">
+              <span class="btn-icon">🌶️</span>
+              <span class="btn-text">매운맛 벌칙</span>
+            </button>
+            <button class="preset-btn" data-preset="coffee">
+              <span class="btn-icon">☕</span>
+              <span class="btn-text">방송 토크</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Players Count Section -->
+        <div class="panel-section">
+          <label class="panel-label" id="lbl-players">👥 참여 인원</label>
+          <div class="player-count-btns grid">
+            <button class="player-cnt-btn active" data-count="1">1인 (솔로)</button>
+            <button class="player-cnt-btn" data-count="2">2인</button>
+            <button class="player-cnt-btn" data-count="3">3인</button>
+            <button class="player-cnt-btn" data-count="4">4인 (합방)</button>
+          </div>
+          <!-- Editable Player Names -->
+          <div class="player-names-wrap" id="player-names-wrap">
+            <label class="panel-sublabel" id="lbl-edit-names">✏️ 참가자 이름</label>
+            <div class="player-names-list" id="player-names-list"></div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="panel-section panel-actions">
+          <button class="btn-custom-edit side-action" id="btn-open-editor" title="말판 내용 전체 편집">
+            ✏️ 말판 칸 전체 편집
+          </button>
+          <button class="btn-reset-board side-action" id="btn-reset-game" title="게임 처음부터 다시 시작">
+            🔄 게임 처음부터 리셋
+          </button>
+        </div>
+
+        <!-- Tips & Shortcut Info -->
+        <div class="panel-section panel-tips">
+          <div class="tips-header">
+            <span>💡</span>
+            <span class="tips-title" id="tips-heading">방송 팁 & 단축키</span>
+          </div>
+          <ul class="tips-list" id="tips-list">
+            <li><strong>Space</strong> : 주사위 굴리기 / 턴 넘기기</li>
+            <li><strong>칸 클릭</strong> : 벌칙 내용 실시간 커스텀</li>
+            <li><strong>전체화면</strong> : F11 또는 ⛶ 버튼으로 꽉 찬 화면</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Tile Action Landing Modal (Result Popup) -->
+    <div class="action-modal-overlay hidden" id="action-modal">
+      <div class="action-modal-card">
+        <div class="modal-petals-decor">🌸 ✨ 🌸</div>
+        <div class="modal-player-tag" id="modal-player-tag">
+          <span class="modal-token" id="modal-token">🌸</span>
+          <span class="modal-name" id="modal-name">플레이어 1</span>
+        </div>
+        <div class="modal-tile-icon" id="modal-tile-icon">🍺</div>
+        <h2 class="modal-tile-title" id="modal-tile-title">한 모금 마시기</h2>
+        <p class="modal-tile-desc" id="modal-tile-desc">시원하게 음료 또는 술 한 모금 마시기!</p>
+        <div class="modal-action-row">
+          <button class="btn-modal-confirm" id="btn-modal-confirm">확인 (다음 턴) →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tile Editor Modal -->
+    <div class="editor-modal-overlay hidden" id="editor-modal">
+      <div class="editor-modal-card">
+        <div class="editor-header">
+          <h3 id="editor-title">✏️ 말판 칸 커스텀 편집</h3>
+          <button class="editor-close-btn" id="btn-close-editor">✕</button>
+        </div>
+        <div class="editor-tabs">
+          <button class="editor-tab active" data-tab="single" id="tab-single">선택 칸 편집</button>
+          <button class="editor-tab" data-tab="all" id="tab-all">24칸 전체 목록</button>
+        </div>
+
+        <div class="editor-tab-pane" id="pane-single">
+          <div class="form-group">
+            <label id="lbl-edit-target">수정할 칸 선택:</label>
+            <select id="edit-tile-select" class="form-select"></select>
+          </div>
+          <div class="form-group">
+            <label id="lbl-edit-title">지령 제목 (짧게):</label>
+            <input type="text" id="edit-tile-title" class="form-input" maxlength="20" />
+          </div>
+          <div class="form-group">
+            <label id="lbl-edit-desc">상세 설명 / 벌칙 내용:</label>
+            <input type="text" id="edit-tile-desc" class="form-input" maxlength="60" />
+          </div>
+          <div class="form-group">
+            <label id="lbl-edit-icon">아이콘 이모지:</label>
+            <div class="emoji-palette" id="emoji-palette">
+              <span>🍺</span><span>🍶</span><span>💧</span><span>🍗</span>
+              <span>🌶️</span><span>🎤</span><span>🐱</span><span>👑</span>
+              <span>🌸</span><span>⭐</span><span>💣</span><span>🎁</span>
+              <span>🤫</span><span>🍻</span><span>📢</span><span>🛡️</span>
+              <span>🔥</span><span>☕</span><span>❓</span><span>💖</span>
+            </div>
+          </div>
+          <button class="btn-save-tile" id="btn-save-single-tile">✓ 이 칸 수정 적용</button>
+        </div>
+
+        <div class="editor-tab-pane hidden" id="pane-all">
+          <div class="all-tiles-list" id="all-tiles-list">
+            <!-- Injected dynamically -->
+          </div>
+          <div class="editor-all-actions">
+            <button class="btn-save-all" id="btn-save-all-tiles">✓ 전체 저장</button>
+            <button class="btn-reset-preset" id="btn-reset-preset-default">기본값으로 복원</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</GameLayout>
+
+<style>
+  /* Blossom Dark Theme */
+  :global(body) {
+    background: #090c15 !important;
+    overflow-x: hidden;
+  }
+
+  .blossom-app-root {
+    position: relative;
+    min-height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0.35rem 0.5rem 1.2rem;
+    color: #f1f5f9;
+    user-select: none;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+  }
+
+  /* Floating Petals Canvas */
+  .sakura-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .board-layout-container.side-by-side {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1080px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 1.25rem;
+    padding: 0 0.5rem;
+  }
+
+  /* Board Grid Wrapper (Left) */
+  .board-grid-wrapper {
+    flex: 1;
+    max-width: 740px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    perspective: 1000px;
+  }
+
+  /* 7x7 Monopoly Board (24 Tiles, 15% Larger Boxes) */
+  .monopoly-board {
+    width: 100%;
+    max-width: 740px;
+    aspect-ratio: 1 / 1;
+    display: grid;
+    grid-template-columns: 1.35fr repeat(5, 1fr) 1.35fr;
+    grid-template-rows: 1.35fr repeat(5, 1fr) 1.35fr;
+    gap: 6px;
+    padding: 8px;
+    background: linear-gradient(145deg, rgba(17, 19, 36, 0.92) 0%, rgba(10, 11, 24, 0.95) 100%);
+    border: 2px solid rgba(244, 114, 182, 0.35);
+    border-radius: 18px;
+    box-shadow: 0 16px 50px rgba(0, 0, 0, 0.7), 0 0 35px rgba(244, 114, 182, 0.15);
+    box-sizing: border-box;
+    position: relative;
+  }
+
+  /* Right: Streamer Control Panel Sidebar */
+  .board-side-panel {
+    width: 290px;
+    min-width: 265px;
+    background: rgba(18, 20, 36, 0.82);
+    border: 1px solid rgba(244, 114, 182, 0.25);
+    border-radius: 18px;
+    padding: 1.1rem;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 25px rgba(244, 114, 182, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 0.95rem;
+    box-sizing: border-box;
+  }
+
+  .panel-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .brand-badge {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #f472b6;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .panel-heading {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #ffffff;
+  }
+
+  .panel-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #f472b6;
+    margin-bottom: 0.45rem;
+  }
+
+  .preset-buttons.vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .preset-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 0.5rem 0.75rem;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    text-align: left;
+  }
+
+  .preset-btn:hover {
+    background: rgba(244, 114, 182, 0.15);
+    border-color: rgba(244, 114, 182, 0.4);
+    color: #fdf2f8;
+    transform: translateX(3px);
+  }
+
+  .preset-btn.active {
+    background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+    border-color: #f472b6;
+    color: #ffffff;
+    box-shadow: 0 0 16px rgba(236, 72, 153, 0.4);
+  }
+
+  .btn-icon {
+    font-size: 1.05rem;
+  }
+
+  .player-count-btns.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+  }
+
+  .player-cnt-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.45rem 0.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.18s ease;
+  }
+
+  .player-cnt-btn:hover {
+    background: rgba(244, 114, 182, 0.15);
+    border-color: rgba(244, 114, 182, 0.4);
+    color: #fdf2f8;
+  }
+
+  .player-cnt-btn.active {
+    background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+    border-color: #f472b6;
+    color: #ffffff;
+    box-shadow: 0 0 14px rgba(236, 72, 153, 0.35);
+  }
+
+  /* Player Names Editor in Sidebar */
+  .player-names-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-top: 0.4rem;
+  }
+
+  .panel-sublabel {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #f472b6;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .player-names-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  :global(.player-name-row) {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.28rem 0.55rem;
+    transition: all 0.15s ease;
+  }
+
+  :global(.player-name-row:focus-within) {
+    border-color: #f472b6;
+    background: rgba(244, 114, 182, 0.12);
+    box-shadow: 0 0 10px rgba(244, 114, 182, 0.25);
+  }
+
+  :global(.player-name-row.active-turn-row) {
+    border-color: rgba(244, 114, 182, 0.5);
+  }
+
+  :global(.p-row-icon) {
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  :global(.p-row-input) {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #f8fafc;
+    font-size: 0.8rem;
+    font-weight: 700;
+    outline: none;
+    padding: 0.12rem 0;
+    min-width: 0;
+    width: 100%;
+  }
+
+  :global(.p-row-input::placeholder) {
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  .panel-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding-top: 0.3rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .side-action {
+    width: 100%;
+    padding: 0.55rem 0.8rem;
+    font-size: 0.82rem;
+    font-weight: 800;
+    border-radius: 9px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.18s ease;
+  }
+
+  .btn-custom-edit {
+    background: rgba(168, 85, 247, 0.15);
+    border: 1px solid rgba(168, 85, 247, 0.4);
+    color: #f3e8ff;
+  }
+
+  .btn-custom-edit:hover {
+    background: rgba(168, 85, 247, 0.3);
+    border-color: #c084fc;
+    transform: scale(1.02);
+  }
+
+  .btn-reset-board {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+  }
+
+  .btn-reset-board:hover {
+    background: rgba(239, 68, 68, 0.25);
+    border-color: #f87171;
+    transform: scale(1.02);
+  }
+
+  .panel-tips {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 0.65rem 0.75rem;
+  }
+
+  .tips-header {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #f472b6;
+    margin-bottom: 0.35rem;
+  }
+
+  .tips-list {
+    margin: 0;
+    padding-left: 1.1rem;
+    font-size: 0.72rem;
+    color: #94a3b8;
+    line-height: 1.45;
+  }
+
+  .tips-list strong {
+    color: #e2e8f0;
+  }
+
+  /* Responsive fallback for smaller screens */
+  @media (max-width: 960px) {
+    .board-layout-container.side-by-side {
+      flex-direction: column;
+      align-items: center;
+    }
+    .board-side-panel {
+      width: 100%;
+      max-width: 740px;
+    }
+  }
+
+  /* Tiles */
+  :global(.board-tile) {
+    position: relative;
+    background: rgba(26, 30, 56, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 9px;
+    padding: 6px 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    overflow: hidden;
+    backdrop-filter: blur(8px);
+  }
+
+  :global(.board-tile:hover) {
+    transform: translateY(-2px);
+    border-color: rgba(244, 114, 182, 0.6);
+    box-shadow: 0 6px 18px rgba(244, 114, 182, 0.25);
+    background: rgba(38, 43, 76, 0.85);
+  }
+
+  /* Active landing pulse */
+  :global(.board-tile.active-destination) {
+    border-color: #f472b6 !important;
+    background: rgba(236, 72, 153, 0.25) !important;
+    box-shadow: 0 0 25px rgba(236, 72, 153, 0.6), inset 0 0 15px rgba(236, 72, 153, 0.3) !important;
+    animation: tilePulse 1.2s infinite alternate ease-in-out;
+  }
+
+  @keyframes tilePulse {
+    from { box-shadow: 0 0 15px rgba(236, 72, 153, 0.4); }
+    to { box-shadow: 0 0 30px rgba(236, 72, 153, 0.8), inset 0 0 20px rgba(236, 72, 153, 0.4); }
+  }
+
+  /* Corner Tiles */
+  :global(.board-tile.tile-corner) {
+    background: linear-gradient(135deg, rgba(30, 36, 70, 0.88) 0%, rgba(20, 24, 48, 0.95) 100%);
+    border: 1.5px solid rgba(244, 114, 182, 0.4);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+  }
+
+  :global(.board-tile.tile-corner-start) {
+    border-color: rgba(244, 114, 182, 0.7);
+    background: linear-gradient(135deg, rgba(80, 24, 56, 0.85) 0%, rgba(30, 20, 44, 0.95) 100%);
+  }
+
+  :global(.board-tile.tile-corner-king) {
+    border-color: rgba(251, 191, 36, 0.6);
+    background: linear-gradient(135deg, rgba(64, 48, 20, 0.85) 0%, rgba(28, 24, 40, 0.95) 100%);
+  }
+
+  :global(.board-tile.tile-corner-island) {
+    border-color: rgba(56, 189, 248, 0.6);
+    background: linear-gradient(135deg, rgba(16, 44, 68, 0.85) 0%, rgba(18, 26, 48, 0.95) 100%);
+  }
+
+  :global(.board-tile.tile-corner-fate) {
+    border-color: rgba(168, 85, 247, 0.6);
+    background: linear-gradient(135deg, rgba(50, 24, 76, 0.85) 0%, rgba(24, 20, 48, 0.95) 100%);
+  }
+
+  :global(.tile-step-num) {
+    position: absolute;
+    top: 4px;
+    left: 6px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.35);
+  }
+
+  :global(.tile-icon) {
+    font-size: 1.55rem;
+    margin-bottom: 2px;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+  }
+
+  :global(.tile-corner .tile-icon) {
+    font-size: 1.95rem;
+  }
+
+  :global(.tile-title) {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #f8fafc;
+    line-height: 1.15;
+    margin: 1px 0;
+    word-break: keep-all;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :global(.tile-corner .tile-title) {
+    font-size: 0.92rem;
+    font-weight: 900;
+    color: #fdf2f8;
+  }
+
+  :global(.tile-desc) {
+    font-size: 0.65rem;
+    color: #94a3b8;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  /* Tokens on Tile */
+  :global(.tile-tokens-container) {
+    position: absolute;
+    bottom: 3px;
+    display: flex;
+    gap: 2px;
+    z-index: 5;
+  }
+
+  :global(.pawn-token) {
+    font-size: 1.25rem;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
+    animation: pawnBounce 0.4s ease infinite alternate;
+  }
+
+  @keyframes pawnBounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-3px); }
+  }
+
+  /* Center Arena (5x5 Inner Span) */
+  .center-arena {
+    grid-column: 2 / 7;
+    grid-row: 2 / 7;
+    background: radial-gradient(circle, rgba(30, 24, 52, 0.85) 0%, rgba(13, 14, 28, 0.95) 100%);
+    border: 1px solid rgba(244, 114, 182, 0.2);
+    border-radius: 16px;
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .arena-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .current-player-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: rgba(244, 114, 182, 0.14);
+    border: 1px solid rgba(244, 114, 182, 0.35);
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: #fdf2f8;
+  }
+
+  .lap-counter {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #cbd5e1;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 0.28rem 0.6rem;
+    border-radius: 6px;
+  }
+
+  /* 3D Dice Container & Scene */
+  .dice-scene {
+    width: 88px;
+    height: 88px;
+    perspective: 550px;
+    margin: 0.35rem 0;
+  }
+
+  .cube-dice {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transform: rotateX(-20deg) rotateY(30deg);
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+  }
+
+  .cube-dice.rolling {
+    animation: diceSpin 1.1s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+  }
+
+  @keyframes diceSpin {
+    0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+    30% { transform: rotateX(720deg) rotateY(360deg) rotateZ(180deg) scale(1.12); }
+    70% { transform: rotateX(1200deg) rotateY(900deg) rotateZ(540deg) scale(1.04); }
+    100% { transform: var(--final-rotation); }
+  }
+
+  .dice-face {
+    position: absolute;
+    width: 88px;
+    height: 88px;
+    background: linear-gradient(135deg, #1e1b2e 0%, #151322 100%);
+    border: 2px solid rgba(244, 114, 182, 0.5);
+    border-radius: 16px;
+    box-shadow: inset 0 0 14px rgba(244, 114, 182, 0.2), 0 0 12px rgba(0, 0, 0, 0.6);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    padding: 9px;
+    box-sizing: border-box;
+  }
+
+  .dice-face.front  { transform: rotateY(0deg) translateZ(44px); }
+  .dice-face.back   { transform: rotateY(180deg) translateZ(44px); }
+  .dice-face.right  { transform: rotateY(90deg) translateZ(44px); }
+  .dice-face.left   { transform: rotateY(-90deg) translateZ(44px); }
+  .dice-face.top    { transform: rotateX(90deg) translateZ(44px); }
+  .dice-face.bottom { transform: rotateX(-90deg) translateZ(44px); }
+
+  .dot {
+    width: 14px;
+    height: 14px;
+    background: radial-gradient(circle, #f472b6 30%, #ec4899 100%);
+    border-radius: 50%;
+    align-self: center;
+    justify-self: center;
+    box-shadow: 0 0 8px rgba(244, 114, 182, 0.8);
+  }
+
+  .dot-center     { grid-column: 2; grid-row: 2; }
+  .dot-top-left   { grid-column: 1; grid-row: 1; }
+  .dot-top-right  { grid-column: 3; grid-row: 1; }
+  .dot-mid-left   { grid-column: 1; grid-row: 2; }
+  .dot-mid-right  { grid-column: 3; grid-row: 2; }
+  .dot-bot-left   { grid-column: 1; grid-row: 3; }
+  .dot-bot-right  { grid-column: 3; grid-row: 3; }
+
+  /* Roll Action Box */
+  .roll-action-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .btn-roll-dice {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #ec4899 0%, #d946ef 50%, #8b5cf6 100%);
+    color: #ffffff;
+    border: none;
+    padding: 0.65rem 1.6rem;
+    border-radius: 999px;
+    font-size: 0.98rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(236, 72, 153, 0.45);
+  }
+
+  .btn-roll-dice:hover {
+    transform: scale(1.04);
+    box-shadow: 0 8px 25px rgba(236, 72, 153, 0.6);
+    filter: brightness(1.1);
+  }
+
+  .btn-roll-dice:active {
+    transform: scale(0.97);
+  }
+
+  .btn-roll-dice:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .roll-shortcut-hint {
+    font-size: 0.72rem;
+    opacity: 0.8;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+  }
+
+  .roll-status-message {
+    font-size: 0.78rem;
+    color: #f472b6;
+    font-weight: 700;
+    min-height: 1.1rem;
+    text-align: center;
+  }
+
+  /* Players Bar in Arena */
+  .arena-players-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  :global(.player-token-pill) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+  }
+
+  :global(.player-token-pill.active-turn) {
+    background: rgba(244, 114, 182, 0.25);
+    color: #fdf2f8;
+    border: 1px solid rgba(244, 114, 182, 0.4);
+  }
+
+  /* Landing Action Modal */
+  .action-modal-overlay, .editor-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(4, 6, 15, 0.8);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+
+  .action-modal-card {
+    background: linear-gradient(145deg, #1f1a36 0%, #111425 100%);
+    border: 2px solid rgba(244, 114, 182, 0.5);
+    border-radius: 20px;
+    padding: 1.8rem 2rem;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(244, 114, 182, 0.3);
+    animation: modalPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+  }
+
+  @keyframes modalPop {
+    from { transform: scale(0.85); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .modal-petals-decor {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.2em;
+  }
+
+  .modal-player-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(244, 114, 182, 0.15);
+    border: 1px solid rgba(244, 114, 182, 0.3);
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #fdf2f8;
+    margin-bottom: 1rem;
+  }
+
+  .modal-tile-icon {
+    font-size: 3.5rem;
+    margin-bottom: 0.5rem;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
+  }
+
+  .modal-tile-title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #ffffff;
+    margin: 0 0 0.5rem;
+    text-shadow: 0 2px 10px rgba(244, 114, 182, 0.5);
+  }
+
+  .modal-tile-desc {
+    font-size: 0.95rem;
+    color: #cbd5e1;
+    line-height: 1.45;
+    margin: 0 0 1.5rem;
+    word-break: keep-all;
+  }
+
+  .modal-action-row {
+    display: flex;
+    justify-content: center;
+  }
+
+  .btn-modal-confirm {
+    background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 999px;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(236, 72, 153, 0.45);
+    transition: transform 0.15s ease;
+  }
+
+  .btn-modal-confirm:hover {
+    transform: scale(1.05);
+  }
+
+  /* Customizer Modal */
+  .editor-modal-card {
+    background: #14172a;
+    border: 1px solid rgba(244, 114, 182, 0.3);
+    border-radius: 16px;
+    padding: 1.5rem;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+  }
+
+  .editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .editor-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #fdf2f8;
+  }
+
+  .editor-close-btn {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 1.3rem;
+    cursor: pointer;
+  }
+
+  .editor-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 0.5rem;
+  }
+
+  .editor-tab {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 0.35rem 0.75rem;
+    cursor: pointer;
+    border-radius: 6px;
+  }
+
+  .editor-tab.active {
+    background: rgba(244, 114, 182, 0.15);
+    color: #f472b6;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    margin-bottom: 0.35rem;
+  }
+
+  .form-select, .form-input {
+    width: 100%;
+    background: #1a1d30;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 0.6rem 0.8rem;
+    color: #f8fafc;
+    font-size: 0.88rem;
+    box-sizing: border-box;
+  }
+
+  .form-select:focus, .form-input:focus {
+    outline: none;
+    border-color: #f472b6;
+    box-shadow: 0 0 10px rgba(244, 114, 182, 0.3);
+  }
+
+  .emoji-palette {
+    display: flex;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+    background: #1a1d30;
+    padding: 0.5rem;
+    border-radius: 8px;
+  }
+
+  .emoji-palette span {
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    transition: transform 0.12s ease, background 0.12s ease;
+  }
+
+  .emoji-palette span:hover {
+    transform: scale(1.25);
+    background: rgba(244, 114, 182, 0.2);
+  }
+
+  .btn-save-tile, .btn-save-all {
+    width: 100%;
+    background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.7rem;
+    font-size: 0.92rem;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 0.5rem;
+  }
+
+  .all-tiles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    max-height: 50vh;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  :global(.all-tile-row) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #181b2e;
+    padding: 0.4rem 0.6rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  :global(.all-tile-num) {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #f472b6;
+    width: 20px;
+  }
+
+  :global(.all-tile-input-title) {
+    flex: 1;
+    background: #0f1222;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #f1f5f9;
+    padding: 0.35rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+  }
+
+  .editor-all-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .btn-reset-preset {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #cbd5e1;
+    border-radius: 8px;
+    padding: 0.7rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .board-top-controls {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .control-group-right {
+      justify-content: space-between;
+    }
+    .monopoly-board {
+      gap: 4px;
+      padding: 6px;
+    }
+    :global(.tile-icon) {
+      font-size: 1.15rem;
+    }
+    :global(.tile-title) {
+      font-size: 0.68rem;
+    }
+    :global(.tile-desc) {
+      display: none;
+    }
+    .dice-scene {
+      width: 64px;
+      height: 64px;
+    }
+    .dice-face {
+      width: 64px;
+      height: 64px;
+      padding: 6px;
+    }
+    .dice-face.front  { transform: rotateY(0deg) translateZ(32px); }
+    .dice-face.back   { transform: rotateY(180deg) translateZ(32px); }
+    .dice-face.right  { transform: rotateY(90deg) translateZ(32px); }
+    .dice-face.left   { transform: rotateY(-90deg) translateZ(32px); }
+    .dice-face.top    { transform: rotateX(90deg) translateZ(32px); }
+    .dice-face.bottom { transform: rotateX(-90deg) translateZ(32px); }
+    .dot {
+      width: 10px;
+      height: 10px;
+    }
+    .btn-roll-dice {
+      padding: 0.5rem 1.2rem;
+      font-size: 0.88rem;
+    }
+  }
+</style>
+
+<script>
+  // Detect language from path or query parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const isEn = window.location.pathname.startsWith('/en') || urlParams.get('lang') === 'en';
+
+  // Game State & Audio
+  interface TileData {
+    id: number;
+    title: string;
+    desc: string;
+    icon: string;
+    type: 'corner' | 'normal';
+    special?: 'start' | 'island' | 'king' | 'fate';
+  }
+
+  interface Player {
+    id: number;
+    name: string;
+    icon: string;
+    color: string;
+    position: number; // 0 to 23
+    laps: number;
+    isResting?: boolean;
+  }
+
+  const PRESETS_DATA: Record<string, { name: string; tiles: TileData[] }> = {
+    drinking: {
+      name: '주루마블 기본',
+      tiles: [
+        { id: 0, title: '출발 (START)', desc: '지날 때마다 축하 건배!', icon: '🌸', type: 'corner', special: 'start' },
+        { id: 1, title: '한 모금 마시기', desc: '시원하게 음료/술 한 모금 축이기', icon: '🍺', type: 'normal' },
+        { id: 2, title: '반 잔 비우기', desc: '부담 없이 딱 반 잔만 마시기', icon: '🍶', type: 'normal' },
+        { id: 3, title: '생존용 안주 찬스', desc: '맛있는 안주 1입 먹고 속 달래기', icon: '🍗', type: 'normal' },
+        { id: 4, title: '시원한 원샷!', desc: '망설임 없이 원샷! (무알콜 가능)', icon: '💣', type: 'normal' },
+        { id: 5, title: '옆 사람과 건배', desc: '양옆 중 한 명과 다정하게 짠!', icon: '🤝', type: 'normal' },
+        { id: 6, title: '무인도 (술자리 감옥)', desc: '1턴 쉬거나 물 1컵 마시고 탈출', icon: '🏝️', type: 'corner', special: 'island' },
+        { id: 7, title: '물 한 컵 마시기', desc: '간 보호! 시원한 냉수 1컵 충전', icon: '💧', type: 'normal' },
+        { id: 8, title: '지목 러브샷', desc: '원하는 1명과 카메라 보고 러브샷', icon: '💘', type: 'normal' },
+        { id: 9, title: '다 함께 건배!', desc: '시청자 및 참가자 전원 다 같이 짠!', icon: '🍻', type: 'normal' },
+        { id: 10, title: '1명 지목 원샷', desc: '내가 지목한 1명에게 원샷 토스!', icon: '🎯', type: 'normal' },
+        { id: 11, title: '주사위 수만큼 모금', desc: '주사위 1번 굴려 나온 수만큼 마시기', icon: '🎲', type: 'normal' },
+        { id: 12, title: '골든벨 (전원 원샷)', desc: '주최자가 종을 울린다! 전원 원샷!', icon: '👑', type: 'corner', special: 'king' },
+        { id: 13, title: '흑기사/흑장미 소환', desc: '대신 마셔줄 사람 구하기 (거절 시 2잔)', icon: '🛡️', type: 'normal' },
+        { id: 14, title: '가위바위보 한판', desc: '다른 참가자와 대결, 패자 원샷!', icon: '✌️', type: 'normal' },
+        { id: 15, title: '양옆 동반 원샷', desc: '나를 기준으로 양옆 사람 둘 다 원샷!', icon: '🔥', type: 'normal' },
+        { id: 16, title: '안주 뺏어먹기', desc: '다른 사람 안주 1입 찬스', icon: '🧀', type: 'normal' },
+        { id: 17, title: '파도타기 원샷', desc: '순서대로 릴레이 한 모금씩 마시기', icon: '🌪️', type: 'normal' },
+        { id: 18, title: '운명의 갈림길', desc: '주사위 짝수면 나만, 홀수면 모두 원샷', icon: '✨', type: 'corner', special: 'fate' },
+        { id: 19, title: '분위기 음미 1모금', desc: '고급스럽게 음미하며 와인/음료 1모금', icon: '🍷', type: 'normal' },
+        { id: 20, title: '술자리 훈민정음', desc: '다음 턴까지 영어 쓰면 1잔씩!', icon: '🤫', type: 'normal' },
+        { id: 21, title: '특제 폭탄주 1잔', desc: '취향대로 섞은 특제 잔 1모금', icon: '🍹', type: 'normal' },
+        { id: 22, title: '시원한 얼음물', desc: '술 깨는 시원한 얼음물 한 모금', icon: '🧊', type: 'normal' },
+        { id: 23, title: '막판 스퍼트 1잔', desc: '출발선 직전 신나는 마무리 1잔!', icon: '🎉', type: 'normal' },
+      ]
+    },
+    penalty: {
+      name: '매운맛 벌칙',
+      tiles: [
+        { id: 0, title: '출발 (START)', desc: '안도의 한숨 & 안전 지대', icon: '🌸', type: 'corner', special: 'start' },
+        { id: 1, title: '애교 3종 세트', desc: '카메라 보고 치명적 애교 3종', icon: '🐱', type: 'normal' },
+        { id: 2, title: '스쿼트 10회', desc: '건강을 위한 스쿼트 10개', icon: '🦵', type: 'normal' },
+        { id: 3, title: '엉덩이로 이름쓰기', desc: '일어나서 엉덩이로 닉네임 쓰기', icon: '🍑', type: 'normal' },
+        { id: 4, title: '과거 흑역사 고백', desc: '기억나는 창피한 순간 고백', icon: '🤫', type: 'normal' },
+        { id: 5, title: '무반주 노래 1곡', desc: '반주 없이 1소절 열창', icon: '🎤', type: 'normal' },
+        { id: 6, title: '감옥 (벌칙 대기)', desc: '시청자 미션 1개 수행 후 탈출', icon: '🏝️', type: 'corner', special: 'island' },
+        { id: 7, title: '물 500ml 원샷', desc: '건강한 수분 폭풍 보충', icon: '💧', type: 'normal' },
+        { id: 8, title: '모두에게 반말', desc: '다음 턴까지 모두에게 반말 모드', icon: '😈', type: 'normal' },
+        { id: 9, title: '15초 막춤', desc: '음악 맞춰 무아지경 댄스 15초', icon: '💃', type: 'normal' },
+        { id: 10, title: '팔굽혀펴기 10회', desc: '상체 근력 강화 타임', icon: '💪', type: 'normal' },
+        { id: 11, title: '엽기 표정 캡처', desc: '시청자 캡처용 엽기 표정 5초', icon: '📸', type: 'normal' },
+        { id: 12, title: '시청자 지목 벌칙', desc: '채팅창 투표로 벌칙 정하기', icon: '👑', type: 'corner', special: 'king' },
+        { id: 13, title: '프리스타일 랩', desc: '비트 없이 라임 맞추기', icon: '🎙️', type: 'normal' },
+        { id: 14, title: '벌칙 방어권', desc: '다음 벌칙 1회 무효화', icon: '🛡️', type: 'normal' },
+        { id: 15, title: '강아지 흉내 3회', desc: '실감 나는 멍멍 짖기 3회', icon: '🐶', type: 'normal' },
+        { id: 16, title: '얼음 물고 말하기', desc: '얼음 물고 20초간 대화하기', icon: '🧊', type: 'normal' },
+        { id: 17, title: '플랭크 30초', desc: '코어 단련 30초 버티기', icon: '🧘', type: 'normal' },
+        { id: 18, title: '운명의 주사위', desc: '홀수면 통과, 짝수면 벌칙 2배', icon: '✨', type: 'corner', special: 'fate' },
+        { id: 19, title: 'AI 로봇 말투', desc: '다음 턴까지 로봇 말투 사용', icon: '🤖', type: 'normal' },
+        { id: 20, title: '연예인 성대모사', desc: '자신 있는 성대모사 1개', icon: '🎭', type: 'normal' },
+        { id: 21, title: '1분간 묵언수행', desc: '1분 동안 오직 몸짓으로 소통', icon: '🤐', type: 'normal' },
+        { id: 22, title: '선글라스 착용', desc: '방송 끝날 때까지 착용하기', icon: '🕶️', type: 'normal' },
+        { id: 23, title: '벌칙 더블', desc: '다음 걸리는 벌칙 2배 수행', icon: '💥', type: 'normal' },
+      ]
+    },
+    coffee: {
+      name: '방송 토크',
+      tiles: [
+        { id: 0, title: '출발 (START)', desc: '화사한 벚꽃과 함께 방송 토크 출발!', icon: '🌸', type: 'corner', special: 'start' },
+        { id: 1, title: '방송 썰 풀기', desc: '첫 방송 때의 기억 또는 레전드 흑역사 썰', icon: '🎤', type: 'normal' },
+        { id: 2, title: '시청자 Q&A', desc: '채팅창에서 아무 질문 1개 골라 솔직 답변', icon: '❓', type: 'normal' },
+        { id: 3, title: '도네이션/팬 칭찬', desc: '기억에 남는 고마운 팬에게 감사 전하기', icon: '💖', type: 'normal' },
+        { id: 4, title: '스트리머 밸런스', desc: '시청자가 주는 극한의 밸런스 게임 선택', icon: '⚖️', type: 'normal' },
+        { id: 5, title: '커피/음료 한 모금', desc: '목 축이며 여유로운 티타임 수다', icon: '☕', type: 'normal' },
+        { id: 6, title: '무인도 (30초 침묵)', desc: '30초 동안 아무 말도 하지 않고 화면 응시', icon: '🏝️', type: 'corner', special: 'island' },
+        { id: 7, title: '유튜브 알고리즘', desc: '요즘 피드에 뜨는 추천 영상 1개 공개', icon: '📈', type: 'normal' },
+        { id: 8, title: '방송 식은땀 순간', desc: '방송 중 가장 당황했던 돌발 상황 썰', icon: '💦', type: 'normal' },
+        { id: 9, title: '내 인생 원픽 게임', desc: '내 스트리머 인생을 바꾼 최고의 게임', icon: '🏆', type: 'normal' },
+        { id: 10, title: '🔥 정치 토크 한마디', desc: '방송 인생 최대 위기! 정치 소신 발언 1마디 or 벌칙 3배 (선택)', icon: '🔥', type: 'normal' },
+        { id: 11, title: '달콤한 간식 타임', desc: '디저트나 간식 먹으며 달콤한 휴식', icon: '🍰', type: 'normal' },
+        { id: 12, title: '왕의 토크 (3분 스피치)', desc: '내가 가장 좋아하는 주제로 3분간 수다', icon: '👑', type: 'corner', special: 'king' },
+        { id: 13, title: '시청자 즉석 투표', desc: '채팅창 투표로 궁금한 것 1개 물어보기', icon: '📊', type: 'normal' },
+        { id: 14, title: '이번 달 후회 지출', desc: '최근 돈 쓰고 가장 현타 왔던 지출 공개', icon: '💸', type: 'normal' },
+        { id: 15, title: '최근 검색어 1위', desc: '유튜브/포털 최근 검색어 맨 위 1개 공개', icon: '🔍', type: 'normal' },
+        { id: 16, title: '동료 스트리머 미담', desc: '친한 동료나 좋아하는 방송인 칭찬하기', icon: '🤝', type: 'normal' },
+        { id: 17, title: '목 보호용 물 한 잔', desc: '텐션 유지를 위한 시원한 물 한 컵', icon: '💧', type: 'normal' },
+        { id: 18, title: '운명의 진실게임', desc: '채팅창에서 가장 추천 많은 질문에 솔직 답변', icon: '✨', type: 'corner', special: 'fate' },
+        { id: 19, title: '흑역사 짤 10초 노출', desc: '내 흑역사 사진/영상 10초 공개', icon: '🙈', type: 'normal' },
+        { id: 20, title: '내 방송 노동요', desc: '평소 작업할 때 즐겨 듣는 애창곡 들려주기', icon: '🎵', type: 'normal' },
+        { id: 21, title: '1등 팬에게 영상편지', desc: '카메라 보고 진심 담은 15초 영상 편지', icon: '💌', type: 'normal' },
+        { id: 22, title: '시그니처 리액션', desc: '내 대표 리액션 또는 성대모사 1개', icon: '🎭', type: 'normal' },
+        { id: 23, title: '방종 예고 소감', desc: '오늘 방송에 대한 솔직한 소감과 인사!', icon: '🌙', type: 'normal' },
+      ]
+    }
+  };
+
+  // English Presets
+  const PRESETS_EN: Record<string, { name: string; tiles: TileData[] }> = {
+    drinking: {
+      name: 'Drinking Board',
+      tiles: [
+        { id: 0, title: 'START', desc: 'Cheers when passing!', icon: '🌸', type: 'corner', special: 'start' },
+        { id: 1, title: 'Take 1 Sip', desc: 'Take a sip of your drink', icon: '🍺', type: 'normal' },
+        { id: 2, title: 'Half Glass', desc: 'Drink half of your glass', icon: '🍶', type: 'normal' },
+        { id: 3, title: 'Eat a Snack', desc: 'Grab a snack to survive!', icon: '🍗', type: 'normal' },
+        { id: 4, title: 'Finish Glass!', desc: 'Empty your glass (or juice)', icon: '💣', type: 'normal' },
+        { id: 5, title: 'Toast Neighbor', desc: 'Cheers with someone next to you', icon: '🤝', type: 'normal' },
+        { id: 6, title: 'Timeout Island', desc: 'Rest 1 turn or drink a glass of water', icon: '🏝️', type: 'corner', special: 'island' },
+        { id: 7, title: 'Drink Water', desc: 'Hydrate! 1 fresh glass of water', icon: '💧', type: 'normal' },
+        { id: 8, title: 'Love Shot', desc: 'Linked-arms toast with camera/friend', icon: '💘', type: 'normal' },
+        { id: 9, title: 'Toast Everyone', desc: 'Group cheers with all viewers!', icon: '🍻', type: 'normal' },
+        { id: 10, title: 'Pick 1 to Drink', desc: 'Choose 1 person to take a drink!', icon: '🎯', type: 'normal' },
+        { id: 11, title: 'Roll Count Sips', desc: 'Roll dice again and sip that many times', icon: '🎲', type: 'normal' },
+        { id: 12, title: "King's Chalice", desc: 'You call the shots! Everyone else drinks!', icon: '👑', type: 'corner', special: 'king' },
+        { id: 13, title: 'Black Knight Pass', desc: 'Ask someone to drink for you (or 2x)', icon: '🛡️', type: 'normal' },
+        { id: 14, title: 'RPS Battle', desc: 'Rock paper scissors, loser drinks!', icon: '✌️', type: 'normal' },
+        { id: 15, title: 'Neighbors Drink', desc: 'Players on your left & right drink!', icon: '🔥', type: 'normal' },
+        { id: 16, title: 'Snack Thief', desc: "Steal 1 bite of someone's snack", icon: '🧀', type: 'normal' },
+        { id: 17, title: 'The Wave', desc: 'Cascade drink in sequence', icon: '🌪️', type: 'normal' },
+        { id: 18, title: 'Fate Roulette', desc: 'Even = you drink, Odd = all drink!', icon: '✨', type: 'corner', special: 'fate' },
+        { id: 19, title: 'Sip of Wine', desc: 'Savor a classy sip of your beverage', icon: '🍷', type: 'normal' },
+        { id: 20, title: 'No English Rule', desc: 'Drink 1 sip if you speak English!', icon: '🤫', type: 'normal' },
+        { id: 21, title: 'Special Cocktail', desc: 'Sip of special mixed drink', icon: '🍹', type: 'normal' },
+        { id: 22, title: 'Cold Ice Water', desc: 'Refreshing ice water recharge', icon: '🧊', type: 'normal' },
+        { id: 23, title: 'Final Sprint Drink', desc: 'Celebratory sip before the finish line!', icon: '🎉', type: 'normal' },
+      ]
+    },
+    penalty: {
+      name: 'Penalty Challenge',
+      tiles: [
+        { id: 0, title: 'START', desc: 'Safe haven celebration', icon: '🌸', type: 'corner', special: 'start' },
+        { id: 1, title: 'Cute Aegyo', desc: 'Do 3 cute poses to camera', icon: '🐱', type: 'normal' },
+        { id: 2, title: '10 Squats', desc: 'Do 10 healthy squats live', icon: '🦵', type: 'normal' },
+        { id: 3, title: 'Name with Hips', desc: 'Spell your nickname with hips', icon: '🍑', type: 'normal' },
+        { id: 4, title: 'Cringe Secret', desc: 'Confess an embarrassing memory', icon: '🤫', type: 'normal' },
+        { id: 5, title: 'A Cappella Song', desc: 'Sing 1 verse without music', icon: '🎤', type: 'normal' },
+        { id: 6, title: 'Prison / Jail', desc: 'Do 1 viewer mission to escape', icon: '🏝️', type: 'corner', special: 'island' },
+        { id: 7, title: 'Chug 500ml Water', desc: 'Healthy hydration challenge', icon: '💧', type: 'normal' },
+        { id: 8, title: 'Informal Talk', desc: 'Speak informally for 1 turn', icon: '😈', type: 'normal' },
+        { id: 9, title: '15s Wild Dance', desc: 'Wild freestyle dance', icon: '💃', type: 'normal' },
+        { id: 10, title: '10 Push-ups', desc: 'Upper body strength challenge', icon: '💪', type: 'normal' },
+        { id: 11, title: 'Funny Face', desc: 'Hold funny face for screenshots', icon: '📸', type: 'normal' },
+        { id: 12, title: 'Viewer Choice', desc: 'Chat votes your next penalty', icon: '👑', type: 'corner', special: 'king' },
+        { id: 13, title: 'Freestyle Rap', desc: 'Drop 4 rhyming bars live', icon: '🎙️', type: 'normal' },
+        { id: 14, title: 'Immunity Shield', desc: 'Shield against next penalty!', icon: '🛡️', type: 'normal' },
+        { id: 15, title: 'Dog Bark 3x', desc: '3 realistic dog barks', icon: '🐶', type: 'normal' },
+        { id: 16, title: 'Ice in Mouth', desc: 'Talk for 20s with ice in mouth', icon: '🧊', type: 'normal' },
+        { id: 17, title: '30s Plank', desc: 'Hold a 30-second core plank', icon: '🧘', type: 'normal' },
+        { id: 18, title: 'Dice of Fate', desc: 'Odd = Safe, Even = 2x Penalty', icon: '✨', type: 'corner', special: 'fate' },
+        { id: 19, title: 'AI Robot Mode', desc: 'Speak like AI until next turn', icon: '🤖', type: 'normal' },
+        { id: 20, title: 'Voice Impression', desc: '1 celebrity impression', icon: '🎭', type: 'normal' },
+        { id: 21, title: '1 Min Silence', desc: '1 minute pantomime only', icon: '🤐', type: 'normal' },
+        { id: 22, title: 'Wear Sunglasses', desc: 'Wear shades till stream ends', icon: '🕶️', type: 'normal' },
+        { id: 23, title: 'Double Trouble', desc: 'Next penalty count is doubled!', icon: '💥', type: 'normal' },
+      ]
+    },
+    coffee: {
+      name: 'Streamer Talk',
+      tiles: [
+        { id: 0, title: 'START', desc: 'Start of cozy streamer chat!', icon: '🌸', type: 'corner', special: 'start' },
+        { id: 1, title: 'Debut Story', desc: 'Tell your first stream memory or cringe story', icon: '🎤', type: 'normal' },
+        { id: 2, title: 'Chat Q&A', desc: 'Pick 1 random question from chat to answer', icon: '❓', type: 'normal' },
+        { id: 3, title: 'Praise Top Fan', desc: 'Shout out and thank a memorable fan', icon: '💖', type: 'normal' },
+        { id: 4, title: 'Streamer Dilemma', desc: 'Chat gives an extreme Would-You-Rather', icon: '⚖️', type: 'normal' },
+        { id: 5, title: 'Sip of Coffee', desc: 'Sip warm tea/coffee and chill', icon: '☕', type: 'normal' },
+        { id: 6, title: 'Silence Island', desc: 'Stare at screen in silence for 30s', icon: '🏝️', type: 'corner', special: 'island' },
+        { id: 7, title: 'Algorithm Pick', desc: 'Reveal 1 recent video recommendation', icon: '📈', type: 'normal' },
+        { id: 8, title: 'Sweat Moment', desc: 'Most panic-inducing stream emergency', icon: '💦', type: 'normal' },
+        { id: 9, title: 'Top Game of Life', desc: 'The #1 game that shaped your streamer life', icon: '🏆', type: 'normal' },
+        { id: 10, title: '🔥 Political Talk', desc: 'Streamer Danger Zone! State a political take OR take 3x penalties!', icon: '🔥', type: 'normal' },
+        { id: 11, title: 'Sweet Dessert', desc: 'Enjoy a sweet bite of dessert', icon: '🍰', type: 'normal' },
+        { id: 12, title: "King's 3-Min Rant", desc: 'Speak non-stop for 3 minutes on favorite topic', icon: '👑', type: 'corner', special: 'king' },
+        { id: 13, title: 'Live Chat Poll', desc: 'Run a quick live poll in chat', icon: '📊', type: 'normal' },
+        { id: 14, title: 'Regret Purchase', desc: 'Most regretted purchase this month', icon: '💸', type: 'normal' },
+        { id: 15, title: 'Top Search Term', desc: 'Reveal your latest browser search history', icon: '🔍', type: 'normal' },
+        { id: 16, title: 'Peer Praise', desc: 'Compliment a fellow creator or friend', icon: '🤝', type: 'normal' },
+        { id: 17, title: 'Hydration Cup', desc: 'Drink water to save your vocal cords', icon: '💧', type: 'normal' },
+        { id: 18, title: 'Truth from Chat', desc: 'Answer top voted chat question honestly', icon: '✨', type: 'corner', special: 'fate' },
+        { id: 19, title: 'Cringe Picture', desc: 'Show or describe an old embarrassing photo', icon: '🙈', type: 'normal' },
+        { id: 20, title: 'Stream Playlist', desc: 'Share a song from your background playlist', icon: '🎵', type: 'normal' },
+        { id: 21, title: 'Fan Video Letter', desc: '15-second heartfelt video message to fans', icon: '💌', type: 'normal' },
+        { id: 22, title: 'Signature Emote', desc: 'Perform your signature emote/impression', icon: '🎭', type: 'normal' },
+        { id: 23, title: 'Stream Sign-off', desc: 'Warm closing thoughts for today stream', icon: '🌙', type: 'normal' },
+      ]
+    }
+  };
+
+  // Acoustic Blossom Audio Synth Engine
+  class BoardSFX {
+    private ctx: AudioContext | null = null;
+
+    private getCtx(): AudioContext | null {
+      if (!this.ctx && typeof window !== 'undefined') {
+        const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        if (AudioCtx) this.ctx = new AudioCtx();
+      }
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+      return this.ctx;
+    }
+
+    // Soft, organic wooden dice tumble taps (Zero buzz/sawtooth)
+    playDiceShake() {
+      const c = this.getCtx();
+      if (!c) return;
+      [0, 0.07, 0.16].forEach((delay, i) => {
+        const osc = c.createOscillator();
+        const gain = c.createGain();
+        const filter = c.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(320 + i * 70, c.currentTime + delay);
+        filter.Q.setValueAtTime(5, c.currentTime + delay);
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(200 + (i % 2) * 50, c.currentTime + delay);
+        osc.frequency.exponentialRampToValueAtTime(70, c.currentTime + delay + 0.045);
+
+        gain.gain.setValueAtTime(0.12, c.currentTime + delay);
+        gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + delay + 0.045);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(c.destination);
+
+        osc.start(c.currentTime + delay);
+        osc.stop(c.currentTime + delay + 0.05);
+      });
+    }
+
+    // Gentle, soothing kalimba / water-drop melodic pentatonic notes
+    playHop(stepIdx: number = 0) {
+      const c = this.getCtx();
+      if (!c) return;
+      const osc = c.createOscillator();
+      const gain = c.createGain();
+      const pentatonic = [659.25, 783.99, 880.0, 987.77, 1174.66, 1318.51];
+      const freq = pentatonic[stepIdx % pentatonic.length];
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, c.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(freq * 0.99, c.currentTime + 0.11);
+
+      gain.gain.setValueAtTime(0.12, c.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.11);
+
+      osc.connect(gain);
+      gain.connect(c.destination);
+      osc.start(c.currentTime);
+      osc.stop(c.currentTime + 0.11);
+    }
+
+    // Sparkling cherry blossom wind-chime arpeggio chord
+    playLand() {
+      const c = this.getCtx();
+      if (!c) return;
+      const chord = [523.25, 659.25, 783.99, 987.77, 1046.5];
+      chord.forEach((freq, idx) => {
+        const osc = c.createOscillator();
+        const gain = c.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, c.currentTime + idx * 0.055);
+
+        gain.gain.setValueAtTime(0.09, c.currentTime + idx * 0.055);
+        gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + idx * 0.055 + 0.35);
+
+        osc.connect(gain);
+        gain.connect(c.destination);
+        osc.start(c.currentTime + idx * 0.055);
+        osc.stop(c.currentTime + idx * 0.055 + 0.36);
+      });
+    }
+  }
+
+  const sfx = new BoardSFX();
+
+  // Floating Sakura Petals Engine
+  function initSakuraCanvas() {
+    const canvas = document.getElementById('sakura-canvas') as HTMLCanvasElement | null;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    function resize() {
+      if (!canvas) return;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    interface Petal {
+      x: number;
+      y: number;
+      size: number;
+      speedX: number;
+      speedY: number;
+      angle: number;
+      spin: number;
+      opacity: number;
+    }
+
+    const petals: Petal[] = [];
+    const count = 35;
+
+    for (let i = 0; i < count; i++) {
+      petals.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 8 + 7,
+        speedX: Math.random() * 1.2 - 0.2,
+        speedY: Math.random() * 1.2 + 0.8,
+        angle: Math.random() * Math.PI * 2,
+        spin: Math.random() * 0.03 - 0.015,
+        opacity: Math.random() * 0.5 + 0.35,
+      });
+    }
+
+    function renderPetals() {
+      if (!ctx || !canvas) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      petals.forEach(p => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+        p.angle += p.spin;
+
+        if (p.y > canvas.height + 20) {
+          p.y = -20;
+          p.x = Math.random() * canvas.width;
+        }
+        if (p.x > canvas.width + 20) {
+          p.x = -20;
+        }
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.angle);
+        ctx.fillStyle = `rgba(244, 114, 182, ${p.opacity})`;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, p.size, p.size * 0.55, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+
+      requestAnimationFrame(renderPetals);
+    }
+    requestAnimationFrame(renderPetals);
+  }
+
+  // 24 Tiles Grid Mapping (7x7 Perimeter)
+  // Clockwise order around the 7x7 grid:
+  // Row 1 (top):    [0..6]   cols 1 to 7, row 1 (7 tiles)
+  // Col 7 (right):  [7..12]  col 7, rows 2 to 7 (6 tiles)
+  // Row 7 (bottom): [13..18] cols 6 down to 1, row 7 (6 tiles)
+  // Col 1 (left):   [19..23] col 1, rows 6 down to 2 (5 tiles)
+  const TILE_GRID_POSITIONS = [
+    // Top Row (cols 1..7, row 1): 7 tiles
+    { col: 1, row: 1 }, // 0: Top-Left START (Corner)
+    { col: 2, row: 1 }, // 1
+    { col: 3, row: 1 }, // 2
+    { col: 4, row: 1 }, // 3
+    { col: 5, row: 1 }, // 4
+    { col: 6, row: 1 }, // 5
+    { col: 7, row: 1 }, // 6: Top-Right CORNER (Island)
+
+    // Right Col (col 7, rows 2..7): 6 tiles
+    { col: 7, row: 2 }, // 7
+    { col: 7, row: 3 }, // 8
+    { col: 7, row: 4 }, // 9
+    { col: 7, row: 5 }, // 10
+    { col: 7, row: 6 }, // 11
+    { col: 7, row: 7 }, // 12: Bottom-Right CORNER (Golden Bell)
+
+    // Bottom Row (cols 6..1, row 7): 6 tiles
+    { col: 6, row: 7 }, // 13
+    { col: 5, row: 7 }, // 14
+    { col: 4, row: 7 }, // 15
+    { col: 3, row: 7 }, // 16
+    { col: 2, row: 7 }, // 17
+    { col: 1, row: 7 }, // 18: Bottom-Left CORNER (Fate)
+
+    // Left Col (col 1, rows 6..2): 5 tiles
+    { col: 1, row: 6 }, // 19
+    { col: 1, row: 5 }, // 20
+    { col: 1, row: 4 }, // 21
+    { col: 1, row: 3 }, // 22
+    { col: 1, row: 2 }, // 23
+  ];
+
+  // Game Engine State
+  let currentPresetKey = 'drinking';
+  let activeTiles: TileData[] = [];
+
+  const defaultAvatars = [
+    { defaultName: isEn ? 'Player 1' : '플레이어 1', icon: '🌸', color: '#f472b6' },
+    { defaultName: isEn ? 'Player 2' : '플레이어 2', icon: '🍶', color: '#38bdf8' },
+    { defaultName: isEn ? 'Player 3' : '플레이어 3', icon: '👑', color: '#fbbf24' },
+    { defaultName: isEn ? 'Player 4' : '플레이어 4', icon: '🐱', color: '#c084fc' },
+  ];
+
+  let customPlayerNames: string[] = [];
+  try {
+    const savedNames = localStorage.getItem('streamarcade_blossom_player_names');
+    if (savedNames) {
+      customPlayerNames = JSON.parse(savedNames);
+    }
+  } catch {
+    customPlayerNames = [];
+  }
+  // Sanitize out any demo names so default is strictly 플레이어 1 ~ 4 / Player 1 ~ 4
+  if (Array.isArray(customPlayerNames)) {
+    customPlayerNames = customPlayerNames.map((name, i) => {
+      if (name === '침착맨' || name === '주호민' || !name) {
+        return isEn ? `Player ${i + 1}` : `플레이어 ${i + 1}`;
+      }
+      return name;
+    });
+  }
+  if (!Array.isArray(customPlayerNames) || customPlayerNames.length < 4) {
+    customPlayerNames = defaultAvatars.map(a => a.defaultName);
+  }
+
+  function savePlayerNames() {
+    try {
+      localStorage.setItem('streamarcade_blossom_player_names', JSON.stringify(customPlayerNames));
+    } catch {
+      // ignore
+    }
+  }
+
+  let players: Player[] = [
+    { id: 1, name: customPlayerNames[0] || (isEn ? 'Player 1' : '플레이어 1'), icon: '🌸', color: '#f472b6', position: 0, laps: 1 }
+  ];
+  let currentPlayerIdx = 0;
+  let isRolling = false;
+  let isMoving = false;
+
+  const diceFaceRotations: Record<number, string> = {
+    1: 'rotateX(0deg) rotateY(0deg)',
+    2: 'rotateX(-90deg) rotateY(0deg)',
+    3: 'rotateX(0deg) rotateY(-90deg)',
+    4: 'rotateX(0deg) rotateY(90deg)',
+    5: 'rotateX(90deg) rotateY(0deg)',
+    6: 'rotateX(180deg) rotateY(0deg)',
+  };
+
+  function loadInitialTiles() {
+    const storageKey = isEn ? 'streamarcade_blossom_board_24_custom_en' : 'streamarcade_blossom_board_24_custom_ko';
+    const saved = localStorage.getItem(storageKey);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length === 24) {
+          activeTiles = parsed;
+          return;
+        }
+      } catch (e) {
+        // Fallback
+      }
+    }
+    const dict = isEn ? PRESETS_EN : PRESETS_DATA;
+    activeTiles = JSON.parse(JSON.stringify(dict[currentPresetKey].tiles));
+  }
+
+  function saveTiles() {
+    const storageKey = isEn ? 'streamarcade_blossom_board_24_custom_en' : 'streamarcade_blossom_board_24_custom_ko';
+    localStorage.setItem(storageKey, JSON.stringify(activeTiles));
+  }
+
+  // DOM Elements
+  const boardEl = document.getElementById('monopoly-board');
+  const cubeDice = document.getElementById('cube-dice');
+  const rollBtn = document.getElementById('btn-roll-dice') as HTMLButtonElement | null;
+  const rollStatus = document.getElementById('roll-status-message');
+  const turnIcon = document.getElementById('turn-player-icon');
+  const turnName = document.getElementById('turn-player-name');
+  const lapCounter = document.getElementById('lap-counter');
+  const arenaPlayersBar = document.getElementById('arena-players-bar');
+  const playerNamesList = document.getElementById('player-names-list');
+
+  function renderPlayerNamesList() {
+    if (!playerNamesList) return;
+    playerNamesList.innerHTML = '';
+
+    players.forEach((p, idx) => {
+      const row = document.createElement('div');
+      row.className = `player-name-row ${idx === currentPlayerIdx ? 'active-turn-row' : ''}`;
+      row.id = `p-name-row-${idx}`;
+
+      const iconSpan = document.createElement('span');
+      iconSpan.className = 'p-row-icon';
+      iconSpan.textContent = p.icon;
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'p-row-input';
+      input.value = p.name;
+      input.maxLength = 14;
+      input.placeholder = isEn ? `Player ${idx + 1}` : `플레이어 ${idx + 1}`;
+      input.setAttribute('data-pid', String(idx));
+      input.title = isEn ? 'Click to edit player name' : '플레이어 이름 수정';
+
+      input.addEventListener('input', () => {
+        p.name = input.value;
+        customPlayerNames[idx] = input.value;
+        savePlayerNames();
+        updatePawnsOnBoard();
+      });
+
+      input.addEventListener('blur', () => {
+        if (!input.value.trim()) {
+          input.value = defaultAvatars[idx].defaultName;
+          p.name = input.value;
+          customPlayerNames[idx] = input.value;
+          savePlayerNames();
+          updatePawnsOnBoard();
+        }
+      });
+
+      row.appendChild(iconSpan);
+      row.appendChild(input);
+      playerNamesList.appendChild(row);
+    });
+  }
+
+  // Modal Elements
+  const actionModal = document.getElementById('action-modal');
+  const modalToken = document.getElementById('modal-token');
+  const modalName = document.getElementById('modal-name');
+  const modalIcon = document.getElementById('modal-tile-icon');
+  const modalTitle = document.getElementById('modal-tile-title');
+  const modalDesc = document.getElementById('modal-tile-desc');
+  const btnModalConfirm = document.getElementById('btn-modal-confirm');
+
+  // Editor Elements
+  const editorModal = document.getElementById('editor-modal');
+  const btnOpenEditor = document.getElementById('btn-open-editor');
+  const btnCloseEditor = document.getElementById('btn-close-editor');
+  const editTileSelect = document.getElementById('edit-tile-select') as HTMLSelectElement | null;
+  const editTileTitle = document.getElementById('edit-tile-title') as HTMLInputElement | null;
+  const editTileDesc = document.getElementById('edit-tile-desc') as HTMLInputElement | null;
+  const emojiPalette = document.getElementById('emoji-palette');
+  const btnSaveSingle = document.getElementById('btn-save-single-tile');
+  const allTilesList = document.getElementById('all-tiles-list');
+  const btnSaveAll = document.getElementById('btn-save-all-tiles');
+  const btnResetDefault = document.getElementById('btn-reset-preset-default');
+  const btnResetGame = document.getElementById('btn-reset-game');
+
+  // Render Board Tiles
+  function renderBoard() {
+    if (!boardEl) return;
+
+    // Remove existing tile elements, keeping the center arena
+    boardEl.querySelectorAll('.board-tile').forEach(el => el.remove());
+
+    activeTiles.forEach((tile, index) => {
+      const pos = TILE_GRID_POSITIONS[index];
+      const tileDiv = document.createElement('div');
+      tileDiv.className = `board-tile ${tile.type === 'corner' ? 'tile-corner' : ''} ${tile.special ? 'tile-corner-' + tile.special : ''}`;
+      tileDiv.id = `tile-${index}`;
+      tileDiv.style.gridColumn = String(pos.col);
+      tileDiv.style.gridRow = String(pos.row);
+
+      tileDiv.innerHTML = `
+        <span class="tile-step-num">#${index + 1}</span>
+        <span class="tile-icon">${tile.icon}</span>
+        <strong class="tile-title">${tile.title}</strong>
+        <span class="tile-desc">${tile.desc}</span>
+        <div class="tile-tokens-container" id="tile-tokens-${index}"></div>
+      `;
+
+      tileDiv.addEventListener('click', () => {
+        openEditorForTile(index);
+      });
+
+      boardEl.appendChild(tileDiv);
+    });
+
+    updatePawnsOnBoard();
+  }
+
+  // Update Pawns on Tiles
+  function updatePawnsOnBoard() {
+    // Clear all token containers
+    for (let i = 0; i < 24; i++) {
+      const c = document.getElementById(`tile-tokens-${i}`);
+      if (c) c.innerHTML = '';
+    }
+
+    // Place each player pawn on its current tile
+    players.forEach(p => {
+      const container = document.getElementById(`tile-tokens-${p.position}`);
+      if (container) {
+        const token = document.createElement('span');
+        token.className = 'pawn-token';
+        token.textContent = p.icon;
+        token.title = `${p.name} (#${p.position + 1})`;
+        container.appendChild(token);
+      }
+    });
+
+    // Update Arena Players Bar
+    if (arenaPlayersBar) {
+      arenaPlayersBar.innerHTML = players.map((p, idx) => `
+        <div class="player-token-pill ${idx === currentPlayerIdx ? 'active-turn' : ''}" data-pid="${idx}" style="cursor: pointer;" title="${isEn ? 'Click to edit name in sidebar' : '클릭하여 이름 수정'}">
+          <span>${p.icon}</span>
+          <span>${p.name}</span>
+          <span style="opacity: 0.6;">(#${p.position + 1})</span>
+        </div>
+      `).join('');
+
+      arenaPlayersBar.querySelectorAll('.player-token-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+          const pid = pill.getAttribute('data-pid');
+          const input = document.querySelector(`.p-row-input[data-pid="${pid}"]`) as HTMLInputElement | null;
+          if (input) {
+            input.focus();
+            input.select();
+          }
+        });
+      });
+    }
+
+    // Update active highlight on sidebar player name rows
+    document.querySelectorAll('.player-name-row').forEach((row, idx) => {
+      if (idx === currentPlayerIdx) {
+        row.classList.add('active-turn-row');
+      } else {
+        row.classList.remove('active-turn-row');
+      }
+    });
+
+    const cur = players[currentPlayerIdx];
+    if (turnIcon) turnIcon.textContent = cur.icon;
+    if (turnName) turnName.textContent = cur.name;
+    if (lapCounter) lapCounter.textContent = isEn ? `Lap: ${cur.laps}` : `바퀴: ${cur.laps}Lap`;
+  }
+
+  // Roll Dice & Move Pawn
+  function rollDice() {
+    if (isRolling || isMoving) return;
+    isRolling = true;
+    if (rollBtn) rollBtn.disabled = true;
+
+    // Shake audio
+    sfx.playDiceShake();
+    const interval = setInterval(() => sfx.playDiceShake(), 220);
+
+    const rolledNumber = Math.floor(Math.random() * 6) + 1;
+    if (rollStatus) {
+      rollStatus.textContent = isEn ? 'Rolling the dice...' : '주사위 굴리는 중...';
+    }
+
+    if (cubeDice) {
+      cubeDice.style.setProperty('--final-rotation', diceFaceRotations[rolledNumber]);
+      cubeDice.classList.remove('rolling');
+      void cubeDice.offsetWidth; // Reflow
+      cubeDice.classList.add('rolling');
+    }
+
+    setTimeout(() => {
+      clearInterval(interval);
+      isRolling = false;
+
+      if (rollStatus) {
+        rollStatus.textContent = isEn
+          ? `🎲 Rolled a ${rolledNumber}! Moving ${rolledNumber} steps...`
+          : `🎲 ${rolledNumber}이 나왔습니다! ${rolledNumber}칸 전진합니다.`;
+      }
+
+      // Start stepping pawn
+      stepPawn(rolledNumber, 0);
+    }, 1150);
+  }
+
+  // Step-by-step Pawn Hopping Animation
+  function stepPawn(stepsRemaining: number, stepIdx: number) {
+    if (stepsRemaining <= 0) {
+      // Arrived at destination
+      isMoving = false;
+      if (rollBtn) rollBtn.disabled = false;
+      handleLanding(players[currentPlayerIdx].position);
+      return;
+    }
+
+    isMoving = true;
+    const player = players[currentPlayerIdx];
+    const prevPos = player.position;
+    const nextPos = (prevPos + 1) % 24;
+
+    if (nextPos === 0) {
+      player.laps += 1;
+    }
+    player.position = nextPos;
+
+    sfx.playHop(stepIdx);
+    updatePawnsOnBoard();
+
+    // Highlight active destination
+    document.querySelectorAll('.board-tile').forEach(t => t.classList.remove('active-destination'));
+    const destEl = document.getElementById(`tile-${nextPos}`);
+    if (destEl) destEl.classList.add('active-destination');
+
+    setTimeout(() => {
+      stepPawn(stepsRemaining - 1, stepIdx + 1);
+    }, 280);
+  }
+
+  // Handle Tile Landing
+  function handleLanding(tileIndex: number) {
+    const tile = activeTiles[tileIndex];
+    const player = players[currentPlayerIdx];
+
+    sfx.playLand();
+
+    // Fill Action Modal
+    if (modalToken) modalToken.textContent = player.icon;
+    if (modalName) modalName.textContent = player.name;
+    if (modalIcon) modalIcon.textContent = tile.icon;
+    if (modalTitle) modalTitle.textContent = tile.title;
+    if (modalDesc) modalDesc.textContent = tile.desc;
+
+    if (actionModal) {
+      actionModal.classList.remove('hidden');
+    }
+  }
+
+  function advanceTurn() {
+    if (actionModal) actionModal.classList.add('hidden');
+    document.querySelectorAll('.board-tile').forEach(t => t.classList.remove('active-destination'));
+
+    // Move to next player
+    currentPlayerIdx = (currentPlayerIdx + 1) % players.length;
+    updatePawnsOnBoard();
+
+    if (rollStatus) {
+      const nextP = players[currentPlayerIdx];
+      rollStatus.textContent = isEn
+        ? `${nextP.name}'s turn! Press Space or Roll.`
+        : `${nextP.name}님의 차례입니다! 주사위를 굴려주세요.`;
+    }
+  }
+
+  btnModalConfirm?.addEventListener('click', advanceTurn);
+
+  // Roll Button Event
+  rollBtn?.addEventListener('click', rollDice);
+
+  // Spacebar Hotkey
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && e.target === document.body) {
+      e.preventDefault();
+      if (actionModal && !actionModal.classList.contains('hidden')) {
+        advanceTurn();
+      } else if (!isRolling && !isMoving) {
+        rollDice();
+      }
+    }
+  });
+
+  // Preset Buttons
+  document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.getAttribute('data-preset') || 'drinking';
+      currentPresetKey = key;
+      document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const dict = isEn ? PRESETS_EN : PRESETS_DATA;
+      activeTiles = JSON.parse(JSON.stringify(dict[key].tiles));
+      saveTiles();
+      renderBoard();
+    });
+  });
+
+  // Player Count Buttons
+  document.querySelectorAll('.player-cnt-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const count = parseInt(btn.getAttribute('data-count') || '1', 10);
+      document.querySelectorAll('.player-cnt-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      players = [];
+      for (let i = 0; i < count; i++) {
+        players.push({
+          id: i + 1,
+          name: customPlayerNames[i] || defaultAvatars[i].defaultName,
+          icon: defaultAvatars[i].icon,
+          color: defaultAvatars[i].color,
+          position: 0,
+          laps: 1,
+        });
+      }
+      currentPlayerIdx = 0;
+      updatePawnsOnBoard();
+      renderPlayerNamesList();
+    });
+  });
+
+  // Reset Game Button
+  btnResetGame?.addEventListener('click', () => {
+    players.forEach(p => {
+      p.position = 0;
+      p.laps = 1;
+    });
+    currentPlayerIdx = 0;
+    updatePawnsOnBoard();
+    if (rollStatus) {
+      rollStatus.textContent = isEn ? 'Board reset to START.' : '게임이 리셋되었습니다. 출발선에서 시작하세요!';
+    }
+  });
+
+  // Open & Close Editor
+  btnOpenEditor?.addEventListener('click', () => {
+    populateEditorSelect();
+    populateAllTilesEditor();
+    if (editorModal) editorModal.classList.remove('hidden');
+  });
+
+  btnCloseEditor?.addEventListener('click', () => {
+    if (editorModal) editorModal.classList.add('hidden');
+  });
+
+  // Editor Tabs
+  const tabSingle = document.getElementById('tab-single');
+  const tabAll = document.getElementById('tab-all');
+  const paneSingle = document.getElementById('pane-single');
+  const paneAll = document.getElementById('pane-all');
+
+  tabSingle?.addEventListener('click', () => {
+    tabSingle.classList.add('active');
+    tabAll?.classList.remove('active');
+    paneSingle?.classList.remove('hidden');
+    paneAll?.classList.add('hidden');
+  });
+
+  tabAll?.addEventListener('click', () => {
+    tabAll.classList.add('active');
+    tabSingle?.classList.remove('active');
+    paneAll?.classList.remove('hidden');
+    paneSingle?.classList.add('hidden');
+  });
+
+  function populateEditorSelect() {
+    if (!editTileSelect) return;
+    editTileSelect.innerHTML = activeTiles.map((t, idx) => `
+      <option value="${idx}">#${idx + 1}: ${t.icon} ${t.title}</option>
+    `).join('');
+    loadTileIntoEditor(0);
+  }
+
+  function loadTileIntoEditor(idx: number) {
+    const t = activeTiles[idx];
+    if (!t) return;
+    if (editTileTitle) editTileTitle.value = t.title;
+    if (editTileDesc) editTileDesc.value = t.desc;
+  }
+
+  function openEditorForTile(idx: number) {
+    if (editTileSelect) editTileSelect.value = String(idx);
+    loadTileIntoEditor(idx);
+    tabSingle?.click();
+    if (editorModal) editorModal.classList.remove('hidden');
+  }
+
+  editTileSelect?.addEventListener('change', () => {
+    loadTileIntoEditor(parseInt(editTileSelect.value, 10));
+  });
+
+  // Emoji Palette Selection
+  let selectedEmoji = '🌸';
+  emojiPalette?.querySelectorAll('span').forEach(span => {
+    span.addEventListener('click', () => {
+      selectedEmoji = span.textContent || '🌸';
+      if (editTileTitle && !editTileTitle.value.trim()) {
+        editTileTitle.value = selectedEmoji;
+      }
+      span.style.background = 'rgba(244, 114, 182, 0.4)';
+      setTimeout(() => { span.style.background = ''; }, 300);
+    });
+  });
+
+  btnSaveSingle?.addEventListener('click', () => {
+    if (!editTileSelect || !editTileTitle || !editTileDesc) return;
+    const idx = parseInt(editTileSelect.value, 10);
+    activeTiles[idx].title = editTileTitle.value.trim() || '지령';
+    activeTiles[idx].desc = editTileDesc.value.trim() || '';
+    if (selectedEmoji) activeTiles[idx].icon = selectedEmoji;
+    saveTiles();
+    renderBoard();
+    if (editorModal) editorModal.classList.add('hidden');
+  });
+
+  function populateAllTilesEditor() {
+    if (!allTilesList) return;
+    allTilesList.innerHTML = activeTiles.map((t, idx) => `
+      <div class="all-tile-row">
+        <span class="all-tile-num">#${idx + 1}</span>
+        <span>${t.icon}</span>
+        <input type="text" class="all-tile-input-title" data-idx="${idx}" value="${t.title}" />
+      </div>
+    `).join('');
+  }
+
+  btnSaveAll?.addEventListener('click', () => {
+    if (!allTilesList) return;
+    const inputs = allTilesList.querySelectorAll<HTMLInputElement>('.all-tile-input-title');
+    inputs.forEach(input => {
+      const idx = parseInt(input.getAttribute('data-idx') || '0', 10);
+      activeTiles[idx].title = input.value.trim() || activeTiles[idx].title;
+    });
+    saveTiles();
+    renderBoard();
+    if (editorModal) editorModal.classList.add('hidden');
+  });
+
+  btnResetDefault?.addEventListener('click', () => {
+    const dict = isEn ? PRESETS_EN : PRESETS_DATA;
+    activeTiles = JSON.parse(JSON.stringify(dict[currentPresetKey].tiles));
+    saveTiles();
+    renderBoard();
+    populateAllTilesEditor();
+    populateEditorSelect();
+  });
+
+  // English UI Adjustments
+  if (isEn) {
+    const brandBadge = document.querySelector('.brand-badge');
+    if (brandBadge) brandBadge.textContent = '🌸 Blossom Suite';
+    const panelHeading = document.querySelector('.panel-heading');
+    if (panelHeading) panelHeading.textContent = 'Broadcast Panel';
+
+    const lblPreset = document.getElementById('lbl-preset');
+    if (lblPreset) lblPreset.textContent = '🎨 Presets';
+    const bDrinking = document.querySelector('.preset-btn[data-preset="drinking"] .btn-text');
+    if (bDrinking) bDrinking.textContent = 'Drinking Board';
+    const bPenalty = document.querySelector('.preset-btn[data-preset="penalty"] .btn-text');
+    if (bPenalty) bPenalty.textContent = 'Penalty Challenge';
+    const bCoffee = document.querySelector('.preset-btn[data-preset="coffee"] .btn-text');
+    if (bCoffee) bCoffee.textContent = 'Streamer Talk';
+
+    const lblPlayers = document.getElementById('lbl-players');
+    if (lblPlayers) lblPlayers.textContent = '👥 Participants';
+    const pBtns = document.querySelectorAll('.player-cnt-btn');
+    if (pBtns[0]) pBtns[0].textContent = '1P (Solo)';
+    if (pBtns[1]) pBtns[1].textContent = '2P';
+    if (pBtns[2]) pBtns[2].textContent = '3P';
+    if (pBtns[3]) pBtns[3].textContent = '4P (Group)';
+
+    if (btnOpenEditor) btnOpenEditor.textContent = '✏️ Edit All 24 Tiles';
+    if (btnResetGame) btnResetGame.textContent = '🔄 Reset to START';
+
+    const tipsHeading = document.getElementById('tips-heading');
+    if (tipsHeading) tipsHeading.textContent = 'Stream Tips & Controls';
+    const tipsList = document.getElementById('tips-list');
+    if (tipsList) {
+      tipsList.innerHTML = `
+        <li><strong>Space</strong> : Roll dice / Advance turn</li>
+        <li><strong>Click Tile</strong> : Instant tile customizer</li>
+        <li><strong>Fullscreen</strong> : Press ⛶ for distraction-free play</li>
+      `;
+    }
+
+    const rollText = document.getElementById('btn-roll-text');
+    if (rollText) rollText.textContent = 'Roll Dice';
+    const turnLbl = document.getElementById('turn-label');
+    if (turnLbl) turnLbl.textContent = 'Turn';
+    if (rollStatus) rollStatus.textContent = 'Roll the dice to advance on the board!';
+    if (btnModalConfirm) btnModalConfirm.textContent = 'Next Turn →';
+
+    const edTitle = document.getElementById('editor-title');
+    if (edTitle) edTitle.textContent = '✏️ Custom Board Editor';
+    if (tabSingle) tabSingle.textContent = 'Edit Tile';
+    if (tabAll) tabAll.textContent = 'All 24 Tiles';
+    const lblTarget = document.getElementById('lbl-edit-target');
+    if (lblTarget) lblTarget.textContent = 'Select Tile:';
+    const lblTTitle = document.getElementById('lbl-edit-title');
+    if (lblTTitle) lblTTitle.textContent = 'Tile Action (Short):';
+    const lblTDesc = document.getElementById('lbl-edit-desc');
+    if (lblTDesc) lblTDesc.textContent = 'Description / Penalty:';
+    const lblTIcon = document.getElementById('lbl-edit-icon');
+    if (lblTIcon) lblTIcon.textContent = 'Emoji Icon:';
+    if (btnSaveSingle) btnSaveSingle.textContent = '✓ Save This Tile';
+    if (btnSaveAll) btnSaveAll.textContent = '✓ Save All';
+    if (btnResetDefault) btnResetDefault.textContent = 'Reset to Defaults';
+
+    const lblEditNames = document.getElementById('lbl-edit-names');
+    if (lblEditNames) lblEditNames.textContent = '✏️ Player Names';
+  }
+
+  // Click on active turn player in center arena focuses their sidebar name input
+  turnName?.addEventListener('click', () => {
+    const input = document.querySelector(`.p-row-input[data-pid="${currentPlayerIdx}"]`) as HTMLInputElement | null;
+    if (input) {
+      input.focus();
+      input.select();
+    }
+  });
+
+  // Initialize
+  initSakuraCanvas();
+  loadInitialTiles();
+  renderBoard();
+  renderPlayerNamesList();
+</script>

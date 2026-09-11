@@ -52,97 +52,125 @@ const data = gameEntry?.data || {
   hideStageHeader={true}
   hideFooter={false}
 >
-  <div class="ladder-app-root" id="ladder-root">
-    
-    <!-- Top Action & Config Bar -->
-    <div class="ladder-toolbar">
-      <div class="toolbar-left">
-        <!-- Player Count Controls (Stepper + Quick Buttons) -->
-        <div class="player-count-select">
-          <label>참여 인원:</label>
+  <div class="ladder-app-root side-by-side" id="ladder-root">
+    <!-- Floating Enchanted Fireflies Background Canvas -->
+    <canvas id="firefly-canvas" class="firefly-canvas"></canvas>
+
+    <!-- Left: The Interactive Ladder Stage Wrapper -->
+    <div class="ladder-stage-wrap">
+      <div class="ladder-canvas-stage" id="ladder-stage">
+        <div class="ladder-stage-inner" id="ladder-stage-inner">
+          <!-- Top Participants Row -->
+          <div class="participants-top-row" id="participants-row">
+            <!-- Injected dynamically -->
+          </div>
+
+          <!-- Main Ladder SVG / Canvas Container -->
+          <div class="ladder-grid-container" id="ladder-container">
+            <svg id="ladder-svg" class="ladder-svg"></svg>
+
+            <!-- Blurring Suspense Blind (가림막) -->
+            <div class="ladder-blind-overlay" id="ladder-blind">
+              <div class="blind-content">
+                <span class="blind-icon">🔒</span>
+                <span class="blind-title">사다리 가림막 ON</span>
+                <span class="blind-sub">결과를 미리 예측할 수 없도록 다리가 완전히 가려져 있습니다 (출발 시 자동 공개)</span>
+                <button id="blind-unveil-center-btn" class="btn-blind-unveil">👁️ 가림막 걷기</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Outcomes Row -->
+          <div class="outcomes-bottom-row" id="outcomes-row">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Streamer Control Panel Sidebar -->
+    <aside class="ladder-side-panel" id="ladder-toolbar">
+      <!-- Panel Header / Brand -->
+      <div class="panel-section panel-brand">
+        <span class="brand-badge">⚡ Ladder Studio</span>
+        <h3 class="panel-heading" id="panel-title">사다리 제어판</h3>
+      </div>
+
+      <!-- Primary Action Buttons -->
+      <div class="panel-section panel-actions-primary">
+        <button id="start-all-btn" class="action-btn-primary full-width" title="모든 참가자가 동시에 사다리를 타고 내려옵니다">
+          <span>🚀 전체 동시 출발</span>
+        </button>
+        <div class="action-btn-row">
+          <button id="toggle-blind-btn" class="action-btn-blind" title="사다리 가림막 켜기/끄기">
+            <span id="blind-btn-text">🔒 가림막 ON</span>
+          </button>
+          <button id="reveal-all-btn" class="action-btn-secondary" title="애니메이션 없이 전체 결과를 즉시 표시합니다">
+            <span>⚡ 즉시 결과</span>
+          </button>
+        </div>
+        <button id="reroll-ladder-btn" class="action-btn-secondary full-width" title="사다리 가로줄을 무작위로 다시 생성합니다">
+          <span>🎲 사다리 다시 섞기</span>
+        </button>
+      </div>
+
+      <!-- Player Count Controls (Stepper + Quick Buttons Grid) -->
+      <div class="panel-section">
+        <div class="panel-section-header">
+          <label class="panel-label" id="lbl-players">👥 참여 인원</label>
           <div class="count-stepper">
             <button id="count-dec-btn" class="stepper-btn" title="1명 감소" aria-label="1명 감소">−</button>
             <span id="count-display" class="count-number">4명</span>
             <button id="count-inc-btn" class="stepper-btn" title="1명 증가" aria-label="1명 증가">+</button>
           </div>
-          <div class="count-btns" id="count-btns">
-            <button class="count-btn" data-count="2">2</button>
-            <button class="count-btn" data-count="3">3</button>
-            <button class="count-btn active" data-count="4">4</button>
-            <button class="count-btn" data-count="6">6</button>
-            <button class="count-btn" data-count="8">8</button>
-            <button class="count-btn" data-count="10">10</button>
-            <button class="count-btn" data-count="12">12</button>
-            <button class="count-btn" data-count="16">16</button>
-            <button class="count-btn" data-count="20">20</button>
-          </div>
         </div>
-
-        <!-- Animation Speed Selector -->
-        <div class="speed-select">
-          <label>애니메이션 속도:</label>
-          <div class="speed-btns" id="speed-btns">
-            <button class="speed-btn" data-speed="slow" title="긴장감 극대화 (약 6.2초)">🐢 느리게</button>
-            <button class="speed-btn active" data-speed="normal" title="표준 긴장감 (약 4초)">🚶 보통</button>
-            <button class="speed-btn" data-speed="fast" title="빠른 진행 (약 2초)">⚡ 빠르게</button>
-          </div>
+        <div class="count-btns-grid" id="count-btns">
+          <button class="count-btn" data-count="2">2</button>
+          <button class="count-btn" data-count="3">3</button>
+          <button class="count-btn active" data-count="4">4</button>
+          <button class="count-btn" data-count="6">6</button>
+          <button class="count-btn" data-count="8">8</button>
+          <button class="count-btn" data-count="10">10</button>
+          <button class="count-btn" data-count="12">12</button>
+          <button class="count-btn" data-count="16">16</button>
+          <button class="count-btn" data-count="20">20</button>
         </div>
       </div>
 
-      <!-- Quick Presets -->
-      <div class="toolbar-presets">
-        <span class="preset-label">빠른 프리셋:</span>
-        <button class="preset-btn" data-preset="coffee">☕ 커피 쏘기</button>
-        <button class="preset-btn" data-preset="chicken">🍗 치킨 내기</button>
-        <button class="preset-btn" data-preset="penalty">⚡ 벌칙 뽑기</button>
-        <button class="preset-btn" data-preset="duty">🧹 청소/당번</button>
-      </div>
-
-      <div class="toolbar-actions">
-        <button id="toggle-blind-btn" class="action-btn-blind" title="사다리 가림막 켜기/끄기">
-          <span id="blind-btn-text">🔒 가림막 ON</span>
-        </button>
-        <button id="start-all-btn" class="action-btn-primary" title="모든 참가자가 동시에 사다리를 타고 내려옵니다">
-          <span>🚀 전체 동시 출발</span>
-        </button>
-        <button id="reveal-all-btn" class="action-btn-secondary" title="애니메이션 없이 전체 결과를 즉시 표시합니다">
-          <span>⚡ 즉시 결과</span>
-        </button>
-        <button id="reroll-ladder-btn" class="action-btn-secondary" title="사다리 가로줄을 무작위로 다시 생성합니다">
-          <span>🎲 사다리 다시 섞기</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- The Interactive Ladder Stage -->
-    <div class="ladder-canvas-stage" id="ladder-stage">
-      <div class="ladder-stage-inner" id="ladder-stage-inner">
-        <!-- Top Participants Row -->
-        <div class="participants-top-row" id="participants-row">
-          <!-- Injected dynamically -->
-        </div>
-
-        <!-- Main Ladder SVG / Canvas Container -->
-        <div class="ladder-grid-container" id="ladder-container">
-          <svg id="ladder-svg" class="ladder-svg"></svg>
-
-          <!-- Blurring Suspense Blind (가림막) -->
-          <div class="ladder-blind-overlay" id="ladder-blind">
-            <div class="blind-content">
-              <span class="blind-icon">🔒</span>
-              <span class="blind-title">사다리 가림막 ON</span>
-              <span class="blind-sub">결과를 미리 예측할 수 없도록 다리가 완전히 가려져 있습니다 (출발 시 자동 공개)</span>
-              <button id="blind-unveil-center-btn" class="btn-blind-unveil">👁️ 가림막 걷기</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bottom Outcomes Row -->
-        <div class="outcomes-bottom-row" id="outcomes-row">
-          <!-- Injected dynamically -->
+      <!-- Quick Presets Grid -->
+      <div class="panel-section">
+        <label class="panel-label preset-label" id="lbl-presets">🎨 빠른 프리셋</label>
+        <div class="preset-btns-grid" id="toolbar-presets">
+          <button class="preset-btn" data-preset="coffee">☕ 커피 쏘기</button>
+          <button class="preset-btn" data-preset="chicken">🍗 치킨 내기</button>
+          <button class="preset-btn" data-preset="penalty">⚡ 벌칙 뽑기</button>
+          <button class="preset-btn" data-preset="duty">🧹 청소/당번</button>
         </div>
       </div>
-    </div>
+
+      <!-- Animation Speed Selector -->
+      <div class="panel-section">
+        <label class="panel-label speed-label" id="lbl-speed">⏱️ 진행 속도</label>
+        <div class="speed-btns" id="speed-btns">
+          <button class="speed-btn" data-speed="slow" title="긴장감 극대화 (약 6.2초)">🐢 느리게</button>
+          <button class="speed-btn active" data-speed="normal" title="표준 긴장감 (약 4초)">🚶 보통</button>
+          <button class="speed-btn" data-speed="fast" title="빠른 진행 (약 2초)">⚡ 빠르게</button>
+        </div>
+      </div>
+
+      <!-- Tips & Shortcut Info -->
+      <div class="panel-section panel-tips">
+        <div class="tips-header">
+          <span>💡</span>
+          <span class="tips-title" id="tips-heading">진행 팁 & 단축키</span>
+        </div>
+        <ul class="tips-list" id="tips-list">
+          <li><strong>상단 클릭</strong>: 개별 참가자 사다리 출발</li>
+          <li><strong>이름/벌칙</strong>: 칸 클릭하여 실시간 수정</li>
+          <li><strong>전체화면</strong>: ⛶ 버튼으로 화면 가득 송출</li>
+        </ul>
+      </div>
+    </aside>
 
     <!-- Final Result Modal -->
     <div class="ladder-result-modal hidden" id="result-modal">
@@ -172,186 +200,150 @@ const data = gameEntry?.data || {
 </GameLayout>
 
 <style>
-  .ladder-app-root {
-    background: #090d16;
-    border-radius: 16px;
-    padding: 0.75rem 0.25rem;
-    min-height: 640px;
-    max-width: 100%;
-    width: 100%;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
-    user-select: none;
+  /* Floating Enchanted Fireflies Background Canvas */
+  .firefly-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 0;
   }
 
-  /* Toolbar */
-  .ladder-toolbar {
+  .ladder-app-root.side-by-side {
+    position: relative;
+    z-index: 1;
+    background: transparent;
+    border: none;
+    padding: 0;
+    min-height: 640px;
+    max-width: 1300px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 1.15rem;
+    user-select: none;
+    box-sizing: border-box;
+  }
+
+  .ladder-stage-wrap {
+    flex: 1 1 0%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Right Control Panel Sidebar */
+  .ladder-side-panel {
+    width: 290px;
+    flex-shrink: 0;
     background: #0f172a;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 14px;
-    padding: 0.65rem 1rem;
+    border-radius: 16px;
+    padding: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    box-sizing: border-box;
+  }
+
+  .panel-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .panel-brand {
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .brand-badge {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 20px;
+    padding: 0.15rem 0.55rem;
+    margin-bottom: 0.25rem;
+    letter-spacing: 0.02em;
+    width: fit-content;
+  }
+
+  .panel-heading {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #f8fafc;
+    letter-spacing: -0.02em;
+  }
+
+  .panel-label {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #94a3b8;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .panel-section-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  }
-
-  .toolbar-left {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-    flex-wrap: wrap;
-  }
-
-  .player-count-select,
-  .speed-select {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    font-size: 0.8rem;
-    color: #94a3b8;
-    font-weight: 700;
-  }
-
-  /* Stepper */
-  .count-stepper {
-    display: flex;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-
-  .stepper-btn {
-    background: rgba(255, 255, 255, 0.08);
-    border: none;
-    color: #f8fafc;
-    width: 28px;
-    height: 28px;
-    font-size: 1rem;
-    font-weight: 900;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.15s ease;
-  }
-
-  .stepper-btn:hover {
-    background: rgba(56, 189, 248, 0.3);
-    color: #38bdf8;
-  }
-
-  .count-number {
-    padding: 0 0.55rem;
-    font-size: 0.82rem;
-    font-weight: 800;
-    color: #38bdf8;
-    min-width: 36px;
-    text-align: center;
-  }
-
-  .count-btns,
-  .speed-btns {
-    display: flex;
-    gap: 0.25rem;
-    align-items: center;
-  }
-
-  .count-btn,
-  .speed-btn {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #e2e8f0;
-    padding: 0.25rem 0.55rem;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 800;
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-
-  .count-btn:hover,
-  .speed-btn:hover {
-    background: rgba(255, 255, 255, 0.14);
-  }
-
-  .count-btn.active,
-  .speed-btn.active {
-    background: linear-gradient(135deg, #a855f7, #38bdf8);
-    color: #ffffff;
-    border-color: transparent;
-    box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
-  }
-
-  .toolbar-presets {
-    display: flex;
-    align-items: center;
     gap: 0.4rem;
-    flex-wrap: wrap;
   }
 
-  .preset-label {
-    font-size: 0.78rem;
-    font-weight: 800;
-    color: #64748b;
-  }
-
-  .preset-btn {
-    background: rgba(168, 85, 247, 0.12);
-    border: 1px solid rgba(168, 85, 247, 0.25);
-    color: #e9d5ff;
-    padding: 0.3rem 0.65rem;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-
-  .preset-btn:hover {
-    background: rgba(168, 85, 247, 0.25);
-    color: #ffffff;
-  }
-
-  .toolbar-actions {
+  /* Primary Action Buttons */
+  .panel-actions-primary {
     display: flex;
-    gap: 0.6rem;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .action-btn-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.45rem;
   }
 
   .action-btn-primary {
     background: linear-gradient(135deg, #10b981, #059669);
     color: #ffffff;
     border: none;
-    padding: 0.6rem 1.1rem;
-    border-radius: 8px;
+    padding: 0.65rem 1rem;
+    border-radius: 9px;
     font-size: 0.85rem;
     font-weight: 800;
     cursor: pointer;
     box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
-    transition: transform 0.15s ease;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    text-align: center;
   }
 
   .action-btn-primary:hover {
-    transform: scale(1.03);
+    transform: translateY(-1px);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
   }
 
   .action-btn-blind {
     background: rgba(234, 179, 8, 0.15);
     border: 1px solid rgba(234, 179, 8, 0.35);
     color: #facc15;
-    padding: 0.6rem 0.9rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
+    padding: 0.55rem 0.6rem;
+    border-radius: 9px;
+    font-size: 0.8rem;
     font-weight: 800;
     cursor: pointer;
     transition: all 0.15s ease;
+    text-align: center;
   }
 
   .action-btn-blind:hover {
@@ -368,16 +360,194 @@ const data = gameEntry?.data || {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.15);
     color: #f8fafc;
-    padding: 0.6rem 1rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
+    padding: 0.55rem 0.6rem;
+    border-radius: 9px;
+    font-size: 0.8rem;
     font-weight: 800;
     cursor: pointer;
     transition: all 0.15s ease;
+    text-align: center;
   }
 
   .action-btn-secondary:hover {
     background: rgba(255, 255, 255, 0.14);
+    transform: translateY(-1px);
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  /* Count Stepper */
+  .count-stepper {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .stepper-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    color: #f8fafc;
+    width: 26px;
+    height: 26px;
+    font-size: 0.95rem;
+    font-weight: 900;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+  }
+
+  .stepper-btn:hover {
+    background: rgba(56, 189, 248, 0.3);
+    color: #38bdf8;
+  }
+
+  .count-number {
+    padding: 0 0.45rem;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #38bdf8;
+    min-width: 32px;
+    text-align: center;
+  }
+
+  /* Count Quick Grid */
+  .count-btns-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.3rem;
+  }
+
+  .count-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    padding: 0.32rem 0.2rem;
+    border-radius: 7px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s ease;
+  }
+
+  .count-btn:hover {
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  .count-btn.active {
+    background: linear-gradient(135deg, #a855f7, #38bdf8);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+  }
+
+  /* Presets Grid */
+  .preset-btns-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.35rem;
+  }
+
+  .preset-btn {
+    background: rgba(168, 85, 247, 0.12);
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    color: #e9d5ff;
+    padding: 0.4rem 0.45rem;
+    border-radius: 7px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all 0.15s ease;
+  }
+
+  .preset-btn:hover {
+    background: rgba(168, 85, 247, 0.25);
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+
+  /* Speed Selector */
+  .speed-btns {
+    display: flex;
+    gap: 0.3rem;
+  }
+
+  .speed-btn {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    padding: 0.35rem 0.3rem;
+    border-radius: 7px;
+    font-size: 0.73rem;
+    font-weight: 800;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s ease;
+  }
+
+  .speed-btn:hover {
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  .speed-btn.active {
+    background: linear-gradient(135deg, #a855f7, #38bdf8);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+  }
+
+  /* Tips & Shortcuts */
+  .panel-tips {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 0.65rem 0.75rem;
+  }
+
+  .tips-header {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #38bdf8;
+    margin-bottom: 0.35rem;
+  }
+
+  .tips-list {
+    margin: 0;
+    padding-left: 1.1rem;
+    font-size: 0.72rem;
+    color: #94a3b8;
+    line-height: 1.45;
+  }
+
+  .tips-list strong {
+    color: #e2e8f0;
+  }
+
+  /* Responsive Stacking */
+  @media (max-width: 960px) {
+    .ladder-app-root.side-by-side {
+      flex-direction: column;
+      align-items: center;
+    }
+    .ladder-side-panel {
+      width: 100%;
+      max-width: 100%;
+    }
   }
 
   /* Ladder Stage & Layout */
@@ -1670,11 +1840,14 @@ const data = gameEntry?.data || {
 
   // English UI Localization
   if (isEn) {
-    const countLabel = document.querySelector('.player-count-select label');
-    if (countLabel) countLabel.textContent = 'Players:';
+    const panelTitle = document.getElementById('panel-title');
+    if (panelTitle) panelTitle.textContent = 'Ladder Studio';
 
-    const speedLabel = document.querySelector('.speed-select label');
-    if (speedLabel) speedLabel.textContent = 'Speed:';
+    const countLabel = document.getElementById('lbl-players') || document.querySelector('.player-count-select label');
+    if (countLabel) countLabel.textContent = '👥 Players';
+
+    const speedLabel = document.getElementById('lbl-speed') || document.querySelector('.speed-select label');
+    if (speedLabel) speedLabel.textContent = '⏱️ Speed';
 
     const sSlow = document.querySelector('[data-speed="slow"]');
     if (sSlow) {
@@ -1692,8 +1865,8 @@ const data = gameEntry?.data || {
       sFast.setAttribute('title', 'Quick pace (~2s)');
     }
 
-    const presetLabel = document.querySelector('.toolbar-presets .preset-label');
-    if (presetLabel) presetLabel.textContent = 'Presets:';
+    const presetLabel = document.getElementById('lbl-presets') || document.querySelector('.toolbar-presets .preset-label');
+    if (presetLabel) presetLabel.textContent = '🎨 Presets';
 
     const pCoffee = document.querySelector('[data-preset="coffee"]');
     if (pCoffee) pCoffee.textContent = '☕ Coffee Bet';
@@ -1723,7 +1896,7 @@ const data = gameEntry?.data || {
     if (revealAllBtn) {
       revealAllBtn.setAttribute('title', 'Instantly calculate and show all results');
       const revealAllSpan = revealAllBtn.querySelector('span');
-      if (revealAllSpan) revealAllSpan.textContent = '⚡ Instant Result';
+      if (revealAllSpan) revealAllSpan.textContent = '⚡ Instant';
     }
 
     const rerollBtn = document.getElementById('reroll-ladder-btn');
@@ -1731,6 +1904,18 @@ const data = gameEntry?.data || {
       rerollBtn.setAttribute('title', 'Generate new random ladder rungs');
       const rerollSpan = rerollBtn.querySelector('span');
       if (rerollSpan) rerollSpan.textContent = '🎲 Shuffle Ladder';
+    }
+
+    const tipsHeading = document.getElementById('tips-heading');
+    if (tipsHeading) tipsHeading.textContent = 'Stream Tips & Guide';
+
+    const tipsList = document.getElementById('tips-list');
+    if (tipsList) {
+      tipsList.innerHTML = `
+        <li><strong>Click Avatar</strong>: Start individual player path</li>
+        <li><strong>Edit Names</strong>: Click name or outcome to edit</li>
+        <li><strong>Fullscreen</strong>: Press ⛶ for distraction-free view</li>
+      `;
     }
 
     const blindTitle = document.querySelector('.ladder-blind-overlay .blind-title');
@@ -1749,6 +1934,109 @@ const data = gameEntry?.data || {
     if (closeResultBtn) closeResultBtn.textContent = 'Close';
   }
 
+  // Enchanted Night Fireflies Background Animation
+  function initFireflies() {
+    const bgCanvas = document.getElementById('firefly-canvas') as HTMLCanvasElement;
+    if (!bgCanvas) return;
+    const bgCtx = bgCanvas.getContext('2d');
+    if (!bgCtx) return;
+
+    function resize() {
+      if (!bgCanvas) return;
+      bgCanvas.width = window.innerWidth;
+      bgCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    interface Firefly {
+      x: number;
+      y: number;
+      radius: number;
+      baseAlpha: number;
+      pulsePhase: number;
+      pulseSpeed: number;
+      speedY: number;
+      speedX: number;
+      wobbleSpeed: number;
+      color: string;
+      glowColor: string;
+    }
+
+    const fireflyColors = [
+      { core: '#34d399', glow: 'rgba(52, 211, 153, 0.4)' },
+      { core: '#38bdf8', glow: 'rgba(56, 189, 248, 0.4)' },
+      { core: '#a3e635', glow: 'rgba(163, 230, 53, 0.4)' },
+      { core: '#facc15', glow: 'rgba(250, 204, 21, 0.4)' },
+    ];
+
+    const fireflies: Firefly[] = [];
+    const count = 32;
+
+    for (let i = 0; i < count; i++) {
+      const c = fireflyColors[Math.floor(Math.random() * fireflyColors.length)];
+      fireflies.push({
+        x: Math.random() * bgCanvas.width,
+        y: Math.random() * bgCanvas.height,
+        radius: Math.random() * 2.8 + 1.5,
+        baseAlpha: Math.random() * 0.4 + 0.35,
+        pulsePhase: Math.random() * Math.PI * 2,
+        pulseSpeed: Math.random() * 0.025 + 0.015,
+        speedY: -(Math.random() * 0.5 + 0.15),
+        speedX: Math.random() * 0.4 - 0.2,
+        wobbleSpeed: Math.random() * 0.02 + 0.01,
+        color: c.core,
+        glowColor: c.glow,
+      });
+    }
+
+    function renderFireflies() {
+      if (!bgCtx || !bgCanvas) return;
+      bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+      fireflies.forEach(f => {
+        f.y += f.speedY;
+        f.x += f.speedX + Math.sin(f.pulsePhase * 0.7) * 0.4;
+        f.pulsePhase += f.pulseSpeed;
+
+        if (f.y < -30) {
+          f.y = bgCanvas.height + 20;
+          f.x = Math.random() * bgCanvas.width;
+        }
+        if (f.x < -30) f.x = bgCanvas.width + 30;
+        if (f.x > bgCanvas.width + 30) f.x = -30;
+
+        const currentAlpha = Math.max(0.1, Math.min(0.9, f.baseAlpha + Math.sin(f.pulsePhase) * 0.35));
+
+        bgCtx.save();
+        bgCtx.translate(f.x, f.y);
+
+        const g = bgCtx.createRadialGradient(0, 0, 0, 0, 0, f.radius * 3.5);
+        g.addColorStop(0, f.color);
+        g.addColorStop(0.35, f.glowColor);
+        g.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+        bgCtx.globalAlpha = currentAlpha;
+        bgCtx.fillStyle = g;
+        bgCtx.beginPath();
+        bgCtx.arc(0, 0, f.radius * 3.5, 0, Math.PI * 2);
+        bgCtx.fill();
+
+        bgCtx.fillStyle = '#ffffff';
+        bgCtx.globalAlpha = Math.min(1, currentAlpha * 1.3);
+        bgCtx.beginPath();
+        bgCtx.arc(0, 0, f.radius * 0.45, 0, Math.PI * 2);
+        bgCtx.fill();
+
+        bgCtx.restore();
+      });
+
+      requestAnimationFrame(renderFireflies);
+    }
+    requestAnimationFrame(renderFireflies);
+  }
+
   // Launch
+  initFireflies();
   initLadder();
 </script>

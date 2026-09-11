@@ -12,7 +12,7 @@ const urlParams = Astro.url.searchParams;
 const streamerMode = urlParams.has('stream') || urlParams.has('obs');
 
 const games = await getCollection('games');
-const priorityOrder = ['marble-roulette', 'roulette', 'ladder', 'fortune'];
+const priorityOrder = ['marble-roulette', 'roulette', 'ladder', 'drinking-marble', 'fortune'];
 const sortedGames = games.sort((a, b) => {
   const idxA = priorityOrder.indexOf(a.id);
   const idxB = priorityOrder.indexOf(b.id);
@@ -33,10 +33,10 @@ const homeFaqSchema = JSON.stringify({
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "방송 화면(OBS/프리즘)에 어떻게 띄우나요?",
+      "name": "전체화면이나 집중 모드는 어떻게 사용하나요?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "OBS Studio나 프리즘 라이브 스튜디오에서 [브라우저 소스] 또는 [윈도우 캡처]를 추가하고, 우측 상단의 [⛶ 전체화면] 버튼을 누르면 군더더기 없이 방송 화면 가득 띄워 송출할 수 있습니다."
+        "text": "각 게임 상단의 [⛶ 전체화면] 또는 [📺 집중 모드] 버튼을 누르면 불필요한 브라우저 여백 없이 화면 가득 띄워 시원하게 플레이할 수 있습니다."
       }
     },
     {
@@ -214,8 +214,8 @@ const homeFaqSchema = JSON.stringify({
           <h2>자주 묻는 질문 (FAQ)</h2>
           <div class="faq-grid">
             <div class="faq-box">
-              <h3>방송 화면(OBS/프리즘)에 어떻게 띄우나요?</h3>
-              <p>OBS Studio나 프리즘 라이브 스튜디오에서 [브라우저 소스] 또는 [윈도우 캡처]를 추가하고, 우측 상단의 [⛶ 전체화면] 버튼을 누르면 군더더기 없이 방송 화면 가득 띄워 송출할 수 있습니다.</p>
+              <h3>전체화면이나 집중 모드는 어떻게 사용하나요?</h3>
+              <p>각 게임 상단의 [⛶ 전체화면] 또는 [📺 집중 모드] 버튼을 누르면 불필요한 브라우저 여백 없이 화면 가득 띄워 시원하게 플레이할 수 있습니다.</p>
             </div>
             <div class="faq-box">
               <h3>비용이나 회원가입이 필요한가요?</h3>
@@ -439,7 +439,7 @@ const homeFaqSchema = JSON.stringify({
 
   .games-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
     gap: 1.25rem;
   }
 

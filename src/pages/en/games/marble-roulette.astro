@@ -26,7 +26,7 @@ const webAppSchema = JSON.stringify({
   "url": enUrl,
   "description": "Free browser-based marble race roulette with a real 2D physics engine. Pins, spinners, bumpers, and a finale propeller across a 7,200px track. Pick a winner or last-place loser live on stream.",
   "applicationCategory": "GameApplication",
-  "operatingSystem": "All (Web Browser, Chrome, Edge, Safari, OBS Studio)",
+  "operatingSystem": "All (Web Browser, Chrome, Edge, Safari, Mobile)",
   "inLanguage": ["en-US", "ko-KR"],
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
   "aggregateRating": {
@@ -51,10 +51,10 @@ const faqSchema = JSON.stringify({
     },
     {
       "@type": "Question",
-      "name": "How do I use Marble Roulette on OBS?",
+      "name": "How do I use Marble Roulette in fullscreen mode?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Add a Browser Source in OBS Studio pointing to this URL, or use Window Capture. Click the Fullscreen button in the top-right to remove the browser chrome and fill your stream canvas cleanly. Append ?stream=true to the URL to disable all ads during broadcast."
+        "text": "Click the Fullscreen button in the top-right to expand the race across your entire screen for clean, distraction-free viewing."
       }
     },
     {
@@ -82,11 +82,11 @@ const faqSchema = JSON.stringify({
   <head>
     <BaseHead
       title="Marble Race Roulette — Free Physics Marble Race for Streamers | StreamArcade"
-      description="Free browser Marble Race Roulette with real 2D physics — pins, windmills, pinball bumpers & a giant finale propeller on a 7,200px track. No install. No login. Perfect for Twitch, YouTube, CHZZK & OBS."
+      description="Free browser Marble Race Roulette with real 2D physics — pins, windmills, pinball bumpers & a giant finale propeller on a 7,200px track. No install. No login. Perfect for Twitch, YouTube, CHZZK & live streams."
       lang="en"
       hreflangKo={koUrl}
       hreflangEn={enUrl}
-      keywords="Marble Roulette, Marble Race, Free Marble Race Online, Stream Roulette, Twitch Marble Game, YouTube Live Marble Race, OBS Marble Roulette, Physics Marble Simulator, Random Winner Picker, Marble Roulette Free"
+      keywords="Marble Roulette, Marble Race, Free Marble Race Online, Stream Roulette, Twitch Marble Game, YouTube Live Marble Race, Live Marble Roulette, Physics Marble Simulator, Random Winner Picker, Marble Roulette Free"
     />
     <script type="application/ld+json" set:html={webAppSchema}></script>
     <script type="application/ld+json" set:html={faqSchema}></script>
@@ -108,9 +108,6 @@ const faqSchema = JSON.stringify({
         ></iframe>
       </div>
 
-      <!-- Horizontal single-line ad directly beneath game -->
-      <LeaderboardAd streamerMode={streamerMode} />
-
       <!-- Unobtrusive Expandable Information Drawer (for Guide & FAQ) -->
       {!streamerMode && (
         <details class="stream-bottom-details">
@@ -127,8 +124,8 @@ const faqSchema = JSON.stringify({
                   <p class="faq-a">A free, browser-based physics marble race. Participants race as colored marbles down a 7,200px track with Galton pins, twin windmills, pinball bumpers, a vortex funnel, and a giant finale propeller.</p>
                 </div>
                 <div class="details-faq-card">
-                  <strong class="faq-q">Q. How do I use it on OBS?</strong>
-                  <p class="faq-a">Add a Browser Source in OBS pointing to this page, or use Window Capture. Click the ⛶ Fullscreen button for clean, borderless broadcast capture. Add <code>?stream=true</code> to the URL to disable ads.</p>
+                  <strong class="faq-q">Q. How do I use fullscreen mode?</strong>
+                  <p class="faq-a">Click the [⛶ Fullscreen] button in the top bar to expand the marble race across your entire screen for clean, distraction-free viewing.</p>
                 </div>
                 <div class="details-faq-card">
                   <strong class="faq-q">Q. Multiple marbles per person?</strong>
@@ -143,6 +140,9 @@ const faqSchema = JSON.stringify({
           </div>
         </details>
       )}
+
+      <!-- Horizontal single-line ad below detail guide & FAQ -->
+      <LeaderboardAd streamerMode={streamerMode} />
     </main>
 
     {!streamerMode && <Footer />}
@@ -207,7 +207,7 @@ const faqSchema = JSON.stringify({
     height: 100%;
     border: none;
     display: block;
-    background: #090d16;
+    background: transparent;
   }
 
   @media (min-width: 1400px) {
