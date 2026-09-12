@@ -176,6 +176,28 @@ const homeFaqSchema = JSON.stringify({
         </div>
       </section>
 
+      <!-- Bzzk Clean Radar Highlight Banner -->
+      <section class="bzzk-home-banner">
+        <div class="bzzk-banner-card">
+          <div class="bzzk-banner-glow"></div>
+          <div class="bzzk-banner-left">
+            <div class="bzzk-badge">
+              <span class="pulse-dot"></span>
+              <span>NEW CHZZK STREAM SECURITY RADAR</span>
+            </div>
+            <h3>Bzzk <span class="gradient-text">(검지직)</span></h3>
+            <p>
+              Real-time cross-channel analysis of multi-banned raid accounts on Naver Chzzk. Protect your stream chat before malicious actors arrive!
+            </p>
+          </div>
+          <div class="bzzk-banner-right">
+            <a href="/en/bzzk" class="btn-bzzk-banner">
+              <span>View Live Radar →</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
       <!-- Content Rectangle Ad -->
       <RectangleAd streamerMode={streamerMode} />
 
@@ -220,6 +242,14 @@ const homeFaqSchema = JSON.stringify({
               <h3>Daily Fortune & Horoscope</h3>
               <p>
                 Auto-refreshed at midnight: 12 Eastern zodiac animal fortunes and 12 Western star sign readings, each with lucky numbers, colors, and daily DO/DON'T tips for stream openers.
+              </p>
+            </div>
+
+            <div class="overview-card">
+              <span class="overview-icon">🛡️</span>
+              <h3>Bzzk (Chzzk Stream Security Radar)</h3>
+              <p>
+                Real-time cross-channel intelligence network detecting high-risk malicious actors across Chzzk streams, shielding your chatroom with automatic pre-emptive restrictions.
               </p>
             </div>
           </div>
@@ -655,5 +685,122 @@ const homeFaqSchema = JSON.stringify({
     border-radius: 4px;
     font-size: 0.8rem;
     color: #38bdf8;
+  }
+
+  /* Bzzk Home Banner Styles */
+  .bzzk-home-banner {
+    margin: 2.5rem 0 1.5rem;
+  }
+
+  .bzzk-banner-card {
+    position: relative;
+    background: linear-gradient(135deg, rgba(22, 27, 46, 0.95) 0%, rgba(30, 27, 75, 0.75) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    border-radius: 20px;
+    padding: 28px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px -10px rgba(99, 102, 241, 0.25);
+  }
+
+  .bzzk-banner-glow {
+    position: absolute;
+    top: -40%;
+    left: 20%;
+    width: 300px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
+    filter: blur(40px);
+    pointer-events: none;
+  }
+
+  .bzzk-banner-left {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+  }
+
+  .bzzk-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    color: #a5b4fc;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #10b981;
+    box-shadow: 0 0 10px #10b981;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  .bzzk-banner-left h3 {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #f8fafc;
+    margin: 0 0 8px;
+    letter-spacing: -0.02em;
+  }
+
+  .bzzk-banner-left p {
+    font-size: 0.95rem;
+    color: #94a3b8;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .bzzk-banner-right {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+  }
+
+  .btn-bzzk-banner {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 13px 26px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 6px 18px -4px rgba(99, 102, 241, 0.6);
+  }
+
+  .btn-bzzk-banner:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px -4px rgba(99, 102, 241, 0.8);
+  }
+
+  @media (max-width: 768px) {
+    .bzzk-banner-card {
+      flex-direction: column;
+      text-align: center;
+      padding: 24px 20px;
+    }
+    .btn-bzzk-banner {
+      width: 100%;
+      justify-content: center;
+    }
   }
 </style>

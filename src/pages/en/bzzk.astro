@@ -1,0 +1,744 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import RectangleAd from '../../components/ads/RectangleAd.astro';
+import LeaderboardAd from '../../components/ads/LeaderboardAd.astro';
+import NativeAd from '../../components/ads/NativeAd.astro';
+import { SITE_TITLE } from '../../consts';
+import { getKoUrl, getEnUrl } from '../../i18n';
+
+const siteBase = Astro.site?.toString() || 'https://errorledger.com';
+const rawPath = Astro.url.pathname.replace(/\/$/, '');
+const koUrl = getKoUrl(siteBase, rawPath);
+const enUrl = getEnUrl(siteBase, rawPath);
+
+const urlParams = Astro.url.searchParams;
+const streamerMode = urlParams.has('stream') || urlParams.has('obs');
+
+const PAGE_TITLE = `Bzzk (검지직) - Real-Time Chzzk Stream Security Radar | ${SITE_TITLE}`;
+const PAGE_DESCRIPTION = "Real-time cross-channel intelligence network detecting high-risk malicious raid accounts across Naver Chzzk live streams. Protect your stream chat before trolls arrive.";
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead 
+      title={PAGE_TITLE} 
+      description={PAGE_DESCRIPTION}
+      lang="en"
+      hreflangKo={koUrl}
+      hreflangEn={enUrl}
+      keywords="Bzzk, 검지직, Chzzk moderation, Chzzk ban list, Chzzk bot, Naver Chzzk security, stream chat filter, streamer security radar"
+    />
+  </head>
+  <body class="bzzk-page-body">
+    <Header />
+
+    <main class="bzzk-page-main">
+      <!-- Hero Section -->
+      <section class="bzzk-hero">
+        <div class="hero-backdrop"></div>
+        <div class="hero-content">
+          <div class="hero-pill">
+            <span class="pulse-dot"></span>
+            <span>🛡️ Chzzk Real-Time Stream Security System</span>
+          </div>
+          <h1 class="hero-headline">
+            Bzzk <span class="gradient-text">(검지직)</span>
+          </h1>
+          <p class="hero-subtext">
+            Cross-channel intelligence network analyzing coordinated troll and raid accounts across multiple live streams in real-time.<br />
+            Identifiers are strictly masked and pseudonymized, allowing streamers to pre-emptively shield chatrooms before malicious actors arrive.
+          </p>
+
+          <!-- Core Feature Highlights -->
+          <div class="features-summary-row">
+            <div class="summary-pill">
+              <span class="pill-icon">📡</span>
+              <span class="pill-text"><strong>Cross-Channel Analysis:</strong> Captures multi-stream raid patterns rather than isolated accidents</span>
+            </div>
+            <div class="summary-pill">
+              <span class="pill-icon">⚡</span>
+              <span class="pill-text"><strong>Real-Time Feed Sync:</strong> Instant database synchronization as soon as malicious acts are identified</span>
+            </div>
+            <div class="summary-pill">
+              <span class="pill-icon">🔒</span>
+              <span class="pill-text"><strong>Privacy First:</strong> 100% automated masking (`**`) and pseudonymization for all account handles</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Live Embed Section -->
+      <section class="bzzk-embed-section">
+        <div class="section-header">
+          <div class="header-left">
+            <div class="live-tag">
+              <span class="blinking-dot"></span>
+              LIVE RADAR
+            </div>
+            <h2>Recent Malicious Activity Feed (Latest 25 Events)</h2>
+          </div>
+          <div class="header-right">
+            <span class="auto-sync-badge">🔄 Live Auto-Sync</span>
+          </div>
+        </div>
+
+        <div class="embed-info-bar">
+          <div class="info-icon">ℹ️</div>
+          <div class="info-text">
+            <strong>Live Activity Notice:</strong> The radar below displays the <strong>25 most recent malicious activities</strong> detected across our monitoring network. All usernames and identifiers are pseudonymized with automated masking (`**`) in strict compliance with data privacy standards.
+          </div>
+        </div>
+
+        <!-- Bzzk Security Grid Window -->
+        <div class="bzzk-embed-wrapper">
+          <div class="embed-window-header">
+            <div class="window-buttons">
+              <span class="win-btn red"></span>
+              <span class="win-btn yellow"></span>
+              <span class="win-btn green"></span>
+            </div>
+            <span class="window-title">Bzzk Security Radar — Recent 25 Activities</span>
+            <div class="window-actions">
+              <span class="status-indicator">● Active Feed</span>
+            </div>
+          </div>
+          
+          <div class="embed-content-box">
+            <script src="https://lunadb.dbflex.net/secure/embed.js"
+              data-url="/ev-15532349/db/86483/view.aspx"></script>
+          </div>
+        </div>
+      </section>
+
+      <!-- Content Rectangle Ad -->
+      <RectangleAd streamerMode={streamerMode} />
+
+      <!-- How It Works Section -->
+      <section class="bzzk-guide-section">
+        <h2 class="section-title">How Does Bzzk Protect Your Stream?</h2>
+        <p class="section-subtext">Engineered with cross-validation algorithms so streamers can focus entirely on creating great content.</p>
+
+        <div class="guide-cards-grid">
+          <div class="guide-card">
+            <div class="card-icon">🎯</div>
+            <h3>1. Cross-Channel Verification</h3>
+            <p>
+              We disregard minor isolated slips and focus exclusively on accounts that incur repeated permanent bans and blind penalties across multiple channels within short timeframes.
+            </p>
+          </div>
+
+          <div class="guide-card">
+            <div class="card-icon">⚡</div>
+            <h3>2. Real-Time Cloud Logging</h3>
+            <p>
+              Identified malicious patterns are synced immediately, logging cross-channel penalty frequencies, burst counts, and violation types for high-confidence scoring.
+            </p>
+          </div>
+
+          <div class="guide-card">
+            <div class="card-icon">🛡️</div>
+            <h3>3. Pre-emptive Stream Shield</h3>
+            <p>
+              Via official Chzzk Open API integration, confirmed bad actors are restricted before they ever send a message in your channel's chatroom.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Streamer Auto-Ban Request Section -->
+      <section class="bzzk-request-section">
+        <div class="request-card">
+          <div class="request-badge">
+            <span>🚀 Streamers Only</span>
+          </div>
+          <h2>Integrate Bzzk Auto-Shield to Your Chzzk Channel</h2>
+          <p class="request-desc">
+            To prevent bot abuse and ensure stability across API traffic limits,<br />
+            <strong>the automated channel-ban bot is integrated individually upon manual streamer review.</strong>
+          </p>
+
+          <div class="request-features">
+            <div class="req-feature-item">
+              <span class="check-icon">✓</span>
+              <span>Swift automatic pre-emptive restriction when cross-channel raid activity is detected</span>
+            </div>
+            <div class="req-feature-item">
+              <span class="check-icon">✓</span>
+              <span>Multi-channel verified high-risk accounts filtered with zero disruption to regular viewers</span>
+            </div>
+            <div class="req-feature-item">
+              <span class="check-icon">✓</span>
+              <span>Continuous real-time synchronization with your channel moderation settings</span>
+            </div>
+          </div>
+
+          <div class="request-cta-wrap">
+            <a href="mailto:contact@errorledger.com?subject=[Bzzk] Chzzk Channel Auto-Ban Request&body=Streamer Name:%0D%0AChzzk Channel URL:%0D%0AContact (Discord or Email):" class="request-btn">
+              📩 Request Channel Integration
+            </a>
+            <span class="request-note">* Applications are reviewed and connected on a rolling basis.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Leaderboard Ad Banner -->
+      <LeaderboardAd streamerMode={streamerMode} />
+
+      <!-- FAQ Section -->
+      <section class="bzzk-faq-section">
+        <div class="faq-container">
+          <h2 class="section-title">Frequently Asked Questions (FAQ)</h2>
+          
+          <div class="faq-item">
+            <h3>Q. Are accidental single-channel bans registered?</h3>
+            <p>
+              No. Isolated single-stream moderation actions are never recorded. Only accounts exhibiting <strong>repeated, concurrent permanent bans and message blinds across multiple separate channels</strong> meet the threshold.
+            </p>
+          </div>
+
+          <div class="faq-item">
+            <h3>Q. Is the table above the complete database?</h3>
+            <p>
+              No. The public live feed displays only the <strong>25 most recent malicious events</strong>. Our core engine operates over the full accumulated dataset to maintain ongoing protection.
+            </p>
+          </div>
+
+          <div class="faq-item">
+            <h3>Q. Why is the auto-ban bot provided only upon request?</h3>
+            <p>
+              In strict adherence to Chzzk platform policies and to guarantee stable, safe operations for all participating streamers, bot access is verified and configured 1-on-1 rather than opened as an unchecked public bot.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Native Recommendation Widget Ad -->
+      <NativeAd streamerMode={streamerMode} />
+    </main>
+
+    {!streamerMode && <Footer />}
+
+    <style>
+      .bzzk-page-body {
+        margin: 0;
+        padding: 0;
+        background-color: #0b0d14;
+        color: #f1f5f9;
+        font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Segoe UI', Roboto, sans-serif;
+        min-height: 100vh;
+      }
+
+      .bzzk-page-main {
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 40px 20px 80px;
+      }
+
+      /* Hero */
+      .bzzk-hero {
+        position: relative;
+        text-align: center;
+        padding: 50px 20px 30px;
+        overflow: hidden;
+      }
+
+      .hero-backdrop {
+        position: absolute;
+        top: -50%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 800px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, rgba(236, 72, 153, 0.08) 50%, transparent 80%);
+        filter: blur(60px);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 860px;
+        margin: 0 auto;
+      }
+
+      .hero-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(99, 102, 241, 0.12);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+        color: #c7d2fe;
+        font-size: 0.85rem;
+        font-weight: 700;
+        padding: 6px 16px;
+        border-radius: 9999px;
+        margin-bottom: 20px;
+      }
+
+      .pulse-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #10b981;
+        box-shadow: 0 0 10px #10b981;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(0.8); }
+      }
+
+      .hero-headline {
+        font-size: 2.8rem;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        margin: 0 0 16px;
+        color: #f8fafc;
+      }
+
+      .gradient-text {
+        background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .hero-subtext {
+        font-size: 1.1rem;
+        color: #94a3b8;
+        line-height: 1.65;
+        margin: 0 0 32px;
+      }
+
+      .features-summary-row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 10px;
+      }
+
+      .summary-pill {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(30, 41, 59, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 8px 16px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        color: #cbd5e1;
+      }
+
+      .summary-pill strong {
+        color: #f1f5f9;
+      }
+
+      /* Embed Section */
+      .bzzk-embed-section {
+        margin: 40px 0 30px;
+      }
+
+      .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .live-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(239, 68, 68, 0.15);
+        border: 1px solid rgba(239, 68, 68, 0.4);
+        color: #f87171;
+        font-size: 0.75rem;
+        font-weight: 800;
+        padding: 4px 10px;
+        border-radius: 6px;
+        letter-spacing: 0.05em;
+      }
+
+      .blinking-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: #ef4444;
+        animation: blink 1s infinite alternate;
+      }
+
+      @keyframes blink {
+        from { opacity: 0.3; }
+        to { opacity: 1; }
+      }
+
+      .header-left h2 {
+        font-size: 1.4rem;
+        font-weight: 800;
+        margin: 0;
+        color: #f8fafc;
+      }
+
+      .auto-sync-badge {
+        font-size: 0.85rem;
+        color: #38bdf8;
+        background: rgba(56, 189, 248, 0.1);
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        padding: 4px 12px;
+        border-radius: 9999px;
+        font-weight: 600;
+      }
+
+      .embed-info-bar {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        background: rgba(30, 41, 59, 0.5);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        padding: 14px 18px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        font-size: 0.88rem;
+        color: #cbd5e1;
+        line-height: 1.5;
+      }
+
+      .info-icon {
+        font-size: 1.1rem;
+        flex-shrink: 0;
+      }
+
+      /* Embed Window */
+      .bzzk-embed-wrapper {
+        background: #111420;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(99, 102, 241, 0.15);
+      }
+
+      .embed-window-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 18px;
+        background: #161a29;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .window-buttons {
+        display: flex;
+        gap: 8px;
+      }
+
+      .win-btn {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+      }
+      .win-btn.red { background-color: #ef4444; }
+      .win-btn.yellow { background-color: #f59e0b; }
+      .win-btn.green { background-color: #10b981; }
+
+      .window-title {
+        font-size: 0.85rem;
+        color: #94a3b8;
+        font-weight: 600;
+        font-family: monospace;
+      }
+
+      .status-indicator {
+        font-size: 0.8rem;
+        color: #10b981;
+        font-weight: 700;
+      }
+
+      .embed-content-box {
+        padding: 20px;
+        min-height: 520px;
+        overflow-x: auto;
+        background: #0d101a;
+      }
+
+      /* Dark mode overrides for LunaDB table */
+      :global(.embed-content-box table) {
+        width: 100% !important;
+        background-color: transparent !important;
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+        font-family: inherit !important;
+        font-size: 0.88rem !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 10px !important;
+        overflow: hidden !important;
+      }
+
+      :global(.embed-content-box th) {
+        background-color: #161c2e !important;
+        color: #93c5fd !important;
+        font-weight: 700 !important;
+        padding: 14px 16px !important;
+        border-bottom: 2px solid rgba(99, 102, 241, 0.3) !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+        text-align: left !important;
+        white-space: nowrap !important;
+        text-transform: uppercase !important;
+        font-size: 0.78rem !important;
+        letter-spacing: 0.04em !important;
+      }
+
+      :global(.embed-content-box td) {
+        background-color: #111420 !important;
+        color: #e2e8f0 !important;
+        padding: 12px 16px !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.04) !important;
+      }
+
+      :global(.embed-content-box tr:hover td) {
+        background-color: #1a2035 !important;
+      }
+
+      :global(.embed-content-box .fs-grid-caption) {
+        display: none !important;
+      }
+
+      :global(.embed-content-box a) {
+        color: #60a5fa !important;
+        text-decoration: none !important;
+      }
+      :global(.embed-content-box a:hover) {
+        text-decoration: underline !important;
+      }
+
+      /* How it Works */
+      .bzzk-guide-section {
+        margin: 60px 0 40px;
+        text-align: center;
+      }
+
+      .section-title {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #f8fafc;
+        margin: 0 0 10px;
+        letter-spacing: -0.02em;
+      }
+
+      .section-subtext {
+        font-size: 1rem;
+        color: #94a3b8;
+        margin: 0 0 36px;
+      }
+
+      .guide-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        text-align: left;
+      }
+
+      .guide-card {
+        background: #131726;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 28px 24px;
+        transition: transform 0.2s, border-color 0.2s;
+      }
+
+      .guide-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(99, 102, 241, 0.4);
+      }
+
+      .card-icon {
+        font-size: 2rem;
+        margin-bottom: 16px;
+      }
+
+      .guide-card h3 {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #f8fafc;
+        margin: 0 0 10px;
+      }
+
+      .guide-card p {
+        font-size: 0.92rem;
+        color: #94a3b8;
+        line-height: 1.6;
+        margin: 0;
+      }
+
+      /* Streamer Request */
+      .bzzk-request-section {
+        margin: 60px 0;
+      }
+
+      .request-card {
+        background: linear-gradient(135deg, rgba(26, 32, 54, 0.95) 0%, rgba(35, 25, 66, 0.85) 100%);
+        border: 1px solid rgba(99, 102, 241, 0.35);
+        border-radius: 20px;
+        padding: 44px 36px;
+        text-align: center;
+        box-shadow: 0 15px 35px -10px rgba(99, 102, 241, 0.25);
+      }
+
+      .request-badge {
+        display: inline-block;
+        background: rgba(99, 102, 241, 0.2);
+        border: 1px solid rgba(99, 102, 241, 0.4);
+        color: #a5b4fc;
+        font-size: 0.8rem;
+        font-weight: 700;
+        padding: 4px 14px;
+        border-radius: 9999px;
+        margin-bottom: 16px;
+      }
+
+      .request-card h2 {
+        font-size: 1.9rem;
+        font-weight: 900;
+        color: #f8fafc;
+        margin: 0 0 14px;
+      }
+
+      .request-desc {
+        font-size: 1.05rem;
+        color: #cbd5e1;
+        line-height: 1.65;
+        margin: 0 0 28px;
+      }
+
+      .request-desc strong {
+        color: #38bdf8;
+      }
+
+      .request-features {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        max-width: 580px;
+        margin: 0 auto 36px;
+        text-align: left;
+      }
+
+      .req-feature-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.95rem;
+        color: #e2e8f0;
+        background: rgba(15, 23, 42, 0.6);
+        padding: 10px 16px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .check-icon {
+        color: #10b981;
+        font-weight: 900;
+      }
+
+      .request-cta-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .request-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+        color: #ffffff;
+        font-size: 1.05rem;
+        font-weight: 800;
+        padding: 15px 36px;
+        border-radius: 12px;
+        text-decoration: none;
+        box-shadow: 0 8px 20px -4px rgba(99, 102, 241, 0.6);
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .request-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px -4px rgba(99, 102, 241, 0.8);
+      }
+
+      .request-note {
+        font-size: 0.82rem;
+        color: #94a3b8;
+      }
+
+      /* FAQ */
+      .bzzk-faq-section {
+        margin: 60px 0;
+      }
+
+      .faq-container {
+        max-width: 860px;
+        margin: 0 auto;
+      }
+
+      .faq-item {
+        background: #131726;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 24px;
+        margin-bottom: 16px;
+      }
+
+      .faq-item h3 {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #a5b4fc;
+        margin: 0 0 10px;
+      }
+
+      .faq-item p {
+        font-size: 0.95rem;
+        color: #94a3b8;
+        line-height: 1.6;
+        margin: 0;
+      }
+
+      .faq-item strong {
+        color: #f1f5f9;
+      }
+
+      @media (max-width: 768px) {
+        .hero-headline {
+          font-size: 2.1rem;
+        }
+        .hero-subtext {
+          font-size: 1rem;
+        }
+        .section-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .request-card {
+          padding: 30px 20px;
+        }
+        .request-card h2 {
+          font-size: 1.5rem;
+        }
+      }
+    </style>
+  </body>
+</html>
