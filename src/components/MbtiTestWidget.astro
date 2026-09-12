@@ -1,6 +1,7 @@
 ---
 import { MBTI_QUESTIONS } from '../data/mbtiQuestions';
 import { MBTI_PROFILES } from '../data/mbtiProfiles';
+import { MBTI_PSYCHOLOGY_FACTS } from '../data/mbtiPsychologyFacts';
 import { getMbtiCompatibility } from '../data/mbtiCompatibility';
 
 interface Props {
@@ -13,12 +14,14 @@ const isEn = lang === 'en';
 // Serialize data safely into the page for client-side evaluation
 const questionsJson = JSON.stringify(MBTI_QUESTIONS);
 const profilesJson = JSON.stringify(MBTI_PROFILES);
+const factsJson = JSON.stringify(MBTI_PSYCHOLOGY_FACTS);
 ---
 
 <div class="mbti-widget-root" id="mbti-widget" data-lang={lang}>
   <!-- Inject Static JSON Data for Instant Reactive Rendering -->
   <script is:inline id="mbti-data-questions" type="application/json" set:html={questionsJson} />
   <script is:inline id="mbti-data-profiles" type="application/json" set:html={profilesJson} />
+  <script is:inline id="mbti-data-facts" type="application/json" set:html={factsJson} />
 
   <!-- 1. INTRO / HERO STAGE -->
   <div class="mbti-stage mbti-stage-intro" id="stage-intro">
@@ -411,11 +414,17 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
           <button type="button" class="jump-chip active" data-target="section-overview">
             <span>📋 {isEn ? 'Overview' : '심층 총평'}</span>
           </button>
+          <button type="button" class="jump-chip" data-target="section-demographics">
+            <span>📊 {isEn ? 'Demographics' : '통계 & 기질'}</span>
+          </button>
           <button type="button" class="jump-chip" data-target="section-cognition">
             <span>🧠 {isEn ? 'Cognitive Stack' : '8대 인지기능'}</span>
           </button>
           <button type="button" class="jump-chip" data-target="section-strengths">
             <span>💎 {isEn ? 'Strengths & Flaws' : '강점과 약점'}</span>
+          </button>
+          <button type="button" class="jump-chip" data-target="section-psychology">
+            <span>🔍 {isEn ? 'Psych Facts' : '심층 심리 팩트'}</span>
           </button>
           <button type="button" class="jump-chip" data-target="section-stress">
             <span>🌪️ {isEn ? 'Stress Loop' : '스트레스 루프'}</span>
@@ -432,7 +441,7 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
         </nav>
       </div>
 
-      <!-- All 7 Report Sections in Seamless Continuous Flow -->
+      <!-- All 9 Report Sections in Seamless Continuous Flow -->
       <div class="result-sections-stream">
         <!-- SECTION 1: OVERVIEW -->
         <section class="result-report-section" id="section-overview">
@@ -447,6 +456,57 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
             <div class="famous-figures-box">
               <h4>🌟 {isEn ? 'Famous Figures & Icons of this Type' : '이 유형의 대표적 인물 및 캐릭터'}</h4>
               <div class="figures-list" id="res-figures-list"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 1.5: DEMOGRAPHICS & TEMPERAMENT -->
+        <section class="result-report-section" id="section-demographics">
+          <div class="detail-card">
+            <div class="section-badge-tag"><span class="badge-num">02</span><span>{isEn ? 'Demographics & Temperament Group' : '인구 통계 희귀도 & 4대 기질 분석'}</span></div>
+            <h3 class="pane-headline">
+              <span>📊</span>
+              <span>{isEn ? 'Population Rarity & Psychological Temperament' : '인구 통계 희귀도 & 데이비드 커시 4대 기질군'}</span>
+            </h3>
+            <p class="pane-subtext">
+              {isEn 
+                ? 'Discover where your personality ranks in the global population and explore your core psychic temperament group.'
+                : '당신의 유형이 전 세계 및 한국 인구 중 얼마나 희귀한지, 그리고 4대 성격 기질군(NT/NF/SJ/SP)의 본질적 삶의 지향점을 분석합니다.'}
+            </p>
+
+            <div class="demographics-cards-grid">
+              <div class="demo-card rarity">
+                <div class="demo-card-header">
+                  <span class="demo-icon">👑</span>
+                  <h4>{isEn ? 'Population Rarity Rank' : '인구 희귀도 순위 & 통계'}</h4>
+                </div>
+                <div class="rarity-highlight" id="demo-rarity-title"></div>
+                <p class="demo-desc-p" id="demo-rarity-desc"></p>
+                <div class="demo-stats-chips">
+                  <span class="stat-chip" id="demo-stat-male"></span>
+                  <span class="stat-chip" id="demo-stat-female"></span>
+                  <span class="stat-chip" id="demo-stat-korea"></span>
+                </div>
+              </div>
+
+              <div class="demo-card temperament">
+                <div class="demo-card-header">
+                  <span class="demo-icon">🏛️</span>
+                  <h4>{isEn ? 'Keirsey Temperament Group' : '데이비드 커시 4대 기질군'}</h4>
+                </div>
+                <div class="temperament-badge" id="demo-temp-name"></div>
+                <blockquote class="temp-motto" id="demo-temp-motto"></blockquote>
+                <div class="temp-detail-box">
+                  <div class="temp-item">
+                    <strong>🎯 {isEn ? 'Core Psychological Driver:' : '핵심 심리 동력:'}</strong>
+                    <span id="demo-temp-core"></span>
+                  </div>
+                  <div class="temp-item">
+                    <strong>🌑 {isEn ? 'Shadow Blind Spot:' : '그림자 사각지대:'}</strong>
+                    <span id="demo-temp-shadow"></span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -524,6 +584,73 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
                   <span>{isEn ? 'Top 5 Blind Spots (Pitfalls)' : '주의해야 할 5대 맹점 (약점)'}</span>
                 </h3>
                 <ul class="sw-list" id="res-weaknesses-list"></ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 3.5: PSYCHOLOGICAL BEHAVIOR FACTS -->
+        <section class="result-report-section" id="section-psychology">
+          <div class="detail-card">
+            <div class="section-badge-tag"><span class="badge-num">04</span><span>{isEn ? 'Situational Behavioral Facts' : '심층 심리 팩트 & 상황별 행동 사전'}</span></div>
+            <h3 class="pane-headline">
+              <span>🔍</span>
+              <span>{isEn ? 'Situational Behavioral Facts & Iceberg Layers' : '상황별 행동 패턴 & 친밀도 3단계 심리 얼음벽'}</span>
+            </h3>
+            <p class="pane-subtext">
+              {isEn 
+                ? 'How this personality type behaves in extreme conditions: conflict reactions, dopamine recovery, pet peeves, and private intimacy layers.'
+                : '분노했을 때의 한계 반응, 방전된 멘탈을 치유하는 도파민 충전법, 대화 시 가장 싫어하는 소통 지뢰, 그리고 친밀도에 따른 태도 변화를 심층 해부합니다.'}
+            </p>
+
+            <div class="psych-facts-grid">
+              <!-- Conflict Reaction -->
+              <div class="psych-fact-card conflict">
+                <div class="psych-card-top">
+                  <span class="p-icon">⚡</span>
+                  <h4>{isEn ? 'Reaction Under Conflict & Anger' : '분노/한계 도달 시 갈등 반응'}</h4>
+                </div>
+                <p id="fact-conflict-text"></p>
+              </div>
+
+              <!-- Recharge Routine -->
+              <div class="psych-fact-card recharge">
+                <div class="psych-card-top">
+                  <span class="p-icon">🔋</span>
+                  <h4>{isEn ? 'Dopamine Recharge & Burnout Healing' : '도파민 재충전 & 멘탈 치유 루틴'}</h4>
+                </div>
+                <p id="fact-recharge-text"></p>
+              </div>
+
+              <!-- Communication Pet Peeve -->
+              <div class="psych-fact-card petpeeve">
+                <div class="psych-card-top">
+                  <span class="p-icon">🚫</span>
+                  <h4>{isEn ? 'Biggest Communication Pet Peeve' : '대화 시 가장 혐오하는 소통 지뢰'}</h4>
+                </div>
+                <p id="fact-petpeeve-text"></p>
+              </div>
+            </div>
+
+            <!-- 3-Tier Intimacy Progression -->
+            <div class="intimacy-layers-box">
+              <h4>🧊 {isEn ? '3-Tier Intimacy Iceberg (How Their Heart Opens)' : '친밀도 3단계 심리 얼음벽 (마음의 문이 열리는 과정)'}</h4>
+              <div class="intimacy-timeline">
+                <div class="intimacy-step">
+                  <div class="step-badge">1단계</div>
+                  <h5>{isEn ? 'Public Persona (Stranger)' : '사회적 가면 (낯선 사람)'}</h5>
+                  <p id="intimacy-step-1"></p>
+                </div>
+                <div class="intimacy-step">
+                  <div class="step-badge">2단계</div>
+                  <h5>{isEn ? 'Trust Formation (Acquaintance)' : '신뢰 형성기 (지인 모드)'}</h5>
+                  <p id="intimacy-step-2"></p>
+                </div>
+                <div class="intimacy-step highlight">
+                  <div class="step-badge inner">3단계</div>
+                  <h5>{isEn ? 'Inner Sanctuary (The 1%)' : '이너 서클 (오직 1%에게만)'}</h5>
+                  <p id="intimacy-step-3"></p>
+                </div>
               </div>
             </div>
           </div>
@@ -636,14 +763,96 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
 
               <!-- Instant Compat Result Card -->
               <div class="compat-result-card" id="compat-result-card">
-                <div class="compat-score-row">
-                  <span class="compat-badge-tag" id="compat-badge-tag">💖 천생연분 환상의 궁합</span>
+                <div class="compat-card-top">
+                  <div class="compat-badge-group">
+                    <span class="compat-badge-tag" id="compat-badge-tag">💖 천생연분 환상의 궁합</span>
+                    <span class="compat-archetype-pill" id="compat-archetype-pill">이중성 (Dual)</span>
+                  </div>
                   <div class="compat-score-pill">
                     <span class="score-number" id="compat-score-num">98</span>
                     <span class="score-unit">{isEn ? 'pts' : '점'}</span>
                   </div>
                 </div>
-                <p class="compat-explanation" id="compat-explanation"></p>
+
+                <div class="compat-pair-nickname" id="compat-pair-nickname">INTJ × ENFP 「영혼의 아키텍트와 스파크」</div>
+
+                <!-- 4-Dimension Chemistry Sub-Scores -->
+                <div class="compat-subscores-container">
+                  <div class="subscores-header">
+                    <span>📊 {isEn ? '4-Dimensional Chemistry Analysis' : '4대 영역 정밀 케미스트리 분석'}</span>
+                  </div>
+                  <div class="compat-subscores-grid">
+                    <div class="subscore-item">
+                      <div class="subscore-info">
+                        <span class="sub-label">💖 {isEn ? 'Romance & Chemistry' : '연애 & 설렘 케미'}</span>
+                        <span class="sub-val" id="compat-sub-romance">99%</span>
+                      </div>
+                      <div class="subscore-track">
+                        <div class="subscore-fill romance" id="compat-bar-romance" style="width: 99%;"></div>
+                      </div>
+                    </div>
+                    <div class="subscore-item">
+                      <div class="subscore-info">
+                        <span class="sub-label">💬 {isEn ? 'Communication & Banter' : '대화 & 티키타카'}</span>
+                        <span class="sub-val" id="compat-sub-comm">96%</span>
+                      </div>
+                      <div class="subscore-track">
+                        <div class="subscore-fill comm" id="compat-bar-comm" style="width: 96%;"></div>
+                      </div>
+                    </div>
+                    <div class="subscore-item">
+                      <div class="subscore-info">
+                        <span class="sub-label">💼 {isEn ? 'Workplace & Goal Synergy' : '업무 & 협업 시너지'}</span>
+                        <span class="sub-val" id="compat-sub-work">95%</span>
+                      </div>
+                      <div class="subscore-track">
+                        <div class="subscore-fill work" id="compat-bar-work" style="width: 95%;"></div>
+                      </div>
+                    </div>
+                    <div class="subscore-item">
+                      <div class="subscore-info">
+                        <span class="sub-label">🛡️ {isEn ? 'Conflict Recovery' : '갈등 회복 & 안정성'}</span>
+                        <span class="sub-val" id="compat-sub-recovery">92%</span>
+                      </div>
+                      <div class="subscore-track">
+                        <div class="subscore-fill recovery" id="compat-bar-recovery" style="width: 92%;"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Real-time Conversation Vibe Box -->
+                <div class="compat-vibe-box">
+                  <div class="vibe-title">🗨️ {isEn ? 'Conversation Vibe & Banter Mood' : '대화 무드 & 티키타카 스타일'}</div>
+                  <p class="vibe-content" id="compat-talk-vibe"></p>
+                </div>
+
+                <!-- 3-Column Deep Insights Grid -->
+                <div class="compat-insights-grid">
+                  <div class="compat-insight-col synergy">
+                    <div class="insight-header">
+                      <span class="in-icon">⚡</span>
+                      <h5>{isEn ? 'Core Synergy (Why They Click)' : '핵심 시너지 (끌리는 이유)'}</h5>
+                    </div>
+                    <p id="compat-synergy"></p>
+                  </div>
+
+                  <div class="compat-insight-col friction">
+                    <div class="insight-header">
+                      <span class="in-icon">⚠️</span>
+                      <h5>{isEn ? 'Friction Triggers & Caution' : '갈등 유발 요인 & 주의점'}</h5>
+                    </div>
+                    <p id="compat-friction"></p>
+                  </div>
+
+                  <div class="compat-insight-col advice">
+                    <div class="insight-header">
+                      <span class="in-icon">💡</span>
+                      <h5>{isEn ? 'Actionable Communication Tip' : '오래가는 실전 소통 팁'}</h5>
+                    </div>
+                    <p id="compat-advice"></p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -716,10 +925,12 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
   // Parse static datasets
   var rawQuestionsEl = document.getElementById('mbti-data-questions');
   var rawProfilesEl = document.getElementById('mbti-data-profiles');
+  var rawFactsEl = document.getElementById('mbti-data-facts');
   if (!rawQuestionsEl || !rawProfilesEl) return;
 
   var questions = JSON.parse(rawQuestionsEl.textContent || '[]');
   var profiles = JSON.parse(rawProfilesEl.textContent || '{}');
+  var psychFacts = rawFactsEl ? JSON.parse(rawFactsEl.textContent || '{}') : {};
   var lang = document.getElementById('mbti-widget')?.getAttribute('data-lang') || 'ko';
   var isEn = lang === 'en';
 
@@ -1286,6 +1497,30 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
       });
     }
 
+    // Section 1.5: Demographics & Temperament Group
+    var fact = psychFacts[resultData.code] || psychFacts['INTJ'];
+    if (fact) {
+      var dRTitle = document.getElementById('demo-rarity-title');
+      if (dRTitle) dRTitle.textContent = (isEn ? (fact.demographics?.rankEn || fact.demographics?.rarityRankEn) : (fact.demographics?.rankKo || fact.demographics?.rarityRankKo)) || '';
+      var dRDesc = document.getElementById('demo-rarity-desc');
+      if (dRDesc) dRDesc.textContent = (isEn ? (fact.demographics?.rarityEn || fact.demographics?.rarityDescEn) : (fact.demographics?.rarityKo || fact.demographics?.rarityDescKo)) || '';
+      var dMale = document.getElementById('demo-stat-male');
+      if (dMale) dMale.textContent = '👨 ' + (isEn ? 'Male: ' : '남성 비율: ') + (fact.demographics?.maleRatio || '0%');
+      var dFemale = document.getElementById('demo-stat-female');
+      if (dFemale) dFemale.textContent = '👩 ' + (isEn ? 'Female: ' : '여성 비율: ') + (fact.demographics?.femaleRatio || '0%');
+      var dKorea = document.getElementById('demo-stat-korea');
+      if (dKorea) dKorea.textContent = '🇰🇷 ' + (isEn ? 'Korea: ' : '한국 인구: ') + (fact.demographics?.koreaStatKo || fact.demographics?.koreaRatio || '0%');
+
+      var dTempName = document.getElementById('demo-temp-name');
+      if (dTempName) dTempName.textContent = (isEn ? (fact.temperament?.nameEn || fact.temperament?.groupNameEn) : (fact.temperament?.nameKo || fact.temperament?.groupNameKo)) || '';
+      var dTempMotto = document.getElementById('demo-temp-motto');
+      if (dTempMotto) dTempMotto.textContent = '“' + ((isEn ? fact.temperament?.mottoEn : fact.temperament?.mottoKo) || '') + '”';
+      var dTempCore = document.getElementById('demo-temp-core');
+      if (dTempCore) dTempCore.textContent = (isEn ? (fact.temperament?.coreDriveEn || fact.temperament?.coreDriverEn) : (fact.temperament?.coreDriveKo || fact.temperament?.coreDriverKo)) || '';
+      var dTempShadow = document.getElementById('demo-temp-shadow');
+      if (dTempShadow) dTempShadow.textContent = (isEn ? fact.temperament?.shadowSideEn : fact.temperament?.shadowSideKo) || '';
+    }
+
     // Section 2: Cognitive functions
     var c = p.cognitiveFunctions || {};
     if (c.dominant) {
@@ -1342,6 +1577,25 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
         li.textContent = w;
         weakList.appendChild(li);
       });
+    }
+
+    // Section 3.5: Psychological Behavior Facts & Intimacy Iceberg
+    if (fact) {
+      var bf = fact.behaviorFacts || fact.behavioralFacts || {};
+      var fConflict = document.getElementById('fact-conflict-text');
+      if (fConflict) fConflict.textContent = (isEn ? (bf.conflictReactionEn || bf.conflictReactionKo) : bf.conflictReactionKo) || '';
+      var fRecharge = document.getElementById('fact-recharge-text');
+      if (fRecharge) fRecharge.textContent = (isEn ? (bf.rechargeRoutineEn || bf.dopamineRechargeEn) : (bf.rechargeRoutineKo || bf.dopamineRechargeKo)) || '';
+      var fPetpeeve = document.getElementById('fact-petpeeve-text');
+      if (fPetpeeve) fPetpeeve.textContent = (isEn ? (bf.petPeeveEn || bf.petPeeveKo) : bf.petPeeveKo) || '';
+
+      var stages = bf.intimacyStages || bf.intimacyIceberg || {};
+      var iStep1 = document.getElementById('intimacy-step-1');
+      if (iStep1) iStep1.textContent = (isEn ? (stages.stage1En || stages.stage1_strangerEn) : (stages.stage1Ko || stages.stage1_strangerKo)) || '';
+      var iStep2 = document.getElementById('intimacy-step-2');
+      if (iStep2) iStep2.textContent = (isEn ? (stages.stage2En || stages.stage2_acquaintanceEn) : (stages.stage2Ko || stages.stage2_acquaintanceKo)) || '';
+      var iStep3 = document.getElementById('intimacy-step-3');
+      if (iStep3) iStep3.textContent = (isEn ? (stages.stage3En || stages.stage3_innerSanctuaryEn) : (stages.stage3Ko || stages.stage3_innerSanctuaryKo)) || '';
     }
 
     // Section 4: Stress Loop & Growth
@@ -1435,68 +1689,341 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
     window.scrollTo({ top: stageResult.offsetTop - 30, behavior: 'smooth' });
   }
 
-  // 7. Compatibility Calculator Helper (Full Jungian Dynamics)
+  // 7. Comprehensive Compatibility Calculator (12 Distinct Jungian Relationship Archetypes)
   function updateCompatibilityView(type1, type2) {
-    var goldenPairs = {
-      INTJ: ['ENFP', 'ENTP'], INTP: ['ENTJ', 'ENFJ'], ENTJ: ['INTP', 'INFP'], ENTP: ['INFJ', 'INTJ'],
-      INFJ: ['ENTP', 'ENFP'], INFP: ['ENFJ', 'ENTJ'], ENFJ: ['INFP', 'ISFP'], ENFP: ['INTJ', 'INFJ'],
-      ISTJ: ['ESFP', 'ESTP'], ISFJ: ['ESTP', 'ESFP'], ESTJ: ['ISFP', 'ISTP'], ESFJ: ['ISTP', 'ISFP'],
-      ISTP: ['ESFJ', 'ESTJ'], ISFP: ['ESTJ', 'ESFJ'], ESTP: ['ISFJ', 'ISTJ'], ESFP: ['ISTJ', 'ISFJ']
+    var DUAL = {
+      INTJ: 'ENFP', ENFP: 'INTJ', INTP: 'ENTJ', ENTJ: 'INTP',
+      INFJ: 'ENTP', ENTP: 'INFJ', INFP: 'ENFJ', ENFJ: 'INFP',
+      ISTJ: 'ESFP', ESFP: 'ISTJ', ISFJ: 'ESTP', ESTP: 'ISFJ',
+      ESTJ: 'ISFP', ISFP: 'ESTJ', ESFJ: 'ISTP', ISTP: 'ESFJ'
+    };
+    var SEMI_DUAL = {
+      INTJ: 'ENTP', ENTP: 'INTJ', INTP: 'ENFJ', ENFJ: 'INTP',
+      INFJ: 'ENFP', ENFP: 'INFJ', INFP: 'ENTJ', ENTJ: 'INFP',
+      ISTJ: 'ESTP', ESTP: 'ISTJ', ISFJ: 'ESFP', ESFP: 'ISFJ',
+      ESTJ: 'ISTP', ISTP: 'ESTJ', ESFJ: 'ISFP', ISFP: 'ESFJ'
+    };
+    var ACTIVATION = {
+      INTJ: 'ISFP', ISFP: 'INTJ', INTP: 'ISFJ', ISFJ: 'INTP',
+      ENTJ: 'ESFP', ESFP: 'ENTJ', ENTP: 'ESFJ', ESFJ: 'ENTP',
+      INFJ: 'ISTP', ISTP: 'INFJ', INFP: 'ISTJ', ISTJ: 'INFP',
+      ENFJ: 'ESTP', ESTP: 'ENFJ', ENFP: 'ESTJ', ESTJ: 'ENFP'
+    };
+    var MIRROR = {
+      INTJ: 'INTP', INTP: 'INTJ', ENTJ: 'ENTP', ENTP: 'ENTJ',
+      INFJ: 'INFP', INFP: 'INFJ', ENFJ: 'ENFP', ENFP: 'ENFJ',
+      ISTJ: 'ISTP', ISTP: 'ISTJ', ESTJ: 'ESTP', ESTP: 'ESTJ',
+      ISFJ: 'ISFP', ISFP: 'ISFJ', ESFJ: 'ESFP', ESFP: 'ESFJ'
+    };
+    var COOPERATION = {
+      INTJ: 'ENTJ', ENTJ: 'INTJ', INTP: 'ENTP', ENTP: 'INTP',
+      INFJ: 'ENFJ', ENFJ: 'INFJ', INFP: 'ENFP', ENFP: 'INFP',
+      ISTJ: 'ESTJ', ESTJ: 'ISTJ', ISTP: 'ESTP', ESTP: 'ISTP',
+      ISFJ: 'ESFJ', ESFJ: 'ISFJ', ISFP: 'ESFP', ESFP: 'ISFP'
+    };
+    var KINDRED = {
+      INTJ: 'ISTJ', ISTJ: 'INTJ', INTP: 'ISTP', ISTP: 'INTP',
+      ENTJ: 'ESTJ', ESTJ: 'ENTJ', ENTP: 'ESTP', ESTP: 'ENTP',
+      INFJ: 'ISFJ', ISFJ: 'INFJ', INFP: 'ISFP', ISFP: 'INFP',
+      ENFJ: 'ESFJ', ESFJ: 'ENFJ', ENFP: 'ESFP', ESFP: 'ENFP'
+    };
+    var MIRAGE = {
+      INTJ: 'INFP', INFP: 'INTJ', INTP: 'INFJ', INFJ: 'INTP',
+      ENTJ: 'ENFP', ENFP: 'ENTJ', ENTP: 'ENFJ', ENFJ: 'ENTP',
+      ISTJ: 'ISFP', ISFP: 'ISTJ', ISTP: 'ISFJ', ISFJ: 'ISTP',
+      ESTJ: 'ESFP', ESFP: 'ESTJ', ESTP: 'ESFJ', ESFJ: 'ESTP'
+    };
+    var SUPER_EGO = {
+      INTJ: 'ESFP', ESFP: 'INTJ', INTP: 'ESFJ', ESFJ: 'INTP',
+      ENTJ: 'ISFP', ISFP: 'ENTJ', ENTP: 'ISFJ', ISFJ: 'ENTP',
+      INFJ: 'ESTP', ESTP: 'INFJ', INFP: 'ESTJ', ESTJ: 'INFP',
+      ENFJ: 'ISTP', ISTP: 'ENFJ', ENFP: 'ISTJ', ISTJ: 'ENFP'
+    };
+    var QUASI = {
+      INTJ: 'INFJ', INFJ: 'INTJ', INTP: 'INFP', INFP: 'INTP',
+      ENTJ: 'ENFJ', ENFJ: 'ENTJ', ENTP: 'ENFP', ENFP: 'ENTP',
+      ISTJ: 'ISFJ', ISFJ: 'ISTJ', ISTP: 'ISFP', ISFP: 'ISTP',
+      ESTJ: 'ESFJ', ESFJ: 'ESTJ', ESTP: 'ESFP', ESFP: 'ESTP'
+    };
+    var CONFLICTOR = {
+      INTJ: 'ESFJ', ESFJ: 'INTJ', INTP: 'ESFP', ESFP: 'INTP',
+      ENTJ: 'ISFJ', ISFJ: 'ENTJ', ENTP: 'ISFP', ISFP: 'ENTP',
+      INFJ: 'ESTJ', ESTJ: 'INFJ', INFP: 'ESTP', ESTP: 'INFP',
+      ENFJ: 'ISTJ', ISTJ: 'ENFJ', ENFP: 'ISTJ', ISTJ: 'ENFP'
+    };
+
+    var TYPE_NAMES = {
+      INTJ: isEn ? 'Strategist' : '전략가', INTP: isEn ? 'Logician' : '사색가', ENTJ: isEn ? 'Commander' : '통솔자', ENTP: isEn ? 'Debater' : '변론가',
+      INFJ: isEn ? 'Advocate' : '옹호자', INFP: isEn ? 'Mediator' : '중재자', ENFJ: isEn ? 'Protagonist' : '멘토', ENFP: isEn ? 'Campaigner' : '활동가',
+      ISTJ: isEn ? 'Inspector' : '원칙주의자', ISFJ: isEn ? 'Protector' : '수호자', ESTJ: isEn ? 'Executive' : '관리자', ESFJ: isEn ? 'Consul' : '외교관',
+      ISTP: isEn ? 'Virtuoso' : '장인', ISFP: isEn ? 'Adventurer' : '예술가', ESTP: isEn ? 'Entrepreneur' : '모험가', ESFP: isEn ? 'Entertainer' : '연예인'
     };
 
     var t1 = (type1 || 'INTJ').toUpperCase();
     var t2 = (type2 || 'ENFP').toUpperCase();
+    var n1 = TYPE_NAMES[t1] || t1;
+    var n2 = TYPE_NAMES[t2] || t2;
 
-    var score = 72;
-    var badge = '🌿 ' + (isEn ? 'Harmonious Balance (Solid Foundation)' : '조화로운 보완 관계 (Harmonious Balance)');
-    var desc = isEn 
-      ? 'A healthy balance of similarities and differences. With honest communication, you offer complementary perspectives that broaden each other’s life experience and wisdom.'
-      : '서로 다른 장점과 관점을 지니고 있어 배울 점이 많은 관계입니다. 일상적인 대화와 솔직한 감정 교류를 통해 차이를 좁혀나간다면 세상 어떤 인연보다도 깊고 풍요로운 유대를 맺을 수 있습니다.';
+    var res = null;
 
     if (t1 === t2) {
-      score = 85;
-      badge = '🪞 ' + (isEn ? 'Soul Mirror (High Resonance)' : '영혼의 거울 (Soul Mirror)');
-      desc = isEn
-        ? 'You share identical cognitive wiring, enabling deep mutual understanding with zero explanation. However, sharing identical blind spots means stagnation or negative loops can amplify unless fresh external perspectives are welcomed.'
-        : '말하지 않아도 상대방의 생각과 기분을 훤히 꿰뚫어 볼 수 있는 깊은 공감대를 형성합니다. 다만 단점과 맹점까지 똑같아서 한 번 갈등이나 침체에 빠지면 함께 헤어나오기 힘들 수 있으므로 외부의 자극이 필요합니다.';
-    } else if (goldenPairs[t1]?.includes(t2)) {
-      score = 98;
-      badge = '💖 ' + (isEn ? 'Ideal Match (Transcendent Chemistry)' : '천생연분 환상의 궁합 (Ideal Match)');
-      desc = isEn
-        ? 'An exceptional psychological pairing where each partner’s primary strengths effortlessly cover the other’s blind spots. Conversations spark spontaneous fireworks and mutual growth feels exhilarating and effortless.'
-        : '서로의 강점이 상대방의 아킬레스건을 자연스럽게 보완해 주는 완벽한 파트너십입니다. 대화가 끊이지 않으며, 함께 있을 때 서로가 더 지혜롭고 매력적인 사람으로 성장하도록 영감을 줍니다.';
+      res = {
+        score: 86,
+        badge: '🪞 ' + (isEn ? 'Identical Mirror (Doppelgänger)' : '서로를 비추는 도플갱어 (Identical)'),
+        archetype: isEn ? 'Identical Resonance' : '동일 관계 (Identical)',
+        nickname: isEn ? (t1 + ' × ' + t2 + ' "Mirror Doppelgänger"') : (t1 + ' × ' + t2 + ' 「거울 속의 또 다른 나」'),
+        subScores: { romance: 84, comm: 96, work: 88, recovery: 74 },
+        vibe: isEn ? 'Effortless telepathic banter where half-sentences are immediately understood.' : '말하지 않아도 상대방의 생각과 기분을 0.1초 만에 꿰뚫어 보는 텔레파시 티키타카',
+        synergy: isEn 
+          ? 'Sharing identical cognitive architecture, you intuitively grasp each other\'s motives with zero friction. Mutual validation and comfort are instantaneously realized.'
+          : '두 사람 모두 동일한 ' + t1 + '의 인지기능 스택을 탑재하고 있어 설명이 필요 없는 절대적인 공감대를 형성합니다. 가치관, 유머 코드, 우선순위가 완벽히 일치하여 함께 있을 때 가장 편안하고 자연스러운 본인의 모습을 유지합니다.',
+        friction: isEn 
+          ? 'Identical blind spots mean mutual stress loops can amplify. Neither partner naturally offers the balancing counterweight during crisis.'
+          : '단점과 사각지대(열등기능)까지 동일합니다. 둘 다 고집을 부리거나 스트레스 루프(번아웃, 무기력)에 빠지면 서로를 구원해주지 못하고 함께 침체될 수 있습니다.',
+        advice: isEn 
+          ? 'Acknowledge shared blind spots and deliberately invite outside perspectives when facing stagnant ruts.'
+          : '서로의 생각을 다 안다고 자만하지 말고, 침체기에는 외부 환경의 새로운 자극이나 다른 성향 친구의 조언을 적극적으로 받아들이세요.'
+      };
+    } else if (DUAL[t1] === t2) {
+      res = {
+        score: 98,
+        badge: '💖 ' + (isEn ? 'Golden Dual (Transcendent Chemistry)' : '천생연분 환상의 궁합 (Golden Dual)'),
+        archetype: isEn ? 'Dual Complementarity' : '이중성 (Dual - 환상의 짝)',
+        nickname: isEn ? (t1 + ' & ' + t2 + ' "Soul Architects"') : (n1 + '과 ' + n2 + '의 만남 「영혼의 아키텍트와 스파크」'),
+        subScores: { romance: 99, comm: 96, work: 95, recovery: 92 },
+        vibe: isEn ? 'Electric, endlessly stimulating dialogue where opposites ignite pure wonder.' : '서로 다른 렌즈로 같은 우주를 바라보며 밤새도록 불꽃이 튀는 영감의 대화',
+        synergy: isEn 
+          ? 'Your primary cognitive superpower effortlessly covers your partner\'s deepest subconscious vulnerability, and vice-versa. Mutual psychological completion at its absolute finest.'
+          : t1 + '의 주기능이 ' + t2 + '의 열등기능을 가장 안전하게 감싸주고, ' + t2 + '의 넘치는 에너지가 ' + t1 + '의 닫힌 세상을 따뜻하게 열어줍니다. 서로가 서로에게 가장 필요했던 심리적 산소탱크 역할을 하여 함께할수록 인격적으로 성장합니다.',
+        friction: isEn 
+          ? 'Initial unfamiliarity can feel daunting. Mature translation of differing operational tempos (logic vs emotion, planning vs improvisation) is essential.'
+          : '초반에는 서로의 삶의 방식이 너무나 달라 \'과연 맞을까?\'라는 낯선 두려움이 들 수 있습니다. 표현 방식의 차이(직설 vs 감성, 계획 vs 즉흥)를 공격으로 오해하지 않는 성숙함이 필요합니다.',
+        advice: isEn 
+          ? 'Treasure your partner\'s alien instincts as rare gifts that liberate you from your own psychological limitations.'
+          : '상대방의 방식이 나와 다름을 바꾸려 하지 말고, 그 다름이야말로 내가 평생 갖지 못한 보물임을 인정하고 감사하세요.'
+      };
+    } else if (SEMI_DUAL[t1] === t2) {
+      res = {
+        score: 93,
+        badge: '✨ ' + (isEn ? 'Semi-Dual (Deep Magnetism)' : '지적 호기심과 설렘 (Semi-Dual)'),
+        archetype: isEn ? 'Semi-Dual Harmony' : '준이중성 (Semi-Dual)',
+        nickname: isEn ? (t1 + ' & ' + t2 + ' "Inspirational Spark"') : (n1 + '과 ' + n2 + ' 「지적 영감의 콤비」'),
+        subScores: { romance: 92, comm: 95, work: 90, recovery: 86 },
+        vibe: isEn ? 'Fascinating intellectual riffing where each insight triggers ten new brilliant thoughts.' : '서로의 독창적인 아이디어에 감탄하며 끝없이 가지를 뻗어가는 흥미진진한 티키타카',
+        synergy: isEn 
+          ? 'Stimulating intellectual chemistry paired with comfortable emotional rapport. Conversations flow with effortless creativity.'
+          : '대화할 때마다 새로운 시각과 지적 쾌감을 선사합니다. 서로의 에너지 레벨이 편안하게 맞물리며, 함께 있을 때 지루할 틈이 없이 끊임없이 웃음과 새로운 영감이 쏟아집니다.',
+        friction: isEn 
+          ? 'Minor disconnects during mundane logistical execution or practical decision deadlines.'
+          : '마지막 결정을 내리는 세부 실행 단계나 생활 습관에서 미묘한 엇박자가 날 수 있습니다. 한쪽이 너무 앞서가거나 멈출 때 템포 조절이 필요합니다.',
+        advice: isEn 
+          ? 'Anchor your shared creative fireworks with clear mutual agreements on practical routines.'
+          : '서로의 독창성을 적극 지지해주되, 일상적인 약속이나 실무에서는 명확한 합의점을 미리 정해두세요.'
+      };
+    } else if (ACTIVATION[t1] === t2) {
+      res = {
+        score: 89,
+        badge: '⚡ ' + (isEn ? 'Activation (Dynamic Catalyst)' : '만나기만 해도 텐션 업 (Activation)'),
+        archetype: isEn ? 'Activation Catalyst' : '활동 관계 (Activation)',
+        nickname: isEn ? (t1 + ' & ' + t2 + ' "Dopamine Boosters"') : (n1 + '과 ' + n2 + ' 「도파민 부스터」'),
+        subScores: { romance: 88, comm: 90, work: 84, recovery: 85 },
+        vibe: isEn ? 'High-energy, mood-lifting banter that instantly dispels stress and fatigue.' : '만난 지 5분 만에 웃음이 터지고 서로의 기분을 단숨에 업시키는 통통 튀는 대화',
+        synergy: isEn 
+          ? 'Natural mood lifters. Each partner effortlessly stimulates the other\'s tertiary relief function, making companionship lighthearted and energizing.'
+          : '서로의 숨은 활력을 일깨워주는 최고의 비타민 같은 관계입니다. 지쳐 있을 때 상대를 만나면 신기하게 에너지가 솟구치며, 함께 취미나 모험을 즐기기에 더없이 좋습니다.',
+        friction: isEn 
+          ? 'Constant high activation can cause occasional sensory or emotional exhaustion if quiet depth is neglected.'
+          : '함께 있으면 텐션이 너무 과열되어 쉽게 피로해질 수 있습니다. 진지하고 무거운 문제를 깊이 있게 다루려 할 때는 서로 겉돌 수 있습니다.',
+        advice: isEn 
+          ? 'Schedule quiet downtime apart so you don\'t burn out each other\'s emotional reserves.'
+          : '늘 신나게 놀기만 하기보다, 가끔은 각자의 차분한 휴식 시간을 존중해 주며 템포를 조절하세요.'
+      };
+    } else if (MIRROR[t1] === t2) {
+      res = {
+        score: 91,
+        badge: '🤝 ' + (isEn ? 'Mirror Intellect (Strategic Comrades)' : '지적 동지와 싱크탱크 (Mirror)'),
+        archetype: isEn ? 'Mirror Reflection' : '거울 관계 (Mirror)',
+        nickname: isEn ? (t1 + ' & ' + t2 + ' "Brain Trust"') : (n1 + '과 ' + n2 + ' 「두뇌 싱크탱크」'),
+        subScores: { romance: 86, comm: 97, work: 95, recovery: 82 },
+        vibe: isEn ? 'Sophisticated analytical discussions that dissect complex systems with mutual delight.' : '핵심 쟁점을 두고 깊이 있는 논리와 아이디어를 주고받는 수준 높은 토론 티키타카',
+        synergy: isEn 
+          ? 'Employing identical functions in reverse dominant/auxiliary order, you provide precisely the strategic corrections the other needs.'
+          : '동일한 인지기능을 쓰되 순서(주기능-부기능)가 반대여서, 서로가 생각하지 못한 논리적 빈틈을 완벽하게 메꿔줍니다. 지적 동료, 비즈니스 파트너로서 최고의 역량을 발휘합니다.',
+        friction: isEn 
+          ? 'Tension between planning closure (J) and endless exploration (P) can stall final decisions.'
+          : '생각하는 방향은 같으나 \'어떻게 실행할 것인가(J vs P)\'에서 충돌합니다. 한쪽은 빨리 결론을 내리고 싶어 하고 다른 쪽은 더 탐색하고 싶어 해 답답함을 느낄 수 있습니다.',
+        advice: isEn 
+          ? 'Let the J lead deadlines and final execution while the P leads exploration and contingency checks.'
+          : '기획과 구조화는 J에게, 새로운 가능성 탐색과 유연한 수정은 P에게 분담하는 현명한 역할 분담을 하세요.'
+      };
+    } else if (COOPERATION[t1] === t2) {
+      res = {
+        score: 87,
+        badge: '💼 ' + (isEn ? 'Productive Execution (Strong Teamwork)' : '목표 달성 어벤저스 (Cooperation)'),
+        archetype: isEn ? 'Cooperation & Impact' : '협력 관계 (Cooperation)',
+        nickname: isEn ? (t1 + ' & ' + t2 + ' "Execution Dynamos"') : (n1 + '과 ' + n2 + ' 「목표 달성 어벤저스」'),
+        subScores: { romance: 82, comm: 88, work: 98, recovery: 80 },
+        vibe: isEn ? 'Goal-focused, efficient communication that translates strategy into tangible results.' : '일의 본질과 효율성을 중심으로 군더더기 없이 딱딱 맞아떨어지는 프로페셔널 대화',
+        synergy: isEn 
+          ? 'Unrivaled project collaboration. Shared auxiliary focus enables seamless division of labor with zero drama.'
+          : '목표 지향점과 업무 스타일이 매우 잘 맞습니다. 감정적인 소모 없이 프로젝트를 성공으로 이끄는 최고의 비즈니스 시너지를 자랑합니다.',
+        friction: isEn 
+          ? 'Risk of becoming purely transactional without cultivating tender personal vulnerability.'
+          : '지나치게 일 중심의 관계가 되거나, 속마음과 사적인 감정을 나누지 않아 관계가 건조해질 위험이 있습니다.',
+        advice: isEn 
+          ? 'Make deliberate space for personal affection and non-work shared joys.'
+          : '업무나 목표 이야기 외에도 사소한 감정과 일상의 따뜻한 안부를 자주 건네세요.'
+      };
+    } else if (MIRAGE[t1] === t2) {
+      res = {
+        score: 84,
+        badge: '🌿 ' + (isEn ? 'Mirage Rest (Gentle Comfort)' : '달콤한 오아시스 (Mirage)'),
+        archetype: isEn ? 'Mirage Oasis' : '착각 관계 (Mirage)',
+        nickname: isEn ? (t1 + ' & ' + t2 + ' "Gentle Oasis"') : (n1 + '과 ' + n2 + ' 「달콤한 오아시스」'),
+        subScores: { romance: 86, comm: 85, work: 76, recovery: 88 },
+        vibe: isEn ? 'Warm, relaxing conversations that melt away daily stress and demands.' : '일상의 치열함을 잊고 서로에게 기대어 도란도란 나누는 포근한 힐링 토크',
+        synergy: isEn 
+          ? 'Psychological oasis. Being together induces genuine calm and emotional decompression.'
+          : '만나면 마음이 편안해지고 세상의 스트레스에서 벗어나게 해줍니다. 서로에게 휴식과 정서적 위안을 주는 따스한 관계입니다.',
+        friction: isEn 
+          ? 'Can foster mutual complacency in practical responsibilities; hard to push each other strictly.'
+          : '공동으로 현실적인 일이나 큰 결정을 내려야 할 때 의지가 약해지거나 서로에게 책임을 미룰 수 있습니다.',
+        advice: isEn 
+          ? 'Enjoy the soothing comfort, but maintain external accountability for serious life goals.'
+          : '편안함을 만끽하되, 현실의 중요한 마감이나 목표 앞에서는 함께 마음을 다잡으세요.'
+      };
+    } else if (KINDRED[t1] === t2) {
+      res = {
+        score: 81,
+        badge: '☕ ' + (isEn ? 'Kindred Spirits (Familiar Allies)' : '마음 통하는 사촌 (Kindred)'),
+        archetype: isEn ? 'Kindred Affinity' : '유사 관계 (Kindred)',
+        nickname: isEn ? (t1 + ' & ' + t2 + ' "Kindred Cousins"') : (n1 + '과 ' + n2 + ' 「마음 통하는 사촌」'),
+        subScores: { romance: 78, comm: 86, work: 82, recovery: 78 },
+        vibe: isEn ? 'Natural, easygoing conversations grounded in familiar cognitive rhythms.' : '말하는 뉘앙스와 분위기가 비슷해 어색함 없이 물 흐르듯 이어지는 편안한 수다',
+        synergy: isEn 
+          ? 'Instantly familiar wavelength. You understand each other\'s initial reactions with little explanation.'
+          : '세상을 대하는 첫인상이나 기본 태도가 비슷해 금방 친해집니다. 별다른 노력 없이도 자연스러운 공감대가 형성됩니다.',
+        friction: isEn 
+          ? 'Surfacing core motives eventually reveals different internal compasses (N vs S).'
+          : '깊은 속내를 들여다보면 핵심적인 가치관이나 목적이 달라 예상치 못한 지점에서 의견이 갈릴 수 있습니다.',
+        advice: isEn 
+          ? 'Don\'t assume identical values just because your conversational style feels familiar.'
+          : '첫인상이 비슷하다고 해서 속마음까지 같을 것이라 넘겨짚지 말고, 차이를 경청하세요.'
+      };
+    } else if (SUPER_EGO[t1] === t2) {
+      res = {
+        score: 76,
+        badge: '💡 ' + (isEn ? 'Super-Ego (Magnetic Contrast)' : '자석의 N극과 S극 (Super-Ego)'),
+        archetype: isEn ? 'Super-Ego Fascination' : '초자아 (Super-Ego)',
+        nickname: isEn ? (t1 + ' & ' + t2 + ' "Magnetic Poles"') : (n1 + '과 ' + n2 + ' 「자석의 N극과 S극」'),
+        subScores: { romance: 82, comm: 72, work: 70, recovery: 74 },
+        vibe: isEn ? 'Intriguing, curious dialogue admiring an alien worldview with fascination.' : '"어떻게 그런 생각을 하지?"라며 서로의 다른 매력에 신기해하고 놀라는 대화',
+        synergy: isEn 
+          ? 'Fascinated by traits you lack. Each partner sees in the other an exotic mastery of an alien world.'
+          : '자신에게 결핍된 기능을 상대방이 완벽하게 다루는 모습을 보며 신비로운 매력과 동경을 느낍니다. 서로의 세계관을 확장시켜 줍니다.',
+        friction: isEn 
+          ? 'In deep stress, fundamentally opposite priorities can make genuine empathy difficult without translation.'
+          : '깊은 관계에서 갈등이 생기면 서로의 동기를 근본적으로 이해하기 어려워 서운함이 깊어질 수 있습니다.',
+        advice: isEn 
+          ? 'Approach differences with curious humility rather than judging through your own psychological framework.'
+          : '상대의 행동을 나의 기준에서 평가하지 말고, "외계인을 대하는 친절한 연구자"의 마음으로 다가가세요.'
+      };
+    } else if (QUASI[t1] === t2) {
+      res = {
+        score: 79,
+        badge: '🔍 ' + (isEn ? 'Quasi-Identical (Parallel Paths)' : '평행선의 탐구자 (Quasi-Identical)'),
+        archetype: isEn ? 'Quasi-Identical Parallel' : '준동일 (Quasi-Identical)',
+        nickname: isEn ? (t1 + ' & ' + t2 + ' "Parallel Explorers"') : (n1 + '과 ' + n2 + ' 「평행선을 달리는 지적 탐구자」'),
+        subScores: { romance: 75, comm: 82, work: 84, recovery: 72 },
+        vibe: isEn ? 'Debating the same topics from completely inverted internal operating systems.' : '같은 주제를 다루지만 결론에 도달하는 논리 회로가 완전히 달라 흥미로운 토론',
+        synergy: isEn 
+          ? 'Similar external interests and lifestyles, but driven by inverted internal cognitive machinery (Te vs Ti, Fe vs Fi).'
+          : '겉보기에는 관심사와 라이프스타일이 놀랍도록 비슷합니다. 같은 문제를 다룰 때 서로 다른 접근법을 비교하며 깊은 지적 재미를 누립니다.',
+        friction: isEn 
+          ? 'Semantic misunderstandings: using identical words with completely different internal definitions.'
+          : '말하는 단어는 같지만 그 단어의 진정한 의미가 달라, 서로 합의했다고 생각했는데 나중에 오해가 드러날 수 있습니다.',
+        advice: isEn 
+          ? 'Double-check assumptions using concrete examples to prevent semantic illusions of agreement.'
+          : '서로 같은 뜻으로 말하고 있는지 구체적인 예시를 들어 확인하는 습관을 들이세요.'
+      };
+    } else if (CONFLICTOR[t1] === t2) {
+      res = {
+        score: 52,
+        badge: '⚡ ' + (isEn ? 'Growth Challenge (Requires Empathy)' : '성장과 배움의 도전 (Conflictor)'),
+        archetype: isEn ? 'Conflictor Crucible' : '갈등 관계 (Conflictor)',
+        nickname: isEn ? (t1 + ' & ' + t2 + ' "The Crucible"') : (n1 + '과 ' + n2 + ' 「미지의 심리적 퍼즐」'),
+        subScores: { romance: 54, comm: 48, work: 56, recovery: 50 },
+        vibe: isEn ? 'Deliberate, careful conversation requiring conscious emotional translation.' : '조심스럽게 서로의 선을 살피며 다른 언어로 번역기를 돌려야 하는 신중한 대화',
+        synergy: isEn 
+          ? 'The ultimate crucible for self-awareness. Overcoming friction with this type expands your psychological range beyond imagination.'
+          : '자신의 가장 아픈 맹점과 마주하게 만드는 인생의 거울입니다. 성숙한 태도로 상대를 이해할 수 있다면 거대한 인격적 도약과 성숙을 선물합니다.',
+        friction: isEn 
+          ? 'Your default unconscious behavior naturally hits your partner\'s exact vulnerable weak spot.'
+          : '나의 자연스러운 행동이 상대의 가장 취약한 지점을 무의식중에 찌르게 됩니다. 사소한 일도 큰 오해와 방어기제로 비화하기 쉽습니다.',
+        advice: isEn 
+          ? 'Maintain courteous psychological space. Never attempt to reform or fix each other\'s native traits.'
+          : '상대의 방식을 \'고쳐야 할 결점\'으로 보지 마세요. 개인적 공간과 적절한 심리적 거리를 유지하며 정중함을 지키는 것이 황금률입니다.'
+      };
     } else {
-      var isSameIntuition = (t1[1] === t2[1]);
-      var isSameThinking = (t1[2] === t2[2]);
-      var isOppositeIntrovert = (t1[0] !== t2[0]);
-
-      if (isSameIntuition && isOppositeIntrovert) {
-        score = 88;
-        badge = '✨ ' + (isEn ? 'Great Synergy (Strong Alignment)' : '매우 좋은 인연 (Great Synergy)');
-        desc = isEn
-          ? 'Sharing the same perceptual wavelength allows intuitive alignment on core values and humor. Extrovert-introvert complementarity ensures both adventure and quiet emotional restoration.'
-          : '세상을 바라보는 렌즈(인식 기능)가 같아 공통의 관심사와 가치관을 쉽게 공유합니다. 한쪽의 외향성이 다른 쪽의 내향적 안식처와 조화를 이루어 오랫동안 편안하게 지속되는 관계입니다.';
-      } else if (isSameIntuition && isSameThinking) {
-        score = 80;
-        badge = '🤝 ' + (isEn ? 'Intellectual Allies (High Respect)' : '지적 파트너 (Intellectual Allies)');
-        desc = isEn
-          ? 'Similar cognitive processing styles make you brilliant co-creators and strategic comrades. As long as intellectual rivalries are kept playful, you form an unshakeable team.'
-          : '목표와 사고방식이 비슷하여 비즈니스, 스터디, 창작 프로젝트를 함께할 때 최상의 추진력을 발휘합니다. 사소한 자존심 대결만 주의한다면 평생을 함께할 든든한 동지가 됩니다.';
-      } else if (!isSameIntuition && !isSameThinking && !isOppositeIntrovert) {
-        score = 55;
-        badge = '💡 ' + (isEn ? 'Opposites Attract (Requires Curiosity)' : '서로 다른 매력 (Opposites Attract)');
-        desc = isEn
-          ? 'Operating on completely different psychological frequencies, you offer each other views of an alien universe. Mutual respect and patient translation of motives are vital for lasting harmony.'
-          : '세상을 인식하고 판단하는 방식이 완전히 달라 처음에는 신기하고 호기심이 발동합니다. 다만 깊은 관계로 발전하려면 상대방의 방식이 "틀린 것"이 아니라 "다른 것"임을 인정하는 열린 마음이 필수적입니다.';
-      }
+      res = {
+        score: 73,
+        badge: '🌱 ' + (isEn ? 'Balanced Affinity (Mutual Learning)' : '조화로운 보완과 배움 (Balanced)'),
+        archetype: isEn ? 'Dynamic Learning' : '보완 관계 (Benefactor/Supervision)',
+        nickname: isEn ? (t1 + ' & ' + t2 + ' "Dynamic Allies"') : (n1 + '과 ' + n2 + ' 「서로를 일깨우는 멘토링」'),
+        subScores: { romance: 74, comm: 75, work: 78, recovery: 72 },
+        vibe: isEn ? 'Constructive dialogue comparing different perspectives to broaden life horizons.' : '서로 다른 관점을 차분히 비교하며 시야를 넓혀가는 유익한 대화',
+        synergy: isEn 
+          ? 'Healthy balance of differences. Each offers complementary angles that enrich the other\'s life perspective.'
+          : '서로 다른 강점을 지니고 있어 배울 점이 많습니다. 일방적이지 않고 상호 존중하는 태도를 유지하면 매우 유익하고 단단한 유대를 형성합니다.',
+        friction: isEn 
+          ? 'Unintentional advice-giving can feel patronizing if psychological boundaries are blurred.'
+          : '한쪽이 무의식중에 조언이나 지적을 과하게 하여 상대방이 부담을 느낄 수 있습니다.',
+        advice: isEn 
+          ? 'Prioritize warm validation and curious listening over unrequested advice.'
+          : '충고나 판단보다는 상대방의 입장을 먼저 있는 그대로 인정해 주고 격려해 주세요.'
+      };
     }
 
-    var badgeTag = document.getElementById('compat-badge-tag');
-    if (badgeTag) badgeTag.textContent = badge;
-    var scoreNum = document.getElementById('compat-score-num');
-    if (scoreNum) scoreNum.textContent = score;
-    var expl = document.getElementById('compat-explanation');
-    if (expl) expl.textContent = desc;
+    // Update DOM elements
+    var bTag = document.getElementById('compat-badge-tag');
+    if (bTag) bTag.textContent = res.badge;
+    var aPill = document.getElementById('compat-archetype-pill');
+    if (aPill) aPill.textContent = res.archetype;
+    var sNum = document.getElementById('compat-score-num');
+    if (sNum) sNum.textContent = res.score;
+    var nName = document.getElementById('compat-pair-nickname');
+    if (nName) nName.textContent = res.nickname;
+
+    // Sub-scores
+    var subRom = document.getElementById('compat-sub-romance');
+    var barRom = document.getElementById('compat-bar-romance');
+    if (subRom) subRom.textContent = res.subScores.romance + '%';
+    if (barRom) barRom.style.width = res.subScores.romance + '%';
+
+    var subComm = document.getElementById('compat-sub-comm');
+    var barComm = document.getElementById('compat-bar-comm');
+    if (subComm) subComm.textContent = res.subScores.comm + '%';
+    if (barComm) barComm.style.width = res.subScores.comm + '%';
+
+    var subWork = document.getElementById('compat-sub-work');
+    var barWork = document.getElementById('compat-bar-work');
+    if (subWork) subWork.textContent = res.subScores.work + '%';
+    if (barWork) barWork.style.width = res.subScores.work + '%';
+
+    var subRec = document.getElementById('compat-sub-recovery');
+    var barRec = document.getElementById('compat-bar-recovery');
+    if (subRec) subRec.textContent = res.subScores.recovery + '%';
+    if (barRec) barRec.style.width = res.subScores.recovery + '%';
+
+    // Vibe & Insights
+    var tVibe = document.getElementById('compat-talk-vibe');
+    if (tVibe) tVibe.textContent = res.vibe;
+    var cSynergy = document.getElementById('compat-synergy');
+    if (cSynergy) cSynergy.textContent = res.synergy;
+    var cFriction = document.getElementById('compat-friction');
+    if (cFriction) cFriction.textContent = res.friction;
+    var cAdvice = document.getElementById('compat-advice');
+    if (cAdvice) cAdvice.textContent = res.advice;
   }
 
   // 8. Sticky Quick-Jump Navigation & Smooth Scrolling
@@ -1575,6 +2102,31 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
     btnScrollTop.addEventListener('click', function() {
       window.scrollTo({ top: stageResult.offsetTop - 20, behavior: 'smooth' });
     });
+  }
+
+  // 12. Check URL parameters for direct result display (e.g. ?type=INTJ)
+  try {
+    var urlParams = new URLSearchParams(window.location.search);
+    var typeParam = urlParams.get('type');
+    if (typeParam && profiles[typeParam.toUpperCase()]) {
+      var validCode = typeParam.toUpperCase();
+      var pEI = parseInt(urlParams.get('ei') || '75', 10);
+      var pSN = parseInt(urlParams.get('sn') || '75', 10);
+      var pTF = parseInt(urlParams.get('tf') || '75', 10);
+      var pJP = parseInt(urlParams.get('jp') || '75', 10);
+
+      showResultDashboard({
+        code: validCode,
+        percentages: {
+          EI: { primary: validCode[0], secondary: validCode[0] === 'E' ? 'I' : 'E', percent: pEI },
+          SN: { primary: validCode[1], secondary: validCode[1] === 'N' ? 'S' : 'N', percent: pSN },
+          TF: { primary: validCode[2], secondary: validCode[2] === 'T' ? 'F' : 'T', percent: pTF },
+          JP: { primary: validCode[3], secondary: validCode[3] === 'J' ? 'P' : 'J', percent: pJP }
+        }
+      });
+    }
+  } catch (e) {
+    console.error('URL parse error:', e);
   }
 
 })();
@@ -2828,6 +3380,129 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
     border-radius: 999px;
   }
 
+  /* Section 1.5: Demographics & Temperament Cards */
+  .demographics-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+  .demo-card {
+    background: #141828;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+
+  .demo-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .demo-card.rarity {
+    border-color: rgba(245, 158, 11, 0.3);
+    background: linear-gradient(145deg, rgba(245, 158, 11, 0.05) 0%, rgba(20, 24, 40, 0.95) 100%);
+  }
+
+  .demo-card.temperament {
+    border-color: rgba(168, 85, 247, 0.3);
+    background: linear-gradient(145deg, rgba(168, 85, 247, 0.05) 0%, rgba(20, 24, 40, 0.95) 100%);
+  }
+
+  .demo-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .demo-card-header .demo-icon {
+    font-size: 1.4rem;
+  }
+
+  .demo-card-header h4 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #f1f5f9;
+    margin: 0;
+  }
+
+  .rarity-highlight {
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: #fbbf24;
+    letter-spacing: -0.01em;
+  }
+
+  .demo-desc-p {
+    font-size: 0.92rem;
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .demo-stats-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 6px;
+  }
+
+  .stat-chip {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fef08a;
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    padding: 4px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .temperament-badge {
+    display: inline-block;
+    font-size: 1.15rem;
+    font-weight: 900;
+    color: #d8b4fe;
+    letter-spacing: -0.01em;
+  }
+
+  .temp-motto {
+    font-size: 0.92rem;
+    font-style: italic;
+    color: #c084fc;
+    margin: 0;
+    padding: 8px 12px;
+    background: rgba(168, 85, 247, 0.1);
+    border-left: 3px solid #a855f7;
+    border-radius: 0 10px 10px 0;
+    line-height: 1.55;
+  }
+
+  .temp-detail-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 6px;
+  }
+
+  .temp-item {
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: #cbd5e1;
+  }
+
+  .temp-item strong {
+    color: #e2e8f0;
+    display: inline-block;
+    margin-right: 6px;
+  }
+
   /* Cognitive Stack Grid */
   .cognitive-cards-grid {
     display: grid;
@@ -2930,6 +3605,131 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
     font-size: 0.95rem;
     color: #cbd5e1;
     line-height: 1.6;
+  }
+
+  /* Section 3.5: Situational Psychological Facts */
+  .psych-facts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+    margin-top: 20px;
+    margin-bottom: 24px;
+  }
+
+  .psych-fact-card {
+    background: #141828;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .psych-fact-card.conflict {
+    border-color: rgba(239, 68, 68, 0.35);
+    background: linear-gradient(145deg, rgba(239, 68, 68, 0.06) 0%, rgba(20, 24, 40, 0.95) 100%);
+  }
+
+  .psych-fact-card.recharge {
+    border-color: rgba(16, 185, 129, 0.35);
+    background: linear-gradient(145deg, rgba(16, 185, 129, 0.06) 0%, rgba(20, 24, 40, 0.95) 100%);
+  }
+
+  .psych-fact-card.petpeeve {
+    border-color: rgba(245, 158, 11, 0.35);
+    background: linear-gradient(145deg, rgba(245, 158, 11, 0.06) 0%, rgba(20, 24, 40, 0.95) 100%);
+  }
+
+  .psych-card-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .psych-card-top .p-icon {
+    font-size: 1.3rem;
+  }
+
+  .psych-card-top h4 {
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0;
+  }
+
+  .psych-fact-card p {
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* Intimacy Iceberg Progression */
+  .intimacy-layers-box {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 20px;
+    padding: 24px;
+  }
+
+  .intimacy-layers-box h4 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #38bdf8;
+    margin: 0 0 16px;
+  }
+
+  .intimacy-timeline {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .intimacy-step {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 16px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .intimacy-step.highlight {
+    background: rgba(99, 102, 241, 0.08);
+    border-color: rgba(99, 102, 241, 0.35);
+    box-shadow: 0 0 16px rgba(99, 102, 241, 0.15);
+  }
+
+  .intimacy-step .step-badge {
+    align-self: flex-start;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: rgba(148, 163, 184, 0.2);
+    color: #94a3b8;
+  }
+
+  .intimacy-step .step-badge.inner {
+    background: rgba(236, 72, 153, 0.25);
+    color: #f472b6;
+  }
+
+  .intimacy-step h5 {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #f1f5f9;
+    margin: 0;
+  }
+
+  .intimacy-step p {
+    font-size: 0.88rem;
+    color: #94a3b8;
+    line-height: 1.55;
+    margin: 0;
   }
 
   /* Stress Loop & Growth */
@@ -3139,48 +3939,233 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
   }
 
   .compat-result-card {
-    background: rgba(15, 23, 42, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    padding: 20px;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: 20px;
+    padding: 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
   }
 
-  .compat-score-row {
+  .compat-card-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .compat-badge-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
   }
 
   .compat-badge-tag {
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 800;
     color: #f472b6;
   }
 
-  .compat-score-pill {
-    background: rgba(236, 72, 153, 0.15);
-    border: 1px solid rgba(236, 72, 153, 0.3);
-    padding: 4px 14px;
+  .compat-archetype-pill {
+    font-size: 0.76rem;
+    font-weight: 800;
+    color: #c7d2fe;
+    background: rgba(99, 102, 241, 0.2);
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    padding: 3px 10px;
     border-radius: 999px;
   }
 
+  .compat-score-pill {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(168, 85, 247, 0.2));
+    border: 1px solid rgba(236, 72, 153, 0.4);
+    padding: 4px 16px;
+    border-radius: 999px;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+  }
+
   .score-number {
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     font-weight: 900;
     color: #fbcfe8;
   }
 
   .score-unit {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: #f472b6;
-    margin-left: 2px;
   }
 
-  .compat-explanation {
-    font-size: 0.95rem;
+  .compat-pair-nickname {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #e2e8f0;
+    letter-spacing: -0.01em;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* 4 Sub-Scores Bars */
+  .compat-subscores-container {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .subscores-header {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #a5b4fc;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .compat-subscores-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  .subscore-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .subscore-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  .subscore-info .sub-label {
     color: #cbd5e1;
-    line-height: 1.65;
+  }
+
+  .subscore-info .sub-val {
+    color: #ffffff;
+    font-weight: 900;
+  }
+
+  .subscore-track {
+    height: 7px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .subscore-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .subscore-fill.romance {
+    background: linear-gradient(90deg, #ec4899, #f43f5e);
+  }
+
+  .subscore-fill.comm {
+    background: linear-gradient(90deg, #38bdf8, #6366f1);
+  }
+
+  .subscore-fill.work {
+    background: linear-gradient(90deg, #34d399, #10b981);
+  }
+
+  .subscore-fill.recovery {
+    background: linear-gradient(90deg, #a855f7, #c084fc);
+  }
+
+  /* Vibe Box */
+  .compat-vibe-box {
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: 14px;
+    padding: 16px;
+  }
+
+  .vibe-title {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #a5b4fc;
+    margin-bottom: 6px;
+  }
+
+  .vibe-content {
+    font-size: 0.95rem;
+    color: #e2e8f0;
+    line-height: 1.6;
+    margin: 0;
+    font-weight: 600;
+  }
+
+  /* 3-Column Insights Grid */
+  .compat-insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .compat-insight-col {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 16px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .compat-insight-col.synergy {
+    border-color: rgba(52, 211, 153, 0.3);
+    background: linear-gradient(145deg, rgba(52, 211, 153, 0.04) 0%, rgba(20, 24, 40, 0.6) 100%);
+  }
+
+  .compat-insight-col.friction {
+    border-color: rgba(239, 68, 68, 0.3);
+    background: linear-gradient(145deg, rgba(239, 68, 68, 0.04) 0%, rgba(20, 24, 40, 0.6) 100%);
+  }
+
+  .compat-insight-col.advice {
+    border-color: rgba(245, 158, 11, 0.3);
+    background: linear-gradient(145deg, rgba(245, 158, 11, 0.04) 0%, rgba(20, 24, 40, 0.6) 100%);
+  }
+
+  .compat-insight-col .insight-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .compat-insight-col .in-icon {
+    font-size: 1.1rem;
+  }
+
+  .compat-insight-col h5 {
+    font-size: 0.95rem;
+    font-weight: 800;
+    margin: 0;
+  }
+
+  .compat-insight-col.synergy h5 { color: #6ee7b7; }
+  .compat-insight-col.friction h5 { color: #fca5a5; }
+  .compat-insight-col.advice h5 { color: #fde68a; }
+
+  .compat-insight-col p {
+    font-size: 0.88rem;
+    color: #cbd5e1;
+    line-height: 1.6;
     margin: 0;
   }
 
