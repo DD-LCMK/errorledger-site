@@ -285,273 +285,307 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
       </div>
     </div>
 
-    <!-- Tabbed Detailed Profile Section -->
+    <!-- Continuous Comprehensive Personality Report -->
     <div class="result-details-container">
-      <div class="result-tabs-nav" role="tablist">
-        <button type="button" class="res-tab active" data-target="tab-overview" role="tab" aria-selected="true">
-          <span>📋 {isEn ? 'Overview' : '심층 총평'}</span>
-        </button>
-        <button type="button" class="res-tab" data-target="tab-cognition" role="tab" aria-selected="false">
-          <span>🧠 {isEn ? 'Cognitive Stack' : '8대 인지기능'}</span>
-        </button>
-        <button type="button" class="res-tab" data-target="tab-strengths" role="tab" aria-selected="false">
-          <span>💎 {isEn ? 'Strengths & Flaws' : '강점과 약점'}</span>
-        </button>
-        <button type="button" class="res-tab" data-target="tab-stress" role="tab" aria-selected="false">
-          <span>🌪️ {isEn ? 'Stress Loop' : '스트레스 루프'}</span>
-        </button>
-        <button type="button" class="res-tab" data-target="tab-career" role="tab" aria-selected="false">
-          <span>💼 {isEn ? 'Career Path' : '직업 & 커리어'}</span>
-        </button>
-        <button type="button" class="res-tab" data-target="tab-relationship" role="tab" aria-selected="false">
-          <span>💖 {isEn ? 'Love & Match' : '연애 & 궁합'}</span>
-        </button>
-        <button type="button" class="res-tab" data-target="tab-streamer" role="tab" aria-selected="false">
-          <span>🎮 {isEn ? 'Creator Style' : '방송/크리에이터'}</span>
-        </button>
+      <!-- Sticky Quick Jump TOC Bar -->
+      <div class="result-sticky-nav-wrap" id="result-sticky-nav-wrap">
+        <nav class="result-jump-nav" id="result-jump-nav" aria-label="Report Quick Navigation">
+          <button type="button" class="jump-chip active" data-target="section-overview">
+            <span>📋 {isEn ? 'Overview' : '심층 총평'}</span>
+          </button>
+          <button type="button" class="jump-chip" data-target="section-cognition">
+            <span>🧠 {isEn ? 'Cognitive Stack' : '8대 인지기능'}</span>
+          </button>
+          <button type="button" class="jump-chip" data-target="section-strengths">
+            <span>💎 {isEn ? 'Strengths & Flaws' : '강점과 약점'}</span>
+          </button>
+          <button type="button" class="jump-chip" data-target="section-stress">
+            <span>🌪️ {isEn ? 'Stress Loop' : '스트레스 루프'}</span>
+          </button>
+          <button type="button" class="jump-chip" data-target="section-career">
+            <span>💼 {isEn ? 'Career Blueprint' : '직업 & 커리어'}</span>
+          </button>
+          <button type="button" class="jump-chip" data-target="section-relationship">
+            <span>💖 {isEn ? 'Love & Match' : '연애 & 궁합'}</span>
+          </button>
+          <button type="button" class="jump-chip" data-target="section-streamer">
+            <span>🎮 {isEn ? 'Creator Style' : '방송/크리에이터'}</span>
+          </button>
+        </nav>
       </div>
 
-      <!-- TAB 1: OVERVIEW -->
-      <div class="res-tab-pane active" id="tab-overview">
-        <div class="detail-card">
-          <h3 class="pane-headline">
-            <span>🌌</span>
-            <span>{isEn ? 'Psychological Essence & Blueprint' : '정신적 청사진과 성격 심층 분석'}</span>
-          </h3>
-          <p class="overview-paragraph" id="res-overview-p"></p>
+      <!-- All 7 Report Sections in Seamless Continuous Flow -->
+      <div class="result-sections-stream">
+        <!-- SECTION 1: OVERVIEW -->
+        <section class="result-report-section" id="section-overview">
+          <div class="detail-card">
+            <div class="section-badge-tag"><span class="badge-num">01</span><span>{isEn ? 'Executive Psychological Blueprint' : '성격 심층 분석 & 대표 인물'}</span></div>
+            <h3 class="pane-headline">
+              <span>🌌</span>
+              <span>{isEn ? 'Psychological Essence & Blueprint' : '정신적 청사진과 성격 심층 분석'}</span>
+            </h3>
+            <p class="overview-paragraph" id="res-overview-p"></p>
 
-          <div class="famous-figures-box">
-            <h4>🌟 {isEn ? 'Famous Figures & Icons of this Type' : '이 유형의 대표적 인물 및 캐릭터'}</h4>
-            <div class="figures-list" id="res-figures-list"></div>
+            <div class="famous-figures-box">
+              <h4>🌟 {isEn ? 'Famous Figures & Icons of this Type' : '이 유형의 대표적 인물 및 캐릭터'}</h4>
+              <div class="figures-list" id="res-figures-list"></div>
+            </div>
           </div>
-        </div>
-      </div>
+        </section>
 
-      <!-- TAB 2: COGNITIVE FUNCTIONS -->
-      <div class="res-tab-pane" id="tab-cognition" style="display: none;">
-        <div class="detail-card">
-          <h3 class="pane-headline">
-            <span>🧠</span>
-            <span>{isEn ? 'Jungian 4-Layer Cognitive Function Architecture' : '융(Jung)의 4계층 인지기능 두뇌 메커니즘'}</span>
-          </h3>
-          <p class="pane-subtext">
-            {isEn 
-              ? 'Your personality is driven by a subconscious hierarchy of cognitive functions that determine how your mind processes data and makes executive choices.'
-              : 'MBTI의 4글자는 단순한 라벨이 아닙니다. 두뇌가 정보를 지각하고 판단하는 4대 인지기능의 작동 순서(위계)를 나타냅니다.'}
-          </p>
+        <!-- SECTION 2: COGNITIVE FUNCTIONS -->
+        <section class="result-report-section" id="section-cognition">
+          <div class="detail-card">
+            <div class="section-badge-tag"><span class="badge-num">02</span><span>{isEn ? 'Jungian Cognitive Functions' : '융(Jung) 8대 인지기능 두뇌 메커니즘'}</span></div>
+            <h3 class="pane-headline">
+              <span>🧠</span>
+              <span>{isEn ? 'Jungian 4-Layer Cognitive Function Architecture' : '융(Jung)의 4계층 인지기능 두뇌 메커니즘'}</span>
+            </h3>
+            <p class="pane-subtext">
+              {isEn 
+                ? 'Your personality is driven by a subconscious hierarchy of cognitive functions that determine how your mind processes data and makes executive choices.'
+                : 'MBTI의 4글자는 단순한 라벨이 아닙니다. 두뇌가 정보를 지각하고 판단하는 4대 인지기능의 작동 순서(위계)를 나타냅니다.'}
+            </p>
 
-          <div class="cognitive-cards-grid">
-            <div class="cog-card dominant">
-              <div class="cog-card-header">
-                <span class="cog-badge dominant">{isEn ? '1. Dominant (Hero)' : '1차 주기능 (히어로)'}</span>
-                <span class="cog-code" id="cog-dom-code">Ni</span>
+            <div class="cognitive-cards-grid">
+              <div class="cog-card dominant">
+                <div class="cog-card-header">
+                  <span class="cog-badge dominant">{isEn ? '1. Dominant (Hero)' : '1차 주기능 (히어로)'}</span>
+                  <span class="cog-code" id="cog-dom-code">Ni</span>
+                </div>
+                <h4 id="cog-dom-name">내향 직관</h4>
+                <p id="cog-dom-desc"></p>
               </div>
-              <h4 id="cog-dom-name">내향 직관</h4>
-              <p id="cog-dom-desc"></p>
-            </div>
 
-            <div class="cog-card auxiliary">
-              <div class="cog-card-header">
-                <span class="cog-badge auxiliary">{isEn ? '2. Auxiliary (Wing)' : '2차 부기능 (날개)'}</span>
-                <span class="cog-code" id="cog-aux-code">Te</span>
+              <div class="cog-card auxiliary">
+                <div class="cog-card-header">
+                  <span class="cog-badge auxiliary">{isEn ? '2. Auxiliary (Wing)' : '2차 부기능 (날개)'}</span>
+                  <span class="cog-code" id="cog-aux-code">Te</span>
+                </div>
+                <h4 id="cog-aux-name">외향 사고</h4>
+                <p id="cog-aux-desc"></p>
               </div>
-              <h4 id="cog-aux-name">외향 사고</h4>
-              <p id="cog-aux-desc"></p>
-            </div>
 
-            <div class="cog-card tertiary">
-              <div class="cog-card-header">
-                <span class="cog-badge tertiary">{isEn ? '3. Tertiary (Relief)' : '3차 3차기능 (힐링/유희)'}</span>
-                <span class="cog-code" id="cog-tert-code">Fi</span>
+              <div class="cog-card tertiary">
+                <div class="cog-card-header">
+                  <span class="cog-badge tertiary">{isEn ? '3. Tertiary (Relief)' : '3차 3차기능 (힐링/유희)'}</span>
+                  <span class="cog-code" id="cog-tert-code">Fi</span>
+                </div>
+                <h4 id="cog-tert-name">내향 감정</h4>
+                <p id="cog-tert-desc"></p>
               </div>
-              <h4 id="cog-tert-name">내향 감정</h4>
-              <p id="cog-tert-desc"></p>
-            </div>
 
-            <div class="cog-card inferior">
-              <div class="cog-card-header">
-                <span class="cog-badge inferior">{isEn ? '4. Inferior (Achilles)' : '4차 열등기능 (아킬레스건)'}</span>
-                <span class="cog-code" id="cog-inf-code">Se</span>
+              <div class="cog-card inferior">
+                <div class="cog-card-header">
+                  <span class="cog-badge inferior">{isEn ? '4. Inferior (Achilles)' : '4차 열등기능 (아킬레스건)'}</span>
+                  <span class="cog-code" id="cog-inf-code">Se</span>
+                </div>
+                <h4 id="cog-inf-name">외향 감각</h4>
+                <p id="cog-inf-desc"></p>
               </div>
-              <h4 id="cog-inf-name">외향 감각</h4>
-              <p id="cog-inf-desc"></p>
             </div>
           </div>
-        </div>
-      </div>
+        </section>
 
-      <!-- TAB 3: STRENGTHS & FLAWS -->
-      <div class="res-tab-pane" id="tab-strengths" style="display: none;">
-        <div class="detail-card">
-          <div class="strengths-weaknesses-grid">
-            <div class="sw-column strengths">
-              <h3 class="sw-title strengths">
-                <span>💎</span>
-                <span>{isEn ? 'Top 5 Superpowers (Strengths)' : '5대 핵심 슈퍼파워 (강점)'}</span>
-              </h3>
-              <ul class="sw-list" id="res-strengths-list"></ul>
-            </div>
+        <!-- SECTION 3: STRENGTHS & FLAWS -->
+        <section class="result-report-section" id="section-strengths">
+          <div class="detail-card">
+            <div class="section-badge-tag"><span class="badge-num">03</span><span>{isEn ? 'Core Superpowers & Blind Spots' : '5대 핵심 슈퍼파워 & 5대 주의 맹점'}</span></div>
+            <div class="strengths-weaknesses-grid">
+              <div class="sw-column strengths">
+                <h3 class="sw-title strengths">
+                  <span>💎</span>
+                  <span>{isEn ? 'Top 5 Superpowers (Strengths)' : '5대 핵심 슈퍼파워 (강점)'}</span>
+                </h3>
+                <ul class="sw-list" id="res-strengths-list"></ul>
+              </div>
 
-            <div class="sw-column weaknesses">
-              <h3 class="sw-title weaknesses">
-                <span>⚠️</span>
-                <span>{isEn ? 'Top 5 Blind Spots (Pitfalls)' : '주의해야 할 5대 맹점 (약점)'}</span>
-              </h3>
-              <ul class="sw-list" id="res-weaknesses-list"></ul>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- TAB 4: STRESS LOOP & RECOVERY -->
-      <div class="res-tab-pane" id="tab-stress" style="display: none;">
-        <div class="detail-card">
-          <h3 class="pane-headline">
-            <span>🌪️</span>
-            <span>{isEn ? 'Cognitive Stress Loop & Grip Dynamics' : '극심한 스트레스 시 인지 루프 및 폭주(Grip) 반응'}</span>
-          </h3>
-          <p class="pane-subtext">
-            {isEn 
-              ? 'When under prolonged burnout or trauma, individuals bypass their balancing auxiliary function and fall into a toxic loop or inferior grip.'
-              : '인간은 번아웃이나 고립을 겪을 때 건강한 부기능을 건너뛰고 1차-3차 기능의 유독한 루프(Loop)에 빠지거나, 4차 열등기능이 비정상적으로 폭발(Grip)하게 됩니다.'}
-          </p>
-          <div class="stress-loop-content-box" id="res-stress-box"></div>
-
-          <div class="growth-box">
-            <h4>🌱 {isEn ? 'Roadmap to Psychological Maturity' : '성숙과 자아실현을 위한 실천 가이드'}</h4>
-            <p id="res-growth-text"></p>
-          </div>
-        </div>
-      </div>
-
-      <!-- TAB 5: CAREER & WORKPLACE -->
-      <div class="res-tab-pane" id="tab-career" style="display: none;">
-        <div class="detail-card">
-          <h3 class="pane-headline">
-            <span>💼</span>
-            <span>{isEn ? 'Career Blueprint & Professional Style' : '직무 환경, 추천 커리어 및 업무 스타일'}</span>
-          </h3>
-
-          <div class="career-env-box">
-            <h4>🏢 {isEn ? 'Ideal Work Environment' : '최고의 역량을 발휘할 수 있는 환경'}</h4>
-            <p id="res-career-env"></p>
-          </div>
-
-          <div class="recommended-jobs-box">
-            <h4>🎯 {isEn ? 'Top Recommended Career Fields' : '적합도 최상 추천 직업군'}</h4>
-            <div class="jobs-tags-grid" id="res-jobs-grid"></div>
-          </div>
-
-          <div class="workstyle-box">
-            <h4>🤝 {isEn ? 'Leadership & Collaboration Style' : '리더십 및 팀워크 협업 스타일'}</h4>
-            <p id="res-career-workstyle"></p>
-          </div>
-        </div>
-      </div>
-
-      <!-- TAB 6: RELATIONSHIP & COMPATIBILITY -->
-      <div class="res-tab-pane" id="tab-relationship" style="display: none;">
-        <div class="detail-card">
-          <h3 class="pane-headline">
-            <span>💖</span>
-            <span>{isEn ? 'Romantic Attachment & Interpersonal Chemistry' : '연애 스타일 및 대인관계 케미스트리'}</span>
-          </h3>
-
-          <div class="love-style-box">
-            <h4>💌 {isEn ? 'Love & Attachment Style' : '사랑에 빠지는 방식과 애정 표현'}</h4>
-            <p id="res-love-style"></p>
-          </div>
-
-          <div class="matches-summary-grid">
-            <div class="match-card golden">
-              <h4>🌟 {isEn ? 'Best Golden Matches' : '환상의 천생연분 궁합'}</h4>
-              <div class="match-types-pills" id="res-best-matches-pills"></div>
-              <p id="res-best-match-desc"></p>
-            </div>
-
-            <div class="match-card challenging">
-              <h4>💡 {isEn ? 'Challenging Matches (Growth)' : '성장이 필요한 주의 궁합'}</h4>
-              <div class="match-types-pills" id="res-challenging-matches-pills"></div>
-              <p id="res-challenging-match-desc"></p>
+              <div class="sw-column weaknesses">
+                <h3 class="sw-title weaknesses">
+                  <span>⚠️</span>
+                  <span>{isEn ? 'Top 5 Blind Spots (Pitfalls)' : '주의해야 할 5대 맹점 (약점)'}</span>
+                </h3>
+                <ul class="sw-list" id="res-weaknesses-list"></ul>
+              </div>
             </div>
           </div>
+        </section>
 
-          <!-- Interactive 16x16 Compatibility Checker Tool -->
-          <div class="interactive-compat-box">
-            <h4>🧩 {isEn ? 'Interactive Type Chemistry Calculator' : '실시간 16개 유형 궁합 계산기'}</h4>
-            <p class="compat-sub">{isEn ? 'Select any other type to instantly compute psychological dynamics and chemistry score:' : '궁금한 상대방의 MBTI 유형을 선택하여 실시간 케미스트리 점수와 관계 역학을 확인하세요:'}</p>
-            
-            <div class="compat-selector-row">
-              <div class="compat-select-wrap">
-                <label for="compat-target-select">{isEn ? 'Compare with:' : '상대방 유형 선택:'}</label>
-                <select id="compat-target-select" class="compat-select">
-                  <option value="INTJ">INTJ (용의주도한 전략가)</option>
-                  <option value="INTP">INTP (논리적인 사색가)</option>
-                  <option value="ENTJ">ENTJ (대담한 통솔자)</option>
-                  <option value="ENTP">ENTP (뜨거운 변론가)</option>
-                  <option value="INFJ">INFJ (선의의 옹호자)</option>
-                  <option value="INFP">INFP (열정적인 중재자)</option>
-                  <option value="ENFJ">ENFJ (정의로운 주인공)</option>
-                  <option value="ENFP">ENFP (재기발랄한 활동가)</option>
-                  <option value="ISTJ">ISTJ (청렴결백한 논리주의자)</option>
-                  <option value="ISFJ">ISFJ (용감한 수호자)</option>
-                  <option value="ESTJ">ESTJ (엄격한 관리자)</option>
-                  <option value="ESFJ">ESFJ (사교적인 외교관)</option>
-                  <option value="ISTP">ISTP (만능 재주꾼)</option>
-                  <option value="ISFP">ISFP (호기심 많은 예술가)</option>
-                  <option value="ESTP">ESTP (모험을 즐기는 사업가)</option>
-                  <option value="ESFP">ESFP (자유로운 영혼의 연예인)</option>
-                </select>
+        <!-- SECTION 4: STRESS LOOP & RECOVERY -->
+        <section class="result-report-section" id="section-stress">
+          <div class="detail-card">
+            <div class="section-badge-tag"><span class="badge-num">04</span><span>{isEn ? 'Stress Loop & Psychological Maturity' : '스트레스 루프 & 자아실현 가이드'}</span></div>
+            <h3 class="pane-headline">
+              <span>🌪️</span>
+              <span>{isEn ? 'Cognitive Stress Loop & Grip Dynamics' : '극심한 스트레스 시 인지 루프 및 폭주(Grip) 반응'}</span>
+            </h3>
+            <p class="pane-subtext">
+              {isEn 
+                ? 'When under prolonged burnout or trauma, individuals bypass their balancing auxiliary function and fall into a toxic loop or inferior grip.'
+                : '인간은 번아웃이나 고립을 겪을 때 건강한 부기능을 건너뛰고 1차-3차 기능의 유독한 루프(Loop)에 빠지거나, 4차 열등기능이 비정상적으로 폭발(Grip)하게 됩니다.'}
+            </p>
+            <div class="stress-loop-content-box" id="res-stress-box"></div>
+
+            <div class="growth-box">
+              <h4>🌱 {isEn ? 'Roadmap to Psychological Maturity' : '성숙과 자아실현을 위한 실천 가이드'}</h4>
+              <p id="res-growth-text"></p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 5: CAREER & WORKPLACE -->
+        <section class="result-report-section" id="section-career">
+          <div class="detail-card">
+            <div class="section-badge-tag"><span class="badge-num">05</span><span>{isEn ? 'Career Blueprint & Professional Style' : '직무 환경, 추천 커리어 및 업무 스타일'}</span></div>
+            <h3 class="pane-headline">
+              <span>💼</span>
+              <span>{isEn ? 'Career Blueprint & Professional Style' : '직무 환경, 추천 커리어 및 업무 스타일'}</span>
+            </h3>
+
+            <div class="career-env-box">
+              <h4>🏢 {isEn ? 'Ideal Work Environment' : '최고의 역량을 발휘할 수 있는 환경'}</h4>
+              <p id="res-career-env"></p>
+            </div>
+
+            <div class="recommended-jobs-box">
+              <h4>🎯 {isEn ? 'Top Recommended Career Fields' : '적합도 최상 추천 직업군'}</h4>
+              <div class="jobs-tags-grid" id="res-jobs-grid"></div>
+            </div>
+
+            <div class="workstyle-box">
+              <h4>🤝 {isEn ? 'Leadership & Collaboration Style' : '리더십 및 팀워크 협업 스타일'}</h4>
+              <p id="res-career-workstyle"></p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 6: RELATIONSHIP & COMPATIBILITY -->
+        <section class="result-report-section" id="section-relationship">
+          <div class="detail-card">
+            <div class="section-badge-tag"><span class="badge-num">06</span><span>{isEn ? 'Romantic Chemistry & Compatibility' : '연애 스타일, 천생연분 & 실시간 궁합 계산기'}</span></div>
+            <h3 class="pane-headline">
+              <span>💖</span>
+              <span>{isEn ? 'Romantic Attachment & Interpersonal Chemistry' : '연애 스타일 및 대인관계 케미스트리'}</span>
+            </h3>
+
+            <div class="love-style-box">
+              <h4>💌 {isEn ? 'Love & Attachment Style' : '사랑에 빠지는 방식과 애정 표현'}</h4>
+              <p id="res-love-style"></p>
+            </div>
+
+            <div class="matches-summary-grid">
+              <div class="match-card golden">
+                <h4>🌟 {isEn ? 'Best Golden Matches' : '환상의 천생연분 궁합'}</h4>
+                <div class="match-types-pills" id="res-best-matches-pills"></div>
+                <p id="res-best-match-desc"></p>
+              </div>
+
+              <div class="match-card challenging">
+                <h4>💡 {isEn ? 'Challenging Matches (Growth)' : '성장이 필요한 주의 궁합'}</h4>
+                <div class="match-types-pills" id="res-challenging-matches-pills"></div>
+                <p id="res-challenging-match-desc"></p>
               </div>
             </div>
 
-            <!-- Instant Compat Result Card -->
-            <div class="compat-result-card" id="compat-result-card">
-              <div class="compat-score-row">
-                <span class="compat-badge-tag" id="compat-badge-tag">💖 천생연분 환상의 궁합</span>
-                <div class="compat-score-pill">
-                  <span class="score-number" id="compat-score-num">98</span>
-                  <span class="score-unit">{isEn ? 'pts' : '점'}</span>
+            <!-- Interactive 16x16 Compatibility Checker Tool -->
+            <div class="interactive-compat-box">
+              <h4>🧩 {isEn ? 'Interactive Type Chemistry Calculator' : '실시간 16개 유형 궁합 계산기'}</h4>
+              <p class="compat-sub">{isEn ? 'Select any other type to instantly compute psychological dynamics and chemistry score:' : '궁금한 상대방의 MBTI 유형을 선택하여 실시간 케미스트리 점수와 관계 역학을 확인하세요:'}</p>
+              
+              <div class="compat-selector-row">
+                <div class="compat-select-wrap">
+                  <label for="compat-target-select">{isEn ? 'Compare with:' : '상대방 유형 선택:'}</label>
+                  <select id="compat-target-select" class="compat-select">
+                    <option value="INTJ">INTJ (용의주도한 전략가)</option>
+                    <option value="INTP">INTP (논리적인 사색가)</option>
+                    <option value="ENTJ">ENTJ (대담한 통솔자)</option>
+                    <option value="ENTP">ENTP (뜨거운 변론가)</option>
+                    <option value="INFJ">INFJ (선의의 옹호자)</option>
+                    <option value="INFP">INFP (열정적인 중재자)</option>
+                    <option value="ENFJ">ENFJ (정의로운 주인공)</option>
+                    <option value="ENFP">ENFP (재기발랄한 활동가)</option>
+                    <option value="ISTJ">ISTJ (청렴결백한 논리주의자)</option>
+                    <option value="ISFJ">ISFJ (용감한 수호자)</option>
+                    <option value="ESTJ">ESTJ (엄격한 관리자)</option>
+                    <option value="ESFJ">ESFJ (사교적인 외교관)</option>
+                    <option value="ISTP">ISTP (만능 재주꾼)</option>
+                    <option value="ISFP">ISFP (호기심 많은 예술가)</option>
+                    <option value="ESTP">ESTP (모험을 즐기는 사업가)</option>
+                    <option value="ESFP">ESFP (자유로운 영혼의 연예인)</option>
+                  </select>
                 </div>
               </div>
-              <p class="compat-explanation" id="compat-explanation"></p>
+
+              <!-- Instant Compat Result Card -->
+              <div class="compat-result-card" id="compat-result-card">
+                <div class="compat-score-row">
+                  <span class="compat-badge-tag" id="compat-badge-tag">💖 천생연분 환상의 궁합</span>
+                  <div class="compat-score-pill">
+                    <span class="score-number" id="compat-score-num">98</span>
+                    <span class="score-unit">{isEn ? 'pts' : '점'}</span>
+                  </div>
+                </div>
+                <p class="compat-explanation" id="compat-explanation"></p>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </section>
 
-      <!-- TAB 7: STREAMER & CREATOR STYLE (StreamArcade Signature) -->
-      <div class="res-tab-pane" id="tab-streamer" style="display: none;">
-        <div class="detail-card">
-          <h3 class="pane-headline">
-            <span>🎮</span>
-            <span>{isEn ? 'StreamArcade Creator & Streaming Persona' : '스트림아케이드 특화: 방송 및 크리에이터 성향 분석'}</span>
-          </h3>
-          <p class="pane-subtext">
-            {isEn 
-              ? 'Every personality type projects a unique aura on live broadcast platforms like Chzzk, Twitch, and YouTube.'
-              : '치지직, 유튜브, 아프리카 등 라이브 생방송과 인터넷 방송 플랫폼에서 발현되는 당신만의 고유한 방송 페르소나입니다.'}
-          </p>
+        <!-- SECTION 7: STREAMER & CREATOR STYLE -->
+        <section class="result-report-section" id="section-streamer">
+          <div class="detail-card">
+            <div class="section-badge-tag"><span class="badge-num">07</span><span>{isEn ? 'StreamArcade Creator Persona' : '스트림아케이드 특화: 방송 및 크리에이터 성향'}</span></div>
+            <h3 class="pane-headline">
+              <span>🎮</span>
+              <span>{isEn ? 'StreamArcade Creator & Streaming Persona' : '스트림아케이드 특화: 방송 및 크리에이터 성향 분석'}</span>
+            </h3>
+            <p class="pane-subtext">
+              {isEn 
+                ? 'Every personality type projects a unique aura on live broadcast platforms like Chzzk, Twitch, and YouTube.'
+                : '치지직, 유튜브, 아프리카 등 라이브 생방송과 인터넷 방송 플랫폼에서 발현되는 당신만의 고유한 방송 페르소나입니다.'}
+            </p>
 
-          <div class="streamer-persona-card">
-            <div class="persona-icon-box">🎙️</div>
-            <div class="persona-text-box">
-              <h4>{isEn ? 'Live Stream Persona Archetype' : '대표 방송 페르소나 아키타입'}</h4>
-              <p id="res-streamer-persona"></p>
+            <div class="streamer-persona-card">
+              <div class="persona-icon-box">🎙️</div>
+              <div class="persona-text-box">
+                <h4>{isEn ? 'Live Stream Persona Archetype' : '대표 방송 페르소나 아키타입'}</h4>
+                <p id="res-streamer-persona"></p>
+              </div>
+            </div>
+
+            <div class="viewer-dynamic-card">
+              <div class="persona-icon-box">💬</div>
+              <div class="persona-text-box">
+                <h4>{isEn ? 'Viewer Interaction & Chatroom Dynamics' : '시청자 소통 및 채팅창 분위기'}</h4>
+                <p id="res-streamer-chat"></p>
+              </div>
+            </div>
+
+            <div class="recommended-games-box">
+              <h4>🕹️ {isEn ? 'Ideal Content & Game Genres' : '텐션 폭발 추천 게임 및 방송 콘텐츠'}</h4>
+              <div class="games-tags-list" id="res-streamer-games"></div>
             </div>
           </div>
+        </section>
 
-          <div class="viewer-dynamic-card">
-            <div class="persona-icon-box">💬</div>
-            <div class="persona-text-box">
-              <h4>{isEn ? 'Viewer Interaction & Chatroom Dynamics' : '시청자 소통 및 채팅창 분위기'}</h4>
-              <p id="res-streamer-chat"></p>
+        <!-- Report Footer & Share Card -->
+        <div class="report-footer-card">
+          <div class="report-footer-content">
+            <div class="report-footer-text">
+              <h3>{isEn ? 'Celebrate & Share Your Unique Psychological Aura' : '나만의 고유한 심리 프로필을 공유해보세요'}</h3>
+              <p>{isEn ? 'Copy your direct result link to share with friends, stream communities, or on social media.' : '결과 링크를 복사하여 친구나 방송 채팅창, SNS에 바로 공유할 수 있습니다.'}</p>
             </div>
-          </div>
-
-          <div class="recommended-games-box">
-            <h4>🕹️ {isEn ? 'Ideal Content & Game Genres' : '텐션 폭발 추천 게임 및 방송 콘텐츠'}</h4>
-            <div class="games-tags-list" id="res-streamer-games"></div>
+            <div class="report-footer-actions">
+              <button type="button" class="btn-share-result btn-share-bottom" id="btn-share-bottom">
+                <span>🔗 {isEn ? 'Share My Result' : '결과 링크 복사 / 공유하기'}</span>
+              </button>
+              <button type="button" class="btn-retake-test btn-retake-bottom" id="btn-retake-bottom">
+                <span>🔄 {isEn ? 'Retake Test' : '다시 검사하기'}</span>
+              </button>
+              <button type="button" class="btn-scroll-top" id="btn-scroll-top">
+                <span>⬆️ {isEn ? 'Back to Top' : '맨 위로'}</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -594,7 +628,7 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
   var answeredCounter = document.getElementById('answered-counter');
   var likertBtns = document.querySelectorAll('.likert-btn');
 
-  // Check URL params for direct shared result: ?type=INTJ&e=24&n=82&t=72&j=85
+  // Check URL params for direct shared result: ?type=INTJ&ei=76&sn=82&tf=72&jp=85
   var urlParams = new URLSearchParams(window.location.search);
   var paramType = urlParams.get('type')?.toUpperCase();
   if (paramType && profiles[paramType]) {
@@ -743,11 +777,10 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
     setTimeout(function() { if (step3) step3.classList.add('done'); }, 1900);
 
     setTimeout(function() {
-      // Dimension sums
-      var sumEI = 0; // +1 => E, -1 => I
-      var sumSN = 0; // +1 => N, -1 => S
-      var sumTF = 0; // +1 => F, -1 => T
-      var sumJP = 0; // +1 => P, -1 => J
+      var sumEI = 0;
+      var sumSN = 0;
+      var sumTF = 0;
+      var sumJP = 0;
 
       for (var i = 0; i < questions.length; i++) {
         var q = questions[i];
@@ -761,7 +794,6 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
         else if (q.dimension === 'JP') sumJP += score;
       }
 
-      // Max absolute raw score = 15 * 3 = 45
       function calcDim(sum, posLetter, negLetter) {
         if (sum >= 0) {
           var pct = Math.round(50 + (sum / 45) * 50);
@@ -799,20 +831,26 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
     currentResultType = resultData.code;
 
     // Header identity
-    document.getElementById('res-badge-pill').textContent = p.badge;
-    document.getElementById('res-type-code').textContent = p.code;
-    document.getElementById('res-type-name').textContent = isEn ? p.nameEn : p.nameKo;
-    document.getElementById('res-motto').textContent = isEn ? p.mottoEn : p.mottoKo;
+    var bPill = document.getElementById('res-badge-pill');
+    if (bPill) bPill.textContent = p.badge || '';
+    var tCode = document.getElementById('res-type-code');
+    if (tCode) tCode.textContent = p.code || '';
+    var tName = document.getElementById('res-type-name');
+    if (tName) tName.textContent = (isEn ? p.nameEn : p.nameKo) || '';
+    var rMotto = document.getElementById('res-motto');
+    if (rMotto) rMotto.textContent = (isEn ? p.mottoEn : p.mottoKo) || '';
 
     // Keywords
     var kwRow = document.getElementById('res-keywords-row');
-    kwRow.innerHTML = '';
-    p.keywords.forEach(function(kw) {
-      var pill = document.createElement('span');
-      pill.className = 'keyword-pill';
-      pill.textContent = '#' + kw;
-      kwRow.appendChild(pill);
-    });
+    if (kwRow) {
+      kwRow.innerHTML = '';
+      (p.keywords || []).forEach(function(kw) {
+        var pill = document.createElement('span');
+        pill.className = 'keyword-pill';
+        pill.textContent = '#' + kw;
+        kwRow.appendChild(pill);
+      });
+    }
 
     // Dimension percentage meters
     var ei = resultData.percentages.EI;
@@ -831,140 +869,196 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
     var isE = ei.primary === 'E';
     var eVal = isE ? ei.percent : (100 - ei.percent);
     var iVal = 100 - eVal;
-    document.getElementById('dim-badge-ei').textContent = (isE ? (ei.percent + '% 외향') : (ei.percent + '% 내향')) + ' (' + formatStrength(ei.percent) + ')';
-    document.getElementById('dim-fill-ei-left').style.width = eVal + '%';
-    document.getElementById('dim-fill-ei-right').style.width = iVal + '%';
+    var dimBadgeEi = document.getElementById('dim-badge-ei');
+    if (dimBadgeEi) dimBadgeEi.textContent = (isE ? (ei.percent + '% 외향') : (ei.percent + '% 내향')) + ' (' + formatStrength(ei.percent) + ')';
+    var fillEiL = document.getElementById('dim-fill-ei-left');
+    if (fillEiL) fillEiL.style.width = eVal + '%';
+    var fillEiR = document.getElementById('dim-fill-ei-right');
+    if (fillEiR) fillEiR.style.width = iVal + '%';
 
     // SN Meter
     var isN = sn.primary === 'N';
     var nVal = isN ? sn.percent : (100 - sn.percent);
     var sVal = 100 - nVal;
-    document.getElementById('dim-badge-sn').textContent = (isN ? (sn.percent + '% 직관') : (sn.percent + '% 감각')) + ' (' + formatStrength(sn.percent) + ')';
-    document.getElementById('dim-fill-sn-left').style.width = sVal + '%';
-    document.getElementById('dim-fill-sn-right').style.width = nVal + '%';
+    var dimBadgeSn = document.getElementById('dim-badge-sn');
+    if (dimBadgeSn) dimBadgeSn.textContent = (isN ? (sn.percent + '% 직관') : (sn.percent + '% 감각')) + ' (' + formatStrength(sn.percent) + ')';
+    var fillSnL = document.getElementById('dim-fill-sn-left');
+    if (fillSnL) fillSnL.style.width = sVal + '%';
+    var fillSnR = document.getElementById('dim-fill-sn-right');
+    if (fillSnR) fillSnR.style.width = nVal + '%';
 
     // TF Meter
     var isF = tf.primary === 'F';
     var fVal = isF ? tf.percent : (100 - tf.percent);
     var tVal = 100 - fVal;
-    document.getElementById('dim-badge-tf').textContent = (isF ? (tf.percent + '% 감정') : (tf.percent + '% 사고')) + ' (' + formatStrength(tf.percent) + ')';
-    document.getElementById('dim-fill-tf-left').style.width = tVal + '%';
-    document.getElementById('dim-fill-tf-right').style.width = fVal + '%';
+    var dimBadgeTf = document.getElementById('dim-badge-tf');
+    if (dimBadgeTf) dimBadgeTf.textContent = (isF ? (tf.percent + '% 감정') : (tf.percent + '% 사고')) + ' (' + formatStrength(tf.percent) + ')';
+    var fillTfL = document.getElementById('dim-fill-tf-left');
+    if (fillTfL) fillTfL.style.width = tVal + '%';
+    var fillTfR = document.getElementById('dim-fill-tf-right');
+    if (fillTfR) fillTfR.style.width = fVal + '%';
 
     // JP Meter
     var isP = jp.primary === 'P';
     var pVal = isP ? jp.percent : (100 - jp.percent);
     var jVal = 100 - pVal;
-    document.getElementById('dim-badge-jp').textContent = (isP ? (jp.percent + '% 인식') : (jp.percent + '% 판단')) + ' (' + formatStrength(jp.percent) + ')';
-    document.getElementById('dim-fill-jp-left').style.width = jVal + '%';
-    document.getElementById('dim-fill-jp-right').style.width = pVal + '%';
+    var dimBadgeJp = document.getElementById('dim-badge-jp');
+    if (dimBadgeJp) dimBadgeJp.textContent = (isP ? (jp.percent + '% 인식') : (jp.percent + '% 판단')) + ' (' + formatStrength(jp.percent) + ')';
+    var fillJpL = document.getElementById('dim-fill-jp-left');
+    if (fillJpL) fillJpL.style.width = jVal + '%';
+    var fillJpR = document.getElementById('dim-fill-jp-right');
+    if (fillJpR) fillJpR.style.width = pVal + '%';
 
-    // Tab 1: Overview
-    document.getElementById('res-overview-p').textContent = isEn ? p.overviewEn : p.overviewKo;
+    // Section 1: Overview & Figures
+    var overP = document.getElementById('res-overview-p');
+    if (overP) overP.textContent = (isEn ? p.overviewEn : p.overviewKo) || '';
     var figList = document.getElementById('res-figures-list');
-    figList.innerHTML = '';
-    p.famousFigures.forEach(function(fig) {
-      var item = document.createElement('span');
-      item.className = 'figure-pill';
-      item.textContent = fig;
-      figList.appendChild(item);
-    });
+    if (figList) {
+      figList.innerHTML = '';
+      (p.famousFigures || []).forEach(function(fig) {
+        var item = document.createElement('span');
+        item.className = 'figure-pill';
+        item.textContent = fig;
+        figList.appendChild(item);
+      });
+    }
 
-    // Tab 2: Cognitive functions
-    var c = p.cognitiveFunctions;
-    document.getElementById('cog-dom-code').textContent = c.dominant.code;
-    document.getElementById('cog-dom-name').textContent = isEn ? c.dominant.nameEn : c.dominant.nameKo;
-    document.getElementById('cog-dom-desc').textContent = isEn ? c.dominant.descEn : c.dominant.descKo;
+    // Section 2: Cognitive functions
+    var c = p.cognitiveFunctions || {};
+    if (c.dominant) {
+      var domCode = document.getElementById('cog-dom-code');
+      if (domCode) domCode.textContent = c.dominant.code || '';
+      var domName = document.getElementById('cog-dom-name');
+      if (domName) domName.textContent = (isEn ? c.dominant.nameEn : c.dominant.nameKo) || '';
+      var domDesc = document.getElementById('cog-dom-desc');
+      if (domDesc) domDesc.textContent = (isEn ? c.dominant.descEn : c.dominant.descKo) || '';
+    }
+    if (c.auxiliary) {
+      var auxCode = document.getElementById('cog-aux-code');
+      if (auxCode) auxCode.textContent = c.auxiliary.code || '';
+      var auxName = document.getElementById('cog-aux-name');
+      if (auxName) auxName.textContent = (isEn ? c.auxiliary.nameEn : c.auxiliary.nameKo) || '';
+      var auxDesc = document.getElementById('cog-aux-desc');
+      if (auxDesc) auxDesc.textContent = (isEn ? c.auxiliary.descEn : c.auxiliary.descKo) || '';
+    }
+    if (c.tertiary) {
+      var tertCode = document.getElementById('cog-tert-code');
+      if (tertCode) tertCode.textContent = c.tertiary.code || '';
+      var tertName = document.getElementById('cog-tert-name');
+      if (tertName) tertName.textContent = (isEn ? c.tertiary.nameEn : c.tertiary.nameKo) || '';
+      var tertDesc = document.getElementById('cog-tert-desc');
+      if (tertDesc) tertDesc.textContent = (isEn ? c.tertiary.descEn : c.tertiary.descKo) || '';
+    }
+    if (c.inferior) {
+      var infCode = document.getElementById('cog-inf-code');
+      if (infCode) infCode.textContent = c.inferior.code || '';
+      var infName = document.getElementById('cog-inf-name');
+      if (infName) infName.textContent = (isEn ? c.inferior.nameEn : c.inferior.nameKo) || '';
+      var infDesc = document.getElementById('cog-inf-desc');
+      if (infDesc) infDesc.textContent = (isEn ? c.inferior.descEn : c.inferior.descKo) || '';
+    }
 
-    document.getElementById('cog-aux-code').textContent = c.auxiliary.code;
-    document.getElementById('cog-aux-name').textContent = isEn ? c.auxiliary.nameEn : c.auxiliary.nameKo;
-    document.getElementById('cog-aux-desc').textContent = isEn ? c.auxiliary.descEn : c.auxiliary.descKo;
-
-    document.getElementById('cog-tert-code').textContent = c.tertiary.code;
-    document.getElementById('cog-tert-name').textContent = isEn ? c.tertiary.nameEn : c.tertiary.nameKo;
-    document.getElementById('cog-tert-desc').textContent = isEn ? c.tertiary.descEn : c.tertiary.descKo;
-
-    document.getElementById('cog-inf-code').textContent = c.inferior.code;
-    document.getElementById('cog-inf-name').textContent = isEn ? c.inferior.nameEn : c.inferior.nameKo;
-    document.getElementById('cog-inf-desc').textContent = isEn ? c.inferior.descEn : c.inferior.descKo;
-
-    // Tab 3: Strengths & Weaknesses
+    // Section 3: Strengths & Weaknesses
     var strList = document.getElementById('res-strengths-list');
-    strList.innerHTML = '';
-    (isEn ? p.strengthsEn : p.strengthsKo).forEach(function(s) {
-      var li = document.createElement('li');
-      li.textContent = s;
-      strList.appendChild(li);
-    });
+    if (strList) {
+      strList.innerHTML = '';
+      var sArr = isEn ? (p.strengthsEn || []) : (p.strengthsKo || []);
+      sArr.forEach(function(s) {
+        var li = document.createElement('li');
+        li.textContent = s;
+        strList.appendChild(li);
+      });
+    }
 
     var weakList = document.getElementById('res-weaknesses-list');
-    weakList.innerHTML = '';
-    (isEn ? p.weaknessesEn : p.weaknessesKo).forEach(function(w) {
-      var li = document.createElement('li');
-      li.textContent = w;
-      weakList.appendChild(li);
-    });
+    if (weakList) {
+      weakList.innerHTML = '';
+      var wArr = isEn ? (p.weaknessesEn || []) : (p.weaknessesKo || []);
+      wArr.forEach(function(w) {
+        var li = document.createElement('li');
+        li.textContent = w;
+        weakList.appendChild(li);
+      });
+    }
 
-    // Tab 4: Stress Loop & Growth
-    document.getElementById('res-stress-box').textContent = isEn ? p.stressLoopEn : p.stressLoopKo;
-    document.getElementById('res-growth-text').textContent = isEn ? p.growthAdviceEn : p.growthAdviceKo;
+    // Section 4: Stress Loop & Growth
+    var stressBox = document.getElementById('res-stress-box');
+    if (stressBox) stressBox.textContent = (isEn ? p.stressLoopEn : p.stressLoopKo) || '';
+    var growthBox = document.getElementById('res-growth-text');
+    if (growthBox) growthBox.textContent = (isEn ? p.growthAdviceEn : p.growthAdviceKo) || '';
 
-    // Tab 5: Career
-    document.getElementById('res-career-env').textContent = isEn ? p.career.bestEnvironmentEn : p.career.bestEnvironmentKo;
+    // Section 5: Career
+    var cEnv = document.getElementById('res-career-env');
+    if (cEnv) cEnv.textContent = (isEn ? p.career?.bestEnvironmentEn : p.career?.bestEnvironmentKo) || '';
     var jobsGrid = document.getElementById('res-jobs-grid');
-    jobsGrid.innerHTML = '';
-    p.career.recommendedCareers.forEach(function(job) {
-      var tag = document.createElement('span');
-      tag.className = 'job-tag';
-      tag.textContent = '💼 ' + job;
-      jobsGrid.appendChild(tag);
-    });
-    document.getElementById('res-career-workstyle').textContent = isEn ? p.career.workStyleEn : p.career.workStyleKo;
+    if (jobsGrid) {
+      jobsGrid.innerHTML = '';
+      (p.career?.recommendedCareers || []).forEach(function(job) {
+        var tag = document.createElement('span');
+        tag.className = 'job-tag';
+        tag.textContent = '💼 ' + job;
+        jobsGrid.appendChild(tag);
+      });
+    }
+    var cWork = document.getElementById('res-career-workstyle');
+    if (cWork) cWork.textContent = (isEn ? p.career?.workStyleEn : p.career?.workStyleKo) || '';
 
-    // Tab 6: Relationship & Compatibility
-    document.getElementById('res-love-style').textContent = isEn ? p.relationship.loveStyleEn : p.relationship.loveStyleKo;
+    // Section 6: Relationship & Compatibility
+    var lStyle = document.getElementById('res-love-style');
+    if (lStyle) lStyle.textContent = (isEn ? p.relationship?.loveStyleEn : p.relationship?.loveStyleKo) || '';
     
     var bestMatchesPills = document.getElementById('res-best-matches-pills');
-    bestMatchesPills.innerHTML = '';
-    p.relationship.bestMatches.forEach(function(m) {
-      var pill = document.createElement('span');
-      pill.className = 'match-pill golden';
-      pill.textContent = '💖 ' + m;
-      bestMatchesPills.appendChild(pill);
-    });
-    document.getElementById('res-best-match-desc').textContent = isEn ? p.relationship.bestMatchReasonEn : p.relationship.bestMatchReasonKo;
+    if (bestMatchesPills) {
+      bestMatchesPills.innerHTML = '';
+      (p.relationship?.bestMatches || []).forEach(function(m) {
+        var pill = document.createElement('span');
+        pill.className = 'match-pill golden';
+        pill.textContent = '💖 ' + m;
+        bestMatchesPills.appendChild(pill);
+      });
+    }
+    var bDesc = document.getElementById('res-best-match-desc');
+    if (bDesc) bDesc.textContent = (isEn ? p.relationship?.bestMatchReasonEn : p.relationship?.bestMatchReasonKo) || '';
 
     var chalMatchesPills = document.getElementById('res-challenging-matches-pills');
-    chalMatchesPills.innerHTML = '';
-    p.relationship.challengingMatches.forEach(function(m) {
-      var pill = document.createElement('span');
-      pill.className = 'match-pill challenging';
-      pill.textContent = '💡 ' + m;
-      chalMatchesPills.appendChild(pill);
-    });
-    document.getElementById('res-challenging-match-desc').textContent = isEn ? p.relationship.challengingMatchReasonEn : p.relationship.challengingMatchReasonKo;
+    if (chalMatchesPills) {
+      chalMatchesPills.innerHTML = '';
+      (p.relationship?.challengingMatches || []).forEach(function(m) {
+        var pill = document.createElement('span');
+        pill.className = 'match-pill challenging';
+        pill.textContent = '💡 ' + m;
+        chalMatchesPills.appendChild(pill);
+      });
+    }
+    var cDesc = document.getElementById('res-challenging-match-desc');
+    if (cDesc) cDesc.textContent = (isEn ? p.relationship?.challengingMatchReasonEn : p.relationship?.challengingMatchReasonKo) || '';
 
-    // Update interactive compatibility checker
+    // Interactive compatibility checker
     var compatSelect = document.getElementById('compat-target-select');
     if (compatSelect) {
-      compatSelect.value = p.relationship.bestMatches[0] || 'ENFP';
+      var defaultCompare = (p.relationship?.bestMatches && p.relationship.bestMatches[0]) || 'ENFP';
+      compatSelect.value = defaultCompare;
       updateCompatibilityView(p.code, compatSelect.value);
       compatSelect.onchange = function() {
         updateCompatibilityView(p.code, this.value);
       };
     }
 
-    // Tab 7: Streamer style
-    document.getElementById('res-streamer-persona').textContent = isEn ? p.streamerStyle.personaEn : p.streamerStyle.personaKo;
-    document.getElementById('res-streamer-chat').textContent = isEn ? p.streamerStyle.viewerDynamicEn : p.streamerStyle.viewerDynamicKo;
+    // Section 7: Streamer style
+    var sPersona = document.getElementById('res-streamer-persona');
+    if (sPersona) sPersona.textContent = (isEn ? p.streamerStyle?.personaEn : p.streamerStyle?.personaKo) || '';
+    var sChat = document.getElementById('res-streamer-chat');
+    if (sChat) sChat.textContent = (isEn ? p.streamerStyle?.viewerDynamicEn : p.streamerStyle?.viewerDynamicKo) || '';
     var gamesList = document.getElementById('res-streamer-games');
-    gamesList.innerHTML = '';
-    p.streamerStyle.recommendedContent.forEach(function(g) {
-      var tag = document.createElement('span');
-      tag.className = 'game-tag';
-      tag.textContent = '🕹️ ' + g;
-      gamesList.appendChild(tag);
-    });
+    if (gamesList) {
+      gamesList.innerHTML = '';
+      (p.streamerStyle?.recommendedContent || []).forEach(function(g) {
+        var tag = document.createElement('span');
+        tag.className = 'game-tag';
+        tag.textContent = '🕹️ ' + g;
+        gamesList.appendChild(tag);
+      });
+    }
 
     // Update browser URL query without reload for direct shareability
     var shareUrl = new URL(window.location.href);
@@ -980,7 +1074,6 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
 
   // 7. Compatibility Calculator Helper
   function updateCompatibilityView(type1, type2) {
-    // Inline quick calculation logic matching mbtiCompatibility.ts
     var goldenPairs = {
       INTJ: ['ENFP', 'ENTP'], INTP: ['ENTJ', 'ENFJ'], ENTJ: ['INTP', 'INFP'], ENTP: ['INFJ', 'INTJ'],
       INFJ: ['ENTP', 'ENFP'], INFP: ['ENFJ', 'ENTJ'], ENFJ: ['INFP', 'ISFP'], ENFP: ['INTJ', 'INFJ'],
@@ -1008,59 +1101,89 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
         : '서로의 장점이 상대방의 약점을 마법처럼 보완해 주는 최고의 케미스트리입니다. 대화가 끊이지 않으며 함께 성장하는 환상의 짝꿍입니다.';
     }
 
-    document.getElementById('compat-badge-tag').textContent = badge;
-    document.getElementById('compat-score-num').textContent = score;
-    document.getElementById('compat-explanation').textContent = desc;
+    var badgeTag = document.getElementById('compat-badge-tag');
+    if (badgeTag) badgeTag.textContent = badge;
+    var scoreNum = document.getElementById('compat-score-num');
+    if (scoreNum) scoreNum.textContent = score;
+    var expl = document.getElementById('compat-explanation');
+    if (expl) expl.textContent = desc;
   }
 
-  // 8. Tab Navigation
-  var tabButtons = document.querySelectorAll('.res-tab');
-  tabButtons.forEach(function(tab) {
-    tab.addEventListener('click', function() {
-      tabButtons.forEach(function(t) { 
-        t.classList.remove('active'); 
-        t.setAttribute('aria-selected', 'false');
-      });
-      this.classList.add('active');
-      this.setAttribute('aria-selected', 'true');
-
+  // 8. Sticky Quick-Jump Navigation & Smooth Scrolling
+  var jumpChips = document.querySelectorAll('.jump-chip');
+  jumpChips.forEach(function(chip) {
+    chip.addEventListener('click', function() {
       var targetId = this.getAttribute('data-target');
-      document.querySelectorAll('.res-tab-pane').forEach(function(pane) {
-        pane.style.display = 'none';
-        pane.classList.remove('active');
-      });
-      var activePane = document.getElementById(targetId);
-      if (activePane) {
-        activePane.style.display = 'block';
-        activePane.classList.add('active');
+      var target = document.getElementById(targetId);
+      if (target) {
+        var offset = 80;
+        var bodyRect = document.body.getBoundingClientRect().top;
+        var elementRect = target.getBoundingClientRect().top;
+        var offsetPosition = (elementRect - bodyRect) - offset;
+        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
       }
     });
   });
 
-  // 9. Share Link Button
-  var btnShare = document.getElementById('btn-share-result');
-  if (btnShare) {
-    btnShare.addEventListener('click', function() {
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(window.location.href).then(function() {
-          alert(isEn ? 'Link copied to clipboard! Share it with friends or stream chat.' : '결과 링크가 클립보드에 복사되었습니다! 친구나 방송 채팅창에 공유해 보세요.');
+  // Scroll Spy for TOC Chips
+  window.addEventListener('scroll', function() {
+    if (stageResult.style.display === 'none') return;
+    var sections = document.querySelectorAll('.result-report-section');
+    var scrollPos = window.scrollY + 140;
+    sections.forEach(function(sec) {
+      var top = sec.offsetTop;
+      var height = sec.offsetHeight;
+      var id = sec.getAttribute('id');
+      if (scrollPos >= top && scrollPos < top + height) {
+        jumpChips.forEach(function(c) {
+          if (c.getAttribute('data-target') === id) {
+            c.classList.add('active');
+          } else {
+            c.classList.remove('active');
+          }
         });
-      } else {
-        alert(window.location.href);
       }
     });
+  });
+
+  // 9. Share Link Buttons
+  function copyLinkAction() {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(window.location.href).then(function() {
+        alert(isEn ? 'Link copied to clipboard! Share it with friends or stream chat.' : '결과 링크가 클립보드에 복사되었습니다! 친구나 방송 채팅창에 공유해 보세요.');
+      });
+    } else {
+      alert(window.location.href);
+    }
   }
 
-  // 10. Retake Test Button
+  var btnShare = document.getElementById('btn-share-result');
+  if (btnShare) btnShare.addEventListener('click', copyLinkAction);
+
+  var btnShareBottom = document.getElementById('btn-share-bottom');
+  if (btnShareBottom) btnShareBottom.addEventListener('click', copyLinkAction);
+
+  // 10. Retake Test Buttons
+  function retakeAction() {
+    answers = new Array(questions.length).fill(null);
+    stageResult.style.display = 'none';
+    stageIntro.style.display = 'none';
+    stageRunner.style.display = 'block';
+    renderQuestion(0);
+    window.scrollTo({ top: stageRunner.offsetTop - 40, behavior: 'smooth' });
+  }
+
   var btnRetake = document.getElementById('btn-retake-test');
-  if (btnRetake) {
-    btnRetake.addEventListener('click', function() {
-      answers = new Array(questions.length).fill(null);
-      stageResult.style.display = 'none';
-      stageIntro.style.display = 'none';
-      stageRunner.style.display = 'block';
-      renderQuestion(0);
-      window.scrollTo({ top: stageRunner.offsetTop - 40, behavior: 'smooth' });
+  if (btnRetake) btnRetake.addEventListener('click', retakeAction);
+
+  var btnRetakeBottom = document.getElementById('btn-retake-bottom');
+  if (btnRetakeBottom) btnRetakeBottom.addEventListener('click', retakeAction);
+
+  // 11. Scroll to Top Button
+  var btnScrollTop = document.getElementById('btn-scroll-top');
+  if (btnScrollTop) {
+    btnScrollTop.addEventListener('click', function() {
+      window.scrollTo({ top: stageResult.offsetTop - 20, behavior: 'smooth' });
     });
   }
 
@@ -1523,7 +1646,7 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
     border: 1px solid rgba(99, 102, 241, 0.35);
     border-radius: 28px;
     padding: 44px 36px;
-    margin-bottom: 36px;
+    margin-bottom: 32px;
     overflow: hidden;
     box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(99, 102, 241, 0.15);
   }
@@ -1701,41 +1824,92 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
     background: linear-gradient(90deg, #ec4899, #f43f5e);
   }
 
-  /* Result Tabs */
-  .result-tabs-nav {
+  /* Sticky Quick-Jump Navigation Bar */
+  .result-sticky-nav-wrap {
+    position: sticky;
+    top: 14px;
+    z-index: 40;
+    margin-bottom: 30px;
+  }
+
+  .result-jump-nav {
     display: flex;
     gap: 8px;
     overflow-x: auto;
-    padding-bottom: 10px;
-    margin-bottom: 24px;
+    padding: 10px 14px;
+    background: rgba(13, 17, 30, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    backdrop-filter: blur(16px);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   }
 
-  .res-tab {
+  .result-jump-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .jump-chip {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    background: #131726;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.08);
     color: #94a3b8;
-    font-size: 0.92rem;
+    font-size: 0.88rem;
     font-weight: 700;
-    padding: 12px 20px;
-    border-radius: 14px;
+    padding: 8px 16px;
+    border-radius: 10px;
     cursor: pointer;
     white-space: nowrap;
     transition: all 0.2s;
   }
 
-  .res-tab:hover {
-    color: #f1f5f9;
-    border-color: rgba(99, 102, 241, 0.3);
+  .jump-chip:hover {
+    color: #ffffff;
+    border-color: rgba(99, 102, 241, 0.4);
+    background: rgba(99, 102, 241, 0.12);
   }
 
-  .res-tab.active {
-    background: #1e243a;
-    border-color: #6366f1;
+  .jump-chip.active {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(168, 85, 247, 0.3));
+    border-color: #818cf8;
     color: #ffffff;
-    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 0 14px rgba(99, 102, 241, 0.35);
+  }
+
+  /* Continuous Report Stream */
+  .result-sections-stream {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .result-report-section {
+    scroll-margin-top: 85px;
+    position: relative;
+  }
+
+  .section-badge-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    color: #a5b4fc;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 4px 12px;
+    border-radius: 8px;
+    margin-bottom: 14px;
+  }
+
+  .section-badge-tag .badge-num {
+    color: #818cf8;
+    font-weight: 900;
   }
 
   .detail-card {
@@ -2217,6 +2391,64 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
     border-radius: 10px;
   }
 
+  /* Report Footer Card */
+  .report-footer-card {
+    background: linear-gradient(135deg, rgba(26, 32, 54, 0.95) 0%, rgba(35, 25, 66, 0.85) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 24px;
+    padding: 38px 28px;
+    margin-top: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    text-align: center;
+  }
+
+  .report-footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .report-footer-text h3 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 8px;
+  }
+
+  .report-footer-text p {
+    font-size: 0.95rem;
+    color: #94a3b8;
+    margin: 0;
+  }
+
+  .report-footer-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .btn-scroll-top {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.92rem;
+    font-weight: 800;
+    padding: 12px 22px;
+    border-radius: 12px;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-scroll-top:hover {
+    background: rgba(51, 65, 85, 0.9);
+    color: #ffffff;
+  }
+
   @media (max-width: 768px) {
     .intro-title { font-size: 2.2rem; }
     .intro-desc { font-size: 1rem; }
@@ -2229,5 +2461,8 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
     .result-type-code { font-size: 3.2rem; }
     .result-type-name { font-size: 1.4rem; }
     .detail-card { padding: 24px 18px; }
+    .result-sticky-nav-wrap { top: 8px; }
+    .jump-chip { font-size: 0.8rem; padding: 6px 12px; }
+    .report-footer-card { padding: 28px 18px; }
   }
 </style>

@@ -1,9 +1,7 @@
 ---
 /**
  * LeaderboardAd — Adsterra 728x90 in-flow horizontal banner ad.
- * Positioned cleanly beneath the game viewport / controls.
- * Scrolls naturally with page content (never fixed/floating).
- * Hidden when streamerMode=true (?stream / ?obs).
+ * Disabled by default across all pages for a clean, distraction-free user experience.
  */
 interface Props {
   streamerMode?: boolean;
@@ -13,80 +11,4 @@ interface Props {
 const { streamerMode = false, class: className = '' } = Astro.props;
 ---
 
-{!streamerMode && (
-  <div class={`leaderboard-ad-wrap ${className}`}>
-    <script is:inline>
-      if (typeof window !== 'undefined') {
-        var sp = new URLSearchParams(window.location.search);
-        if (sp.has('stream') || sp.has('obs')) {
-          var el = document.currentScript?.parentElement;
-          if (el) el.style.display = 'none';
-        }
-      }
-    </script>
-    <div class="leaderboard-ad-inner">
-      <!-- Adsterra 728x90 banner -->
-      <script is:inline>
-        atOptions = {
-          'key' : '9da075030ba65a883d58c24eb903807c',
-          'format' : 'iframe',
-          'height' : 90,
-          'width' : 728,
-          'params' : {}
-        };
-      </script>
-      <script is:inline src="https://russiaexternalknew.com/9da075030ba65a883d58c24eb903807c/invoke.js"></script>
-    </div>
-  </div>
-)}
-
-<style>
-  .leaderboard-ad-wrap {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    margin: 1.25rem auto 1.5rem;
-    overflow: hidden;
-  }
-
-  .leaderboard-ad-inner {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 728px;
-    height: 90px;
-    background: rgba(15, 23, 42, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-
-  /* Responsive scaling on tablet / mobile screens */
-  @media (max-width: 760px) {
-    .leaderboard-ad-inner {
-      transform: scale(0.9);
-      transform-origin: center center;
-    }
-  }
-
-  @media (max-width: 660px) {
-    .leaderboard-ad-inner {
-      transform: scale(0.75);
-      transform-origin: center center;
-    }
-    .leaderboard-ad-wrap {
-      height: 72px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .leaderboard-ad-inner {
-      transform: scale(0.48);
-      transform-origin: center center;
-    }
-    .leaderboard-ad-wrap {
-      height: 50px;
-    }
-  }
-</style>
+<!-- Ads disabled by default across all pages -->

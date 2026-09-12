@@ -56,15 +56,15 @@ const homeFaqSchema = JSON.stringify({
       "name": "Are the results fair? Can results be manipulated?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Marble Roulette uses a real 2D rigid-body physics engine (gravity, friction, elastic collisions) calculated every frame. The Spin Wheel and Ladder Game use cryptographically seeded pseudo-random algorithms. No one can predict or manipulate the outcome."
+        "text": "The Wheel and Ladder games use cryptographically seeded pseudo-random algorithms and mathematical bijective mapping. No one can predict or manipulate the outcome."
       }
     },
     {
       "@type": "Question",
-      "name": "What is StreamArcade (Marble Roulette & Stream Tools)?",
+      "name": "What is StreamArcade?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "StreamArcade provides 100% free, client-side interactive web games and stream tools including Marble Roulette (physics marble race simulator), Random Wheel Picker, and Ghost Leg Ladder Game for global livestreamers and creators on Twitch and YouTube."
+        "text": "StreamArcade provides 100% free, client-side interactive web games, tests (MBTI), and stream utility tools for global livestreamers, creators, and viewers."
       }
     }
   ]
@@ -308,15 +308,11 @@ const homeFaqSchema = JSON.stringify({
             </div>
             <div class="faq-box">
               <h3>Are results fair? Can anyone manipulate them?</h3>
-              <p>Marble Roulette uses a real per-frame 2D physics engine; no one can influence the outcome. The Wheel and Ladder use cryptographically seeded PRNG with bijective mapping — fully tamper-proof.</p>
-            </div>
-            <div class="faq-box">
-              <h3>Can I give one person multiple marbles?</h3>
-              <p>Yes! In the participant list, type <code>Alice * 3</code> or <code>Bob * 5</code> to give that person multiple marbles and increase their winning odds proportionally.</p>
+              <p>The Spin Wheel and Ghost Leg Ladder use cryptographically seeded PRNG with mathematical bijective mapping — fully random and tamper-proof.</p>
             </div>
             <div class="faq-box">
               <h3>What is StreamArcade?</h3>
-              <p>StreamArcade provides 100% free, client-side interactive web games and stream tools — Marble Roulette, Random Wheel Picker, and Ghost Leg Ladder Game — for global livestreamers and creators.</p>
+              <p>StreamArcade provides 100% free, client-side interactive web games, tests (MBTI), and stream utility tools for global livestreamers, creators, and communities.</p>
             </div>
           </div>
         </div>

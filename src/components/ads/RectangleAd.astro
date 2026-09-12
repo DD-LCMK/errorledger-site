@@ -1,50 +1,13 @@
 ---
 /**
  * RectangleAd — Adsterra 300x250 inline content rectangle.
- * Drop anywhere in a page layout between content sections.
- * Hidden when streamerMode=true.
+ * Disabled by default across all pages for a clean, distraction-free user experience.
  */
 interface Props {
   streamerMode?: boolean;
   class?: string;
 }
-const { streamerMode = false } = Astro.props;
+const { streamerMode = false, class: className = '' } = Astro.props;
 ---
 
-{!streamerMode && (
-  <div class="rect-ad-wrap">
-    <script is:inline>
-      if (typeof window !== 'undefined') {
-        var sp = new URLSearchParams(window.location.search);
-        if (sp.has('stream') || sp.has('obs')) {
-          var s = document.createElement('style');
-          s.textContent = '.rect-ad-wrap { display: none !important; }';
-          document.head.appendChild(s);
-        }
-      }
-    </script>
-    <!-- Adsterra 300x250 rectangle -->
-    <script is:inline>
-      atOptions = {
-        'key' : '85bb86b023a301ded2e4f1a3c27e2774',
-        'format' : 'iframe',
-        'height' : 250,
-        'width' : 300,
-        'params' : {}
-      };
-    </script>
-    <script is:inline src="https://russiaexternalknew.com/85bb86b023a301ded2e4f1a3c27e2774/invoke.js"></script>
-  </div>
-)}
-
-<style>
-  .rect-ad-wrap {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 1rem auto;
-    width: 300px;
-    height: 250px;
-    overflow: hidden;
-  }
-</style>
+<!-- Ads disabled by default across all pages -->
