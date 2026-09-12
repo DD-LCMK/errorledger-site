@@ -86,6 +86,17 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
     </nav>
 
     <div class="header-actions">
+      <!-- Hide Ads Button (page-only, resets on navigation) -->
+      <button 
+        id="page-ad-toggle" 
+        class="action-btn ad-toggle-btn" 
+        title={isEn ? "Hide ads on this page" : "이 페이지 광고 숨기기"} 
+        aria-label={isEn ? "Hide Ads" : "광고 숨기기"}
+      >
+        <span class="ad-toggle-icon">🚫</span>
+        <span class="ad-toggle-text">{isEn ? "Hide Ads" : "광고 숨기기"}</span>
+      </button>
+
       <button id="global-sound-toggle" class="action-btn" title={t(lang, 'nav.sound.off')} aria-label={t(lang, 'nav.sound.off')}>
         <span id="sound-icon">🔊</span>
       </button>
@@ -240,6 +251,31 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
     border-color: rgba(165, 180, 252, 0.4);
   }
 
+  /* Ad Toggle button (session/page only) */
+  .ad-toggle-btn {
+    width: auto;
+    min-width: 36px;
+    padding: 0 0.55rem;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #cbd5e1;
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .ad-toggle-btn:hover {
+    color: #fca5a5;
+    border-color: rgba(248, 113, 113, 0.35);
+    background: rgba(248, 113, 113, 0.12);
+  }
+
+  .ad-toggle-btn.active {
+    color: #38bdf8;
+    border-color: rgba(56, 189, 248, 0.4);
+    background: rgba(56, 189, 248, 0.15);
+  }
+
   @media (max-width: 640px) {
     .nav-label {
       display: none;
@@ -251,10 +287,52 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
       padding: 0.4rem 0.5rem;
       font-size: 1.1rem;
     }
+    .ad-toggle-text {
+      display: none;
+    }
+    .ad-toggle-btn {
+      padding: 0;
+      width: 36px;
+    }
   }
 </style>
 
 <script>
+  // Page-specific Ad Toggle (Resets on navigation — does NOT persist to localStorage)
+  const adToggleBtn = document.getElementById('page-ad-toggle');
+  if (adToggleBtn) {
+    const isEn = document.documentElement.lang === 'en';
+    
+    // Check if user has ?stream or ?obs or ?noads in URL
+    const sp = new URLSearchParams(window.location.search);
+    if (sp.has('stream') || sp.has('obs') || sp.has('noads')) {
+      document.body.classList.add('ads-hidden');
+      adToggleBtn.classList.add('active');
+      const icon = adToggleBtn.querySelector('.ad-toggle-icon');
+      const text = adToggleBtn.querySelector('.ad-toggle-text');
+      if (icon) icon.textContent = '👁️';
+      if (text) text.textContent = isEn ? 'Show Ads' : '광고 보기';
+    }
+
+    adToggleBtn.addEventListener('click', () => {
+      const isHidden = document.body.classList.toggle('ads-hidden');
+      adToggleBtn.classList.toggle('active', isHidden);
+      const icon = adToggleBtn.querySelector('.ad-toggle-icon');
+      const text = adToggleBtn.querySelector('.ad-toggle-text');
+      if (isHidden) {
+        if (icon) icon.textContent = '👁️';
+        if (text) text.textContent = isEn ? 'Show Ads' : '광고 보기';
+        adToggleBtn.setAttribute('title', isEn ? 'Show ads on this page' : '이 페이지 광고 다시 표시');
+        adToggleBtn.setAttribute('aria-label', isEn ? 'Show Ads' : '광고 보기');
+      } else {
+        if (icon) icon.textContent = '🚫';
+        if (text) text.textContent = isEn ? 'Hide Ads' : '광고 숨기기';
+        adToggleBtn.setAttribute('title', isEn ? 'Hide ads on this page' : '이 페이지 광고 숨기기');
+        adToggleBtn.setAttribute('aria-label', isEn ? 'Hide Ads' : '광고 숨기기');
+      }
+    });
+  }
+
   // Client-side global sound toggle
   const soundBtn = document.getElementById('global-sound-toggle');
   const soundIcon = document.getElementById('sound-icon');
