@@ -94,7 +94,11 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
           <div class="progress-fill" id="progress-fill" style="width: 1.6%;"></div>
         </div>
         <div class="runner-controls-top">
-          <span class="keyboard-tip-tag">{isEn ? '⌨️ Press 1-7 on keyboard' : '⌨️ 키보드 1~7번으로 빠른 선택 가능'}</span>
+          <button type="button" class="btn-toggle-grid" id="btn-toggle-grid" title={isEn ? "Open Question Map (1-60)" : "전체 문항 지도 (1~60)"}>
+            <span class="grid-icon">📋</span>
+            <span class="grid-label">{isEn ? 'Question Map' : '전체 문항 (1~60)'}</span>
+          </button>
+          <span class="keyboard-tip-tag">{isEn ? '⌨️ Press 1-7' : '⌨️ 키보드 1~7번'}</span>
         </div>
       </div>
     </div>
@@ -102,6 +106,17 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
     <!-- Question Container (Smooth card animation) -->
     <div class="question-deck-container">
       <div class="question-card" id="active-question-card">
+        <!-- Return to Latest Question Banner (Visible when reviewing earlier question) -->
+        <div class="return-latest-bar" id="return-latest-bar" style="display: none;">
+          <div class="return-bar-content">
+            <span class="return-icon">📍</span>
+            <span class="return-msg">{isEn ? 'Reviewing previous question' : '이전 문항 검토/수정 중'}</span>
+          </div>
+          <button type="button" class="btn-return-latest" id="btn-return-latest">
+            <span>{isEn ? '🚀 Return to Q.' : '🚀 마지막 진행 문항으로 복귀 (Q.'}<span id="latest-q-num">59</span>{isEn ? '' : ')'}</span>
+          </button>
+        </div>
+
         <div class="question-card-header">
           <span class="q-number-pill" id="q-number-pill">Q.01</span>
           <span class="q-dimension-pill" id="q-dimension-pill">사회적 에너지 충전</span>
@@ -156,10 +171,65 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
           <button type="button" class="btn-nav-prev" id="btn-nav-prev" disabled>
             <span>{isEn ? '← Previous' : '← 이전 문항'}</span>
           </button>
-          <span class="answered-counter" id="answered-counter">0 / 60 완료</span>
+          
+          <div class="nav-center-group">
+            <button type="button" class="btn-open-matrix" id="btn-open-matrix" title={isEn ? "Open full question list" : "전체 문항 목록 열기"}>
+              <span id="answered-counter">0 / 60 완료</span>
+              <span class="matrix-pill-tag">📋 {isEn ? 'Jump' : '문항 이동'}</span>
+            </button>
+            <button type="button" class="btn-nav-return-pill" id="btn-nav-return-pill" style="display: none;">
+              <span>🚀 Q.<span id="nav-latest-num">59</span> {isEn ? 'Return' : '복귀'}</span>
+            </button>
+          </div>
+
           <button type="button" class="btn-nav-next" id="btn-nav-next">
             <span>{isEn ? 'Next →' : '다음 문항 →'}</span>
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Question Matrix / Navigator Modal Drawer -->
+    <div class="question-matrix-modal" id="question-matrix-modal" style="display: none;">
+      <div class="matrix-modal-backdrop" id="matrix-modal-backdrop"></div>
+      <div class="matrix-modal-card">
+        <div class="matrix-modal-header">
+          <div class="matrix-title-group">
+            <h3>📋 {isEn ? 'Question Navigator (1 to 60)' : '전체 60문항 바로가기 & 응답 현황'}</h3>
+            <p>{isEn ? 'Click any question to jump directly and review or edit your response.' : '원하는 문항 번호를 클릭하면 즉시 해당 문항으로 이동하여 답변을 확인 및 수정할 수 있습니다.'}</p>
+          </div>
+          <button type="button" class="btn-close-matrix" id="btn-close-matrix" aria-label="Close">✕</button>
+        </div>
+
+        <div class="matrix-legend-row">
+          <span class="legend-item"><span class="legend-dot answered"></span>{isEn ? 'Answered' : '답변 완료'}</span>
+          <span class="legend-item"><span class="legend-dot current"></span>{isEn ? 'Current' : '현재 문항'}</span>
+          <span class="legend-item"><span class="legend-dot unanswered"></span>{isEn ? 'Unanswered' : '미답변'}</span>
+        </div>
+
+        <div class="matrix-farthest-action" id="matrix-farthest-wrap" style="display: none;">
+          <button type="button" class="btn-matrix-return-latest" id="btn-matrix-return-latest">
+            <span>🚀 {isEn ? 'Jump to Farthest Progress (Q.' : '마지막 진행 문항으로 바로 이동 (Q.'}<span id="matrix-latest-q-num">59</span>{isEn ? ')' : ')'}</span>
+          </button>
+        </div>
+
+        <div class="matrix-grid-scroll">
+          <div class="matrix-dimension-group">
+            <span class="dim-group-title">E vs I ({isEn ? 'Extraversion vs Introversion' : '외향 vs 내향'}) — Q.01 ~ Q.15</span>
+            <div class="matrix-chips-row" id="matrix-group-ei"></div>
+          </div>
+          <div class="matrix-dimension-group">
+            <span class="dim-group-title">S vs N ({isEn ? 'Sensing vs Intuition' : '감각 vs 직관'}) — Q.16 ~ Q.30</span>
+            <div class="matrix-chips-row" id="matrix-group-sn"></div>
+          </div>
+          <div class="matrix-dimension-group">
+            <span class="dim-group-title">T vs F ({isEn ? 'Thinking vs Feeling' : '사고 vs 감정'}) — Q.31 ~ Q.45</span>
+            <div class="matrix-chips-row" id="matrix-group-tf"></div>
+          </div>
+          <div class="matrix-dimension-group">
+            <span class="dim-group-title">J vs P ({isEn ? 'Judging vs Perceiving' : '판단 vs 인식'}) — Q.46 ~ Q.60</span>
+            <div class="matrix-chips-row" id="matrix-group-jp"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -223,63 +293,111 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
 
       <!-- Dimension Percentages Breakdown Grid -->
       <div class="dimensions-breakdown-card">
-        <h3 class="dimensions-title">{isEn ? '4-Dimensional Spectrum & Preference Intensity' : '4대 심리 축 성향 스펙트럼 및 강도 지수'}</h3>
+        <div class="dimensions-header-group">
+          <div class="dim-title-wrap">
+            <h3 class="dimensions-title">
+              <span>📊</span>
+              <span>{isEn ? '4-Dimensional Spectrum & Situational Flexibility Analysis' : '4대 심리 축 성향 스펙트럼 & 상황별 유연성 분석'}</span>
+            </h3>
+            <p class="dimensions-subtitle">
+              {isEn 
+                ? '💡 The meaning of percentages: Scores near 100% mean high behavioral consistency in any context, while scores near 50% indicate situational flexibility—adapting between traits depending on your role, context, and environment.'
+                : '💡 성향 백분율(%)의 비밀: 100%에 가까울수록 어떤 환경에서도 일관된 성향을 고수하며, 50%에 가까울수록 고정된 성격이 아니라 상황·맥락·상대방에 따라 두 성향을 유연하게 넘나드는 입체적 행동 양식을 가집니다.'}
+            </p>
+          </div>
+        </div>
         
         <div class="dim-meters-grid">
           <!-- EI Meter -->
-          <div class="dim-meter-row">
+          <div class="dim-meter-row" id="dim-row-ei">
             <div class="dim-labels">
-              <span class="dim-side left"><strong>E</strong> {isEn ? 'Extravert' : '외향형'}</span>
-              <span class="dim-score-badge" id="dim-badge-ei">76% 내향 (확고형)</span>
-              <span class="dim-side right"><strong>I</strong> {isEn ? 'Introvert' : '내향형'}</span>
+              <span class="dim-side left" id="dim-side-e">
+                <strong class="dim-code-letter">E</strong>
+                <span class="dim-name-text">{isEn ? 'Extravert' : '외향형'}</span>
+                <span class="dim-pct-val" id="dim-pct-e">50%</span>
+              </span>
+              <span class="dim-score-badge" id="dim-badge-ei">50% 내향 (균형형)</span>
+              <span class="dim-side right" id="dim-side-i">
+                <span class="dim-pct-val" id="dim-pct-i">50%</span>
+                <span class="dim-name-text">{isEn ? 'Introvert' : '내향형'}</span>
+                <strong class="dim-code-letter">I</strong>
+              </span>
             </div>
             <div class="dim-bar-track">
-              <div class="dim-bar-fill left" id="dim-fill-ei-left" style="width: 24%;"></div>
+              <div class="dim-bar-fill left" id="dim-fill-ei-left" style="width: 50%;"></div>
               <div class="dim-bar-divider"></div>
-              <div class="dim-bar-fill right" id="dim-fill-ei-right" style="width: 76%;"></div>
+              <div class="dim-bar-fill right" id="dim-fill-ei-right" style="width: 50%;"></div>
             </div>
+            <div class="dim-situational-desc" id="dim-desc-ei"></div>
           </div>
 
           <!-- SN Meter -->
-          <div class="dim-meter-row">
+          <div class="dim-meter-row" id="dim-row-sn">
             <div class="dim-labels">
-              <span class="dim-side left"><strong>S</strong> {isEn ? 'Sensing' : '감각형'}</span>
-              <span class="dim-score-badge" id="dim-badge-sn">82% 직관 (확고형)</span>
-              <span class="dim-side right"><strong>N</strong> {isEn ? 'Intuition' : '직관형'}</span>
+              <span class="dim-side left" id="dim-side-s">
+                <strong class="dim-code-letter">S</strong>
+                <span class="dim-name-text">{isEn ? 'Sensing' : '감각형'}</span>
+                <span class="dim-pct-val" id="dim-pct-s">50%</span>
+              </span>
+              <span class="dim-score-badge" id="dim-badge-sn">50% 직관 (균형형)</span>
+              <span class="dim-side right" id="dim-side-n">
+                <span class="dim-pct-val" id="dim-pct-n">50%</span>
+                <span class="dim-name-text">{isEn ? 'Intuition' : '직관형'}</span>
+                <strong class="dim-code-letter">N</strong>
+              </span>
             </div>
             <div class="dim-bar-track">
-              <div class="dim-bar-fill left" id="dim-fill-sn-left" style="width: 18%;"></div>
+              <div class="dim-bar-fill left" id="dim-fill-sn-left" style="width: 50%;"></div>
               <div class="dim-bar-divider"></div>
-              <div class="dim-bar-fill right" id="dim-fill-sn-right" style="width: 82%;"></div>
+              <div class="dim-bar-fill right" id="dim-fill-sn-right" style="width: 50%;"></div>
             </div>
+            <div class="dim-situational-desc" id="dim-desc-sn"></div>
           </div>
 
           <!-- TF Meter -->
-          <div class="dim-meter-row">
+          <div class="dim-meter-row" id="dim-row-tf">
             <div class="dim-labels">
-              <span class="dim-side left"><strong>T</strong> {isEn ? 'Thinking' : '사고형'}</span>
-              <span class="dim-score-badge" id="dim-badge-tf">72% 사고 (완만형)</span>
-              <span class="dim-side right"><strong>F</strong> {isEn ? 'Feeling' : '감정형'}</span>
+              <span class="dim-side left" id="dim-side-t">
+                <strong class="dim-code-letter">T</strong>
+                <span class="dim-name-text">{isEn ? 'Thinking' : '사고형'}</span>
+                <span class="dim-pct-val" id="dim-pct-t">50%</span>
+              </span>
+              <span class="dim-score-badge" id="dim-badge-tf">50% 사고 (균형형)</span>
+              <span class="dim-side right" id="dim-side-f">
+                <span class="dim-pct-val" id="dim-pct-f">50%</span>
+                <span class="dim-name-text">{isEn ? 'Feeling' : '감정형'}</span>
+                <strong class="dim-code-letter">F</strong>
+              </span>
             </div>
             <div class="dim-bar-track">
-              <div class="dim-bar-fill left" id="dim-fill-tf-left" style="width: 72%;"></div>
+              <div class="dim-bar-fill left" id="dim-fill-tf-left" style="width: 50%;"></div>
               <div class="dim-bar-divider"></div>
-              <div class="dim-bar-fill right" id="dim-fill-tf-right" style="width: 28%;"></div>
+              <div class="dim-bar-fill right" id="dim-fill-tf-right" style="width: 50%;"></div>
             </div>
+            <div class="dim-situational-desc" id="dim-desc-tf"></div>
           </div>
 
           <!-- JP Meter -->
-          <div class="dim-meter-row">
+          <div class="dim-meter-row" id="dim-row-jp">
             <div class="dim-labels">
-              <span class="dim-side left"><strong>J</strong> {isEn ? 'Judging' : '판단형'}</span>
-              <span class="dim-score-badge" id="dim-badge-jp">85% 판단 (확고형)</span>
-              <span class="dim-side right"><strong>P</strong> {isEn ? 'Perceiving' : '인식형'}</span>
+              <span class="dim-side left" id="dim-side-j">
+                <strong class="dim-code-letter">J</strong>
+                <span class="dim-name-text">{isEn ? 'Judging' : '판단형'}</span>
+                <span class="dim-pct-val" id="dim-pct-j">50%</span>
+              </span>
+              <span class="dim-score-badge" id="dim-badge-jp">50% 판단 (균형형)</span>
+              <span class="dim-side right" id="dim-side-p">
+                <span class="dim-pct-val" id="dim-pct-p">50%</span>
+                <span class="dim-name-text">{isEn ? 'Perceiving' : '인식형'}</span>
+                <strong class="dim-code-letter">P</strong>
+              </span>
             </div>
             <div class="dim-bar-track">
-              <div class="dim-bar-fill left" id="dim-fill-jp-left" style="width: 85%;"></div>
+              <div class="dim-bar-fill left" id="dim-fill-jp-left" style="width: 50%;"></div>
               <div class="dim-bar-divider"></div>
-              <div class="dim-bar-fill right" id="dim-fill-jp-right" style="width: 15%;"></div>
+              <div class="dim-bar-fill right" id="dim-fill-jp-right" style="width: 50%;"></div>
             </div>
+            <div class="dim-situational-desc" id="dim-desc-jp"></div>
           </div>
         </div>
       </div>
@@ -607,8 +725,11 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
 
   // State
   var currentIndex = 0;
+  var maxReachedIndex = 0;
   var answers = new Array(questions.length).fill(null);
   var currentResultType = 'INTJ';
+  var isAdvancing = false;
+  var advanceTimer = null;
 
   // DOM Elements
   var stageIntro = document.getElementById('stage-intro');
@@ -627,6 +748,28 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
   var btnNavNext = document.getElementById('btn-nav-next');
   var answeredCounter = document.getElementById('answered-counter');
   var likertBtns = document.querySelectorAll('.likert-btn');
+
+  // Return to Latest Question Elements
+  var returnLatestBar = document.getElementById('return-latest-bar');
+  var latestQNum = document.getElementById('latest-q-num');
+  var btnReturnLatest = document.getElementById('btn-return-latest');
+  var btnNavReturnPill = document.getElementById('btn-nav-return-pill');
+  var navLatestNum = document.getElementById('nav-latest-num');
+
+  // Matrix Modal Elements
+  var questionMatrixModal = document.getElementById('question-matrix-modal');
+  var matrixModalBackdrop = document.getElementById('matrix-modal-backdrop');
+  var btnCloseMatrix = document.getElementById('btn-close-matrix');
+  var btnToggleGrid = document.getElementById('btn-toggle-grid');
+  var btnOpenMatrix = document.getElementById('btn-open-matrix');
+  var matrixFarthestWrap = document.getElementById('matrix-farthest-wrap');
+  var matrixLatestQNum = document.getElementById('matrix-latest-q-num');
+  var btnMatrixReturnLatest = document.getElementById('btn-matrix-return-latest');
+
+  var matrixGroupEI = document.getElementById('matrix-group-ei');
+  var matrixGroupSN = document.getElementById('matrix-group-sn');
+  var matrixGroupTF = document.getElementById('matrix-group-tf');
+  var matrixGroupJP = document.getElementById('matrix-group-jp');
 
   // Check URL params for direct shared result: ?type=INTJ&ei=76&sn=82&tf=72&jp=85
   var urlParams = new URLSearchParams(window.location.search);
@@ -654,10 +797,87 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
     });
   }
 
+  // Question Matrix Setup (60 Chips)
+  function initMatrixChips() {
+    if (!matrixGroupEI) return;
+    matrixGroupEI.innerHTML = '';
+    matrixGroupSN.innerHTML = '';
+    matrixGroupTF.innerHTML = '';
+    matrixGroupJP.innerHTML = '';
+
+    for (var i = 0; i < questions.length; i++) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'q-chip-btn';
+      btn.setAttribute('data-idx', String(i));
+      btn.textContent = String(i + 1);
+      btn.addEventListener('click', function() {
+        var targetIdx = parseInt(this.getAttribute('data-idx') || '0', 10);
+        renderQuestion(targetIdx);
+        closeMatrixModal();
+      });
+
+      if (i < 15) matrixGroupEI.appendChild(btn);
+      else if (i < 30) matrixGroupSN.appendChild(btn);
+      else if (i < 45) matrixGroupTF.appendChild(btn);
+      else matrixGroupJP.appendChild(btn);
+    }
+  }
+  initMatrixChips();
+
+  function updateMatrixChips() {
+    var allChips = document.querySelectorAll('.q-chip-btn');
+    allChips.forEach(function(chip) {
+      var idx = parseInt(chip.getAttribute('data-idx') || '0', 10);
+      chip.classList.toggle('current', idx === currentIndex);
+      chip.classList.toggle('answered', answers[idx] !== null);
+      chip.classList.toggle('unanswered', answers[idx] === null);
+    });
+  }
+
+  function openMatrixModal() {
+    if (questionMatrixModal) {
+      updateMatrixChips();
+      questionMatrixModal.style.display = 'flex';
+    }
+  }
+
+  function closeMatrixModal() {
+    if (questionMatrixModal) {
+      questionMatrixModal.style.display = 'none';
+    }
+  }
+
+  function jumpToLatest() {
+    if (advanceTimer) {
+      clearTimeout(advanceTimer);
+      advanceTimer = null;
+    }
+    isAdvancing = false;
+    renderQuestion(maxReachedIndex);
+    closeMatrixModal();
+  }
+
+  if (btnToggleGrid) btnToggleGrid.addEventListener('click', openMatrixModal);
+  if (btnOpenMatrix) btnOpenMatrix.addEventListener('click', openMatrixModal);
+  if (btnCloseMatrix) btnCloseMatrix.addEventListener('click', closeMatrixModal);
+  if (matrixModalBackdrop) matrixModalBackdrop.addEventListener('click', closeMatrixModal);
+
+  if (btnReturnLatest) btnReturnLatest.addEventListener('click', jumpToLatest);
+  if (btnNavReturnPill) btnNavReturnPill.addEventListener('click', jumpToLatest);
+  if (btnMatrixReturnLatest) btnMatrixReturnLatest.addEventListener('click', jumpToLatest);
+
   // 2. Render Question Card
   function renderQuestion(index) {
     if (index < 0 || index >= questions.length) return;
+    if (advanceTimer) {
+      clearTimeout(advanceTimer);
+      advanceTimer = null;
+    }
+    isAdvancing = false;
+
     currentIndex = index;
+    maxReachedIndex = Math.max(maxReachedIndex, index);
     var q = questions[index];
 
     progressStepText.textContent = (isEn ? 'Question ' : '문항 ') + (index + 1) + ' / ' + questions.length;
@@ -668,6 +888,21 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
     qNumberPill.textContent = 'Q.' + (index + 1 < 10 ? '0' : '') + (index + 1);
     qDimensionPill.textContent = facetName;
     questionText.textContent = isEn ? q.textEn : q.textKo;
+
+    // Reviewing past question indicator & return buttons
+    var isReviewingPast = (currentIndex < maxReachedIndex);
+    if (returnLatestBar) {
+      returnLatestBar.style.display = isReviewingPast ? 'flex' : 'none';
+      if (latestQNum) latestQNum.textContent = String(maxReachedIndex + 1);
+    }
+    if (btnNavReturnPill) {
+      btnNavReturnPill.style.display = isReviewingPast ? 'inline-flex' : 'none';
+      if (navLatestNum) navLatestNum.textContent = String(maxReachedIndex + 1);
+    }
+    if (matrixFarthestWrap) {
+      matrixFarthestWrap.style.display = isReviewingPast ? 'block' : 'none';
+      if (matrixLatestQNum) matrixLatestQNum.textContent = String(maxReachedIndex + 1);
+    }
 
     // Likert button states
     var curVal = answers[index];
@@ -694,15 +929,38 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
       btnNavNext.innerHTML = '<span>' + (isEn ? 'Next →' : '다음 문항 →') + '</span>';
       btnNavNext.classList.remove('finish-mode');
     }
+
+    updateMatrixChips();
   }
 
-  // 3. Select Score
+  // 3. Select Score (Throttled to prevent skips on rapid clicking)
   function selectScore(score) {
-    answers[currentIndex] = score;
-    renderQuestion(currentIndex);
+    if (isAdvancing) return; // Prevent accidental double-clicks from skipping questions
+    if (advanceTimer) {
+      clearTimeout(advanceTimer);
+      advanceTimer = null;
+    }
 
-    // Auto-advance with smooth transition after 220ms
-    setTimeout(function() {
+    answers[currentIndex] = score;
+
+    // Update button visual state immediately
+    likertBtns.forEach(function(btn) {
+      var s = parseInt(btn.getAttribute('data-score') || '0', 10);
+      if (s === score) {
+        btn.classList.add('selected');
+      } else {
+        btn.classList.remove('selected');
+      }
+    });
+
+    var totalAnswered = answers.filter(function(v) { return v !== null; }).length;
+    answeredCounter.textContent = totalAnswered + ' / ' + questions.length + (isEn ? ' answered' : ' 완료');
+    updateMatrixChips();
+
+    // Auto-advance with smooth transition after 240ms
+    isAdvancing = true;
+    advanceTimer = setTimeout(function() {
+      isAdvancing = false;
       if (currentIndex < questions.length - 1) {
         renderQuestion(currentIndex + 1);
       } else {
@@ -715,7 +973,7 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
           runCalculation();
         }
       }
-    }, 220);
+    }, 240);
   }
 
   // Bind click to Likert buttons
@@ -729,12 +987,16 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
   // Prev / Next buttons
   if (btnNavPrev) {
     btnNavPrev.addEventListener('click', function() {
+      if (advanceTimer) { clearTimeout(advanceTimer); advanceTimer = null; }
+      isAdvancing = false;
       if (currentIndex > 0) renderQuestion(currentIndex - 1);
     });
   }
 
   if (btnNavNext) {
     btnNavNext.addEventListener('click', function() {
+      if (advanceTimer) { clearTimeout(advanceTimer); advanceTimer = null; }
+      isAdvancing = false;
       if (currentIndex === questions.length - 1) {
         var unansIdx = answers.findIndex(function(v) { return v === null; });
         if (unansIdx !== -1) {
@@ -749,15 +1011,21 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
     });
   }
 
-  // 4. Keyboard Shortcuts: 1-7 for scores, Arrow keys for navigation
+  // 4. Keyboard Shortcuts: 1-7 for scores, Arrow keys for navigation, Esc to close matrix
   window.addEventListener('keydown', function(e) {
     if (stageRunner.style.display === 'none') return;
     var key = e.key;
-    if (key >= '1' && key <= '7') {
+    if (key === 'Escape') {
+      closeMatrixModal();
+    } else if (key >= '1' && key <= '7') {
       selectScore(parseInt(key, 10));
     } else if (key === 'ArrowLeft') {
+      if (advanceTimer) { clearTimeout(advanceTimer); advanceTimer = null; }
+      isAdvancing = false;
       if (currentIndex > 0) renderQuestion(currentIndex - 1);
     } else if (key === 'ArrowRight') {
+      if (advanceTimer) { clearTimeout(advanceTimer); advanceTimer = null; }
+      isAdvancing = false;
       if (currentIndex < questions.length - 1) renderQuestion(currentIndex + 1);
     }
   });
@@ -852,62 +1120,157 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
       });
     }
 
-    // Dimension percentage meters
+    // Dimension percentage meters & situational behavior analysis
     var ei = resultData.percentages.EI;
     var sn = resultData.percentages.SN;
     var tf = resultData.percentages.TF;
     var jp = resultData.percentages.JP;
 
-    function formatStrength(pct) {
-      if (pct >= 90) return isEn ? 'Very Strong' : '극단적 확고형';
-      if (pct >= 75) return isEn ? 'Clear Preference' : '확고형';
-      if (pct >= 60) return isEn ? 'Moderate' : '완만형';
-      return isEn ? 'Flexible / Balanced' : '균형형';
+    function getDimDetail(dimKey, primary, percent, isEn) {
+      var isBalanced = percent <= 58;
+      var isModerate = percent > 58 && percent < 75;
+      var isClear = percent >= 75 && percent < 90;
+      var isExtreme = percent >= 90;
+
+      var strengthLabel = '';
+      var strengthIcon = '';
+      if (isExtreme) {
+        strengthLabel = isEn ? 'Extreme Consistency (90%+)' : '극단적 확신형 (90%+)';
+        strengthIcon = '⚡';
+      } else if (isClear) {
+        strengthLabel = isEn ? 'Clear Preference (75~89%)' : '뚜렷한 확신형 (75~89%)';
+        strengthIcon = '🎯';
+      } else if (isModerate) {
+        strengthLabel = isEn ? 'Moderate Preference (59~74%)' : '완만한 지향형 (59~74%)';
+        strengthIcon = '⚖️';
+      } else {
+        strengthLabel = isEn ? 'Situation-Adaptive (50~58%)' : '상황적 유연형 (50~58%)';
+        strengthIcon = '🔄';
+      }
+
+      var desc = '';
+      if (dimKey === 'EI') {
+        var ePct = primary === 'E' ? percent : (100 - percent);
+        var iPct = 100 - ePct;
+        if (isBalanced) {
+          desc = isEn 
+            ? 'With Extraversion (' + ePct + '%) and Introversion (' + iPct + '%) near 50:50, you are an <strong>Ambivert</strong>. You adapt flexibly: engaging enthusiastically in familiar, comfortable groups, yet actively withdrawing into quiet solitude to recharge whenever social fatigue sets in.'
+            : '외향(' + ePct + '%)과 내향(' + iPct + '%)의 비율이 팽팽한 대표적 <strong>상황적 양향성(Ambivert)</strong>입니다! 당신은 극단적인 외톨이도, 쉼 없는 파티피플도 아닙니다. <strong>상황과 상대방에 따라 E와 I 모드를 자유자재로 스위칭</strong>합니다. 마음이 통하는 모임이나 열정적인 프로젝트에서는 활기찬 외향(E)으로 나서지만, 에너지가 소진되면 반드시 홀로 있는 시공간으로 들어가 내향(I)으로 스스로를 재충전합니다.';
+        } else if (isModerate) {
+          desc = isEn
+            ? 'You comfortably favor ' + (primary === 'E' ? 'Extraversion' : 'Introversion') + ' (' + percent + '%), while possessing healthy situational adaptability to enjoy ' + (primary === 'E' ? 'solitary contemplation' : 'social interaction') + ' when needed.'
+            : (primary === 'E' ? '외향(E)' : '내향(I)') + ' 성향(' + percent + '%)을 안정적 기반으로 삼되, 업무적 필요나 특정 상황에서는 반대 성향도 무리 없이 발휘할 수 있는 건강한 사회적 유연성을 지니고 있습니다.';
+        } else {
+          desc = isEn
+            ? 'Deeply defined ' + (primary === 'E' ? 'Extraversion' : 'Introversion') + ' (' + percent + '%). Your primary source of vitality is ' + (primary === 'E' ? 'external interaction, group momentum, and real-time social expression' : 'peaceful solitude, deep self-reflection, and undisturbed mental autonomy') + '.'
+            : (primary === 'E' ? '외향(E)' : '내향(I)') + ' 성향(' + percent + '%)이 매우 뚜렷합니다. 에너지의 원천이 확고하여 어떤 환경에서도 ' + (primary === 'E' ? '사람들과 교류하고 적극적으로 감정을 표현할 때 최고의 활력과 생기를 얻습니다' : '타인에게 방해받지 않는 독립적인 시공간 속에서 비로소 온전한 평온과 두뇌의 명료함을 누립니다') + '.';
+        }
+      } else if (dimKey === 'SN') {
+        var sPct = primary === 'S' ? percent : (100 - percent);
+        var nPct = 100 - sPct;
+        if (isBalanced) {
+          desc = isEn
+            ? 'Sensing (' + sPct + '%) and Intuition (' + nPct + '%) maintain ideal harmony. You are a <strong>Pragmatic Visionary</strong>—readily dreaming up big-picture concepts and creative ideas (N), while rigorously checking concrete facts, data metrics, and realistic execution steps (S).'
+            : '감각(' + sPct + '%)과 직관(' + nPct + '%)이 완벽한 균형을 이루는 <strong>실사구시 융합형</strong>입니다! 거시적인 미래 비전과 기발한 가능성(N)을 상상하는 통찰력을 지니면서도, 이를 현실 세계로 안착시킬 구체적인 데이터·수치·실행 계획(S)을 놓치지 않습니다. 뜬구름 잡는 공상에 빠지지도, 눈앞의 반복에 갇히지도 않는 입체적 두뇌를 자랑합니다.';
+        } else if (isModerate) {
+          desc = isEn
+            ? 'Guided predominantly by ' + (primary === 'S' ? 'tangible experience and empirical facts (S)' : 'underlying patterns and intuitive insight (N)') + ' (' + percent + '%), while comfortably referencing ' + (primary === 'S' ? 'creative possibilities' : 'realistic details') + '.'
+            : (primary === 'S' ? '실제적 경험과 구체적 팩트(S)' : '숨겨진 맥락과 직관적 통찰(N)') + '(' + percent + '%)을 주된 판단 렌즈로 사용하되, 필요 시 반대 축의 시각도 열린 마음으로 수용합니다.';
+        } else {
+          desc = isEn
+            ? 'Decisive ' + (primary === 'S' ? 'Sensing' : 'Intuition') + ' (' + percent + '%). You perceive reality primarily through ' + (primary === 'S' ? 'verifiable evidence, sensory details, and proven methodology' : 'subconscious archetypes, abstract connections, and transformative future trends') + '.'
+            : (primary === 'S' ? '감각(S)' : '직관(N)') + ' 성향(' + percent + '%)이 압도적입니다. 정보를 받아들일 때 ' + (primary === 'S' ? '눈에 보이는 확실한 증거와 경험적 실효성을 절대적으로 신뢰하며 모호함을 철저히 배제합니다' : '드러난 표면 너머의 숨겨진 이면과 미래의 가능성, 패러다임의 변화를 본능적으로 직관합니다') + '.';
+        }
+      } else if (dimKey === 'TF') {
+        var tPct = primary === 'T' ? percent : (100 - percent);
+        var fPct = 100 - tPct;
+        if (isBalanced) {
+          desc = isEn
+            ? 'Thinking (' + tPct + '%) and Feeling (' + fPct + '%) are balanced (50:50). You are a <strong>Situation-Adaptive Hybrid Thinker-Feeler</strong>! In work projects, crisis analysis, and practical debates, you evaluate with razor-sharp logic and factual causality (T). But when dealing with human heartaches, personal friendships, and team dynamics, you effortlessly switch to warm, sincere empathy (F). People often see you as "exceptionally competent and rational at work, yet warm and deeply caring in life."'
+            : '사고(' + tPct + '%)와 감정(' + fPct + '%)이 50:50에 가깝게 조화를 이루는 <strong>상황적 양면 공감형 (하이브리드)</strong>입니다! 당신은 피도 눈물도 없는 냉혈한도, 감정에 휘둘려 일을 망치는 사람도 아닙니다. <strong>공적인 업무나 문제 해결 시에는 팩트와 논리(T)로 명확하게 결단하지만, 인간관계나 누군가 위로를 구할 때는 따뜻한 감정(F)으로 깊이 공감합니다.</strong> 상황과 맥락에 따라 T와 F가 자연스럽게 전환되어 주변인들로부터 "일할 때는 똑 부러지고 예리한데, 사석에서는 따뜻하고 배려심 넘친다"는 높은 신뢰를 받습니다.';
+        } else if (isModerate) {
+          desc = isEn
+            ? 'While anchored in ' + (primary === 'T' ? 'objective principles (T)' : 'human empathy and core values (F)') + ' (' + percent + '%), you maturely factor the impact on people and circumstances into your choices.'
+            : (primary === 'T' ? '논리적 타당성과 원칙(T)' : '사람의 마음과 정서적 조화(F)') + '(' + percent + '%)을 우선시하되, ' + (primary === 'T' ? '상대방의 감정적 상태와 관계의 지속성도 신중히 배려합니다' : '현실적인 효율성과 인과관계도 함께 고려하는 균형감을 보입니다') + '.';
+        } else {
+          desc = isEn
+            ? 'Powerful ' + (primary === 'T' ? 'Thinking' : 'Feeling') + ' preference (' + percent + '%). In any dilemma, you anchor your choices on ' + (primary === 'T' ? 'objective truth, causal logic, and unbiased merit, regardless of emotional pressure' : 'compassion, interpersonal harmony, and profound emotional authenticity, refusing cold expediency') + '.'
+            : (primary === 'T' ? '사고(T)' : '감정(F)') + ' 성향(' + percent + '%)이 매우 확고합니다. 어떤 상황에서도 ' + (primary === 'T' ? '사적인 정이나 감정적 호소에 흔들리지 않고 오직 진실과 원칙, 효율성만을 기준으로 칼 같은 결단을 내립니다' : '숫자나 냉정한 규칙보다 사람의 마음과 가치, 관계의 온기를 절대적으로 소중히 여기며 타인의 아픔에 진심으로 반응합니다') + '.';
+        }
+      } else if (dimKey === 'JP') {
+        var jPct = primary === 'J' ? percent : (100 - percent);
+        var pPct = 100 - jPct;
+        if (isBalanced) {
+          desc = isEn
+            ? 'Judging (' + jPct + '%) and Perceiving (' + pPct + '%) are in equilibrium. You are an <strong>Agile & Adaptive Planner</strong>. You establish essential timelines and structured goals (J), yet welcome spontaneous twists, new creative opportunities, and sudden changes with fluid grace (P).'
+            : '판단(' + jPct + '%)과 인식(' + pPct + '%)이 조화를 이룬 <strong>유연한 계획형 (애자일 스타일)</strong>입니다! 전체적인 마감 기한과 핵심 뼈대(J)는 든든하게 세워두되, 진행 과정에서 돌발 변수나 새로운 영감이 찾아오면 스트레스 없이 유연하게 계획을 수정하고 즐기는(P) 뛰어난 상황 적응력을 자랑합니다. 계획에 갇혀 질식하지도, 무계획으로 표류하지도 않는 최적의 라이프스타일 밸런스입니다.';
+        } else if (isModerate) {
+          desc = isEn
+            ? 'Leaning toward ' + (primary === 'J' ? 'structured predictability (J)' : 'spontaneous freedom (P)') + ' (' + percent + '%), while possessing easy adaptability when schedules shift.'
+            : (primary === 'J' ? '체계적인 계획과 정돈(J)' : '자유로운 탐색과 유연성(P)') + '(' + percent + '%)을 선호하지만, 상황이 바뀌었을 때 당황하지 않고 대처하는 유연함을 보유하고 있습니다.';
+        } else {
+          desc = isEn
+            ? 'Uncompromising ' + (primary === 'J' ? 'Judging' : 'Perceiving') + ' orientation (' + percent + '%). You thrive at your highest potential when ' + (primary === 'J' ? 'everything is neatly organized, scheduled, and systematically executed according to plan' : 'all possibilities remain open, giving you maximum freedom to improvise and strike spontaneously in the flow of the moment') + '.'
+            : (primary === 'J' ? '판단(J)' : '인식(P)') + ' 성향(' + percent + '%)이 절대적입니다. 일상을 살아갈 때 ' + (primary === 'J' ? '예측 불가능한 무질서를 극도로 기피하며, 모든 일정과 단계가 명확하게 정돈되고 통제될 때 최고의 심리적 안정감을 누립니다' : '엄격한 규칙이나 닫힌 일정에 갇히는 것을 극도로 답답해하며, 자유로운 탐색과 닥쳐오는 순간의 직관적 몰입에서 최고의 잠재력이 폭발합니다') + '.';
+        }
+      }
+
+      return {
+        strengthLabel: strengthLabel,
+        strengthIcon: strengthIcon,
+        isBalanced: isBalanced,
+        desc: desc
+      };
     }
 
-    // EI Meter
-    var isE = ei.primary === 'E';
-    var eVal = isE ? ei.percent : (100 - ei.percent);
-    var iVal = 100 - eVal;
-    var dimBadgeEi = document.getElementById('dim-badge-ei');
-    if (dimBadgeEi) dimBadgeEi.textContent = (isE ? (ei.percent + '% 외향') : (ei.percent + '% 내향')) + ' (' + formatStrength(ei.percent) + ')';
-    var fillEiL = document.getElementById('dim-fill-ei-left');
-    if (fillEiL) fillEiL.style.width = eVal + '%';
-    var fillEiR = document.getElementById('dim-fill-ei-right');
-    if (fillEiR) fillEiR.style.width = iVal + '%';
+    function updateDimensionUI(dimKey, primary, percent, leftLetter, rightLetter, leftName, rightName) {
+      var isLeft = primary === leftLetter;
+      var leftVal = isLeft ? percent : (100 - percent);
+      var rightVal = 100 - leftVal;
 
-    // SN Meter
-    var isN = sn.primary === 'N';
-    var nVal = isN ? sn.percent : (100 - sn.percent);
-    var sVal = 100 - nVal;
-    var dimBadgeSn = document.getElementById('dim-badge-sn');
-    if (dimBadgeSn) dimBadgeSn.textContent = (isN ? (sn.percent + '% 직관') : (sn.percent + '% 감각')) + ' (' + formatStrength(sn.percent) + ')';
-    var fillSnL = document.getElementById('dim-fill-sn-left');
-    if (fillSnL) fillSnL.style.width = sVal + '%';
-    var fillSnR = document.getElementById('dim-fill-sn-right');
-    if (fillSnR) fillSnR.style.width = nVal + '%';
+      var sideLeft = document.getElementById('dim-side-' + leftLetter.toLowerCase());
+      var sideRight = document.getElementById('dim-side-' + rightLetter.toLowerCase());
+      var pctLeft = document.getElementById('dim-pct-' + leftLetter.toLowerCase());
+      var pctRight = document.getElementById('dim-pct-' + rightLetter.toLowerCase());
+      var fillL = document.getElementById('dim-fill-' + dimKey.toLowerCase() + '-left');
+      var fillR = document.getElementById('dim-fill-' + dimKey.toLowerCase() + '-right');
+      var badge = document.getElementById('dim-badge-' + dimKey.toLowerCase());
+      var descBox = document.getElementById('dim-desc-' + dimKey.toLowerCase());
 
-    // TF Meter
-    var isF = tf.primary === 'F';
-    var fVal = isF ? tf.percent : (100 - tf.percent);
-    var tVal = 100 - fVal;
-    var dimBadgeTf = document.getElementById('dim-badge-tf');
-    if (dimBadgeTf) dimBadgeTf.textContent = (isF ? (tf.percent + '% 감정') : (tf.percent + '% 사고')) + ' (' + formatStrength(tf.percent) + ')';
-    var fillTfL = document.getElementById('dim-fill-tf-left');
-    if (fillTfL) fillTfL.style.width = tVal + '%';
-    var fillTfR = document.getElementById('dim-fill-tf-right');
-    if (fillTfR) fillTfR.style.width = fVal + '%';
+      if (pctLeft) pctLeft.textContent = leftVal + '%';
+      if (pctRight) pctRight.textContent = rightVal + '%';
+      if (fillL) fillL.style.width = leftVal + '%';
+      if (fillR) fillR.style.width = rightVal + '%';
 
-    // JP Meter
-    var isP = jp.primary === 'P';
-    var pVal = isP ? jp.percent : (100 - jp.percent);
-    var jVal = 100 - pVal;
-    var dimBadgeJp = document.getElementById('dim-badge-jp');
-    if (dimBadgeJp) dimBadgeJp.textContent = (isP ? (jp.percent + '% 인식') : (jp.percent + '% 판단')) + ' (' + formatStrength(jp.percent) + ')';
-    var fillJpL = document.getElementById('dim-fill-jp-left');
-    if (fillJpL) fillJpL.style.width = jVal + '%';
-    var fillJpR = document.getElementById('dim-fill-jp-right');
-    if (fillJpR) fillJpR.style.width = pVal + '%';
+      if (sideLeft) {
+        if (isLeft) sideLeft.classList.add('dominant');
+        else sideLeft.classList.remove('dominant');
+      }
+      if (sideRight) {
+        if (!isLeft) sideRight.classList.add('dominant');
+        else sideRight.classList.remove('dominant');
+      }
+
+      var info = getDimDetail(dimKey, primary, percent, isEn);
+      var primaryName = isLeft ? leftName : rightName;
+      if (badge) {
+        badge.textContent = info.strengthIcon + ' ' + percent + '% ' + primaryName + ' (' + info.strengthLabel + ')';
+        if (info.isBalanced) {
+          badge.classList.add('badge-balanced');
+        } else {
+          badge.classList.remove('badge-balanced');
+        }
+      }
+
+      if (descBox) {
+        descBox.innerHTML = '<div class="sit-desc-header"><span class="sit-tag">💡 ' + (isEn ? 'Situational Behavior Insight' : '상황별 행동 양식 및 유연성 분석') + '</span></div><p class="sit-desc-text">' + info.desc + '</p>';
+      }
+    }
+
+    updateDimensionUI('EI', ei.primary, ei.percent, 'E', 'I', isEn ? 'Extravert' : '외향', isEn ? 'Introvert' : '내향');
+    updateDimensionUI('SN', sn.primary, sn.percent, 'S', 'N', isEn ? 'Sensing' : '감각', isEn ? 'Intuition' : '직관');
+    updateDimensionUI('TF', tf.primary, tf.percent, 'T', 'F', isEn ? 'Thinking' : '사고', isEn ? 'Feeling' : '감정');
+    updateDimensionUI('JP', jp.primary, jp.percent, 'J', 'P', isEn ? 'Judging' : '판단', isEn ? 'Perceiving' : '인식');
 
     // Section 1: Overview & Figures
     var overP = document.getElementById('res-overview-p');
@@ -1072,7 +1435,7 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
     window.scrollTo({ top: stageResult.offsetTop - 30, behavior: 'smooth' });
   }
 
-  // 7. Compatibility Calculator Helper
+  // 7. Compatibility Calculator Helper (Full Jungian Dynamics)
   function updateCompatibilityView(type1, type2) {
     var goldenPairs = {
       INTJ: ['ENFP', 'ENTP'], INTP: ['ENTJ', 'ENFJ'], ENTJ: ['INTP', 'INFP'], ENTP: ['INFJ', 'INTJ'],
@@ -1081,24 +1444,51 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
       ISTP: ['ESFJ', 'ESTJ'], ISFP: ['ESTJ', 'ESFJ'], ESTP: ['ISFJ', 'ISTJ'], ESFP: ['ISTJ', 'ISFJ']
     };
 
-    var score = 75;
-    var badge = '🌿 ' + (isEn ? 'Harmonious Balance' : '조화로운 보완 관계');
-    var desc = isEn 
-      ? 'A healthy balance of similarities and differences. You offer complementary perspectives that broaden each other’s horizons.'
-      : '서로 다른 장점과 관점을 지니고 있어 배울 점이 많은 관계입니다. 솔직한 대화로 차이를 좁혀가면 누구보다 깊은 유대를 맺습니다.';
+    var t1 = (type1 || 'INTJ').toUpperCase();
+    var t2 = (type2 || 'ENFP').toUpperCase();
 
-    if (type1 === type2) {
+    var score = 72;
+    var badge = '🌿 ' + (isEn ? 'Harmonious Balance (Solid Foundation)' : '조화로운 보완 관계 (Harmonious Balance)');
+    var desc = isEn 
+      ? 'A healthy balance of similarities and differences. With honest communication, you offer complementary perspectives that broaden each other’s life experience and wisdom.'
+      : '서로 다른 장점과 관점을 지니고 있어 배울 점이 많은 관계입니다. 일상적인 대화와 솔직한 감정 교류를 통해 차이를 좁혀나간다면 세상 어떤 인연보다도 깊고 풍요로운 유대를 맺을 수 있습니다.';
+
+    if (t1 === t2) {
       score = 85;
-      badge = '🪞 ' + (isEn ? 'Soul Mirror' : '영혼의 거울 같은 관계');
+      badge = '🪞 ' + (isEn ? 'Soul Mirror (High Resonance)' : '영혼의 거울 (Soul Mirror)');
       desc = isEn
-        ? 'Identical cognitive wiring enables effortless communication and mutual understanding, though you must navigate identical blind spots together.'
-        : '말하지 않아도 상대방의 생각과 기분을 훤히 꿰뚫어 보는 깊은 공감대를 형성합니다. 단점까지 같을 수 있어 배려가 필요합니다.';
-    } else if (goldenPairs[type1]?.includes(type2)) {
+        ? 'You share identical cognitive wiring, enabling deep mutual understanding with zero explanation. However, sharing identical blind spots means stagnation or negative loops can amplify unless fresh external perspectives are welcomed.'
+        : '말하지 않아도 상대방의 생각과 기분을 훤히 꿰뚫어 볼 수 있는 깊은 공감대를 형성합니다. 다만 단점과 맹점까지 똑같아서 한 번 갈등이나 침체에 빠지면 함께 헤어나오기 힘들 수 있으므로 외부의 자극이 필요합니다.';
+    } else if (goldenPairs[t1]?.includes(t2)) {
       score = 98;
-      badge = '💖 ' + (isEn ? 'Ideal Match (Transcendent Synergy)' : '천생연분 환상의 궁합');
+      badge = '💖 ' + (isEn ? 'Ideal Match (Transcendent Chemistry)' : '천생연분 환상의 궁합 (Ideal Match)');
       desc = isEn
-        ? 'Exceptional psychological pairing where each partner’s primary strengths effortlessly cover the other’s blind spots. Effortless fireworks and deep mutual growth.'
-        : '서로의 장점이 상대방의 약점을 마법처럼 보완해 주는 최고의 케미스트리입니다. 대화가 끊이지 않으며 함께 성장하는 환상의 짝꿍입니다.';
+        ? 'An exceptional psychological pairing where each partner’s primary strengths effortlessly cover the other’s blind spots. Conversations spark spontaneous fireworks and mutual growth feels exhilarating and effortless.'
+        : '서로의 강점이 상대방의 아킬레스건을 자연스럽게 보완해 주는 완벽한 파트너십입니다. 대화가 끊이지 않으며, 함께 있을 때 서로가 더 지혜롭고 매력적인 사람으로 성장하도록 영감을 줍니다.';
+    } else {
+      var isSameIntuition = (t1[1] === t2[1]);
+      var isSameThinking = (t1[2] === t2[2]);
+      var isOppositeIntrovert = (t1[0] !== t2[0]);
+
+      if (isSameIntuition && isOppositeIntrovert) {
+        score = 88;
+        badge = '✨ ' + (isEn ? 'Great Synergy (Strong Alignment)' : '매우 좋은 인연 (Great Synergy)');
+        desc = isEn
+          ? 'Sharing the same perceptual wavelength allows intuitive alignment on core values and humor. Extrovert-introvert complementarity ensures both adventure and quiet emotional restoration.'
+          : '세상을 바라보는 렌즈(인식 기능)가 같아 공통의 관심사와 가치관을 쉽게 공유합니다. 한쪽의 외향성이 다른 쪽의 내향적 안식처와 조화를 이루어 오랫동안 편안하게 지속되는 관계입니다.';
+      } else if (isSameIntuition && isSameThinking) {
+        score = 80;
+        badge = '🤝 ' + (isEn ? 'Intellectual Allies (High Respect)' : '지적 파트너 (Intellectual Allies)');
+        desc = isEn
+          ? 'Similar cognitive processing styles make you brilliant co-creators and strategic comrades. As long as intellectual rivalries are kept playful, you form an unshakeable team.'
+          : '목표와 사고방식이 비슷하여 비즈니스, 스터디, 창작 프로젝트를 함께할 때 최상의 추진력을 발휘합니다. 사소한 자존심 대결만 주의한다면 평생을 함께할 든든한 동지가 됩니다.';
+      } else if (!isSameIntuition && !isSameThinking && !isOppositeIntrovert) {
+        score = 55;
+        badge = '💡 ' + (isEn ? 'Opposites Attract (Requires Curiosity)' : '서로 다른 매력 (Opposites Attract)');
+        desc = isEn
+          ? 'Operating on completely different psychological frequencies, you offer each other views of an alien universe. Mutual respect and patient translation of motives are vital for lasting harmony.'
+          : '세상을 인식하고 판단하는 방식이 완전히 달라 처음에는 신기하고 호기심이 발동합니다. 다만 깊은 관계로 발전하려면 상대방의 방식이 "틀린 것"이 아니라 "다른 것"임을 인정하는 열린 마음이 필수적입니다.';
+      }
     }
 
     var badgeTag = document.getElementById('compat-badge-tag');
@@ -1381,13 +1771,93 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
   }
 
   .runner-controls-top {
-    margin-top: 8px;
-    text-align: right;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+  }
+
+  .btn-toggle-grid {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    color: #c7d2fe;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-toggle-grid:hover {
+    background: rgba(99, 102, 241, 0.28);
+    color: #ffffff;
+    border-color: rgba(99, 102, 241, 0.6);
   }
 
   .keyboard-tip-tag {
     font-size: 0.78rem;
     color: #64748b;
+  }
+
+  /* Return to Latest Question Bar */
+  .return-latest-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.18) 0%, rgba(236, 72, 153, 0.14) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    border-radius: 14px;
+    padding: 10px 16px;
+    margin-bottom: 22px;
+    animation: pulseGlow 2.5s infinite alternate;
+  }
+
+  @keyframes pulseGlow {
+    0% { box-shadow: 0 0 0 rgba(99, 102, 241, 0); }
+    100% { box-shadow: 0 0 16px rgba(99, 102, 241, 0.35); }
+  }
+
+  .return-bar-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .return-icon {
+    font-size: 1.1rem;
+  }
+
+  .return-msg {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #cbd5e1;
+  }
+
+  .btn-return-latest {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    border: none;
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 800;
+    padding: 8px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    transition: transform 0.15s, box-shadow 0.15s;
+    white-space: nowrap;
+  }
+
+  .btn-return-latest:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.6);
   }
 
   /* Question Card */
@@ -1523,6 +1993,67 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
+  }
+
+  .nav-center-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .btn-open-matrix {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 8px 14px;
+    color: #cbd5e1;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-open-matrix:hover {
+    background: rgba(45, 55, 75, 0.85);
+    color: #ffffff;
+    border-color: rgba(99, 102, 241, 0.5);
+  }
+
+  .matrix-pill-tag {
+    font-size: 0.75rem;
+    background: rgba(99, 102, 241, 0.25);
+    color: #a5b4fc;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 700;
+  }
+
+  .btn-nav-return-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: #ffffff;
+    border: none;
+    font-size: 0.82rem;
+    font-weight: 800;
+    padding: 8px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn-nav-return-pill:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.6);
   }
 
   .btn-nav-prev, .btn-nav-next {
@@ -1538,6 +2069,7 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s;
+    white-space: nowrap;
   }
 
   .btn-nav-prev:disabled {
@@ -1549,6 +2081,207 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
     background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
     color: #ffffff;
     box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4);
+  }
+
+  .answered-counter {
+    font-size: 0.88rem;
+    color: #94a3b8;
+    font-weight: 600;
+  }
+
+  /* Question Matrix / Navigator Modal Drawer */
+  .question-matrix-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .matrix-modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(5, 8, 16, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .matrix-modal-card {
+    position: relative;
+    z-index: 1;
+    background: #0f1424;
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    border-radius: 24px;
+    max-width: 820px;
+    width: 100%;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+    padding: 28px 24px;
+    overflow: hidden;
+  }
+
+  .matrix-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    gap: 12px;
+  }
+
+  .matrix-title-group h3 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 4px;
+  }
+
+  .matrix-title-group p {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin: 0;
+  }
+
+  .btn-close-matrix {
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    color: #94a3b8;
+    font-size: 1.1rem;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .btn-close-matrix:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+  }
+
+  .matrix-legend-row {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    margin-bottom: 14px;
+    font-size: 0.8rem;
+    color: #cbd5e1;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .legend-dot.answered { background: #10b981; }
+  .legend-dot.current { background: #818cf8; box-shadow: 0 0 6px #818cf8; }
+  .legend-dot.unanswered { background: #475569; }
+
+  .matrix-farthest-action {
+    margin-bottom: 14px;
+  }
+
+  .btn-matrix-return-latest {
+    width: 100%;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(236, 72, 153, 0.2) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    color: #ffffff;
+    font-size: 0.88rem;
+    font-weight: 800;
+    padding: 10px 18px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-matrix-return-latest:hover {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.35) 0%, rgba(236, 72, 153, 0.35) 100%);
+    border-color: #818cf8;
+  }
+
+  .matrix-grid-scroll {
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-right: 4px;
+  }
+
+  .matrix-dimension-group {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+
+  .dim-group-title {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #a5b4fc;
+    margin-bottom: 10px;
+  }
+
+  .matrix-chips-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+    gap: 8px;
+  }
+
+  :global(.q-chip-btn) {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.03);
+    color: #94a3b8;
+    font-size: 0.82rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  :global(.q-chip-btn:hover) {
+    transform: scale(1.08);
+    border-color: rgba(99, 102, 241, 0.5);
+    color: #ffffff;
+  }
+
+  :global(.q-chip-btn.answered) {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.4);
+    color: #6ee7b7;
+  }
+
+  :global(.q-chip-btn.current) {
+    background: rgba(99, 102, 241, 0.35);
+    border: 2px solid #818cf8;
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.6);
+    font-weight: 900;
   }
 
   .answered-counter {
@@ -1758,54 +2491,137 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
     line-height: 1.6;
   }
 
-  /* Dimension Breakdown Meters */
+  /* Dimension Breakdown Meters & Situational Flexibility */
   .dimensions-breakdown-card {
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(99, 102, 241, 0.28);
+    border-radius: 22px;
     padding: 28px 24px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  .dimensions-header-group {
+    margin-bottom: 22px;
   }
 
   .dimensions-title {
-    font-size: 1.15rem;
+    font-size: 1.25rem;
     font-weight: 800;
     color: #f8fafc;
-    margin: 0 0 20px;
+    margin: 0 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dimensions-subtitle {
+    font-size: 0.88rem;
+    color: #94a3b8;
+    margin: 0;
+    line-height: 1.55;
   }
 
   .dim-meters-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 22px;
   }
 
   .dim-meter-row {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 18px;
+    transition: all 0.2s ease;
+  }
+
+  .dim-meter-row:hover {
+    border-color: rgba(99, 102, 241, 0.4);
+    background: rgba(30, 41, 59, 0.7);
   }
 
   .dim-labels {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    gap: 8px;
+  }
+
+  .dim-side {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+
+  .dim-side.dominant {
+    color: #ffffff;
+    font-weight: 800;
+  }
+
+  .dim-side.left.dominant .dim-code-letter {
+    color: #38bdf8;
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+  }
+
+  .dim-side.right.dominant .dim-code-letter {
+    color: #f43f5e;
+    text-shadow: 0 0 10px rgba(244, 63, 94, 0.6);
+  }
+
+  .dim-code-letter {
+    font-size: 1rem;
+    font-weight: 900;
+  }
+
+  .dim-name-text {
     font-size: 0.82rem;
+  }
+
+  .dim-pct-val {
+    font-size: 0.8rem;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
     color: #94a3b8;
   }
 
+  .dim-side.dominant .dim-pct-val {
+    background: rgba(99, 102, 241, 0.25);
+    color: #e2e8f0;
+    font-weight: 900;
+    border: 1px solid rgba(99, 102, 241, 0.4);
+  }
+
   .dim-score-badge {
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     font-weight: 800;
-    color: #a5b4fc;
-    background: rgba(99, 102, 241, 0.15);
-    padding: 2px 8px;
-    border-radius: 6px;
+    color: #c7d2fe;
+    background: rgba(99, 102, 241, 0.2);
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    padding: 3px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  .dim-score-badge.badge-balanced {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(99, 102, 241, 0.25) 100%);
+    border-color: rgba(16, 185, 129, 0.5);
+    color: #6ee7b7;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
   }
 
   .dim-bar-track {
     position: relative;
     display: flex;
-    height: 10px;
+    height: 12px;
     background: rgba(255, 255, 255, 0.08);
     border-radius: 999px;
     overflow: hidden;
@@ -1818,10 +2634,48 @@ const profilesJson = JSON.stringify(MBTI_PROFILES);
   }
 
   .dim-bar-fill.left {
-    background: linear-gradient(90deg, #38bdf8, #6366f1);
+    background: linear-gradient(90deg, #0284c7, #38bdf8);
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .dim-bar-fill.right {
-    background: linear-gradient(90deg, #ec4899, #f43f5e);
+    background: linear-gradient(90deg, #f43f5e, #e11d48);
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Situational Insight Box */
+  .dim-situational-desc {
+    background: rgba(15, 23, 42, 0.7);
+    border-left: 3px solid #6366f1;
+    border-radius: 0 12px 12px 0;
+    padding: 12px 14px;
+    margin-top: 2px;
+  }
+
+  .sit-desc-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .sit-tag {
+    font-size: 0.74rem;
+    font-weight: 800;
+    color: #a5b4fc;
+    letter-spacing: 0.3px;
+  }
+
+  .sit-desc-text {
+    font-size: 0.82rem;
+    color: #cbd5e1;
+    margin: 0;
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+
+  .sit-desc-text strong {
+    color: #ffffff;
+    font-weight: 700;
   }
 
   /* Sticky Quick-Jump Navigation Bar */
