@@ -4,6 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import RectangleAd from '../components/ads/RectangleAd.astro';
 import NativeAd from '../components/ads/NativeAd.astro';
+import ReferralBanner from '../components/ads/ReferralBanner.astro';
 import { SITE_TITLE, SITE_TAGLINE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
 import { getKoUrl, getEnUrl } from '../i18n';
@@ -296,6 +297,9 @@ const homeFaqSchema = JSON.stringify({
           </div>
         </div>
       </section>
+
+      <!-- Adsterra Publisher Referral Banner -->
+      <ReferralBanner streamerMode={streamerMode} />
     </main>
 
     {!streamerMode && <Footer />}
