@@ -177,6 +177,28 @@ const homeFaqSchema = JSON.stringify({
         </div>
       </section>
 
+      <!-- MBTI Personality Test Highlight Banner -->
+      <section class="mbti-home-banner">
+        <div class="mbti-banner-card">
+          <div class="mbti-banner-glow"></div>
+          <div class="mbti-banner-left">
+            <div class="mbti-badge">
+              <span class="pulse-dot-mbti"></span>
+              <span>🧠 정통 60문항 융(Jung) 인지기능 기반 정밀 검사</span>
+            </div>
+            <h3>심층 정밀 MBTI <span class="gradient-text">(Personality & Cognition)</span></h3>
+            <p>
+              단순한 4글자 라벨을 넘어, 4대 심리 축 정밀 % 스펙트럼과 8대 인지기능 위계(주/부/3차/열등기능), 5대 강점, 스트레스 루프, 직업, 연애 및 스트리머 방송 성향까지 완벽 분석!
+            </p>
+          </div>
+          <div class="mbti-banner-right">
+            <a href="/mbti" class="btn-mbti-banner">
+              <span>정밀 검사 시작하기 →</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
       <!-- Content Rectangle Ad -->
       <RectangleAd streamerMode={streamerMode} />
 
@@ -229,6 +251,14 @@ const homeFaqSchema = JSON.stringify({
               <h3>검지직 (Bzzk - 치지직 실시간 방송 보호 레이더)</h3>
               <p>
                 치지직 플랫폼의 여러 라이브 방송에서 동시다발적으로 제재된 악성 분탕 계정을 실시간 교차 분석하여, 내 방송 채팅방에 들어오기 전 신속하게 사전 차단하고 보호하는 스마트 레이더 시스템입니다.
+              </p>
+            </div>
+
+            <div class="overview-card">
+              <span class="overview-icon">🧠</span>
+              <h3>정밀 MBTI & 8대 인지기능 검사 (Scientific MBTI)</h3>
+              <p>
+                60개 균형 문항과 역채점 매트릭스로 편향을 없앤 정통 심리검사. 16가지 성격 유형의 8대 인지기능 스택, 스트레스 인지 루프, 직무 커리어, 실시간 유형 궁합 계산기 및 크리에이터 방송 스타일을 무료로 분석합니다.
               </p>
             </div>
           </div>
@@ -870,6 +900,123 @@ const homeFaqSchema = JSON.stringify({
       padding: 24px 20px;
     }
     .btn-bzzk-banner {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  /* MBTI Home Banner Styles */
+  .mbti-home-banner {
+    margin: 1.5rem 0 2rem;
+  }
+
+  .mbti-banner-card {
+    position: relative;
+    background: linear-gradient(135deg, rgba(20, 24, 45, 0.95) 0%, rgba(45, 20, 60, 0.8) 100%);
+    border: 1px solid rgba(236, 72, 153, 0.35);
+    border-radius: 20px;
+    padding: 28px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px -10px rgba(236, 72, 153, 0.25);
+  }
+
+  .mbti-banner-glow {
+    position: absolute;
+    top: -40%;
+    left: 25%;
+    width: 350px;
+    height: 220px;
+    background: radial-gradient(circle, rgba(236, 72, 153, 0.25) 0%, transparent 70%);
+    filter: blur(40px);
+    pointer-events: none;
+  }
+
+  .mbti-banner-left {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+  }
+
+  .mbti-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    background: rgba(236, 72, 153, 0.15);
+    border: 1px solid rgba(236, 72, 153, 0.35);
+    color: #fbcfe8;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .pulse-dot-mbti {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #ec4899;
+    box-shadow: 0 0 10px #ec4899;
+    animation: pulse-mbti 2s infinite;
+  }
+
+  @keyframes pulse-mbti {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  .mbti-banner-left h3 {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #f8fafc;
+    margin: 0 0 8px;
+    letter-spacing: -0.02em;
+  }
+
+  .mbti-banner-left p {
+    font-size: 0.95rem;
+    color: #cbd5e1;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .mbti-banner-right {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+  }
+
+  .btn-mbti-banner {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 13px 26px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 6px 18px -4px rgba(236, 72, 153, 0.6);
+  }
+
+  .btn-mbti-banner:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px -4px rgba(236, 72, 153, 0.8);
+  }
+
+  @media (max-width: 768px) {
+    .mbti-banner-card {
+      flex-direction: column;
+      text-align: center;
+      padding: 24px 20px;
+    }
+    .btn-mbti-banner {
       width: 100%;
       justify-content: center;
     }

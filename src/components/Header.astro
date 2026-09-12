@@ -75,6 +75,14 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
         <span class="nav-icon">🛡️</span>
         <span class="nav-label">{t(lang, 'nav.bzzk')}</span>
       </a>
+      <a 
+        href={`${prefix}/mbti`} 
+        class={`nav-item ${currentPath.includes('/mbti') ? 'highlight active' : ''}`}
+        aria-current={currentPath.includes('/mbti') ? 'page' : undefined}
+      >
+        <span class="nav-icon">🧠</span>
+        <span class="nav-label">{t(lang, 'nav.mbti')}</span>
+      </a>
     </nav>
 
     <div class="header-actions">

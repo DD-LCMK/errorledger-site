@@ -1,0 +1,288 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import MbtiTestWidget from '../../components/MbtiTestWidget.astro';
+import RectangleAd from '../../components/ads/RectangleAd.astro';
+import LeaderboardAd from '../../components/ads/LeaderboardAd.astro';
+import NativeAd from '../../components/ads/NativeAd.astro';
+import { SITE_TITLE } from '../../consts';
+import { getKoUrl, getEnUrl } from '../../i18n';
+
+const siteBase = Astro.site?.toString() || 'https://errorledger.com';
+const rawPath = Astro.url.pathname.replace(/\/$/, '');
+const koUrl = getKoUrl(siteBase, rawPath);
+const enUrl = getEnUrl(siteBase, rawPath);
+
+const urlParams = Astro.url.searchParams;
+const streamerMode = urlParams.has('stream') || urlParams.has('obs');
+
+const PAGE_TITLE = `Scientific MBTI & Jungian Cognitive Function Assessment | ${SITE_TITLE}`;
+const PAGE_DESCRIPTION = "Comprehensive 60-item personality test measuring 4 psychological dimensions, 8 Jungian cognitive function stacks (Dominant, Auxiliary, Tertiary, Inferior), career blueprints, love compatibility, and creator personas.";
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead 
+      title={PAGE_TITLE} 
+      description={PAGE_DESCRIPTION}
+      lang="en"
+      hreflangKo={koUrl}
+      hreflangEn={enUrl}
+      keywords="MBTI Test, Free MBTI assessment, Jungian cognitive functions, accurate 60 questions MBTI, 16 personalities test, cognitive function stack, streamer personality test"
+    />
+  </head>
+  <body class="mbti-page-body">
+    <Header />
+
+    <main class="mbti-page-main">
+      <!-- MBTI Interactive Test Runner & Result Widget -->
+      <section class="mbti-widget-section">
+        <MbtiTestWidget lang="en" />
+      </section>
+
+      <!-- Content Rectangle Ad -->
+      <RectangleAd streamerMode={streamerMode} />
+
+      <!-- Deep Psychological Guide & Educational Section -->
+      <section class="mbti-guide-section">
+        <div class="guide-container">
+          <div class="guide-header">
+            <span class="guide-pill">PSYCHOMETRIC GUIDE</span>
+            <h2>Understanding Jungian Cognitive Functions & The 4 Dichotomies</h2>
+            <p>Why StreamArcade engineered an empirical 60-item instrument rather than a superficial quiz.</p>
+          </div>
+
+          <div class="guide-grid">
+            <div class="guide-card">
+              <div class="guide-card-icon">🧭</div>
+              <h3>1. The 4 Core Dichotomies</h3>
+              <p>
+                <strong>Extraversion/Introversion</strong> gauges energy replenishment, <strong>Sensing/Intuition</strong> reflects perceptual processing, <strong>Thinking/Feeling</strong> shapes executive decision-making, and <strong>Judging/Perceiving</strong> structures lifestyle organization. Each axis is calibrated across 3 sub-facets for balanced nuance.
+              </p>
+            </div>
+
+            <div class="guide-card">
+              <div class="guide-card-icon">🧠</div>
+              <h3>2. The 8 Cognitive Functions</h3>
+              <p>
+                Humans do not merely fit into 4 isolated letters; they utilize an internal cognitive hierarchy of 8 functions (Ni, Ne, Si, Se, Ti, Te, Fi, Fe). From your effortless Dominant function to your stress-reactive Inferior Achilles heel, this stack unlocks profound psychological self-awareness.
+              </p>
+            </div>
+
+            <div class="guide-card">
+              <div class="guide-card-icon">⚖️</div>
+              <h3>3. Eliminating Acquiescence Bias</h3>
+              <p>
+                Uncontrolled questionnaires suffer from unconscious agreement bias. Our 60-item instrument features balanced reverse-scored items per dimension, mathematically neutralizing polarity drift to yield authentic psychometric scores.
+              </p>
+            </div>
+
+            <div class="guide-card">
+              <div class="guide-card-icon">🎙️</div>
+              <h3>4. Creator & Streamer Archetypes</h3>
+              <p>
+                Understanding your cognitive function stack prevents streaming burnout. Feeling (F) creators may be vulnerable to chat criticism, while Intuitive (N) creators fatigue quickly under repetitive game loops. Tailor your live broadcast to your genuine psychological strengths.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Leaderboard Ad Banner -->
+      <LeaderboardAd streamerMode={streamerMode} />
+
+      <!-- FAQ Section -->
+      <section class="mbti-faq-section">
+        <div class="faq-container">
+          <h2 class="section-title">Frequently Asked Questions (FAQ)</h2>
+
+          <div class="faq-item">
+            <h3>Q. Why do test results fluctuate slightly between sessions?</h3>
+            <p>
+              Scores falling between 50% and 59% represent a "Flexible/Balanced" preference band. Depending on sleep, stress levels, or social context, your mind adapts fluidly. Check your dimension spectrum bars to see if you are a moderate or strong archetype.
+            </p>
+          </div>
+
+          <div class="faq-item">
+            <h3>Q. Can I share my exact percentage results with friends?</h3>
+            <p>
+              Yes! Click <strong>[Share My Result]</strong> at the top of your report to copy a unique URL containing your exact percentage breakdowns. Anyone opening the link will instantly view your full analysis without having to retake the test.
+            </p>
+          </div>
+
+          <div class="faq-item">
+            <h3>Q. Can I display this on OBS broadcast without ads?</h3>
+            <p>
+              Absolutely. Append <code>?stream</code> or <code>?obs</code> to the URL in your browser source to activate clean streamer mode with all advertisements automatically suppressed.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Native Recommendation Widget Ad -->
+      <NativeAd streamerMode={streamerMode} />
+    </main>
+
+    {!streamerMode && <Footer />}
+
+    <style>
+      .mbti-page-body {
+        margin: 0;
+        padding: 0;
+        background-color: #090c15;
+        color: #f1f5f9;
+        font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Segoe UI', Roboto, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .mbti-page-main {
+        flex: 1;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px 20px 80px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      /* Guide Section */
+      .mbti-guide-section {
+        margin: 60px 0 40px;
+      }
+
+      .guide-container {
+        max-width: 1060px;
+        margin: 0 auto;
+      }
+
+      .guide-header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .guide-pill {
+        display: inline-block;
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: #a5b4fc;
+        background: rgba(99, 102, 241, 0.15);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+        padding: 4px 14px;
+        border-radius: 999px;
+        letter-spacing: 0.05em;
+        margin-bottom: 12px;
+      }
+
+      .guide-header h2 {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #f8fafc;
+        margin: 0 0 10px;
+      }
+
+      .guide-header p {
+        font-size: 1rem;
+        color: #94a3b8;
+        margin: 0;
+      }
+
+      .guide-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+      }
+
+      .guide-card {
+        background: #111524;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 28px 24px;
+        transition: transform 0.2s, border-color 0.2s;
+      }
+
+      .guide-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(99, 102, 241, 0.35);
+      }
+
+      .guide-card-icon {
+        font-size: 2rem;
+        margin-bottom: 16px;
+      }
+
+      .guide-card h3 {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #f8fafc;
+        margin: 0 0 10px;
+      }
+
+      .guide-card p {
+        font-size: 0.92rem;
+        color: #94a3b8;
+        line-height: 1.65;
+        margin: 0;
+      }
+
+      .guide-card strong {
+        color: #e2e8f0;
+      }
+
+      /* FAQ Section */
+      .mbti-faq-section {
+        margin: 60px 0;
+      }
+
+      .faq-container {
+        max-width: 860px;
+        margin: 0 auto;
+      }
+
+      .section-title {
+        text-align: center;
+        font-size: 2rem;
+        font-weight: 900;
+        color: #f8fafc;
+        margin: 0 0 32px;
+      }
+
+      .faq-item {
+        background: #111524;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 16px;
+      }
+
+      .faq-item h3 {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #a5b4fc;
+        margin: 0 0 10px;
+      }
+
+      .faq-item p {
+        font-size: 0.95rem;
+        color: #94a3b8;
+        line-height: 1.65;
+        margin: 0;
+      }
+
+      .faq-item code {
+        background: rgba(99, 102, 241, 0.15);
+        color: #cbd5e1;
+        padding: 2px 6px;
+        border-radius: 6px;
+        font-family: monospace;
+      }
+
+      @media (max-width: 768px) {
+        .guide-header h2 { font-size: 1.6rem; }
+        .section-title { font-size: 1.6rem; }
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,283 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import MbtiTestWidget from '../components/MbtiTestWidget.astro';
+import RectangleAd from '../components/ads/RectangleAd.astro';
+import LeaderboardAd from '../components/ads/LeaderboardAd.astro';
+import NativeAd from '../components/ads/NativeAd.astro';
+import { SITE_TITLE } from '../consts';
+import { getKoUrl, getEnUrl } from '../i18n';
+
+const urlParams = Astro.url.searchParams;
+const streamerMode = urlParams.has('stream') || urlParams.has('obs');
+
+const PAGE_TITLE = `정밀 MBTI 성격 유형 검사 - 60문항 융(Jung) 인지기능 기반 심층 분석 | ${SITE_TITLE}`;
+const PAGE_DESCRIPTION = "단순한 16가지 라벨을 넘어 4대 심리 축의 정밀 백분율과 8대 인지기능 스택(주기능/부기능/3차/열등기능), 5대 강점, 스트레스 루프, 추천 직업, 연애 궁합 및 크리에이터 방송 성향까지 심층 분석하는 정통 60문항 무료 MBTI 검사.";
+---
+
+<!doctype html>
+<html lang="ko" class="dark">
+  <head>
+    <BaseHead 
+      title={PAGE_TITLE} 
+      description={PAGE_DESCRIPTION}
+      lang="ko"
+      hreflangKo={getKoUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
+      hreflangEn={getEnUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
+      keywords="MBTI 검사, 무료 MBTI 테스트, 정밀 MBTI, 융 인지기능, MBTI 60문항, 16가지 성격 유형, MBTI 궁합, 인지기능 스택, 스트리머 MBTI, 성격 테스트"
+    />
+  </head>
+  <body class="mbti-page-body">
+    <Header />
+
+    <main class="mbti-page-main">
+      <!-- MBTI Interactive Test Runner & Result Widget -->
+      <section class="mbti-widget-section">
+        <MbtiTestWidget lang="ko" />
+      </section>
+
+      <!-- Content Rectangle Ad -->
+      <RectangleAd streamerMode={streamerMode} />
+
+      <!-- Deep Psychological Guide & Educational Section -->
+      <section class="mbti-guide-section">
+        <div class="guide-container">
+          <div class="guide-header">
+            <span class="guide-pill">PSYCHOMETRIC GUIDE</span>
+            <h2>정통 융(Jung) 인지기능 & MBTI 4대 지표 심층 가이드</h2>
+            <p>스트림아케이드는 왜 단순한 12문항 퀴즈 대신 60문항 인지기능 정밀 검사를 구축했을까요?</p>
+          </div>
+
+          <div class="guide-grid">
+            <div class="guide-card">
+              <div class="guide-card-icon">🧭</div>
+              <h3>1. 4대 선호 지표의 본질</h3>
+              <p>
+                <strong>외향(E)/내향(I)</strong>은 에너지의 충전 방향, <strong>감각(S)/직관(N)</strong>은 세상을 인식하는 렌즈, <strong>사고(T)/감정(F)</strong>은 결정을 내리는 기준 잣대, <strong>판단(J)/인식(P)</strong>은 삶을 조직화하는 생활 양식을 나타냅니다. 본 검사는 축당 3개의 세부 하위 척도를 통해 편향 없이 정밀하게 측정합니다.
+              </p>
+            </div>
+
+            <div class="guide-card">
+              <div class="guide-card-icon">🧠</div>
+              <h3>2. 융(Jung) 8대 인지기능이란?</h3>
+              <p>
+                모든 사람은 단순히 4글자가 아니라, 내향/외향으로 분화된 8가지 인지기능(Ni, Ne, Si, Se, Ti, Te, Fi, Fe) 중 자신만의 고유한 <strong>위계(Stack)</strong>를 사용합니다. 숨 쉬듯 자연스러운 1차 주기능부터 스트레스 시 오작동하는 4차 열등기능까지 이해할 때 진정한 자기 이해가 시작됩니다.
+              </p>
+            </div>
+
+            <div class="guide-card">
+              <div class="guide-card-icon">⚖️</div>
+              <h3>3. 역채점(Reverse Scoring)의 중요성</h3>
+              <p>
+                인간은 설문 시 긍정 답변에 무의식적으로 쏠리는 '동의 편향(Acquiescence Bias)'을 지닙니다. 본 검사는 60개 문항 중 절반에 가까운 역채점 문항을 교차 배치하여 특정 알파벳으로 점수가 왜곡되는 현상을 수학적으로 방지합니다.
+              </p>
+            </div>
+
+            <div class="guide-card">
+              <div class="guide-card-icon">🎙️</div>
+              <h3>4. 크리에이터와 MBTI 인지기능</h3>
+              <p>
+                스트리머와 콘텐츠 제작자는 자신의 주기능과 열등기능을 알 때 방송 번아웃을 예방할 수 있습니다. 감정형(F) 크리에이터는 악플에 취약할 수 있고, 직관형(N) 크리에이터는 루틴한 게임 반복에 쉽게 지칠 수 있습니다. 자신의 인지 유형에 맞는 콘텐츠와 휴식 방식을 설계하세요.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Leaderboard Ad Banner -->
+      <LeaderboardAd streamerMode={streamerMode} />
+
+      <!-- FAQ Section -->
+      <section class="mbti-faq-section">
+        <div class="faq-container">
+          <h2 class="section-title">자주 묻는 질문 (FAQ)</h2>
+
+          <div class="faq-item">
+            <h3>Q. 검사할 때마다 결과가 조금씩 바뀌는 이유는 무엇인가요?</h3>
+            <p>
+              성격 지표 중 50~59%의 '균형형(Flexible)'에 해당하는 축은 그날의 컨디션이나 사회적 환경에 따라 유연하게 발현되기 때문입니다. 본 검사의 결과지에서 각 축의 퍼센트 강도를 확인하시면 본인이 특정 축에서 중도적인 성향인지 확고한 성향인지 한눈에 알 수 있습니다.
+            </p>
+          </div>
+
+          <div class="faq-item">
+            <h3>Q. 다른 사람과 내 검사 결과를 공유할 수 있나요?</h3>
+            <p>
+              네! 검사 완료 후 상단의 <strong>[결과 공유 / 링크 복사]</strong> 버튼을 누르면 나의 정확한 퍼센트 수치가 포함된 고유 URL이 복사됩니다. 친구나 방송 시청자에게 링크를 전달하면 다시 검사할 필요 없이 내 상세 분석 페이지가 그대로 열립니다.
+            </p>
+          </div>
+
+          <div class="faq-item">
+            <h3>Q. 방송 화면(OBS)에 띄우고 싶은데 광고를 끌 수 있나요?</h3>
+            <p>
+              물론입니다. 주소창 URL 끝에 <code>?stream</code> 또는 <code>?obs</code>를 붙여 브라우저 소스로 띄우시면 모든 광고가 100% 자동 숨김 처리되는 클린 스트리머 모드로 실행됩니다.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Native Recommendation Widget Ad -->
+      <NativeAd streamerMode={streamerMode} />
+    </main>
+
+    {!streamerMode && <Footer />}
+
+    <style>
+      .mbti-page-body {
+        margin: 0;
+        padding: 0;
+        background-color: #090c15;
+        color: #f1f5f9;
+        font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Segoe UI', Roboto, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .mbti-page-main {
+        flex: 1;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px 20px 80px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      /* Guide Section */
+      .mbti-guide-section {
+        margin: 60px 0 40px;
+      }
+
+      .guide-container {
+        max-width: 1060px;
+        margin: 0 auto;
+      }
+
+      .guide-header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .guide-pill {
+        display: inline-block;
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: #a5b4fc;
+        background: rgba(99, 102, 241, 0.15);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+        padding: 4px 14px;
+        border-radius: 999px;
+        letter-spacing: 0.05em;
+        margin-bottom: 12px;
+      }
+
+      .guide-header h2 {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #f8fafc;
+        margin: 0 0 10px;
+      }
+
+      .guide-header p {
+        font-size: 1rem;
+        color: #94a3b8;
+        margin: 0;
+      }
+
+      .guide-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+      }
+
+      .guide-card {
+        background: #111524;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 28px 24px;
+        transition: transform 0.2s, border-color 0.2s;
+      }
+
+      .guide-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(99, 102, 241, 0.35);
+      }
+
+      .guide-card-icon {
+        font-size: 2rem;
+        margin-bottom: 16px;
+      }
+
+      .guide-card h3 {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #f8fafc;
+        margin: 0 0 10px;
+      }
+
+      .guide-card p {
+        font-size: 0.92rem;
+        color: #94a3b8;
+        line-height: 1.65;
+        margin: 0;
+      }
+
+      .guide-card strong {
+        color: #e2e8f0;
+      }
+
+      /* FAQ Section */
+      .mbti-faq-section {
+        margin: 60px 0;
+      }
+
+      .faq-container {
+        max-width: 860px;
+        margin: 0 auto;
+      }
+
+      .section-title {
+        text-align: center;
+        font-size: 2rem;
+        font-weight: 900;
+        color: #f8fafc;
+        margin: 0 0 32px;
+      }
+
+      .faq-item {
+        background: #111524;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 16px;
+      }
+
+      .faq-item h3 {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #a5b4fc;
+        margin: 0 0 10px;
+      }
+
+      .faq-item p {
+        font-size: 0.95rem;
+        color: #94a3b8;
+        line-height: 1.65;
+        margin: 0;
+      }
+
+      .faq-item code {
+        background: rgba(99, 102, 241, 0.15);
+        color: #cbd5e1;
+        padding: 2px 6px;
+        border-radius: 6px;
+        font-family: monospace;
+      }
+
+      @media (max-width: 768px) {
+        .guide-header h2 { font-size: 1.6rem; }
+        .section-title { font-size: 1.6rem; }
+      }
+    </style>
+  </body>
+</html>
