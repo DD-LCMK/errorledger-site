@@ -1,38 +1,11 @@
 ---
 /**
- * NativeAd — Adsterra native/recommendation widget.
- * Renders the async invoke.js + container div for the native unit.
- * Hidden when streamerMode=true.
+ * NativeAd — Neutralized to prevent external ad redirects.
  */
 interface Props {
   streamerMode?: boolean;
 }
 const { streamerMode = false } = Astro.props;
 ---
+<!-- Ad disabled to prevent unwanted external redirects -->
 
-{!streamerMode && (
-  <div class="native-ad-wrap">
-    <script is:inline>
-      if (typeof window !== 'undefined') {
-        var sp = new URLSearchParams(window.location.search);
-        if (sp.has('stream') || sp.has('obs') || sp.has('noads')) {
-          var s = document.createElement('style');
-          s.textContent = '.native-ad-wrap { display: none !important; }';
-          document.head.appendChild(s);
-        }
-      }
-    </script>
-    <script async data-cfasync="false" is:inline
-      src="https://russiaexternalknew.com/b7dc3adf1eee8de5f60eb73f9ef808a1/invoke.js">
-    </script>
-    <div id="container-b7dc3adf1eee8de5f60eb73f9ef808a1"></div>
-  </div>
-)}
-
-<style>
-  .native-ad-wrap {
-    width: 100%;
-    margin: 1.5rem 0;
-    overflow: hidden;
-  }
-</style>
