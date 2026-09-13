@@ -1,0 +1,2766 @@
+---
+/**
+ * StreamScheduleStudio.astro
+ * Compact Single-Page Stream Broadcast Schedule Studio.
+ * 
+ * Features:
+ * 1. Single-Page Fit: Entire board fits on screen at once without vertical scrolling.
+ * 2. Unified Monthly Calendar: Plan the month once, extract any week with 1-click.
+ * 3. Compact Stream Format: Clear sections for Day/Date, Status Badge, Time, and Short Title/Keyword.
+ * 4. Local PC Save & Load (.json): Download template file to PC and re-upload anytime.
+ * 5. High-Res PNG Poster Export (Compact Single-Page Weekly & Monthly formats).
+ * 6. OBS Clean Mode (?obs=1 / ?stream=1).
+ */
+import { SCHEDULE_THEMES, STATUS_BADGES, SAMPLE_PRESETS } from './scheduleTemplates';
+
+interface Props {
+  streamerMode?: boolean;
+  lang?: 'ko' | 'en';
+}
+const { streamerMode = false, lang = 'ko' } = Astro.props;
+---
+
+<div class={`schedule-studio-wrapper ${streamerMode ? 'streamer-clean-mode' : ''}`} id="scheduleStudioRoot" data-lang={lang}>
+  <!-- Top Editor Controls Bar (Hidden in streamer/OBS clean mode) -->
+  <div class="studio-controls-bar">
+    <div class="controls-container">
+      <!-- Row 1: Studio Title & File Export Actions -->
+      <div class="controls-top-row">
+        <div class="studio-title-badge">
+          <span class="pulse-dot-schedule"></span>
+          <span>📅 방송 편성표 스튜디오</span>
+          <span class="badge-single-page">한 페이지 뷰</span>
+        </div>
+        <div class="quick-export-actions">
+          <button type="button" class="btn-action btn-save-json" id="btnSaveJson" title="내 PC에 템플릿 파일(.json) 저장">
+            <span class="btn-icon">💾</span>
+            <span>내 PC에 저장</span>
+          </button>
+          <label class="btn-action btn-load-json" title="내 PC에서 템플릿 파일(.json) 불러오기">
+            <span class="btn-icon">📂</span>
+            <span>PC에서 불러오기</span>
+            <input type="file" id="inputLoadJson" accept=".json,application/json" style="display: none;" />
+          </label>
+          <button type="button" class="btn-action btn-export-png" id="btnExportPng" title="한 장으로 딱 떨어지는 고화질 PNG 이미지 저장">
+            <span class="btn-icon">📸</span>
+            <span id="btnExportPngLabel">주간 PNG 저장</span>
+          </button>
+          <button type="button" class="btn-action btn-copy-text" id="btnCopyText" title="디스코드/팬카페 공유용 텍스트 복사">
+            <span class="btn-icon">📋</span>
+            <span>텍스트 복사</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Row 2: View Mode Switcher, Week Extractor & Theme Picker -->
+      <div class="controls-toolbar-row">
+        <!-- View Mode Switcher -->
+        <div class="toolbar-group">
+          <label class="toolbar-label">보기 모드</label>
+          <div class="btn-group-mode">
+            <button type="button" class="btn-mode active" data-mode="weekly" id="btnModeWeekly" title="선택한 주간의 세로형 7일 일정">
+              <span>📅 주간 편성표 추출</span>
+            </button>
+            <button type="button" class="btn-mode" data-mode="monthly" id="btnModeMonthly" title="월간 캘린더 전체 보기">
+              <span>🗓️ 월간 전체 캘린더</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Week Extractor Buttons (Shown when in Weekly mode) -->
+        <div class="toolbar-group week-extractor-group" id="weekExtractorGroup">
+          <label class="toolbar-label">추출할 주차 선택</label>
+          <div class="week-buttons-bar" id="weekButtonsBar">
+            <!-- Dynamically generated week buttons -->
+          </div>
+        </div>
+
+        <!-- Theme Picker -->
+        <div class="toolbar-group theme-group">
+          <label class="toolbar-label">테마</label>
+          <div class="theme-picker-compact" id="themePickerRow">
+            {Object.values(SCHEDULE_THEMES).map((t) => (
+              <button 
+                type="button" 
+                class={`theme-chip ${t.id === 'travel-boarding-pass' ? 'active' : ''}`}
+                data-theme-id={t.id}
+                title={t.nameKo}
+                style={`--theme-accent: ${t.accent};`}
+              >
+                <span class="theme-dot" style={`background: ${t.accent};`}></span>
+                <span class="theme-name">{t.nameKo}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <!-- Channel Quick Inputs & Presets -->
+        <div class="toolbar-group end-group">
+          <label class="toolbar-label">샘플 프리셋</label>
+          <div class="toolbar-btns-row">
+            <button type="button" class="btn-preset-mini" id="btnPresetTravel" title="여행 보딩패스 티켓 샘플">✈️ 여행티켓</button>
+            <button type="button" class="btn-preset-mini" id="btnPresetGamer" title="종합 게임 스트리머 샘플">🎮 종합게임</button>
+            <button type="button" class="btn-preset-mini" id="btnPresetVtuber" title="버튜버/힐링 샘플">🌸 버튜버</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Channel Profile & Notices Settings Panel (Always Visible) -->
+      <div class="channel-settings-panel">
+        <div class="channel-settings-header">
+          <span class="settings-title-icon">⚙️</span>
+          <span class="settings-title-text">스트리머 프로필 & 공지사항 설정</span>
+        </div>
+        <div class="channel-inputs-grid">
+          <div class="input-field emoji-picker-col">
+            <label>대표 이모지</label>
+            <div class="emoji-picker-row">
+              <input type="text" id="inputAvatarEmoji" class="ctrl-input emoji-input" value="🎮" maxlength="4" />
+              <div class="emoji-samples-row" id="emojiSamplesRow">
+                <button type="button" class="btn-emoji-chip" data-emoji="🎮" title="게임">🎮</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="🌸" title="꽃/힐링">🌸</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="🐱" title="고양이">🐱</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="🍕" title="음식/먹방">🍕</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="🎤" title="노래/토크">🎤</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="✨" title="반짝">✨</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="🔥" title="열정/도전">🔥</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="☕" title="카페/소통">☕</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="🏆" title="대회/랭크">🏆</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="📺" title="방송">📺</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="✈️" title="여행">✈️</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="👑" title="왕관">👑</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="🎨" title="그림">🎨</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="🎸" title="기타/음악">🎸</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="🍀" title="행운">🍀</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="👾" title="인디게임">👾</button>
+              </div>
+            </div>
+          </div>
+          <div class="input-field flex-2">
+            <label>스트리머 채널명</label>
+            <input type="text" id="inputChannelName" class="ctrl-input" value="스트리머 아케이드" placeholder="채널명" />
+          </div>
+          <div class="input-field">
+            <label>방송 플랫폼</label>
+            <select id="selectPlatform" class="ctrl-select">
+              <option value="chzzk">치지직 (CHZZK)</option>
+              <option value="soop">SOOP (숲)</option>
+              <option value="twitch">트위치 (Twitch)</option>
+              <option value="youtube">유튜브 (YouTube)</option>
+              <option value="custom">기타 (LIVE)</option>
+            </select>
+          </div>
+          <div class="input-field flex-3">
+            <label>방송 소개 문구</label>
+            <input type="text" id="inputTagline" class="ctrl-input" value="매일 저녁 8시 소통 & 종합 게임 방송" placeholder="한 줄 소개" />
+          </div>
+          <div class="input-field flex-3">
+            <label>📢 주간 공지사항 / 이번 주 하이라이트</label>
+            <input type="text" id="inputNoticeWeekly" class="ctrl-input" value="📢 이번 주 토요일은 시청자 참여전 & 치킨 이벤트 진행!" placeholder="주간 편성표 상단 공지사항 (비우면 숨김)" />
+          </div>
+          <div class="input-field flex-3">
+            <label>🎯 월간 공지사항 / 이번 달 목표</label>
+            <input type="text" id="inputNoticeMonthly" class="ctrl-input" value="🎯 9월 목표: 주 5회 정규 방송 & 구독자 1만 달성!" placeholder="월간 캘린더 상단 목표 (비우면 숨김)" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Schedule Board (Single-Page Fit Container) -->
+  <div class="schedule-preview-stage">
+    <div class="schedule-card-board" id="scheduleBoard" data-theme="travel-boarding-pass" data-view="weekly">
+      <!-- Board Header -->
+      <div class="board-header">
+        <div class="channel-info-col">
+          <div class="channel-avatar-box" id="dispAvatar">🎮</div>
+          <div class="channel-text-group">
+            <div class="channel-title-row">
+              <h2 class="channel-name" id="dispChannelName">스트리머 아케이드</h2>
+              <span class="platform-badge" id="dispPlatformBadge">치지직</span>
+            </div>
+            <p class="channel-tagline" id="dispTagline">매일 저녁 8시 신작 & 종합 게임 방송!</p>
+          </div>
+        </div>
+
+        <div class="board-meta-col">
+          <div class="board-range-badge" id="dispScheduleRangeBadge">2026.09 3주차 (09.14 ~ 09.20)</div>
+          <div class="branding-watermark">
+            <span class="brand-icon-mini">🔴</span>
+            <span>STREAM ARCADE</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Optional Notice Banner -->
+      <div class="board-notice-banner" id="dispNoticeBanner">
+        <span class="notice-icon">📢</span>
+        <span class="notice-text" id="dispNoticeText">이번 주 토요일은 시청자 참여 돌림판 & 사다리타기 벌칙전 진행!</span>
+      </div>
+
+      <!-- VIEW 1: Travel Boarding Pass / Ticket Schedule (1 + 3 + 3 Single Page) -->
+      <div class="bp-schedule-wrap" id="weeklyWrap">
+        <!-- Top Section: Keychain + Flight Board + Monday Ticket -->
+        <div class="bp-row-top">
+          <!-- Left: Keychain & Flight Board -->
+          <div class="bp-top-left-panel">
+            <!-- 1. Vintage Motel Key Tag ("SCHEDULE") -->
+            <div class="bp-keytag-unit" title="스케줄 키링">
+              <div class="bp-keytag-body">
+                <div class="bp-keytag-inner-bevel">
+                  <div class="bp-keytag-hole"></div>
+                  <div class="bp-keyring-loop"></div>
+                  <!-- Silver Key Over Keychain -->
+                  <div class="bp-silver-key-box">
+                    <svg class="bp-key-svg" viewBox="0 0 130 50" fill="none">
+                      <defs>
+                        <linearGradient id="silverBodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                          <stop offset="0%" stop-color="#ffffff"/>
+                          <stop offset="25%" stop-color="#e2e8f0"/>
+                          <stop offset="55%" stop-color="#cbd5e1"/>
+                          <stop offset="85%" stop-color="#94a3b8"/>
+                          <stop offset="100%" stop-color="#64748b"/>
+                        </linearGradient>
+                        <filter id="keyShadow" x="-20%" y="-20%" width="140%" height="140%">
+                          <feDropShadow dx="2" dy="3" stdDeviation="2.5" flood-color="rgba(15,23,42,0.45)"/>
+                        </filter>
+                      </defs>
+                      <g filter="url(#keyShadow)">
+                        <circle cx="25" cy="25" r="16" fill="url(#silverBodyGrad)" stroke="#718096" stroke-width="1.8"/>
+                        <circle cx="25" cy="25" r="6" fill="#486292" stroke="#4a5568" stroke-width="1.2"/>
+                        <path d="M 38 21.5 L 112 21.5 L 112 28.5 L 38 28.5 Z" fill="url(#silverBodyGrad)" stroke="#718096" stroke-width="1.5"/>
+                        <rect x="75" y="28.5" width="8" height="9" rx="1" fill="url(#silverBodyGrad)" stroke="#718096" stroke-width="1.2"/>
+                        <rect x="90" y="28.5" width="7" height="13" rx="1" fill="url(#silverBodyGrad)" stroke="#718096" stroke-width="1.2"/>
+                        <rect x="103" y="28.5" width="6" height="7" rx="1" fill="url(#silverBodyGrad)" stroke="#718096" stroke-width="1.2"/>
+                        <line x1="42" y1="25" x2="108" y2="25" stroke="#64748b" stroke-width="1.4" stroke-linecap="round"/>
+                      </g>
+                    </svg>
+                  </div>
+                  <span class="bp-keytag-title" id="bpKeytagTitle">SCHEDULE</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. Flight Board Gate Ticker ("DEP ✈ ARR") -->
+            <div class="bp-flight-gate-card">
+              <div class="bp-flight-header-row">
+                <span class="bp-f-tag">DEP</span>
+                <span class="bp-f-icon">✈</span>
+                <span class="bp-f-tag">ARR</span>
+              </div>
+              <div class="bp-flight-dates-display" id="bpFlightDatesDisplay">
+                09.14 ✈ 09.20
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Monday Ticket Stub -->
+          <div class="bp-mon-ticket-container" id="bpMonTicketContainer">
+            <!-- Dynamic Monday Ticket inserted here -->
+          </div>
+        </div>
+
+        <!-- Middle Row: TUE, WED, THU 3-Ticket Sheet -->
+        <div class="bp-ticket-strip bp-mid-strip">
+          <!-- Left Barcode Stub -->
+          <div class="bp-strip-left-stub">
+            <div class="bp-barcode-stub-content">
+              <div class="bp-barcode-lines">
+                <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <span class="bp-barcode-number">01223541354121021</span>
+            </div>
+            <div class="bp-stub-notches">
+              <span class="bp-notch top"></span>
+              <span class="bp-notch btm"></span>
+            </div>
+          </div>
+
+          <!-- 3 Day Tickets Container -->
+          <div class="bp-strip-tickets-group" id="bpMidTicketsGroup">
+            <!-- TUE, WED, THU dynamically generated -->
+          </div>
+        </div>
+
+        <!-- Bottom Row: FRI, SAT, SUN 3-Ticket Sheet -->
+        <div class="bp-ticket-strip bp-btm-strip">
+          <!-- Left Barcode Stub with Diagonal Stripes -->
+          <div class="bp-strip-left-stub">
+            <div class="bp-barcode-stub-content bp-stripes-stub">
+              <div class="bp-diagonal-stripes"></div>
+            </div>
+            <div class="bp-stub-notches">
+              <span class="bp-notch top"></span>
+              <span class="bp-notch btm"></span>
+            </div>
+          </div>
+
+          <!-- 3 Day Tickets Container -->
+          <div class="bp-strip-tickets-group" id="bpBtmTicketsGroup">
+            <!-- FRI, SAT, SUN dynamically generated -->
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 2: Compact Monthly Calendar Grid (Hidden by default, fits within ~350px) -->
+      <div class="monthly-schedule-compact-wrap" id="monthlyWrap" style="display: none;">
+        <div class="monthly-header-bar">
+          <div class="month-nav-row">
+            <button type="button" class="btn-month-nav" id="btnPrevMonth">◀</button>
+            <span class="month-title-text" id="dispMonthTitle">2026년 9월 전체 방송 캘린더</span>
+            <button type="button" class="btn-month-nav" id="btnNextMonth">▶</button>
+          </div>
+          <div class="monthly-goal-badge" id="dispMonthlyGoal">🎯 9월 목표: 구독자 1만 달성 & 시참전 2회</div>
+        </div>
+        <div class="calendar-days-header">
+          <span class="col-sun">일</span>
+          <span>월</span>
+          <span>화</span>
+          <span>수</span>
+          <span>목</span>
+          <span>금</span>
+          <span class="col-sat">토</span>
+        </div>
+        <div class="calendar-cells-compact-container" id="calendarCellsContainer">
+          <!-- 35 compact cells generated -->
+        </div>
+      </div>
+
+      <!-- Board Footer -->
+      <div class="board-footer">
+        <span>StreamArcade Schedule Studio • 누구나 무료로 생성하는 방송 편성표</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden Canvas for PNG Generation -->
+  <canvas id="exportCanvas" style="display: none;"></canvas>
+
+  <!-- Compact Day Edit Modal -->
+  <div class="edit-modal-overlay" id="editModalOverlay" style="display: none;">
+    <div class="edit-modal-card">
+      <div class="modal-header">
+        <h3 id="modalDayTitle">요일 방송 일정 편집</h3>
+        <button type="button" class="btn-close-modal" id="btnCloseModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-form-group">
+          <label>방송 상태 뱃지</label>
+          <div class="badge-select-grid" id="modalBadgeGrid">
+            {Object.values(STATUS_BADGES).map((b) => (
+              <button 
+                type="button" 
+                class="badge-opt-btn" 
+                data-badge-id={b.id}
+                style={`--badge-c: ${b.color}; --badge-bg: ${b.bg};`}
+              >
+                <span>{b.icon}</span>
+                <span>{b.labelKo}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div class="modal-form-group">
+          <label>방송 시작 시간</label>
+          <div class="time-presets-row">
+            <input type="text" id="modalStartTimeInput" class="modal-input flex-1" placeholder="예: 20:00" />
+            <button type="button" class="btn-quick-start" data-time="20:00">20:00</button>
+            <button type="button" class="btn-quick-start" data-time="20:30">20:30</button>
+            <button type="button" class="btn-quick-start" data-time="21:00">21:00</button>
+            <button type="button" class="btn-quick-start" data-time="자율">자율</button>
+            <button type="button" class="btn-quick-start" data-time="휴식">휴식</button>
+          </div>
+        </div>
+
+        <div class="modal-form-group">
+          <label>방송 종료 시간 (선택)</label>
+          <div class="time-presets-row">
+            <input type="text" id="modalEndTimeInput" class="modal-input flex-1" placeholder="예: 23:30 또는 방종시" />
+            <button type="button" class="btn-quick-end" data-time="23:00">23:00</button>
+            <button type="button" class="btn-quick-end" data-time="23:30">23:30</button>
+            <button type="button" class="btn-quick-end" data-time="24:00">24:00</button>
+            <button type="button" class="btn-quick-end" data-time="방종시">방종시</button>
+            <button type="button" class="btn-quick-end" data-time="새벽">새벽</button>
+          </div>
+          <span class="field-hint">시작/종료 시간을 모두 입력하면 '20:00 ~ 23:30' 형태로 자동 표기됩니다.</span>
+        </div>
+
+        <div class="modal-form-group">
+          <label>방송 콘텐츠 제목 / 키워드</label>
+          <input type="text" id="modalTitleInput" class="modal-input" placeholder="예: 저챗 / 종합 게임 / 먹방 / 롤 랭크" maxlength="40" />
+          <span class="field-hint">티켓 상단에 크게 들어갈 메인 제목입니다.</span>
+        </div>
+
+        <div class="modal-form-group">
+          <label>상세 안내 / 부제목 (선택)</label>
+          <input type="text" id="modalMemoInput" class="modal-input" placeholder="예: 치킨 시참 내기전 / 신작 인디게임 켠왕" maxlength="45" />
+          <span class="field-hint">티켓 중앙에 들어갈 보조 설명 문구입니다.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-modal-cancel" id="btnModalCancel">취소</button>
+        <button type="button" class="btn-modal-save" id="btnModalSave">저장 완료</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style is:global>
+  .schedule-studio-wrapper {
+    width: 100%;
+    min-height: 100vh;
+    padding-bottom: 3.5rem;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #f8fafc;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     TOP CONTROLS BAR (Compact & Streamlined)
+     ───────────────────────────────────────────────────────────────────────────── */
+  .studio-controls-bar {
+    background: #0b0f19;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.35rem 1rem 0.3rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .controls-container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .controls-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .studio-title-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: #f8fafc;
+  }
+
+  .badge-single-page {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.12rem 0.4rem;
+    border-radius: 4px;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+  }
+
+  .pulse-dot-schedule {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #00ffa3;
+    box-shadow: 0 0 8px #00ffa3;
+    animation: pulseSchedule 2s infinite;
+  }
+
+  @keyframes pulseSchedule {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+  }
+
+  .quick-export-actions {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s ease;
+  }
+
+  .btn-save-json, .btn-load-json {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+  }
+  .btn-save-json:hover, .btn-load-json:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+  }
+
+  .btn-export-png {
+    background: linear-gradient(135deg, #00ffa3, #00d2ff);
+    color: #050d18;
+    font-weight: 800;
+  }
+  .btn-export-png:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 0 14px rgba(0, 255, 163, 0.4);
+  }
+
+  .btn-copy-text {
+    background: rgba(168, 85, 247, 0.18);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    color: #e9d5ff;
+  }
+  .btn-copy-text:hover {
+    background: rgba(168, 85, 247, 0.3);
+  }
+
+  /* Row 2: Controls Toolbar */
+  .controls-toolbar-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.45rem 0.85rem;
+    padding: 0.25rem 0.55rem;
+    background: rgba(255, 255, 255, 0.025);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .toolbar-label {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .btn-group-mode {
+    display: flex;
+    gap: 0.25rem;
+    background: rgba(0, 0, 0, 0.35);
+    padding: 0.2rem;
+    border-radius: 7px;
+  }
+
+  .btn-mode {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 0.74rem;
+    font-weight: 700;
+    padding: 0.32rem 0.65rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-mode.active {
+    background: #38bdf8;
+    color: #08101a;
+  }
+
+  /* Week Extractor Buttons Bar */
+  .week-buttons-bar {
+    display: flex;
+    gap: 0.3rem;
+  }
+
+  .btn-week-chip {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.3rem 0.55rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .btn-week-chip:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+  }
+
+  .btn-week-chip.active {
+    background: rgba(0, 255, 163, 0.15);
+    border-color: #00ffa3;
+    color: #00ffa3;
+    box-shadow: 0 0 8px rgba(0, 255, 163, 0.25);
+  }
+
+  /* Theme Picker Compact */
+  .theme-picker-compact {
+    display: flex;
+    gap: 0.3rem;
+  }
+
+  .theme-chip {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.28rem 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: all 0.15s ease;
+  }
+
+  .theme-chip:hover {
+    color: #ffffff;
+  }
+
+  .theme-chip.active {
+    border-color: var(--theme-accent);
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .theme-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  .end-group {
+    margin-left: auto;
+  }
+
+  .toolbar-btns-row {
+    display: flex;
+    gap: 0.3rem;
+  }
+
+  .btn-preset-mini {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.3rem 0.55rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-preset-mini:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+  }
+
+  /* Channel Profile Settings Panel (Always Visible) */
+  .channel-settings-panel {
+    margin-top: 0.35rem;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 0.45rem 0.65rem 0.55rem;
+  }
+
+  .channel-settings-header {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.76rem;
+    font-weight: 800;
+    color: #cbd5e1;
+    margin-bottom: 0.35rem;
+  }
+  .settings-title-icon {
+    font-size: 0.85rem;
+  }
+
+  .channel-inputs-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .emoji-picker-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 220px;
+  }
+
+  .emoji-picker-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .emoji-samples-row {
+    display: flex;
+    gap: 0.2rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .btn-emoji-chip {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 4px;
+    padding: 0.15rem 0.3rem;
+    font-size: 0.84rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: all 0.12s ease;
+  }
+  .btn-emoji-chip:hover {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.15);
+  }
+
+  .input-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .input-field label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #94a3b8;
+  }
+  .flex-2 { flex: 2; min-width: 140px; }
+  .flex-3 { flex: 3; min-width: 200px; }
+
+  .ctrl-input, .ctrl-select {
+    background: #080c14;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #f8fafc;
+    font-size: 0.78rem;
+    padding: 0.35rem 0.55rem;
+    border-radius: 6px;
+    outline: none;
+  }
+  .emoji-input { width: 44px; text-align: center; }
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     LIVE SCHEDULE BOARD (Single-Page Compact Fit)
+     ───────────────────────────────────────────────────────────────────────────── */
+  .schedule-preview-stage {
+    display: flex;
+    justify-content: center;
+    padding: 0 1rem;
+  }
+
+  .schedule-card-board {
+    width: 100%;
+    max-width: 820px;
+    background: #cbd5e1;
+    border: 1.5px solid #64748b;
+    border-radius: 14px;
+    padding: 0.5rem 0.75rem 0.45rem;
+    box-shadow: 0 10px 30px rgba(25, 38, 62, 0.26);
+    position: relative;
+    overflow: hidden;
+    transition: max-width 0.25s ease, border-color 0.25s ease;
+  }
+
+  .schedule-card-board[data-view="monthly"] {
+    max-width: 860px; /* Slightly wider for the 7-col calendar */
+  }
+
+  /* Themes — Complete Palette Transformation for Calendar, Tickets, Ribbons & Stubs */
+  .schedule-card-board {
+    --b-board-bg: #cbd5e1;
+    --b-card: #ffffff;
+    --b-accent: #1e40af;
+    --b-border: #64748b;
+    --b-text: #0f172a;
+    --b-sub: #334155;
+    --b-keytag-bg: #334e80;
+    --b-keytag-border: #1e3a8a;
+    --b-keytag-text: #ffffff;
+    --b-keytag-shadow: #93c5fd;
+    --b-ticker-bg: #ffffff;
+    --b-ticker-border: #475569;
+    --b-ticker-label: #1e293b;
+    --b-ticker-text: #0f172a;
+    --b-ribbon-bg: #1e40af;
+    --b-ribbon-fold: #172554;
+    --b-ribbon-text: #ffffff;
+    --b-strip-bg: #ffffff;
+    --b-strip-border: #64748b;
+    --b-stub-bg: #f1f5f9;
+    --b-stub-border: #64748b;
+    --b-stub-text: #1e293b;
+    --b-barcode: #1e293b;
+    --b-ticket-bg: #ffffff;
+    --b-ticket-inner-border: #94a3b8;
+    --b-ticket-title: #0f172a;
+    --b-ticket-memo: #334155;
+    --b-ticket-time: #1e40af;
+    --b-flourish: #64748b;
+    --b-offline-bg: #451a03;
+    --b-offline-border: #290f02;
+    --b-offline-text: #fef08a;
+    transition: background 0.3s ease, border-color 0.3s ease;
+  }
+
+  .schedule-card-board[data-theme="travel-boarding-pass"] {
+    --b-board-bg: #cbd5e1;
+    --b-card: #ffffff;
+    --b-accent: #1e40af;
+    --b-border: #64748b;
+    --b-text: #0f172a;
+    --b-sub: #334155;
+    --b-keytag-bg: #334e80;
+    --b-keytag-border: #1e3a8a;
+    --b-keytag-text: #ffffff;
+    --b-keytag-shadow: #93c5fd;
+    --b-ticker-bg: #ffffff;
+    --b-ticker-border: #475569;
+    --b-ticker-label: #1e293b;
+    --b-ticker-text: #0f172a;
+    --b-ribbon-bg: #1e40af;
+    --b-ribbon-fold: #172554;
+    --b-ribbon-text: #ffffff;
+    --b-strip-bg: #ffffff;
+    --b-strip-border: #64748b;
+    --b-stub-bg: #f1f5f9;
+    --b-stub-border: #64748b;
+    --b-stub-text: #1e293b;
+    --b-barcode: #1e293b;
+    --b-ticket-bg: #ffffff;
+    --b-ticket-inner-border: #94a3b8;
+    --b-ticket-title: #0f172a;
+    --b-ticket-memo: #334155;
+    --b-ticket-time: #1e40af;
+    --b-flourish: #64748b;
+    --b-offline-bg: #451a03;
+    --b-offline-border: #290f02;
+    --b-offline-text: #fef08a;
+    background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.6) 0%, rgba(203, 213, 225, 0.75) 100%), #cbd5e1;
+    border-color: #64748b;
+  }
+
+  .schedule-card-board[data-theme="chzzk-neon"] {
+    --b-board-bg: #080c14;
+    --b-card: rgba(14, 23, 38, 0.92);
+    --b-accent: #00ffa3;
+    --b-border: rgba(0, 255, 163, 0.3);
+    --b-text: #f0fdf4;
+    --b-sub: #86efac;
+    --b-keytag-bg: #0b1e16;
+    --b-keytag-border: #00ffa3;
+    --b-keytag-text: #00ffa3;
+    --b-keytag-shadow: rgba(0, 255, 163, 0.4);
+    --b-ticker-bg: #071610;
+    --b-ticker-border: rgba(0, 255, 163, 0.45);
+    --b-ticker-label: #4ade80;
+    --b-ticker-text: #00ffa3;
+    --b-ribbon-bg: #00ffa3;
+    --b-ribbon-fold: #00b875;
+    --b-ribbon-text: #041c10;
+    --b-strip-bg: #0e1824;
+    --b-strip-border: rgba(0, 255, 163, 0.35);
+    --b-stub-bg: #0a121c;
+    --b-stub-border: rgba(0, 255, 163, 0.3);
+    --b-stub-text: #86efac;
+    --b-barcode: #00ffa3;
+    --b-ticket-bg: #111e2e;
+    --b-ticket-inner-border: rgba(0, 255, 163, 0.25);
+    --b-ticket-title: #ffffff;
+    --b-ticket-memo: #86efac;
+    --b-ticket-time: #00ffa3;
+    --b-flourish: rgba(0, 255, 163, 0.45);
+    --b-offline-bg: #152520;
+    --b-offline-border: #00ffa3;
+    --b-offline-text: #00ffa3;
+    background: radial-gradient(circle at top right, rgba(0, 255, 163, 0.12), transparent 55%), #080c14;
+    border-color: rgba(0, 255, 163, 0.35);
+  }
+
+  .schedule-card-board[data-theme="twitch-violet"] {
+    --b-board-bg: #0b0914;
+    --b-card: rgba(23, 17, 43, 0.92);
+    --b-accent: #9146ff;
+    --b-border: rgba(145, 70, 255, 0.35);
+    --b-text: #faf5ff;
+    --b-sub: #c084fc;
+    --b-keytag-bg: #20123a;
+    --b-keytag-border: #9146ff;
+    --b-keytag-text: #faf5ff;
+    --b-keytag-shadow: #a855f7;
+    --b-ticker-bg: #170c2d;
+    --b-ticker-border: rgba(145, 70, 255, 0.45);
+    --b-ticker-label: #c084fc;
+    --b-ticker-text: #faf5ff;
+    --b-ribbon-bg: #9146ff;
+    --b-ribbon-fold: #6b21a8;
+    --b-ribbon-text: #ffffff;
+    --b-strip-bg: #151026;
+    --b-strip-border: rgba(145, 70, 255, 0.4);
+    --b-stub-bg: #100b1e;
+    --b-stub-border: rgba(145, 70, 255, 0.3);
+    --b-stub-text: #c084fc;
+    --b-barcode: #a855f7;
+    --b-ticket-bg: #1b1433;
+    --b-ticket-inner-border: rgba(192, 132, 252, 0.25);
+    --b-ticket-title: #ffffff;
+    --b-ticket-memo: #d8b4fe;
+    --b-ticket-time: #c084fc;
+    --b-flourish: rgba(145, 70, 255, 0.45);
+    --b-offline-bg: #23153c;
+    --b-offline-border: #9146ff;
+    --b-offline-text: #faf5ff;
+    background: radial-gradient(circle at top right, rgba(145, 70, 255, 0.15), transparent 55%), #0b0914;
+    border-color: rgba(145, 70, 255, 0.38);
+  }
+
+  .schedule-card-board[data-theme="soop-cyan"] {
+    --b-board-bg: #06101e;
+    --b-card: rgba(10, 26, 51, 0.92);
+    --b-accent: #00d2ff;
+    --b-border: rgba(0, 210, 255, 0.3);
+    --b-text: #f0f9ff;
+    --b-sub: #7dd3fc;
+    --b-keytag-bg: #082236;
+    --b-keytag-border: #00d2ff;
+    --b-keytag-text: #00d2ff;
+    --b-keytag-shadow: rgba(0, 210, 255, 0.4);
+    --b-ticker-bg: #061928;
+    --b-ticker-border: rgba(0, 210, 255, 0.45);
+    --b-ticker-label: #38bdf8;
+    --b-ticker-text: #00d2ff;
+    --b-ribbon-bg: #00d2ff;
+    --b-ribbon-fold: #0284c7;
+    --b-ribbon-text: #031929;
+    --b-strip-bg: #0a1a2e;
+    --b-strip-border: rgba(0, 210, 255, 0.35);
+    --b-stub-bg: #061221;
+    --b-stub-border: rgba(0, 210, 255, 0.3);
+    --b-stub-text: #7dd3fc;
+    --b-barcode: #00d2ff;
+    --b-ticket-bg: #0d223c;
+    --b-ticket-inner-border: rgba(0, 210, 255, 0.25);
+    --b-ticket-title: #ffffff;
+    --b-ticket-memo: #7dd3fc;
+    --b-ticket-time: #38bdf8;
+    --b-flourish: rgba(0, 210, 255, 0.45);
+    --b-offline-bg: #0c263d;
+    --b-offline-border: #00d2ff;
+    --b-offline-text: #e0f2fe;
+    background: radial-gradient(circle at top right, rgba(0, 210, 255, 0.14), transparent 55%), #06101e;
+    border-color: rgba(0, 210, 255, 0.35);
+  }
+
+  .schedule-card-board[data-theme="cozy-pastel"] {
+    --b-board-bg: #1e1826;
+    --b-card: rgba(42, 33, 54, 0.94);
+    --b-accent: #f472b6;
+    --b-border: rgba(244, 114, 182, 0.35);
+    --b-text: #fdf2f8;
+    --b-sub: #fbcfe8;
+    --b-keytag-bg: #42243a;
+    --b-keytag-border: #f472b6;
+    --b-keytag-text: #fdf2f8;
+    --b-keytag-shadow: #f472b6;
+    --b-ticker-bg: #331b2c;
+    --b-ticker-border: rgba(244, 114, 182, 0.4);
+    --b-ticker-label: #fbcfe8;
+    --b-ticker-text: #fdf2f8;
+    --b-ribbon-bg: #f472b6;
+    --b-ribbon-fold: #db2777;
+    --b-ribbon-text: #331122;
+    --b-strip-bg: #2b1c31;
+    --b-strip-border: rgba(244, 114, 182, 0.35);
+    --b-stub-bg: #201426;
+    --b-stub-border: rgba(244, 114, 182, 0.3);
+    --b-stub-text: #fbcfe8;
+    --b-barcode: #f472b6;
+    --b-ticket-bg: #372440;
+    --b-ticket-inner-border: rgba(244, 114, 182, 0.25);
+    --b-ticket-title: #ffffff;
+    --b-ticket-memo: #fbcfe8;
+    --b-ticket-time: #f472b6;
+    --b-flourish: rgba(244, 114, 182, 0.45);
+    --b-offline-bg: #46273f;
+    --b-offline-border: #f472b6;
+    --b-offline-text: #fdf2f8;
+    background: radial-gradient(circle at top right, rgba(244, 114, 182, 0.15), transparent 55%), #1e1826;
+    border-color: rgba(244, 114, 182, 0.38);
+  }
+
+  .schedule-card-board[data-theme="retro-arcade"] {
+    --b-board-bg: #130924;
+    --b-card: rgba(35, 16, 61, 0.92);
+    --b-accent: #ff007f;
+    --b-border: rgba(255, 230, 0, 0.4);
+    --b-text: #ffffff;
+    --b-sub: #ffe600;
+    --b-keytag-bg: #2e0f45;
+    --b-keytag-border: #ffe600;
+    --b-keytag-text: #ffe600;
+    --b-keytag-shadow: #ff007f;
+    --b-ticker-bg: #210935;
+    --b-ticker-border: rgba(255, 0, 127, 0.5);
+    --b-ticker-label: #ff007f;
+    --b-ticker-text: #ffe600;
+    --b-ribbon-bg: #ff007f;
+    --b-ribbon-fold: #be005d;
+    --b-ribbon-text: #ffe600;
+    --b-strip-bg: #1c0d33;
+    --b-strip-border: rgba(255, 0, 127, 0.45);
+    --b-stub-bg: #140826;
+    --b-stub-border: rgba(255, 230, 0, 0.35);
+    --b-stub-text: #ffe600;
+    --b-barcode: #ff007f;
+    --b-ticket-bg: #271247;
+    --b-ticket-inner-border: rgba(255, 230, 0, 0.3);
+    --b-ticket-title: #ffffff;
+    --b-ticket-memo: #ffe600;
+    --b-ticket-time: #00f0ff;
+    --b-flourish: rgba(255, 0, 127, 0.45);
+    --b-offline-bg: #351152;
+    --b-offline-border: #ff007f;
+    --b-offline-text: #ffe600;
+    background: radial-gradient(circle at top right, rgba(255, 0, 127, 0.18), transparent 55%), #130924;
+    border-color: rgba(255, 230, 0, 0.45);
+  }
+
+  .schedule-card-board[data-theme="minimal-obsidian"] {
+    --b-board-bg: #0a0a0c;
+    --b-card: rgba(18, 18, 24, 0.96);
+    --b-accent: #e2e8f0;
+    --b-border: rgba(255, 255, 255, 0.18);
+    --b-text: #ffffff;
+    --b-sub: #94a3b8;
+    --b-keytag-bg: #18181f;
+    --b-keytag-border: #94a3b8;
+    --b-keytag-text: #ffffff;
+    --b-keytag-shadow: #64748b;
+    --b-ticker-bg: #131318;
+    --b-ticker-border: rgba(255, 255, 255, 0.2);
+    --b-ticker-label: #94a3b8;
+    --b-ticker-text: #f8fafc;
+    --b-ribbon-bg: #e2e8f0;
+    --b-ribbon-fold: #94a3b8;
+    --b-ribbon-text: #0f172a;
+    --b-strip-bg: #121217;
+    --b-strip-border: rgba(255, 255, 255, 0.18);
+    --b-stub-bg: #0d0d12;
+    --b-stub-border: rgba(255, 255, 255, 0.15);
+    --b-stub-text: #94a3b8;
+    --b-barcode: #cbd5e1;
+    --b-ticket-bg: #181820;
+    --b-ticket-inner-border: rgba(255, 255, 255, 0.14);
+    --b-ticket-title: #ffffff;
+    --b-ticket-memo: #94a3b8;
+    --b-ticket-time: #cbd5e1;
+    --b-flourish: rgba(255, 255, 255, 0.25);
+    --b-offline-bg: #1e1e26;
+    --b-offline-border: #94a3b8;
+    --b-offline-text: #f8fafc;
+    background: #0a0a0c;
+    border-color: rgba(255, 255, 255, 0.22);
+  }
+
+  .schedule-card-board[data-theme="cyberpunk-matrix"] {
+    --b-board-bg: #090a0f;
+    --b-card: rgba(20, 20, 30, 0.94);
+    --b-accent: #fcee0a;
+    --b-border: rgba(0, 240, 255, 0.4);
+    --b-text: #ffffff;
+    --b-sub: #00f0ff;
+    --b-keytag-bg: #141824;
+    --b-keytag-border: #fcee0a;
+    --b-keytag-text: #fcee0a;
+    --b-keytag-shadow: #00f0ff;
+    --b-ticker-bg: #0d111c;
+    --b-ticker-border: rgba(0, 240, 255, 0.45);
+    --b-ticker-label: #00f0ff;
+    --b-ticker-text: #fcee0a;
+    --b-ribbon-bg: #fcee0a;
+    --b-ribbon-fold: #c8bd04;
+    --b-ribbon-text: #05070c;
+    --b-strip-bg: #0f131f;
+    --b-strip-border: rgba(0, 240, 255, 0.4);
+    --b-stub-bg: #090c15;
+    --b-stub-border: rgba(0, 240, 255, 0.3);
+    --b-stub-text: #00f0ff;
+    --b-barcode: #fcee0a;
+    --b-ticket-bg: #161c2c;
+    --b-ticket-inner-border: rgba(252, 238, 10, 0.28);
+    --b-ticket-title: #ffffff;
+    --b-ticket-memo: #00f0ff;
+    --b-ticket-time: #fcee0a;
+    --b-flourish: rgba(0, 240, 255, 0.45);
+    --b-offline-bg: #1d2233;
+    --b-offline-border: #fcee0a;
+    --b-offline-text: #fcee0a;
+    background: radial-gradient(circle at top right, rgba(252, 238, 10, 0.14), transparent 55%), #090a0f;
+    border-color: rgba(0, 240, 255, 0.45);
+  }
+
+  /* Compact Board Header */
+  .board-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .channel-info-col {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .channel-avatar-box {
+    width: 44px;
+    height: 44px;
+    background: var(--b-card);
+    border: 1.5px solid var(--b-border);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+
+  .channel-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  html.dark .schedule-card-board .channel-name,
+  .channel-name {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--b-text) !important;
+  }
+
+  html.dark .schedule-card-board .platform-badge,
+  .platform-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    background: var(--b-card) !important;
+    color: var(--b-accent) !important;
+    border: 1px solid var(--b-border) !important;
+    text-transform: uppercase;
+  }
+
+  html.dark .schedule-card-board .channel-tagline,
+  .channel-tagline {
+    font-size: 0.76rem;
+    color: var(--b-sub) !important;
+    margin: 0.1rem 0 0;
+  }
+
+  .board-meta-col {
+    text-align: right;
+  }
+
+  html.dark .schedule-card-board .board-range-badge,
+  .board-range-badge {
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: var(--b-accent) !important;
+    margin-bottom: 0.15rem;
+  }
+
+  html.dark .schedule-card-board .branding-watermark,
+  .branding-watermark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--b-sub) !important;
+    letter-spacing: 0.05em;
+  }
+  .brand-icon-mini { font-size: 0.65rem; }
+
+  /* Notice Banner */
+  html.dark .schedule-card-board .board-notice-banner,
+  .board-notice-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--b-card) !important;
+    border: 1px solid var(--b-border) !important;
+    padding: 0.4rem 0.85rem;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--b-text) !important;
+  }
+  html.dark .schedule-card-board .board-notice-banner .notice-text,
+  .board-notice-banner .notice-text {
+    color: var(--b-text) !important;
+  }
+  .notice-icon { font-size: 0.85rem; }
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     VIEW 1: TRAVEL BOARDING PASS & VINTAGE TICKET STUDIO (1 + 3 + 3)
+     ───────────────────────────────────────────────────────────────────────────── */
+  .bp-schedule-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    user-select: none;
+  }
+
+  /* ROW 1: TOP SECTION (Keychain & Flight Gate on Left, MON Ticket on Right) */
+  .bp-row-top {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .bp-top-left-panel {
+    flex: 1;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    background: var(--b-card, rgba(255, 255, 255, 0.22));
+    border: 1px solid var(--b-border, rgba(158, 178, 220, 0.45));
+    border-radius: 12px;
+    padding: 6px 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    transition: all 0.25s ease;
+  }
+
+  /* 1. Motel Keychain ("SCHEDULE") */
+  .bp-keytag-unit {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: default;
+  }
+
+  .bp-keytag-body {
+    background: var(--b-keytag-bg, #5570a5);
+    border-radius: 50px;
+    padding: 7px 16px 7px 24px;
+    box-shadow: 2px 6px 14px rgba(0, 0, 0, 0.28), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+    position: relative;
+    transition: background 0.25s ease;
+  }
+
+  .bp-keytag-inner-bevel {
+    border: 1.5px solid var(--b-keytag-border, #7c9bd1);
+    border-radius: 40px;
+    padding: 4px 12px 4px 16px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    transition: border-color 0.25s ease;
+  }
+
+  .bp-keytag-hole {
+    position: absolute;
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #111827;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
+  }
+
+  .bp-keyring-loop {
+    position: absolute;
+    left: -22px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 3.5px solid #b8c4d4;
+    box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.25);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .bp-silver-key-box {
+    position: absolute;
+    left: -26px;
+    top: 6px;
+    width: 110px;
+    height: 36px;
+    pointer-events: none;
+    z-index: 3;
+    transform: rotate(14deg);
+    filter: drop-shadow(2px 5px 6px rgba(15, 23, 42, 0.35));
+  }
+
+  .bp-key-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .bp-keytag-title {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-weight: 900;
+    font-size: 1.35rem;
+    letter-spacing: 0.08em;
+    color: var(--b-keytag-text, #1e2c47);
+    text-shadow: 0 1px 0 var(--b-keytag-shadow, #9cb6e5);
+    user-select: none;
+    transition: color 0.25s ease, text-shadow 0.25s ease;
+  }
+
+  /* 2. Flight Board Gate Ticker ("DEP ✈ ARR") */
+  .bp-flight-gate-card {
+    background: var(--b-ticker-bg, #cfe4f5);
+    border: 1.5px solid var(--b-ticker-border, #8ab6db);
+    border-radius: 6px;
+    padding: 4px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 1px 3px 8px rgba(0, 0, 0, 0.18);
+    min-width: 135px;
+    margin-left: auto;
+    transition: background 0.25s ease, border-color 0.25s ease;
+  }
+
+  .bp-flight-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--b-ticker-label, #55799c);
+    letter-spacing: 0.12em;
+    transition: color 0.25s ease;
+  }
+
+  .bp-f-icon {
+    color: var(--b-ticker-label, #3b668f);
+    font-size: 0.72rem;
+  }
+
+  .bp-flight-dates-display {
+    font-family: 'Courier New', Courier, monospace, sans-serif;
+    font-size: 1.02rem;
+    font-weight: 900;
+    color: var(--b-ticker-text, #214063) !important;
+    text-align: center;
+    margin-top: 2px;
+    letter-spacing: 0.06em;
+    transition: color 0.25s ease;
+  }
+
+  /* Top Right: Monday Ticket Container */
+  .bp-mon-ticket-container {
+    width: 250px;
+    flex-shrink: 0;
+    display: flex;
+  }
+
+  .bp-mon-ticket-container .bp-ticket-card {
+    width: 100%;
+    border: 1.5px solid var(--b-strip-border, #9eb2dc);
+    border-radius: 8px;
+    box-shadow: 2px 6px 16px rgba(0, 0, 0, 0.16);
+  }
+
+  /* TICKET STRIPS (Middle & Bottom Rows) */
+  .bp-ticket-strip {
+    background: var(--b-strip-bg, #f8fafc);
+    border: 1.5px solid var(--b-strip-border, #9eb2dc);
+    border-radius: 8px;
+    display: flex;
+    align-items: stretch;
+    box-shadow: 2px 6px 16px rgba(0, 0, 0, 0.16);
+    overflow: hidden;
+    position: relative;
+    transition: background 0.25s ease, border-color 0.25s ease;
+  }
+
+  /* Left Barcode Stub */
+  .bp-strip-left-stub {
+    width: 44px;
+    flex-shrink: 0;
+    background: var(--b-stub-bg, #eef3f9);
+    border-right: 1.5px dashed var(--b-stub-border, #9eb2dc);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 6px 0;
+    transition: background 0.25s ease, border-color 0.25s ease;
+  }
+
+  .bp-barcode-stub-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transform: rotate(-90deg);
+    white-space: nowrap;
+  }
+
+  .bp-barcode-number {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.62rem;
+    font-weight: 800;
+    color: var(--b-stub-text, #556c8e);
+    letter-spacing: 0.12em;
+    transition: color 0.25s ease;
+  }
+
+  .bp-barcode-lines {
+    display: inline-flex;
+    align-items: stretch;
+    gap: 1.5px;
+    height: 14px;
+  }
+  .bp-barcode-lines span {
+    display: inline-block;
+    width: 1.5px;
+    background: var(--b-barcode, #465a78);
+    transition: background 0.25s ease;
+  }
+  .bp-barcode-lines span:nth-child(2n) { width: 3px; }
+  .bp-barcode-lines span:nth-child(3n) { width: 1px; }
+
+  .bp-stripes-stub {
+    width: 28px;
+    height: 65px;
+    transform: none;
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--b-barcode, #556c8e),
+      var(--b-barcode, #556c8e) 4px,
+      transparent 4px,
+      transparent 9px
+    );
+    opacity: 0.7;
+    border-radius: 2px;
+    transition: background 0.25s ease;
+  }
+
+  .bp-stub-notches, .bp-perforate-divider {
+    position: relative;
+  }
+
+  .bp-notch {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--b-board-bg, #d2d7e2);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+    transition: background 0.25s ease;
+  }
+  .bp-notch.top { top: -7px; }
+  .bp-notch.btm { bottom: -7px; }
+
+  .bp-strip-tickets-group {
+    flex: 1;
+    display: flex;
+    align-items: stretch;
+  }
+
+  .bp-perforate-divider {
+    width: 0;
+    border-right: 1.5px dashed var(--b-strip-border, #9eb2dc);
+    position: relative;
+    z-index: 3;
+    transition: border-color 0.25s ease;
+  }
+
+  /* INDIVIDUAL TICKET CARD */
+  .bp-ticket-card {
+    flex: 1;
+    min-width: 0;
+    background: var(--b-ticket-bg, #fbfdff);
+    padding: 5px 5px 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s ease, filter 0.2s ease;
+  }
+
+  .bp-ticket-card:hover {
+    filter: brightness(1.08);
+  }
+
+  /* Ribbon Day Banner */
+  .bp-ticket-ribbon-wrap {
+    margin-bottom: 3px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .bp-folded-ribbon {
+    position: relative;
+    background: var(--b-ribbon-bg, #5b7bc3);
+    color: var(--b-ribbon-text, #ffffff);
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 0.86rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 2px 14px;
+    border-radius: 2px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+
+  .bp-ribbon-fold-l, .bp-ribbon-fold-r {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 9px;
+    background: var(--b-ribbon-fold, #4665a8);
+    transition: background 0.25s ease;
+  }
+  .bp-ribbon-fold-l {
+    left: -8px;
+    clip-path: polygon(100% 0, 100% 100%, 0 50%);
+  }
+  .bp-ribbon-fold-r {
+    right: -8px;
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+  }
+
+  /* Inner Ticket Frame */
+  .bp-ticket-inner-frame {
+    width: 100%;
+    flex: 1;
+    border: 1px solid var(--b-ticket-inner-border, #9bb5e0);
+    border-radius: 6px;
+    padding: 4px 5px 3px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    position: relative;
+    min-height: 80px;
+    transition: border-color 0.25s ease;
+  }
+
+  .bp-ticket-body-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    margin: auto 0;
+    width: 100%;
+  }
+
+  html.dark .schedule-card-board .bp-ticket-title,
+  .bp-ticket-title {
+    font-size: 0.98rem;
+    font-weight: 900;
+    color: var(--b-ticket-title, #24385a) !important;
+    line-height: 1.2;
+    word-break: break-word;
+    transition: color 0.25s ease;
+  }
+
+  html.dark .schedule-card-board .bp-ticket-memo,
+  .bp-ticket-memo {
+    font-size: 0.69rem;
+    font-weight: 600;
+    color: var(--b-ticket-memo, #5a739c) !important;
+    line-height: 1.2;
+    min-height: 13px;
+    word-break: break-word;
+    transition: color 0.25s ease;
+  }
+
+  html.dark .schedule-card-board .bp-ticket-time,
+  .bp-ticket-time {
+    font-size: 0.76rem;
+    font-weight: 800;
+    color: var(--b-ticket-time, #3b5785) !important;
+    margin-top: 1px;
+    letter-spacing: 0.02em;
+    transition: color 0.25s ease;
+  }
+
+  /* Hanging Wooden OFFLINE Sign (Friday / Day Off) */
+  .bp-hanging-sign-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: auto 0;
+    transform: rotate(-4.5deg);
+    filter: drop-shadow(2px 5px 6px rgba(0, 0, 0, 0.25));
+  }
+
+  .bp-pin-nail {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #394657;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  }
+
+  .bp-hanging-strings-svg {
+    width: 60px;
+    height: 12px;
+    display: block;
+  }
+
+  .bp-wooden-plaque {
+    background: var(--b-offline-bg, #b5a799);
+    border: 2px solid var(--b-offline-border, #5a4b3d);
+    border-radius: 3px;
+    padding: 4px 10px;
+    position: relative;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.25), 1px 3px 6px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.25s ease, border-color 0.25s ease;
+  }
+
+  html.dark .schedule-card-board .bp-wooden-text,
+  .bp-wooden-text {
+    font-family: 'Georgia', 'Impact', serif;
+    font-size: 0.88rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    color: var(--b-offline-text, #35281d) !important;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+    transition: color 0.25s ease;
+  }
+
+  .bp-rivet {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #45392e;
+  }
+  .bp-rivet.tl { top: 2.5px; left: 2.5px; }
+  .bp-rivet.tr { top: 2.5px; right: 2.5px; }
+  .bp-rivet.bl { bottom: 2.5px; left: 2.5px; }
+  .bp-rivet.br { bottom: 2.5px; right: 2.5px; }
+
+  /* Vintage Flourish Ornament at Bottom of Ticket */
+  .bp-flourish-wrap {
+    width: 100%;
+    max-width: 100px;
+    height: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--b-flourish, #8da9dc);
+    margin-top: 1px;
+    transition: color 0.25s ease;
+  }
+
+  .bp-flourish-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Quick Edit Tooltip/Hint on Hover */
+  .bp-ticket-edit-hint {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: var(--b-card, rgba(255, 255, 255, 0.85));
+    border: 1px solid var(--b-border, rgba(85, 114, 185, 0.25));
+    border-radius: 4px;
+    font-size: 0.65rem;
+    padding: 1px 3px;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    cursor: pointer;
+  }
+  .bp-ticket-card:hover .bp-ticket-edit-hint {
+    opacity: 1;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     VIEW 2: COMPACT MONTHLY CALENDAR GRID (Fits within single page)
+     ───────────────────────────────────────────────────────────────────────────── */
+  .monthly-schedule-compact-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .monthly-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+  }
+
+  .month-nav-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  html.dark .schedule-card-board .btn-month-nav,
+  .btn-month-nav {
+    background: var(--b-card) !important;
+    border: 1px solid var(--b-border) !important;
+    color: var(--b-text) !important;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  html.dark .schedule-card-board .month-title-text,
+  .month-title-text {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--b-text) !important;
+  }
+
+  html.dark .schedule-card-board .monthly-goal-badge,
+  .monthly-goal-badge {
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: var(--b-accent) !important;
+    background: var(--b-card) !important;
+    border: 1px solid var(--b-border) !important;
+    padding: 0.15rem 0.55rem;
+    border-radius: 4px;
+  }
+
+  html.dark .schedule-card-board .calendar-days-header,
+  .calendar-days-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.35rem;
+    text-align: center;
+    font-size: 0.74rem;
+    font-weight: 800;
+    color: var(--b-sub) !important;
+    padding-bottom: 0.25rem;
+  }
+  html.dark .schedule-card-board .calendar-days-header span,
+  .calendar-days-header span {
+    color: var(--b-sub) !important;
+  }
+  .col-sun { color: #f43f5e !important; }
+  .col-sat { color: #38bdf8 !important; }
+
+  .calendar-cells-compact-container {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.35rem;
+  }
+
+  .cal-cell-compact {
+    background: var(--b-ticket-bg, var(--b-card));
+    border: 1px solid var(--b-strip-border, var(--b-border));
+    border-radius: 8px;
+    height: 56px;
+    padding: 0.3rem 0.4rem;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    overflow: hidden;
+  }
+
+  .cal-cell-compact:hover {
+    border-color: var(--b-accent);
+    transform: translateY(-1.5px);
+  }
+
+  .cal-cell-compact.is-empty {
+    opacity: 0.15;
+    pointer-events: none;
+  }
+
+  .cal-cell-num {
+    font-size: 0.74rem;
+    font-weight: 800;
+    color: var(--b-ticket-title, var(--b-text)) !important;
+    margin-bottom: 0.15rem;
+  }
+  .cal-cell-num.col-sun { color: #f43f5e !important; }
+  .cal-cell-num.col-sat { color: #38bdf8 !important; }
+
+  .cal-cell-pill {
+    font-size: 0.66rem;
+    font-weight: 700;
+    padding: 0.12rem 0.3rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+  }
+
+  /* Board Footer */
+  .board-footer {
+    text-align: center;
+    margin-top: 0.75rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--b-border, rgba(255, 255, 255, 0.05));
+    font-size: 0.65rem;
+    color: var(--b-sub, #64748b) !important;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     EDIT MODAL
+     ───────────────────────────────────────────────────────────────────────────── */
+  .edit-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 1rem;
+  }
+
+  .edit-modal-card {
+    width: 100%;
+    max-width: 440px;
+    background: #0d1322;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .modal-header h3 { margin: 0; font-size: 0.95rem; font-weight: 800; }
+  .btn-close-modal { background: none; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; }
+
+  .modal-body { padding: 1.1rem 1.25rem; }
+  .modal-form-group { margin-bottom: 0.85rem; }
+  .modal-form-group label { display: block; font-size: 0.74rem; font-weight: 700; color: #94a3b8; margin-bottom: 0.3rem; }
+
+  .badge-select-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.3rem;
+  }
+
+  .badge-opt-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #f1f5f9;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.35rem 0.2rem;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+  }
+  .badge-opt-btn.active {
+    background: var(--badge-bg);
+    border-color: var(--badge-c);
+    color: var(--badge-c);
+  }
+
+  .time-presets-row {
+    display: flex;
+    gap: 0.3rem;
+  }
+  .modal-input {
+    width: 100%;
+    background: #080c14;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #f8fafc;
+    font-size: 0.82rem;
+    padding: 0.45rem 0.65rem;
+    border-radius: 6px;
+    outline: none;
+    box-sizing: border-box;
+  }
+  .modal-input:focus { border-color: #38bdf8; }
+
+  .btn-quick-time {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.35rem 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .field-hint {
+    font-size: 0.68rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+    display: block;
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .btn-modal-cancel {
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    color: #cbd5e1;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.45rem 0.9rem;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .btn-modal-save {
+    background: #38bdf8;
+    border: none;
+    color: #08101a;
+    font-size: 0.78rem;
+    font-weight: 800;
+    padding: 0.45rem 1.1rem;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     OBS CLEAN MODE
+     ───────────────────────────────────────────────────────────────────────────── */
+  .streamer-clean-mode .studio-controls-bar {
+    display: none !important;
+  }
+  .streamer-clean-mode .schedule-preview-stage {
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+  }
+  .streamer-clean-mode .schedule-card-board {
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    max-width: 100%;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Responsive Mobile Breakpoint */
+  @media (max-width: 640px) {
+    .day-card-compact {
+      gap: 0.4rem;
+      padding: 0 0.5rem;
+    }
+    .day-badge-col {
+      width: 58px;
+    }
+    .day-status-compact {
+      width: 68px;
+      font-size: 0.68rem;
+    }
+    .day-time-compact {
+      width: 62px;
+      font-size: 0.68rem;
+    }
+    .day-title-compact {
+      font-size: 0.78rem;
+    }
+  }
+</style>
+
+<script>
+import { renderScheduleToCanvas } from './ScheduleCanvasRenderer';
+import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } from './scheduleTemplates';
+
+(function () {
+
+  // ─── Unified Default Schedule State (Version 2 - Everyday Stream Categories) ──
+  var DEFAULT_SCHEDULE = JSON.parse(JSON.stringify(SAMPLE_PRESETS.travelTicket));
+
+  // ─── State Initialization ──────────────────────────────────────────────────
+  var state = null;
+  var STORAGE_KEY = 'streamarcade_unified_schedule_v6';
+
+  try {
+    var saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) {
+      saved = localStorage.getItem('streamarcade_unified_schedule_v5');
+    }
+    if (saved) {
+      // Clear out legacy sample containing "봉누도"
+      if (saved.indexOf('봉누도') !== -1) {
+        state = null;
+      } else {
+        state = JSON.parse(saved);
+      }
+    }
+  } catch (e) {}
+
+  if (!state || !state.monthly || !state.monthly.days) {
+    state = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {}
+  }
+
+  // ─── Week Calculation Helper ───────────────────────────────────────────────
+  // Divides any month into standard Monday-Sunday calendar weeks
+  function computeMonthWeeks(year, month) {
+    var firstDate = new Date(year, month - 1, 1);
+    var firstDayOfWeek = firstDate.getDay(); // 0: Sun, 1: Mon, 2: Tue...
+    var monOffset = (firstDayOfWeek + 6) % 7; // Distance to Monday
+    var startDate = new Date(year, month - 1, 1 - monOffset);
+
+    var weeks = [];
+    var curr = new Date(startDate);
+    var dayEnList = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+    var dayKoList = ['월', '화', '수', '목', '금', '토', '일'];
+
+    while (true) {
+      var weekDays = [];
+      var hasDayInMonth = false;
+
+      for (var d = 0; d < 7; d++) {
+        var y = curr.getFullYear();
+        var m = curr.getMonth() + 1;
+        var dayNum = curr.getDate();
+        var isCurrentMonth = (y === year && m === month);
+        if (isCurrentMonth) hasDayInMonth = true;
+
+        var dateStr = (m < 10 ? '0' + m : m) + '.' + (dayNum < 10 ? '0' + dayNum : dayNum);
+
+        // Fetch entry from monthly schedule if present
+        var entry = (isCurrentMonth && state.monthly.days[dayNum])
+          ? state.monthly.days[dayNum]
+          : { time: '20:00', startTime: '20:00', endTime: '', status: 'live', title: '방송 예정' };
+
+        weekDays.push({
+          year: y,
+          month: m,
+          day: dayNum,
+          dayEn: dayEnList[d],
+          dayKo: dayKoList[d],
+          isCurrentMonth: isCurrentMonth,
+          dateStr: dateStr,
+          entry: entry
+        });
+
+        curr.setDate(curr.getDate() + 1);
+      }
+
+      if (!hasDayInMonth && weeks.length >= 4) {
+        break;
+      }
+
+      var weekNum = weeks.length + 1;
+      var rangeStr = weekDays[0].dateStr + ' ~ ' + weekDays[6].dateStr;
+      weeks.push({
+        index: weeks.length,
+        weekNum: weekNum,
+        label: weekNum + '주차 (' + rangeStr + ')',
+        shortLabel: weekNum + '주차',
+        rangeStr: rangeStr,
+        days: weekDays
+      });
+
+      if (weeks.length >= 6 || (curr.getFullYear() >= year && (curr.getMonth() + 1) > month && curr.getDate() > 7)) {
+        break;
+      }
+    }
+
+    return weeks;
+  }
+
+  // ─── DOM References ────────────────────────────────────────────────────────
+  var root = document.getElementById('scheduleStudioRoot');
+  var board = document.getElementById('scheduleBoard');
+  var weeklyWrap = document.getElementById('weeklyWrap');
+  var monthlyWrap = document.getElementById('monthlyWrap');
+  var calendarCellsContainer = document.getElementById('calendarCellsContainer');
+  var weekButtonsBar = document.getElementById('weekButtonsBar');
+  var weekExtractorGroup = document.getElementById('weekExtractorGroup');
+
+  // Boarding Pass Elements
+  var bpFlightDatesDisplay = document.getElementById('bpFlightDatesDisplay');
+  var bpMonTicketContainer = document.getElementById('bpMonTicketContainer');
+  var bpMidTicketsGroup = document.getElementById('bpMidTicketsGroup');
+  var bpBtmTicketsGroup = document.getElementById('bpBtmTicketsGroup');
+
+  var dispAvatar = document.getElementById('dispAvatar');
+  var dispChannelName = document.getElementById('dispChannelName');
+  var dispPlatformBadge = document.getElementById('dispPlatformBadge');
+  var dispTagline = document.getElementById('dispTagline');
+  var dispScheduleRangeBadge = document.getElementById('dispScheduleRangeBadge');
+  var dispNoticeBanner = document.getElementById('dispNoticeBanner');
+  var dispNoticeText = document.getElementById('dispNoticeText');
+  var dispMonthTitle = document.getElementById('dispMonthTitle');
+  var dispMonthlyGoal = document.getElementById('dispMonthlyGoal');
+  var btnExportPngLabel = document.getElementById('btnExportPngLabel');
+
+  // Input Controls
+  var inputAvatarEmoji = document.getElementById('inputAvatarEmoji');
+  var emojiSamplesRow = document.getElementById('emojiSamplesRow');
+  var inputChannelName = document.getElementById('inputChannelName');
+  var selectPlatform = document.getElementById('selectPlatform');
+  var inputTagline = document.getElementById('inputTagline');
+  var inputNoticeWeekly = document.getElementById('inputNoticeWeekly');
+  var inputNoticeMonthly = document.getElementById('inputNoticeMonthly');
+
+  var btnModeWeekly = document.getElementById('btnModeWeekly');
+  var btnModeMonthly = document.getElementById('btnModeMonthly');
+  var themePickerRow = document.getElementById('themePickerRow');
+
+  var btnSaveJson = document.getElementById('btnSaveJson');
+  var inputLoadJson = document.getElementById('inputLoadJson') as HTMLInputElement;
+  var btnExportPng = document.getElementById('btnExportPng');
+  var btnCopyText = document.getElementById('btnCopyText');
+  var btnPresetTravel = document.getElementById('btnPresetTravel');
+  var btnPresetGamer = document.getElementById('btnPresetGamer');
+  var btnPresetVtuber = document.getElementById('btnPresetVtuber');
+  var exportCanvas = document.getElementById('exportCanvas') as HTMLCanvasElement;
+
+  var btnPrevMonth = document.getElementById('btnPrevMonth');
+  var btnNextMonth = document.getElementById('btnNextMonth');
+
+  // Modal DOM
+  var modalOverlay = document.getElementById('editModalOverlay');
+  var modalDayTitle = document.getElementById('modalDayTitle');
+  var modalBadgeGrid = document.getElementById('modalBadgeGrid');
+  var modalStartTimeInput = document.getElementById('modalStartTimeInput') as HTMLInputElement;
+  var modalEndTimeInput = document.getElementById('modalEndTimeInput') as HTMLInputElement;
+  var modalTitleInput = document.getElementById('modalTitleInput') as HTMLInputElement;
+  var modalMemoInput = document.getElementById('modalMemoInput') as HTMLInputElement;
+  var btnCloseModal = document.getElementById('btnCloseModal');
+  var btnModalCancel = document.getElementById('btnModalCancel');
+  var btnModalSave = document.getElementById('btnModalSave');
+
+  var currentEditingDayNum = 1;
+  var currentSelectedBadgeId = 'live';
+
+  // ─── Render Functions ──────────────────────────────────────────────────────
+  function renderAll() {
+    var weeks = computeMonthWeeks(state.monthly.year, state.monthly.month);
+    if (state.selectedWeekIndex >= weeks.length) {
+      state.selectedWeekIndex = 0;
+    }
+    var currentWeek = weeks[state.selectedWeekIndex] || weeks[0];
+
+    // 1. Board Theme & View Attribute
+    board.setAttribute('data-theme', state.themeId);
+    board.setAttribute('data-view', state.viewMode);
+
+    // Update keytag title dynamically according to theme
+    var bpKeytagTitle = document.getElementById('bpKeytagTitle');
+    if (bpKeytagTitle && SCHEDULE_THEMES[state.themeId]) {
+      bpKeytagTitle.textContent = SCHEDULE_THEMES[state.themeId].keytagTitle || 'SCHEDULE';
+    }
+
+    // 2. Active Theme Chips
+    var themeChips = themePickerRow.querySelectorAll('.theme-chip');
+    themeChips.forEach(function (chip) {
+      if (chip.getAttribute('data-theme-id') === state.themeId) {
+        chip.classList.add('active');
+      } else {
+        chip.classList.remove('active');
+      }
+    });
+
+    // 3. View Mode Toggle
+    if (state.viewMode === 'weekly') {
+      btnModeWeekly.classList.add('active');
+      btnModeMonthly.classList.remove('active');
+      weeklyWrap.style.display = 'block';
+      monthlyWrap.style.display = 'none';
+      weekExtractorGroup.style.display = 'flex';
+      btnExportPngLabel.textContent = '주간 PNG 저장';
+      dispScheduleRangeBadge.textContent = state.monthly.year + '.' + (state.monthly.month < 10 ? '0' + state.monthly.month : state.monthly.month) + ' ' + currentWeek.label;
+    } else {
+      btnModeWeekly.classList.remove('active');
+      btnModeMonthly.classList.add('active');
+      weeklyWrap.style.display = 'none';
+      monthlyWrap.style.display = 'block';
+      weekExtractorGroup.style.display = 'none';
+      btnExportPngLabel.textContent = '월간 PNG 저장';
+      dispScheduleRangeBadge.textContent = state.monthly.year + '년 ' + state.monthly.month + '월 전체 방송';
+    }
+
+    // 4. Week Buttons Bar
+    renderWeekButtons(weeks);
+
+    // 5. Header Branding Details
+    dispAvatar.textContent = state.channel.avatarEmoji || '🎮';
+    dispChannelName.textContent = state.channel.name || '스트리머 채널';
+    dispTagline.textContent = state.channel.tagline || '';
+
+    var platformMap = { chzzk: '치지직', soop: 'SOOP', twitch: '트위치', youtube: '유튜브', custom: 'LIVE' };
+    dispPlatformBadge.textContent = platformMap[state.channel.platform] || 'LIVE';
+
+    // Notice Banner (Weekly vs Monthly)
+    if (state.viewMode === 'weekly') {
+      var weeklyNotice = state.channel.noticeWeekly || state.channel.notice;
+      if (weeklyNotice && weeklyNotice.trim() !== '') {
+        dispNoticeBanner.style.display = 'flex';
+        dispNoticeText.textContent = weeklyNotice;
+      } else {
+        dispNoticeBanner.style.display = 'none';
+      }
+    } else {
+      // In monthly view, monthly notice/goal is cleanly displayed in the calendar toolbar badge
+      dispNoticeBanner.style.display = 'none';
+    }
+
+    // Monthly Goal Badge
+    var monthlyGoal = state.channel.noticeMonthly || state.monthly.monthlyGoal;
+    dispMonthlyGoal.textContent = monthlyGoal || '🎯 이번 달도 파이팅!';
+
+    // 6. Sync Input Controls
+    inputAvatarEmoji.value = state.channel.avatarEmoji || '🎮';
+    inputChannelName.value = state.channel.name || '';
+    selectPlatform.value = state.channel.platform || 'chzzk';
+    inputTagline.value = state.channel.tagline || '';
+    inputNoticeWeekly.value = state.channel.noticeWeekly || state.channel.notice || '';
+    inputNoticeMonthly.value = state.channel.noticeMonthly || state.monthly.monthlyGoal || '';
+
+    // 7. Render Weekly Compact Day Cards
+    renderWeeklyDays(currentWeek.days);
+
+    // 8. Render Monthly Compact Cells
+    renderMonthlyCalendar();
+  }
+
+  function renderWeekButtons(weeks) {
+    weekButtonsBar.innerHTML = '';
+    weeks.forEach(function (w, idx) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn-week-chip' + (idx === state.selectedWeekIndex ? ' active' : '');
+      btn.textContent = w.shortLabel;
+      btn.title = w.label;
+
+      btn.addEventListener('click', function () {
+        state.selectedWeekIndex = idx;
+        saveState();
+        renderAll();
+      });
+
+      weekButtonsBar.appendChild(btn);
+    });
+  }
+
+  function renderWeeklyDays(weekDays) {
+    if (bpFlightDatesDisplay && weekDays.length >= 7) {
+      bpFlightDatesDisplay.textContent = weekDays[0].dateStr + ' ✈ ' + weekDays[6].dateStr;
+    }
+
+    // 1. Monday Ticket (Top Right)
+    if (bpMonTicketContainer) {
+      bpMonTicketContainer.innerHTML = '';
+      if (weekDays[0]) {
+        bpMonTicketContainer.appendChild(createBoardingPassTicket(weekDays[0]));
+      }
+    }
+
+    // 2. Middle Row Tickets (TUE, WED, THU)
+    if (bpMidTicketsGroup) {
+      bpMidTicketsGroup.innerHTML = '';
+      for (var i = 1; i <= 3; i++) {
+        if (i > 1) {
+          var div = document.createElement('div');
+          div.className = 'bp-perforate-divider';
+          div.innerHTML = '<span class="bp-notch top"></span><span class="bp-notch btm"></span>';
+          bpMidTicketsGroup.appendChild(div);
+        }
+        if (weekDays[i]) {
+          bpMidTicketsGroup.appendChild(createBoardingPassTicket(weekDays[i]));
+        }
+      }
+    }
+
+    // 3. Bottom Row Tickets (FRI, SAT, SUN)
+    if (bpBtmTicketsGroup) {
+      bpBtmTicketsGroup.innerHTML = '';
+      for (var j = 4; j <= 6; j++) {
+        if (j > 4) {
+          var div2 = document.createElement('div');
+          div2.className = 'bp-perforate-divider';
+          div2.innerHTML = '<span class="bp-notch top"></span><span class="bp-notch btm"></span>';
+          bpBtmTicketsGroup.appendChild(div2);
+        }
+        if (weekDays[j]) {
+          bpBtmTicketsGroup.appendChild(createBoardingPassTicket(weekDays[j]));
+        }
+      }
+    }
+  }
+
+  function createBoardingPassTicket(d) {
+    var entry = d.entry || { time: '20:00', startTime: '20:00', endTime: '', status: 'live', title: '방송 예정', memo: '' };
+    var isOff = (entry.status === 'off' || entry.title === 'OFFLINE');
+    var displayTime = formatDisplayTime(entry) || entry.time || '20:00';
+
+    var card = document.createElement('div');
+    card.className = 'bp-ticket-card' + (isOff ? ' is-off-day' : '');
+    card.setAttribute('data-day', d.dayEn);
+
+    var innerContentHtml = '';
+
+    if (isOff) {
+      // Hanging rustic wooden OFFLINE sign tilted at -4.5° with cords and rivets
+      innerContentHtml =
+        '<div class="bp-hanging-sign-unit">' +
+          '<div class="bp-pin-nail"></div>' +
+          '<svg class="bp-hanging-strings-svg" viewBox="0 0 68 14" fill="none">' +
+            '<line x1="34" y1="2" x2="10" y2="13" stroke="#4b5869" stroke-width="1.6" stroke-linecap="round"/>' +
+            '<line x1="34" y1="2" x2="58" y2="13" stroke="#4b5869" stroke-width="1.6" stroke-linecap="round"/>' +
+          '</svg>' +
+          '<div class="bp-wooden-plaque">' +
+            '<span class="bp-rivet tl"></span><span class="bp-rivet tr"></span>' +
+            '<span class="bp-wooden-text">OFFLINE</span>' +
+            '<span class="bp-rivet bl"></span><span class="bp-rivet br"></span>' +
+          '</div>' +
+        '</div>';
+    } else {
+      // Active stream day: Title, Memo/Subtitle, and Time
+      innerContentHtml =
+        '<div class="bp-ticket-body-content">' +
+          '<div class="bp-ticket-title">' + (entry.title || '방송 예정') + '</div>' +
+          '<div class="bp-ticket-memo">' + (entry.memo || '') + '</div>' +
+          '<div class="bp-ticket-time">' + displayTime + '</div>' +
+        '</div>';
+    }
+
+    card.innerHTML =
+      '<div class="bp-ticket-ribbon-wrap">' +
+        '<div class="bp-folded-ribbon">' +
+          '<span class="bp-ribbon-fold-l"></span>' +
+          '<span class="bp-ribbon-label">' + d.dayEn + '</span>' +
+          '<span class="bp-ribbon-fold-r"></span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="bp-ticket-inner-frame">' +
+        innerContentHtml +
+        '<div class="bp-flourish-wrap">' +
+          '<svg class="bp-flourish-svg" viewBox="0 0 140 24" fill="none">' +
+            '<path d="M 12 15 C 32 21, 42 5, 60 12 C 66 14, 69 14, 70 12 C 71 14, 74 14, 80 12 C 98 5, 108 21, 128 15" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>' +
+            '<circle cx="70" cy="12" r="2.2" fill="currentColor"/>' +
+            '<path d="M 22 12 C 16 9, 19 4, 25 6 C 30 8, 27 14, 18 14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>' +
+            '<path d="M 118 12 C 124 9, 121 4, 115 6 C 110 8, 113 14, 122 14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>' +
+          '</svg>' +
+        '</div>' +
+      '</div>' +
+      '<button type="button" class="bp-ticket-edit-hint" title="일정 편집">✏️</button>';
+
+    card.addEventListener('click', function () {
+      openEditModal(d.day, d.dateStr + ' (' + d.dayEn + ')');
+    });
+
+    return card;
+  }
+
+  function renderMonthlyCalendar() {
+    dispMonthTitle.textContent = state.monthly.year + '년 ' + state.monthly.month + '월 전체 방송 캘린더';
+    var monthlyGoal = state.channel.noticeMonthly || state.monthly.monthlyGoal;
+    dispMonthlyGoal.textContent = monthlyGoal || '🎯 이번 달도 파이팅!';
+    calendarCellsContainer.innerHTML = '';
+
+    var daysInMonth = new Date(state.monthly.year, state.monthly.month, 0).getDate();
+    var firstDayIndex = new Date(state.monthly.year, state.monthly.month - 1, 1).getDay(); // 0 is Sun
+
+    for (var cell = 0; cell < 35; cell++) {
+      var dayNum = cell - firstDayIndex + 1;
+      var cellEl = document.createElement('div');
+
+      if (dayNum >= 1 && dayNum <= daysInMonth) {
+        cellEl.className = 'cal-cell-compact';
+        var entry = state.monthly.days[dayNum] || { time: '', startTime: '', endTime: '', status: 'live', title: '', memo: '' };
+        var badge = STATUS_BADGES[entry.status] || STATUS_BADGES.live;
+        var isSun = (cell % 7 === 0);
+        var isSat = (cell % 7 === 6);
+        var colClass = isSun ? ' col-sun' : (isSat ? ' col-sat' : '');
+        var displayTime = formatDisplayTime(entry);
+
+        var html = '<div class="cal-cell-num' + colClass + '">' + dayNum + '</div>';
+        if (entry.title && entry.title.trim() !== '') {
+          var timePrefix = (displayTime && displayTime !== '휴식') ? displayTime + ' ' : '';
+          html += '<div class="cal-cell-pill" style="background: ' + badge.bg + '; color: ' + badge.color + '; border: 1px solid ' + badge.color + '44;">' +
+            badge.icon + ' ' + timePrefix + entry.title +
+          '</div>';
+        }
+        cellEl.innerHTML = html;
+
+        (function (dNum) {
+          cellEl.addEventListener('click', function () {
+            openEditModal(dNum, state.monthly.month + '월 ' + dNum + '일');
+          });
+        })(dayNum);
+      } else {
+        cellEl.className = 'cal-cell-compact is-empty';
+      }
+
+      calendarCellsContainer.appendChild(cellEl);
+    }
+  }
+
+  // ─── Modal Editing Logic ───────────────────────────────────────────────────
+  function openEditModal(dayNum, titleLabel) {
+    currentEditingDayNum = dayNum;
+    modalDayTitle.textContent = titleLabel + ' 방송 일정 편집';
+
+    var existing = state.monthly.days[dayNum] || { startTime: '20:00', endTime: '', time: '20:00', status: 'live', title: '', memo: '' };
+    currentSelectedBadgeId = existing.status || 'live';
+    modalStartTimeInput.value = existing.startTime || existing.time || '20:00';
+    modalEndTimeInput.value = existing.endTime || '';
+    modalTitleInput.value = existing.title || '';
+    if (modalMemoInput) {
+      modalMemoInput.value = existing.memo || '';
+    }
+
+    updateModalBadgeButtons();
+    modalOverlay.style.display = 'flex';
+  }
+
+  function updateModalBadgeButtons() {
+    var btns = modalBadgeGrid.querySelectorAll('.badge-opt-btn');
+    btns.forEach(function (b) {
+      if (b.getAttribute('data-badge-id') === currentSelectedBadgeId) {
+        b.classList.add('active');
+      } else {
+        b.classList.remove('active');
+      }
+    });
+  }
+
+  modalBadgeGrid.addEventListener('click', function (e) {
+    var btn = e.target.closest('.badge-opt-btn');
+    if (!btn) return;
+    currentSelectedBadgeId = btn.getAttribute('data-badge-id');
+    updateModalBadgeButtons();
+
+    if (currentSelectedBadgeId === 'off') {
+      modalStartTimeInput.value = '휴식';
+      modalEndTimeInput.value = '';
+      if (!modalTitleInput.value || modalTitleInput.value === '방송 예정') {
+        modalTitleInput.value = 'OFFLINE';
+      }
+    }
+  });
+
+  // Quick Start Time Buttons in Modal
+  modalOverlay.querySelectorAll('.btn-quick-start').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      modalStartTimeInput.value = btn.getAttribute('data-time') || '';
+    });
+  });
+
+  // Quick End Time Buttons in Modal
+  modalOverlay.querySelectorAll('.btn-quick-end').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      modalEndTimeInput.value = btn.getAttribute('data-time') || '';
+    });
+  });
+
+  btnModalCancel.addEventListener('click', function () {
+    modalOverlay.style.display = 'none';
+  });
+  btnCloseModal.addEventListener('click', function () {
+    modalOverlay.style.display = 'none';
+  });
+
+  btnModalSave.addEventListener('click', function () {
+    var startVal = modalStartTimeInput.value.trim() || '20:00';
+    var endVal = modalEndTimeInput.value.trim();
+    var tempEntry = {
+      startTime: startVal,
+      endTime: endVal,
+      status: currentSelectedBadgeId,
+      title: modalTitleInput.value.trim() || (currentSelectedBadgeId === 'off' ? 'OFFLINE' : '방송 예정'),
+      memo: modalMemoInput ? modalMemoInput.value.trim() : ''
+    };
+    tempEntry.time = formatDisplayTime(tempEntry);
+
+    state.monthly.days[currentEditingDayNum] = tempEntry;
+    saveState();
+    modalOverlay.style.display = 'none';
+    renderAll();
+  });
+
+  // ─── Event Handlers ────────────────────────────────────────────────────────
+  btnModeWeekly.addEventListener('click', function () {
+    state.viewMode = 'weekly';
+    saveState();
+    renderAll();
+  });
+
+  btnModeMonthly.addEventListener('click', function () {
+    state.viewMode = 'monthly';
+    saveState();
+    renderAll();
+  });
+
+  themePickerRow.addEventListener('click', function (e) {
+    var btn = e.target.closest('.theme-chip');
+    if (!btn) return;
+    state.themeId = btn.getAttribute('data-theme-id');
+    saveState();
+    renderAll();
+  });
+
+  // Month navigation
+  btnPrevMonth.addEventListener('click', function () {
+    state.monthly.month -= 1;
+    if (state.monthly.month < 1) {
+      state.monthly.month = 12;
+      state.monthly.year -= 1;
+    }
+    state.selectedWeekIndex = 0;
+    saveState();
+    renderAll();
+  });
+
+  btnNextMonth.addEventListener('click', function () {
+    state.monthly.month += 1;
+    if (state.monthly.month > 12) {
+      state.monthly.month = 1;
+      state.monthly.year += 1;
+    }
+    state.selectedWeekIndex = 0;
+    saveState();
+    renderAll();
+  });
+
+  // Representative Emoji Input & Sample Chips
+  inputAvatarEmoji.addEventListener('input', function (e) {
+    state.channel.avatarEmoji = e.target.value;
+    saveState();
+    dispAvatar.textContent = state.channel.avatarEmoji || '🎮';
+  });
+
+  if (emojiSamplesRow) {
+    emojiSamplesRow.addEventListener('click', function (e) {
+      var btn = e.target.closest('.btn-emoji-chip');
+      if (!btn) return;
+      var emoji = btn.getAttribute('data-emoji');
+      if (emoji) {
+        state.channel.avatarEmoji = emoji;
+        inputAvatarEmoji.value = emoji;
+        dispAvatar.textContent = emoji;
+        saveState();
+      }
+    });
+  }
+
+  inputChannelName.addEventListener('input', function (e) {
+    state.channel.name = e.target.value;
+    saveState();
+    dispChannelName.textContent = state.channel.name || '스트리머 채널';
+  });
+
+  selectPlatform.addEventListener('change', function (e) {
+    state.channel.platform = e.target.value;
+    saveState();
+    var map = { chzzk: '치지직', soop: 'SOOP', twitch: '트위치', youtube: '유튜브', custom: 'LIVE' };
+    dispPlatformBadge.textContent = map[state.channel.platform] || 'LIVE';
+  });
+
+  inputTagline.addEventListener('input', function (e) {
+    state.channel.tagline = e.target.value;
+    saveState();
+    dispTagline.textContent = state.channel.tagline || '';
+  });
+
+  inputNoticeWeekly.addEventListener('input', function (e) {
+    state.channel.noticeWeekly = e.target.value;
+    state.channel.notice = e.target.value;
+    saveState();
+    if (state.viewMode === 'weekly') {
+      if (e.target.value && e.target.value.trim() !== '') {
+        dispNoticeBanner.style.display = 'flex';
+        dispNoticeText.textContent = e.target.value;
+      } else {
+        dispNoticeBanner.style.display = 'none';
+      }
+    }
+  });
+
+  inputNoticeMonthly.addEventListener('input', function (e) {
+    state.channel.noticeMonthly = e.target.value;
+    state.monthly.monthlyGoal = e.target.value;
+    saveState();
+    dispMonthlyGoal.textContent = e.target.value || '🎯 이번 달도 파이팅!';
+  });
+
+  // Sample Presets (No highlight sticky state)
+  if (btnPresetTravel) {
+    btnPresetTravel.addEventListener('click', function () {
+      state = JSON.parse(JSON.stringify(SAMPLE_PRESETS.travelTicket));
+      saveState();
+      renderAll();
+    });
+  }
+
+  btnPresetGamer.addEventListener('click', function () {
+    state = JSON.parse(JSON.stringify(SAMPLE_PRESETS.varietyGamer));
+    saveState();
+    renderAll();
+  });
+
+  btnPresetVtuber.addEventListener('click', function () {
+    state = JSON.parse(JSON.stringify(SAMPLE_PRESETS.vtuberCozy));
+    saveState();
+    renderAll();
+  });
+
+  // ─── Local JSON Save & Load (.json) ────────────────────────────────────────
+  btnSaveJson.addEventListener('click', function () {
+    var jsonStr = JSON.stringify(state, null, 2);
+    var blob = new Blob([jsonStr], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'stream_schedule_' + state.monthly.year + '_' + state.monthly.month + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  inputLoadJson.addEventListener('change', function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    var reader = new FileReader();
+    reader.onload = function (ev) {
+      try {
+        var parsed = JSON.parse(ev.target.result);
+        if (parsed && parsed.monthly && parsed.monthly.days) {
+          state = parsed;
+          saveState();
+          renderAll();
+          alert('✅ 템플릿 파일을 성공적으로 불러왔습니다!');
+        } else {
+          alert('올바른 편성표 템플릿 JSON 파일이 아닙니다.');
+        }
+      } catch (err) {
+        alert('JSON 파일 읽기 오류: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+
+  // ─── High-Res PNG Download ─────────────────────────────────────────────────
+  if (btnExportPng && exportCanvas) {
+    btnExportPng.addEventListener('click', function () {
+      try {
+        var weeks = computeMonthWeeks(state.monthly.year, state.monthly.month);
+        var currentWeek = weeks[state.selectedWeekIndex] || weeks[0];
+        var isWeekly = (state.viewMode === 'weekly');
+
+        renderScheduleToCanvas(exportCanvas, state, currentWeek.days, isWeekly, 2);
+
+        var dataUrl = exportCanvas.toDataURL('image/png');
+        var a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = isWeekly
+          ? 'stream_schedule_weekly_' + (state.selectedWeekIndex + 1) + 'week_' + state.monthly.year + '-' + state.monthly.month + '.png'
+          : 'stream_schedule_monthly_' + state.monthly.year + '-' + state.monthly.month + '.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } catch (err) {
+        console.error('Canvas export error:', err);
+        alert('PNG 내보내기 중 오류가 발생했습니다: ' + (err instanceof Error ? err.message : String(err)));
+      }
+    });
+  }
+
+  // ─── Text Copy for Discord / Fan Cafe ──────────────────────────────────────
+  btnCopyText.addEventListener('click', function () {
+    var weeks = computeMonthWeeks(state.monthly.year, state.monthly.month);
+    var currentWeek = weeks[state.selectedWeekIndex] || weeks[0];
+
+    var text = '📢 [' + state.channel.name + '] ' + state.monthly.year + '.' + state.monthly.month + ' ' + currentWeek.label + '\n\n';
+    currentWeek.days.forEach(function (d) {
+      var entry = d.entry;
+      var badge = STATUS_BADGES[entry.status] || STATUS_BADGES.live;
+      text += '• ' + d.dateStr + ' (' + d.dayKo + ') : ' + badge.icon + ' ' + (entry.time || '자율') + ' | ' + (entry.title || '방송 예정') + '\n';
+    });
+
+    text += '\n📺 ' + (state.channel.tagline || 'StreamArcade') + '\nhttps://streamarcade.net/schedule';
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(function () {
+        alert('📋 디스코드 / 팬카페 공유용 텍스트가 복사되었습니다!');
+      });
+    }
+  });
+
+  // Check URL params for stream/obs mode
+  var params = new URLSearchParams(window.location.search);
+  if (params.has('obs') || params.has('stream')) {
+    root.classList.add('streamer-clean-mode');
+  }
+
+  // Initial Render
+  renderAll();
+})();
+</script>

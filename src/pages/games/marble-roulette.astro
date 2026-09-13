@@ -80,6 +80,9 @@ const data = gameEntry?.data || {
                 <button class="cam-resume-btn hidden" id="cam-resume-btn" title="자동 추적 카메라로 복귀">↩ 자동 복귀</button>
               </div>
 
+              <!-- Probability Panel Toggle Button -->
+              <button class="prob-toggle-btn active" id="prob-toggle-btn" title="구슬 확률 및 지분 패널 토글">📊 확률</button>
+
               <div class="live-rank-chip" id="live-rank-chip">
                 <span class="rank-dot">● LIVE</span>
                 <span class="rank-text" id="lead-name">선두: 대기 중</span>
@@ -106,6 +109,20 @@ const data = gameEntry?.data || {
 
           <!-- Canvas Viewport -->
           <div class="canvas-viewport" id="canvas-viewport">
+            <!-- Participant Marbles & Probability Panel (Left Flank) -->
+            <div class="marble-prob-panel" id="marble-prob-panel">
+              <div class="prob-panel-header">
+                <div class="prob-title-row">
+                  <span class="prob-icon">🔮</span>
+                  <span class="prob-title-text" id="marble-prob-title-text">구슬 확률 &amp; 지분</span>
+                </div>
+                <span class="prob-total-badge" id="marble-prob-total-badge">총 8개 구슬</span>
+              </div>
+              <div class="prob-items-list" id="marble-prob-items-list">
+                <!-- Injected dynamically -->
+              </div>
+            </div>
+
             <canvas id="marble-canvas" width="620" height="660"></canvas>
 
             <!-- Countdown Overlay -->
@@ -597,10 +614,232 @@ const data = gameEntry?.data || {
     display: block;
   }
 
+  /* Probability Toggle Button in HUD */
+  .prob-toggle-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 0.2rem 0.45rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .prob-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+  }
+
+  .prob-toggle-btn.active {
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+    border-color: #38bdf8;
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+  }
+
+  /* Marble Probability & Share Panel (Left Flank of Canvas) */
+  .marble-prob-panel {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 232px;
+    height: 580px;
+    background: rgba(10, 15, 29, 0.92);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 0.75rem 0.8rem;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), 0 0 16px rgba(56, 189, 248, 0.1);
+    z-index: 10;
+    pointer-events: auto;
+    transition: all 0.2s ease;
+  }
+
+  .marble-prob-panel.collapsed {
+    display: none !important;
+  }
+
+  .prob-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 0.55rem;
+    flex-shrink: 0;
+  }
+
+  .prob-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .prob-icon {
+    font-size: 0.95rem;
+  }
+
+  .prob-title-text {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: #f8fafc;
+    letter-spacing: -0.01em;
+  }
+
+  .prob-total-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    padding: 0.12rem 0.4rem;
+    border-radius: 5px;
+    white-space: nowrap;
+  }
+
+  .prob-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.32rem;
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 0.2rem;
+  }
+
+  .prob-items-list::-webkit-scrollbar {
+    width: 4px;
+  }
+  .prob-items-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+  }
+
+  /* Scoped CSS styling for dynamically injected marble prob rows */
+  .marble-prob-panel :global(.prob-item-row) {
+    position: relative;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 7px;
+    height: 32px;
+    min-height: 32px;
+    padding: 0 0.55rem;
+    gap: 0.35rem;
+    transition: all 0.12s ease;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .marble-prob-panel :global(.prob-item-row:hover) {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateX(2px);
+  }
+
+  .marble-prob-panel :global(.prob-item-row.is-active-slice) {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: var(--item-color, #38bdf8);
+    box-shadow: 0 0 14px var(--item-color, rgba(56, 189, 248, 0.45));
+    transform: scale(1.02) translateX(2px);
+  }
+
+  .marble-prob-panel :global(.prob-color-dot) {
+    display: inline-block !important;
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 0 6px var(--item-color, currentColor);
+  }
+
+  .marble-prob-panel :global(.prob-item-name) {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .marble-prob-panel :global(.prob-item-count) {
+    font-size: 0.64rem;
+    font-weight: 700;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 0.05rem 0.28rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .marble-prob-panel :global(.prob-inline-bar-track) {
+    width: 36px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .marble-prob-panel :global(.prob-inline-bar-fill) {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+
+  .marble-prob-panel :global(.prob-item-percent) {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.76rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.22);
+    border-radius: 5px;
+    padding: 0.06rem 0.35rem;
+    flex-shrink: 0;
+    min-width: 44px;
+    text-align: right;
+    letter-spacing: -0.02em;
+  }
+
+  .marble-prob-panel :global(.prob-empty-text) {
+    font-size: 0.78rem;
+    color: #64748b;
+    text-align: center;
+    padding: 1rem 0;
+    font-style: italic;
+  }
+
+  @media (max-width: 1000px) {
+    .marble-prob-panel {
+      display: none;
+    }
+    .marble-prob-panel.mobile-open {
+      display: flex !important;
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      width: calc(100% - 24px);
+      max-width: 280px;
+      height: 480px;
+      z-index: 50;
+    }
+  }
+
   .pan-hint-chip {
     position: absolute;
     bottom: 10px;
-    left: 12px;
+    left: 50%;
+    transform: translateX(-50%);
     font-size: 0.68rem;
     font-weight: 700;
     color: rgba(255, 255, 255, 0.4);
@@ -609,6 +848,7 @@ const data = gameEntry?.data || {
     border-radius: 12px;
     pointer-events: none;
     transition: opacity 0.3s ease;
+    white-space: nowrap;
   }
 
   /* Countdown Overlay */
@@ -1718,6 +1958,13 @@ const data = gameEntry?.data || {
   const panHintChip = document.getElementById('pan-hint-chip');
   const camResumeBtn = document.getElementById('cam-resume-btn');
 
+  // Probability Panel Queries
+  const marbleProbPanel = document.getElementById('marble-prob-panel');
+  const marbleProbItemsList = document.getElementById('marble-prob-items-list');
+  const marbleProbTotalBadge = document.getElementById('marble-prob-total-badge');
+  const marbleProbTitleText = document.getElementById('marble-prob-title-text');
+  const probToggleBtn = document.getElementById('prob-toggle-btn');
+
   const namesInput = document.getElementById('names-input') as HTMLTextAreaElement;
   const marbleCountBadge = document.getElementById('marble-count-badge');
   const raceToggleBtn = document.getElementById('race-toggle-btn');
@@ -1796,6 +2043,111 @@ const data = gameEntry?.data || {
     return colorMap;
   }
 
+  // Marble Probability Calculation & Dynamic List Rendering
+  interface MarbleProbGroup {
+    name: string;
+    count: number;
+    color: string;
+    probPercent: string;
+  }
+
+  function calculateMarbleProbabilities(): MarbleProbGroup[] {
+    const raw = namesInput?.value || '';
+    const lines = raw.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
+    const counts: Record<string, number> = {};
+    const colorMap = getParticipantColorMap();
+
+    lines.forEach(line => {
+      const match = line.match(/^(.+?)\s*\*\s*(\d+)$/);
+      if (match) {
+        const name = match[1].trim();
+        const count = Math.min(50, Math.max(1, parseInt(match[2], 10)));
+        counts[name] = (counts[name] || 0) + count;
+      } else {
+        counts[line] = (counts[line] || 0) + 1;
+      }
+    });
+
+    const total = Object.values(counts).reduce((a, b) => a + b, 0);
+    if (total === 0) return [];
+
+    const groups: MarbleProbGroup[] = Object.keys(counts).map(name => {
+      const cnt = counts[name];
+      const pct = ((cnt / total) * 100).toFixed(1);
+      return {
+        name,
+        count: cnt,
+        color: colorMap.get(name) || '#38bdf8',
+        probPercent: pct
+      };
+    });
+
+    groups.sort((a, b) => b.count - a.count);
+    return groups;
+  }
+
+  function renderMarbleProbabilityList() {
+    if (!marbleProbItemsList) return;
+    const groups = calculateMarbleProbabilities();
+    const totalCount = groups.reduce((acc, g) => acc + g.count, 0);
+
+    if (marbleProbTotalBadge) {
+      marbleProbTotalBadge.textContent = isEn ? `Total ${totalCount} Marbles` : `총 ${totalCount}개 구슬`;
+    }
+
+    if (groups.length === 0) {
+      marbleProbItemsList.innerHTML = `<div class="prob-empty-text">${isEn ? 'No participants' : '등록된 참가자가 없습니다'}</div>`;
+      return;
+    }
+
+    marbleProbItemsList.innerHTML = groups.map(g => `
+      <div class="prob-item-row" data-marble-name="${escapeHtml(g.name)}" style="--item-color: ${g.color};" title="${escapeHtml(g.name)} (${g.count}개, ${g.probPercent}%) - 클릭 시 해당 구슬 추적">
+        <span class="prob-color-dot" style="background: ${g.color};"></span>
+        <span class="prob-item-name" title="${escapeHtml(g.name)}">${escapeHtml(g.name)}</span>
+        ${g.count > 1 ? `<span class="prob-item-count">${g.count}${isEn ? 'x' : '개'}</span>` : ''}
+        <div class="prob-inline-bar-track">
+          <div class="prob-inline-bar-fill" style="width: ${g.probPercent}%; background: ${g.color};"></div>
+        </div>
+        <span class="prob-item-percent">${g.probPercent}%</span>
+      </div>
+    `).join('');
+
+    marbleProbItemsList.querySelectorAll('.prob-item-row').forEach(row => {
+      row.addEventListener('click', () => {
+        const name = row.getAttribute('data-marble-name');
+        if (!name) return;
+        const targetMarble = marbles.find(m => m.name === name && !m.finished) || marbles.find(m => m.name === name);
+        if (targetMarble) {
+          focusedMarbleId = targetMarble.id;
+          camMode = 'runner';
+          isManualCam = false;
+          updateCamModeHUD();
+          highlightMarbleProbItem(name);
+        }
+      });
+    });
+  }
+
+  function highlightMarbleProbItem(name: string) {
+    if (!marbleProbItemsList) return;
+    marbleProbItemsList.querySelectorAll('.prob-item-row').forEach(r => {
+      if (r.getAttribute('data-marble-name') === name) {
+        r.classList.add('is-active-slice');
+      } else {
+        r.classList.remove('is-active-slice');
+      }
+    });
+  }
+
+  function escapeHtml(str: string): string {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
   function spawnMarbles() {
     if (activeMarbleNames.length === 0) {
       activeMarbleNames = parseNamesList();
@@ -1812,6 +2164,8 @@ const data = gameEntry?.data || {
     isManualCam = false;
     focusedMarbleId = null;
     updateCamModeHUD();
+
+    renderMarbleProbabilityList();
 
     if (marbleCountBadge) {
       marbleCountBadge.textContent = isEn ? `Total ${names.length} marbles` : `총 ${names.length}개 구슬 대기`;
@@ -2625,6 +2979,10 @@ const data = gameEntry?.data || {
         const lead = active.reduce((prev, cur) => (cur.y > prev.y ? cur : prev), active[0]);
         const tail = active.reduce((prev, cur) => (cur.y < prev.y ? cur : prev), active[0]);
 
+        if (isRacing && lead) {
+          highlightMarbleProbItem(lead.name);
+        }
+
         if (camMode === 'auto') {
           if (finishRankCounter === 0) {
             if (leadNameElem) leadNameElem.textContent = isEn ? `Leader: ${lead.name}` : `선두: ${lead.name}`;
@@ -3381,6 +3739,10 @@ const data = gameEntry?.data || {
       badgeText = isEn ? `#${targetRank} Finisher` : `${targetRank}등 당첨`;
     }
 
+    if (winners.length > 0) {
+      highlightMarbleProbItem(winners[0].name);
+    }
+
     if (modalWinnerTitle) modalWinnerTitle.textContent = spotlightTitle;
     if (spotlightBadge) spotlightBadge.textContent = badgeText;
     if (spotlightName) spotlightName.textContent = winners.map(w => w.name).join(', ');
@@ -3664,6 +4026,19 @@ const data = gameEntry?.data || {
   });
   updateHudSoundUI();
 
+  // Probability Panel Toggle Button
+  probToggleBtn?.addEventListener('click', () => {
+    if (window.innerWidth <= 1000) {
+      marbleProbPanel?.classList.toggle('mobile-open');
+      const isOpen = marbleProbPanel?.classList.contains('mobile-open');
+      probToggleBtn.classList.toggle('active', isOpen);
+    } else {
+      marbleProbPanel?.classList.toggle('collapsed');
+      const isClosed = marbleProbPanel?.classList.contains('collapsed');
+      probToggleBtn.classList.toggle('active', !isClosed);
+    }
+  });
+
   // Speed buttons (0.5x, 1x, 1.5x)
   document.querySelectorAll('.speed-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -3727,6 +4102,14 @@ const data = gameEntry?.data || {
     }
     const leadName = document.getElementById('lead-name');
     if (leadName) leadName.textContent = 'Leader: Waiting';
+
+    if (probToggleBtn) {
+      probToggleBtn.textContent = '📊 Odds';
+      probToggleBtn.setAttribute('title', 'Toggle Marbles & Odds Panel');
+    }
+    if (marbleProbTitleText) {
+      marbleProbTitleText.textContent = 'Marbles & Odds';
+    }
 
     const theaterBtn = document.getElementById('theater-toggle-btn');
     if (theaterBtn) {

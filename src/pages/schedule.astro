@@ -1,0 +1,191 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import StreamScheduleStudio from '../components/schedule/StreamScheduleStudio.astro';
+import { SITE_TITLE } from '../consts';
+import { getKoUrl, getEnUrl } from '../i18n';
+
+const urlParams = Astro.url.searchParams;
+const streamerMode = urlParams.has('stream') || urlParams.has('obs');
+
+const PAGE_TITLE = `방송 편성표 스튜디오 - 주간/월간 방송 일정표 & 템플릿 메이커 | ${SITE_TITLE}`;
+const PAGE_DESCRIPTION = "치지직, SOOP, 트위치, 유튜브 스트리머를 위한 무료 방송 주간/월간 편성표 제작 도구. 7가지 디자인 템플릿, 내 PC에 템플릿 저장/불러오기(JSON), 1080p 고화질 PNG 이미지 저장 지원.";
+---
+
+<!doctype html>
+<html lang="ko" class="dark">
+  <head>
+    <BaseHead 
+      title={PAGE_TITLE} 
+      description={PAGE_DESCRIPTION}
+      lang="ko"
+      hreflangKo={getKoUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
+      hreflangEn={getEnUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
+      keywords="방송 편성표, 주간 방송 일정표, 스트리머 편성표, 치지직 편성표, SOOP 방송 일정, 트위치 스케줄러, 버튜버 편성표 템플릿, 방송 일정표 만들기, 방송 캘린더, 방송용 이미지 제작"
+    />
+  </head>
+  <body class="schedule-page-body">
+    {!streamerMode && <Header />}
+
+    <main class="schedule-page-main">
+      <!-- Interactive Studio Component -->
+      <StreamScheduleStudio streamerMode={streamerMode} />
+
+      <!-- Feature Guide & SEO Information Section -->
+      {!streamerMode && (
+        <section class="schedule-guide-section">
+          <div class="guide-container">
+            <div class="guide-header">
+              <span class="guide-pill">STREAMER TOOLKIT</span>
+              <h2>스트리머를 위한 무료 방송 편성표 & 스케줄러 스튜디오</h2>
+              <p>매주 포토샵이나 캔바로 일정표 만드느라 고생하셨나요? 클릭 몇 번으로 고화질 편성표를 완성하세요.</p>
+            </div>
+
+            <div class="guide-grid">
+              <div class="guide-card">
+                <div class="guide-card-icon">💾</div>
+                <h3>1. 내 PC에 템플릿 영구 저장 (JSON)</h3>
+                <p>
+                  한 번 설정한 내 채널명, 플랫폼, 방송 시간대, 대표 이모지를 <strong>내 PC에 템플릿 파일(.json)로 저장</strong>할 수 있습니다. 다음 주에는 파일만 불러와서 게임 제목만 바꾸면 30초 만에 새 편성표가 완성됩니다.
+                </p>
+              </div>
+
+              <div class="guide-card">
+                <div class="guide-card-icon">🎨</div>
+                <h3>2. 7가지 스트리머 맞춤형 디자인 테마</h3>
+                <p>
+                  치지직 에메랄드 네온, 트위치 글리치 바이올렛, SOOP 호라이즌 시안, 버튜버 전용 포근한 카페 파스텔, 80s 레트로 아케이드, 미니멀 옵시디언, 사이버펑크 등 방송 콘셉트에 딱 맞는 테마를 원클릭으로 선택할 수 있습니다.
+                </p>
+              </div>
+
+              <div class="guide-card">
+                <div class="guide-card-icon">📸</div>
+                <h3>3. 1080p Full HD 무손실 PNG 이미지 다운로드</h3>
+                <p>
+                  [고화질 PNG 다운로드] 버튼을 누르면 브라우저 자체 고해상도 캔버스 엔진이 선명한 1920×1080 이미지를 즉시 생성합니다. 네이버 라운지, 아프리카 방송국, 디스코드, X(트위터)에 바로 업로드하세요.
+                </p>
+              </div>
+
+              <div class="guide-card">
+                <div class="guide-card-icon">📅</div>
+                <h3>4. 주간 편성표 & 월간 캘린더 연동</h3>
+                <p>
+                  월간 전체 방송 계획을 한눈에 관리하면서 원하는 주차를 원클릭으로 주간 편성표로 추출할 수 있습니다. 주간과 월간을 따로 만들 필요 없이 하나의 화면에서 자유롭게 관리하세요.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+    </main>
+
+    {!streamerMode && <Footer />}
+  </body>
+</html>
+
+<style>
+  .schedule-page-body {
+    background: #090d16 !important;
+    color: #f1f5f9 !important;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .schedule-page-main {
+    flex: 1;
+    width: 100%;
+  }
+
+  /* Guide & SEO Section */
+  .schedule-guide-section {
+    margin: 4rem auto 2rem;
+    padding: 3rem 1.5rem;
+    max-width: 1200px;
+    background: #0d121f;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+  }
+
+  .guide-container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .guide-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .guide-pill {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .guide-header h2 {
+    font-size: 1.85rem;
+    font-weight: 900;
+    color: #f8fafc;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.5rem;
+  }
+
+  .guide-header p {
+    font-size: 1rem;
+    color: #94a3b8;
+    margin: 0;
+  }
+
+  .guide-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .guide-card {
+    background: #131929;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 1.75rem 1.5rem;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+
+  .guide-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(56, 189, 248, 0.35);
+  }
+
+  .guide-card-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .guide-card h3 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 0.5rem;
+  }
+
+  .guide-card p {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .guide-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

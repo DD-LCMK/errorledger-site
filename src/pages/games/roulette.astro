@@ -60,19 +60,39 @@ const data = gameEntry?.data || {
     <div class="wheel-stage-container">
       <div class="wheel-title-bar" id="display-title">오늘의 방송 룰렛</div>
 
-      <div class="wheel-canvas-wrapper" id="wheel-wrapper">
-        <!-- Physical Pointer Needle -->
-        <div class="roulette-pointer" id="wheel-pointer">
-          <div class="pointer-arrow"></div>
+      <div class="wheel-stage-layout">
+        <!-- Probability & Items Panel (Utilizing Stage Left Space) -->
+        <div class="roulette-prob-panel" id="roulette-prob-panel">
+          <div class="prob-panel-header">
+            <div class="prob-title-row">
+              <span class="prob-icon">📊</span>
+              <span class="prob-title-text" id="prob-title-text">항목 및 당첨 확률</span>
+            </div>
+            <span class="prob-total-badge" id="prob-total-badge">총 0개 항목</span>
+          </div>
+          <div class="prob-items-list" id="prob-items-list">
+            <!-- Dynamically populated in JS -->
+          </div>
         </div>
 
-        <!-- HTML5 High-DPI Canvas -->
-        <canvas id="roulette-canvas" width="600" height="600"></canvas>
+        <div class="wheel-canvas-wrapper" id="wheel-wrapper">
+          <!-- Physical Pointer Needle with Live Arrow Ticker -->
+          <div class="roulette-pointer" id="wheel-pointer">
+            <div class="pointer-live-ticker" id="pointer-ticker">
+              <span class="ticker-dot" id="ticker-dot"></span>
+              <span class="ticker-text" id="ticker-text">준비 완료 (Space)</span>
+            </div>
+            <div class="pointer-arrow"></div>
+          </div>
 
-        <!-- Center Glowing Hub & Spin Button -->
-        <button id="center-spin-btn" class="center-hub-btn" title="클릭하거나 스페이스바를 눌러 룰렛 회전">
-          <span class="hub-label">돌리기</span>
-        </button>
+          <!-- HTML5 High-DPI Canvas -->
+          <canvas id="roulette-canvas" width="600" height="600"></canvas>
+
+          <!-- Center Glowing Hub & Spin Button -->
+          <button id="center-spin-btn" class="center-hub-btn" title="클릭하거나 스페이스바를 눌러 룰렛 회전">
+            <span class="hub-label">돌리기</span>
+          </button>
+        </div>
       </div>
 
       <!-- Quick Action Controls -->
@@ -243,6 +263,181 @@ const data = gameEntry?.data || {
     text-align: center;
   }
 
+  /* Wheel Stage Layout: Prob Panel + Canvas */
+  .wheel-stage-layout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+
+  /* Left Side: Probability & Items Panel */
+  .roulette-prob-panel {
+    width: 250px;
+    height: 480px;
+    background: rgba(10, 15, 29, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    flex-shrink: 0;
+  }
+
+  .prob-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 0.6rem;
+  }
+
+  .prob-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .prob-icon {
+    font-size: 1rem;
+  }
+
+  .prob-title-text {
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #f8fafc;
+    letter-spacing: -0.01em;
+  }
+
+  .prob-total-badge {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    padding: 0.15rem 0.45rem;
+    border-radius: 6px;
+  }
+
+  .prob-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.32rem;
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 0.2rem;
+  }
+
+  .prob-items-list::-webkit-scrollbar {
+    width: 4px;
+  }
+  .prob-items-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+  }
+
+  .roulette-prob-panel :global(.prob-item-row) {
+    position: relative;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 7px;
+    height: 32px;
+    min-height: 32px;
+    padding: 0 0.55rem;
+    gap: 0.35rem;
+    transition: all 0.12s ease;
+    overflow: hidden;
+  }
+
+  .roulette-prob-panel :global(.prob-item-row:hover) {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .roulette-prob-panel :global(.prob-item-row.is-active-slice) {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: var(--item-color, #38bdf8);
+    box-shadow: 0 0 14px var(--item-color, rgba(56, 189, 248, 0.45));
+    transform: scale(1.02) translateX(2px);
+  }
+
+  .roulette-prob-panel :global(.prob-color-dot) {
+    display: inline-block !important;
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 0 6px var(--item-color, currentColor);
+  }
+
+  .roulette-prob-panel :global(.prob-item-name) {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .roulette-prob-panel :global(.prob-item-count) {
+    font-size: 0.64rem;
+    font-weight: 700;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 0.05rem 0.28rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .roulette-prob-panel :global(.prob-inline-bar-track) {
+    width: 38px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .roulette-prob-panel :global(.prob-inline-bar-fill) {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+
+  .roulette-prob-panel :global(.prob-item-percent) {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.76rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.22);
+    border-radius: 5px;
+    padding: 0.06rem 0.35rem;
+    flex-shrink: 0;
+    min-width: 44px;
+    text-align: right;
+    letter-spacing: -0.02em;
+  }
+
+  .roulette-prob-panel :global(.prob-empty-text) {
+    font-size: 0.78rem;
+    color: #64748b;
+    text-align: center;
+    padding: 1rem 0;
+    font-style: italic;
+  }
+
   .wheel-canvas-wrapper {
     position: relative;
     width: 500px;
@@ -259,28 +454,83 @@ const data = gameEntry?.data || {
     box-shadow: 0 0 35px rgba(0, 0, 0, 0.7), 0 0 25px rgba(168, 85, 247, 0.3);
   }
 
-  /* Top Needle Pointer */
+  /* Top Needle Pointer with Live Arrow Ticker */
   .roulette-pointer {
     position: absolute;
-    top: 2px;
+    top: -18px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 25;
     pointer-events: none;
     transition: transform 0.08s ease-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .pointer-live-ticker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 120px;
+    gap: 0.35rem;
+    padding: 0.25rem 0.75rem;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1.5px solid var(--ticker-color, #38bdf8);
+    border-radius: 9999px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7), 0 0 12px var(--ticker-color, rgba(56, 189, 248, 0.5));
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #ffffff;
+    white-space: nowrap;
+    margin-bottom: 2px;
+    transition: all 0.08s ease;
+    backdrop-filter: blur(4px);
+  }
+
+  .ticker-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ticker-color, #38bdf8);
+    box-shadow: 0 0 6px var(--ticker-color, #38bdf8);
+  }
+
+  .ticker-text {
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .pointer-live-ticker.ticker-pulse {
+    transform: scale(1.08);
+  }
+
+  .pointer-live-ticker.is-winner {
+    background: linear-gradient(135deg, #facc15 0%, #f97316 100%);
+    border-color: #fef08a;
+    color: #020617;
+    box-shadow: 0 0 20px rgba(250, 204, 21, 0.9);
+    transform: scale(1.12);
+  }
+
+  .pointer-live-ticker.is-winner .ticker-dot {
+    background: #020617;
+    box-shadow: 0 0 6px #020617;
   }
 
   .pointer-arrow {
     width: 0;
     height: 0;
-    border-left: 18px solid transparent;
-    border-right: 18px solid transparent;
-    border-top: 36px solid #ef4444;
+    border-left: 16px solid transparent;
+    border-right: 16px solid transparent;
+    border-top: 32px solid #ef4444;
     filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 10px #ef4444);
   }
 
   .pointer-tick {
-    transform: translateX(-50%) rotate(-15deg);
+    transform: translateX(-50%) rotate(-12deg);
   }
 
   /* Center Hub Button */
@@ -625,6 +875,18 @@ const data = gameEntry?.data || {
     display: none !important;
   }
 
+  @media (max-width: 1100px) {
+    .wheel-stage-layout {
+      flex-direction: column-reverse;
+      gap: 1.25rem;
+    }
+    .roulette-prob-panel {
+      width: 100% !important;
+      max-width: 500px;
+      height: 240px;
+    }
+  }
+
   @media (max-width: 900px) {
     
   /* Mode Switcher Tabs */
@@ -685,6 +947,9 @@ const data = gameEntry?.data || {
     #roulette-canvas {
       width: 330px;
       height: 330px;
+    }
+    .roulette-prob-panel {
+      max-width: 340px;
     }
   }
 </style>
@@ -876,12 +1141,165 @@ const data = gameEntry?.data || {
     };
   }
 
+  // Festival Particle Sparkles Engine (Carnival Lights & Star Trails)
+  class FestivalSparklesEngine {
+    private canvas: HTMLCanvasElement;
+    private ctx: CanvasRenderingContext2D | null;
+    private particles: { x: number; y: number; vx: number; vy: number; color: string; size: number; alpha: number; life: number; maxLife: number; shape: 'star' | 'circle' }[] = [];
+    private running: boolean = false;
+
+    constructor(canvas: HTMLCanvasElement) {
+      this.canvas = canvas;
+      this.ctx = canvas ? canvas.getContext('2d') : null;
+      this.resize();
+      window.addEventListener('resize', () => this.resize());
+    }
+
+    private resize() {
+      if (!this.canvas) return;
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = window.innerHeight;
+    }
+
+    spawnSparksAroundWheel(cx: number, cy: number, radius: number, color: string) {
+      if (!this.ctx || !this.canvas) return;
+      const count = 3;
+      const festiveColors = [color, '#facc15', '#ffffff', '#38bdf8', '#f43f5e', '#a855f7'];
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const r = radius + (Math.random() - 0.5) * 20;
+        const x = cx + Math.cos(angle) * r;
+        const y = cy + Math.sin(angle) * r;
+        const c = festiveColors[Math.floor(Math.random() * festiveColors.length)];
+
+        this.particles.push({
+          x,
+          y,
+          vx: (Math.random() - 0.5) * 4 + Math.cos(angle) * 1.5,
+          vy: (Math.random() - 0.5) * 4 + Math.sin(angle) * 1.5 - 1.2,
+          color: c,
+          size: Math.random() * 5 + 3,
+          alpha: 1,
+          life: 0,
+          maxLife: 22 + Math.random() * 18,
+          shape: Math.random() > 0.35 ? 'star' : 'circle'
+        });
+      }
+
+      if (!this.running) {
+        this.running = true;
+        this.loop();
+      }
+    }
+
+    burstVictoryStars(cx: number, cy: number) {
+      if (!this.ctx || !this.canvas) return;
+      const festiveColors = ['#facc15', '#f59e0b', '#fef08a', '#ffffff', '#f43f5e', '#38bdf8'];
+      for (let i = 0; i < 40; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 8 + 3;
+        this.particles.push({
+          x: cx,
+          y: cy,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 2.5,
+          color: festiveColors[Math.floor(Math.random() * festiveColors.length)],
+          size: Math.random() * 7 + 4,
+          alpha: 1,
+          life: 0,
+          maxLife: 35 + Math.random() * 25,
+          shape: 'star'
+        });
+      }
+      if (!this.running) {
+        this.running = true;
+        this.loop();
+      }
+    }
+
+    private drawStar(cx: number, cy: number, spikes: number, outerRadius: number, innerRadius: number, color: string, alpha: number) {
+      if (!this.ctx) return;
+      let rot = (Math.PI / 2) * 3;
+      let x = cx;
+      let y = cy;
+      const step = Math.PI / spikes;
+
+      this.ctx.save();
+      this.ctx.globalAlpha = alpha;
+      this.ctx.fillStyle = color;
+      this.ctx.beginPath();
+      this.ctx.moveTo(cx, cy - outerRadius);
+      for (let i = 0; i < spikes; i++) {
+        x = cx + Math.cos(rot) * outerRadius;
+        y = cy + Math.sin(rot) * outerRadius;
+        this.ctx.lineTo(x, y);
+        rot += step;
+
+        x = cx + Math.cos(rot) * innerRadius;
+        y = cy + Math.sin(rot) * innerRadius;
+        this.ctx.lineTo(x, y);
+        rot += step;
+      }
+      this.ctx.lineTo(cx, cy - outerRadius);
+      this.ctx.closePath();
+      this.ctx.fill();
+      this.ctx.restore();
+    }
+
+    private loop = () => {
+      if (!this.ctx || !this.running) return;
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+      let alive = 0;
+      for (let i = 0; i < this.particles.length; i++) {
+        const p = this.particles[i];
+        p.life++;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha = Math.max(0, 1 - (p.life / p.maxLife));
+
+        if (p.alpha > 0) {
+          alive++;
+          if (p.shape === 'star') {
+            this.drawStar(p.x, p.y, 4, p.size, p.size * 0.45, p.color, p.alpha);
+          } else {
+            this.ctx.save();
+            this.ctx.globalAlpha = p.alpha;
+            this.ctx.fillStyle = p.color;
+            this.ctx.beginPath();
+            this.ctx.arc(p.x, p.y, p.size / 2, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.restore();
+          }
+        }
+      }
+
+      this.particles = this.particles.filter(p => p.alpha > 0);
+
+      if (alive > 0) {
+        requestAnimationFrame(this.loop);
+      } else {
+        this.running = false;
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      }
+    };
+  }
+
   // DOM Elements
   const canvas = document.getElementById('roulette-canvas') as HTMLCanvasElement;
   const ctx = canvas?.getContext('2d');
   const pointerElem = document.getElementById('wheel-pointer');
   const confettiCanvas = document.getElementById('confetti-canvas') as HTMLCanvasElement;
   const confetti = new ConfettiEngine(confettiCanvas);
+  const carnivalCanvas = document.getElementById('carnival-canvas') as HTMLCanvasElement;
+  const festivalSparkles = new FestivalSparklesEngine(carnivalCanvas);
+
+  const probItemsList = document.getElementById('prob-items-list');
+  const probTotalBadge = document.getElementById('prob-total-badge');
+  const probTitleText = document.getElementById('prob-title-text');
+  const pointerTicker = document.getElementById('pointer-ticker');
+  const tickerDot = document.getElementById('ticker-dot');
+  const tickerText = document.getElementById('ticker-text');
 
   const titleInput = document.getElementById('input-title') as HTMLInputElement;
   const itemsTextarea = document.getElementById('input-items') as HTMLTextAreaElement;
@@ -959,10 +1377,108 @@ const data = gameEntry?.data || {
     itemsTextarea.value = newLines.join('\n');
   }
 
+  // Probability Calculation & Dynamic List Rendering
+  interface ItemProbGroup {
+    name: string;
+    count: number;
+    probPercent: string;
+    color: string;
+  }
+
+  function calculateProbabilities(): ItemProbGroup[] {
+    if (items.length === 0) return [];
+    const counts: Record<string, { count: number; firstIndex: number }> = {};
+    items.forEach((item, idx) => {
+      if (!counts[item]) {
+        counts[item] = { count: 1, firstIndex: idx };
+      } else {
+        counts[item].count++;
+      }
+    });
+
+    const total = items.length;
+    const groups: ItemProbGroup[] = Object.keys(counts).map(name => {
+      const c = counts[name].count;
+      const pct = ((c / total) * 100).toFixed(1);
+      const color = SLICE_COLORS[counts[name].firstIndex % SLICE_COLORS.length];
+      return {
+        name,
+        count: c,
+        probPercent: pct,
+        color
+      };
+    });
+
+    // Sort by count descending, then alphabetical
+    groups.sort((a, b) => b.count - a.count);
+    return groups;
+  }
+
+  function renderProbabilityList() {
+    if (!probItemsList) return;
+    const groups = calculateProbabilities();
+
+    if (probTotalBadge) {
+      probTotalBadge.textContent = isEn ? `Total ${items.length} Slices` : `총 ${items.length}개 칸`;
+    }
+
+    if (groups.length === 0) {
+      probItemsList.innerHTML = `<div class="prob-empty-text">${isEn ? 'No items entered' : '등록된 항목이 없습니다'}</div>`;
+      return;
+    }
+
+    probItemsList.innerHTML = groups.map(g => `
+      <div class="prob-item-row" data-item-name="${escapeHtml(g.name)}" style="--item-color: ${g.color};">
+        <span class="prob-color-dot" style="background: ${g.color};"></span>
+        <span class="prob-item-name" title="${escapeHtml(g.name)}">${escapeHtml(g.name)}</span>
+        ${g.count > 1 ? `<span class="prob-item-count">${g.count}${isEn ? 'x' : '칸'}</span>` : ''}
+        <div class="prob-inline-bar-track">
+          <div class="prob-inline-bar-fill" style="width: ${g.probPercent}%; background: ${g.color};"></div>
+        </div>
+        <span class="prob-item-percent">${g.probPercent}%</span>
+      </div>
+    `).join('');
+  }
+
+  function highlightProbItem(itemName: string) {
+    if (!probItemsList) return;
+    const rows = probItemsList.querySelectorAll('.prob-item-row');
+    rows.forEach(r => {
+      if (r.getAttribute('data-item-name') === itemName) {
+        r.classList.add('is-active-slice');
+      } else {
+        r.classList.remove('is-active-slice');
+      }
+    });
+  }
+
+  function escapeHtml(str: string): string {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
   function syncItems() {
     items = parseItems();
     if (itemsCountBadge) itemsCountBadge.textContent = isEn ? `${items.length} Items` : `${items.length}개 항목`;
+    renderProbabilityList();
     drawWheel();
+    if (!isSpinning) {
+      if (pointerTicker) pointerTicker.classList.remove('is-winner');
+      if (tickerText) {
+        tickerText.textContent = items.length > 0 ? (isEn ? 'Ready (Space)' : '준비 완료 (Space)') : (isEn ? 'Enter items' : '항목을 입력하세요');
+      }
+      if (tickerDot) {
+        tickerDot.style.background = '#38bdf8';
+        tickerDot.style.boxShadow = '0 0 8px #38bdf8';
+      }
+      if (pointerTicker) {
+        pointerTicker.style.setProperty('--ticker-color', '#38bdf8');
+      }
+    }
   }
 
   function drawWheel() {
@@ -971,14 +1487,16 @@ const data = gameEntry?.data || {
     const height = canvas.height;
     const centerX = width / 2;
     const centerY = height / 2;
-    const radius = width / 2 - 15;
+    const outerCasingRadius = width / 2 - 14; // 286
+    const bulbRingRadius = outerCasingRadius - 16; // 270
+    const sliceRadius = bulbRingRadius - 18; // 252
 
     ctx.clearRect(0, 0, width, height);
 
     if (items.length === 0) {
       // Empty wheel state
       ctx.beginPath();
-      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      ctx.arc(centerX, centerY, sliceRadius, 0, Math.PI * 2);
       ctx.fillStyle = '#1e293b';
       ctx.fill();
       ctx.strokeStyle = '#334155';
@@ -994,27 +1512,72 @@ const data = gameEntry?.data || {
 
     const sliceAngle = (Math.PI * 2) / items.length;
 
-    // Outer Glow Ring
+    // 1. Draw Outer Carnival Metallic Rim & Track
     ctx.beginPath();
-    ctx.arc(centerX, centerY, radius + 5, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(168, 85, 247, 0.4)';
-    ctx.lineWidth = 8;
+    ctx.arc(centerX, centerY, outerCasingRadius, 0, Math.PI * 2);
+    ctx.fillStyle = '#090d16';
+    ctx.fill();
+    ctx.strokeStyle = isSpinning ? '#eab308' : '#334155';
+    ctx.lineWidth = 4;
     ctx.stroke();
 
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, bulbRingRadius + 8, 0, Math.PI * 2);
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 14;
+    ctx.stroke();
+
+    // 2. Carnival Marquee Lights (32 bulbs around perimeter)
+    const numBulbs = 32;
+    const bulbColors = ['#facc15', '#38bdf8', '#f43f5e', '#34d399'];
+    for (let b = 0; b < numBulbs; b++) {
+      const bAngle = (b / numBulbs) * Math.PI * 2;
+      const bx = centerX + Math.cos(bAngle) * bulbRingRadius;
+      const by = centerY + Math.sin(bAngle) * bulbRingRadius;
+
+      let bulbColor = '#fef08a';
+      let bulbGlow = 'rgba(250, 204, 21, 0.6)';
+
+      if (isSpinning) {
+        const chaseIndex = (b + Math.floor(currentAngle * 7)) % 4;
+        bulbColor = bulbColors[chaseIndex];
+        bulbGlow = bulbColor;
+      } else {
+        bulbColor = (b % 2 === 0) ? '#facc15' : '#fef08a';
+      }
+
+      // Bulb Socket
+      ctx.beginPath();
+      ctx.arc(bx, by, 5.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#020617';
+      ctx.fill();
+
+      // Glowing Bulb
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(bx, by, 3.8, 0, Math.PI * 2);
+      ctx.fillStyle = bulbColor;
+      ctx.shadowColor = bulbGlow;
+      ctx.shadowBlur = isSpinning ? 12 : 5;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // 3. Draw Slices
     for (let i = 0; i < items.length; i++) {
       const startAngle = currentAngle + i * sliceAngle;
       const endAngle = startAngle + sliceAngle;
       const color = SLICE_COLORS[i % SLICE_COLORS.length];
 
-      // Draw Slice
+      // Draw Slice Pie
       ctx.beginPath();
       ctx.moveTo(centerX, centerY);
-      ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+      ctx.arc(centerX, centerY, sliceRadius, startAngle, endAngle);
       ctx.closePath();
       ctx.fillStyle = color;
       ctx.fill();
       ctx.strokeStyle = '#0f172a';
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 2.5;
       ctx.stroke();
 
       // Draw Slice Text
@@ -1023,22 +1586,34 @@ const data = gameEntry?.data || {
       ctx.rotate(startAngle + sliceAngle / 2);
       ctx.textAlign = 'right';
       ctx.fillStyle = '#ffffff';
-      // Format slice label
       let text = items[i];
-      let fontSize = items.length > 12 ? 13 : 16;
+      let fontSize = items.length > 14 ? 12 : (items.length > 8 ? 14 : 16);
       if (text.length > 12) {
-        fontSize = Math.max(11, fontSize - 2);
+        fontSize = Math.max(10, fontSize - 2);
       }
       if (text.length > 18) text = text.substring(0, 17) + '…';
       ctx.font = `bold ${fontSize}px sans-serif`;
-      ctx.fillText(text, radius - 20, 5);
+      ctx.fillText(text, sliceRadius - 18, 5);
       ctx.restore();
     }
+
+    // 4. Center Bezel behind center button
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 48, 0, Math.PI * 2);
+    ctx.fillStyle = '#0f172a';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(250, 204, 21, 0.6)';
+    ctx.lineWidth = 3;
+    ctx.stroke();
   }
 
   function spinWheel() {
     if (isSpinning || items.length < 2) return;
     isSpinning = true;
+
+    if (pointerTicker) {
+      pointerTicker.classList.remove('is-winner');
+    }
 
     // Random spin parameters
     const minRounds = 5;
@@ -1062,6 +1637,20 @@ const data = gameEntry?.data || {
       const pointerAngle = (Math.PI * 1.5 - normalized + Math.PI * 2) % (Math.PI * 2);
       const sliceAngle = (Math.PI * 2) / items.length;
       const currentSlice = Math.floor(pointerAngle / sliceAngle);
+      const currentItem = items[currentSlice] || '';
+      const currentColor = SLICE_COLORS[currentSlice % SLICE_COLORS.length];
+
+      // Real-time live ticker update on top of pointer needle!
+      if (tickerText && currentItem) {
+        tickerText.textContent = currentItem;
+      }
+      if (tickerDot) {
+        tickerDot.style.background = currentColor;
+        tickerDot.style.boxShadow = `0 0 8px ${currentColor}`;
+      }
+      if (pointerTicker) {
+        pointerTicker.style.setProperty('--ticker-color', currentColor);
+      }
 
       // Play tick sound when slice boundary crossed
       if (currentSlice !== lastTickedSlice) {
@@ -1072,6 +1661,23 @@ const data = gameEntry?.data || {
           void pointerElem.offsetWidth;
           pointerElem.classList.add('pointer-tick');
         }
+        if (pointerTicker) {
+          pointerTicker.classList.remove('ticker-pulse');
+          void pointerTicker.offsetWidth;
+          pointerTicker.classList.add('ticker-pulse');
+        }
+
+        // Live highlight corresponding item in probability panel!
+        highlightProbItem(currentItem);
+
+        // Festival Sparkles: emit sparks around wheel edge
+        const rect = canvas.getBoundingClientRect();
+        festivalSparkles.spawnSparksAroundWheel(
+          rect.left + rect.width / 2,
+          rect.top + rect.height / 2,
+          rect.width / 2,
+          currentColor
+        );
       }
 
       drawWheel();
@@ -1092,6 +1698,17 @@ const data = gameEntry?.data || {
   function finishSpin(winner: string, index: number) {
     sfx.playWinFanfare();
     confetti.burst();
+
+    // Victory stars from wheel center!
+    const rect = canvas.getBoundingClientRect();
+    festivalSparkles.burstVictoryStars(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
+    // Update live ticker with winner celebration!
+    if (tickerText) tickerText.textContent = `👑 ${winner}`;
+    if (pointerTicker) pointerTicker.classList.add('is-winner');
+
+    // Highlight winning item in probability list
+    highlightProbItem(winner);
 
     // Show winner banner
     if (winnerNameDisplay) winnerNameDisplay.textContent = winner;

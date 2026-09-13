@@ -1,0 +1,191 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import StreamScheduleStudio from '../../components/schedule/StreamScheduleStudio.astro';
+import { SITE_TITLE } from '../../consts';
+import { getKoUrl, getEnUrl } from '../../i18n';
+
+const urlParams = Astro.url.searchParams;
+const streamerMode = urlParams.has('stream') || urlParams.has('obs');
+
+const PAGE_TITLE = `Stream Schedule Studio - Weekly & Monthly Broadcast Calendar & Template Maker | ${SITE_TITLE}`;
+const PAGE_DESCRIPTION = "Free broadcast schedule maker for Twitch, YouTube Live, Chzzk, and SOOP streamers. 7 stunning themes, save & load templates to your local PC (JSON), and 1080p high-resolution PNG export.";
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead 
+      title={PAGE_TITLE} 
+      description={PAGE_DESCRIPTION}
+      lang="en"
+      hreflangKo={getKoUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
+      hreflangEn={getEnUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
+      keywords="stream schedule, weekly broadcast schedule, twitch schedule maker, vtuber schedule template, stream calendar, chzzk schedule, stream graphics, free schedule generator"
+    />
+  </head>
+  <body class="schedule-page-body">
+    {!streamerMode && <Header />}
+
+    <main class="schedule-page-main">
+      <!-- Interactive Studio Component -->
+      <StreamScheduleStudio streamerMode={streamerMode} lang="en" />
+
+      <!-- Feature Guide & SEO Information Section -->
+      {!streamerMode && (
+        <section class="schedule-guide-section">
+          <div class="guide-container">
+            <div class="guide-header">
+              <span class="guide-pill">STREAMER TOOLKIT</span>
+              <h2>Free Broadcast Schedule & Calendar Studio for Creators</h2>
+              <p>Stop wasting hours in Photoshop or Canva. Create and export professional broadcast schedules in seconds.</p>
+            </div>
+
+            <div class="guide-grid">
+              <div class="guide-card">
+                <div class="guide-card-icon">💾</div>
+                <h3>1. Save & Load Templates on Your PC (JSON)</h3>
+                <p>
+                  Save your channel settings, broadcast hours, and branding directly to your PC as a lightweight <code>.json</code> file. Next week, just load your file, update games in 30 seconds, and you are good to go.
+                </p>
+              </div>
+
+              <div class="guide-card">
+                <div class="guide-card-icon">🎨</div>
+                <h3>2. 7 Broadcast-Ready Design Themes</h3>
+                <p>
+                  Switch with one click between Chzzk Cyber Emerald, Twitch Glitch Violet, SOOP Horizon Cyan, Cozy Cafe Pastel (VTuber favorite), 80s Retro Arcade, Minimal Obsidian, and Cyberpunk.
+                </p>
+              </div>
+
+              <div class="guide-card">
+                <div class="guide-card-icon">📸</div>
+                <h3>3. 1080p Lossless PNG Image Export</h3>
+                <p>
+                  Click [Export High-Res PNG] to render a crisp 1920×1080 schedule image directly in your browser. Perfect for Twitter/X, Discord announcements, and community posts.
+                </p>
+              </div>
+
+              <div class="guide-card">
+                <div class="guide-card-icon">📅</div>
+                <h3>4. Sync Weekly & Monthly Calendars</h3>
+                <p>
+                  Manage your entire monthly stream roadmap while effortlessly extracting any specific week into a vertical boarding pass schedule with one click.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+    </main>
+
+    {!streamerMode && <Footer />}
+  </body>
+</html>
+
+<style>
+  .schedule-page-body {
+    background: #090d16 !important;
+    color: #f1f5f9 !important;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .schedule-page-main {
+    flex: 1;
+    width: 100%;
+  }
+
+  /* Guide & SEO Section */
+  .schedule-guide-section {
+    margin: 4rem auto 2rem;
+    padding: 3rem 1.5rem;
+    max-width: 1200px;
+    background: #0d121f;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+  }
+
+  .guide-container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .guide-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .guide-pill {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .guide-header h2 {
+    font-size: 1.85rem;
+    font-weight: 900;
+    color: #f8fafc;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.5rem;
+  }
+
+  .guide-header p {
+    font-size: 1rem;
+    color: #94a3b8;
+    margin: 0;
+  }
+
+  .guide-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .guide-card {
+    background: #131929;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 1.75rem 1.5rem;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+
+  .guide-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(56, 189, 248, 0.35);
+  }
+
+  .guide-card-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .guide-card h3 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 0.5rem;
+  }
+
+  .guide-card p {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .guide-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -227,14 +227,14 @@ const organizationSchema = JSON.stringify({
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
   }
   
-  /* Formats headers, labels, and grid headings to high contrast white */
-  html.dark h1, html.dark h2, html.dark h3, html.dark h4, html.dark h5, html.dark h6,
-  html.dark th, html.dark dt, html.dark strong {
+  /* Formats headers, labels, and grid headings to high contrast white (except custom studio preview boards) */
+  html.dark h1:not(.schedule-card-board *), html.dark h2:not(.schedule-card-board *), html.dark h3:not(.schedule-card-board *), html.dark h4:not(.schedule-card-board *), html.dark h5:not(.schedule-card-board *), html.dark h6:not(.schedule-card-board *),
+  html.dark th, html.dark dt, html.dark strong:not(.schedule-card-board *) {
     color: #f8fafc !important;
   }
   
   /* Sets body text, code explanations, and grid text fields to light grey */
-  html.dark p, html.dark li, html.dark time, html.dark td, html.dark dd, html.dark div:not([style*="color"]) {
+  html.dark p:not(.schedule-card-board *), html.dark li:not(.schedule-card-board *), html.dark time:not(.schedule-card-board *), html.dark td:not(.schedule-card-board *), html.dark dd:not(.schedule-card-board *), html.dark div:not([style*="color"]):not(.schedule-card-board *) {
     color: #cbd5e1 !important;
   }
   
