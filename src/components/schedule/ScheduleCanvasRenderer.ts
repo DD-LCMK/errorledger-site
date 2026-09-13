@@ -28,7 +28,8 @@ export function renderScheduleToCanvas(
   data: StreamScheduleData,
   weekSlice: WeekDaySlice[],
   isWeeklyMode: boolean = true,
-  scale: number = 2
+  scale: number = 2,
+  lang: 'ko' | 'en' = 'ko'
 ): void {
   const width = isWeeklyMode ? 940 : 1600;
   const height = isWeeklyMode ? 900 : 940;
@@ -56,9 +57,9 @@ export function renderScheduleToCanvas(
   ctx.fillRect(0, 0, width, height);
 
   if (isWeeklyMode) {
-    renderBoardingPassWeeklyCanvas(ctx, data, weekSlice, theme, width, height);
+    renderBoardingPassWeeklyCanvas(ctx, data, weekSlice, theme, width, height, lang);
   } else {
-    renderBoardingPassMonthlyCanvas(ctx, data, theme, width, height);
+    renderBoardingPassMonthlyCanvas(ctx, data, theme, width, height, lang);
   }
 
   // Footer Branding
@@ -80,7 +81,8 @@ function renderBoardingPassWeeklyCanvas(
   weekSlice: WeekDaySlice[],
   theme: any,
   width: number,
-  height: number
+  height: number,
+  lang: 'ko' | 'en' = 'ko'
 ): void {
   const padX = 36;
   const topY = 32;
@@ -179,13 +181,25 @@ function renderBoardingPassWeeklyCanvas(
   ctx.textAlign = 'left';
   ctx.font = 'bold 14px "Pretendard", sans-serif';
   ctx.fillStyle = theme.textSub || '#344b75';
-  ctx.fillText(`✈ [${data.channel.platform.toUpperCase()}] ${data.channel.name || '스트리머 채널'} • ${data.channel.tagline || '주간 방송'}`, padX + 22, topY + 165);
+  const defaultChName = lang === 'en' ? 'Streamer Channel' : '스트리머 채널';
+  const defaultTagline = lang === 'en' ? 'Weekly Schedule' : '주간 방송';
+  ctx.fillText(`✈ [${data.channel.platform.toUpperCase()}] ${data.channel.name || defaultChName} • ${data.channel.tagline || defaultTagline}`, padX + 22, topY + 165);
 
   // 1C. MON Ticket Stub (Top Right)
   const monX = boardW + padX - monTicketW;
   const monY = topY;
-  const monDay = weekSlice[0] || { dayEn: 'MON', dayKo: '월', dateStr: '09.14', entry: { title: '저챗 / 소통', memo: '한 주 시작 토크', time: '20:00 ~ 23:00', status: 'chat' } };
-  drawSingleTicketCell(ctx, monX, monY, monTicketW, topSecH, monDay, theme.ribbonBg, theme, true);
+  const monDay = weekSlice[0] || { 
+    dayEn: 'MON', 
+    dayKo: '월', 
+    dateStr: '09.14', 
+    entry: { 
+      title: lang === 'en' ? 'Just Chatting' : '저챗 / 소통', 
+      memo: lang === 'en' ? 'Weekly Kickoff' : '한 주 시작 토크', 
+      time: '20:00 ~ 23:00', 
+      status: 'chat' 
+    } 
+  };
+  drawSingleTicketCell(ctx, monX, monY, monTicketW, topSecH, monDay, theme.ribbonBg, theme, true, lang);
 
   // ─────────────────────────────────────────────────────────────────────────────
   // 2. MIDDLE ROW (TUE, WED, THU) (Height: 250px)
@@ -193,14 +207,14 @@ function renderBoardingPassWeeklyCanvas(
   // ─────────────────────────────────────────────────────────────────────────────
   const midY = topY + topSecH + 16;
   const rowH = 250;
-  drawTicketRowSheet(ctx, padX, midY, boardW, rowH, [weekSlice[1], weekSlice[2], weekSlice[3]], theme);
+  drawTicketRowSheet(ctx, padX, midY, boardW, rowH, [weekSlice[1], weekSlice[2], weekSlice[3]], theme, lang);
 
   // ─────────────────────────────────────────────────────────────────────────────
   // 3. BOTTOM ROW (FRI, SAT, SUN) (Height: 250px)
   // Perforated 3-Ticket Sheet with Left Barcode Stub
   // ─────────────────────────────────────────────────────────────────────────────
   const btmY = midY + rowH + 16;
-  drawTicketRowSheet(ctx, padX, btmY, boardW, rowH, [weekSlice[4], weekSlice[5], weekSlice[6]], theme);
+  drawTicketRowSheet(ctx, padX, btmY, boardW, rowH, [weekSlice[4], weekSlice[5], weekSlice[6]], theme, lang);
 }
 
 /**
@@ -213,7 +227,8 @@ function drawTicketRowSheet(
   w: number,
   h: number,
   days: (WeekDaySlice | undefined)[],
-  theme: any
+  theme: any,
+  lang: 'ko' | 'en' = 'ko'
 ): void {
   // Shadow
   ctx.save();
@@ -266,7 +281,7 @@ function drawTicketRowSheet(
     const colX = x + stubW + i * colW;
     const ribbonColor = (i === 2 && dayData?.dayEn === 'SUN' && theme.accent) ? theme.accent : theme.ribbonBg;
 
-    drawSingleTicketContent(ctx, colX, y, colW, h, dayData, ribbonColor, theme);
+    drawSingleTicketContent(ctx, colX, y, colW, h, dayData, ribbonColor, theme, lang);
 
     // Perforation divider between tickets (except last)
     if (i < 2) {
@@ -292,7 +307,8 @@ function drawSingleTicketCell(
   dayData: WeekDaySlice | undefined,
   ribbonColor: string,
   theme: any,
-  drawBoxShadow: boolean = false
+  drawBoxShadow: boolean = false,
+  lang: 'ko' | 'en' = 'ko'
 ): void {
   if (drawBoxShadow) {
     ctx.save();
@@ -404,7 +420,7 @@ function drawSingleTicketContent(
     ctx.textAlign = 'center';
     ctx.font = 'bold 18px "Pretendard", sans-serif';
     ctx.fillStyle = theme.ticketTitle || '#0f172a';
-    ctx.fillText(entry.title || '방송 예정', x + w / 2, contentCenterY);
+    ctx.fillText(entry.title || (lang === 'en' ? 'Live Stream' : '방송 예정'), x + w / 2, contentCenterY);
 
     // Subtitle / Memo
     ctx.font = '13px "Pretendard", sans-serif';
@@ -412,7 +428,7 @@ function drawSingleTicketContent(
     ctx.fillText(entry.memo || '', x + w / 2, contentCenterY + 28);
 
     // Time
-    const displayTime = formatDisplayTime(entry) || entry.time || '자율';
+    const displayTime = formatDisplayTime(entry, lang) || entry.time || (lang === 'en' ? 'Flexible' : '자율');
     ctx.font = 'bold 15px "Pretendard", sans-serif';
     ctx.fillStyle = theme.ticketTime || '#1e40af';
     ctx.fillText(displayTime, x + w / 2, contentCenterY + 56);
@@ -524,20 +540,27 @@ function renderBoardingPassMonthlyCanvas(
   data: StreamScheduleData,
   theme: any,
   width: number,
-  height: number
+  height: number,
+  lang: 'ko' | 'en' = 'ko'
 ): void {
   const padX = 50;
   let topY = 36;
+
+  const monthNamesEn = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
   // Header Bar
   ctx.textAlign = 'left';
   ctx.font = 'bold 26px "Pretendard", sans-serif';
   ctx.fillStyle = theme.textMain || '#263859';
-  ctx.fillText(`✈ ${data.monthly.year}년 ${data.monthly.month}월 비행 일정표 (전체 방송 캘린더)`, padX, topY + 24);
+  const monthTitle = lang === 'en'
+    ? `✈ ${monthNamesEn[data.monthly.month - 1]} ${data.monthly.year} Flight Schedule (Monthly Calendar)`
+    : `✈ ${data.monthly.year}년 ${data.monthly.month}월 비행 일정표 (전체 방송 캘린더)`;
+  ctx.fillText(monthTitle, padX, topY + 24);
 
   ctx.font = '14px "Pretendard", sans-serif';
   ctx.fillStyle = theme.accent || '#1e40af';
-  ctx.fillText(data.channel.noticeMonthly || data.monthly.monthlyGoal || `${data.channel.name}의 월간 방송 일정`, padX, topY + 52);
+  const defaultSub = lang === 'en' ? `${data.channel.name}'s Monthly Stream Schedule` : `${data.channel.name}의 월간 방송 일정`;
+  ctx.fillText(data.channel.noticeMonthly || data.monthly.monthlyGoal || defaultSub, padX, topY + 52);
 
   // Channel Profile on Right
   const rightX = width - padX;
@@ -548,12 +571,14 @@ function renderBoardingPassMonthlyCanvas(
 
   ctx.font = '13px "Pretendard", sans-serif';
   ctx.fillStyle = theme.textSub || '#5572b9';
-  ctx.fillText(data.channel.tagline || '즐거운 방송', rightX, topY + 48);
+  ctx.fillText(data.channel.tagline || (lang === 'en' ? 'Live Streaming' : '즐거운 방송'), rightX, topY + 48);
 
   topY += 76;
 
   // Weekday Header Row
-  const weekDays = ['MON 월', 'TUE 화', 'WED 수', 'THU 목', 'FRI 금', 'SAT 토', 'SUN 일'];
+  const weekDays = lang === 'en'
+    ? ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
+    : ['MON 월', 'TUE 화', 'WED 수', 'THU 목', 'FRI 금', 'SAT 토', 'SUN 일'];
   const gridW = width - padX * 2;
   const colGap = 8;
   const colW = (gridW - colGap * 6) / 7;
@@ -609,8 +634,8 @@ function renderBoardingPassMonthlyCanvas(
         ctx.textAlign = 'left';
         ctx.font = 'bold 11px "Pretendard", sans-serif';
         ctx.fillStyle = isOff ? (theme.stubText || '#62768f') : (theme.ticketTime || theme.accent || '#1e40af');
-        const cellTime = formatDisplayTime(entry);
-        ctx.fillText(cellTime && cellTime !== '휴식' ? `✈ ${cellTime}` : (isOff ? 'OFFLINE' : 'LIVE'), x + 12, y + 52);
+        const cellTime = formatDisplayTime(entry, lang);
+        ctx.fillText(cellTime && cellTime !== (lang === 'en' ? 'OFF' : '휴식') ? `✈ ${cellTime}` : (isOff ? 'OFFLINE' : 'LIVE'), x + 12, y + 52);
 
         ctx.font = 'bold 12px "Pretendard", sans-serif';
         ctx.fillStyle = theme.ticketTitle || theme.textMain || '#263859';

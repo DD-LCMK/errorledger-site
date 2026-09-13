@@ -11,13 +11,14 @@
  * 5. High-Res PNG Poster Export (Compact Single-Page Weekly & Monthly formats).
  * 6. OBS Clean Mode (?obs=1 / ?stream=1).
  */
-import { SCHEDULE_THEMES, STATUS_BADGES, SAMPLE_PRESETS } from './scheduleTemplates';
+import { SCHEDULE_THEMES, STATUS_BADGES, SAMPLE_PRESETS, SAMPLE_PRESETS_EN } from './scheduleTemplates';
 
 interface Props {
   streamerMode?: boolean;
   lang?: 'ko' | 'en';
 }
 const { streamerMode = false, lang = 'ko' } = Astro.props;
+const isEn = lang === 'en';
 ---
 
 <div class={`schedule-studio-wrapper ${streamerMode ? 'streamer-clean-mode' : ''}`} id="scheduleStudioRoot" data-lang={lang}>
@@ -28,26 +29,26 @@ const { streamerMode = false, lang = 'ko' } = Astro.props;
       <div class="controls-top-row">
         <div class="studio-title-badge">
           <span class="pulse-dot-schedule"></span>
-          <span>📅 방송 편성표 스튜디오</span>
-          <span class="badge-single-page">한 페이지 뷰</span>
+          <span>📅 {isEn ? 'Stream Schedule Studio' : '방송 편성표 스튜디오'}</span>
+          <span class="badge-single-page">{isEn ? 'Single-Page View' : '한 페이지 뷰'}</span>
         </div>
         <div class="quick-export-actions">
-          <button type="button" class="btn-action btn-save-json" id="btnSaveJson" title="내 PC에 템플릿 파일(.json) 저장">
+          <button type="button" class="btn-action btn-save-json" id="btnSaveJson" title={isEn ? 'Save template file (.json) to your PC' : '내 PC에 템플릿 파일(.json) 저장'}>
             <span class="btn-icon">💾</span>
-            <span>내 PC에 저장</span>
+            <span>{isEn ? 'Save to PC' : '내 PC에 저장'}</span>
           </button>
-          <label class="btn-action btn-load-json" title="내 PC에서 템플릿 파일(.json) 불러오기">
+          <label class="btn-action btn-load-json" title={isEn ? 'Load template file (.json) from PC' : '내 PC에서 템플릿 파일(.json) 불러오기'}>
             <span class="btn-icon">📂</span>
-            <span>PC에서 불러오기</span>
+            <span>{isEn ? 'Load from PC' : 'PC에서 불러오기'}</span>
             <input type="file" id="inputLoadJson" accept=".json,application/json" style="display: none;" />
           </label>
-          <button type="button" class="btn-action btn-export-png" id="btnExportPng" title="한 장으로 딱 떨어지는 고화질 PNG 이미지 저장">
+          <button type="button" class="btn-action btn-export-png" id="btnExportPng" title={isEn ? 'Save compact high-resolution PNG image' : '한 장으로 딱 떨어지는 고화질 PNG 이미지 저장'}>
             <span class="btn-icon">📸</span>
-            <span id="btnExportPngLabel">주간 PNG 저장</span>
+            <span id="btnExportPngLabel">{isEn ? 'Save Weekly PNG' : '주간 PNG 저장'}</span>
           </button>
-          <button type="button" class="btn-action btn-copy-text" id="btnCopyText" title="디스코드/팬카페 공유용 텍스트 복사">
+          <button type="button" class="btn-action btn-copy-text" id="btnCopyText" title={isEn ? 'Copy text for Discord / Community' : '디스코드/팬카페 공유용 텍스트 복사'}>
             <span class="btn-icon">📋</span>
-            <span>텍스트 복사</span>
+            <span>{isEn ? 'Copy Text' : '텍스트 복사'}</span>
           </button>
         </div>
       </div>
@@ -56,20 +57,20 @@ const { streamerMode = false, lang = 'ko' } = Astro.props;
       <div class="controls-toolbar-row">
         <!-- View Mode Switcher -->
         <div class="toolbar-group">
-          <label class="toolbar-label">보기 모드</label>
+          <label class="toolbar-label">{isEn ? 'View Mode' : '보기 모드'}</label>
           <div class="btn-group-mode">
-            <button type="button" class="btn-mode active" data-mode="weekly" id="btnModeWeekly" title="선택한 주간의 세로형 7일 일정">
-              <span>📅 주간 편성표 추출</span>
+            <button type="button" class="btn-mode active" data-mode="weekly" id="btnModeWeekly" title={isEn ? '7-day vertical schedule for selected week' : '선택한 주간의 세로형 7일 일정'}>
+              <span>📅 {isEn ? 'Weekly Timetable' : '주간 편성표 추출'}</span>
             </button>
-            <button type="button" class="btn-mode" data-mode="monthly" id="btnModeMonthly" title="월간 캘린더 전체 보기">
-              <span>🗓️ 월간 전체 캘린더</span>
+            <button type="button" class="btn-mode" data-mode="monthly" id="btnModeMonthly" title={isEn ? 'Full monthly calendar view' : '월간 캘린더 전체 보기'}>
+              <span>🗓️ {isEn ? 'Monthly Calendar' : '월간 전체 캘린더'}</span>
             </button>
           </div>
         </div>
 
         <!-- Week Extractor Buttons (Shown when in Weekly mode) -->
         <div class="toolbar-group week-extractor-group" id="weekExtractorGroup">
-          <label class="toolbar-label">추출할 주차 선택</label>
+          <label class="toolbar-label">{isEn ? 'Select Week' : '추출할 주차 선택'}</label>
           <div class="week-buttons-bar" id="weekButtonsBar">
             <!-- Dynamically generated week buttons -->
           </div>
@@ -77,18 +78,18 @@ const { streamerMode = false, lang = 'ko' } = Astro.props;
 
         <!-- Theme Picker -->
         <div class="toolbar-group theme-group">
-          <label class="toolbar-label">테마</label>
+          <label class="toolbar-label">{isEn ? 'Theme' : '테마'}</label>
           <div class="theme-picker-compact" id="themePickerRow">
             {Object.values(SCHEDULE_THEMES).map((t) => (
               <button 
                 type="button" 
                 class={`theme-chip ${t.id === 'travel-boarding-pass' ? 'active' : ''}`}
                 data-theme-id={t.id}
-                title={t.nameKo}
+                title={isEn ? t.nameEn : t.nameKo}
                 style={`--theme-accent: ${t.accent};`}
               >
                 <span class="theme-dot" style={`background: ${t.accent};`}></span>
-                <span class="theme-name">{t.nameKo}</span>
+                <span class="theme-name">{isEn ? t.nameEn : t.nameKo}</span>
               </button>
             ))}
           </div>
@@ -96,11 +97,11 @@ const { streamerMode = false, lang = 'ko' } = Astro.props;
 
         <!-- Channel Quick Inputs & Presets -->
         <div class="toolbar-group end-group">
-          <label class="toolbar-label">샘플 프리셋</label>
+          <label class="toolbar-label">{isEn ? 'Sample Presets' : '샘플 프리셋'}</label>
           <div class="toolbar-btns-row">
-            <button type="button" class="btn-preset-mini" id="btnPresetTravel" title="여행 보딩패스 티켓 샘플">✈️ 여행티켓</button>
-            <button type="button" class="btn-preset-mini" id="btnPresetGamer" title="종합 게임 스트리머 샘플">🎮 종합게임</button>
-            <button type="button" class="btn-preset-mini" id="btnPresetVtuber" title="버튜버/힐링 샘플">🌸 버튜버</button>
+            <button type="button" class="btn-preset-mini" id="btnPresetTravel" title={isEn ? 'Travel boarding pass ticket sample' : '여행 보딩패스 티켓 샘플'}>{isEn ? '✈️ Travel Ticket' : '✈️ 여행티켓'}</button>
+            <button type="button" class="btn-preset-mini" id="btnPresetGamer" title={isEn ? 'Variety game streamer sample' : '종합 게임 스트리머 샘플'}>{isEn ? '🎮 Variety Gamer' : '🎮 종합게임'}</button>
+            <button type="button" class="btn-preset-mini" id="btnPresetVtuber" title={isEn ? 'VTuber / Cozy stream sample' : '버튜버/힐링 샘플'}>{isEn ? '🌸 VTuber' : '🌸 버튜버'}</button>
           </div>
         </div>
       </div>
@@ -109,58 +110,58 @@ const { streamerMode = false, lang = 'ko' } = Astro.props;
       <div class="channel-settings-panel">
         <div class="channel-settings-header">
           <span class="settings-title-icon">⚙️</span>
-          <span class="settings-title-text">스트리머 프로필 & 공지사항 설정</span>
+          <span class="settings-title-text">{isEn ? 'Streamer Profile & Notice Settings' : '스트리머 프로필 & 공지사항 설정'}</span>
         </div>
         <div class="channel-inputs-grid">
           <div class="input-field emoji-picker-col">
-            <label>대표 이모지</label>
+            <label>{isEn ? 'Channel Emoji' : '대표 이모지'}</label>
             <div class="emoji-picker-row">
               <input type="text" id="inputAvatarEmoji" class="ctrl-input emoji-input" value="🎮" maxlength="4" />
               <div class="emoji-samples-row" id="emojiSamplesRow">
-                <button type="button" class="btn-emoji-chip" data-emoji="🎮" title="게임">🎮</button>
-                <button type="button" class="btn-emoji-chip" data-emoji="🌸" title="꽃/힐링">🌸</button>
-                <button type="button" class="btn-emoji-chip" data-emoji="🐱" title="고양이">🐱</button>
-                <button type="button" class="btn-emoji-chip" data-emoji="🍕" title="음식/먹방">🍕</button>
-                <button type="button" class="btn-emoji-chip" data-emoji="🎤" title="노래/토크">🎤</button>
-                <button type="button" class="btn-emoji-chip" data-emoji="✨" title="반짝">✨</button>
-                <button type="button" class="btn-emoji-chip" data-emoji="🔥" title="열정/도전">🔥</button>
-                <button type="button" class="btn-emoji-chip" data-emoji="☕" title="카페/소통">☕</button>
-                <button type="button" class="btn-emoji-chip" data-emoji="🏆" title="대회/랭크">🏆</button>
-                <button type="button" class="btn-emoji-chip" data-emoji="📺" title="방송">📺</button>
-                <button type="button" class="btn-emoji-chip" data-emoji="✈️" title="여행">✈️</button>
-                <button type="button" class="btn-emoji-chip" data-emoji="👑" title="왕관">👑</button>
-                <button type="button" class="btn-emoji-chip" data-emoji="🎨" title="그림">🎨</button>
-                <button type="button" class="btn-emoji-chip" data-emoji="🎸" title="기타/음악">🎸</button>
-                <button type="button" class="btn-emoji-chip" data-emoji="🍀" title="행운">🍀</button>
-                <button type="button" class="btn-emoji-chip" data-emoji="👾" title="인디게임">👾</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="🎮" title={isEn ? 'Gaming' : '게임'}>🎮</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="🌸" title={isEn ? 'Flower / Cozy' : '꽃/힐링'}>🌸</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="🐱" title={isEn ? 'Cat' : '고양이'}>🐱</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="🍕" title={isEn ? 'Food / Mukbang' : '음식/먹방'}>🍕</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="🎤" title={isEn ? 'Singing / Talk' : '노래/토크'}>🎤</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="✨" title={isEn ? 'Sparkle' : '반짝'}>✨</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="🔥" title={isEn ? 'Hype / Challenge' : '열정/도전'}>🔥</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="☕" title={isEn ? 'Cafe / Chat' : '카페/소통'}>☕</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="🏆" title={isEn ? 'Rank / Tournament' : '대회/랭크'}>🏆</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="📺" title={isEn ? 'Broadcast' : '방송'}>📺</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="✈️" title={isEn ? 'Travel' : '여행'}>✈️</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="👑" title={isEn ? 'Crown' : '왕관'}>👑</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="🎨" title={isEn ? 'Art / Drawing' : '그림'}>🎨</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="🎸" title={isEn ? 'Music / Guitar' : '기타/음악'}>🎸</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="🍀" title={isEn ? 'Lucky' : '행운'}>🍀</button>
+                <button type="button" class="btn-emoji-chip" data-emoji="👾" title={isEn ? 'Retro / Indie' : '인디게임'}>👾</button>
               </div>
             </div>
           </div>
           <div class="input-field flex-2">
-            <label>스트리머 채널명</label>
-            <input type="text" id="inputChannelName" class="ctrl-input" value="스트리머 아케이드" placeholder="채널명" />
+            <label>{isEn ? 'Channel Name' : '스트리머 채널명'}</label>
+            <input type="text" id="inputChannelName" class="ctrl-input" value={isEn ? 'Streamer Arcade' : '스트리머 아케이드'} placeholder={isEn ? 'Channel Name' : '채널명'} />
           </div>
           <div class="input-field">
-            <label>방송 플랫폼</label>
+            <label>{isEn ? 'Broadcast Platform' : '방송 플랫폼'}</label>
             <select id="selectPlatform" class="ctrl-select">
-              <option value="chzzk">치지직 (CHZZK)</option>
-              <option value="soop">SOOP (숲)</option>
-              <option value="twitch">트위치 (Twitch)</option>
-              <option value="youtube">유튜브 (YouTube)</option>
-              <option value="custom">기타 (LIVE)</option>
+              <option value="chzzk">{isEn ? 'CHZZK' : '치지직 (CHZZK)'}</option>
+              <option value="soop">SOOP</option>
+              <option value="twitch" selected={isEn}>{isEn ? 'Twitch' : '트위치 (Twitch)'}</option>
+              <option value="youtube">{isEn ? 'YouTube' : '유튜브 (YouTube)'}</option>
+              <option value="custom">{isEn ? 'Other (LIVE)' : '기타 (LIVE)'}</option>
             </select>
           </div>
           <div class="input-field flex-3">
-            <label>방송 소개 문구</label>
-            <input type="text" id="inputTagline" class="ctrl-input" value="매일 저녁 8시 소통 & 종합 게임 방송" placeholder="한 줄 소개" />
+            <label>{isEn ? 'Tagline / Bio' : '방송 소개 문구'}</label>
+            <input type="text" id="inputTagline" class="ctrl-input" value={isEn ? 'Daily 8 PM Variety Gaming & Community Chat' : '매일 저녁 8시 소통 & 종합 게임 방송'} placeholder={isEn ? 'One-line bio / stream schedule' : '한 줄 소개'} />
           </div>
           <div class="input-field flex-3">
-            <label>📢 주간 공지사항 / 이번 주 하이라이트</label>
-            <input type="text" id="inputNoticeWeekly" class="ctrl-input" value="📢 이번 주 토요일은 시청자 참여전 & 치킨 이벤트 진행!" placeholder="주간 편성표 상단 공지사항 (비우면 숨김)" />
+            <label>📢 {isEn ? 'Weekly Notice / Highlights' : '주간 공지사항 / 이번 주 하이라이트'}</label>
+            <input type="text" id="inputNoticeWeekly" class="ctrl-input" value={isEn ? '📢 Saturday: Viewer Community Games & Giveaway Event!' : '📢 이번 주 토요일은 시청자 참여전 & 치킨 이벤트 진행!'} placeholder={isEn ? 'Weekly notice shown at top (hide if empty)' : '주간 편성표 상단 공지사항 (비우면 숨김)'} />
           </div>
           <div class="input-field flex-3">
-            <label>🎯 월간 공지사항 / 이번 달 목표</label>
-            <input type="text" id="inputNoticeMonthly" class="ctrl-input" value="🎯 9월 목표: 주 5회 정규 방송 & 구독자 1만 달성!" placeholder="월간 캘린더 상단 목표 (비우면 숨김)" />
+            <label>🎯 {isEn ? 'Monthly Goal / Notice' : '월간 공지사항 / 이번 달 목표'}</label>
+            <input type="text" id="inputNoticeMonthly" class="ctrl-input" value={isEn ? '🎯 September Goal: 5 Streams/Week & 10K Followers!' : '🎯 9월 목표: 주 5회 정규 방송 & 구독자 1만 달성!'} placeholder={isEn ? 'Monthly goal shown at top (hide if empty)' : '월간 캘린더 상단 목표 (비우면 숨김)'} />
           </div>
         </div>
       </div>
@@ -176,15 +177,15 @@ const { streamerMode = false, lang = 'ko' } = Astro.props;
           <div class="channel-avatar-box" id="dispAvatar">🎮</div>
           <div class="channel-text-group">
             <div class="channel-title-row">
-              <h2 class="channel-name" id="dispChannelName">스트리머 아케이드</h2>
-              <span class="platform-badge" id="dispPlatformBadge">치지직</span>
+              <h2 class="channel-name" id="dispChannelName">{isEn ? 'Streamer Arcade' : '스트리머 아케이드'}</h2>
+              <span class="platform-badge" id="dispPlatformBadge">{isEn ? 'Twitch' : '치지직'}</span>
             </div>
-            <p class="channel-tagline" id="dispTagline">매일 저녁 8시 신작 & 종합 게임 방송!</p>
+            <p class="channel-tagline" id="dispTagline">{isEn ? 'Daily 8 PM Variety Gaming & Community Chat' : '매일 저녁 8시 신작 & 종합 게임 방송!'}</p>
           </div>
         </div>
 
         <div class="board-meta-col">
-          <div class="board-range-badge" id="dispScheduleRangeBadge">2026.09 3주차 (09.14 ~ 09.20)</div>
+          <div class="board-range-badge" id="dispScheduleRangeBadge">2026.09 {isEn ? 'Week 3 (09.14 ~ 09.20)' : '3주차 (09.14 ~ 09.20)'}</div>
           <div class="branding-watermark">
             <span class="brand-icon-mini">🔴</span>
             <span>STREAM ARCADE</span>
@@ -195,7 +196,7 @@ const { streamerMode = false, lang = 'ko' } = Astro.props;
       <!-- Optional Notice Banner -->
       <div class="board-notice-banner" id="dispNoticeBanner">
         <span class="notice-icon">📢</span>
-        <span class="notice-text" id="dispNoticeText">이번 주 토요일은 시청자 참여 돌림판 & 사다리타기 벌칙전 진행!</span>
+        <span class="notice-text" id="dispNoticeText">{isEn ? 'Saturday: Viewer Community Games & Giveaway Event!' : '이번 주 토요일은 시청자 참여 돌림판 & 사다리타기 벌칙전 진행!'}</span>
       </div>
 
       <!-- VIEW 1: Travel Boarding Pass / Ticket Schedule (1 + 3 + 3 Single Page) -->
@@ -307,19 +308,19 @@ const { streamerMode = false, lang = 'ko' } = Astro.props;
         <div class="monthly-header-bar">
           <div class="month-nav-row">
             <button type="button" class="btn-month-nav" id="btnPrevMonth">◀</button>
-            <span class="month-title-text" id="dispMonthTitle">2026년 9월 전체 방송 캘린더</span>
+            <span class="month-title-text" id="dispMonthTitle">{isEn ? 'September 2026 Full Broadcast Calendar' : '2026년 9월 전체 방송 캘린더'}</span>
             <button type="button" class="btn-month-nav" id="btnNextMonth">▶</button>
           </div>
-          <div class="monthly-goal-badge" id="dispMonthlyGoal">🎯 9월 목표: 구독자 1만 달성 & 시참전 2회</div>
+          <div class="monthly-goal-badge" id="dispMonthlyGoal">{isEn ? '🎯 September Goal: 5 Streams/Week & 10K Followers!' : '🎯 9월 목표: 구독자 1만 달성 & 시참전 2회'}</div>
         </div>
         <div class="calendar-days-header">
-          <span class="col-sun">일</span>
-          <span>월</span>
-          <span>화</span>
-          <span>수</span>
-          <span>목</span>
-          <span>금</span>
-          <span class="col-sat">토</span>
+          <span class="col-sun">{isEn ? 'SUN' : '일'}</span>
+          <span>{isEn ? 'MON' : '월'}</span>
+          <span>{isEn ? 'TUE' : '화'}</span>
+          <span>{isEn ? 'WED' : '수'}</span>
+          <span>{isEn ? 'THU' : '목'}</span>
+          <span>{isEn ? 'FRI' : '금'}</span>
+          <span class="col-sat">{isEn ? 'SAT' : '토'}</span>
         </div>
         <div class="calendar-cells-compact-container" id="calendarCellsContainer">
           <!-- 35 compact cells generated -->
@@ -328,7 +329,7 @@ const { streamerMode = false, lang = 'ko' } = Astro.props;
 
       <!-- Board Footer -->
       <div class="board-footer">
-        <span>StreamArcade Schedule Studio • 누구나 무료로 생성하는 방송 편성표</span>
+        <span>StreamArcade Schedule Studio • {isEn ? 'Free Instant Broadcast Schedule Generator' : '누구나 무료로 생성하는 방송 편성표'}</span>
       </div>
     </div>
   </div>
@@ -340,12 +341,12 @@ const { streamerMode = false, lang = 'ko' } = Astro.props;
   <div class="edit-modal-overlay" id="editModalOverlay" style="display: none;">
     <div class="edit-modal-card">
       <div class="modal-header">
-        <h3 id="modalDayTitle">요일 방송 일정 편집</h3>
+        <h3 id="modalDayTitle">{isEn ? 'Edit Day Broadcast Schedule' : '요일 방송 일정 편집'}</h3>
         <button type="button" class="btn-close-modal" id="btnCloseModal">✕</button>
       </div>
       <div class="modal-body">
         <div class="modal-form-group">
-          <label>방송 상태 뱃지</label>
+          <label>{isEn ? 'Status Badge' : '방송 상태 뱃지'}</label>
           <div class="badge-select-grid" id="modalBadgeGrid">
             {Object.values(STATUS_BADGES).map((b) => (
               <button 
@@ -355,52 +356,52 @@ const { streamerMode = false, lang = 'ko' } = Astro.props;
                 style={`--badge-c: ${b.color}; --badge-bg: ${b.bg};`}
               >
                 <span>{b.icon}</span>
-                <span>{b.labelKo}</span>
+                <span>{isEn ? b.labelEn : b.labelKo}</span>
               </button>
             ))}
           </div>
         </div>
 
         <div class="modal-form-group">
-          <label>방송 시작 시간</label>
+          <label>{isEn ? 'Broadcast Start Time' : '방송 시작 시간'}</label>
           <div class="time-presets-row">
-            <input type="text" id="modalStartTimeInput" class="modal-input flex-1" placeholder="예: 20:00" />
+            <input type="text" id="modalStartTimeInput" class="modal-input flex-1" placeholder={isEn ? 'e.g. 20:00' : '예: 20:00'} />
             <button type="button" class="btn-quick-start" data-time="20:00">20:00</button>
             <button type="button" class="btn-quick-start" data-time="20:30">20:30</button>
             <button type="button" class="btn-quick-start" data-time="21:00">21:00</button>
-            <button type="button" class="btn-quick-start" data-time="자율">자율</button>
-            <button type="button" class="btn-quick-start" data-time="휴식">휴식</button>
+            <button type="button" class="btn-quick-start" data-time={isEn ? 'Flexible' : '자율'}>{isEn ? 'Flexible' : '자율'}</button>
+            <button type="button" class="btn-quick-start" data-time={isEn ? 'OFF' : '휴식'}>{isEn ? 'OFF' : '휴식'}</button>
           </div>
         </div>
 
         <div class="modal-form-group">
-          <label>방송 종료 시간 (선택)</label>
+          <label>{isEn ? 'Broadcast End Time (Optional)' : '방송 종료 시간 (선택)'}</label>
           <div class="time-presets-row">
-            <input type="text" id="modalEndTimeInput" class="modal-input flex-1" placeholder="예: 23:30 또는 방종시" />
+            <input type="text" id="modalEndTimeInput" class="modal-input flex-1" placeholder={isEn ? 'e.g. 23:30 or TBD' : '예: 23:30 또는 방종시'} />
             <button type="button" class="btn-quick-end" data-time="23:00">23:00</button>
             <button type="button" class="btn-quick-end" data-time="23:30">23:30</button>
             <button type="button" class="btn-quick-end" data-time="24:00">24:00</button>
-            <button type="button" class="btn-quick-end" data-time="방종시">방종시</button>
-            <button type="button" class="btn-quick-end" data-time="새벽">새벽</button>
+            <button type="button" class="btn-quick-end" data-time={isEn ? 'TBD' : '방종시'}>{isEn ? 'TBD' : '방종시'}</button>
+            <button type="button" class="btn-quick-end" data-time={isEn ? 'Late' : '새벽'}>{isEn ? 'Late' : '새벽'}</button>
           </div>
-          <span class="field-hint">시작/종료 시간을 모두 입력하면 '20:00 ~ 23:30' 형태로 자동 표기됩니다.</span>
+          <span class="field-hint">{isEn ? "Entering both start & end times will automatically format as '20:00 ~ 23:30'." : "시작/종료 시간을 모두 입력하면 '20:00 ~ 23:30' 형태로 자동 표기됩니다."}</span>
         </div>
 
         <div class="modal-form-group">
-          <label>방송 콘텐츠 제목 / 키워드</label>
-          <input type="text" id="modalTitleInput" class="modal-input" placeholder="예: 저챗 / 종합 게임 / 먹방 / 롤 랭크" maxlength="40" />
-          <span class="field-hint">티켓 상단에 크게 들어갈 메인 제목입니다.</span>
+          <label>{isEn ? 'Broadcast Title / Keyword' : '방송 콘텐츠 제목 / 키워드'}</label>
+          <input type="text" id="modalTitleInput" class="modal-input" placeholder={isEn ? 'e.g. Just Chatting / Variety Games / Mukbang / Ranked' : '예: 저챗 / 종합 게임 / 먹방 / 롤 랭크'} maxlength="40" />
+          <span class="field-hint">{isEn ? 'Main title prominently displayed on ticket.' : '티켓 상단에 크게 들어갈 메인 제목입니다.'}</span>
         </div>
 
         <div class="modal-form-group">
-          <label>상세 안내 / 부제목 (선택)</label>
-          <input type="text" id="modalMemoInput" class="modal-input" placeholder="예: 치킨 시참 내기전 / 신작 인디게임 켠왕" maxlength="45" />
-          <span class="field-hint">티켓 중앙에 들어갈 보조 설명 문구입니다.</span>
+          <label>{isEn ? 'Details / Subtitle (Optional)' : '상세 안내 / 부제목 (선택)'}</label>
+          <input type="text" id="modalMemoInput" class="modal-input" placeholder={isEn ? 'e.g. Community Giveaway Matches / New Indie Game' : '예: 치킨 시참 내기전 / 신작 인디게임 켠왕'} maxlength="45" />
+          <span class="field-hint">{isEn ? 'Secondary description in the middle of ticket.' : '티켓 중앙에 들어갈 보조 설명 문구입니다.'}</span>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn-modal-cancel" id="btnModalCancel">취소</button>
-        <button type="button" class="btn-modal-save" id="btnModalSave">저장 완료</button>
+        <button type="button" class="btn-modal-cancel" id="btnModalCancel">{isEn ? 'Cancel' : '취소'}</button>
+        <button type="button" class="btn-modal-save" id="btnModalSave">{isEn ? 'Save' : '저장 완료'}</button>
       </div>
     </div>
   </div>
@@ -2026,20 +2027,23 @@ const { streamerMode = false, lang = 'ko' } = Astro.props;
 
 <script>
 import { renderScheduleToCanvas } from './ScheduleCanvasRenderer';
-import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } from './scheduleTemplates';
+import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMPLE_PRESETS_EN } from './scheduleTemplates';
 
 (function () {
+  var root = document.getElementById('scheduleStudioRoot');
+  var isEn = (root && root.getAttribute('data-lang') === 'en');
+  var presets = isEn ? SAMPLE_PRESETS_EN : SAMPLE_PRESETS;
 
-  // ─── Unified Default Schedule State (Version 2 - Everyday Stream Categories) ──
-  var DEFAULT_SCHEDULE = JSON.parse(JSON.stringify(SAMPLE_PRESETS.travelTicket));
+  // ─── Unified Default Schedule State ──
+  var DEFAULT_SCHEDULE = JSON.parse(JSON.stringify(presets.travelTicket));
 
   // ─── State Initialization ──────────────────────────────────────────────────
   var state = null;
-  var STORAGE_KEY = 'streamarcade_unified_schedule_v6';
+  var STORAGE_KEY = isEn ? 'streamarcade_unified_schedule_en_v1' : 'streamarcade_unified_schedule_v6';
 
   try {
     var saved = localStorage.getItem(STORAGE_KEY);
-    if (!saved) {
+    if (!saved && !isEn) {
       saved = localStorage.getItem('streamarcade_unified_schedule_v5');
     }
     if (saved) {
@@ -2063,6 +2067,9 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } fro
   }
 
   // ─── Week Calculation Helper ───────────────────────────────────────────────
+  var monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  var monthShortNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
   // Divides any month into standard Monday-Sunday calendar weeks
   function computeMonthWeeks(year, month) {
     var firstDate = new Date(year, month - 1, 1);
@@ -2089,9 +2096,10 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } fro
         var dateStr = (m < 10 ? '0' + m : m) + '.' + (dayNum < 10 ? '0' + dayNum : dayNum);
 
         // Fetch entry from monthly schedule if present
+        var defaultDayTitle = isEn ? 'Live Stream' : '방송 예정';
         var entry = (isCurrentMonth && state.monthly.days[dayNum])
           ? state.monthly.days[dayNum]
-          : { time: '20:00', startTime: '20:00', endTime: '', status: 'live', title: '방송 예정' };
+          : { time: '20:00', startTime: '20:00', endTime: '', status: 'live', title: defaultDayTitle };
 
         weekDays.push({
           year: y,
@@ -2113,11 +2121,13 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } fro
 
       var weekNum = weeks.length + 1;
       var rangeStr = weekDays[0].dateStr + ' ~ ' + weekDays[6].dateStr;
+      var label = isEn ? ('Week ' + weekNum + ' (' + rangeStr + ')') : (weekNum + '주차 (' + rangeStr + ')');
+      var shortLabel = isEn ? ('Week ' + weekNum) : (weekNum + '주차');
       weeks.push({
         index: weeks.length,
         weekNum: weekNum,
-        label: weekNum + '주차 (' + rangeStr + ')',
-        shortLabel: weekNum + '주차',
+        label: label,
+        shortLabel: shortLabel,
         rangeStr: rangeStr,
         days: weekDays
       });
@@ -2131,7 +2141,6 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } fro
   }
 
   // ─── DOM References ────────────────────────────────────────────────────────
-  var root = document.getElementById('scheduleStudioRoot');
   var board = document.getElementById('scheduleBoard');
   var weeklyWrap = document.getElementById('weeklyWrap');
   var monthlyWrap = document.getElementById('monthlyWrap');
@@ -2231,7 +2240,7 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } fro
       weeklyWrap.style.display = 'block';
       monthlyWrap.style.display = 'none';
       weekExtractorGroup.style.display = 'flex';
-      btnExportPngLabel.textContent = '주간 PNG 저장';
+      btnExportPngLabel.textContent = isEn ? 'Save Weekly PNG' : '주간 PNG 저장';
       dispScheduleRangeBadge.textContent = state.monthly.year + '.' + (state.monthly.month < 10 ? '0' + state.monthly.month : state.monthly.month) + ' ' + currentWeek.label;
     } else {
       btnModeWeekly.classList.remove('active');
@@ -2239,8 +2248,10 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } fro
       weeklyWrap.style.display = 'none';
       monthlyWrap.style.display = 'block';
       weekExtractorGroup.style.display = 'none';
-      btnExportPngLabel.textContent = '월간 PNG 저장';
-      dispScheduleRangeBadge.textContent = state.monthly.year + '년 ' + state.monthly.month + '월 전체 방송';
+      btnExportPngLabel.textContent = isEn ? 'Save Monthly PNG' : '월간 PNG 저장';
+      dispScheduleRangeBadge.textContent = isEn
+        ? (monthShortNames[state.monthly.month - 1] + ' ' + state.monthly.year + ' All Streams')
+        : (state.monthly.year + '년 ' + state.monthly.month + '월 전체 방송');
     }
 
     // 4. Week Buttons Bar
@@ -2248,10 +2259,12 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } fro
 
     // 5. Header Branding Details
     dispAvatar.textContent = state.channel.avatarEmoji || '🎮';
-    dispChannelName.textContent = state.channel.name || '스트리머 채널';
+    dispChannelName.textContent = state.channel.name || (isEn ? 'Streamer Channel' : '스트리머 채널');
     dispTagline.textContent = state.channel.tagline || '';
 
-    var platformMap = { chzzk: '치지직', soop: 'SOOP', twitch: '트위치', youtube: '유튜브', custom: 'LIVE' };
+    var platformMap = isEn
+      ? { chzzk: 'CHZZK', soop: 'SOOP', twitch: 'Twitch', youtube: 'YouTube', custom: 'LIVE' }
+      : { chzzk: '치지직', soop: 'SOOP', twitch: '트위치', youtube: '유튜브', custom: 'LIVE' };
     dispPlatformBadge.textContent = platformMap[state.channel.platform] || 'LIVE';
 
     // Notice Banner (Weekly vs Monthly)
@@ -2264,18 +2277,17 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } fro
         dispNoticeBanner.style.display = 'none';
       }
     } else {
-      // In monthly view, monthly notice/goal is cleanly displayed in the calendar toolbar badge
       dispNoticeBanner.style.display = 'none';
     }
 
     // Monthly Goal Badge
     var monthlyGoal = state.channel.noticeMonthly || state.monthly.monthlyGoal;
-    dispMonthlyGoal.textContent = monthlyGoal || '🎯 이번 달도 파이팅!';
+    dispMonthlyGoal.textContent = monthlyGoal || (isEn ? '🎯 Let’s make this month great!' : '🎯 이번 달도 파이팅!');
 
     // 6. Sync Input Controls
     inputAvatarEmoji.value = state.channel.avatarEmoji || '🎮';
     inputChannelName.value = state.channel.name || '';
-    selectPlatform.value = state.channel.platform || 'chzzk';
+    selectPlatform.value = state.channel.platform || (isEn ? 'twitch' : 'chzzk');
     inputTagline.value = state.channel.tagline || '';
     inputNoticeWeekly.value = state.channel.noticeWeekly || state.channel.notice || '';
     inputNoticeMonthly.value = state.channel.noticeMonthly || state.monthly.monthlyGoal || '';
@@ -2353,9 +2365,10 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } fro
   }
 
   function createBoardingPassTicket(d) {
-    var entry = d.entry || { time: '20:00', startTime: '20:00', endTime: '', status: 'live', title: '방송 예정', memo: '' };
+    var defaultDayTitle = isEn ? 'Live Stream' : '방송 예정';
+    var entry = d.entry || { time: '20:00', startTime: '20:00', endTime: '', status: 'live', title: defaultDayTitle, memo: '' };
     var isOff = (entry.status === 'off' || entry.title === 'OFFLINE');
-    var displayTime = formatDisplayTime(entry) || entry.time || '20:00';
+    var displayTime = formatDisplayTime(entry, isEn ? 'en' : 'ko') || entry.time || '20:00';
 
     var card = document.createElement('div');
     card.className = 'bp-ticket-card' + (isOff ? ' is-off-day' : '');
@@ -2382,7 +2395,7 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } fro
       // Active stream day: Title, Memo/Subtitle, and Time
       innerContentHtml =
         '<div class="bp-ticket-body-content">' +
-          '<div class="bp-ticket-title">' + (entry.title || '방송 예정') + '</div>' +
+          '<div class="bp-ticket-title">' + (entry.title || defaultDayTitle) + '</div>' +
           '<div class="bp-ticket-memo">' + (entry.memo || '') + '</div>' +
           '<div class="bp-ticket-time">' + displayTime + '</div>' +
         '</div>';
@@ -2407,19 +2420,22 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } fro
           '</svg>' +
         '</div>' +
       '</div>' +
-      '<button type="button" class="bp-ticket-edit-hint" title="일정 편집">✏️</button>';
+      '<button type="button" class="bp-ticket-edit-hint" title="' + (isEn ? 'Edit Schedule' : '일정 편집') + '">✏️</button>';
 
     card.addEventListener('click', function () {
-      openEditModal(d.day, d.dateStr + ' (' + d.dayEn + ')');
+      var dayTitleStr = isEn ? (d.dateStr + ' (' + d.dayEn + ')') : (d.dateStr + ' (' + d.dayKo + ')');
+      openEditModal(d.day, dayTitleStr);
     });
 
     return card;
   }
 
   function renderMonthlyCalendar() {
-    dispMonthTitle.textContent = state.monthly.year + '년 ' + state.monthly.month + '월 전체 방송 캘린더';
+    dispMonthTitle.textContent = isEn
+      ? (monthNames[state.monthly.month - 1] + ' ' + state.monthly.year + ' Full Broadcast Calendar')
+      : (state.monthly.year + '년 ' + state.monthly.month + '월 전체 방송 캘린더');
     var monthlyGoal = state.channel.noticeMonthly || state.monthly.monthlyGoal;
-    dispMonthlyGoal.textContent = monthlyGoal || '🎯 이번 달도 파이팅!';
+    dispMonthlyGoal.textContent = monthlyGoal || (isEn ? '🎯 Let’s make this month great!' : '🎯 이번 달도 파이팅!');
     calendarCellsContainer.innerHTML = '';
 
     var daysInMonth = new Date(state.monthly.year, state.monthly.month, 0).getDate();
@@ -2436,11 +2452,12 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } fro
         var isSun = (cell % 7 === 0);
         var isSat = (cell % 7 === 6);
         var colClass = isSun ? ' col-sun' : (isSat ? ' col-sat' : '');
-        var displayTime = formatDisplayTime(entry);
+        var displayTime = formatDisplayTime(entry, isEn ? 'en' : 'ko');
 
         var html = '<div class="cal-cell-num' + colClass + '">' + dayNum + '</div>';
         if (entry.title && entry.title.trim() !== '') {
-          var timePrefix = (displayTime && displayTime !== '휴식') ? displayTime + ' ' : '';
+          var offWord = isEn ? 'OFF' : '휴식';
+          var timePrefix = (displayTime && displayTime !== offWord) ? displayTime + ' ' : '';
           html += '<div class="cal-cell-pill" style="background: ' + badge.bg + '; color: ' + badge.color + '; border: 1px solid ' + badge.color + '44;">' +
             badge.icon + ' ' + timePrefix + entry.title +
           '</div>';
@@ -2449,7 +2466,8 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } fro
 
         (function (dNum) {
           cellEl.addEventListener('click', function () {
-            openEditModal(dNum, state.monthly.month + '월 ' + dNum + '일');
+            var titleLabel = isEn ? (monthShortNames[state.monthly.month - 1] + ' ' + dNum) : (state.monthly.month + '월 ' + dNum + '일');
+            openEditModal(dNum, titleLabel);
           });
         })(dayNum);
       } else {
@@ -2463,8 +2481,9 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } fro
   // ─── Modal Editing Logic ───────────────────────────────────────────────────
   function openEditModal(dayNum, titleLabel) {
     currentEditingDayNum = dayNum;
-    modalDayTitle.textContent = titleLabel + ' 방송 일정 편집';
+    modalDayTitle.textContent = isEn ? ('Edit Schedule: ' + titleLabel) : (titleLabel + ' 방송 일정 편집');
 
+    var defaultDayTitle = isEn ? 'Live Stream' : '방송 예정';
     var existing = state.monthly.days[dayNum] || { startTime: '20:00', endTime: '', time: '20:00', status: 'live', title: '', memo: '' };
     currentSelectedBadgeId = existing.status || 'live';
     modalStartTimeInput.value = existing.startTime || existing.time || '20:00';
@@ -2496,9 +2515,9 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } fro
     updateModalBadgeButtons();
 
     if (currentSelectedBadgeId === 'off') {
-      modalStartTimeInput.value = '휴식';
+      modalStartTimeInput.value = isEn ? 'OFF' : '휴식';
       modalEndTimeInput.value = '';
-      if (!modalTitleInput.value || modalTitleInput.value === '방송 예정') {
+      if (!modalTitleInput.value || modalTitleInput.value === '방송 예정' || modalTitleInput.value === 'Live Stream') {
         modalTitleInput.value = 'OFFLINE';
       }
     }
@@ -2528,14 +2547,15 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } fro
   btnModalSave.addEventListener('click', function () {
     var startVal = modalStartTimeInput.value.trim() || '20:00';
     var endVal = modalEndTimeInput.value.trim();
+    var defaultDayTitle = isEn ? 'Live Stream' : '방송 예정';
     var tempEntry = {
       startTime: startVal,
       endTime: endVal,
       status: currentSelectedBadgeId,
-      title: modalTitleInput.value.trim() || (currentSelectedBadgeId === 'off' ? 'OFFLINE' : '방송 예정'),
+      title: modalTitleInput.value.trim() || (currentSelectedBadgeId === 'off' ? 'OFFLINE' : defaultDayTitle),
       memo: modalMemoInput ? modalMemoInput.value.trim() : ''
     };
-    tempEntry.time = formatDisplayTime(tempEntry);
+    tempEntry.time = formatDisplayTime(tempEntry, isEn ? 'en' : 'ko');
 
     state.monthly.days[currentEditingDayNum] = tempEntry;
     saveState();
@@ -2611,13 +2631,15 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } fro
   inputChannelName.addEventListener('input', function (e) {
     state.channel.name = e.target.value;
     saveState();
-    dispChannelName.textContent = state.channel.name || '스트리머 채널';
+    dispChannelName.textContent = state.channel.name || (isEn ? 'Streamer Channel' : '스트리머 채널');
   });
 
   selectPlatform.addEventListener('change', function (e) {
     state.channel.platform = e.target.value;
     saveState();
-    var map = { chzzk: '치지직', soop: 'SOOP', twitch: '트위치', youtube: '유튜브', custom: 'LIVE' };
+    var map = isEn
+      ? { chzzk: 'CHZZK', soop: 'SOOP', twitch: 'Twitch', youtube: 'YouTube', custom: 'LIVE' }
+      : { chzzk: '치지직', soop: 'SOOP', twitch: '트위치', youtube: '유튜브', custom: 'LIVE' };
     dispPlatformBadge.textContent = map[state.channel.platform] || 'LIVE';
   });
 
@@ -2645,26 +2667,26 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } fro
     state.channel.noticeMonthly = e.target.value;
     state.monthly.monthlyGoal = e.target.value;
     saveState();
-    dispMonthlyGoal.textContent = e.target.value || '🎯 이번 달도 파이팅!';
+    dispMonthlyGoal.textContent = e.target.value || (isEn ? '🎯 Let’s make this month great!' : '🎯 이번 달도 파이팅!');
   });
 
   // Sample Presets (No highlight sticky state)
   if (btnPresetTravel) {
     btnPresetTravel.addEventListener('click', function () {
-      state = JSON.parse(JSON.stringify(SAMPLE_PRESETS.travelTicket));
+      state = JSON.parse(JSON.stringify(presets.travelTicket));
       saveState();
       renderAll();
     });
   }
 
   btnPresetGamer.addEventListener('click', function () {
-    state = JSON.parse(JSON.stringify(SAMPLE_PRESETS.varietyGamer));
+    state = JSON.parse(JSON.stringify(presets.varietyGamer));
     saveState();
     renderAll();
   });
 
   btnPresetVtuber.addEventListener('click', function () {
-    state = JSON.parse(JSON.stringify(SAMPLE_PRESETS.vtuberCozy));
+    state = JSON.parse(JSON.stringify(presets.vtuberCozy));
     saveState();
     renderAll();
   });
@@ -2695,12 +2717,12 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } fro
           state = parsed;
           saveState();
           renderAll();
-          alert('✅ 템플릿 파일을 성공적으로 불러왔습니다!');
+          alert(isEn ? '✅ Template file loaded successfully!' : '✅ 템플릿 파일을 성공적으로 불러왔습니다!');
         } else {
-          alert('올바른 편성표 템플릿 JSON 파일이 아닙니다.');
+          alert(isEn ? 'Invalid schedule template JSON file.' : '올바른 편성표 템플릿 JSON 파일이 아닙니다.');
         }
       } catch (err) {
-        alert('JSON 파일 읽기 오류: ' + err.message);
+        alert((isEn ? 'Error reading JSON file: ' : 'JSON 파일 읽기 오류: ') + err.message);
       }
     };
     reader.readAsText(file);
@@ -2715,7 +2737,7 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } fro
         var currentWeek = weeks[state.selectedWeekIndex] || weeks[0];
         var isWeekly = (state.viewMode === 'weekly');
 
-        renderScheduleToCanvas(exportCanvas, state, currentWeek.days, isWeekly, 2);
+        renderScheduleToCanvas(exportCanvas, state, currentWeek.days, isWeekly, 2, isEn ? 'en' : 'ko');
 
         var dataUrl = exportCanvas.toDataURL('image/png');
         var a = document.createElement('a');
@@ -2728,7 +2750,7 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } fro
         document.body.removeChild(a);
       } catch (err) {
         console.error('Canvas export error:', err);
-        alert('PNG 내보내기 중 오류가 발생했습니다: ' + (err instanceof Error ? err.message : String(err)));
+        alert((isEn ? 'Error exporting PNG: ' : 'PNG 내보내기 중 오류가 발생했습니다: ') + (err instanceof Error ? err.message : String(err)));
       }
     });
   }
@@ -2742,14 +2764,18 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS } fro
     currentWeek.days.forEach(function (d) {
       var entry = d.entry;
       var badge = STATUS_BADGES[entry.status] || STATUS_BADGES.live;
-      text += '• ' + d.dateStr + ' (' + d.dayKo + ') : ' + badge.icon + ' ' + (entry.time || '자율') + ' | ' + (entry.title || '방송 예정') + '\n';
+      var dayTag = isEn ? d.dayEn : d.dayKo;
+      var timeStr = entry.time || (isEn ? 'Flexible' : '자율');
+      var defaultDayTitle = isEn ? 'Live Stream' : '방송 예정';
+      var titleStr = entry.title || defaultDayTitle;
+      text += '• ' + d.dateStr + ' (' + dayTag + ') : ' + badge.icon + ' ' + timeStr + ' | ' + titleStr + '\n';
     });
 
-    text += '\n📺 ' + (state.channel.tagline || 'StreamArcade') + '\nhttps://streamarcade.net/schedule';
+    text += '\n📺 ' + (state.channel.tagline || 'StreamArcade') + '\nhttps://streamarcade.net/' + (isEn ? 'en/' : '') + 'schedule';
 
     if (navigator.clipboard) {
       navigator.clipboard.writeText(text).then(function () {
-        alert('📋 디스코드 / 팬카페 공유용 텍스트가 복사되었습니다!');
+        alert(isEn ? '📋 Text copied to clipboard for Discord / Community!' : '📋 디스코드 / 팬카페 공유용 텍스트가 복사되었습니다!');
       });
     }
   });

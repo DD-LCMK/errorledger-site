@@ -93,9 +93,9 @@ export interface StreamScheduleData {
   };
 }
 
-export function formatDisplayTime(entry?: DayScheduleEntry): string {
+export function formatDisplayTime(entry?: DayScheduleEntry, lang: 'ko' | 'en' = 'ko'): string {
   if (!entry) return '';
-  if (entry.status === 'off' || entry.title === 'OFFLINE') return '휴식';
+  if (entry.status === 'off' || entry.title === 'OFFLINE') return lang === 'en' ? 'OFF' : '휴식';
   if (entry.startTime && entry.endTime) {
     return `${entry.startTime} ~ ${entry.endTime}`;
   }
@@ -701,6 +701,142 @@ export const SAMPLE_PRESETS: Record<string, StreamScheduleData> = {
         28: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'event', title: '가을 특별 낭독회' },
         29: { startTime: '21:30', endTime: '24:00', time: '21:30 ~ 24:00', status: 'live', title: '스팀 힐링 게임' },
         30: { startTime: '휴식', endTime: '', time: '휴식', status: 'off', title: '9월 결산 휴방' }
+      }
+    }
+  }
+};
+
+export const SAMPLE_PRESETS_EN: Record<string, StreamScheduleData> = {
+  travelTicket: {
+    version: 2,
+    viewMode: 'weekly',
+    selectedWeekIndex: 2, // Week 3 (09.14 ~ 09.20)
+    themeId: 'travel-boarding-pass',
+    channel: {
+      name: 'Streamer Arcade',
+      platform: 'twitch',
+      avatarEmoji: '🎮',
+      tagline: 'Daily 8 PM Variety Gaming & Community Chat',
+      notice: '📢 Saturday: Viewer Community Games & Giveaway Event!',
+      noticeWeekly: '📢 Saturday: Viewer Community Games & Giveaway Event!',
+      noticeMonthly: '🎯 September Goal: 5 Streams/Week & 10K Followers!'
+    },
+    monthly: {
+      year: 2026,
+      month: 9,
+      monthlyGoal: '🎯 September Goal: 5 Streams/Week & 10K Followers!',
+      days: {
+        14: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: 'Just Chatting', memo: 'Weekly Kickoff & Life Catch-up' },
+        15: { startTime: '20:00', endTime: '24:00', time: '20:00 ~ 24:00', status: 'live', title: 'Steam Variety Games', memo: 'Trending New Release Gameplay' },
+        16: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'irl', title: 'Midnight Mukbang', memo: 'Late Night Snack & Chill Talk' },
+        17: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'viewer', title: 'Viewer Community Games', memo: 'Party Games & Mini Tournaments' },
+        18: { startTime: 'OFF', endTime: '', time: 'OFF', status: 'off', title: 'OFFLINE', memo: 'Recharge Energy (Day Off)' },
+        19: { startTime: '19:00', endTime: 'Late', time: '19:00 ~ Late', status: 'event', title: 'Special Weekend Event', memo: 'Horror Game Marathon Challenge' },
+        20: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: 'Weekly Recap & Talk', memo: 'Next Week Schedule & Wrap-up' }
+      }
+    }
+  },
+  varietyGamer: {
+    version: 2,
+    viewMode: 'weekly',
+    selectedWeekIndex: 2,
+    themeId: 'chzzk-neon',
+    channel: {
+      name: 'Streamer Arcade',
+      platform: 'twitch',
+      avatarEmoji: '🎮',
+      tagline: 'Daily 8 PM New Releases & Variety Gaming!',
+      notice: '📢 Saturday: Viewer Spin Wheel & Community Games!',
+      noticeWeekly: '📢 Saturday: Viewer Spin Wheel & Community Games!',
+      noticeMonthly: '10K Followers Goal & 2 Viewer Tournaments'
+    },
+    monthly: {
+      year: 2026,
+      month: 9,
+      monthlyGoal: '10K Followers Goal & 2 Viewer Tournaments',
+      days: {
+        1: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: 'September Opener & Chat' },
+        2: { startTime: '20:00', endTime: '24:00', time: '20:00 ~ 24:00', status: 'new', title: 'Steam New Indie Games' },
+        3: { startTime: 'OFF', endTime: '', time: 'OFF', status: 'off', title: 'Scheduled Day Off' },
+        4: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: 'Late Night Talk & Stories' },
+        5: { startTime: '21:00', endTime: '24:00', time: '21:00 ~ 24:00', status: 'collab', title: '4-Player Streamer Collab' },
+        6: { startTime: '19:00', endTime: '22:00', time: '19:00 ~ 22:00', status: 'viewer', title: 'Viewer Spin Wheel Show' },
+        7: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'live', title: 'Ranked Solo Queue Grind' },
+        8: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'live', title: 'Steam Exploration Stream' },
+        9: { startTime: '20:30', endTime: '23:30', time: '20:30 ~ 23:30', status: 'new', title: 'Horror Game Marathon' },
+        10: { startTime: 'OFF', endTime: '', time: 'OFF', status: 'off', title: 'Scheduled Day Off' },
+        11: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: 'Just Chatting & Advice' },
+        12: { startTime: '21:00', endTime: '24:00', time: '21:00 ~ 24:00', status: 'collab', title: 'Battle Royale Squad' },
+        13: { startTime: '19:00', endTime: '22:00', time: '19:00 ~ 22:00', status: 'viewer', title: 'Marble Race Giveaway' },
+        14: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: 'Just Chatting & Life' },
+        15: { startTime: '20:00', endTime: '24:00', time: '20:00 ~ 24:00', status: 'live', title: 'Steam Variety Games' },
+        16: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'irl', title: 'Late Night Mukbang' },
+        17: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'viewer', title: 'Community Party Games' },
+        18: { startTime: 'OFF', endTime: '', time: 'OFF', status: 'off', title: 'Scheduled Day Off' },
+        19: { startTime: '19:00', endTime: 'Late', time: '19:00 ~ Late', status: 'event', title: 'Weekend Special Stream' },
+        20: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: 'Weekly Recap & Talk' },
+        21: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'event', title: '🎉 Channel Milestone Party' },
+        22: { startTime: '20:00', endTime: '24:00', time: '20:00 ~ 24:00', status: 'live', title: 'RPG Boss Rush Day' },
+        23: { startTime: '20:30', endTime: '23:30', time: '20:30 ~ 23:30', status: 'new', title: 'New Release RPG Day 1' },
+        24: { startTime: 'OFF', endTime: '', time: 'OFF', status: 'off', title: 'Scheduled Day Off' },
+        25: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: 'Fan Art & Chatting' },
+        26: { startTime: '21:00', endTime: '24:00', time: '21:00 ~ 24:00', status: 'collab', title: 'Duo Team Tournament' },
+        27: { startTime: '19:00', endTime: '22:00', time: '19:00 ~ 22:00', status: 'viewer', title: 'Monthly Roulette Derby' },
+        28: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'live', title: 'RPG Grand Finale Ending' },
+        29: { startTime: '20:30', endTime: '23:30', time: '20:30 ~ 23:30', status: 'live', title: 'September Channel Awards' },
+        30: { startTime: 'OFF', endTime: '', time: 'OFF', status: 'off', title: 'October Prep Day Off' }
+      }
+    }
+  },
+  vtuberCozy: {
+    version: 2,
+    viewMode: 'weekly',
+    selectedWeekIndex: 2,
+    themeId: 'cozy-pastel',
+    channel: {
+      name: 'Cherry Macaron',
+      platform: 'youtube',
+      avatarEmoji: '🌸',
+      tagline: 'Sweet & Cozy Healing VTuber Cherry ✨',
+      notice: '🍓 Thursday: New Outfit Reveal & Midnight Singing Stream!',
+      noticeWeekly: '🍓 Thursday: New Outfit Reveal & Midnight Singing Stream!',
+      noticeMonthly: 'Original Song Release & Community Fanmeet'
+    },
+    monthly: {
+      year: 2026,
+      month: 9,
+      monthlyGoal: 'Original Song Release & Community Fanmeet',
+      days: {
+        1: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'chat', title: 'Tea Time Just Chatting' },
+        2: { startTime: '21:30', endTime: '24:00', time: '21:30 ~ 24:00', status: 'live', title: 'Animal Crossing Island Cozy' },
+        3: { startTime: 'OFF', endTime: '', time: 'OFF', status: 'off', title: 'Vocal Lesson (Day Off)' },
+        4: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'event', title: 'Karaoke Singing Live' },
+        5: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'collab', title: '4-Player Party Collab' },
+        6: { startTime: '21:00', endTime: '23:00', time: '21:00 ~ 23:00', status: 'viewer', title: 'Drawing & Guessing with Chat' },
+        7: { startTime: '21:00', endTime: '24:00', time: '21:00 ~ 24:00', status: 'event', title: '🎂 Birthday Countdown Stream' },
+        8: { startTime: '21:30', endTime: '24:00', time: '21:30 ~ 24:00', status: 'live', title: 'Pokémon Scarlet Journey' },
+        9: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'chat', title: 'Birthday Unboxing & Stories' },
+        10: { startTime: 'OFF', endTime: '', time: 'OFF', status: 'off', title: 'Rest & Recharge Day' },
+        11: { startTime: '22:00', endTime: 'Late', time: '22:00 ~ Late', status: 'chat', title: 'Midnight ASMR & Sleepy Chat' },
+        12: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'collab', title: 'Relay Singing Festival' },
+        13: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'viewer', title: 'Community Mahjong Match' },
+        14: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: 'Weekly Kickoff & Chatting' },
+        15: { startTime: '20:00', endTime: '24:00', time: '20:00 ~ 24:00', status: 'live', title: 'Steam Cozy Games' },
+        16: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'irl', title: 'Late Night Snack Talk' },
+        17: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'viewer', title: 'Viewer Community Games' },
+        18: { startTime: 'OFF', endTime: '', time: 'OFF', status: 'off', title: 'Scheduled Day Off' },
+        19: { startTime: '19:00', endTime: 'Late', time: '19:00 ~ Late', status: 'event', title: 'Special Weekend Stream' },
+        20: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: 'Weekly Recap & Chat' },
+        21: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'viewer', title: 'Fan Art Appreciation' },
+        22: { startTime: '21:00', endTime: '24:00', time: '21:00 ~ 24:00', status: 'live', title: 'Minecraft Cozy Building' },
+        23: { startTime: '21:30', endTime: '23:30', time: '21:30 ~ 23:30', status: 'live', title: 'Mobile Game Cozy Run' },
+        24: { startTime: 'OFF', endTime: '', time: 'OFF', status: 'off', title: 'Energy Recharge Day Off' },
+        25: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'chat', title: 'Autumn Song Recommendations' },
+        26: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'collab', title: 'Team Battle Collab' },
+        27: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'viewer', title: 'Viewer Penalty Games' },
+        28: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'event', title: 'Autumn Story Reading Night' },
+        29: { startTime: '21:30', endTime: '24:00', time: '21:30 ~ 24:00', status: 'live', title: 'Steam Healing Indie Game' },
+        30: { startTime: 'OFF', endTime: '', time: 'OFF', status: 'off', title: 'September Recap Day Off' }
       }
     }
   }
