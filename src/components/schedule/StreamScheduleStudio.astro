@@ -1466,8 +1466,15 @@ const isEn = lang === 'en';
     transition: background 0.25s ease;
   }
 
-  .bp-stub-notches, .bp-perforate-divider {
-    position: relative;
+  .bp-stub-notches {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 0;
+    height: 100%;
+    pointer-events: none;
+    z-index: 4;
   }
 
   .bp-notch {
