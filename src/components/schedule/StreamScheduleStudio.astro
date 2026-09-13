@@ -8,7 +8,7 @@
  * 2. Unified Monthly Calendar: Plan the month once, extract any week with 1-click.
  * 3. Compact Stream Format: Clear sections for Day/Date, Status Badge, Time, and Short Title/Keyword.
  * 4. Local PC Save & Load (.json): Download template file to PC and re-upload anytime.
- * 5. High-Res PNG Poster Export (Compact Single-Page Weekly & Monthly formats).
+ * 5. One-Click Formatted Text Copy for Discord, Fan Cafe, and Social Announcements.
  * 6. OBS Clean Mode (?obs=1 / ?stream=1).
  */
 import { SCHEDULE_THEMES, STATUS_BADGES, SAMPLE_PRESETS, SAMPLE_PRESETS_EN } from './scheduleTemplates';
@@ -42,10 +42,6 @@ const isEn = lang === 'en';
             <span>{isEn ? 'Load from PC' : 'PC에서 불러오기'}</span>
             <input type="file" id="inputLoadJson" accept=".json,application/json" style="display: none;" />
           </label>
-          <button type="button" class="btn-action btn-export-png" id="btnExportPng" title={isEn ? 'Save compact high-resolution PNG image' : '한 장으로 딱 떨어지는 고화질 PNG 이미지 저장'}>
-            <span class="btn-icon">📸</span>
-            <span id="btnExportPngLabel">{isEn ? 'Save Weekly PNG' : '주간 PNG 저장'}</span>
-          </button>
           <button type="button" class="btn-action btn-copy-text" id="btnCopyText" title={isEn ? 'Copy text for Discord / Community' : '디스코드/팬카페 공유용 텍스트 복사'}>
             <span class="btn-icon">📋</span>
             <span>{isEn ? 'Copy Text' : '텍스트 복사'}</span>
@@ -344,8 +340,6 @@ const isEn = lang === 'en';
     </div>
   </div>
 
-  <!-- Hidden Canvas for PNG Generation -->
-  <canvas id="exportCanvas" style="display: none;"></canvas>
 
   <!-- Compact Day Edit Modal -->
   <div class="edit-modal-overlay" id="editModalOverlay" style="display: none;">
@@ -512,15 +506,6 @@ const isEn = lang === 'en';
     color: #ffffff;
   }
 
-  .btn-export-png {
-    background: linear-gradient(135deg, #00ffa3, #00d2ff);
-    color: #050d18;
-    font-weight: 800;
-  }
-  .btn-export-png:hover {
-    filter: brightness(1.1);
-    box-shadow: 0 0 14px rgba(0, 255, 163, 0.4);
-  }
 
   .btn-copy-text {
     background: rgba(168, 85, 247, 0.18);
@@ -2052,7 +2037,6 @@ const isEn = lang === 'en';
 </style>
 
 <script>
-import { renderScheduleToCanvas } from './ScheduleCanvasRenderer';
 import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMPLE_PRESETS_EN } from './scheduleTemplates';
 
 (function () {
@@ -2189,7 +2173,6 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
   var dispNoticeText = document.getElementById('dispNoticeText');
   var dispMonthTitle = document.getElementById('dispMonthTitle');
   var dispMonthlyGoal = document.getElementById('dispMonthlyGoal');
-  var btnExportPngLabel = document.getElementById('btnExportPngLabel');
 
   // Input Controls
   var inputAvatarEmoji = document.getElementById('inputAvatarEmoji');
@@ -2206,12 +2189,10 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
 
   var btnSaveJson = document.getElementById('btnSaveJson');
   var inputLoadJson = document.getElementById('inputLoadJson') as HTMLInputElement;
-  var btnExportPng = document.getElementById('btnExportPng');
   var btnCopyText = document.getElementById('btnCopyText');
   var btnPresetTravel = document.getElementById('btnPresetTravel');
   var btnPresetGamer = document.getElementById('btnPresetGamer');
   var btnPresetVtuber = document.getElementById('btnPresetVtuber');
-  var exportCanvas = document.getElementById('exportCanvas') as HTMLCanvasElement;
 
   var btnPrevMonth = document.getElementById('btnPrevMonth');
   var btnNextMonth = document.getElementById('btnNextMonth');
@@ -2269,7 +2250,6 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
       weeklyWrap.style.display = 'block';
       monthlyWrap.style.display = 'none';
       weekExtractorGroup.style.display = 'flex';
-      btnExportPngLabel.textContent = isEn ? 'Save Weekly PNG' : '주간 PNG 저장';
       dispScheduleRangeBadge.textContent = state.monthly.year + '.' + (state.monthly.month < 10 ? '0' + state.monthly.month : state.monthly.month) + ' ' + currentWeek.label;
     } else {
       btnModeWeekly.classList.remove('active');
@@ -2277,7 +2257,6 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
       weeklyWrap.style.display = 'none';
       monthlyWrap.style.display = 'block';
       weekExtractorGroup.style.display = 'none';
-      btnExportPngLabel.textContent = isEn ? 'Save Monthly PNG' : '월간 PNG 저장';
       dispScheduleRangeBadge.textContent = isEn
         ? (monthShortNames[state.monthly.month - 1] + ' ' + state.monthly.year + ' All Streams')
         : (state.monthly.year + '년 ' + state.monthly.month + '월 전체 방송');
@@ -2798,31 +2777,6 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
     e.target.value = '';
   });
 
-  // ─── High-Res PNG Download ─────────────────────────────────────────────────
-  if (btnExportPng && exportCanvas) {
-    btnExportPng.addEventListener('click', function () {
-      try {
-        var weeks = computeMonthWeeks(state.monthly.year, state.monthly.month);
-        var currentWeek = weeks[state.selectedWeekIndex] || weeks[0];
-        var isWeekly = (state.viewMode === 'weekly');
-
-        renderScheduleToCanvas(exportCanvas, state, currentWeek.days, isWeekly, 2, isEn ? 'en' : 'ko');
-
-        var dataUrl = exportCanvas.toDataURL('image/png');
-        var a = document.createElement('a');
-        a.href = dataUrl;
-        a.download = isWeekly
-          ? 'stream_schedule_weekly_' + (state.selectedWeekIndex + 1) + 'week_' + state.monthly.year + '-' + state.monthly.month + '.png'
-          : 'stream_schedule_monthly_' + state.monthly.year + '-' + state.monthly.month + '.png';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-      } catch (err) {
-        console.error('Canvas export error:', err);
-        alert((isEn ? 'Error exporting PNG: ' : 'PNG 내보내기 중 오류가 발생했습니다: ') + (err instanceof Error ? err.message : String(err)));
-      }
-    });
-  }
 
   // ─── Text Copy for Discord / Fan Cafe ──────────────────────────────────────
   btnCopyText.addEventListener('click', function () {

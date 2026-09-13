@@ -10,7 +10,7 @@ const urlParams = Astro.url.searchParams;
 const streamerMode = urlParams.has('stream') || urlParams.has('obs');
 
 const PAGE_TITLE = `Stream Schedule Studio - Weekly & Monthly Broadcast Calendar & Template Maker | ${SITE_TITLE}`;
-const PAGE_DESCRIPTION = "Free broadcast schedule maker for Twitch, YouTube Live, Chzzk, and SOOP streamers. 7 stunning themes, save & load templates to your local PC (JSON), and 1080p high-resolution PNG export.";
+const PAGE_DESCRIPTION = "Free broadcast schedule maker for Twitch, YouTube Live, Chzzk, and SOOP streamers. 7 stunning themes, save & load templates to your local PC (JSON), and one-click text formatting for Discord.";
 ---
 
 <!doctype html>
@@ -22,7 +22,7 @@ const PAGE_DESCRIPTION = "Free broadcast schedule maker for Twitch, YouTube Live
       lang="en"
       hreflangKo={getKoUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
       hreflangEn={getEnUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
-      keywords="stream schedule, weekly broadcast schedule, twitch schedule maker, vtuber schedule template, stream calendar, chzzk schedule, stream graphics, free schedule generator"
+      keywords="stream schedule, weekly broadcast schedule, twitch schedule maker, vtuber schedule template, stream calendar, chzzk schedule, discord stream schedule, stream announcement copy, free schedule generator"
     />
   </head>
   <body class="schedule-page-body">
@@ -60,10 +60,10 @@ const PAGE_DESCRIPTION = "Free broadcast schedule maker for Twitch, YouTube Live
               </div>
 
               <div class="guide-card">
-                <div class="guide-card-icon">📸</div>
-                <h3>3. 1080p Lossless PNG Image Export</h3>
+                <div class="guide-card-icon">📋</div>
+                <h3>3. One-Click Discord & Community Text Copy</h3>
                 <p>
-                  Click [Export High-Res PNG] to render a crisp 1920×1080 schedule image directly in your browser. Perfect for Twitter/X, Discord announcements, and community posts.
+                  Click [Copy Text] to instantly format and copy your weekly timetable for Discord announcements, community forums, and Twitter/X posts.
                 </p>
               </div>
 

@@ -10,7 +10,7 @@ const urlParams = Astro.url.searchParams;
 const streamerMode = urlParams.has('stream') || urlParams.has('obs');
 
 const PAGE_TITLE = `방송 편성표 스튜디오 - 주간/월간 방송 일정표 & 템플릿 메이커 | ${SITE_TITLE}`;
-const PAGE_DESCRIPTION = "치지직, SOOP, 트위치, 유튜브 스트리머를 위한 무료 방송 주간/월간 편성표 제작 도구. 7가지 디자인 템플릿, 내 PC에 템플릿 저장/불러오기(JSON), 1080p 고화질 PNG 이미지 저장 지원.";
+const PAGE_DESCRIPTION = "치지직, SOOP, 트위치, 유튜브 스트리머를 위한 무료 방송 주간/월간 편성표 제작 도구. 7가지 디자인 템플릿, 내 PC에 템플릿 저장/불러오기(JSON), 디스코드·팬카페 원클릭 텍스트 복사 지원.";
 ---
 
 <!doctype html>
@@ -22,7 +22,7 @@ const PAGE_DESCRIPTION = "치지직, SOOP, 트위치, 유튜브 스트리머를 
       lang="ko"
       hreflangKo={getKoUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
       hreflangEn={getEnUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
-      keywords="방송 편성표, 주간 방송 일정표, 스트리머 편성표, 치지직 편성표, SOOP 방송 일정, 트위치 스케줄러, 버튜버 편성표 템플릿, 방송 일정표 만들기, 방송 캘린더, 방송용 이미지 제작"
+      keywords="방송 편성표, 주간 방송 일정표, 스트리머 편성표, 치지직 편성표, SOOP 방송 일정, 트위치 스케줄러, 버튜버 편성표 템플릿, 방송 일정표 만들기, 방송 캘린더, 디스코드 방송 일정, 팬카페 편성표"
     />
   </head>
   <body class="schedule-page-body">
@@ -60,10 +60,10 @@ const PAGE_DESCRIPTION = "치지직, SOOP, 트위치, 유튜브 스트리머를 
               </div>
 
               <div class="guide-card">
-                <div class="guide-card-icon">📸</div>
-                <h3>3. 1080p Full HD 무손실 PNG 이미지 다운로드</h3>
+                <div class="guide-card-icon">📋</div>
+                <h3>3. 디스코드 & 팬카페 원클릭 텍스트 복사</h3>
                 <p>
-                  [고화질 PNG 다운로드] 버튼을 누르면 브라우저 자체 고해상도 캔버스 엔진이 선명한 1920×1080 이미지를 즉시 생성합니다. 네이버 라운지, 아프리카 방송국, 디스코드, X(트위터)에 바로 업로드하세요.
+                  [텍스트 복사] 버튼을 누르면 디스코드, 치지직 라운지, 아프리카 방송국, 팬카페에 바로 공유할 수 있는 깔끔한 주간 일정 텍스트가 클립보드에 복사됩니다.
                 </p>
               </div>
 
