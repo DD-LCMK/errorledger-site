@@ -128,10 +128,12 @@ function renderBoardingPassWeeklyCanvas(
   ctx.arc(tagX + 28, tagY + tagH / 2, 7, 0, Math.PI * 2);
   ctx.fill();
 
-  // Title text (e.g. "SCHEDULE", "CHZZK LIVE", "TWITCH LIVE", etc.)
-  const keyTitle = theme.keytagTitle || 'SCHEDULE';
+  // Title text (e.g. "SCHEDULE", "CHZZK LIVE", "TWITCH LIVE", or custom text)
+  const customKey = data.keytagText || (data.channel as any)?.keytagText;
+  const keyTitle = (customKey !== undefined && customKey.trim() !== '') ? customKey.trim() : (theme.keytagTitle || 'SCHEDULE');
   ctx.textAlign = 'center';
-  ctx.font = '900 24px "Georgia", "Times New Roman", serif';
+  const fontSize = keyTitle.length > 12 ? 15 : (keyTitle.length > 9 ? 18 : 23);
+  ctx.font = `900 ${fontSize}px "Georgia", "Times New Roman", serif`;
   ctx.fillStyle = theme.keytagShadow || '#9cb6e5';
   ctx.fillText(keyTitle, tagX + tagW / 2 + 10, tagY + tagH / 2 + 10);
   ctx.fillStyle = theme.keytagText || '#1e2c47';
@@ -324,7 +326,7 @@ function drawSingleTicketCell(
     roundRect(ctx, x, y, w, h, 14, false, true);
   }
 
-  drawSingleTicketContent(ctx, x, y, w, h, dayData, ribbonColor, theme);
+  drawSingleTicketContent(ctx, x, y, w, h, dayData, ribbonColor, theme, lang);
 }
 
 /**
@@ -338,7 +340,8 @@ function drawSingleTicketContent(
   h: number,
   dayData: WeekDaySlice | undefined,
   ribbonColor: string,
-  theme: any
+  theme: any,
+  lang: 'ko' | 'en' = 'ko'
 ): void {
   const d = dayData || { dayEn: 'DAY', dayKo: '일', dateStr: '00.00', entry: { title: '', memo: '', time: '', status: 'live' } };
   const entry = d.entry || { title: '', memo: '', time: '', status: 'live' };

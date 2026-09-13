@@ -76,6 +76,7 @@ export interface StreamScheduleData {
   viewMode: 'weekly' | 'monthly';
   selectedWeekIndex: number; // 0: Week 1, 1: Week 2, 2: Week 3, etc.
   themeId: string;
+  keytagText?: string; // Customizable keychain badge text (e.g. "SCHEDULE", "LIVE", "ON AIR")
   channel: {
     name: string;
     platform: 'chzzk' | 'soop' | 'twitch' | 'youtube' | 'custom';
@@ -84,6 +85,7 @@ export interface StreamScheduleData {
     notice: string; // Weekly notice (backwards compatibility)
     noticeWeekly?: string;
     noticeMonthly?: string;
+    keytagText?: string;
   };
   monthly: {
     year: number;

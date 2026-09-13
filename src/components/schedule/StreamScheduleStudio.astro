@@ -151,6 +151,17 @@ const isEn = lang === 'en';
               <option value="custom">{isEn ? 'Other (LIVE)' : '기타 (LIVE)'}</option>
             </select>
           </div>
+          <div class="input-field flex-2">
+            <label>🏷️ {isEn ? 'Header Badge Text (Keychain)' : '상단 키체인 배지 문구'}</label>
+            <input 
+              type="text" 
+              id="inputKeytagText" 
+              class="ctrl-input" 
+              value="SCHEDULE" 
+              maxlength="16" 
+              placeholder={isEn ? 'e.g. SCHEDULE, LIVE, ON AIR' : '예: SCHEDULE, 방송중, ON AIR'} 
+            />
+          </div>
           <div class="input-field flex-3">
             <label>{isEn ? 'Tagline / Bio' : '방송 소개 문구'}</label>
             <input type="text" id="inputTagline" class="ctrl-input" value={isEn ? 'Daily 8 PM Variety Gaming & Community Chat' : '매일 저녁 8시 소통 & 종합 게임 방송'} placeholder={isEn ? 'One-line bio / stream schedule' : '한 줄 소개'} />
@@ -205,15 +216,14 @@ const isEn = lang === 'en';
         <div class="bp-row-top">
           <!-- Left: Keychain & Flight Board -->
           <div class="bp-top-left-panel">
-            <!-- 1. Vintage Motel Key Tag ("SCHEDULE") -->
-            <div class="bp-keytag-unit" title="스케줄 키링">
+            <!-- 1. Motel Keychain ("SCHEDULE") -->
+            <div class="bp-keytag-unit" id="bpKeytagUnit" role="button" tabindex="0" title={isEn ? "Click to edit keychain badge text" : "클릭하여 키체인 배지 문구 수정"}>
               <div class="bp-keytag-body">
                 <div class="bp-keytag-inner-bevel">
                   <div class="bp-keytag-hole"></div>
                   <div class="bp-keyring-loop"></div>
-                  <!-- Silver Key Over Keychain -->
                   <div class="bp-silver-key-box">
-                    <svg class="bp-key-svg" viewBox="0 0 130 50" fill="none">
+                    <svg class="bp-key-svg" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <defs>
                         <linearGradient id="silverBodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
                           <stop offset="0%" stop-color="#ffffff"/>
@@ -1258,7 +1268,12 @@ const isEn = lang === 'en';
     position: relative;
     display: flex;
     align-items: center;
-    cursor: default;
+    cursor: pointer;
+    transition: transform 0.15s ease, filter 0.15s ease;
+  }
+  .bp-keytag-unit:hover {
+    transform: translateY(-1px) scale(1.02);
+    filter: brightness(1.06);
   }
 
   .bp-keytag-body {
@@ -1331,7 +1346,11 @@ const isEn = lang === 'en';
     color: var(--b-keytag-text, #1e2c47);
     text-shadow: 0 1px 0 var(--b-keytag-shadow, #9cb6e5);
     user-select: none;
-    transition: color 0.25s ease, text-shadow 0.25s ease;
+    transition: color 0.25s ease, text-shadow 0.25s ease, font-size 0.2s ease;
+    max-width: 175px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   /* 2. Flight Board Gate Ticker ("DEP ✈ ARR") */
@@ -2224,10 +2243,13 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
     board.setAttribute('data-theme', state.themeId);
     board.setAttribute('data-view', state.viewMode);
 
-    // Update keytag title dynamically according to theme
-    var bpKeytagTitle = document.getElementById('bpKeytagTitle');
-    if (bpKeytagTitle && SCHEDULE_THEMES[state.themeId]) {
-      bpKeytagTitle.textContent = SCHEDULE_THEMES[state.themeId].keytagTitle || 'SCHEDULE';
+    // Update keytag title dynamically according to custom text or theme
+    updateKeytagDisplay();
+    var inputKeytagText = document.getElementById('inputKeytagText') as HTMLInputElement | null;
+    if (inputKeytagText && document.activeElement !== inputKeytagText) {
+      var customKeytag = state.keytagText || (state.channel && state.channel.keytagText);
+      var defaultThemeKeytag = (SCHEDULE_THEMES[state.themeId] && SCHEDULE_THEMES[state.themeId].keytagTitle) || 'SCHEDULE';
+      inputKeytagText.value = (customKeytag !== undefined && customKeytag !== '') ? customKeytag : defaultThemeKeytag;
     }
 
     // 2. Active Theme Chips
@@ -2676,6 +2698,46 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
     saveState();
     dispMonthlyGoal.textContent = e.target.value || (isEn ? '🎯 Let’s make this month great!' : '🎯 이번 달도 파이팅!');
   });
+
+  // Keychain Badge Custom Text Input
+  var inputKeytagTextEl = document.getElementById('inputKeytagText');
+  if (inputKeytagTextEl) {
+    inputKeytagTextEl.addEventListener('input', function (e) {
+      var val = (e.target as HTMLInputElement).value;
+      state.keytagText = val;
+      if (state.channel) state.channel.keytagText = val;
+      saveState();
+      updateKeytagDisplay();
+    });
+  }
+
+  var bpKeytagUnitEl = document.getElementById('bpKeytagUnit');
+  if (bpKeytagUnitEl) {
+    bpKeytagUnitEl.addEventListener('click', function () {
+      var inp = document.getElementById('inputKeytagText') as HTMLInputElement | null;
+      if (inp) {
+        inp.focus();
+        inp.select();
+        inp.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+  }
+
+  function updateKeytagDisplay() {
+    var bpKeytagTitleEl = document.getElementById('bpKeytagTitle');
+    if (!bpKeytagTitleEl) return;
+    var customKeytag = state.keytagText || (state.channel && state.channel.keytagText);
+    var defaultThemeKeytag = (SCHEDULE_THEMES[state.themeId] && SCHEDULE_THEMES[state.themeId].keytagTitle) || 'SCHEDULE';
+    var textToShow = (customKeytag !== undefined && customKeytag.trim() !== '') ? customKeytag.trim() : defaultThemeKeytag;
+    bpKeytagTitleEl.textContent = textToShow;
+    if (textToShow.length > 12) {
+      bpKeytagTitleEl.style.fontSize = '1.02rem';
+    } else if (textToShow.length > 9) {
+      bpKeytagTitleEl.style.fontSize = '1.18rem';
+    } else {
+      bpKeytagTitleEl.style.fontSize = '';
+    }
+  }
 
   // Sample Presets (No highlight sticky state)
   if (btnPresetTravel) {
