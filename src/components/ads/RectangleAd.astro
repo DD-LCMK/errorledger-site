@@ -1,12 +1,98 @@
 ---
 /**
- * RectangleAd — Neutralized to prevent external ad redirects.
+ * RectangleAd — Sandboxed Adsterra 300x250 inline content rectangle.
+ * - Confined in an isolated iframe with sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
+ * - STRICTLY NO allow-top-navigation (prevents any external parent redirect).
+ * - Anti-Tabnabbing: window.open and link clicks are forced with rel="noopener noreferrer" and opener=null.
+ * - Drop anywhere in a page layout between content sections.
+ * - Hidden when streamerMode=true (?stream / ?obs / ?noads).
  */
 interface Props {
   streamerMode?: boolean;
   class?: string;
 }
 const { streamerMode = false, class: className = '' } = Astro.props;
----
-<!-- Ad disabled to prevent unwanted external redirects -->
 
+const rectHtml = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { margin: 0; padding: 0; overflow: hidden; background: transparent; display: flex; justify-content: center; align-items: center; }
+  </style>
+</head>
+<body>
+  <script>
+    try {
+      var _open = window.open;
+      window.open = function(url, target, features) {
+        var cleanFeatures = (features ? features + ',' : '') + 'noopener,noreferrer';
+        var w = _open.call(window, url, target || '_blank', cleanFeatures);
+        if (w) try { w.opener = null; } catch(err) {}
+        return w;
+      };
+      document.addEventListener('click', function(e) {
+        var a = e.target && e.target.closest ? e.target.closest('a, area') : null;
+        if (a) {
+          a.rel = 'noopener noreferrer';
+          a.target = '_blank';
+        }
+      }, true);
+      document.addEventListener('submit', function(e) {
+        var form = e.target;
+        if (form) {
+          form.target = '_blank';
+          form.rel = 'noopener noreferrer';
+        }
+      }, true);
+    } catch(e) {}
+  <\/script>
+  <script>
+    atOptions = {
+      'key' : '85bb86b023a301ded2e4f1a3c27e2774',
+      'format' : 'iframe',
+      'height' : 250,
+      'width' : 300,
+      'params' : {}
+    };
+  <\/script>
+  <script src="https://russiaexternalknew.com/85bb86b023a301ded2e4f1a3c27e2774/invoke.js"><\/script>
+</body>
+</html>`;
+---
+
+{!streamerMode && (
+  <div class={`rect-ad-wrap ${className}`}>
+    <script is:inline>
+      if (typeof window !== 'undefined') {
+        var sp = new URLSearchParams(window.location.search);
+        if (sp.has('stream') || sp.has('obs') || sp.has('noads')) {
+          var el = document.currentScript?.parentElement;
+          if (el) el.style.display = 'none';
+        }
+      }
+    </script>
+    <iframe
+      srcdoc={rectHtml}
+      width="300"
+      height="250"
+      title="Sponsored Advertisement"
+      style="border:none;overflow:hidden;"
+      scrolling="no"
+      sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
+      loading="lazy"
+    ></iframe>
+  </div>
+)}
+
+<style>
+  .rect-ad-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem auto;
+    width: 300px;
+    height: 250px;
+    overflow: hidden;
+  }
+</style>

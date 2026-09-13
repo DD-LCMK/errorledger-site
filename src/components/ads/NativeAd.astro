@@ -1,11 +1,87 @@
 ---
 /**
- * NativeAd — Neutralized to prevent external ad redirects.
+ * NativeAd — Sandboxed Adsterra native/recommendation widget.
+ * - Confined in an isolated iframe with sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
+ * - STRICTLY NO allow-top-navigation (prevents any external parent redirect).
+ * - Anti-Tabnabbing: window.open and link clicks are forced with rel="noopener noreferrer" and opener=null.
+ * - Hidden when streamerMode=true (?stream / ?obs / ?noads).
  */
 interface Props {
   streamerMode?: boolean;
 }
 const { streamerMode = false } = Astro.props;
----
-<!-- Ad disabled to prevent unwanted external redirects -->
 
+const nativeHtml = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { margin: 0; padding: 0; background: transparent; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; overflow: hidden; }
+  </style>
+</head>
+<body>
+  <script>
+    try {
+      var _open = window.open;
+      window.open = function(url, target, features) {
+        var cleanFeatures = (features ? features + ',' : '') + 'noopener,noreferrer';
+        var w = _open.call(window, url, target || '_blank', cleanFeatures);
+        if (w) try { w.opener = null; } catch(err) {}
+        return w;
+      };
+      document.addEventListener('click', function(e) {
+        var a = e.target && e.target.closest ? e.target.closest('a, area') : null;
+        if (a) {
+          a.rel = 'noopener noreferrer';
+          a.target = '_blank';
+        }
+      }, true);
+      document.addEventListener('submit', function(e) {
+        var form = e.target;
+        if (form) {
+          form.target = '_blank';
+          form.rel = 'noopener noreferrer';
+        }
+      }, true);
+    } catch(e) {}
+  <\/script>
+  <script async data-cfasync="false" src="https://russiaexternalknew.com/b7dc3adf1eee8de5f60eb73f9ef808a1/invoke.js"><\/script>
+  <div id="container-b7dc3adf1eee8de5f60eb73f9ef808a1"></div>
+</body>
+</html>`;
+---
+
+{!streamerMode && (
+  <div class="native-ad-wrap">
+    <script is:inline>
+      if (typeof window !== 'undefined') {
+        var sp = new URLSearchParams(window.location.search);
+        if (sp.has('stream') || sp.has('obs') || sp.has('noads')) {
+          var s = document.createElement('style');
+          s.textContent = '.native-ad-wrap { display: none !important; }';
+          document.head.appendChild(s);
+        }
+      }
+    </script>
+    <iframe
+      srcdoc={nativeHtml}
+      width="100%"
+      height="180"
+      title="Sponsored Recommendations"
+      style="border:none;overflow:hidden;width:100%;min-height:160px;"
+      scrolling="no"
+      sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
+      loading="lazy"
+    ></iframe>
+  </div>
+)}
+
+<style>
+  .native-ad-wrap {
+    width: 100%;
+    margin: 1.5rem 0;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+  }
+</style>

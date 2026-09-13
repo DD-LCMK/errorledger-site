@@ -1,11 +1,147 @@
 ---
 /**
- * StickyBannerAd — Neutralized to prevent external ad redirects.
+ * StickyBannerAd — Sandboxed Adsterra fixed bottom sticky banner (728x90).
+ * - Confined in an isolated iframe with sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
+ * - STRICTLY NO allow-top-navigation (prevents any external parent redirect).
+ * - Suppressed when streamerMode=true (?stream / ?obs / ?noads).
  */
 interface Props {
   streamerMode?: boolean;
 }
 const { streamerMode = false } = Astro.props;
----
-<!-- Ad disabled to prevent unwanted external redirects -->
 
+const stickyAdHtml = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { margin: 0; padding: 0; overflow: hidden; background: transparent; display: flex; justify-content: center; align-items: center; }
+  </style>
+</head>
+<body>
+  <script>
+    try {
+      var _open = window.open;
+      window.open = function(url, target, features) {
+        var cleanFeatures = (features ? features + ',' : '') + 'noopener,noreferrer';
+        var w = _open.call(window, url, target || '_blank', cleanFeatures);
+        if (w) try { w.opener = null; } catch(err) {}
+        return w;
+      };
+      document.addEventListener('click', function(e) {
+        var a = e.target && e.target.closest ? e.target.closest('a, area') : null;
+        if (a) {
+          a.rel = 'noopener noreferrer';
+          a.target = '_blank';
+        }
+      }, true);
+      document.addEventListener('submit', function(e) {
+        var form = e.target;
+        if (form) {
+          form.target = '_blank';
+          form.rel = 'noopener noreferrer';
+        }
+      }, true);
+    } catch(e) {}
+  <\/script>
+  <script>
+    atOptions = {
+      'key' : '9da075030ba65a883d58c24eb903807c',
+      'format' : 'iframe',
+      'height' : 90,
+      'width' : 728,
+      'params' : {}
+    };
+  <\/script>
+  <script src="https://russiaexternalknew.com/9da075030ba65a883d58c24eb903807c/invoke.js"><\/script>
+</body>
+</html>`;
+---
+
+{!streamerMode && (
+  <div class="sticky-banner-ad-wrap" id="sticky-banner-ad">
+    <script is:inline>
+      if (typeof window !== 'undefined') {
+        var sp = new URLSearchParams(window.location.search);
+        if (sp.has('stream') || sp.has('obs') || sp.has('noads')) {
+          var adWrap = document.getElementById('sticky-banner-ad');
+          if (adWrap) adWrap.style.display = 'none';
+          var s = document.createElement('style');
+          s.textContent = '.sticky-banner-ad-wrap { display: none !important; }';
+          document.head.appendChild(s);
+        }
+      }
+    </script>
+    <button class="ad-close-btn" id="sticky-close-btn" aria-label="Close ad">✕</button>
+    <div class="ad-inner">
+      <iframe
+        srcdoc={stickyAdHtml}
+        width="728"
+        height="90"
+        title="Sponsored Advertisement"
+        style="border:none;overflow:hidden;max-width:100%;"
+        scrolling="no"
+        sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
+        loading="lazy"
+      ></iframe>
+    </div>
+  </div>
+)}
+
+<style>
+  .sticky-banner-ad-wrap {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999;
+    background: rgba(9, 13, 22, 0.92);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 6px 8px 4px;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
+    max-width: 100vw;
+    overflow: hidden;
+  }
+
+  .ad-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ad-close-btn {
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    background: none;
+    border: none;
+    color: #64748b;
+    font-size: 0.7rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px 4px;
+    z-index: 1;
+  }
+
+  .ad-close-btn:hover {
+    color: #e2e8f0;
+  }
+
+  @media (max-width: 740px) {
+    .ad-inner {
+      transform: scale(0.9);
+      transform-origin: center bottom;
+    }
+  }
+</style>
+
+<script>
+  const closeBtn = document.getElementById('sticky-close-btn');
+  const wrap = document.getElementById('sticky-banner-ad');
+  if (closeBtn && wrap) {
+    closeBtn.addEventListener('click', () => {
+      wrap.style.display = 'none';
+    });
+  }
+</script>

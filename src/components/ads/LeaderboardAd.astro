@@ -1,6 +1,12 @@
 ---
 /**
- * LeaderboardAd — Neutralized to prevent external ad redirects.
+ * LeaderboardAd — Sandboxed 728x90 in-flow horizontal banner ad.
+ * - Confined in an isolated iframe with sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
+ * - STRICTLY NO allow-top-navigation (prevents any external parent redirect).
+ * - Anti-Tabnabbing: window.open and link clicks are forced with rel="noopener noreferrer" and opener=null.
+ * - Positioned cleanly beneath the game viewport / controls.
+ * - Scrolls naturally with page content (never fixed/floating).
+ * - Hidden when streamerMode=true (?stream / ?obs / ?noads).
  */
 interface Props {
   streamerMode?: boolean;
@@ -8,6 +14,128 @@ interface Props {
 }
 
 const { streamerMode = false, class: className = '' } = Astro.props;
----
-<!-- Ad disabled to prevent unwanted external redirects -->
 
+const leaderboardHtml = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { margin: 0; padding: 0; overflow: hidden; background: transparent; display: flex; justify-content: center; align-items: center; }
+  </style>
+</head>
+<body>
+  <script>
+    try {
+      var _open = window.open;
+      window.open = function(url, target, features) {
+        var cleanFeatures = (features ? features + ',' : '') + 'noopener,noreferrer';
+        var w = _open.call(window, url, target || '_blank', cleanFeatures);
+        if (w) try { w.opener = null; } catch(err) {}
+        return w;
+      };
+      document.addEventListener('click', function(e) {
+        var a = e.target && e.target.closest ? e.target.closest('a, area') : null;
+        if (a) {
+          a.rel = 'noopener noreferrer';
+          a.target = '_blank';
+        }
+      }, true);
+      document.addEventListener('submit', function(e) {
+        var form = e.target;
+        if (form) {
+          form.target = '_blank';
+          form.rel = 'noopener noreferrer';
+        }
+      }, true);
+    } catch(e) {}
+  <\/script>
+  <script>
+    atOptions = {
+      'key' : '9da075030ba65a883d58c24eb903807c',
+      'format' : 'iframe',
+      'height' : 90,
+      'width' : 728,
+      'params' : {}
+    };
+  <\/script>
+  <script src="https://russiaexternalknew.com/9da075030ba65a883d58c24eb903807c/invoke.js"><\/script>
+</body>
+</html>`;
+---
+
+{!streamerMode && (
+  <div class={`leaderboard-ad-wrap ${className}`}>
+    <script is:inline>
+      if (typeof window !== 'undefined') {
+        var sp = new URLSearchParams(window.location.search);
+        if (sp.has('stream') || sp.has('obs') || sp.has('noads')) {
+          var el = document.currentScript?.parentElement;
+          if (el) el.style.display = 'none';
+        }
+      }
+    </script>
+    <div class="leaderboard-ad-inner">
+      <iframe
+        srcdoc={leaderboardHtml}
+        width="728"
+        height="90"
+        title="Sponsored Advertisement"
+        style="border:none;overflow:hidden;max-width:100%;"
+        scrolling="no"
+        sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
+        loading="lazy"
+      ></iframe>
+    </div>
+  </div>
+)}
+
+<style>
+  .leaderboard-ad-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 1.25rem auto 1.5rem;
+    overflow: hidden;
+  }
+
+  .leaderboard-ad-inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 728px;
+    height: 90px;
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* Responsive scaling on tablet / mobile screens */
+  @media (max-width: 760px) {
+    .leaderboard-ad-inner {
+      transform: scale(0.9);
+      transform-origin: center center;
+    }
+  }
+
+  @media (max-width: 660px) {
+    .leaderboard-ad-inner {
+      transform: scale(0.75);
+      transform-origin: center center;
+    }
+    .leaderboard-ad-wrap {
+      height: 72px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .leaderboard-ad-inner {
+      transform: scale(0.48);
+      transform-origin: center center;
+    }
+    .leaderboard-ad-wrap {
+      height: 50px;
+    }
+  }
+</style>
