@@ -27,27 +27,43 @@ const currentYear = new Date().getFullYear();
       {/* Donation link reserved for user's PayPal: e.g. <a href="https://paypal.me/..." class="footer-support-link">☕ {isEn ? 'Support StreamArcade' : '후원하기'}</a> */}
     </div>
 
+    <!-- 1. Games -->
     <div class="footer-links-col">
-      <h4>{t(lang, 'footer.tools.title')}</h4>
+      <h4>🎮 {t(lang, 'footer.category.games')}</h4>
+      <ul>
+        <li><a href={`${prefix}/games/marble-roulette`}>{t(lang, 'footer.tools.marble')}</a></li>
+        <li><a href={`${prefix}/games/roulette`}>{t(lang, 'footer.tools.roulette')}</a></li>
+        <li><a href={`${prefix}/games/ladder`}>{t(lang, 'footer.tools.ladder')}</a></li>
+        <li><a href={`${prefix}/games/drinking-marble`}>{t(lang, 'footer.tools.drinking_marble')}</a></li>
+      </ul>
+    </div>
+
+    <!-- 2. Tests & Fortune -->
+    <div class="footer-links-col">
+      <h4>🧪 {t(lang, 'footer.category.tests')}</h4>
+      <ul>
+        <li><a href={`${prefix}/mbti`}>{t(lang, 'footer.tools.mbti')}</a></li>
+        <li><a href={`${prefix}/fortune`}>{t(lang, 'footer.tools.fortune')}</a></li>
+      </ul>
+    </div>
+
+    <!-- 3. Stream Utilities -->
+    <div class="footer-links-col">
+      <h4>🛠️ {t(lang, 'footer.category.tools')}</h4>
       <ul>
         <li><a href={`${prefix}/schedule`}>{t(lang, 'footer.tools.schedule')}</a></li>
-        <li><a href={`${prefix}/games/drinking-marble`}>{t(lang, 'footer.tools.drinking_marble')}</a></li>
-        <li><a href={`${prefix}/games/roulette`}>{t(lang, 'footer.tools.roulette')}</a></li>
-        <li><a href={`${prefix}/games/marble-roulette`}>{t(lang, 'footer.tools.marble')}</a></li>
-        <li><a href={`${prefix}/games/ladder`}>{t(lang, 'footer.tools.ladder')}</a></li>
-        <li><a href={`${prefix}/fortune`}>{t(lang, 'footer.tools.fortune')}</a></li>
-        <li><a href={`${prefix}/mbti`}>{t(lang, 'footer.tools.mbti')}</a></li>
         <li><a href={`${prefix}/bzzk`}>{t(lang, 'footer.tools.bzzk')}</a></li>
       </ul>
     </div>
 
+    <!-- 4. Support & Info -->
     <div class="footer-links-col">
-      <h4>{t(lang, 'footer.support.title')}</h4>
+      <h4>ℹ️ {t(lang, 'footer.category.support')}</h4>
       <ul>
-        <li><a href={`${prefix}/privacy`}>{t(lang, 'footer.support.privacy')}</a></li>
-        <li><a href={`${prefix}/terms`}>{t(lang, 'footer.support.terms')}</a></li>
         <li><a href={`${prefix}/about`}>{t(lang, 'footer.support.about')}</a></li>
         <li><a href={`${prefix}/contact`}>{t(lang, 'footer.support.contact')}</a></li>
+        <li><a href={`${prefix}/privacy`}>{t(lang, 'footer.support.privacy')}</a></li>
+        <li><a href={`${prefix}/terms`}>{t(lang, 'footer.support.terms')}</a></li>
       </ul>
     </div>
   </div>
@@ -62,16 +78,16 @@ const currentYear = new Date().getFullYear();
     background: #090d16;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     color: #94a3b8;
-    padding: 3rem 1.5rem 1.5rem;
+    padding: 3.5rem 1.5rem 1.75rem;
     margin-top: auto;
   }
 
   .footer-inner {
-    max-width: 1200px;
+    max-width: 1240px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: 3rem;
+    grid-template-columns: 1.8fr 1.1fr 1fr 1fr 1fr;
+    gap: 2.25rem;
   }
 
   .footer-logo {
@@ -178,7 +194,17 @@ const currentYear = new Date().getFullYear();
     color: #475569;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
+    .footer-inner {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2.5rem;
+    }
+    .footer-brand-col {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 640px) {
     .footer-inner {
       grid-template-columns: 1fr;
       gap: 2rem;

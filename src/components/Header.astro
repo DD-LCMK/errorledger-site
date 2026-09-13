@@ -26,71 +26,86 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
       </a>
     </div>
 
-    <nav class="header-nav">
-      <a 
-        href={`${prefix}/games/marble-roulette`} 
-        class={`nav-item ${currentPath.includes('/games/marble-roulette') ? 'highlight active' : ''}`}
-        aria-current={currentPath.includes('/games/marble-roulette') ? 'page' : undefined}
-      >
-        <span class="nav-icon">🔮</span>
-        <span class="nav-label">{t(lang, 'nav.marble')}</span>
-      </a>
-      <a 
-        href={`${prefix}/games/roulette`} 
-        class={`nav-item ${currentPath.includes('/games/roulette') && !currentPath.includes('marble') ? 'highlight active' : ''}`}
-        aria-current={currentPath.includes('/games/roulette') && !currentPath.includes('marble') ? 'page' : undefined}
-      >
-        <span class="nav-icon">🎡</span>
-        <span class="nav-label">{t(lang, 'nav.roulette')}</span>
-      </a>
-      <a 
-        href={`${prefix}/schedule`} 
-        class={`nav-item ${currentPath.includes('/schedule') ? 'highlight active' : ''}`}
-        aria-current={currentPath.includes('/schedule') ? 'page' : undefined}
-      >
-        <span class="nav-icon">📅</span>
-        <span class="nav-label">{t(lang, 'nav.schedule')}</span>
-      </a>
-      <a 
-        href={`${prefix}/games/ladder`} 
-        class={`nav-item ${currentPath.includes('/games/ladder') ? 'highlight active' : ''}`}
-        aria-current={currentPath.includes('/games/ladder') ? 'page' : undefined}
-      >
-        <span class="nav-icon">🪜</span>
-        <span class="nav-label">{t(lang, 'nav.ladder')}</span>
-      </a>
-      <a 
-        href={`${prefix}/games/drinking-marble`} 
-        class={`nav-item ${currentPath.includes('/games/drinking-marble') ? 'highlight active' : ''}`}
-        aria-current={currentPath.includes('/games/drinking-marble') ? 'page' : undefined}
-      >
-        <span class="nav-icon">🌸</span>
-        <span class="nav-label">{t(lang, 'nav.drinking_marble')}</span>
-      </a>
-      <a 
-        href={`${prefix}/fortune`} 
-        class={`nav-item ${currentPath.endsWith('/fortune') ? 'highlight active' : ''}`}
-        aria-current={currentPath.endsWith('/fortune') ? 'page' : undefined}
-      >
-        <span class="nav-icon">✨</span>
-        <span class="nav-label">{t(lang, 'nav.fortune')}</span>
-      </a>
-      <a 
-        href={`${prefix}/bzzk`} 
-        class={`nav-item ${currentPath.includes('/bzzk') ? 'highlight active' : ''}`}
-        aria-current={currentPath.includes('/bzzk') ? 'page' : undefined}
-      >
-        <span class="nav-icon">🛡️</span>
-        <span class="nav-label">{t(lang, 'nav.bzzk')}</span>
-      </a>
-      <a 
-        href={`${prefix}/mbti`} 
-        class={`nav-item ${currentPath.includes('/mbti') ? 'highlight active' : ''}`}
-        aria-current={currentPath.includes('/mbti') ? 'page' : undefined}
-      >
-        <span class="nav-icon">🧠</span>
-        <span class="nav-label">{t(lang, 'nav.mbti')}</span>
-      </a>
+    <nav class="header-nav" aria-label="Main Navigation">
+      <!-- 1. Games (게임) -->
+      <div class="nav-category-group nav-group-games" title={isEn ? "Games" : "게임"}>
+        <a 
+          href={`${prefix}/games/marble-roulette`} 
+          class={`nav-item ${currentPath.includes('/games/marble-roulette') ? 'highlight active' : ''}`}
+          aria-current={currentPath.includes('/games/marble-roulette') ? 'page' : undefined}
+        >
+          <span class="nav-icon">🔮</span>
+          <span class="nav-label">{t(lang, 'nav.marble')}</span>
+        </a>
+        <a 
+          href={`${prefix}/games/roulette`} 
+          class={`nav-item ${currentPath.includes('/games/roulette') && !currentPath.includes('marble') ? 'highlight active' : ''}`}
+          aria-current={currentPath.includes('/games/roulette') && !currentPath.includes('marble') ? 'page' : undefined}
+        >
+          <span class="nav-icon">🎡</span>
+          <span class="nav-label">{t(lang, 'nav.roulette')}</span>
+        </a>
+        <a 
+          href={`${prefix}/games/ladder`} 
+          class={`nav-item ${currentPath.includes('/games/ladder') ? 'highlight active' : ''}`}
+          aria-current={currentPath.includes('/games/ladder') ? 'page' : undefined}
+        >
+          <span class="nav-icon">🪜</span>
+          <span class="nav-label">{t(lang, 'nav.ladder')}</span>
+        </a>
+        <a 
+          href={`${prefix}/games/drinking-marble`} 
+          class={`nav-item ${currentPath.includes('/games/drinking-marble') ? 'highlight active' : ''}`}
+          aria-current={currentPath.includes('/games/drinking-marble') ? 'page' : undefined}
+        >
+          <span class="nav-icon">🌸</span>
+          <span class="nav-label">{t(lang, 'nav.drinking_marble')}</span>
+        </a>
+      </div>
+
+      <div class="nav-divider" aria-hidden="true"></div>
+
+      <!-- 2. Tests & Fortune (심리·운세) -->
+      <div class="nav-category-group nav-group-tests" title={isEn ? "Tests & Fortune" : "심리·운세"}>
+        <a 
+          href={`${prefix}/mbti`} 
+          class={`nav-item ${currentPath.includes('/mbti') ? 'highlight active' : ''}`}
+          aria-current={currentPath.includes('/mbti') ? 'page' : undefined}
+        >
+          <span class="nav-icon">🧠</span>
+          <span class="nav-label">{t(lang, 'nav.mbti')}</span>
+        </a>
+        <a 
+          href={`${prefix}/fortune`} 
+          class={`nav-item ${currentPath.endsWith('/fortune') ? 'highlight active' : ''}`}
+          aria-current={currentPath.endsWith('/fortune') ? 'page' : undefined}
+        >
+          <span class="nav-icon">✨</span>
+          <span class="nav-label">{t(lang, 'nav.fortune')}</span>
+        </a>
+      </div>
+
+      <div class="nav-divider" aria-hidden="true"></div>
+
+      <!-- 3. Stream Utilities (방송 도구) -->
+      <div class="nav-category-group nav-group-tools" title={isEn ? "Stream Tools" : "방송 유틸리티"}>
+        <a 
+          href={`${prefix}/schedule`} 
+          class={`nav-item ${currentPath.includes('/schedule') ? 'highlight active' : ''}`}
+          aria-current={currentPath.includes('/schedule') ? 'page' : undefined}
+        >
+          <span class="nav-icon">📅</span>
+          <span class="nav-label">{t(lang, 'nav.schedule')}</span>
+        </a>
+        <a 
+          href={`${prefix}/bzzk`} 
+          class={`nav-item ${currentPath.includes('/bzzk') ? 'highlight active' : ''}`}
+          aria-current={currentPath.includes('/bzzk') ? 'page' : undefined}
+        >
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">{t(lang, 'nav.bzzk')}</span>
+        </a>
+      </div>
     </nav>
 
     <div class="header-actions">
@@ -178,7 +193,21 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
   .header-nav {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.35rem;
+  }
+
+  .nav-category-group {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .nav-divider {
+    width: 1px;
+    height: 18px;
+    background: rgba(255, 255, 255, 0.15);
+    margin: 0 0.2rem;
+    flex-shrink: 0;
   }
 
   .nav-item {
@@ -284,7 +313,32 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
     background: rgba(56, 189, 248, 0.15);
   }
 
-  @media (max-width: 640px) {
+  @media (max-width: 1024px) {
+    .nav-item {
+      padding: 0.35rem 0.5rem;
+      font-size: 0.82rem;
+    }
+    .header-nav {
+      gap: 0.2rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .arcade-header {
+      padding: 0.5rem 0.65rem;
+    }
+    .header-inner {
+      gap: 0.4rem;
+    }
+    .header-nav {
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding: 0 0.15rem;
+    }
+    .header-nav::-webkit-scrollbar {
+      display: none;
+    }
     .nav-label {
       display: none;
     }
@@ -292,8 +346,12 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
       display: none;
     }
     .nav-item {
-      padding: 0.4rem 0.5rem;
+      padding: 0.4rem 0.45rem;
       font-size: 1.1rem;
+    }
+    .nav-divider {
+      margin: 0 0.15rem;
+      height: 14px;
     }
     .ad-toggle-text {
       display: none;
@@ -301,6 +359,12 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
     .ad-toggle-btn {
       padding: 0;
       width: 36px;
+    }
+  }
+
+  @media (max-width: 440px) {
+    .brand-text-accent {
+      display: none;
     }
   }
 </style>
