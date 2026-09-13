@@ -44,6 +44,14 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
         <span class="nav-label">{t(lang, 'nav.roulette')}</span>
       </a>
       <a 
+        href={`${prefix}/schedule`} 
+        class={`nav-item ${currentPath.includes('/schedule') ? 'highlight active' : ''}`}
+        aria-current={currentPath.includes('/schedule') ? 'page' : undefined}
+      >
+        <span class="nav-icon">📅</span>
+        <span class="nav-label">{t(lang, 'nav.schedule')}</span>
+      </a>
+      <a 
         href={`${prefix}/games/ladder`} 
         class={`nav-item ${currentPath.includes('/games/ladder') ? 'highlight active' : ''}`}
         aria-current={currentPath.includes('/games/ladder') ? 'page' : undefined}

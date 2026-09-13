@@ -200,6 +200,28 @@ const homeFaqSchema = JSON.stringify({
         </div>
       </section>
 
+      <!-- Stream Schedule Studio Highlight Banner -->
+      <section class="schedule-home-banner">
+        <div class="schedule-banner-card">
+          <div class="schedule-banner-glow"></div>
+          <div class="schedule-banner-left">
+            <div class="schedule-badge">
+              <span class="pulse-dot-schedule"></span>
+              <span>📅 고화질 PNG/JPG 1초 다운로드 스튜디오</span>
+            </div>
+            <h3>방송 편성표 제작기 <span class="gradient-text">(Stream Schedule Studio)</span></h3>
+            <p>
+              포토샵 없이 클릭 몇 번으로 주간/월간 방송 일정표 완성! 네온 사이버, 레트로 아케이드, 파스텔 감성, 여행 티켓 등 다채로운 테마와 인스타그램/치지직/SOOP/X(트위터) 규격 이미지 즉시 다운로드.
+            </p>
+          </div>
+          <div class="schedule-banner-right">
+            <a href="/schedule" class="btn-schedule-banner">
+              <span>편성표 만들기 →</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
       <!-- Content Rectangle Ad -->
       <RectangleAd streamerMode={streamerMode} />
 
@@ -260,6 +282,14 @@ const homeFaqSchema = JSON.stringify({
               <h3>정밀 MBTI & 8대 인지기능 검사 (Scientific MBTI)</h3>
               <p>
                 60개 균형 문항과 역채점 매트릭스로 편향을 없앤 정통 심리검사. 16가지 성격 유형의 8대 인지기능 스택, 스트레스 인지 루프, 직무 커리어, 실시간 유형 궁합 계산기 및 크리에이터 방송 스타일을 무료로 분석합니다.
+              </p>
+            </div>
+
+            <div class="overview-card">
+              <span class="overview-icon">📅</span>
+              <h3>방송 편성표 제작기 (Stream Schedule Studio)</h3>
+              <p>
+                포토샵 없이 클릭 몇 번으로 나만의 방송 일정표를 디자인하세요. 주간 및 월간 템플릿, 다양한 비주얼 테마(네온, 레트로, 여행티켓 등), 인스타그램 및 X(트위터) 규격 고화질 이미지 즉시 다운로드를 지원합니다.
               </p>
             </div>
           </div>
@@ -1017,6 +1047,123 @@ const homeFaqSchema = JSON.stringify({
       padding: 24px 20px;
     }
     .btn-mbti-banner {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  /* Schedule Home Banner Styles */
+  .schedule-home-banner {
+    margin: 1.5rem 0 2rem;
+  }
+
+  .schedule-banner-card {
+    position: relative;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 58, 138, 0.5) 50%, rgba(14, 116, 144, 0.4) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    border-radius: 20px;
+    padding: 28px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px -10px rgba(56, 189, 248, 0.25);
+  }
+
+  .schedule-banner-glow {
+    position: absolute;
+    top: -40%;
+    left: 20%;
+    width: 350px;
+    height: 220px;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.25) 0%, transparent 70%);
+    filter: blur(40px);
+    pointer-events: none;
+  }
+
+  .schedule-banner-left {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+  }
+
+  .schedule-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #38bdf8;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .pulse-dot-schedule {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #38bdf8;
+    box-shadow: 0 0 8px #38bdf8;
+    animation: pulseSchedule 2s infinite;
+  }
+
+  @keyframes pulseSchedule {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+  }
+
+  .schedule-banner-left h3 {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #f8fafc;
+    margin: 0 0 8px;
+    letter-spacing: -0.02em;
+  }
+
+  .schedule-banner-left p {
+    font-size: 0.95rem;
+    color: #94a3b8;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .schedule-banner-right {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+  }
+
+  .btn-schedule-banner {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 50%, #06b6d4 100%);
+    color: #040813;
+    font-size: 1rem;
+    font-weight: 800;
+    padding: 13px 26px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 6px 18px -4px rgba(14, 165, 233, 0.6);
+  }
+
+  .btn-schedule-banner:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px -4px rgba(14, 165, 233, 0.8);
+  }
+
+  @media (max-width: 768px) {
+    .schedule-banner-card {
+      flex-direction: column;
+      text-align: center;
+      padding: 24px 20px;
+    }
+    .btn-schedule-banner {
       width: 100%;
       justify-content: center;
     }

@@ -221,6 +221,28 @@ const homeFaqSchema = JSON.stringify({
         </div>
       </section>
 
+      <!-- Stream Schedule Studio Highlight Banner -->
+      <section class="schedule-home-banner">
+        <div class="schedule-banner-card">
+          <div class="schedule-banner-glow"></div>
+          <div class="schedule-banner-left">
+            <div class="schedule-badge">
+              <span class="pulse-dot-schedule"></span>
+              <span>📅 High-Res PNG/JPG 1-Click Studio</span>
+            </div>
+            <h3>Stream Schedule Studio <span class="gradient-text">(Broadcast Timetable)</span></h3>
+            <p>
+              Design clean, professional weekly and monthly stream timetables in seconds without Photoshop! Choose from Neon Cyber, Retro Arcade, Pastel, and Travel Ticket themes, with one-click export for Instagram, Twitch, YouTube, and X (Twitter).
+            </p>
+          </div>
+          <div class="schedule-banner-right">
+            <a href="/en/schedule" class="btn-schedule-banner">
+              <span>Create Schedule →</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
       <!-- Content Rectangle Ad -->
       <RectangleAd streamerMode={streamerMode} />
 
@@ -281,6 +303,14 @@ const homeFaqSchema = JSON.stringify({
               <h3>Scientific MBTI & 8 Cognitive Functions Test</h3>
               <p>
                 Empirical 60-item instrument with balanced reverse scoring. Dissect your 8 Jungian cognitive functions, stress loops, workplace superpowers, real-time chemistry calculator, and creator streaming persona.
+              </p>
+            </div>
+
+            <div class="overview-card">
+              <span class="overview-icon">📅</span>
+              <h3>Stream Schedule Studio (Broadcast Timetable Maker)</h3>
+              <p>
+                Design polished stream schedules without graphic design software. Features weekly and monthly grid layouts, versatile visual themes (Neon, Retro, Travel Ticket, Pastel), and one-click image export formatted for Instagram and X (Twitter).
               </p>
             </div>
           </div>
@@ -946,6 +976,123 @@ const homeFaqSchema = JSON.stringify({
       padding: 24px 20px;
     }
     .btn-mbti-banner {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  /* Schedule Home Banner Styles */
+  .schedule-home-banner {
+    margin: 1.5rem 0 2rem;
+  }
+
+  .schedule-banner-card {
+    position: relative;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 58, 138, 0.5) 50%, rgba(14, 116, 144, 0.4) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    border-radius: 20px;
+    padding: 28px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px -10px rgba(56, 189, 248, 0.25);
+  }
+
+  .schedule-banner-glow {
+    position: absolute;
+    top: -40%;
+    left: 20%;
+    width: 350px;
+    height: 220px;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.25) 0%, transparent 70%);
+    filter: blur(40px);
+    pointer-events: none;
+  }
+
+  .schedule-banner-left {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+  }
+
+  .schedule-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #38bdf8;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .pulse-dot-schedule {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #38bdf8;
+    box-shadow: 0 0 8px #38bdf8;
+    animation: pulseSchedule 2s infinite;
+  }
+
+  @keyframes pulseSchedule {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+  }
+
+  .schedule-banner-left h3 {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #f8fafc;
+    margin: 0 0 8px;
+    letter-spacing: -0.02em;
+  }
+
+  .schedule-banner-left p {
+    font-size: 0.95rem;
+    color: #94a3b8;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .schedule-banner-right {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+  }
+
+  .btn-schedule-banner {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 50%, #06b6d4 100%);
+    color: #040813;
+    font-size: 1rem;
+    font-weight: 800;
+    padding: 13px 26px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 6px 18px -4px rgba(14, 165, 233, 0.6);
+  }
+
+  .btn-schedule-banner:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px -4px rgba(14, 165, 233, 0.8);
+  }
+
+  @media (max-width: 768px) {
+    .schedule-banner-card {
+      flex-direction: column;
+      text-align: center;
+      padding: 24px 20px;
+    }
+    .btn-schedule-banner {
       width: 100%;
       justify-content: center;
     }

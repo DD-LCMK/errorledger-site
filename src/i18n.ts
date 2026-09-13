@@ -30,6 +30,7 @@ const ui = {
     // Header nav
     'nav.marble': '구슬 룰렛',
     'nav.roulette': '돌림판',
+    'nav.schedule': '방송 편성표',
     'nav.ladder': '사다리타기',
     'nav.drinking_marble': '주루마블',
     'nav.fortune': '오늘의 운세',
@@ -44,6 +45,7 @@ const ui = {
     'footer.desc': '스트림아케이드는 치지직(CHZZK), SOOP(아프리카TV), 유튜브 라이브 스트리머와 시청자를 위한 무료 방송용 인터랙티브 웹게임 플랫폼입니다. 언제 어디서나 간편하게 띄워 생방송 텐션을 올려보세요.',
     'footer.badge': '⚡ 100% 무료 • 로그인 없는 즉시 실행',
     'footer.tools.title': '추천 방송 도구',
+    'footer.tools.schedule': '📅 방송 편성표 (스튜디오 에디터)',
     'footer.tools.mbti': '🧠 정밀 MBTI & 인지기능 검사',
     'footer.tools.bzzk': '🛡️ 검지직 (치지직 방송 보호 레이더)',
     'footer.tools.drinking_marble': '🌸 주루마블 (술게임/벌칙 말판)',
@@ -71,6 +73,7 @@ const ui = {
     // Header nav
     'nav.marble': 'Marble Roulette',
     'nav.roulette': 'Spin Wheel',
+    'nav.schedule': 'Schedule',
     'nav.ladder': 'Ladder Game',
     'nav.drinking_marble': 'Blossom Board',
     'nav.fortune': 'Daily Fortune',
@@ -85,6 +88,7 @@ const ui = {
     'footer.desc': 'StreamArcade is a 100% free, browser-based interactive tool platform for live streamers on Twitch, YouTube, CHZZK, and SOOP — no install, no login required.',
     'footer.badge': '⚡ 100% Free • No Login Required',
     'footer.tools.title': 'Stream Tools',
+    'footer.tools.schedule': '📅 Stream Schedule Studio',
     'footer.tools.mbti': '🧠 Scientific MBTI & Cognitive Test',
     'footer.tools.bzzk': '🛡️ Bzzk (Chzzk Stream Radar)',
     'footer.tools.drinking_marble': '🌸 Blossom Board (Dice Game)',
