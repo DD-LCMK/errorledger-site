@@ -16,6 +16,7 @@
 
 html {
 	min-height: 100%;
+	overflow-x: hidden;
 }
 
 /* --- Dark Mode Canvas (only mode) --- */

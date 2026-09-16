@@ -1,0 +1,256 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import LeaderboardAd from '../../../components/ads/LeaderboardAd.astro';
+import { getKoUrl, getEnUrl } from '../../../i18n';
+
+const siteBase = Astro.site?.toString() || 'https://errorledger.com';
+const rawPath = Astro.url.pathname.replace(/\/$/, '');
+const koUrl = getKoUrl(siteBase, rawPath);
+const enUrl = getEnUrl(siteBase, rawPath);
+
+const urlParams = Astro.url.searchParams;
+const streamerMode = urlParams.has('stream') || urlParams.has('obs');
+const gameUrl = streamerMode
+  ? '/games/stream-doodle?bare=1&stream=true&lang=en'
+  : '/games/stream-doodle?bare=1&lang=en';
+
+const webAppSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Stream Doodle — StreamArcade",
+  "alternateName": ["Stream Doodle", "Animated GIF Doodle Studio", "Line Boil Drawing Tool", "스트림 두들"],
+  "url": enUrl,
+  "description": "Free browser-based animated drawing tool where every stroke dances with 12 FPS line boil motion. 8 animated brushes, OBS chroma-key/transparent overlay mode, symmetry mandala tools, and instant client-side GIF export.",
+  "applicationCategory": "DrawingApplication",
+  "operatingSystem": "All (Web Browser, Chrome, Edge, Safari, Mobile)",
+  "inLanguage": ["en-US", "ko-KR"],
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+});
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead
+      title="Stream Doodle — Free Animated GIF Doodle Studio for Streamers | StreamArcade"
+      description="Create playful animated drawings where every stroke wiggles at 12 FPS! Features 8 animated brushes, OBS transparent/chroma green mode, symmetry tools, and one-click looping GIF export. 100% free, no install."
+      lang="en"
+      hreflangKo={koUrl}
+      hreflangEn={enUrl}
+      keywords="Stream Doodle, Animated Drawing Tool, Line Boil Animation, Make Looping GIF Online, Twitch Drawing Stream, Discord Emote Maker, Animated Doodle Studio, OBS Canvas Overlay"
+    />
+    <script type="application/ld+json" set:html={webAppSchema}></script>
+  </head>
+  <body class="en-game-body">
+    <Header />
+
+    <main class="en-game-main">
+      <div class="en-game-frame-wrap">
+        <iframe
+          src={gameUrl}
+          class="en-game-iframe"
+          id="game-iframe"
+          title="Stream Doodle — StreamArcade"
+          allowfullscreen
+          loading="eager"
+          scrolling="no"
+        ></iframe>
+      </div>
+
+      <!-- Unobtrusive Expandable Information Drawer (for Guide & FAQ) -->
+      {!streamerMode && (
+        <details class="stream-bottom-details">
+          <summary class="details-summary">
+            <span>📖 Detailed Guide & FAQ</span>
+            <span class="chevron">▼</span>
+          </summary>
+          <div class="details-content">
+            <div class="details-faq-section">
+              <h3>Stream Doodle FAQ</h3>
+              <div class="details-faq-grid">
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. What makes the lines wiggle?</strong>
+                  <p class="faq-a">Every stroke is simultaneously rendered across 3 independent frames with subtle coordinate jitter noise. The 12 FPS playback loop continuously cycles through these frames to produce a hand-drawn cartoon "line boil" animation.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Can I export transparent GIFs for Discord or OBS?</strong>
+                  <p class="faq-a">Yes! Switch the canvas mode to [Transparent] or [OBS Chroma Green]. When you click [Export GIF], the background color is preserved or made transparent so your animation looks amazing anywhere.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Does it work with Apple Pencil, S-Pen, or touchscreens?</strong>
+                  <p class="faq-a">Absolutely. Native pointer events support stylus pressure, finger touches, and mouse drags with touch scrolling lock (touch-action: none) for a smooth drawing feel.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Are my drawings stored or uploaded anywhere?</strong>
+                  <p class="faq-a">No. Everything runs 100% locally in your web browser. No accounts, no cloud uploads, and complete creative privacy.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </details>
+      )}
+
+      <!-- Horizontal single-line ad below detail guide & FAQ -->
+      <LeaderboardAd streamerMode={streamerMode} />
+    </main>
+
+    {!streamerMode && <Footer />}
+
+    <script>
+      const iframe = document.getElementById('game-iframe') as HTMLIFrameElement;
+      if (iframe) {
+        // Streamer / OBS mode client-side check
+        var sp = new URLSearchParams(window.location.search);
+        if (sp.has('stream') || sp.has('obs')) {
+          var s = document.createElement('style');
+          s.textContent = [
+            '.leaderboard-ad-wrap { display: none !important; }',
+            'footer { display: none !important; }',
+            '.stream-bottom-details { display: none !important; }',
+            '.arcade-header { display: none !important; }',
+            '.en-game-main { padding: 0 !important; margin: 0 !important; max-width: none !important; }',
+            '.en-game-frame-wrap { height: 100vh !important; }',
+            '.en-game-iframe { height: 100vh !important; }'
+          ].join(' ');
+          document.head.appendChild(s);
+
+          if (!iframe.src.includes('stream=true')) {
+            iframe.src = iframe.src + '&stream=true';
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
+
+<style>
+  .en-game-body {
+    background: #090d16;
+    color: #f1f5f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+  }
+
+  .en-game-main {
+    width: 100% !important;
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 1rem 1rem 3rem;
+    box-sizing: border-box;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .en-game-frame-wrap {
+    width: 100%;
+    min-height: 820px;
+    height: 85vh;
+    max-height: 940px;
+    background: #0d121f;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 16px 48px -8px rgba(0, 0, 0, 0.6);
+  }
+
+  .en-game-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+
+  .stream-bottom-details {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .stream-bottom-details[open] {
+    border-color: rgba(99, 102, 241, 0.3);
+  }
+
+  .details-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.875rem 1.25rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #94a3b8;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .details-summary:hover {
+    color: #f1f5f9;
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .details-summary .chevron {
+    font-size: 0.75rem;
+    transition: transform 0.2s ease;
+  }
+
+  .stream-bottom-details[open] .chevron {
+    transform: rotate(180deg);
+  }
+
+  .details-content {
+    padding: 0.5rem 1.25rem 1.25rem;
+  }
+
+  .details-faq-section h3 {
+    margin: 0 0 1rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+
+  .details-faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .details-faq-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  .faq-q {
+    display: block;
+    color: #a5b4fc;
+    font-size: 0.875rem;
+    margin-bottom: 0.375rem;
+  }
+
+  .faq-a {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 768px) {
+    .en-game-main {
+      padding: 0.5rem 0.5rem 2rem;
+    }
+    .en-game-frame-wrap {
+      min-height: 720px;
+      height: 80vh;
+      border-radius: 10px;
+    }
+  }
+</style>

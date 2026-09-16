@@ -1266,6 +1266,61 @@ const data = gameEntry?.data || {
       font-size: 0.88rem;
     }
   }
+
+  @media (max-width: 480px) {
+    .monopoly-board {
+      gap: 2px;
+      padding: 4px;
+      border-radius: 12px;
+    }
+    :global(.board-tile) {
+      padding: 3px 2px;
+      border-radius: 6px;
+    }
+    :global(.tile-icon) {
+      font-size: 0.92rem;
+    }
+    :global(.tile-title) {
+      font-size: 0.55rem;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      max-height: 2.2em;
+      overflow: hidden;
+    }
+    .dice-scene {
+      width: 48px;
+      height: 48px;
+    }
+    .dice-face {
+      width: 48px;
+      height: 48px;
+      padding: 4px;
+    }
+    .dice-face.front  { transform: rotateY(0deg) translateZ(24px); }
+    .dice-face.back   { transform: rotateY(180deg) translateZ(24px); }
+    .dice-face.right  { transform: rotateY(90deg) translateZ(24px); }
+    .dice-face.left   { transform: rotateY(-90deg) translateZ(24px); }
+    .dice-face.top    { transform: rotateX(90deg) translateZ(24px); }
+    .dice-face.bottom { transform: rotateX(-90deg) translateZ(24px); }
+    .dot {
+      width: 8px;
+      height: 8px;
+    }
+    .btn-roll-dice {
+      padding: 0.4rem 0.85rem;
+      font-size: 0.78rem;
+    }
+    .roll-shortcut-hint {
+      display: none;
+    }
+    .roll-status-message {
+      font-size: 0.72rem;
+    }
+    .current-player-badge {
+      padding: 0.25rem 0.55rem;
+      font-size: 0.75rem;
+    }
+  }
 </style>
 
 <script>

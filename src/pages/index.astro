@@ -13,7 +13,7 @@ const urlParams = Astro.url.searchParams;
 const streamerMode = urlParams.has('stream') || urlParams.has('obs');
 
 const games = await getCollection('games');
-const priorityOrder = ['marble-roulette', 'roulette', 'ladder', 'drinking-marble', 'fortune'];
+const priorityOrder = ['marble-roulette', 'roulette', 'ladder', 'drinking-marble', 'stream-doodle', 'fortune'];
 const sortedGames = games.sort((a, b) => {
   const idxA = priorityOrder.indexOf(a.id);
   const idxB = priorityOrder.indexOf(b.id);

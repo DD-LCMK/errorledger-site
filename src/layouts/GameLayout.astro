@@ -62,6 +62,7 @@ const pageUrl = new URL(rawPath || '/', siteBase).href;
 // Alternate english names for SEO
 let enName = 'Interactive Stream Game';
 if (rawPath.includes('drinking-marble')) enName = 'Blossom Board — Drinking & Penalty Dice Game';
+else if (rawPath.includes('stream-doodle')) enName = 'Stream Doodle — Animated GIF Studio';
 else if (rawPath.includes('marble-roulette')) enName = 'Marble Roulette & Marble Race Online';
 else if (rawPath.includes('roulette')) enName = 'Random Wheel Picker & Roulette Spinner';
 else if (rawPath.includes('ladder')) enName = 'Ghost Leg Ladder Game (Amidakuji)';
@@ -142,14 +143,14 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
             '.leaderboard-ad-wrap { display: none !important; }'
           ];
           if (isStream) {
-            rules.push('footer { display: none !important; }');
+            rules.push('footer.arcade-footer { display: none !important; }');
             rules.push('.stream-bottom-details { display: none !important; }');
             rules.push('.arcade-header { display: none !important; }');
           }
           if (isBare) {
             rules.push('html, body { margin: 0 !important; padding: 0 !important; }');
             rules.push('.arcade-header { display: none !important; }');
-            rules.push('footer { display: none !important; }');
+            rules.push('footer.arcade-footer { display: none !important; }');
             rules.push('.stream-bottom-details { display: none !important; }');
             rules.push('.game-top-bar { display: none !important; }');
             rules.push('.game-main-container { padding: 0 !important; margin: 0 !important; max-width: none !important; }');
@@ -255,6 +256,7 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
         min-height: 100vh;
         display: flex;
         flex-direction: column;
+        overflow-x: hidden;
       }
 
       .game-main-container {
@@ -264,6 +266,12 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
         width: 100% !important;
         flex: 1;
         box-sizing: border-box;
+      }
+
+      @media (max-width: 768px) {
+        .game-main-container {
+          padding: 0.25rem 0.35rem 1.5rem !important;
+        }
       }
 
       /* Slim Minimal Stage Header Bar */

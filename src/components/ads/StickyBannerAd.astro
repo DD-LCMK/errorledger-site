@@ -130,8 +130,14 @@ const stickyAdHtml = `<!DOCTYPE html>
 
   @media (max-width: 740px) {
     .ad-inner {
-      transform: scale(0.9);
+      transform: scale(0.85);
       transform-origin: center bottom;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .sticky-banner-ad-wrap {
+      display: none !important;
     }
   }
 </style>
