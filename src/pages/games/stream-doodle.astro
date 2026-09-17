@@ -13,16 +13,19 @@ const data = gameEntry?.data || {
   players: '1인 (방송/소셜 창작)',
   playTime: '자유 (1분~)',
   controls: [
-    '마우스 클릭 & 드래그 또는 터치/스타일러스 펜으로 자유롭게 그리기',
+    '마우스 클릭 & 드래그 또는 터치/스타일러스 펜으로 자유롭게 그리기 (반투명 크기·모양 미리보기)',
+    '브러시 모양(● 원형 / ■ 사각 픽셀) 선택으로 매끄러운 곡선 및 레트로 도트 아트 손쉬운 드로잉',
+    '페인트통(🪣) 도구로 닫힌 영역이나 배경을 원클릭으로 간편하게 단색 채우기',
+    '투명도(10%~100%) 조절로 부드러운 형광펜·수채화 느낌의 반투명 오버레이 레이어링',
+    '우측 하단 [− / + / 100%] 줌 컨트롤 또는 Ctrl+휠로 캔버스 자유 확대·축소 & Space/손도구로 이동',
     '상단 [📐 크기] 메뉴에서 트위치(112px), 디스코드(128/256px) 등 맞춤 캔버스 크기 지정',
-    '상단 [⏱ 속도] 메뉴에서 6~24 FPS로 꿈틀거리는 속도 자유 조절',
-    '하단 색상 피커(RGB/HEX)로 원하는 어떤 색상이든 무제한 선택',
-    '좌측 툴바 [🕳️ 투명 오려내기]로 사진 배경이나 캔버스 투명하게 뚫기',
+    '사진 덧그리기 후 [✕ 사진 제거] 버튼으로 언제든 깔끔하게 원클릭 삭제',
     '[📷 PNG 저장] 또는 [✨ GIF 내보내기]로 원하는 규격의 이미지 즉시 다운로드'
   ],
   rules: [
     '선을 그으면 3개 프레임에 걸쳐 미세한 지터 오프셋이 적용되어 실시간으로 선이 꿈틀거립니다.',
     '지정한 FPS(6~24)에 맞추어 실시간 렌더링 및 GIF 프레임 딜레이가 정확히 동기화됩니다.',
+    '페인트통 도구는 3개 프레임의 라인에 맞춰 실시간으로 영역을 채워 경계면이 자연스럽게 꿈틀거립니다.',
     '투명 오려내기 브러시를 쓰면 배경 사진과 낙서가 투명하게 뚫려 나만의 스티커를 만들 수 있습니다.',
     '모든 데이터는 브라우저 내부에서만 처리되며 외부 서버로 그림이 업로드되지 않아 100% 안전합니다.'
   ],
@@ -32,12 +35,24 @@ const data = gameEntry?.data || {
       a: '네! 상단의 [📐 360×360] 크기 버튼을 눌러 112×112(트위치/치지직), 128×128(디스코드 이모지), 256×256(디스코드 스티커)를 선택하면 번거로운 리사이징 없이 규격에 딱 맞는 GIF/PNG로 즉시 제작됩니다.'
     },
     {
-      q: '원하는 특정 RGB 색상이나 사진 배경 투명화가 가능한가요?',
-      a: '네! 하단 팔레트의 [🎨 피커]를 누르면 원하는 모든 RGB/HEX 색상을 선택할 수 있으며, 좌측 툴바의 [🕳️ 투명 오려내기] 브러시로 사진의 배경을 오려내어 누끼 스티커를 만들 수 있습니다.'
+      q: '픽셀 아트(도트 그래픽)나 각진 스타일로도 그릴 수 있나요?',
+      a: '네! 좌측 툴바에서 [🔲 픽셀] 펜을 선택하거나 [■ 사각] 팁을 선택하면 가장자리가 둥글지 않은 정사각 픽셀 블록 브러시로 깔끔한 레트로 도트 아트를 그릴 수 있습니다.'
     },
     {
-      q: '정지 이미지(PNG)로만 저장할 수도 있나요?',
-      a: '네! 상단의 [📷 PNG 저장] 버튼을 누르면 투명 배경이 유지된 고화질 정지 이미지로 즉시 다운로드됩니다.'
+      q: '페인트통(영역 채우기) 도구는 어떻게 작동하나요?',
+      a: '좌측 툴바에서 [🪣 페인트통]을 선택한 후 닫힌 도형 안쪽이나 빈 배경을 클릭하면, 3개 애니메이션 프레임 전체에 걸쳐 색상이 즉시 채워지며 외곽선과 함께 생동감 있게 꿈틀거립니다.'
+    },
+    {
+      q: '형광펜처럼 반투명하게 색을 덧칠할 수 있나요?',
+      a: '네! 하단 팔레트 또는 좌측 도구 설정의 [투명도] 슬라이더와 퀵 버튼(30%, 50%, 75%, 100%)을 조절하면 밑바탕의 선이나 사진이 비쳐 보이는 고품질 형광펜 효과를 낼 수 있습니다.'
+    },
+    {
+      q: '캔버스 확대/축소 및 화면 이동(패닝)은 어떻게 하나요?',
+      a: '우측 하단의 [− / + / 100%] 줌 버튼을 클릭하거나 Ctrl+마우스 휠로 확대·축소할 수 있습니다. 확대된 상태에서는 Space 키를 누른 채 드래그하거나 손도구(✋)를 눌러 자유롭게 화면을 이동할 수 있습니다.'
+    },
+    {
+      q: '불러온 배경 사진은 어떻게 제거하나요?',
+      a: '사진을 불러오면 캔버스 좌측 상단에 [🖼️ 사진 레이어 (✕ 제거)] 배지와 좌측 툴바에 [❌ 사진 제거] 버튼이 나타나 원클릭으로 언제든 깔끔하게 제거할 수 있습니다.'
     }
   ]
 };
@@ -166,13 +181,17 @@ const data = gameEntry?.data || {
       <aside class="doodle-sidebar" aria-label="그리기 도구">
         <div class="toolbar-section-label">브러시</div>
         <div class="brushes-list" id="brushes-list">
-          <button type="button" class="brush-btn active" data-brush="pen" title="가는 펜 (미세한 떨림)">
+          <button type="button" class="brush-btn active" data-brush="pen" title="펜 (원형 팁 - 부드러운 드로잉)">
             <span class="brush-icon">🖊️</span>
-            <span class="brush-name">가는 펜</span>
+            <span class="brush-name">펜</span>
           </button>
-          <button type="button" class="brush-btn" data-brush="marker" title="굵은 마커 (탱글탱글한 라인)">
-            <span class="brush-icon">🖍️</span>
-            <span class="brush-name">마커</span>
+          <button type="button" class="brush-btn" data-brush="pixel" title="픽셀 펜 (정사각 팁 - 레트로 도트·픽셀아트)">
+            <span class="brush-icon">🔲</span>
+            <span class="brush-name">픽셀</span>
+          </button>
+          <button type="button" class="brush-btn" data-brush="bucket" title="페인트통 (닫힌 영역 클릭하여 채우기)">
+            <span class="brush-icon">🪣</span>
+            <span class="brush-name">페인트통</span>
           </button>
           <button type="button" class="brush-btn" data-brush="pencil" title="스케치 연필 (거친 흑연 질감)">
             <span class="brush-icon">✏️</span>
@@ -181,10 +200,6 @@ const data = gameEntry?.data || {
           <button type="button" class="brush-btn" data-brush="spray" title="에어 스프레이 (흩뿌리는 도트 입자)">
             <span class="brush-icon">💨</span>
             <span class="brush-name">스프레이</span>
-          </button>
-          <button type="button" class="brush-btn" data-brush="squeak" title="촉촉한 잉크 (쫀득한 획)">
-            <span class="brush-icon">💧</span>
-            <span class="brush-name">잉크</span>
           </button>
           <button type="button" class="brush-btn" data-brush="rainbow" title="무지개 펜 (그릴 때마다 색상 변화)">
             <span class="brush-icon">🌈</span>
@@ -210,15 +225,33 @@ const data = gameEntry?.data || {
           <div class="active-tool-card" id="active-tool-card">
             <div class="tool-card-header">
               <span class="tool-card-icon" id="tool-card-icon">🖊️</span>
-              <span class="tool-card-name" id="tool-card-name">가는 펜</span>
+              <span class="tool-card-name" id="tool-card-name">펜</span>
+            </div>
+            <!-- Tip Shape (Round vs Square) -->
+            <div class="sidebar-row" id="sidebar-tip-row">
+              <div class="sidebar-row-label">
+                <span id="sidebar-tip-title">팁 모양</span>
+              </div>
+              <div class="tip-shape-toggle">
+                <button type="button" class="tip-btn active" data-tip="round" title="원형 팁">● 원형</button>
+                <button type="button" class="tip-btn" data-tip="square" title="사각 팁 (픽셀아트)">■ 사각</button>
+              </div>
             </div>
             <!-- Brush Size on Sidebar -->
-            <div class="sidebar-row">
+            <div class="sidebar-row" id="sidebar-size-row">
               <div class="sidebar-row-label">
                 <span id="sidebar-size-title">굵기</span>
                 <span class="sidebar-val" id="sidebar-size-val">3px</span>
               </div>
               <input type="range" class="sidebar-slider" id="sidebar-size-slider" min="1" max="64" value="3" />
+            </div>
+            <!-- Brush Opacity on Sidebar -->
+            <div class="sidebar-row" id="sidebar-opacity-row">
+              <div class="sidebar-row-label">
+                <span id="sidebar-opacity-title">투명도</span>
+                <span class="sidebar-val" id="sidebar-opacity-val">100%</span>
+              </div>
+              <input type="range" class="sidebar-slider" id="sidebar-opacity-slider" min="10" max="100" step="5" value="100" />
             </div>
             <!-- Brush Color on Sidebar -->
             <div class="sidebar-row" id="sidebar-color-row">
@@ -268,12 +301,43 @@ const data = gameEntry?.data || {
       <!-- Center Stage: The Animated Canvas -->
       <main class="doodle-stage">
         <div class="canvas-viewport" id="canvas-viewport">
+          <!-- Floating Zoom Controls Bar -->
+          <div class="canvas-zoom-bar" id="canvas-zoom-bar" role="toolbar" aria-label="줌 컨트롤">
+            <button type="button" class="zoom-btn" id="zoom-out-btn" title="축소 (Zoom Out)">
+              <span>−</span>
+            </button>
+            <button type="button" class="zoom-level-btn" id="zoom-reset-btn" title="100% 원래 크기로 (클릭하여 리셋)">
+              <span id="zoom-level-text">100%</span>
+            </button>
+            <button type="button" class="zoom-btn" id="zoom-in-btn" title="확대 (Zoom In)">
+              <span>+</span>
+            </button>
+            <button type="button" class="zoom-btn" id="zoom-fit-btn" title="화면에 맞추기 (Fit)">
+              <span>⊡</span>
+            </button>
+            <div class="zoom-divider"></div>
+            <button type="button" class="zoom-btn" id="pan-toggle-btn" title="화면 이동 도구 (Space 드래그 가능)">
+              <span id="pan-icon">✋</span>
+            </button>
+          </div>
+
           <div class="canvas-frame" id="canvas-frame">
+            <!-- Floating Active Photo Layer Overlay Badge -->
+            <div class="photo-overlay-bar" id="photo-overlay-bar" style="display: none;">
+              <span class="photo-badge-label" id="photo-badge-label">🖼️ 사진 레이어</span>
+              <button type="button" class="photo-badge-del-btn" id="photo-overlay-remove-btn" title="배경 사진 제거">
+                ✕ 제거
+              </button>
+            </div>
+
             <!-- Background Layer Canvas for Imported Photo (Allows cutout erasing!) -->
             <canvas id="photo-canvas" width="360" height="360" class="photo-canvas" style="display: none;"></canvas>
 
             <!-- The Active Multi-Frame Animated Canvas -->
             <canvas id="doodle-canvas" width="360" height="360" class="doodle-canvas"></canvas>
+
+            <!-- Brush Cursor Preview Circle -->
+            <div id="brush-cursor" class="brush-cursor" style="display: none;"></div>
 
             <!-- Guide grid overlay for transparent mode -->
             <div class="checker-bg" id="checker-bg" style="display: none;"></div>
@@ -313,6 +377,21 @@ const data = gameEntry?.data || {
               <button type="button" class="size-pill" data-size="10">10</button>
               <button type="button" class="size-pill" data-size="20">20</button>
               <button type="button" class="size-pill" data-size="40">40</button>
+            </div>
+          </div>
+
+          <div class="palette-separator"></div>
+
+          <!-- Brush Opacity Control with Quick Opacity Pills -->
+          <div class="opacity-control-group">
+            <span class="size-label" id="palette-opacity-label">투명도</span>
+            <input type="range" id="brush-opacity-slider" min="10" max="100" step="5" value="100" class="size-slider opacity-slider" />
+            <span class="size-value" id="brush-opacity-val">100%</span>
+            <div class="quick-sizes quick-opacities">
+              <button type="button" class="opacity-pill" data-opacity="30">30%</button>
+              <button type="button" class="opacity-pill" data-opacity="50">50%</button>
+              <button type="button" class="opacity-pill" data-opacity="75">75%</button>
+              <button type="button" class="opacity-pill active" data-opacity="100">100%</button>
             </div>
           </div>
 
@@ -394,10 +473,10 @@ const data = gameEntry?.data || {
 
   const BRUSH_CONFIGS: Record<string, { amplitude: number; spacing: number; blend: string }> = {
     pen:     { amplitude: 1.2, spacing: 1, blend: 'normal' },
-    marker:  { amplitude: 2.2, spacing: 2, blend: 'normal' },
+    pixel:   { amplitude: 0.0, spacing: 1, blend: 'pixel' },
+    bucket:  { amplitude: 0.0, spacing: 0, blend: 'bucket' },
     pencil:  { amplitude: 1.5, spacing: 1, blend: 'dither' },
     spray:   { amplitude: 3.5, spacing: 3, blend: 'spray' },
-    squeak:  { amplitude: 2.0, spacing: 2, blend: 'normal' },
     rainbow: { amplitude: 2.0, spacing: 2, blend: 'rainbow' },
     behind:  { amplitude: 1.5, spacing: 1, blend: 'behind' },
     eraser:  { amplitude: 1.0, spacing: 1, blend: 'erase' },
@@ -456,6 +535,19 @@ const data = gameEntry?.data || {
           return;
         }
 
+        if (brush === 'pixel') {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(580, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(420, this.ctx.currentTime + 0.02);
+          gain.gain.setValueAtTime(0.012, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.02);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.02);
+          return;
+        }
+
         const freq = brush === 'eraser' || brush === 'cutout' ? 200 : brush === 'pencil' ? 560 : 360 + Math.random() * 80;
         osc.type = brush === 'eraser' || brush === 'cutout' ? 'triangle' : 'sine';
         osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
@@ -468,6 +560,25 @@ const data = gameEntry?.data || {
         gain.connect(this.ctx.destination);
         osc.start();
         osc.stop(this.ctx.currentTime + 0.03);
+      } catch (e) {}
+    }
+
+    public playBucket() {
+      if (this.isMuted()) return;
+      this.init();
+      if (!this.ctx) return;
+      try {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(320, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(740, this.ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.12);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.12);
       } catch (e) {}
     }
 
@@ -678,13 +789,13 @@ const data = gameEntry?.data || {
     public isPlaying: boolean = true;
     public fps: number = 12;
 
-    public paletteTable: { hex: string; rgb: [number, number, number]; name: string }[] = [...PALETTE];
+    public paletteTable: { hex: string; rgb: [number, number, number]; name: string; alpha?: number }[] = [...PALETTE];
     public brushSizes: Record<string, number> = {
       pen: 3,
-      marker: 10,
+      pixel: 4,
+      bucket: 1,
       pencil: 3,
       spray: 16,
-      squeak: 6,
       rainbow: 6,
       behind: 12,
       eraser: 16,
@@ -692,15 +803,17 @@ const data = gameEntry?.data || {
     };
     public brushColors: Record<string, number> = {
       pen: 2,
-      marker: 4,
+      pixel: 2,
+      bucket: 2,
       pencil: 14,
       spray: 6,
-      squeak: 9,
       rainbow: 2,
       behind: 5,
       eraser: 0,
       cutout: 0
     };
+    public brushOpacity: number = 1.0;
+    public tipShape: 'round' | 'square' = 'round';
 
     public currentFrameIndex: number = 0;
     private lastFrameTime: number = 0;
@@ -766,30 +879,94 @@ const data = gameEntry?.data || {
       this.render();
     }
 
-    public getOrCreateColorIndex(r: number, g: number, b: number, hex?: string): number {
+    public getOrCreateColorIndex(r: number, g: number, b: number, hex?: string, alpha: number = 255): number {
       for (let i = 0; i < this.paletteTable.length; i++) {
         const p = this.paletteTable[i];
-        if (p.rgb[0] === r && p.rgb[1] === g && p.rgb[2] === b) {
+        const pAlpha = p.alpha !== undefined ? p.alpha : 255;
+        if (p.rgb[0] === r && p.rgb[1] === g && p.rgb[2] === b && pAlpha === alpha) {
           return i;
         }
       }
       const h = hex || `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()}`;
       if (this.paletteTable.length < 255) {
         const idx = this.paletteTable.length;
-        this.paletteTable.push({ hex: h, rgb: [r, g, b], name: h });
+        this.paletteTable.push({ hex: h, rgb: [r, g, b], name: h, alpha: alpha });
         return idx;
       }
       let closestIdx = 1;
       let minDist = Infinity;
       for (let i = 1; i < this.paletteTable.length; i++) {
         const p = this.paletteTable[i];
-        const dist = (p.rgb[0] - r) ** 2 + (p.rgb[1] - g) ** 2 + (p.rgb[2] - b) ** 2;
+        const pAlpha = p.alpha !== undefined ? p.alpha : 255;
+        const dist = (p.rgb[0] - r) ** 2 + (p.rgb[1] - g) ** 2 + (p.rgb[2] - b) ** 2 + (pAlpha - alpha) ** 2;
         if (dist < minDist) {
           minDist = dist;
           closestIdx = i;
         }
       }
       return closestIdx;
+    }
+
+    public floodFill(startX: number, startY: number) {
+      const w = this.width;
+      const h = this.height;
+      const total = w * h;
+      const sx = Math.floor(startX);
+      const sy = Math.floor(startY);
+      if (sx < 0 || sx >= w || sy < 0 || sy >= h) return;
+
+      this.pushHistory();
+
+      let fillColorIdx = this.activeColorIndex;
+      const alpha = Math.max(15, Math.round(255 * this.brushOpacity));
+      const curColor = this.paletteTable[this.activeColorIndex] || PALETTE[2];
+      if (this.brushOpacity < 1.0) {
+        fillColorIdx = this.getOrCreateColorIndex(curColor.rgb[0], curColor.rgb[1], curColor.rgb[2], curColor.hex, alpha);
+      }
+
+      // Flood fill each frame across animated boiling lines
+      for (let f = 0; f < FRAMES_COUNT; f++) {
+        const frame = this.frames[f];
+        const targetIdx = frame[sy * w + sx];
+        if (targetIdx === fillColorIdx) continue;
+
+        const queue = new Int32Array(total * 2);
+        let head = 0;
+        let tail = 0;
+
+        queue[tail++] = sx;
+        queue[tail++] = sy;
+        frame[sy * w + sx] = fillColorIdx;
+
+        while (head < tail) {
+          const cx = queue[head++];
+          const cy = queue[head++];
+
+          if (cx + 1 < w && frame[cy * w + (cx + 1)] === targetIdx) {
+            frame[cy * w + (cx + 1)] = fillColorIdx;
+            queue[tail++] = cx + 1;
+            queue[tail++] = cy;
+          }
+          if (cx - 1 >= 0 && frame[cy * w + (cx - 1)] === targetIdx) {
+            frame[cy * w + (cx - 1)] = fillColorIdx;
+            queue[tail++] = cx - 1;
+            queue[tail++] = cy;
+          }
+          if (cy + 1 < h && frame[(cy + 1) * w + cx] === targetIdx) {
+            frame[(cy + 1) * w + cx] = fillColorIdx;
+            queue[tail++] = cx;
+            queue[tail++] = cy + 1;
+          }
+          if (cy - 1 >= 0 && frame[(cy - 1) * w + cx] === targetIdx) {
+            frame[(cy - 1) * w + cx] = fillColorIdx;
+            queue[tail++] = cx;
+            queue[tail++] = cy - 1;
+          }
+        }
+      }
+
+      this.render();
+      sound.playBucket();
     }
 
     public setCustomColor(hex: string) {
@@ -901,17 +1078,26 @@ const data = gameEntry?.data || {
     }
 
     private drawStrokeSegment(x0: number, y0: number, x1: number, y1: number) {
+      if (this.activeBrush === 'bucket') return;
+
       const cfg = BRUSH_CONFIGS[this.activeBrush] || BRUSH_CONFIGS.pen;
       const amp = cfg.amplitude;
       const r = Math.max(1, Math.round(this.brushSize / 2));
       const blend = cfg.blend;
+      const isSquare = this.tipShape === 'square' || this.activeBrush === 'pixel';
+      const curColor = this.paletteTable[this.activeColorIndex] || PALETTE[2];
 
       let colorIndex = this.activeColorIndex;
+      const alpha = Math.max(15, Math.round(255 * this.brushOpacity));
+      if (this.brushOpacity < 1.0 && blend !== 'erase' && blend !== 'cutout') {
+        colorIndex = this.getOrCreateColorIndex(curColor.rgb[0], curColor.rgb[1], curColor.rgb[2], curColor.hex, alpha);
+      }
+
       if (blend === 'rainbow') {
         this.rainbowHue = (this.rainbowHue + 1) % 36;
         const h = (this.rainbowHue * 10) % 360;
         const rgb = hslToRgb(h, 0.95, 0.55);
-        colorIndex = this.getOrCreateColorIndex(rgb[0], rgb[1], rgb[2]);
+        colorIndex = this.getOrCreateColorIndex(rgb[0], rgb[1], rgb[2], undefined, alpha);
       } else if (blend === 'erase' || blend === 'cutout') {
         colorIndex = 0;
       }
@@ -921,7 +1107,11 @@ const data = gameEntry?.data || {
         this.photoCtx.save();
         this.photoCtx.globalCompositeOperation = 'destination-out';
         this.photoCtx.beginPath();
-        this.photoCtx.arc(x1, y1, r, 0, Math.PI * 2);
+        if (isSquare) {
+          this.photoCtx.rect(x1 - r, y1 - r, r * 2, r * 2);
+        } else {
+          this.photoCtx.arc(x1, y1, r, 0, Math.PI * 2);
+        }
         this.photoCtx.fill();
         this.photoCtx.restore();
       }
@@ -948,7 +1138,8 @@ const data = gameEntry?.data || {
           } else if (blend === 'dither') {
             for (let dy = -r; dy <= r; dy++) {
               for (let dx = -r; dx <= r; dx++) {
-                if (dx * dx + dy * dy <= r * r && (cx + dx + cy + dy) % 2 === 0) {
+                const inShape = isSquare ? true : (dx * dx + dy * dy <= r * r);
+                if (inShape && (cx + dx + cy + dy) % 2 === 0) {
                   const px = Math.round(cx + dx);
                   const py = Math.round(cy + dy);
                   if (px >= 0 && px < this.width && py >= 0 && py < this.height) {
@@ -960,7 +1151,8 @@ const data = gameEntry?.data || {
           } else {
             for (let dy = -r; dy <= r; dy++) {
               for (let dx = -r; dx <= r; dx++) {
-                if (dx * dx + dy * dy <= r * r) {
+                const inShape = isSquare ? true : (dx * dx + dy * dy <= r * r);
+                if (inShape) {
                   const px = Math.round(cx + dx);
                   const py = Math.round(cy + dy);
                   if (px >= 0 && px < this.width && py >= 0 && py < this.height) {
@@ -968,7 +1160,18 @@ const data = gameEntry?.data || {
                     if (blend === 'behind') {
                       if (frameBuf[idx] === 0) frameBuf[idx] = colorIndex;
                     } else {
-                      frameBuf[idx] = colorIndex;
+                      if (this.brushOpacity < 1.0 && frameBuf[idx] !== 0 && frameBuf[idx] !== colorIndex) {
+                        const prevColor = this.paletteTable[frameBuf[idx]] || this.paletteTable[1];
+                        const a = this.brushOpacity;
+                        const blendedR = Math.round(curColor.rgb[0] * a + prevColor.rgb[0] * (1 - a));
+                        const blendedG = Math.round(curColor.rgb[1] * a + prevColor.rgb[1] * (1 - a));
+                        const blendedB = Math.round(curColor.rgb[2] * a + prevColor.rgb[2] * (1 - a));
+                        const blendedAlpha = Math.round((curColor.alpha ?? 255) * a + (prevColor.alpha ?? 255) * (1 - a));
+                        const blendIdx = this.getOrCreateColorIndex(blendedR, blendedG, blendedB, undefined, blendedAlpha);
+                        frameBuf[idx] = blendIdx;
+                      } else {
+                        frameBuf[idx] = colorIndex;
+                      }
                     }
                   }
                 }
@@ -1063,7 +1266,14 @@ const data = gameEntry?.data || {
       }
 
       for (let i = 1; i < this.paletteTable.length; i++) {
-        paletteRgb.push(this.paletteTable[i].rgb);
+        const p = this.paletteTable[i];
+        const a = (p.alpha !== undefined ? p.alpha : 255) / 255;
+        const rgb: [number, number, number] = [
+          Math.round(p.rgb[0] * a + (1 - a) * (this.bgMode === 'green' ? 0 : 11)),
+          Math.round(p.rgb[1] * a + (1 - a) * (this.bgMode === 'green' ? 255 : 15)),
+          Math.round(p.rgb[2] * a + (1 - a) * (this.bgMode === 'green' ? 0 : 25))
+        ];
+        paletteRgb.push(rgb);
       }
 
       const delayHundredths = Math.max(2, Math.round(100 / this.fps));
@@ -1304,11 +1514,11 @@ const data = gameEntry?.data || {
       if (sectionLabels[2]) sectionLabels[2].textContent = 'Symmetry';
 
       const brushNames: Record<string, { name: string; title: string }> = {
-        'pen': { name: 'Fine Pen', title: 'Fine Pen (Subtle Jitter)' },
-        'marker': { name: 'Marker', title: 'Chunky Marker (Bouncy Line)' },
-        'pencil': { name: 'Pencil', title: 'Sketch Pencil (Rough Texture)' },
+        'pen': { name: 'Pen', title: 'Round Pen (Smooth Drawing)' },
+        'pixel': { name: 'Pixel', title: 'Square Pixel Pen (Pixel Art & Retro)' },
+        'bucket': { name: 'Bucket', title: 'Paint Bucket (Flood Fill Area)' },
+        'pencil': { name: 'Pencil', title: 'Sketch Pencil (Rough Graphite Texture)' },
         'spray': { name: 'Spray', title: 'Air Spray (Dot Particles)' },
-        'squeak': { name: 'Ink', title: 'Wet Ink (Juicy Strokes)' },
         'rainbow': { name: 'Rainbow', title: 'Rainbow Pen (Color Shift)' },
         'behind': { name: 'Underlay', title: 'Underlay (Draw Behind Lines)' },
         'eraser': { name: 'Eraser', title: 'Eraser (Erase to Background)' },
@@ -1322,6 +1532,18 @@ const data = gameEntry?.data || {
           if (n) n.textContent = brushNames[brush].name;
           (btn as HTMLElement).title = brushNames[brush].title;
         }
+      });
+
+      const sidebarTipTitle = document.getElementById('sidebar-tip-title');
+      if (sidebarTipTitle) sidebarTipTitle.textContent = 'Tip Shape';
+      const sidebarOpacityTitle = document.getElementById('sidebar-opacity-title');
+      if (sidebarOpacityTitle) sidebarOpacityTitle.textContent = 'Opacity';
+      const paletteOpacityLabel = document.getElementById('palette-opacity-label');
+      if (paletteOpacityLabel) paletteOpacityLabel.textContent = 'Opacity';
+      document.querySelectorAll('.tip-btn').forEach(btn => {
+        const tip = (btn as HTMLElement).dataset.tip;
+        if (tip === 'round') (btn as HTMLElement).textContent = '● Round';
+        if (tip === 'square') (btn as HTMLElement).textContent = '■ Square';
       });
 
       const symHBtn = document.getElementById('sym-h-btn');
@@ -1347,6 +1569,24 @@ const data = gameEntry?.data || {
       if (photoLabel) photoLabel.textContent = '🖼️ Underlay Photo';
       const removePhotoBtn = document.getElementById('remove-photo-btn');
       if (removePhotoBtn) removePhotoBtn.textContent = '❌ Remove Photo';
+      const photoBadgeLabel = document.getElementById('photo-badge-label');
+      if (photoBadgeLabel) photoBadgeLabel.textContent = '🖼️ Photo Layer';
+      const photoOverlayRemoveBtn = document.getElementById('photo-overlay-remove-btn');
+      if (photoOverlayRemoveBtn) {
+        photoOverlayRemoveBtn.textContent = '✕ Remove';
+        photoOverlayRemoveBtn.title = 'Remove photo layer';
+      }
+
+      const zoomOutBtn = document.getElementById('zoom-out-btn');
+      if (zoomOutBtn) zoomOutBtn.title = 'Zoom Out (−)';
+      const zoomResetBtn = document.getElementById('zoom-reset-btn');
+      if (zoomResetBtn) zoomResetBtn.title = 'Reset Zoom (100%)';
+      const zoomInBtn = document.getElementById('zoom-in-btn');
+      if (zoomInBtn) zoomInBtn.title = 'Zoom In (+)';
+      const zoomFitBtn = document.getElementById('zoom-fit-btn');
+      if (zoomFitBtn) zoomFitBtn.title = 'Fit to Viewport';
+      const panToggleBtn = document.getElementById('pan-toggle-btn');
+      if (panToggleBtn) panToggleBtn.title = 'Hand Tool (Pan / Space+Drag)';
 
       const customPickerGroup = document.querySelector('.custom-picker-group');
       if (customPickerGroup) (customPickerGroup as HTMLElement).title = 'Pick any custom RGB/HEX color';
@@ -1383,6 +1623,17 @@ const data = gameEntry?.data || {
 
     const canvas = document.getElementById('doodle-canvas') as HTMLCanvasElement;
     const photoCanvas = document.getElementById('photo-canvas') as HTMLCanvasElement;
+    const canvasViewport = document.getElementById('canvas-viewport') as HTMLElement;
+    const canvasFrame = document.getElementById('canvas-frame') as HTMLElement;
+    const brushCursor = document.getElementById('brush-cursor') as HTMLElement;
+    const photoOverlayBar = document.getElementById('photo-overlay-bar') as HTMLElement;
+    const photoOverlayRemoveBtn = document.getElementById('photo-overlay-remove-btn');
+    const zoomOutBtn = document.getElementById('zoom-out-btn');
+    const zoomResetBtn = document.getElementById('zoom-reset-btn');
+    const zoomInBtn = document.getElementById('zoom-in-btn');
+    const zoomFitBtn = document.getElementById('zoom-fit-btn');
+    const zoomLevelText = document.getElementById('zoom-level-text');
+    const panToggleBtn = document.getElementById('pan-toggle-btn');
     if (!canvas) return;
 
     const engine = new StreamDoodleEngine(canvas, photoCanvas);
@@ -1415,6 +1666,7 @@ const data = gameEntry?.data || {
         if (sizeLabel) sizeLabel.textContent = `${w}×${h}`;
         if (sizeDropdown) sizeDropdown.style.display = 'none';
         engine.setDimensions(w, h);
+        updateBrushCursorColorAndSize();
       });
     });
 
@@ -1427,6 +1679,7 @@ const data = gameEntry?.data || {
       if (sizeLabel) sizeLabel.textContent = `${w}×${h}`;
       if (sizeDropdown) sizeDropdown.style.display = 'none';
       engine.setDimensions(w, h);
+      updateBrushCursorColorAndSize();
     });
 
     // ── FPS Selector Setup ──
@@ -1437,14 +1690,14 @@ const data = gameEntry?.data || {
 
     // ── Brush Metadata & UI Synchronization ──
     const BRUSH_META: Record<string, { icon: string; nameKo: string; nameEn: string }> = {
-      pen:     { icon: '🖊️', nameKo: '가는 펜', nameEn: 'Fine Pen' },
-      marker:  { icon: '🖍️', nameKo: '마커',    nameEn: 'Marker' },
-      pencil:  { icon: '✏️', nameKo: '연필',    nameEn: 'Pencil' },
-      spray:   { icon: '💨', nameKo: '스프레이', nameEn: 'Spray' },
-      squeak:  { icon: '💧', nameKo: '잉크',    nameEn: 'Ink' },
-      rainbow: { icon: '🌈', nameKo: '무지개',  nameEn: 'Rainbow' },
-      behind:  { icon: '🎨', nameKo: '덧칠',    nameEn: 'Underlay' },
-      eraser:  { icon: '🧼', nameKo: '지우개',  nameEn: 'Eraser' },
+      pen:     { icon: '🖊️', nameKo: '펜',       nameEn: 'Pen' },
+      pixel:   { icon: '🔲', nameKo: '픽셀 펜',   nameEn: 'Pixel Pen' },
+      bucket:  { icon: '🪣', nameKo: '페인트통',  nameEn: 'Bucket Fill' },
+      pencil:  { icon: '✏️', nameKo: '연필',      nameEn: 'Pencil' },
+      spray:   { icon: '💨', nameKo: '스프레이',  nameEn: 'Spray' },
+      rainbow: { icon: '🌈', nameKo: '무지개',    nameEn: 'Rainbow' },
+      behind:  { icon: '🎨', nameKo: '덧칠',      nameEn: 'Underlay' },
+      eraser:  { icon: '🧼', nameKo: '지우개',    nameEn: 'Eraser' },
       cutout:  { icon: '🕳️', nameKo: '투명 오리기', nameEn: 'Cutout' }
     };
 
@@ -1453,6 +1706,8 @@ const data = gameEntry?.data || {
     const toolCardName = document.getElementById('tool-card-name');
     const sidebarSizeSlider = document.getElementById('sidebar-size-slider') as HTMLInputElement;
     const sidebarSizeVal = document.getElementById('sidebar-size-val');
+    const sidebarOpacitySlider = document.getElementById('sidebar-opacity-slider') as HTMLInputElement;
+    const sidebarOpacityVal = document.getElementById('sidebar-opacity-val');
     const sidebarColorRow = document.getElementById('sidebar-color-row');
     const sidebarColorInput = document.getElementById('sidebar-color-input') as HTMLInputElement;
     const sidebarColorHex = document.getElementById('sidebar-color-hex');
@@ -1466,6 +1721,9 @@ const data = gameEntry?.data || {
     const sizeSlider = document.getElementById('brush-size-slider') as HTMLInputElement;
     const sizeVal = document.getElementById('brush-size-val');
     const paletteSizeLabel = document.getElementById('palette-size-label');
+    const opacitySlider = document.getElementById('brush-opacity-slider') as HTMLInputElement;
+    const opacityVal = document.getElementById('brush-opacity-val');
+    const paletteOpacityLabel = document.getElementById('palette-opacity-label');
 
     const syncBrushUI = () => {
       const bKey = engine.activeBrush;
@@ -1475,7 +1733,15 @@ const data = gameEntry?.data || {
       if (toolCardIcon) toolCardIcon.textContent = meta.icon;
       if (toolCardName) toolCardName.textContent = bName;
 
-      // 1. Size synchronization
+      // 1. Tip Shape synchronization
+      if (bKey === 'pixel') {
+        engine.tipShape = 'square';
+      }
+      document.querySelectorAll('.tip-btn').forEach(btn => {
+        btn.classList.toggle('active', (btn as HTMLElement).dataset.tip === engine.tipShape);
+      });
+
+      // 2. Size synchronization
       const curSize = engine.brushSizes[bKey] || engine.brushSize;
       engine.brushSize = curSize;
       if (sidebarSizeSlider) sidebarSizeSlider.value = curSize.toString();
@@ -1488,7 +1754,17 @@ const data = gameEntry?.data || {
         p.classList.toggle('active', parseInt((p as HTMLElement).dataset.size || '0', 10) === curSize);
       });
 
-      // 2. Color synchronization
+      // 3. Opacity synchronization
+      const curOpacityPercent = Math.round(engine.brushOpacity * 100);
+      if (sidebarOpacitySlider) sidebarOpacitySlider.value = curOpacityPercent.toString();
+      if (sidebarOpacityVal) sidebarOpacityVal.textContent = `${curOpacityPercent}%`;
+      if (opacitySlider) opacitySlider.value = curOpacityPercent.toString();
+      if (opacityVal) opacityVal.textContent = `${curOpacityPercent}%`;
+      document.querySelectorAll('.opacity-pill').forEach(p => {
+        p.classList.toggle('active', parseInt((p as HTMLElement).dataset.opacity || '0', 10) === curOpacityPercent);
+      });
+
+      // 4. Color synchronization
       const isEraseTool = bKey === 'eraser' || bKey === 'cutout';
       if (sidebarColorRow) {
         sidebarColorRow.style.opacity = isEraseTool ? '0.35' : '1';
@@ -1518,6 +1794,15 @@ const data = gameEntry?.data || {
       if (customSwatchLabel) {
         customSwatchLabel.classList.toggle('active', engine.isCustomColor);
       }
+
+      // 5. Visibility for Bucket tool vs normal brush
+      const isBucket = bKey === 'bucket';
+      const sidebarSizeRow = document.getElementById('sidebar-size-row');
+      const sidebarTipRow = document.getElementById('sidebar-tip-row');
+      if (sidebarSizeRow) sidebarSizeRow.style.display = isBucket ? 'none' : 'flex';
+      if (sidebarTipRow) sidebarTipRow.style.display = isBucket ? 'none' : 'flex';
+
+      updateBrushCursorColorAndSize();
     };
 
     const setBrushSize = (val: number) => {
@@ -1530,12 +1815,52 @@ const data = gameEntry?.data || {
       document.querySelectorAll('.size-pill').forEach(p => {
         p.classList.toggle('active', parseInt((p as HTMLElement).dataset.size || '0', 10) === val);
       });
+      updateBrushCursorColorAndSize();
+    };
+
+    const setBrushOpacity = (val: number) => {
+      engine.brushOpacity = Math.max(0.1, Math.min(1.0, val / 100));
+      if (sidebarOpacitySlider) sidebarOpacitySlider.value = val.toString();
+      if (sidebarOpacityVal) sidebarOpacityVal.textContent = `${val}%`;
+      if (opacitySlider) opacitySlider.value = val.toString();
+      if (opacityVal) opacityVal.textContent = `${val}%`;
+      document.querySelectorAll('.opacity-pill').forEach(p => {
+        p.classList.toggle('active', parseInt((p as HTMLElement).dataset.opacity || '0', 10) === val);
+      });
+      updateBrushCursorColorAndSize();
     };
 
     const setCustomColorValue = (hex: string) => {
       engine.setCustomColor(hex);
       syncBrushUI();
+      updateBrushCursorColorAndSize();
     };
+
+    // Tip Shape Toggle Listeners
+    document.querySelectorAll('.tip-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const tip = (e.currentTarget as HTMLElement).dataset.tip as 'round' | 'square';
+        if (tip) {
+          engine.tipShape = tip;
+          document.querySelectorAll('.tip-btn').forEach(b => b.classList.toggle('active', (b as HTMLElement).dataset.tip === tip));
+          updateBrushCursorColorAndSize();
+        }
+      });
+    });
+
+    // Opacity Sliders & Pills Listeners
+    sidebarOpacitySlider?.addEventListener('input', () => {
+      setBrushOpacity(parseInt(sidebarOpacitySlider.value, 10));
+    });
+    opacitySlider?.addEventListener('input', () => {
+      setBrushOpacity(parseInt(opacitySlider.value, 10));
+    });
+    document.querySelectorAll('.opacity-pill').forEach(pill => {
+      pill.addEventListener('click', (e) => {
+        const val = parseInt((e.currentTarget as HTMLElement).dataset.opacity || '100', 10);
+        setBrushOpacity(val);
+      });
+    });
 
     // Color Pickers Input Events
     customColorInput?.addEventListener('input', () => {
@@ -1629,7 +1954,6 @@ const data = gameEntry?.data || {
     const bgGreenBtn = document.getElementById('bg-green-btn');
     const bgTransBtn = document.getElementById('bg-trans-btn');
     const checkerBg = document.getElementById('checker-bg');
-    const canvasFrame = document.getElementById('canvas-frame');
 
     const updateBgMode = (mode: 'dark' | 'green' | 'trans') => {
       engine.bgMode = mode;
@@ -1694,6 +2018,9 @@ const data = gameEntry?.data || {
     document.getElementById('redo-btn')?.addEventListener('click', () => engine.redo());
     document.getElementById('clear-btn')?.addEventListener('click', () => {
       engine.clear();
+      if (engine.hasPhoto) {
+        removePhoto(false);
+      }
       showToast(isEn ? 'Canvas cleared!' : '캔버스를 모두 비웠습니다!', true);
     });
 
@@ -1708,6 +2035,21 @@ const data = gameEntry?.data || {
     // ── Photo Upload & Background Eraser ──
     const photoInput = document.getElementById('photo-upload-input') as HTMLInputElement;
     const removePhotoBtn = document.getElementById('remove-photo-btn');
+
+    const removePhoto = (notify: boolean = true) => {
+      if (engine.photoCtx && photoCanvas) {
+        engine.photoCtx.clearRect(0, 0, engine.width, engine.height);
+        photoCanvas.style.display = 'none';
+        engine.hasPhoto = false;
+        if (removePhotoBtn) removePhotoBtn.style.display = 'none';
+        if (photoOverlayBar) photoOverlayBar.style.display = 'none';
+        if (photoInput) photoInput.value = '';
+        updateBgMode('dark');
+        if (notify) {
+          showToast(isEn ? 'Photo removed.' : '사진이 제거되었습니다.');
+        }
+      }
+    };
 
     photoInput?.addEventListener('change', (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
@@ -1727,6 +2069,7 @@ const data = gameEntry?.data || {
                                      centerShiftX, centerShiftY, img.width * ratio, img.height * ratio);
           updateBgMode('trans');
           if (removePhotoBtn) removePhotoBtn.style.display = 'inline-flex';
+          if (photoOverlayBar) photoOverlayBar.style.display = 'inline-flex';
           showToast(isEn
             ? 'Photo loaded! Use [Cutout Tool] to erase transparently.'
             : '사진을 불러왔습니다! [🕳️ 투명 오리기]로 배경을 오려낼 수 있습니다.');
@@ -1735,18 +2078,163 @@ const data = gameEntry?.data || {
       }
     });
 
-    removePhotoBtn?.addEventListener('click', () => {
-      if (engine.photoCtx && photoCanvas) {
-        engine.photoCtx.clearRect(0, 0, engine.width, engine.height);
-        photoCanvas.style.display = 'none';
-        engine.hasPhoto = false;
-        if (removePhotoBtn) removePhotoBtn.style.display = 'none';
-        updateBgMode('dark');
-        showToast(isEn ? 'Photo removed.' : '사진이 제거되었습니다.');
+    removePhotoBtn?.addEventListener('click', () => removePhoto(true));
+    photoOverlayRemoveBtn?.addEventListener('click', () => removePhoto(true));
+
+    // ── Zoom & Pan System ──
+    const ZOOM_LEVELS = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0, 4.0];
+    let currentZoom = 1.0;
+    let panX = 0;
+    let panY = 0;
+    let isPanning = false;
+    let panStartX = 0;
+    let panStartY = 0;
+    let isSpacePressed = false;
+    let spaceDragDistance = 0;
+    let isHandToolActive = false;
+
+    const updateCanvasTransform = (animate: boolean = false) => {
+      if (!canvasFrame) return;
+      canvasFrame.style.transition = animate ? 'transform 0.16s cubic-bezier(0.2, 0.8, 0.2, 1)' : 'none';
+      canvasFrame.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
+      if (zoomLevelText) {
+        zoomLevelText.textContent = `${Math.round(currentZoom * 100)}%`;
+      }
+      if (zoomResetBtn) {
+        zoomResetBtn.classList.toggle('is-custom', Math.abs(currentZoom - 1.0) > 0.01);
+      }
+      updateBrushCursorColorAndSize();
+    };
+
+    const zoomTo = (newZoom: number, animate: boolean = true) => {
+      currentZoom = Math.max(0.25, Math.min(4.0, Math.round(newZoom * 100) / 100));
+      updateCanvasTransform(animate);
+    };
+
+    const zoomIn = () => {
+      const next = ZOOM_LEVELS.find(lvl => lvl > currentZoom + 0.02) || 4.0;
+      zoomTo(next, true);
+    };
+
+    const zoomOut = () => {
+      const prev = [...ZOOM_LEVELS].reverse().find(lvl => lvl < currentZoom - 0.02) || 0.25;
+      zoomTo(prev, true);
+    };
+
+    const resetZoom = () => {
+      currentZoom = 1.0;
+      panX = 0;
+      panY = 0;
+      updateCanvasTransform(true);
+      showToast(isEn ? 'Zoom reset (100%)' : '확대율 초기화 (100%)');
+    };
+
+    const fitZoom = () => {
+      panX = 0;
+      panY = 0;
+      const vpW = canvasViewport ? canvasViewport.clientWidth - 40 : 360;
+      const vpH = canvasViewport ? canvasViewport.clientHeight - 40 : 360;
+      const scaleW = vpW / canvas.offsetWidth;
+      const scaleH = vpH / canvas.offsetHeight;
+      const fitScale = Math.min(1.0, Math.min(scaleW, scaleH));
+      zoomTo(Math.max(0.5, fitScale), true);
+    };
+
+    zoomInBtn?.addEventListener('click', zoomIn);
+    zoomOutBtn?.addEventListener('click', zoomOut);
+    zoomResetBtn?.addEventListener('click', resetZoom);
+    zoomFitBtn?.addEventListener('click', fitZoom);
+
+    panToggleBtn?.addEventListener('click', () => {
+      isHandToolActive = !isHandToolActive;
+      panToggleBtn.classList.toggle('active', isHandToolActive);
+      if (isHandToolActive) {
+        canvas.classList.add('is-hand-mode');
+        canvas.style.cursor = 'grab';
+        if (brushCursor) brushCursor.style.display = 'none';
+        showToast(isEn ? 'Hand Tool: Drag to pan canvas' : '화면 이동 도구: 캔버스를 드래그하여 이동');
+      } else {
+        canvas.classList.remove('is-hand-mode');
+        canvas.style.cursor = 'none';
+        showToast(isEn ? 'Drawing Tool Active' : '그리기 도구 활성화');
       }
     });
 
-    // ── Pointer Draw Events ──
+    // Ctrl + Wheel Zoom on Viewport
+    canvasViewport?.addEventListener('wheel', (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        const factor = e.deltaY < 0 ? 1.15 : 0.87;
+        zoomTo(currentZoom * factor, false);
+      }
+    }, { passive: false });
+
+    // ── Brush Cursor Indicator ──
+    const updateBrushCursorColorAndSize = () => {
+      if (!brushCursor) return;
+      const bKey = engine.activeBrush;
+      const curColor = engine.paletteTable[engine.activeColorIndex] || PALETTE[2];
+      const rgb = curColor.rgb || [255, 0, 85];
+      const hex = curColor.hex || '#FF0055';
+      const isSquare = engine.tipShape === 'square' || bKey === 'pixel';
+      const opacity = engine.brushOpacity;
+
+      const scale = canvas.offsetWidth / engine.width;
+      let diameter = Math.max(3, engine.brushSize * scale);
+      if (bKey === 'spray') {
+        diameter = Math.max(6, engine.brushSize * 2.5 * scale);
+      }
+      brushCursor.style.width = `${diameter}px`;
+      brushCursor.style.height = `${diameter}px`;
+      brushCursor.style.borderRadius = isSquare ? '2px' : '50%';
+
+      if (bKey === 'bucket') {
+        brushCursor.style.display = 'none';
+        canvas.style.cursor = 'cell';
+        return;
+      }
+
+      canvas.style.cursor = isHandToolActive ? 'grab' : 'none';
+
+      const previewAlpha = Math.max(0.12, opacity * 0.45);
+
+      if (bKey === 'eraser') {
+        brushCursor.style.background = `rgba(255, 255, 255, ${previewAlpha})`;
+        brushCursor.style.borderColor = '#ffffff';
+        brushCursor.style.borderStyle = 'solid';
+      } else if (bKey === 'cutout') {
+        brushCursor.style.background = `rgba(239, 68, 68, ${previewAlpha})`;
+        brushCursor.style.borderColor = '#f87171';
+        brushCursor.style.borderStyle = 'dashed';
+      } else if (bKey === 'rainbow') {
+        brushCursor.style.background = `radial-gradient(circle, rgba(255,0,128,${previewAlpha}) 0%, rgba(0,255,200,${previewAlpha}) 100%)`;
+        brushCursor.style.borderColor = '#38bdf8';
+        brushCursor.style.borderStyle = 'solid';
+      } else if (bKey === 'spray') {
+        brushCursor.style.background = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${previewAlpha * 0.7})`;
+        brushCursor.style.borderColor = hex;
+        brushCursor.style.borderStyle = 'dashed';
+      } else {
+        brushCursor.style.background = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${previewAlpha})`;
+        brushCursor.style.borderColor = '#ffffff';
+        brushCursor.style.borderStyle = 'solid';
+      }
+    };
+
+    const updateBrushCursorPos = (pos: { x: number; y: number }) => {
+      if (!brushCursor) return;
+      if (isHandToolActive || isSpacePressed || engine.activeBrush === 'bucket') {
+        brushCursor.style.display = 'none';
+        return;
+      }
+      const cursorX = pos.x * (canvas.offsetWidth / engine.width);
+      const cursorY = pos.y * (canvas.offsetHeight / engine.height);
+      brushCursor.style.left = `${cursorX}px`;
+      brushCursor.style.top = `${cursorY}px`;
+      brushCursor.style.display = 'block';
+    };
+
+    // ── Pointer Draw & Pan Events ──
     const getPos = (e: PointerEvent) => {
       const rect = canvas.getBoundingClientRect();
       const scaleX = engine.width / rect.width;
@@ -1757,22 +2245,83 @@ const data = gameEntry?.data || {
       };
     };
 
+    canvas.addEventListener('pointerenter', (e) => {
+      if (engine.activeBrush === 'bucket') {
+        canvas.style.cursor = 'cell';
+        if (brushCursor) brushCursor.style.display = 'none';
+        return;
+      }
+      if (!isHandToolActive && !isSpacePressed && e.pointerType !== 'touch') {
+        canvas.style.cursor = 'none';
+        const pos = getPos(e);
+        updateBrushCursorPos(pos);
+      }
+    });
+
+    canvas.addEventListener('pointerleave', () => {
+      if (!engine.isDrawing) {
+        if (brushCursor) brushCursor.style.display = 'none';
+      }
+    });
+
     canvas.addEventListener('pointerdown', (e) => {
-      canvas.setPointerCapture(e.pointerId);
+      // Check if Pan action (Hand tool, Space held, or middle click button 1)
+      if (isHandToolActive || isSpacePressed || e.button === 1) {
+        isPanning = true;
+        panStartX = e.clientX - panX;
+        panStartY = e.clientY - panY;
+        canvas.setPointerCapture(e.pointerId);
+        canvas.style.cursor = 'grabbing';
+        if (brushCursor) brushCursor.style.display = 'none';
+        e.preventDefault();
+        return;
+      }
+
+      if (e.button !== 0 && e.pointerType === 'mouse') return;
+
       const pos = getPos(e);
+
+      if (engine.activeBrush === 'bucket') {
+        engine.floodFill(pos.x, pos.y);
+        e.preventDefault();
+        return;
+      }
+
+      canvas.setPointerCapture(e.pointerId);
       engine.startStroke(pos.x, pos.y);
+      updateBrushCursorPos(pos);
       e.preventDefault();
     });
 
     canvas.addEventListener('pointermove', (e) => {
+      if (isPanning) {
+        panX = e.clientX - panStartX;
+        panY = e.clientY - panStartY;
+        spaceDragDistance += 1;
+        updateCanvasTransform(false);
+        e.preventDefault();
+        return;
+      }
+
       const pos = getPos(e);
-      engine.moveStroke(pos.x, pos.y);
+      updateBrushCursorPos(pos);
+      if (engine.isDrawing) {
+        engine.moveStroke(pos.x, pos.y);
+      }
       e.preventDefault();
     });
 
     const handlePointerEnd = (e: PointerEvent) => {
       try { canvas.releasePointerCapture(e.pointerId); } catch {}
+      if (isPanning) {
+        isPanning = false;
+        canvas.style.cursor = (isHandToolActive || isSpacePressed) ? 'grab' : 'none';
+        return;
+      }
       engine.endStroke();
+      if (e.pointerType === 'touch' && brushCursor) {
+        brushCursor.style.display = 'none';
+      }
       e.preventDefault();
     };
 
@@ -1784,13 +2333,43 @@ const data = gameEntry?.data || {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       if (e.code === 'Space') {
         e.preventDefault();
-        toggleAnimation();
+        if (!isSpacePressed) {
+          isSpacePressed = true;
+          spaceDragDistance = 0;
+          canvas.style.cursor = 'grab';
+          if (brushCursor) brushCursor.style.display = 'none';
+        }
+      } else if ((e.ctrlKey || e.metaKey) && (e.key === '=' || e.key === '+')) {
+        e.preventDefault();
+        zoomIn();
+      } else if ((e.ctrlKey || e.metaKey) && (e.key === '-' || e.key === '_')) {
+        e.preventDefault();
+        zoomOut();
+      } else if ((e.ctrlKey || e.metaKey) && e.key === '0') {
+        e.preventDefault();
+        resetZoom();
       } else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
         e.preventDefault();
         engine.undo();
       } else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.shiftKey && e.key === 'Z'))) {
         e.preventDefault();
         engine.redo();
+      }
+    });
+
+    window.addEventListener('keyup', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        isSpacePressed = false;
+        if (!isHandToolActive) {
+          canvas.style.cursor = 'none';
+          if (spaceDragDistance < 5) {
+            // Quick tap without dragging -> toggle animation!
+            toggleAnimation();
+          }
+        } else {
+          canvas.style.cursor = 'grab';
+        }
       }
     });
 
@@ -2497,6 +3076,9 @@ const data = gameEntry?.data || {
     justify-content: center;
     width: 100%;
     min-height: 380px;
+    position: relative;
+    overflow: hidden;
+    touch-action: none;
   }
 
   .canvas-frame {
@@ -2510,6 +3092,8 @@ const data = gameEntry?.data || {
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.1);
     background: #0b0f19;
     overflow: hidden;
+    transform-origin: center center;
+    will-change: transform;
   }
 
   .doodle-canvas {
@@ -2518,9 +3102,159 @@ const data = gameEntry?.data || {
     display: block;
     image-rendering: pixelated;
     touch-action: none;
-    cursor: crosshair;
+    cursor: none;
     position: relative;
     z-index: 2;
+  }
+
+  .doodle-canvas.is-hand-mode {
+    cursor: grab !important;
+  }
+
+  /* ── Semi-transparent Brush Cursor Preview ── */
+  .brush-cursor {
+    position: absolute;
+    pointer-events: none;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.75), inset 0 0 0 1px rgba(0, 0, 0, 0.3);
+    background: rgba(255, 0, 85, 0.35);
+    transform: translate(-50%, -50%);
+    z-index: 25;
+    display: none;
+    box-sizing: border-box;
+    will-change: left, top, width, height;
+  }
+
+  .brush-cursor::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 1px #000;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  /* ── Floating Active Photo Layer Overlay Badge ── */
+  .photo-overlay-bar {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 4px 10px 4px 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+    z-index: 30;
+    user-select: none;
+  }
+
+  .photo-badge-label {
+    font-size: 0.725rem;
+    font-weight: 600;
+    color: #cbd5e1;
+  }
+
+  .photo-badge-del-btn {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 0.675rem;
+    font-weight: 700;
+    color: #fca5a5;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .photo-badge-del-btn:hover {
+    background: rgba(239, 68, 68, 0.45);
+    color: #ffffff;
+    border-color: #ef4444;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+  }
+
+  /* ── Floating Zoom & Pan Controls ── */
+  .canvas-zoom-bar {
+    position: absolute;
+    bottom: 14px;
+    right: 16px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    padding: 3px 4px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 0, 0, 0.3);
+    z-index: 25;
+    user-select: none;
+  }
+
+  .zoom-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .zoom-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #f8fafc;
+  }
+
+  .zoom-btn.active {
+    background: rgba(0, 234, 200, 0.2);
+    color: #00eac8;
+    box-shadow: 0 0 8px rgba(0, 234, 200, 0.4);
+  }
+
+  .zoom-level-btn {
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    padding: 0 6px;
+    height: 28px;
+    color: #cbd5e1;
+    font-size: 0.725rem;
+    font-weight: 700;
+    font-family: monospace;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .zoom-level-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #38bdf8;
+  }
+
+  .zoom-level-btn.is-custom {
+    color: #00eac8;
+  }
+
+  .zoom-divider {
+    width: 1px;
+    height: 16px;
+    background: rgba(255, 255, 255, 0.12);
+    margin: 0 2px;
   }
 
   .photo-canvas {
@@ -2707,6 +3441,72 @@ const data = gameEntry?.data || {
   .preset-btn:hover {
     background: rgba(255, 255, 255, 0.1);
     color: #f8fafc;
+  }
+
+  /* ── Tip Shape Toggle & Opacity Controls ── */
+  .tip-shape-toggle {
+    display: flex;
+    gap: 4px;
+    width: 100%;
+  }
+
+  .tip-btn {
+    flex: 1;
+    padding: 0.28rem 0.4rem;
+    font-size: 0.675rem;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .tip-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #f8fafc;
+  }
+
+  .tip-btn.active {
+    background: rgba(0, 234, 200, 0.2);
+    border-color: #00eac8;
+    color: #00eac8;
+    box-shadow: 0 0 8px rgba(0, 234, 200, 0.3);
+  }
+
+  .opacity-control-group {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .opacity-slider {
+    width: 80px;
+  }
+
+  .opacity-pill {
+    padding: 0.2rem 0.38rem;
+    border-radius: 6px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .opacity-pill:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #f8fafc;
+  }
+
+  .opacity-pill.active {
+    background: rgba(255, 0, 85, 0.25);
+    border-color: #ff0055;
+    color: #ff0055;
+    box-shadow: 0 0 6px rgba(255, 0, 85, 0.4);
   }
 
   /* ── Export Modal ── */
