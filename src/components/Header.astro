@@ -69,6 +69,14 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
           <span class="nav-icon">🎨</span>
           <span class="nav-label">{t(lang, 'nav.stream_doodle')}</span>
         </a>
+        <a 
+          href={`${prefix}/games/stream-emoji`} 
+          class={`nav-item ${currentPath.includes('/games/stream-emoji') ? 'highlight active' : ''}`}
+          aria-current={currentPath.includes('/games/stream-emoji') ? 'page' : undefined}
+        >
+          <span class="nav-icon">🎬</span>
+          <span class="nav-label">{t(lang, 'nav.stream_emoji')}</span>
+        </a>
       </div>
 
       <div class="nav-divider" aria-hidden="true"></div>
@@ -228,6 +236,16 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
               <span class="drawer-item-desc">{isEn ? "Animated GIF Doodle" : "움직이는 GIF 낙서장"}</span>
             </div>
           </a>
+          <a 
+            href={`${prefix}/games/stream-emoji`} 
+            class={`drawer-nav-item ${currentPath.includes('/games/stream-emoji') ? 'active' : ''}`}
+          >
+            <span class="drawer-item-icon">🎬</span>
+            <div class="drawer-item-info">
+              <span class="drawer-item-name">{t(lang, 'nav.stream_emoji')}</span>
+              <span class="drawer-item-desc">{isEn ? "Animated Emote Studio" : "움직이는 이모티콘 메이커"}</span>
+            </div>
+          </a>
         </div>
       </div>
 
@@ -297,14 +315,14 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
 
 <style>
   .arcade-header {
-    background: rgba(15, 23, 42, 0.85);
+    background: rgba(15, 23, 42, 0.88);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     position: sticky;
     top: 0;
     z-index: 100;
-    padding: 0.65rem 1rem;
+    padding: 0.45rem 1rem;
   }
 
   .header-inner {
@@ -314,20 +332,21 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 0.75rem;
   }
 
   .header-left {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.5rem;
+    flex-shrink: 0;
   }
 
   .brand-link {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    font-size: 1.35rem;
+    gap: 0.35rem;
+    font-size: 1.18rem;
     font-weight: 800;
     text-decoration: none;
     letter-spacing: -0.02em;
@@ -336,7 +355,7 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
   }
 
   .brand-icon {
-    font-size: 1.4rem;
+    font-size: 1.25rem;
     filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.5));
   }
 
@@ -353,51 +372,69 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
   .header-nav {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.3rem;
+    flex-wrap: nowrap;
+    overflow: hidden;
   }
 
   .nav-category-group {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.15rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 2px 3px;
+    flex-shrink: 0;
   }
 
   .nav-divider {
     width: 1px;
-    height: 18px;
-    background: rgba(255, 255, 255, 0.15);
-    margin: 0 0.2rem;
+    height: 14px;
+    background: rgba(255, 255, 255, 0.12);
+    margin: 0 0.15rem;
     flex-shrink: 0;
   }
 
   .nav-item {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    padding: 0.4rem 0.75rem;
-    border-radius: 8px;
+    gap: 0.25rem;
+    padding: 0.28rem 0.48rem;
+    border-radius: 6px;
     color: #cbd5e1;
     text-decoration: none;
-    font-size: 0.88rem;
+    font-size: 0.775rem;
     font-weight: 600;
+    white-space: nowrap;
     transition: all 0.15s ease;
     border: 1px solid transparent;
+    line-height: 1.2;
+  }
+
+  .nav-label {
+    white-space: nowrap;
+  }
+
+  .nav-icon {
+    font-size: 0.85rem;
+    line-height: 1;
   }
 
   .nav-item:hover {
     color: #ffffff;
     background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.1);
   }
 
   .nav-item.highlight {
-    background: rgba(168, 85, 247, 0.15);
-    border-color: rgba(168, 85, 247, 0.3);
-    color: #e9d5ff;
+    background: rgba(168, 85, 247, 0.18);
+    border-color: rgba(168, 85, 247, 0.35);
+    color: #f3e8ff;
+    font-weight: 700;
   }
 
   .nav-item.highlight:hover {
-    background: rgba(168, 85, 247, 0.25);
+    background: rgba(168, 85, 247, 0.28);
     border-color: rgba(168, 85, 247, 0.5);
     color: #ffffff;
   }
@@ -405,13 +442,14 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
   .header-actions {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.35rem;
+    flex-shrink: 0;
   }
 
   .action-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: #e2e8f0;
@@ -419,9 +457,10 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.95rem;
     transition: all 0.15s ease;
     text-decoration: none;
+    flex-shrink: 0;
   }
 
   .action-btn:hover {
@@ -433,9 +472,9 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
   /* Language switcher — slightly wider to fit text */
   .lang-btn {
     width: auto;
-    min-width: 36px;
-    padding: 0 0.6rem;
-    font-size: 0.75rem;
+    min-width: 32px;
+    padding: 0 0.5rem;
+    font-size: 0.725rem;
     font-weight: 700;
     letter-spacing: 0.04em;
     color: #a5b4fc;
@@ -451,14 +490,15 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
   /* Ad Toggle button (session/page only) */
   .ad-toggle-btn {
     width: auto;
-    min-width: 36px;
-    padding: 0 0.55rem;
-    gap: 0.35rem;
-    font-size: 0.75rem;
+    min-width: 32px;
+    padding: 0 0.45rem;
+    gap: 0.3rem;
+    font-size: 0.725rem;
     font-weight: 700;
     letter-spacing: 0.02em;
     color: #cbd5e1;
     border-color: rgba(255, 255, 255, 0.15);
+    white-space: nowrap;
   }
 
   .ad-toggle-btn:hover {
@@ -656,19 +696,24 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
     color: #ffffff;
   }
 
-  @media (max-width: 1024px) {
-    .nav-item {
-      padding: 0.35rem 0.5rem;
-      font-size: 0.82rem;
+  @media (max-width: 1360px) {
+    .ad-toggle-text {
+      display: none;
     }
-    .header-nav {
+    .ad-toggle-btn {
+      padding: 0;
+      width: 32px;
+    }
+    .nav-item {
+      padding: 0.25rem 0.42rem;
+      font-size: 0.74rem;
       gap: 0.2rem;
     }
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 1140px) {
     .arcade-header {
-      padding: 0.5rem 0.75rem;
+      padding: 0.45rem 0.75rem;
     }
     .header-inner {
       gap: 0.5rem;
@@ -677,14 +722,14 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
       display: none !important;
     }
     .mobile-menu-btn {
-      display: flex;
+      display: flex !important;
     }
     .ad-toggle-text {
       display: none;
     }
     .ad-toggle-btn {
       padding: 0;
-      width: 36px;
+      width: 32px;
     }
   }
 
