@@ -36,7 +36,7 @@ const data = gameEntry?.data || {
     },
     {
       q: '픽셀 아트(도트 그래픽)나 각진 스타일로도 그릴 수 있나요?',
-      a: '네! 좌측 툴바에서 [🔲 픽셀] 펜을 선택하거나 [■ 사각] 팁을 선택하면 가장자리가 둥글지 않은 정사각 픽셀 블록 브러시로 깔끔한 레트로 도트 아트를 그릴 수 있습니다.'
+      a: '네! 도구 설정에서 [■ 사각] 팁을 선택하면 가장자리가 둥글지 않은 정사각 픽셀 블록 브러시로 깔끔한 레트로 도트 아트를 그릴 수 있습니다.'
     },
     {
       q: '페인트통(영역 채우기) 도구는 어떻게 작동하나요?',
@@ -181,13 +181,9 @@ const data = gameEntry?.data || {
       <aside class="doodle-sidebar" aria-label="그리기 도구">
         <div class="toolbar-section-label">브러시</div>
         <div class="brushes-list" id="brushes-list">
-          <button type="button" class="brush-btn active" data-brush="pen" title="펜 (원형 팁 - 부드러운 드로잉)">
+          <button type="button" class="brush-btn active" data-brush="pen" title="펜 (원형/사각 팁 - 라인보일 손그림 드로잉)">
             <span class="brush-icon">🖊️</span>
             <span class="brush-name">펜</span>
-          </button>
-          <button type="button" class="brush-btn" data-brush="pixel" title="픽셀 펜 (정사각 팁 - 레트로 도트·픽셀아트)">
-            <span class="brush-icon">🔲</span>
-            <span class="brush-name">픽셀</span>
           </button>
           <button type="button" class="brush-btn" data-brush="bucket" title="페인트통 (닫힌 영역 클릭하여 채우기)">
             <span class="brush-icon">🪣</span>
@@ -382,6 +378,17 @@ const data = gameEntry?.data || {
 
           <div class="palette-separator"></div>
 
+          <!-- Brush Tip Shape Toggle (Round vs Square) -->
+          <div class="tip-control-group">
+            <span class="size-label" id="palette-tip-label">팁</span>
+            <div class="tip-shape-toggle palette-tip-toggle">
+              <button type="button" class="tip-btn active" data-tip="round" title="원형 팁">● 원형</button>
+              <button type="button" class="tip-btn" data-tip="square" title="사각 팁 (픽셀)">■ 사각</button>
+            </div>
+          </div>
+
+          <div class="palette-separator"></div>
+
           <!-- Brush Opacity Control with Quick Opacity Pills -->
           <div class="opacity-control-group">
             <span class="size-label" id="palette-opacity-label">투명도</span>
@@ -473,7 +480,6 @@ const data = gameEntry?.data || {
 
   const BRUSH_CONFIGS: Record<string, { amplitude: number; spacing: number; blend: string }> = {
     pen:     { amplitude: 1.2, spacing: 1, blend: 'normal' },
-    pixel:   { amplitude: 0.0, spacing: 1, blend: 'pixel' },
     bucket:  { amplitude: 0.0, spacing: 0, blend: 'bucket' },
     pencil:  { amplitude: 1.5, spacing: 1, blend: 'dither' },
     spray:   { amplitude: 3.5, spacing: 3, blend: 'spray' },
@@ -508,7 +514,7 @@ const data = gameEntry?.data || {
       }
     }
 
-    public playBrush(brush: string) {
+    public playBrush(brush: string, isSquare: boolean = false) {
       if (this.isMuted()) return;
       const now = performance.now();
       if (now - this.lastPlayTime < 45) return;
@@ -535,7 +541,7 @@ const data = gameEntry?.data || {
           return;
         }
 
-        if (brush === 'pixel') {
+        if (isSquare) {
           osc.type = 'square';
           osc.frequency.setValueAtTime(580, this.ctx.currentTime);
           osc.frequency.exponentialRampToValueAtTime(420, this.ctx.currentTime + 0.02);
@@ -792,7 +798,6 @@ const data = gameEntry?.data || {
     public paletteTable: { hex: string; rgb: [number, number, number]; name: string; alpha?: number }[] = [...PALETTE];
     public brushSizes: Record<string, number> = {
       pen: 3,
-      pixel: 4,
       bucket: 1,
       pencil: 3,
       spray: 16,
@@ -803,7 +808,6 @@ const data = gameEntry?.data || {
     };
     public brushColors: Record<string, number> = {
       pen: 2,
-      pixel: 2,
       bucket: 2,
       pencil: 14,
       spray: 6,
@@ -1036,7 +1040,7 @@ const data = gameEntry?.data || {
       this.lastX = x;
       this.lastY = y;
       this.drawPointMirrored(x, y);
-      sound.playBrush(this.activeBrush);
+      sound.playBrush(this.activeBrush, this.tipShape === 'square');
     }
 
     public moveStroke(x: number, y: number) {
@@ -1044,7 +1048,7 @@ const data = gameEntry?.data || {
       this.drawLineMirrored(this.lastX, this.lastY, x, y);
       this.lastX = x;
       this.lastY = y;
-      sound.playBrush(this.activeBrush);
+      sound.playBrush(this.activeBrush, this.tipShape === 'square');
     }
 
     public endStroke() {
@@ -1084,7 +1088,7 @@ const data = gameEntry?.data || {
       const amp = cfg.amplitude;
       const r = Math.max(1, Math.round(this.brushSize / 2));
       const blend = cfg.blend;
-      const isSquare = this.tipShape === 'square' || this.activeBrush === 'pixel';
+      const isSquare = this.tipShape === 'square';
       const curColor = this.paletteTable[this.activeColorIndex] || PALETTE[2];
 
       let colorIndex = this.activeColorIndex;
@@ -1241,10 +1245,25 @@ const data = gameEntry?.data || {
           data[offset + 3] = bgA;
         } else {
           const c = this.paletteTable[colorIdx] || this.paletteTable[1];
-          data[offset] = c.rgb[0];
-          data[offset + 1] = c.rgb[1];
-          data[offset + 2] = c.rgb[2];
-          data[offset + 3] = 255;
+          if (c.alpha !== undefined && c.alpha < 255) {
+            if (this.bgMode === 'trans' || this.hasPhoto) {
+              data[offset] = c.rgb[0];
+              data[offset + 1] = c.rgb[1];
+              data[offset + 2] = c.rgb[2];
+              data[offset + 3] = c.alpha;
+            } else {
+              const a = c.alpha / 255;
+              data[offset] = Math.round(c.rgb[0] * a + bgR * (1 - a));
+              data[offset + 1] = Math.round(c.rgb[1] * a + bgG * (1 - a));
+              data[offset + 2] = Math.round(c.rgb[2] * a + bgB * (1 - a));
+              data[offset + 3] = 255;
+            }
+          } else {
+            data[offset] = c.rgb[0];
+            data[offset + 1] = c.rgb[1];
+            data[offset + 2] = c.rgb[2];
+            data[offset + 3] = 255;
+          }
         }
       }
 
@@ -1397,7 +1416,7 @@ const data = gameEntry?.data || {
   // =========================================================================
   // 5. DOM EVENTS & INITIALIZATION
   // =========================================================================
-  document.addEventListener('DOMContentLoaded', () => {
+  function initStreamDoodle() {
     const isEn = typeof window !== 'undefined' && (
       new URLSearchParams(window.location.search).get('lang') === 'en' ||
       window.location.pathname.startsWith('/en')
@@ -1514,8 +1533,7 @@ const data = gameEntry?.data || {
       if (sectionLabels[2]) sectionLabels[2].textContent = 'Symmetry';
 
       const brushNames: Record<string, { name: string; title: string }> = {
-        'pen': { name: 'Pen', title: 'Round Pen (Smooth Drawing)' },
-        'pixel': { name: 'Pixel', title: 'Square Pixel Pen (Pixel Art & Retro)' },
+        'pen': { name: 'Pen', title: 'Pen (Round or Square Tip with Line Boil Animation)' },
         'bucket': { name: 'Bucket', title: 'Paint Bucket (Flood Fill Area)' },
         'pencil': { name: 'Pencil', title: 'Sketch Pencil (Rough Graphite Texture)' },
         'spray': { name: 'Spray', title: 'Air Spray (Dot Particles)' },
@@ -1536,6 +1554,8 @@ const data = gameEntry?.data || {
 
       const sidebarTipTitle = document.getElementById('sidebar-tip-title');
       if (sidebarTipTitle) sidebarTipTitle.textContent = 'Tip Shape';
+      const paletteTipLabel = document.getElementById('palette-tip-label');
+      if (paletteTipLabel) paletteTipLabel.textContent = 'Tip';
       const sidebarOpacityTitle = document.getElementById('sidebar-opacity-title');
       if (sidebarOpacityTitle) sidebarOpacityTitle.textContent = 'Opacity';
       const paletteOpacityLabel = document.getElementById('palette-opacity-label');
@@ -1638,6 +1658,129 @@ const data = gameEntry?.data || {
 
     const engine = new StreamDoodleEngine(canvas, photoCanvas);
 
+    // ── Zoom, Pan & Cursor State ──
+    const ZOOM_LEVELS = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0, 4.0];
+    let currentZoom = 1.0;
+    let panX = 0;
+    let panY = 0;
+    let isPanning = false;
+    let panStartX = 0;
+    let panStartY = 0;
+    let isSpacePressed = false;
+    let spaceDragDistance = 0;
+    let isHandToolActive = false;
+
+    function updateBrushCursorColorAndSize() {
+      if (!brushCursor) return;
+      const bKey = engine.activeBrush;
+      const curColor = engine.paletteTable[engine.activeColorIndex] || PALETTE[2];
+      const rgb = curColor.rgb || [255, 0, 85];
+      const hex = curColor.hex || '#FF0055';
+      const isSquare = engine.tipShape === 'square';
+      const opacity = engine.brushOpacity;
+
+      const scale = canvas.offsetWidth / engine.width;
+      let diameter = Math.max(3, engine.brushSize * scale);
+      if (bKey === 'spray') {
+        diameter = Math.max(6, engine.brushSize * 2.5 * scale);
+      }
+      brushCursor.style.width = `${diameter}px`;
+      brushCursor.style.height = `${diameter}px`;
+      brushCursor.style.borderRadius = isSquare ? '2px' : '50%';
+
+      if (bKey === 'bucket') {
+        brushCursor.style.display = 'none';
+        canvas.style.cursor = 'cell';
+        return;
+      }
+
+      canvas.style.cursor = isHandToolActive ? 'grab' : 'none';
+
+      const previewAlpha = Math.max(0.12, opacity * 0.45);
+
+      if (bKey === 'eraser') {
+        brushCursor.style.background = `rgba(255, 255, 255, ${previewAlpha})`;
+        brushCursor.style.borderColor = '#ffffff';
+        brushCursor.style.borderStyle = 'solid';
+      } else if (bKey === 'cutout') {
+        brushCursor.style.background = `rgba(239, 68, 68, ${previewAlpha})`;
+        brushCursor.style.borderColor = '#f87171';
+        brushCursor.style.borderStyle = 'dashed';
+      } else if (bKey === 'rainbow') {
+        brushCursor.style.background = `radial-gradient(circle, rgba(255,0,128,${previewAlpha}) 0%, rgba(0,255,200,${previewAlpha}) 100%)`;
+        brushCursor.style.borderColor = '#38bdf8';
+        brushCursor.style.borderStyle = 'solid';
+      } else if (bKey === 'spray') {
+        brushCursor.style.background = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${previewAlpha * 0.7})`;
+        brushCursor.style.borderColor = hex;
+        brushCursor.style.borderStyle = 'dashed';
+      } else {
+        brushCursor.style.background = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${previewAlpha})`;
+        brushCursor.style.borderColor = '#ffffff';
+        brushCursor.style.borderStyle = 'solid';
+      }
+    }
+
+    function updateBrushCursorPos(pos: { x: number; y: number }) {
+      if (!brushCursor) return;
+      if (isHandToolActive || isSpacePressed || engine.activeBrush === 'bucket') {
+        brushCursor.style.display = 'none';
+        return;
+      }
+      const cursorX = pos.x * (canvas.offsetWidth / engine.width);
+      const cursorY = pos.y * (canvas.offsetHeight / engine.height);
+      brushCursor.style.left = `${cursorX}px`;
+      brushCursor.style.top = `${cursorY}px`;
+      brushCursor.style.display = 'block';
+    }
+
+    function updateCanvasTransform(animate: boolean = false) {
+      if (!canvasFrame) return;
+      canvasFrame.style.transition = animate ? 'transform 0.16s cubic-bezier(0.2, 0.8, 0.2, 1)' : 'none';
+      canvasFrame.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
+      if (zoomLevelText) {
+        zoomLevelText.textContent = `${Math.round(currentZoom * 100)}%`;
+      }
+      if (zoomResetBtn) {
+        zoomResetBtn.classList.toggle('is-custom', Math.abs(currentZoom - 1.0) > 0.01);
+      }
+      updateBrushCursorColorAndSize();
+    }
+
+    function zoomTo(newZoom: number, animate: boolean = true) {
+      currentZoom = Math.max(0.25, Math.min(4.0, Math.round(newZoom * 100) / 100));
+      updateCanvasTransform(animate);
+    }
+
+    function zoomIn() {
+      const next = ZOOM_LEVELS.find(lvl => lvl > currentZoom + 0.02) || 4.0;
+      zoomTo(next, true);
+    }
+
+    function zoomOut() {
+      const prev = [...ZOOM_LEVELS].reverse().find(lvl => lvl < currentZoom - 0.02) || 0.25;
+      zoomTo(prev, true);
+    }
+
+    function resetZoom() {
+      currentZoom = 1.0;
+      panX = 0;
+      panY = 0;
+      updateCanvasTransform(true);
+      showToast(isEn ? 'Zoom reset (100%)' : '확대율 초기화 (100%)');
+    }
+
+    function fitZoom() {
+      panX = 0;
+      panY = 0;
+      const vpW = canvasViewport ? canvasViewport.clientWidth - 40 : 360;
+      const vpH = canvasViewport ? canvasViewport.clientHeight - 40 : 360;
+      const scaleW = vpW / canvas.offsetWidth;
+      const scaleH = vpH / canvas.offsetHeight;
+      const fitScale = Math.min(1.0, Math.min(scaleW, scaleH));
+      zoomTo(Math.max(0.5, fitScale), true);
+    }
+
     // ── Canvas Size Dropdown Setup ──
     const sizeBtn = document.getElementById('canvas-size-btn');
     const sizeDropdown = document.getElementById('size-dropdown-menu');
@@ -1691,7 +1834,6 @@ const data = gameEntry?.data || {
     // ── Brush Metadata & UI Synchronization ──
     const BRUSH_META: Record<string, { icon: string; nameKo: string; nameEn: string }> = {
       pen:     { icon: '🖊️', nameKo: '펜',       nameEn: 'Pen' },
-      pixel:   { icon: '🔲', nameKo: '픽셀 펜',   nameEn: 'Pixel Pen' },
       bucket:  { icon: '🪣', nameKo: '페인트통',  nameEn: 'Bucket Fill' },
       pencil:  { icon: '✏️', nameKo: '연필',      nameEn: 'Pencil' },
       spray:   { icon: '💨', nameKo: '스프레이',  nameEn: 'Spray' },
@@ -1734,9 +1876,6 @@ const data = gameEntry?.data || {
       if (toolCardName) toolCardName.textContent = bName;
 
       // 1. Tip Shape synchronization
-      if (bKey === 'pixel') {
-        engine.tipShape = 'square';
-      }
       document.querySelectorAll('.tip-btn').forEach(btn => {
         btn.classList.toggle('active', (btn as HTMLElement).dataset.tip === engine.tipShape);
       });
@@ -2081,65 +2220,7 @@ const data = gameEntry?.data || {
     removePhotoBtn?.addEventListener('click', () => removePhoto(true));
     photoOverlayRemoveBtn?.addEventListener('click', () => removePhoto(true));
 
-    // ── Zoom & Pan System ──
-    const ZOOM_LEVELS = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0, 4.0];
-    let currentZoom = 1.0;
-    let panX = 0;
-    let panY = 0;
-    let isPanning = false;
-    let panStartX = 0;
-    let panStartY = 0;
-    let isSpacePressed = false;
-    let spaceDragDistance = 0;
-    let isHandToolActive = false;
-
-    const updateCanvasTransform = (animate: boolean = false) => {
-      if (!canvasFrame) return;
-      canvasFrame.style.transition = animate ? 'transform 0.16s cubic-bezier(0.2, 0.8, 0.2, 1)' : 'none';
-      canvasFrame.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
-      if (zoomLevelText) {
-        zoomLevelText.textContent = `${Math.round(currentZoom * 100)}%`;
-      }
-      if (zoomResetBtn) {
-        zoomResetBtn.classList.toggle('is-custom', Math.abs(currentZoom - 1.0) > 0.01);
-      }
-      updateBrushCursorColorAndSize();
-    };
-
-    const zoomTo = (newZoom: number, animate: boolean = true) => {
-      currentZoom = Math.max(0.25, Math.min(4.0, Math.round(newZoom * 100) / 100));
-      updateCanvasTransform(animate);
-    };
-
-    const zoomIn = () => {
-      const next = ZOOM_LEVELS.find(lvl => lvl > currentZoom + 0.02) || 4.0;
-      zoomTo(next, true);
-    };
-
-    const zoomOut = () => {
-      const prev = [...ZOOM_LEVELS].reverse().find(lvl => lvl < currentZoom - 0.02) || 0.25;
-      zoomTo(prev, true);
-    };
-
-    const resetZoom = () => {
-      currentZoom = 1.0;
-      panX = 0;
-      panY = 0;
-      updateCanvasTransform(true);
-      showToast(isEn ? 'Zoom reset (100%)' : '확대율 초기화 (100%)');
-    };
-
-    const fitZoom = () => {
-      panX = 0;
-      panY = 0;
-      const vpW = canvasViewport ? canvasViewport.clientWidth - 40 : 360;
-      const vpH = canvasViewport ? canvasViewport.clientHeight - 40 : 360;
-      const scaleW = vpW / canvas.offsetWidth;
-      const scaleH = vpH / canvas.offsetHeight;
-      const fitScale = Math.min(1.0, Math.min(scaleW, scaleH));
-      zoomTo(Math.max(0.5, fitScale), true);
-    };
-
+    // ── Zoom & Pan Controls ──
     zoomInBtn?.addEventListener('click', zoomIn);
     zoomOutBtn?.addEventListener('click', zoomOut);
     zoomResetBtn?.addEventListener('click', resetZoom);
@@ -2168,71 +2249,6 @@ const data = gameEntry?.data || {
         zoomTo(currentZoom * factor, false);
       }
     }, { passive: false });
-
-    // ── Brush Cursor Indicator ──
-    const updateBrushCursorColorAndSize = () => {
-      if (!brushCursor) return;
-      const bKey = engine.activeBrush;
-      const curColor = engine.paletteTable[engine.activeColorIndex] || PALETTE[2];
-      const rgb = curColor.rgb || [255, 0, 85];
-      const hex = curColor.hex || '#FF0055';
-      const isSquare = engine.tipShape === 'square' || bKey === 'pixel';
-      const opacity = engine.brushOpacity;
-
-      const scale = canvas.offsetWidth / engine.width;
-      let diameter = Math.max(3, engine.brushSize * scale);
-      if (bKey === 'spray') {
-        diameter = Math.max(6, engine.brushSize * 2.5 * scale);
-      }
-      brushCursor.style.width = `${diameter}px`;
-      brushCursor.style.height = `${diameter}px`;
-      brushCursor.style.borderRadius = isSquare ? '2px' : '50%';
-
-      if (bKey === 'bucket') {
-        brushCursor.style.display = 'none';
-        canvas.style.cursor = 'cell';
-        return;
-      }
-
-      canvas.style.cursor = isHandToolActive ? 'grab' : 'none';
-
-      const previewAlpha = Math.max(0.12, opacity * 0.45);
-
-      if (bKey === 'eraser') {
-        brushCursor.style.background = `rgba(255, 255, 255, ${previewAlpha})`;
-        brushCursor.style.borderColor = '#ffffff';
-        brushCursor.style.borderStyle = 'solid';
-      } else if (bKey === 'cutout') {
-        brushCursor.style.background = `rgba(239, 68, 68, ${previewAlpha})`;
-        brushCursor.style.borderColor = '#f87171';
-        brushCursor.style.borderStyle = 'dashed';
-      } else if (bKey === 'rainbow') {
-        brushCursor.style.background = `radial-gradient(circle, rgba(255,0,128,${previewAlpha}) 0%, rgba(0,255,200,${previewAlpha}) 100%)`;
-        brushCursor.style.borderColor = '#38bdf8';
-        brushCursor.style.borderStyle = 'solid';
-      } else if (bKey === 'spray') {
-        brushCursor.style.background = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${previewAlpha * 0.7})`;
-        brushCursor.style.borderColor = hex;
-        brushCursor.style.borderStyle = 'dashed';
-      } else {
-        brushCursor.style.background = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${previewAlpha})`;
-        brushCursor.style.borderColor = '#ffffff';
-        brushCursor.style.borderStyle = 'solid';
-      }
-    };
-
-    const updateBrushCursorPos = (pos: { x: number; y: number }) => {
-      if (!brushCursor) return;
-      if (isHandToolActive || isSpacePressed || engine.activeBrush === 'bucket') {
-        brushCursor.style.display = 'none';
-        return;
-      }
-      const cursorX = pos.x * (canvas.offsetWidth / engine.width);
-      const cursorY = pos.y * (canvas.offsetHeight / engine.height);
-      brushCursor.style.left = `${cursorX}px`;
-      brushCursor.style.top = `${cursorY}px`;
-      brushCursor.style.display = 'block';
-    };
 
     // ── Pointer Draw & Pan Events ──
     const getPos = (e: PointerEvent) => {
@@ -2489,7 +2505,13 @@ const data = gameEntry?.data || {
 
     // Initial preset
     engine.loadPreset('cat');
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initStreamDoodle);
+  } else {
+    initStreamDoodle();
+  }
 </script>
 
 <style>
@@ -3473,6 +3495,23 @@ const data = gameEntry?.data || {
     border-color: #00eac8;
     color: #00eac8;
     box-shadow: 0 0 8px rgba(0, 234, 200, 0.3);
+  }
+
+  .tip-control-group {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .palette-tip-toggle {
+    width: auto;
+    display: inline-flex;
+  }
+
+  .palette-tip-toggle .tip-btn {
+    flex: none;
+    padding: 0.2rem 0.45rem;
+    font-size: 0.65rem;
   }
 
   .opacity-control-group {
