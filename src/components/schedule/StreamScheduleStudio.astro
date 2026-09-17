@@ -350,7 +350,7 @@ const isEn = lang === 'en';
 
       <!-- Board Footer -->
       <div class="board-footer">
-        <span>StreamArcade Schedule Studio • {isEn ? 'Free Instant Broadcast Schedule Generator' : '누구나 무료로 생성하는 방송 편성표'}</span>
+        <span>ErrorLedger Schedule Studio • {isEn ? 'Free Instant Broadcast Schedule Generator' : '누구나 무료로 생성하는 방송 편성표'}</span>
       </div>
     </div>
   </div>
@@ -2861,7 +2861,7 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
       text += '• ' + d.dateStr + ' (' + dayTag + ') : ' + badge.icon + ' ' + timeStr + ' | ' + titleStr + '\n';
     });
 
-    text += '\n📺 ' + (state.channel.tagline || 'StreamArcade') + '\nhttps://streamarcade.net/' + (isEn ? 'en/' : '') + 'schedule';
+    text += '\n📺 ' + (state.channel.tagline || 'ErrorLedger') + '\nhttps://errorledger.com/' + (isEn ? 'en/' : '') + 'schedule';
 
     if (navigator.clipboard) {
       navigator.clipboard.writeText(text).then(function () {

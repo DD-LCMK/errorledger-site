@@ -47,7 +47,7 @@ const ui = {
     'nav.lang.title': 'Switch to English',
 
     // Footer
-    'footer.desc': '스트림아케이드는 치지직(CHZZK), SOOP(아프리카TV), 유튜브 라이브 스트리머와 시청자를 위한 무료 방송용 인터랙티브 웹게임 플랫폼입니다. 언제 어디서나 간편하게 띄워 생방송 텐션을 올려보세요.',
+    'footer.desc': '에러레저는 치지직(CHZZK), SOOP(아프리카TV), 유튜브 라이브 스트리머와 시청자를 위한 무료 방송용 인터랙티브 웹게임 플랫폼입니다. 언제 어디서나 간편하게 띄워 생방송 텐션을 올려보세요.',
     'footer.badge': '⚡ 100% 무료 • 로그인 없는 즉시 실행',
     'footer.category.games': '인기 게임',
     'footer.category.tests': '심리 & 운세',
@@ -69,7 +69,7 @@ const ui = {
     'footer.support.terms': '이용약관',
     'footer.support.about': '서비스 소개',
     'footer.support.contact': '문의하기',
-    'footer.copyright': '스트림아케이드 (StreamArcade). All rights reserved. 방송인을 위한 무료 인터랙티브 도구.',
+    'footer.copyright': '에러레저 (ErrorLedger). All rights reserved. 방송인을 위한 무료 인터랙티브 도구.',
 
     // Game layout
     'game.guide.toggle': '📖 상세 가이드 및 FAQ 보기',
@@ -101,7 +101,7 @@ const ui = {
     'nav.lang.title': '한국어로 전환',
 
     // Footer
-    'footer.desc': 'StreamArcade is a 100% free, browser-based interactive tool platform for live streamers on Twitch, YouTube, CHZZK, and SOOP — no install, no login required.',
+    'footer.desc': 'ErrorLedger is a 100% free, browser-based interactive tool platform for live streamers on Twitch, YouTube, CHZZK, and SOOP — no install, no login required.',
     'footer.badge': '⚡ 100% Free • No Login Required',
     'footer.category.games': 'Games',
     'footer.category.tests': 'Tests & Fortune',
@@ -121,9 +121,9 @@ const ui = {
     'footer.support.title': 'Support & Info',
     'footer.support.privacy': 'Privacy Policy',
     'footer.support.terms': 'Terms of Use',
-    'footer.support.about': 'About StreamArcade',
+    'footer.support.about': 'About ErrorLedger',
     'footer.support.contact': 'Contact Us',
-    'footer.copyright': 'StreamArcade. All rights reserved. Free interactive tools for streamers.',
+    'footer.copyright': 'ErrorLedger. All rights reserved. Free interactive tools for streamers.',
 
     // Game layout
     'game.guide.toggle': '📖 Full Guide & FAQ',
