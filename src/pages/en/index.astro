@@ -12,7 +12,7 @@ const urlParams = Astro.url.searchParams;
 const streamerMode = urlParams.has('stream') || urlParams.has('obs');
 
 const games = await getCollection('games');
-const priorityOrder = ['marble-roulette', 'roulette', 'ladder', 'drinking-marble', 'stream-doodle', 'fortune'];
+const priorityOrder = ['marble-roulette', 'roulette', 'ladder', 'drinking-marble', 'ai-music-quiz', 'stream-doodle', 'stream-emoji', 'fortune'];
 const sortedGames = games.sort((a, b) => {
   const idxA = priorityOrder.indexOf(a.id);
   const idxB = priorityOrder.indexOf(b.id);
@@ -136,6 +136,8 @@ const homeFaqSchema = JSON.stringify({
               'ladder': 'Ghost Leg Ladder Game',
               'drinking-marble': 'Blossom Board (Drinking & Penalty)',
               'stream-doodle': 'Stream Doodle (Animated GIF Studio)',
+              'stream-emoji': 'Stream Emoji (Animated Emotes)',
+              'ai-music-quiz': 'AI Music Quiz (Guess The Song)',
               'fortune': 'Daily Fortune',
             };
             const enTagline: Record<string, string> = {
@@ -144,6 +146,8 @@ const homeFaqSchema = JSON.stringify({
               'ladder': 'Real-time animated ghost-leg (Amidakuji) for 2–20 players',
               'drinking-marble': 'Monopoly-style drinking & penalty board with 3D rolling dice',
               'stream-doodle': 'Interactive animated GIF doodle studio with 12 FPS line boil and OBS mode',
+              'stream-emoji': 'Create retro 16-frame pixel & animated emotes for Twitch, Discord & YouTube',
+              'ai-music-quiz': 'Listen to AI rearranged songs and guess the original title with side-by-side YouTube reveals',
               'fortune': 'Daily auto-updated horoscope & zodiac fortune for stream openers',
             };
             const enBadge: Record<string, string> = {
@@ -152,6 +156,8 @@ const homeFaqSchema = JSON.stringify({
               'ladder': 'Bets & Penalties',
               'drinking-marble': '🌸 New Game',
               'stream-doodle': '✨ New Studio',
+              'stream-emoji': '🎬 Emote Maker',
+              'ai-music-quiz': '🎧 New Game',
               'fortune': 'Daily Free',
             };
             return (

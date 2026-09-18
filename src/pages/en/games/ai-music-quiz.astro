@@ -1,0 +1,229 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import LeaderboardAd from '../../../components/ads/LeaderboardAd.astro';
+import { getKoUrl, getEnUrl } from '../../../i18n';
+
+const siteBase = Astro.site?.toString() || 'https://errorledger.com';
+const rawPath = Astro.url.pathname.replace(/\/$/, '');
+const koUrl = getKoUrl(siteBase, rawPath);
+const enUrl = getEnUrl(siteBase, rawPath);
+
+const urlParams = Astro.url.searchParams;
+const streamerMode = urlParams.has('stream') || urlParams.has('obs');
+const gameUrl = streamerMode
+  ? '/games/ai-music-quiz?bare=1&stream=true&lang=en'
+  : '/games/ai-music-quiz?bare=1&lang=en';
+
+const webAppSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "AI Music Quiz — ErrorLedger",
+  "alternateName": ["AI Music Quiz", "Guess The Song", "AI Cover Song Quiz", "AI 편곡 노래 맞추기"],
+  "url": enUrl,
+  "description": "Listen to songs rearranged by AI using their original lyrics and guess the original title. Audio scrubber controls, relaxed typo-tolerant answering, and side-by-side YouTube comparison without autoplay.",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "All (Web Browser, Chrome, Edge, Safari, Mobile)",
+  "inLanguage": ["en-US", "ko-KR"],
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+});
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead
+      title="AI Music Quiz — Guess The Song From AI Rearranged Covers | ErrorLedger"
+      description="Can you guess the original song when AI completely reimagines the melody? Streamer-friendly audio player, typo-tolerant answer validation, and side-by-side AI vs Original comparison. Free with no install!"
+      lang="en"
+      hreflangKo={koUrl}
+      hreflangEn={enUrl}
+      keywords="AI Music Quiz, Guess the Song Game, AI Cover Song Quiz, Music Quiz Online, Twitch Music Game, YouTube Stream Quiz, Free Music Trivia"
+    />
+    <script type="application/ld+json" set:html={webAppSchema}></script>
+  </head>
+  <body class="en-game-body">
+    <Header />
+
+    <main class="en-game-main">
+      <div class="en-game-frame-wrap">
+        <iframe
+          src={gameUrl}
+          class="en-game-iframe"
+          id="game-iframe"
+          title="AI Music Quiz — ErrorLedger"
+          allowfullscreen
+          loading="eager"
+          scrolling="no"
+        ></iframe>
+      </div>
+
+      <!-- Unobtrusive Expandable Information Drawer (for Guide & FAQ) -->
+      {!streamerMode && (
+        <details class="stream-bottom-details">
+          <summary class="details-summary">
+            <span>📖 Detailed Guide & FAQ</span>
+            <span class="chevron">▼</span>
+          </summary>
+          <div class="details-content">
+            <div class="details-faq-section">
+              <h3>AI Music Quiz FAQ</h3>
+              <div class="details-faq-grid">
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. How does the game work?</strong>
+                  <p class="faq-a">AI rearranges the song with new beats and vocals based on original lyrics. Listen to the audio snippet via the hidden player and submit your guess for the original title.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Are answers strict or typo-tolerant?</strong>
+                  <p class="faq-a">The answer checker is relaxed! It ignores spacing, punctuation, and casing, and accepts English or Korean titles as well as minor 1-2 character typos.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Do the reveal videos autoplay?</strong>
+                  <p class="faq-a">No, autoplay is strictly disabled. You have full control to click and listen to the AI version on the left or original highlight on the right at your own pace.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Can streamers customize the rounds?</strong>
+                  <p class="faq-a">Yes. In the pre-game lobby, choose how many questions to play (5, 10, or all) and toggle shuffle mode.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Can I add custom songs or save my own playlists?</strong>
+                  <p class="faq-a">To keep the game completely friction-free without accounts or database logins, custom song uploads are not supported. All tracks are officially curated and updated regularly.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </details>
+      )}
+
+      <!-- Horizontal single-line ad below detail guide & FAQ -->
+      <LeaderboardAd streamerMode={streamerMode} />
+    </main>
+
+    {!streamerMode && <Footer />}
+
+    <script>
+      const iframe = document.getElementById('game-iframe') as HTMLIFrameElement;
+      if (iframe) {
+        var sp = new URLSearchParams(window.location.search);
+        if (sp.has('stream') || sp.has('obs')) {
+          var s = document.createElement('style');
+          s.textContent = [
+            '.leaderboard-ad-wrap { display: none !important; }',
+            'footer { display: none !important; }',
+            '.stream-bottom-details { display: none !important; }',
+            '.arcade-header { display: none !important; }',
+            '.en-game-main { padding: 0 !important; margin: 0 !important; max-width: none !important; }',
+            '.en-game-frame-wrap { height: 100vh !important; }',
+            '.en-game-iframe { height: 100vh !important; }'
+          ].join(' ');
+          document.head.appendChild(s);
+
+          if (!iframe.src.includes('stream=true')) {
+            iframe.src = iframe.src + '&stream=true';
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
+
+<style>
+  .en-game-body {
+    background: #090d16;
+    color: #f1f5f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+  }
+
+  .en-game-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 1rem 1rem 3rem;
+    box-sizing: border-box;
+  }
+
+  .en-game-frame-wrap {
+    width: 100%;
+    height: 850px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #0d121f;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .en-game-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  .stream-bottom-details {
+    width: 100%;
+    max-width: 1080px;
+    margin-top: 2rem;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .details-summary {
+    padding: 1rem 1.5rem;
+    font-weight: 700;
+    font-size: 1.05rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    color: #38bdf8;
+  }
+
+  .details-content {
+    padding: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .details-faq-section h3 {
+    margin: 0 0 1.25rem;
+    font-size: 1.2rem;
+    color: #f8fafc;
+  }
+
+  .details-faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .details-faq-card {
+    background: rgba(30, 41, 59, 0.5);
+    padding: 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .faq-q {
+    display: block;
+    color: #38bdf8;
+    margin-bottom: 0.4rem;
+    font-size: 0.95rem;
+  }
+
+  .faq-a {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+</style>

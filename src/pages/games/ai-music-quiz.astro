@@ -1,0 +1,2056 @@
+---
+import GameLayout from '../../layouts/GameLayout.astro';
+import { getEntry } from 'astro:content';
+import { QUIZ_SONG_LIST } from '../../data/aiMusicQuiz';
+
+const gameEntry = await getEntry('games', 'ai-music-quiz');
+const data = gameEntry?.data || {
+  title: 'AI 편곡 노래 맞추기 퀴즈',
+  tagline: 'AI가 재해석한 가사를 듣고 원곡을 맞히는 신개념 음악 퀴즈',
+  description: 'AI로 새롭게 편곡된 노래를 듣고 원곡의 제목을 맞혀보세요! 깔끔한 오디오 플레이어와 시크 바, 관대한 정답 판정, 정답 공개 후 AI와 원곡 영상의 1:1 좌우 비교 감상까지 무료로 즐길 수 있습니다.',
+  icon: '🎧',
+  category: 'stream',
+  badge: '🎵 신규 게임',
+  players: '1인 ~ 시청자 다수 (방송 참여)',
+  playTime: '3분 ~ 10분',
+  controls: [
+    '스피커 버튼을 눌러 AI 편곡 음원 재생 및 일시정지 (단축키: Space)',
+    '탐색 바(Scrubber Bar)로 원하는 구간 자유롭게 다시 듣기 (좌우 방향키 5초 이동)',
+    '정답 입력창에 생각나는 노래 제목이나 영문 제목 입력 후 Enter',
+    '정답 공개 화면에서 AI 편곡과 원곡 하이라이트를 좌우로 직접 비교 재생'
+  ],
+  rules: [
+    'AI가 원곡의 가사를 기반으로 완전히 다른 장르와 보컬로 재해석한 음원을 들려줍니다.',
+    '화면에는 영상이 노출되지 않으므로 순수하게 귀로 듣고 원곡을 유추해야 합니다.',
+    '띄어쓰기나 사소한 오타, 영문 표기도 관대하게 정답으로 인정됩니다.',
+    '정답을 제출하면 좌측에는 AI 편곡, 우측에는 원곡 하이라이트 영상이 열려 비교해 볼 수 있습니다.'
+  ],
+  faqItems: [
+    {
+      q: '원곡과 AI 음원은 어디서 재생되나요?',
+      a: '모든 음원은 유튜브 정식 링크를 통해 안전하게 재생되며, 문제 풀이 중에는 제목이나 썸네일이 보이지 않도록 오디오 컨트롤러만 제공됩니다.'
+    },
+    {
+      q: '정답 공개 시 영상이 자동으로 재생되어 시끄럽지 않나요?',
+      a: '걱정하지 마세요! 정답 화면에 나오는 AI 영상과 원곡 영상은 자동 재생되지 않으며(Autoplay 비활성화), 스트리머가 원하는 순서대로 직접 클릭하여 들려줄 수 있습니다.'
+    },
+    {
+      q: '원하는 곡을 직접 추가하거나 나만의 퀴즈를 만들 수 있나요?',
+      a: '현재 버전은 별도의 데이터베이스 연동이나 로그인 없이 누구나 즉시 즐길 수 있도록 제작되어, 개인 곡 추가 기능은 지원하지 않습니다. 대신 검증된 엄선 퀴즈셋이 정기적으로 업데이트됩니다.'
+    }
+  ]
+};
+
+// JSON stringified quiz data to pass into client script
+const quizDataJson = JSON.stringify(QUIZ_SONG_LIST);
+---
+
+<GameLayout
+  title={data.title}
+  description={data.description}
+  tagline={data.tagline}
+  icon={data.icon}
+  category={data.category}
+  badge={data.badge}
+  players={data.players}
+  playTime={data.playTime}
+  controls={data.controls}
+  rules={data.rules}
+  faqItems={data.faqItems}
+  layoutMode="full"
+  hideStageHeader={true}
+  hideFooter={false}
+>
+  <div class="music-quiz-root" id="quiz-root">
+    <!-- Hidden YouTube Audio Player Container -->
+    <div id="yt-audio-container" class="yt-hidden-wrapper" aria-hidden="true">
+      <div id="yt-hidden-player"></div>
+    </div>
+
+    <!-- 1. LOBBY SCREEN (Rules, Manual, Round Settings) -->
+    <div id="screen-lobby" class="quiz-screen active">
+      <div class="lobby-card">
+        <div class="lobby-badge">🎧 STREAM MUSIC QUIZ</div>
+        <h1 class="lobby-title">AI 편곡 노래 맞추기</h1>
+        <p class="lobby-subtitle">
+          AI가 원곡의 가사로 새롭게 편곡한 음악을 듣고 노래 제목을 맞혀보세요!
+        </p>
+
+        <!-- Pre-game Guide / Manual -->
+        <div class="guide-box">
+          <h2 class="guide-box-title">📖 퀴즈 진행 매뉴얼</h2>
+          <div class="guide-grid">
+            <div class="guide-item">
+              <span class="guide-icon">🔊</span>
+              <div class="guide-text">
+                <strong>1. 음원 듣기</strong>
+                <p>스피커 재생 버튼을 눌러 AI 편곡을 듣습니다. 타임 바로 원하는 구간을 언제든 다시 들을 수 있습니다.</p>
+              </div>
+            </div>
+            <div class="guide-item">
+              <span class="guide-icon">✍️</span>
+              <div class="guide-text">
+                <strong>2. 정답 제출</strong>
+                <p>노래 제목을 입력하세요. 띄어쓰기나 1~2자 오타, 영문 표기도 관대하게 정답으로 인정됩니다.</p>
+              </div>
+            </div>
+            <div class="guide-item">
+              <span class="guide-icon">🤖 ⚡ 🎧</span>
+              <div class="guide-text">
+                <strong>3. 좌우 비교 감상</strong>
+                <p>정답 확인 후 좌측 AI 편곡과 우측 원곡 하이라이트를 비교 감상하세요. (자동재생되지 않으니 직접 클릭하세요!)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Round Count Options -->
+        <div class="settings-box">
+          <label class="settings-label">🎯 플레이할 문제 수 선택</label>
+          <div class="round-options-group" id="round-options">
+            <button type="button" class="round-btn active" data-count="5">5문제</button>
+            <button type="button" class="round-btn" data-count="10">10문제</button>
+            <button type="button" class="round-btn" data-count="20">20문제</button>
+            <button type="button" class="round-btn" data-count="all">전체 ({QUIZ_SONG_LIST.length}곡)</button>
+          </div>
+          <div class="shuffle-option">
+            <label class="checkbox-label">
+              <input type="checkbox" id="shuffle-checkbox" checked />
+              <span>🎲 문제 순서 무작위 셔플</span>
+            </label>
+          </div>
+        </div>
+
+        <button type="button" id="start-game-btn" class="glow-start-btn">
+          <span>🚀 퀴즈 시작하기</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 2. QUIZ PLAYING SCREEN (Audio Player UX & Answer Form) -->
+    <div id="screen-playing" class="quiz-screen">
+      <!-- Top Status Bar -->
+      <div class="quiz-top-bar">
+        <div class="round-indicator">
+          <span class="round-badge">QUESTION</span>
+          <span id="current-round-text" class="round-number">Q 1 / 5</span>
+        </div>
+        <div class="score-indicator">
+          <span>현재 점수:</span>
+          <strong id="current-score-text">0</strong>
+        </div>
+      </div>
+
+      <!-- Main Audio Player Stage -->
+      <div class="audio-stage-card">
+        <div class="disc-visualizer-wrap">
+          <div class="disc-glow" id="disc-glow"></div>
+          <button type="button" id="audio-toggle-btn" class="speaker-action-btn" title="재생 / 일시정지 (Space)">
+            <span class="speaker-icon" id="speaker-icon">🔊</span>
+            <div class="sound-ripples">
+              <span class="ripple r1"></span>
+              <span class="ripple r2"></span>
+              <span class="ripple r3"></span>
+            </div>
+          </button>
+        </div>
+
+        <!-- Equalizer Waves Animation -->
+        <div class="equalizer-bars" id="equalizer-bars">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
+
+        <div class="player-status-text" id="player-status-text">
+          버튼을 눌러 AI 편곡 음원을 재생하세요
+        </div>
+
+        <!-- Scrubber Progress Bar -->
+        <div class="scrubber-control-group">
+          <span class="time-label" id="time-current">0:00</span>
+          <div class="scrubber-wrapper">
+            <input type="range" id="audio-scrubber" min="0" max="100" value="0" step="0.1" class="audio-scrubber" />
+            <div class="scrubber-fill" id="scrubber-fill"></div>
+          </div>
+          <span class="time-label" id="time-duration">0:00</span>
+        </div>
+
+        <!-- Audio Action Controls -->
+        <div class="audio-quick-controls">
+          <button type="button" id="btn-skip-backward" class="quick-ctl-btn" title="10초 뒤로">
+            <span>⏪ 10초</span>
+          </button>
+          <button type="button" id="btn-restart-audio" class="quick-ctl-btn" title="처음부터 다시듣기">
+            <span>🔄 처음부터</span>
+          </button>
+          <button type="button" id="btn-skip-forward" class="quick-ctl-btn" title="10초 앞으로">
+            <span>10초 ⏩</span>
+          </button>
+        </div>
+
+        <!-- Hint Section -->
+        <div class="hint-container">
+          <button type="button" id="btn-toggle-hint" class="hint-toggle-btn">
+            <span>💡 힌트 보기</span>
+          </button>
+          <div id="hint-display-box" class="hint-display-box hidden">
+            <div class="hint-item" id="hint-initials-row">
+              <span class="hint-tag">초성</span>
+              <strong id="hint-initials-text" class="hint-val"></strong>
+            </div>
+            <div class="hint-item" id="hint-genre-row">
+              <span class="hint-tag">장르/연도</span>
+              <span id="hint-genre-text" class="hint-val"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Answer Input Card -->
+      <div class="answer-card">
+        <form id="answer-form" class="answer-form" onsubmit="return false;">
+          <div class="input-row">
+            <input
+              type="text"
+              id="answer-input"
+              class="answer-input"
+              placeholder="노래 제목을 입력하세요 (예: 만약에, IF)"
+              autocomplete="off"
+              autofocus
+            />
+            <button type="submit" id="btn-submit-answer" class="btn-submit">
+              <span>제출 (Enter)</span>
+            </button>
+          </div>
+          <div class="form-bottom-actions">
+            <button type="button" id="btn-skip-question" class="btn-skip">
+              <span>🤷 모르겠어요 (패스)</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 3. REVEAL SCREEN (Side-by-Side Video Player Comparison) -->
+    <div id="screen-reveal" class="quiz-screen">
+      <!-- Result Banner -->
+      <div id="reveal-banner" class="reveal-banner">
+        <span class="result-icon" id="result-icon">🎉</span>
+        <div class="result-text-wrap">
+          <h2 id="result-headline" class="result-headline">정답입니다!</h2>
+          <p id="result-subline" class="result-subline">원곡: 태연 - 만약에</p>
+        </div>
+      </div>
+
+      <!-- Side-by-Side YouTube Comparison Grid -->
+      <div class="comparison-grid">
+        <!-- Left: AI Rearranged Song -->
+        <div class="video-compare-card ai-card">
+          <div class="card-header">
+            <span class="badge ai-badge">🤖 AI 편곡 버전</span>
+            <span class="audio-cue">퀴즈에 출제된 음원</span>
+          </div>
+          <div class="iframe-embed-wrap">
+            <iframe
+              id="reveal-ai-iframe"
+              class="reveal-iframe"
+              src=""
+              title="AI 편곡 영상"
+              allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          </div>
+          <div class="card-footer">
+            <span class="info-note">⚠️ 자동재생되지 않습니다. 클릭하여 AI 음원을 감상하세요.</span>
+          </div>
+        </div>
+
+        <!-- Right: Original Song Highlight -->
+        <div class="video-compare-card original-card">
+          <div class="card-header">
+            <span class="badge original-badge">🎧 원곡 하이라이트</span>
+            <span class="audio-cue" id="original-start-cue">하이라이트 구간 시작</span>
+          </div>
+          <div class="iframe-embed-wrap">
+            <iframe
+              id="reveal-original-iframe"
+              class="reveal-iframe"
+              src=""
+              title="원곡 하이라이트 영상"
+              allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          </div>
+          <div class="card-footer">
+            <span class="info-note">⚠️ 자동재생되지 않습니다. 클릭하여 원곡과 차이를 비교해보세요!</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Next Button Bar -->
+      <div class="reveal-action-bar">
+        <button type="button" id="btn-next-question" class="glow-next-btn">
+          <span id="next-btn-text">다음 문제로 (Enter) ➔</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 4. SUMMARY / SCOREBOARD SCREEN -->
+    <div id="screen-summary" class="quiz-screen">
+      <div class="summary-card">
+        <div class="summary-header">
+          <span class="summary-badge">🏆 QUIZ COMPLETED</span>
+          <h2 class="summary-title">퀴즈 결과</h2>
+          <div class="final-score-box">
+            <div class="score-circle">
+              <span id="summary-score" class="big-score">0</span>
+              <span class="score-divider">/</span>
+              <span id="summary-total" class="total-score">0</span>
+            </div>
+            <p id="summary-comment" class="summary-comment">훌륭합니다! 원곡을 정확하게 기억하고 계시네요!</p>
+          </div>
+        </div>
+
+        <!-- Song History List -->
+        <div class="history-list-box">
+          <h3 class="history-title">🎵 출제된 곡 목록 및 원곡 비교</h3>
+          <div class="history-items" id="history-items-container">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Summary Action Buttons -->
+        <div class="summary-actions">
+          <button type="button" id="btn-play-again" class="btn-primary">
+            <span>🔄 같은 설정으로 다시 하기</span>
+          </button>
+          <button type="button" id="btn-back-to-lobby" class="btn-secondary">
+            <span>⚙️ 문제 수 및 설정 변경</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</GameLayout>
+
+<script is:inline src="https://www.youtube.com/iframe_api"></script>
+
+<script is:inline define:vars={{ quizDataJson }}>
+  // Quiz song dataset from server
+  var ALL_SONGS = JSON.parse(quizDataJson);
+
+  // Global YouTube Player Instance for audio quiz
+  var ytPlayer = null;
+  var isPlayerReady = false;
+  var progressTimer = null;
+  var isAudioPlaying = false;
+
+  // Quiz Game State
+  var gameState = {
+    screen: 'LOBBY', // 'LOBBY' | 'PLAYING' | 'REVEAL' | 'SUMMARY'
+    selectedCount: 5,
+    isShuffle: true,
+    activeSongs: [],
+    currentIndex: 0,
+    score: 0,
+    history: [], // { song, userWon, userAnswer }
+    hintRevealed: false
+  };
+
+  // 유튜브 URL 파싱 헬퍼 (클라이언트용)
+  function parseYoutubeUrlClient(url) {
+    var videoId = '';
+    var startTime = 0;
+    if (!url) return { videoId: videoId, startTime: startTime };
+
+    try {
+      var trimmed = url.trim();
+      var parsed = new URL(trimmed.startsWith('http') ? trimmed : 'https://' + trimmed);
+
+      if (parsed.hostname.includes('youtu.be')) {
+        videoId = parsed.pathname.slice(1).split('/')[0].split('?')[0];
+      } else if (parsed.hostname.includes('youtube.com')) {
+        if (parsed.pathname.startsWith('/embed/')) {
+          videoId = parsed.pathname.replace('/embed/', '').split('/')[0].split('?')[0];
+        } else if (parsed.pathname.startsWith('/shorts/')) {
+          videoId = parsed.pathname.replace('/shorts/', '').split('/')[0].split('?')[0];
+        } else {
+          videoId = parsed.searchParams.get('v') || '';
+        }
+      }
+
+      var tParam = parsed.searchParams.get('t') || parsed.searchParams.get('start');
+      if (tParam) {
+        if (/^\d+$/.test(tParam)) {
+          startTime = parseInt(tParam, 10);
+        } else if (/^\d+s$/i.test(tParam)) {
+          startTime = parseInt(tParam.replace(/s/i, ''), 10);
+        } else {
+          var total = 0;
+          var hMatch = tParam.match(/(\d+)h/i);
+          var mMatch = tParam.match(/(\d+)m/i);
+          var sMatch = tParam.match(/(\d+)s/i);
+          if (hMatch) total += parseInt(hMatch[1], 10) * 3600;
+          if (mMatch) total += parseInt(mMatch[1], 10) * 60;
+          if (sMatch) total += parseInt(sMatch[1], 10);
+          if (total > 0) startTime = total;
+        }
+      }
+    } catch (e) {
+      var idMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+      if (idMatch) videoId = idMatch[1];
+      var tMatch = url.match(/[?&]t=(\d+)/);
+      if (tMatch) startTime = parseInt(tMatch[1], 10);
+    }
+
+    return { videoId: videoId, startTime: startTime };
+  }
+
+  // 텍스트 정규화 (공백, 특수문자, 대소문자 제거)
+  function normalizeTextClient(text) {
+    return (text || '')
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}]/gu, '')
+      .trim();
+  }
+
+  // 레벤슈타인 편집 거리 계산
+  function levenshtein(a, b) {
+    if (a.length === 0) return b.length;
+    if (b.length === 0) return a.length;
+
+    var matrix = [];
+    for (var i = 0; i <= b.length; i++) matrix[i] = [i];
+    for (var j = 0; j <= a.length; j++) matrix[0][j] = j;
+
+    for (var i = 1; i <= b.length; i++) {
+      for (var j = 1; j <= a.length; j++) {
+        if (b.charAt(i - 1) === a.charAt(j - 1)) {
+          matrix[i][j] = matrix[i - 1][j - 1];
+        } else {
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j - 1] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j] + 1
+          );
+        }
+      }
+    }
+    return matrix[b.length][a.length];
+  }
+
+  // 관대한 정답 체크 함수
+  function checkAnswerClient(userInput, song) {
+    var cleanInput = normalizeTextClient(userInput);
+    if (!cleanInput) return { isCorrect: false };
+
+    var candidates = [
+      song.title,
+      song.artist + ' ' + song.title,
+      song.title + ' ' + song.artist
+    ];
+    if (song.aliases && Array.isArray(song.aliases)) {
+      candidates = candidates.concat(song.aliases);
+    }
+
+    // 1. 완전 일치 검사
+    for (var i = 0; i < candidates.length; i++) {
+      var cleanCand = normalizeTextClient(candidates[i]);
+      if (cleanCand && cleanInput === cleanCand) {
+        return { isCorrect: true, matchedAlias: candidates[i] };
+      }
+    }
+
+    // 2. 부분 일치 검사 (3글자 이상이고 제목을 포함하고 있을 때)
+    var cleanTitle = normalizeTextClient(song.title);
+    if (cleanTitle.length >= 3 && cleanInput.includes(cleanTitle)) {
+      return { isCorrect: true, matchedAlias: song.title };
+    }
+
+    // 3. 오타 허용 (편집 거리 1~2자 이내)
+    for (var j = 0; j < candidates.length; j++) {
+      var cleanCand2 = normalizeTextClient(candidates[j]);
+      if (!cleanCand2) continue;
+
+      var dist = levenshtein(cleanInput, cleanCand2);
+      var maxAllowed = cleanCand2.length >= 7 ? 2 : (cleanCand2.length >= 5 ? 1 : 0);
+      if (dist <= maxAllowed) {
+        return { isCorrect: true, matchedAlias: candidates[j] };
+      }
+    }
+
+    return { isCorrect: false };
+  }
+
+  // 초 단위를 0:00 포맷으로 변환
+  function formatTime(seconds) {
+    if (!seconds || isNaN(seconds) || seconds < 0) return '0:00';
+    var mins = Math.floor(seconds / 60);
+    var secs = Math.floor(seconds % 60);
+    return mins + ':' + (secs < 10 ? '0' : '') + secs;
+  }
+
+  // 모든 오디오 및 영상 재생을 확실하게 정지하는 마스터 함수
+  function stopAllAudio() {
+    // 1. 숨겨진 퀴즈 음원 플레이어(ytPlayer) 완전 정지
+    if (ytPlayer && isPlayerReady) {
+      try {
+        if (typeof ytPlayer.stopVideo === 'function') {
+          ytPlayer.stopVideo();
+        } else if (typeof ytPlayer.pauseVideo === 'function') {
+          ytPlayer.pauseVideo();
+        }
+      } catch (e) {
+        console.warn('[AI Music Quiz] Error stopping ytPlayer:', e);
+      }
+    }
+    isAudioPlaying = false;
+    stopProgressLoop();
+
+    // 2. 오디오 플레이어 UI 상태 초기화
+    var disc = document.getElementById('disc-glow');
+    var eq = document.getElementById('equalizer-bars');
+    var icon = document.getElementById('speaker-icon');
+    var statusText = document.getElementById('player-status-text');
+    if (disc) disc.classList.remove('pulsing');
+    if (eq) eq.classList.remove('active');
+    if (icon) icon.textContent = '🔊';
+    if (statusText) statusText.textContent = '준비 완료! 스피커 버튼을 눌러 재생하세요.';
+
+    // 3. 정답 화면의 좌우 유튜브 iframes 완전 정지 (postMessage 전송 및 about:blank 리셋)
+    var aiIframe = document.getElementById('reveal-ai-iframe');
+    var origIframe = document.getElementById('reveal-original-iframe');
+    if (aiIframe) {
+      try {
+        aiIframe.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*');
+        aiIframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+      } catch (e) {}
+      aiIframe.src = 'about:blank';
+    }
+    if (origIframe) {
+      try {
+        origIframe.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*');
+        origIframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+      } catch (e) {}
+      origIframe.src = 'about:blank';
+    }
+  }
+
+  // 화면 전환 관리자
+  function setScreen(screenName) {
+    stopAllAudio(); // 모든 화면 전환 시 이전 화면의 모든 오디오/영상 즉시 차단!
+
+    gameState.screen = screenName;
+    document.querySelectorAll('.quiz-screen').forEach(function (el) {
+      el.classList.remove('active');
+    });
+
+    var target = document.getElementById('screen-' + screenName.toLowerCase());
+    if (target) target.classList.add('active');
+
+    // 화면 진입 시 필요한 처리
+    if (screenName === 'PLAYING') {
+      setupPlayingScreen();
+    }
+  }
+
+  // 유튜브 API 초기화 콜백
+  window.onYouTubeIframeAPIReady = function () {
+    ytPlayer = new YT.Player('yt-hidden-player', {
+      height: '200',
+      width: '200',
+      playerVars: {
+        playsinline: 1,
+        controls: 0,
+        disablekb: 1,
+        rel: 0,
+        modestbranding: 1
+      },
+      events: {
+        onReady: function () {
+          isPlayerReady = true;
+          console.log('[AI Music Quiz] YouTube audio player ready.');
+          if (gameState.screen === 'PLAYING' && gameState.activeSongs[gameState.currentIndex]) {
+            var s = gameState.activeSongs[gameState.currentIndex];
+            var p = parseYoutubeUrlClient(s.aiYoutubeUrl);
+            if (p.videoId) {
+              ytPlayer.cueVideoById({
+                videoId: p.videoId,
+                startSeconds: p.startTime || 0
+              });
+            }
+          }
+        },
+        onStateChange: onPlayerStateChange
+      }
+    });
+  };
+
+  function onPlayerStateChange(event) {
+    var disc = document.getElementById('disc-glow');
+    var eq = document.getElementById('equalizer-bars');
+    var icon = document.getElementById('speaker-icon');
+    var statusText = document.getElementById('player-status-text');
+
+    if (event.data === YT.PlayerState.PLAYING) {
+      isAudioPlaying = true;
+      if (disc) disc.classList.add('pulsing');
+      if (eq) eq.classList.add('active');
+      if (icon) icon.textContent = '⏸️';
+      if (statusText) statusText.textContent = 'AI 편곡 음원이 재생 중입니다...';
+      startProgressLoop();
+    } else if (event.data === YT.PlayerState.PAUSED) {
+      isAudioPlaying = false;
+      if (disc) disc.classList.remove('pulsing');
+      if (eq) eq.classList.remove('active');
+      if (icon) icon.textContent = '🔊';
+      if (statusText) statusText.textContent = '음원이 일시정지되었습니다.';
+      stopProgressLoop();
+    } else if (event.data === YT.PlayerState.ENDED) {
+      isAudioPlaying = false;
+      if (disc) disc.classList.remove('pulsing');
+      if (eq) eq.classList.remove('active');
+      if (icon) icon.textContent = '🔊';
+      if (statusText) statusText.textContent = '음원 재생이 완료되었습니다. 다시 들으려면 버튼을 누르세요.';
+      stopProgressLoop();
+    } else if (event.data === YT.PlayerState.CUED) {
+      isAudioPlaying = false;
+      if (disc) disc.classList.remove('pulsing');
+      if (eq) eq.classList.remove('active');
+      if (icon) icon.textContent = '🔊';
+      stopProgressLoop();
+    } else if (event.data === YT.PlayerState.BUFFERING) {
+      if (statusText) statusText.textContent = '음원을 불러오는 중입니다...';
+    }
+  }
+
+  function startProgressLoop() {
+    stopProgressLoop();
+    progressTimer = setInterval(function () {
+      if (!ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') return;
+
+      var current = ytPlayer.getCurrentTime() || 0;
+      var duration = ytPlayer.getDuration() || 0;
+
+      var timeCurrent = document.getElementById('time-current');
+      var timeDuration = document.getElementById('time-duration');
+      var scrubber = document.getElementById('audio-scrubber');
+      var scrubberFill = document.getElementById('scrubber-fill');
+
+      if (timeCurrent) timeCurrent.textContent = formatTime(current);
+      if (timeDuration) timeDuration.textContent = formatTime(duration);
+
+      if (duration > 0 && scrubber) {
+        var pct = (current / duration) * 100;
+        scrubber.value = pct;
+        if (scrubberFill) scrubberFill.style.width = pct + '%';
+      }
+    }, 200);
+  }
+
+  function stopProgressLoop() {
+    if (progressTimer) {
+      clearInterval(progressTimer);
+      progressTimer = null;
+    }
+  }
+
+  function toggleAudio() {
+    if (!ytPlayer || !isPlayerReady) return;
+
+    if (isAudioPlaying) {
+      pauseAudio();
+    } else {
+      ytPlayer.playVideo();
+    }
+  }
+
+  function pauseAudio() {
+    if (ytPlayer && isPlayerReady) {
+      try {
+        if (typeof ytPlayer.pauseVideo === 'function') {
+          ytPlayer.pauseVideo();
+        }
+      } catch (e) {}
+    }
+    isAudioPlaying = false;
+    stopProgressLoop();
+
+    var disc = document.getElementById('disc-glow');
+    var eq = document.getElementById('equalizer-bars');
+    var icon = document.getElementById('speaker-icon');
+    var statusText = document.getElementById('player-status-text');
+    if (disc) disc.classList.remove('pulsing');
+    if (eq) eq.classList.remove('active');
+    if (icon) icon.textContent = '🔊';
+    if (statusText) statusText.textContent = '음원이 일시정지되었습니다.';
+  }
+
+  function seekAudio(seconds) {
+    if (!ytPlayer || !isPlayerReady) return;
+    ytPlayer.seekTo(seconds, true);
+  }
+
+  // 1. 게임 시작 처리
+  function startGame() {
+    stopAllAudio();
+
+    var count = gameState.selectedCount;
+    var songsCopy = ALL_SONGS.slice();
+
+    if (gameState.isShuffle) {
+      // Fisher-Yates shuffle
+      for (var i = songsCopy.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = songsCopy[i];
+        songsCopy[i] = songsCopy[j];
+        songsCopy[j] = temp;
+      }
+    }
+
+    if (count !== 'all') {
+      songsCopy = songsCopy.slice(0, Math.min(count, songsCopy.length));
+    }
+
+    gameState.activeSongs = songsCopy;
+    gameState.currentIndex = 0;
+    gameState.score = 0;
+    gameState.history = [];
+
+    setScreen('PLAYING');
+  }
+
+  // 2. 현재 문제 세팅
+  function setupPlayingScreen() {
+    stopAllAudio();
+
+    var song = gameState.activeSongs[gameState.currentIndex];
+    if (!song) {
+      showSummaryScreen();
+      return;
+    }
+
+    gameState.hintRevealed = false;
+
+    // 상단 라운드 및 점수 텍스트 업데이트
+    var roundText = document.getElementById('current-round-text');
+    var scoreText = document.getElementById('current-score-text');
+    if (roundText) roundText.textContent = 'Q ' + (gameState.currentIndex + 1) + ' / ' + gameState.activeSongs.length;
+    if (scoreText) scoreText.textContent = gameState.score;
+
+    // 힌트 리셋
+    var hintBox = document.getElementById('hint-display-box');
+    var hintBtn = document.getElementById('btn-toggle-hint');
+    if (hintBox) hintBox.classList.add('hidden');
+    if (hintBtn) hintBtn.classList.remove('revealed');
+
+    var hintInitials = document.getElementById('hint-initials-text');
+    var hintGenre = document.getElementById('hint-genre-text');
+    if (hintInitials) hintInitials.textContent = (song.hint && song.hint.initials) ? song.hint.initials : '힌트 없음';
+    if (hintGenre) hintGenre.textContent = (song.hint && song.hint.genre) ? song.hint.genre : (song.hint && song.hint.releaseYear ? song.hint.releaseYear + '년 발매' : '가요');
+
+    // 입력창 초기화
+    var answerInput = document.getElementById('answer-input');
+    if (answerInput) {
+      answerInput.value = '';
+      setTimeout(function () { answerInput.focus(); }, 100);
+    }
+
+    // 시크 바 초기화
+    var scrubber = document.getElementById('audio-scrubber');
+    var scrubberFill = document.getElementById('scrubber-fill');
+    var timeCurrent = document.getElementById('time-current');
+    var timeDuration = document.getElementById('time-duration');
+    if (scrubber) scrubber.value = 0;
+    if (scrubberFill) scrubberFill.style.width = '0%';
+    if (timeCurrent) timeCurrent.textContent = '0:00';
+    if (timeDuration) timeDuration.textContent = '0:00';
+
+    // AI 음원 비디오 로드
+    var aiParsed = parseYoutubeUrlClient(song.aiYoutubeUrl);
+    if (ytPlayer && isPlayerReady && aiParsed.videoId) {
+      try {
+        if (typeof ytPlayer.stopVideo === 'function') {
+          ytPlayer.stopVideo();
+        }
+      } catch (e) {}
+      ytPlayer.cueVideoById({
+        videoId: aiParsed.videoId,
+        startSeconds: aiParsed.startTime || 0
+      });
+      var statusText = document.getElementById('player-status-text');
+      if (statusText) statusText.textContent = '준비 완료! 스피커 버튼을 눌러 재생하세요.';
+    }
+  }
+
+  // 3. 정답 판정 및 정답 공개 화면으로 전환
+  function submitAnswer(isSkipped) {
+    var song = gameState.activeSongs[gameState.currentIndex];
+    if (!song) return;
+
+    var answerInput = document.getElementById('answer-input');
+    var userInput = answerInput ? answerInput.value.trim() : '';
+
+    var isWon = false;
+    var matchedName = '';
+
+    if (!isSkipped && userInput) {
+      var check = checkAnswerClient(userInput, song);
+      isWon = check.isCorrect;
+      matchedName = check.matchedAlias || '';
+    }
+
+    if (isWon) {
+      gameState.score += 1;
+    }
+
+    gameState.history.push({
+      song: song,
+      userWon: isWon,
+      userAnswer: userInput || (isSkipped ? '[패스]' : '[미입력]')
+    });
+
+    // 정답 화면(REVEAL) 구성
+    showRevealScreen(song, isWon, userInput);
+  }
+
+  function showRevealScreen(song, isWon, userInput) {
+    // 1. 화면 먼저 전환 (이때 이전 배경 퀴즈 음원이 확실하게 정지됨)
+    setScreen('REVEAL');
+
+    // 2. 상단 배너 설정
+    var banner = document.getElementById('reveal-banner');
+    var icon = document.getElementById('result-icon');
+    var headline = document.getElementById('result-headline');
+    var subline = document.getElementById('result-subline');
+
+    if (banner) {
+      banner.className = 'reveal-banner ' + (isWon ? 'correct' : 'incorrect');
+    }
+    if (icon) icon.textContent = isWon ? '🎉' : '❌';
+    if (headline) {
+      headline.textContent = isWon ? '정답입니다!' : '아쉽네요! 다음 기회에!';
+    }
+    if (subline) {
+      subline.textContent = '정답: ' + song.artist + ' - ' + song.title;
+    }
+
+    // 3. 좌측 AI 편곡 유튜브 Iframe (절대 자동재생 금지! autoplay=0)
+    var aiParsed = parseYoutubeUrlClient(song.aiYoutubeUrl);
+    var aiIframe = document.getElementById('reveal-ai-iframe');
+    if (aiIframe && aiParsed.videoId) {
+      var aiSrc = 'https://www.youtube-nocookie.com/embed/' + aiParsed.videoId +
+                  '?start=' + (aiParsed.startTime || 0) +
+                  '&autoplay=0&enablejsapi=1&rel=0&modestbranding=1';
+      aiIframe.src = aiSrc;
+    }
+
+    // 4. 우측 원곡 유튜브 Iframe (사용자가 지정한 타임스탬프 t=166 시작, 자동재생 금지! autoplay=0)
+    var origParsed = parseYoutubeUrlClient(song.originalYoutubeUrl);
+    var origIframe = document.getElementById('reveal-original-iframe');
+    var origCue = document.getElementById('original-start-cue');
+    if (origIframe && origParsed.videoId) {
+      var origSrc = 'https://www.youtube-nocookie.com/embed/' + origParsed.videoId +
+                    '?start=' + (origParsed.startTime || 0) +
+                    '&autoplay=0&enablejsapi=1&rel=0&modestbranding=1';
+      origIframe.src = origSrc;
+      if (origCue) {
+        origCue.textContent = origParsed.startTime > 0 ? formatTime(origParsed.startTime) + ' 하이라이트 시작' : '처음부터 시작';
+      }
+    }
+
+    // 5. 다음 문제 버튼 라벨
+    var isLast = (gameState.currentIndex + 1) >= gameState.activeSongs.length;
+    var nextText = document.getElementById('next-btn-text');
+    if (nextText) {
+      nextText.textContent = isLast ? '최종 결과 확인하기 (Enter) 🏆' : '다음 문제로 (Enter) ➔';
+    }
+  }
+
+  function nextQuestion() {
+    stopAllAudio();
+    gameState.currentIndex += 1;
+    if (gameState.currentIndex >= gameState.activeSongs.length) {
+      showSummaryScreen();
+    } else {
+      setScreen('PLAYING');
+    }
+  }
+
+  // 4. 최종 결과 화면
+  function showSummaryScreen() {
+    setScreen('SUMMARY');
+
+    var summaryScore = document.getElementById('summary-score');
+    var summaryTotal = document.getElementById('summary-total');
+    var summaryComment = document.getElementById('summary-comment');
+    var container = document.getElementById('history-items-container');
+
+    var total = gameState.activeSongs.length;
+    var score = gameState.score;
+
+    if (summaryScore) summaryScore.textContent = score;
+    if (summaryTotal) summaryTotal.textContent = total;
+
+    if (summaryComment) {
+      var ratio = total > 0 ? (score / total) : 0;
+      if (ratio === 1) {
+        summaryComment.textContent = '👑 퍼펙트 올킬! 당신은 진정한 가요계의 절대음감 마스터!';
+      } else if (ratio >= 0.8) {
+        summaryComment.textContent = '🔥 대단합니다! AI의 화려한 편곡 속에서도 원곡을 꿰뚫어 보셨네요!';
+      } else if (ratio >= 0.5) {
+        summaryComment.textContent = '✨ 절반 이상 정답! 원곡과 AI 편곡의 차이를 즐기기에 충분한 실력입니다.';
+      } else {
+        summaryComment.textContent = '💪 AI의 편곡이 너무 감쪽같았나요? 다시 도전해보세요!';
+      }
+    }
+
+    if (container) {
+      container.innerHTML = '';
+      gameState.history.forEach(function (h, idx) {
+        var itemEl = document.createElement('div');
+        itemEl.className = 'history-card ' + (h.userWon ? 'won' : 'lost');
+
+        var aiParsed = parseYoutubeUrlClient(h.song.aiYoutubeUrl);
+        var origParsed = parseYoutubeUrlClient(h.song.originalYoutubeUrl);
+
+        var aiUrl = 'https://www.youtube.com/watch?v=' + aiParsed.videoId;
+        var origUrl = 'https://www.youtube.com/watch?v=' + origParsed.videoId + (origParsed.startTime ? '&t=' + origParsed.startTime : '');
+
+        itemEl.innerHTML =
+          '<div class="history-left">' +
+            '<span class="history-status">' + (h.userWon ? '✅ 정답' : '❌ 오답') + '</span>' +
+            '<div class="history-info">' +
+              '<strong>Q' + (idx + 1) + '. ' + h.song.artist + ' - ' + h.song.title + '</strong>' +
+              '<span class="history-user-ans">내 입력: ' + (h.userAnswer || '-') + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="history-links">' +
+            '<a href="' + aiUrl + '" target="_blank" rel="noopener" class="hist-link ai-link">🤖 AI 편곡</a>' +
+            '<a href="' + origUrl + '" target="_blank" rel="noopener" class="hist-link orig-link">🎧 원곡</a>' +
+          '</div>';
+
+        container.appendChild(itemEl);
+      });
+    }
+  }
+
+  // DOM 이벤트 바인딩
+  document.addEventListener('DOMContentLoaded', function () {
+    // 1. 문제 수 선택 버튼
+    var roundBtns = document.querySelectorAll('.round-btn');
+    roundBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        roundBtns.forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        var val = btn.getAttribute('data-count');
+        gameState.selectedCount = val === 'all' ? 'all' : parseInt(val, 10);
+      });
+    });
+
+    // 셔플 체크박스
+    var shuffleCheckbox = document.getElementById('shuffle-checkbox');
+    if (shuffleCheckbox) {
+      shuffleCheckbox.addEventListener('change', function () {
+        gameState.isShuffle = shuffleCheckbox.checked;
+      });
+    }
+
+    // 게임 시작 버튼
+    var startBtn = document.getElementById('start-game-btn');
+    if (startBtn) {
+      startBtn.addEventListener('click', startGame);
+    }
+
+    // 스피커 토글 버튼
+    var audioToggleBtn = document.getElementById('audio-toggle-btn');
+    if (audioToggleBtn) {
+      audioToggleBtn.addEventListener('click', toggleAudio);
+    }
+
+    // 10초 뒤로 / 10초 앞으로 / 처음부터
+    var btnBack = document.getElementById('btn-skip-backward');
+    var btnRestart = document.getElementById('btn-restart-audio');
+    var btnForward = document.getElementById('btn-skip-forward');
+
+    if (btnBack) {
+      btnBack.addEventListener('click', function () {
+        if (!ytPlayer || !isPlayerReady) return;
+        var cur = ytPlayer.getCurrentTime() || 0;
+        seekAudio(Math.max(0, cur - 10));
+      });
+    }
+
+    if (btnRestart) {
+      btnRestart.addEventListener('click', function () {
+        seekAudio(0);
+        if (!isAudioPlaying) toggleAudio();
+      });
+    }
+
+    if (btnForward) {
+      btnForward.addEventListener('click', function () {
+        if (!ytPlayer || !isPlayerReady) return;
+        var cur = ytPlayer.getCurrentTime() || 0;
+        seekAudio(cur + 10);
+      });
+    }
+
+    // 시크 바 조작
+    var scrubber = document.getElementById('audio-scrubber');
+    if (scrubber) {
+      scrubber.addEventListener('input', function () {
+        if (!ytPlayer || !isPlayerReady) return;
+        var dur = ytPlayer.getDuration() || 0;
+        if (dur > 0) {
+          var targetSec = (scrubber.value / 100) * dur;
+          seekAudio(targetSec);
+        }
+      });
+    }
+
+    // 힌트 토글 버튼
+    var hintToggleBtn = document.getElementById('btn-toggle-hint');
+    var hintBox = document.getElementById('hint-display-box');
+    if (hintToggleBtn && hintBox) {
+      hintToggleBtn.addEventListener('click', function () {
+        hintBox.classList.toggle('hidden');
+        hintToggleBtn.classList.toggle('revealed');
+      });
+    }
+
+    // 정답 제출 폼
+    var answerForm = document.getElementById('answer-form');
+    if (answerForm) {
+      answerForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        submitAnswer(false);
+      });
+    }
+
+    // 모르겠어요 / 패스 버튼
+    var skipBtn = document.getElementById('btn-skip-question');
+    if (skipBtn) {
+      skipBtn.addEventListener('click', function () {
+        submitAnswer(true);
+      });
+    }
+
+    // 정답 공개 화면에서 다음 문제 버튼
+    var nextBtn = document.getElementById('btn-next-question');
+    if (nextBtn) {
+      nextBtn.addEventListener('click', nextQuestion);
+    }
+
+    // 결과 화면 액션 버튼
+    var playAgainBtn = document.getElementById('btn-play-again');
+    var backLobbyBtn = document.getElementById('btn-back-to-lobby');
+
+    if (playAgainBtn) {
+      playAgainBtn.addEventListener('click', startGame);
+    }
+    if (backLobbyBtn) {
+      backLobbyBtn.addEventListener('click', function () {
+        setScreen('LOBBY');
+      });
+    }
+
+    // 키보드 단축키 지원 (Space: 재생/일시정지, Enter: 제출 또는 다음)
+    window.addEventListener('keydown', function (e) {
+      var activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+
+      if (e.code === 'Space') {
+        // 인풋에 포커스가 없을 때만 스페이스바로 재생/일시정지 토글
+        if (activeTag !== 'input' && activeTag !== 'textarea') {
+          e.preventDefault();
+          if (gameState.screen === 'PLAYING') {
+            toggleAudio();
+          }
+        }
+      } else if (e.code === 'Enter') {
+        if (gameState.screen === 'REVEAL') {
+          e.preventDefault();
+          nextQuestion();
+        }
+      } else if (e.code === 'ArrowLeft') {
+        if (activeTag !== 'input' && gameState.screen === 'PLAYING') {
+          e.preventDefault();
+          if (ytPlayer && isPlayerReady) {
+            var cur = ytPlayer.getCurrentTime() || 0;
+            seekAudio(Math.max(0, cur - 5));
+          }
+        }
+      } else if (e.code === 'ArrowRight') {
+        if (activeTag !== 'input' && gameState.screen === 'PLAYING') {
+          e.preventDefault();
+          if (ytPlayer && isPlayerReady) {
+            var cur2 = ytPlayer.getCurrentTime() || 0;
+            seekAudio(cur2 + 5);
+          }
+        }
+      }
+    });
+  });
+</script>
+
+<style>
+  /* Base Layout & Themes */
+  .music-quiz-root {
+    position: relative;
+    width: 100%;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 4rem;
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  /* Hidden YouTube Audio IFrame Wrapper */
+  .yt-hidden-wrapper {
+    position: fixed;
+    top: -9999px;
+    left: -9999px;
+    width: 10px;
+    height: 10px;
+    opacity: 0;
+    pointer-events: none;
+    z-index: -10;
+  }
+
+  /* Screens State */
+  .quiz-screen {
+    display: none;
+    animation: fadeIn 0.3s ease-out forwards;
+  }
+  .quiz-screen.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* 1. LOBBY SCREEN STYLES */
+  .lobby-card {
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  .lobby-badge {
+    display: inline-block;
+    padding: 0.35rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 9999px;
+    margin-bottom: 1rem;
+  }
+
+  .lobby-title {
+    font-size: 2.4rem;
+    font-weight: 900;
+    margin: 0 0 0.5rem;
+    background: linear-gradient(135deg, #ffffff 30%, #38bdf8 70%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .lobby-subtitle {
+    font-size: 1.05rem;
+    color: #94a3b8;
+    margin: 0 0 2rem;
+  }
+
+  /* Guide Box */
+  .guide-box {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: left;
+  }
+
+  .guide-box-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 1rem;
+  }
+
+  .guide-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+
+  .guide-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    background: rgba(15, 23, 42, 0.5);
+    padding: 1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .guide-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .guide-text strong {
+    display: block;
+    font-size: 0.95rem;
+    color: #38bdf8;
+    margin-bottom: 0.25rem;
+  }
+
+  .guide-text p {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  /* Settings Box */
+  .settings-box {
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .settings-label {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    margin-bottom: 1rem;
+  }
+
+  .round-options-group {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  .round-btn {
+    padding: 0.65rem 1.4rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .round-btn:hover {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: #38bdf8;
+    color: #38bdf8;
+  }
+
+  .round-btn.active {
+    background: linear-gradient(135deg, #0284c7, #38bdf8);
+    color: #ffffff;
+    border-color: #38bdf8;
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+  }
+
+  .shuffle-option {
+    margin-top: 0.5rem;
+  }
+
+  .checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #94a3b8;
+    cursor: pointer;
+  }
+
+  .checkbox-label input {
+    accent-color: #38bdf8;
+    cursor: pointer;
+  }
+
+  .glow-start-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 3rem;
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: #ffffff;
+    background: linear-gradient(135deg, #0284c7 0%, #38bdf8 50%, #818cf8 100%);
+    border: none;
+    border-radius: 9999px;
+    cursor: pointer;
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.5);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glow-start-btn:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 0 35px rgba(56, 189, 248, 0.8);
+  }
+
+  /* 2. PLAYING SCREEN STYLES */
+  .quiz-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.25rem;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    margin-bottom: 1.25rem;
+  }
+
+  .round-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .round-badge {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.15);
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+  }
+
+  .round-number {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #ffffff;
+  }
+
+  .score-indicator {
+    font-size: 0.95rem;
+    color: #cbd5e1;
+  }
+
+  .score-indicator strong {
+    color: #4ade80;
+    font-size: 1.15rem;
+    margin-left: 0.3rem;
+  }
+
+  /* Audio Stage Card */
+  .audio-stage-card {
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2.5rem 1.5rem 2rem;
+    text-align: center;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+    margin-bottom: 1.5rem;
+  }
+
+  .disc-visualizer-wrap {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .disc-glow {
+    position: absolute;
+    inset: -10px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.35) 0%, transparent 70%);
+    opacity: 0.4;
+    transition: all 0.3s ease;
+  }
+
+  .disc-glow.pulsing {
+    opacity: 1;
+    animation: discPulse 1.5s infinite alternate;
+  }
+
+  @keyframes discPulse {
+    0% { transform: scale(0.95); opacity: 0.5; }
+    100% { transform: scale(1.15); opacity: 1; }
+  }
+
+  .speaker-action-btn {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border: 2px solid #38bdf8;
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.35);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+    z-index: 2;
+  }
+
+  .speaker-action-btn:hover {
+    transform: scale(1.06);
+    box-shadow: 0 0 35px rgba(56, 189, 248, 0.6);
+  }
+
+  .speaker-icon {
+    font-size: 3rem;
+    line-height: 1;
+    filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.5));
+  }
+
+  /* Equalizer Animation */
+  .equalizer-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 6px;
+    height: 28px;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
+  }
+
+  .equalizer-bars.active {
+    opacity: 1;
+  }
+
+  .equalizer-bars .bar {
+    width: 4px;
+    height: 6px;
+    background: #38bdf8;
+    border-radius: 2px;
+  }
+
+  .equalizer-bars.active .bar {
+    animation: eqBounce 1s infinite alternate ease-in-out;
+  }
+
+  .equalizer-bars.active .bar:nth-child(1) { animation-delay: 0.1s; }
+  .equalizer-bars.active .bar:nth-child(2) { animation-delay: 0.3s; }
+  .equalizer-bars.active .bar:nth-child(3) { animation-delay: 0.2s; }
+  .equalizer-bars.active .bar:nth-child(4) { animation-delay: 0.5s; }
+  .equalizer-bars.active .bar:nth-child(5) { animation-delay: 0.15s; }
+  .equalizer-bars.active .bar:nth-child(6) { animation-delay: 0.4s; }
+  .equalizer-bars.active .bar:nth-child(7) { animation-delay: 0.25s; }
+  .equalizer-bars.active .bar:nth-child(8) { animation-delay: 0.35s; }
+
+  @keyframes eqBounce {
+    0% { height: 6px; }
+    100% { height: 26px; }
+  }
+
+  .player-status-text {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #94a3b8;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Scrubber Control Group */
+  .scrubber-control-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 600px;
+    margin: 0 auto 1.25rem;
+  }
+
+  .time-label {
+    font-size: 0.85rem;
+    font-family: monospace;
+    color: #cbd5e1;
+    min-width: 42px;
+  }
+
+  .scrubber-wrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .audio-scrubber {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.15);
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+  }
+
+  .audio-scrubber::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #38bdf8;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+    cursor: pointer;
+    transition: transform 0.1s ease;
+  }
+
+  .audio-scrubber::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+  }
+
+  .audio-quick-controls {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .quick-ctl-btn {
+    padding: 0.45rem 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .quick-ctl-btn:hover {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: #38bdf8;
+    color: #38bdf8;
+  }
+
+  /* Hint Display */
+  .hint-container {
+    display: inline-block;
+  }
+
+  .hint-toggle-btn {
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .hint-toggle-btn:hover {
+    background: rgba(245, 158, 11, 0.2);
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+  }
+
+  .hint-display-box {
+    margin-top: 0.75rem;
+    padding: 0.75rem 1.25rem;
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 12px;
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+  }
+
+  .hint-display-box.hidden {
+    display: none;
+  }
+
+  .hint-tag {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-right: 0.4rem;
+  }
+
+  .hint-val {
+    font-size: 0.95rem;
+    color: #fbbf24;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+  }
+
+  /* Answer Input Card */
+  .answer-card {
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+  }
+
+  .input-row {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .answer-input {
+    flex: 1;
+    padding: 0.9rem 1.25rem;
+    font-size: 1.1rem;
+    color: #ffffff;
+    background: rgba(30, 41, 59, 0.7);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    outline: none;
+    transition: all 0.2s ease;
+  }
+
+  .answer-input:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+  }
+
+  .btn-submit {
+    padding: 0 1.75rem;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #ffffff;
+    background: linear-gradient(135deg, #0284c7, #38bdf8);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 24px rgba(56, 189, 248, 0.6);
+  }
+
+  .form-bottom-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .btn-skip {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    transition: color 0.2s;
+  }
+
+  .btn-skip:hover {
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.1);
+  }
+
+  /* 3. REVEAL SCREEN STYLES */
+  .reveal-banner {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1.25rem 2rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    backdrop-filter: blur(12px);
+  }
+
+  .reveal-banner.correct {
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    box-shadow: 0 0 25px rgba(34, 197, 94, 0.25);
+  }
+
+  .reveal-banner.incorrect {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    box-shadow: 0 0 25px rgba(239, 68, 68, 0.25);
+  }
+
+  .result-icon {
+    font-size: 2.75rem;
+    line-height: 1;
+  }
+
+  .result-headline {
+    font-size: 1.75rem;
+    font-weight: 900;
+    margin: 0 0 0.25rem;
+  }
+
+  .reveal-banner.correct .result-headline { color: #4ade80; }
+  .reveal-banner.incorrect .result-headline { color: #f87171; }
+
+  .result-subline {
+    font-size: 1.1rem;
+    color: #f1f5f9;
+    margin: 0;
+    font-weight: 700;
+  }
+
+  /* Comparison Grid (Side by Side) */
+  .comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .comparison-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .video-compare-card {
+    background: rgba(15, 23, 42, 0.8);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .video-compare-card.ai-card {
+    border-color: rgba(56, 189, 248, 0.4);
+  }
+
+  .video-compare-card.original-card {
+    border-color: rgba(168, 85, 247, 0.4);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.9rem 1.25rem;
+    background: rgba(30, 41, 59, 0.6);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .card-header .badge {
+    padding: 0.3rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 800;
+    border-radius: 6px;
+  }
+
+  .ai-badge {
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+  }
+
+  .original-badge {
+    background: rgba(168, 85, 247, 0.2);
+    color: #c084fc;
+    border: 1px solid rgba(168, 85, 247, 0.4);
+  }
+
+  .audio-cue {
+    font-size: 0.8rem;
+    color: #94a3b8;
+  }
+
+  .iframe-embed-wrap {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    background: #000000;
+  }
+
+  .reveal-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  .card-footer {
+    padding: 0.75rem 1rem;
+    background: rgba(15, 23, 42, 0.6);
+    text-align: center;
+  }
+
+  .info-note {
+    font-size: 0.75rem;
+    color: #94a3b8;
+  }
+
+  .reveal-action-bar {
+    text-align: center;
+  }
+
+  .glow-next-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 3.5rem;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #ffffff;
+    background: linear-gradient(135deg, #059669, #10b981);
+    border: none;
+    border-radius: 9999px;
+    cursor: pointer;
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.5);
+    transition: all 0.2s ease;
+  }
+
+  .glow-next-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 0 35px rgba(16, 185, 129, 0.7);
+  }
+
+  /* 4. SUMMARY SCREEN STYLES */
+  .summary-card {
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  .summary-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .summary-badge {
+    display: inline-block;
+    padding: 0.35rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.15);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: 9999px;
+    margin-bottom: 1rem;
+  }
+
+  .summary-title {
+    font-size: 2.2rem;
+    font-weight: 900;
+    margin: 0 0 1.5rem;
+    color: #ffffff;
+  }
+
+  .final-score-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .score-circle {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding: 1rem 2.5rem;
+    background: rgba(30, 41, 59, 0.6);
+    border: 2px solid #38bdf8;
+    border-radius: 9999px;
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.3);
+  }
+
+  .big-score {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #38bdf8;
+    line-height: 1;
+  }
+
+  .score-divider {
+    font-size: 2rem;
+    color: #64748b;
+  }
+
+  .total-score {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #94a3b8;
+  }
+
+  .summary-comment {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin: 0;
+  }
+
+  .history-list-box {
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .history-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 1rem;
+  }
+
+  .history-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .history-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.85rem 1.25rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(15, 23, 42, 0.6);
+  }
+
+  .history-card.won {
+    border-left: 4px solid #4ade80;
+  }
+
+  .history-card.lost {
+    border-left: 4px solid #f87171;
+  }
+
+  .history-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .history-status {
+    font-size: 0.85rem;
+    font-weight: 800;
+  }
+
+  .history-card.won .history-status { color: #4ade80; }
+  .history-card.lost .history-status { color: #f87171; }
+
+  .history-info strong {
+    display: block;
+    font-size: 0.95rem;
+    color: #f8fafc;
+  }
+
+  .history-user-ans {
+    font-size: 0.8rem;
+    color: #94a3b8;
+  }
+
+  .history-links {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .hist-link {
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .ai-link {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+  }
+  .ai-link:hover {
+    background: rgba(56, 189, 248, 0.3);
+  }
+
+  .orig-link {
+    background: rgba(168, 85, 247, 0.15);
+    color: #c084fc;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+  }
+  .orig-link:hover {
+    background: rgba(168, 85, 247, 0.3);
+  }
+
+  .summary-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    padding: 0.9rem 2rem;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #ffffff;
+    background: linear-gradient(135deg, #0284c7, #38bdf8);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 24px rgba(56, 189, 248, 0.6);
+  }
+
+  .btn-secondary {
+    padding: 0.9rem 2rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+  }
+</style>

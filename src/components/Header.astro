@@ -77,6 +77,14 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
           <span class="nav-icon">🎬</span>
           <span class="nav-label">{t(lang, 'nav.stream_emoji')}</span>
         </a>
+        <a 
+          href={`${prefix}/games/ai-music-quiz`} 
+          class={`nav-item ${currentPath.includes('/games/ai-music-quiz') ? 'highlight active' : ''}`}
+          aria-current={currentPath.includes('/games/ai-music-quiz') ? 'page' : undefined}
+        >
+          <span class="nav-icon">🎧</span>
+          <span class="nav-label">{t(lang, 'nav.ai_music_quiz')}</span>
+        </a>
       </div>
 
       <div class="nav-divider" aria-hidden="true"></div>
@@ -244,6 +252,16 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
             <div class="drawer-item-info">
               <span class="drawer-item-name">{t(lang, 'nav.stream_emoji')}</span>
               <span class="drawer-item-desc">{isEn ? "Animated Emote Studio" : "움직이는 이모티콘 메이커"}</span>
+            </div>
+          </a>
+          <a 
+            href={`${prefix}/games/ai-music-quiz`} 
+            class={`drawer-nav-item ${currentPath.includes('/games/ai-music-quiz') ? 'active' : ''}`}
+          >
+            <span class="drawer-item-icon">🎧</span>
+            <div class="drawer-item-info">
+              <span class="drawer-item-name">{t(lang, 'nav.ai_music_quiz')}</span>
+              <span class="drawer-item-desc">{isEn ? "Guess The Song From AI Cover" : "AI 편곡 노래 맞추기 퀴즈"}</span>
             </div>
           </a>
         </div>
