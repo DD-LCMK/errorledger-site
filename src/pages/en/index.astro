@@ -30,6 +30,14 @@ const homeFaqSchema = JSON.stringify({
   "mainEntity": [
     {
       "@type": "Question",
+      "name": "Can I use ErrorLedger on stream or in monetized YouTube videos?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, absolutely! All games and interactive tools on ErrorLedger are 100% free to use for live broadcasting on Twitch, YouTube Live, CHZZK, SOOP, and for monetized video creation and viewer donations."
+      }
+    },
+    {
+      "@type": "Question",
       "name": "How do I use fullscreen or focus mode?",
       "acceptedAnswer": {
         "@type": "Answer",
@@ -93,6 +101,10 @@ const homeFaqSchema = JSON.stringify({
       <section class="hero-showcase">
         <div class="hero-backdrop"></div>
         <div class="hero-content">
+          <div class="hero-pill">
+            <span>🎥</span>
+            <span>100% Free for Streaming, YouTube & Monetization</span>
+          </div>
           <h1 class="hero-headline">
             Free <span class="gradient-text">Stream Tools</span> for Live Creators
           </h1>
@@ -351,6 +363,10 @@ const homeFaqSchema = JSON.stringify({
           <h2>Frequently Asked Questions</h2>
           <div class="faq-grid">
             <div class="faq-box">
+              <h3>Can I use ErrorLedger on stream or in monetized videos?</h3>
+              <p>Yes, 100% permitted and free! You are fully allowed to broadcast our tools live on Twitch, YouTube, CHZZK, SOOP, and upload edited videos with monetization and donations enabled.</p>
+            </div>
+            <div class="faq-box">
               <h3>How do I use fullscreen or focus mode?</h3>
               <p>Click the [⛶ Fullscreen] or [📺 Focus Mode] button in the top-right of any game to go borderless for clean, distraction-free play.</p>
             </div>
@@ -425,6 +441,20 @@ const homeFaqSchema = JSON.stringify({
     z-index: 1;
     max-width: 850px;
     margin: 0 auto;
+  }
+
+  .hero-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(168, 85, 247, 0.15);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    color: #e9d5ff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.3rem 0.85rem;
+    border-radius: 999px;
+    margin-bottom: 1.25rem;
   }
 
   .hero-headline {

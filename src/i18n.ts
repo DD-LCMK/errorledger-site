@@ -49,7 +49,7 @@ const ui = {
 
     // Footer
     'footer.desc': '에러레저는 치지직(CHZZK), SOOP(아프리카TV), 유튜브 라이브 스트리머와 시청자를 위한 무료 방송용 인터랙티브 웹게임 플랫폼입니다. 언제 어디서나 간편하게 띄워 생방송 텐션을 올려보세요.',
-    'footer.badge': '⚡ 100% 무료 • 로그인 없는 즉시 실행',
+    'footer.badge': '⚡ 100% 무료 • 방송 송출 및 상업적 이용 허용',
     'footer.category.games': '인기 게임',
     'footer.category.tests': '심리 & 운세',
     'footer.category.tools': '방송 유틸리티',
@@ -105,7 +105,7 @@ const ui = {
 
     // Footer
     'footer.desc': 'ErrorLedger is a 100% free, browser-based interactive tool platform for live streamers on Twitch, YouTube, CHZZK, and SOOP — no install, no login required.',
-    'footer.badge': '⚡ 100% Free • No Login Required',
+    'footer.badge': '⚡ 100% Free • Free for Streams & Monetization',
     'footer.category.games': 'Games',
     'footer.category.tests': 'Tests & Fortune',
     'footer.category.tools': 'Stream Utilities',
