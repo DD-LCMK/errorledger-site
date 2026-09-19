@@ -391,6 +391,7 @@ const data = gameEntry?.data || {
           <button type="button" class="preset-btn" data-preset="blink" title="눈 깜빡이기 기본 모션 불러오기">🐱 깜빡임</button>
           <button type="button" class="preset-btn" data-preset="wave" title="손 흔들기 웨이브 모션 불러오기">👋 손흔들기</button>
           <button type="button" class="preset-btn" data-preset="heart" title="하트 쿵쾅 바운스 모션 불러오기">❤️ 바운스</button>
+          <button type="button" class="preset-btn" data-preset="fire" title="타오르는 불꽃 모션 불러오기">🔥 불꽃</button>
         </div>
       </div>
 
@@ -1071,6 +1072,104 @@ const data = gameEntry?.data || {
       });
     }
 
+    // ── Built-in Preset Drawing Primitives ──
+    public fillCircle(frame: Uint8Array, cx: number, cy: number, r: number, colorIdx: number) {
+      const w = this.width, h = this.height;
+      const minX = Math.max(0, Math.floor(cx - r));
+      const maxX = Math.min(w - 1, Math.ceil(cx + r));
+      const minY = Math.max(0, Math.floor(cy - r));
+      const maxY = Math.min(h - 1, Math.ceil(cy + r));
+      const r2 = r * r;
+      for (let y = minY; y <= maxY; y++) {
+        const dy2 = (y - cy) * (y - cy);
+        for (let x = minX; x <= maxX; x++) {
+          if ((x - cx) * (x - cx) + dy2 <= r2) {
+            frame[y * w + x] = colorIdx;
+          }
+        }
+      }
+    }
+
+    public fillEllipse(frame: Uint8Array, cx: number, cy: number, rx: number, ry: number, colorIdx: number) {
+      const w = this.width, h = this.height;
+      const minX = Math.max(0, Math.floor(cx - rx));
+      const maxX = Math.min(w - 1, Math.ceil(cx + rx));
+      const minY = Math.max(0, Math.floor(cy - ry));
+      const maxY = Math.min(h - 1, Math.ceil(cy + ry));
+      for (let y = minY; y <= maxY; y++) {
+        const dy = (y - cy) / Math.max(0.5, ry);
+        for (let x = minX; x <= maxX; x++) {
+          const dx = (x - cx) / Math.max(0.5, rx);
+          if (dx * dx + dy * dy <= 1.0) {
+            frame[y * w + x] = colorIdx;
+          }
+        }
+      }
+    }
+
+    public fillPoly(frame: Uint8Array, pts: [number, number][], colorIdx: number) {
+      const w = this.width, h = this.height;
+      if (pts.length < 3) return;
+      let minX = w, maxX = 0, minY = h, maxY = 0;
+      for (const [px, py] of pts) {
+        if (px < minX) minX = px;
+        if (px > maxX) maxX = px;
+        if (py < minY) minY = py;
+        if (py > maxY) maxY = py;
+      }
+      minX = Math.max(0, Math.floor(minX));
+      maxX = Math.min(w - 1, Math.ceil(maxX));
+      minY = Math.max(0, Math.floor(minY));
+      maxY = Math.min(h - 1, Math.ceil(maxY));
+
+      for (let y = minY; y <= maxY; y++) {
+        for (let x = minX; x <= maxX; x++) {
+          let inside = false;
+          for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+            const xi = pts[i][0], yi = pts[i][1];
+            const xj = pts[j][0], yj = pts[j][1];
+            const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+            if (intersect) inside = !inside;
+          }
+          if (inside) frame[y * w + x] = colorIdx;
+        }
+      }
+    }
+
+    public strokeCircle(frame: Uint8Array, cx: number, cy: number, r: number, colorIdx: number, thickness: number = 1) {
+      const w = this.width, h = this.height;
+      const rOuter = r + (thickness - 1) / 2;
+      const rInner = r - (thickness - 1) / 2;
+      const minX = Math.max(0, Math.floor(cx - rOuter - 1));
+      const maxX = Math.min(w - 1, Math.ceil(cx + rOuter + 1));
+      const minY = Math.max(0, Math.floor(cy - rOuter - 1));
+      const maxY = Math.min(h - 1, Math.ceil(cy + rOuter + 1));
+      for (let y = minY; y <= maxY; y++) {
+        const dy2 = (y - cy) * (y - cy);
+        for (let x = minX; x <= maxX; x++) {
+          const d = Math.sqrt((x - cx) * (x - cx) + dy2);
+          if (d >= rInner - 0.5 && d <= rOuter + 0.5) {
+            frame[y * w + x] = colorIdx;
+          }
+        }
+      }
+    }
+
+    public drawStrokeLine(frame: Uint8Array, x0: number, y0: number, x1: number, y1: number, colorIdx: number, size: number = 1) {
+      this.drawLineSegment(frame, Math.round(x0), Math.round(y0), Math.round(x1), Math.round(y1), colorIdx, size, false);
+    }
+
+    public drawSparkle(frame: Uint8Array, cx: number, cy: number, r: number, colorIdx: number) {
+      const pts: [number, number][] = [];
+      for (let i = 0; i < 8; i++) {
+        const rad = (i % 2 === 0 ? r : r * 0.28);
+        const a = (i * Math.PI) / 4 - Math.PI / 2;
+        pts.push([cx + Math.cos(a) * rad, cy + Math.sin(a) * rad]);
+      }
+      this.fillPoly(frame, pts, colorIdx);
+      this.fillCircle(frame, cx, cy, Math.max(1, r * 0.25), 1);
+    }
+
     // ── Built-in Presets ──
     public loadPreset(name: string) {
       this.initFrames(4);
@@ -1078,85 +1177,313 @@ const data = gameEntry?.data || {
       const h = this.height;
       const cx = Math.floor(w / 2);
       const cy = Math.floor(h / 2);
+      const sc = w / 128;
 
       if (name === 'blink') {
-        // Blinking Cat Face across 4 frames
+        // ── 4-Frame Kawaii Blinking & Bouncing Kitty Emote ──
         for (let f = 0; f < 4; f++) {
           const frame = this.frames[f];
-          // Head outline (Yellow)
-          const cYel = 4;
-          const r = Math.floor(w * 0.35);
-          for (let a = 0; a < 360; a += 2) {
-            const rad = a * Math.PI / 180;
-            const px = Math.round(cx + Math.cos(rad) * r);
-            const py = Math.round(cy + Math.sin(rad) * r);
-            if (px >= 0 && px < w && py >= 0 && py < h) frame[py * w + px] = cYel;
+          const bounceY = [0, 3 * sc, 4 * sc, -5 * sc][f];
+          const rxScale = [1.0, 1.08, 1.10, 0.95][f];
+          const ryScale = [1.0, 0.92, 0.90, 1.06][f];
+
+          const headCy = cy - 4 * sc + bounceY;
+          const bodyCy = cy + 38 * sc + bounceY * 0.5;
+
+          // 1. Soft body at bottom (Cream 15)
+          this.fillEllipse(frame, cx, bodyCy, 32 * sc * rxScale, 18 * sc * ryScale, 15);
+          for (let a = 0.2; a <= Math.PI - 0.2; a += 0.1) {
+            const x0 = cx + Math.cos(a) * 32 * sc * rxScale;
+            const y0 = bodyCy + Math.sin(a) * 18 * sc * ryScale;
+            const x1 = cx + Math.cos(a + 0.1) * 32 * sc * rxScale;
+            const y1 = bodyCy + Math.sin(a + 0.1) * 18 * sc * ryScale;
+            this.drawStrokeLine(frame, x0, y0, x1, y1, 14, Math.max(1, Math.round(2 * sc)));
           }
-          // Ears
-          for (let d = 0; d < 20; d++) {
-            const lx = cx - r + d;
-            const ly = cy - r + d * 0.7;
-            const rx = cx + r - d;
-            const ry = cy - r + d * 0.7;
-            if (lx >= 0 && lx < w && ly >= 0 && ly < h) frame[Math.floor(ly) * w + Math.floor(lx)] = cYel;
-            if (rx >= 0 && rx < w && ry >= 0 && ry < h) frame[Math.floor(ry) * w + Math.floor(rx)] = cYel;
+
+          // 2. Ears
+          const earTilt = [0, 3 * sc, 4 * sc, -2 * sc][f];
+          this.fillPoly(frame, [
+            [cx - 32 * sc * rxScale, headCy - 12 * sc],
+            [cx - 36 * sc * rxScale - earTilt, headCy - 48 * sc + bounceY * 0.4],
+            [cx - 12 * sc, headCy - 26 * sc]
+          ], 15);
+          this.fillPoly(frame, [
+            [cx + 32 * sc * rxScale, headCy - 12 * sc],
+            [cx + 36 * sc * rxScale + earTilt, headCy - 48 * sc + bounceY * 0.4],
+            [cx + 12 * sc, headCy - 26 * sc]
+          ], 15);
+
+          this.fillPoly(frame, [
+            [cx - 28 * sc * rxScale, headCy - 15 * sc],
+            [cx - 33 * sc * rxScale - earTilt, headCy - 42 * sc + bounceY * 0.4],
+            [cx - 15 * sc, headCy - 25 * sc]
+          ], 2);
+          this.fillPoly(frame, [
+            [cx + 28 * sc * rxScale, headCy - 15 * sc],
+            [cx + 33 * sc * rxScale + earTilt, headCy - 42 * sc + bounceY * 0.4],
+            [cx + 15 * sc, headCy - 25 * sc]
+          ], 2);
+
+          this.drawStrokeLine(frame, cx - 32 * sc * rxScale, headCy - 12 * sc, cx - 36 * sc * rxScale - earTilt, headCy - 48 * sc + bounceY * 0.4, 14, Math.max(1, Math.round(2 * sc)));
+          this.drawStrokeLine(frame, cx - 36 * sc * rxScale - earTilt, headCy - 48 * sc + bounceY * 0.4, cx - 12 * sc, headCy - 26 * sc, 14, Math.max(1, Math.round(2 * sc)));
+          this.drawStrokeLine(frame, cx + 32 * sc * rxScale, headCy - 12 * sc, cx + 36 * sc * rxScale + earTilt, headCy - 48 * sc + bounceY * 0.4, 14, Math.max(1, Math.round(2 * sc)));
+          this.drawStrokeLine(frame, cx + 36 * sc * rxScale + earTilt, headCy - 48 * sc + bounceY * 0.4, cx + 12 * sc, headCy - 26 * sc, 14, Math.max(1, Math.round(2 * sc)));
+
+          // 3. Head (Cream 15)
+          this.fillEllipse(frame, cx, headCy, 36 * sc * rxScale, 30 * sc * ryScale, 15);
+          for (let a = 0; a < Math.PI * 2; a += 0.08) {
+            const x0 = cx + Math.cos(a) * 36 * sc * rxScale;
+            const y0 = headCy + Math.sin(a) * 30 * sc * ryScale;
+            const x1 = cx + Math.cos(a + 0.08) * 36 * sc * rxScale;
+            const y1 = headCy + Math.sin(a + 0.08) * 30 * sc * ryScale;
+            this.drawStrokeLine(frame, x0, y0, x1, y1, 14, Math.max(1, Math.round(2 * sc)));
           }
-          // Eyes: Frame 2 is closed blink!
-          const eyeY = cy - 4;
-          const isBlink = f === 2;
-          if (isBlink) {
-            // Closed horizontal slits
-            for (let dx = -8; dx <= -2; dx++) frame[eyeY * w + (cx + dx)] = 1;
-            for (let dx = 2; dx <= 8; dx++) frame[eyeY * w + (cx + dx)] = 1;
+
+          // 4. Rosy Blush Cheeks
+          const cheekColor = f === 2 ? 2 : 10;
+          this.fillEllipse(frame, cx - 24 * sc * rxScale, headCy + 9 * sc, 7 * sc, 4.5 * sc, cheekColor);
+          this.fillEllipse(frame, cx + 24 * sc * rxScale, headCy + 9 * sc, 7 * sc, 4.5 * sc, cheekColor);
+
+          // 5. Whiskers
+          this.drawStrokeLine(frame, cx - 25 * sc * rxScale, headCy + 4 * sc, cx - 44 * sc * rxScale, headCy + 1 * sc, 14, 1);
+          this.drawStrokeLine(frame, cx - 26 * sc * rxScale, headCy + 10 * sc, cx - 46 * sc * rxScale, headCy + 10 * sc, 14, 1);
+          this.drawStrokeLine(frame, cx + 25 * sc * rxScale, headCy + 4 * sc, cx + 44 * sc * rxScale, headCy + 1 * sc, 14, 1);
+          this.drawStrokeLine(frame, cx + 26 * sc * rxScale, headCy + 10 * sc, cx + 46 * sc * rxScale, headCy + 10 * sc, 14, 1);
+
+          // 6. Eyes across the 4 frames
+          const eyeXOff = 16 * sc * rxScale;
+          const eyeY = headCy - 4 * sc;
+
+          if (f === 2) {
+            for (let a = 0.2; a <= Math.PI - 0.2; a += 0.15) {
+              const lx0 = cx - eyeXOff - Math.cos(a) * 7 * sc;
+              const ly0 = eyeY + 2 * sc - Math.sin(a) * 5 * sc;
+              const lx1 = cx - eyeXOff - Math.cos(a + 0.15) * 7 * sc;
+              const ly1 = eyeY + 2 * sc - Math.sin(a + 0.15) * 5 * sc;
+              this.drawStrokeLine(frame, lx0, ly0, lx1, ly1, 14, Math.max(1, Math.round(2 * sc)));
+
+              const rx0 = cx + eyeXOff + Math.cos(a) * 7 * sc;
+              const ry0 = eyeY + 2 * sc - Math.sin(a) * 5 * sc;
+              const rx1 = cx + eyeXOff + Math.cos(a + 0.15) * 7 * sc;
+              const ry1 = eyeY + 2 * sc - Math.sin(a + 0.15) * 5 * sc;
+              this.drawStrokeLine(frame, rx0, ry0, rx1, ry1, 14, Math.max(1, Math.round(2 * sc)));
+            }
+            this.drawSparkle(frame, cx - 44 * sc, headCy - 30 * sc, 9 * sc, 4);
+            this.drawSparkle(frame, cx + 44 * sc, headCy - 28 * sc, 8 * sc, 6);
           } else {
-            // Open circle eyes
-            for (let dy = -3; dy <= 3; dy++) {
-              for (let dx = -3; dx <= 3; dx++) {
-                if (dx * dx + dy * dy <= 9) {
-                  frame[(eyeY + dy) * w + (cx - 6 + dx)] = 6; // Cyan eye
-                  frame[(eyeY + dy) * w + (cx + 6 + dx)] = 6;
-                }
-              }
+            const eyeR = (f === 3 ? 7.5 : f === 1 ? 5.8 : 6.8) * sc;
+            this.fillCircle(frame, cx - eyeXOff, eyeY, eyeR, 14);
+            this.fillCircle(frame, cx + eyeXOff, eyeY, eyeR, 14);
+
+            if (f === 3) {
+              this.drawSparkle(frame, cx - eyeXOff - 1.5 * sc, eyeY - 1.5 * sc, 4.0 * sc, 1);
+              this.drawSparkle(frame, cx + eyeXOff - 1.5 * sc, eyeY - 1.5 * sc, 4.0 * sc, 1);
+            } else {
+              this.fillCircle(frame, cx - eyeXOff - 2.2 * sc, eyeY - 2.2 * sc, 2.5 * sc, 1);
+              this.fillCircle(frame, cx + eyeXOff - 2.2 * sc, eyeY - 2.2 * sc, 2.5 * sc, 1);
+              this.fillCircle(frame, cx - eyeXOff + 2.2 * sc, eyeY + 2.2 * sc, 1.2 * sc, 1);
+              this.fillCircle(frame, cx + eyeXOff + 2.2 * sc, eyeY + 2.2 * sc, 1.2 * sc, 1);
             }
           }
-          // Smile
-          const mouthY = cy + 10;
-          for (let mx = -6; mx <= 6; mx++) {
-            const my = mouthY + Math.abs(mx) * 0.3;
-            frame[Math.floor(my) * w + (cx + mx)] = 2; // Pink smile
+
+          // 7. Pink Nose & Cat Smile :3
+          this.fillPoly(frame, [
+            [cx - 2.5 * sc, headCy + 4 * sc],
+            [cx + 2.5 * sc, headCy + 4 * sc],
+            [cx, headCy + 7 * sc]
+          ], 2);
+
+          if (f === 1) {
+            this.fillCircle(frame, cx, headCy + 10 * sc, 3 * sc, 2);
+            this.strokeCircle(frame, cx, headCy + 10 * sc, 3 * sc, 14, 1);
+          } else {
+            for (let a = 0; a <= Math.PI; a += 0.25) {
+              const lx0 = cx - 4 * sc + Math.cos(a) * 4 * sc;
+              const ly0 = headCy + 7 * sc + Math.sin(a) * 3.5 * sc;
+              const lx1 = cx - 4 * sc + Math.cos(a + 0.25) * 4 * sc;
+              const ly1 = headCy + 7 * sc + Math.sin(a + 0.25) * 3.5 * sc;
+              this.drawStrokeLine(frame, lx0, ly0, lx1, ly1, 14, Math.max(1, Math.round(1.5 * sc)));
+
+              const rx0 = cx + 4 * sc - Math.cos(a) * 4 * sc;
+              const ry0 = headCy + 7 * sc + Math.sin(a) * 3.5 * sc;
+              const rx1 = cx + 4 * sc - Math.cos(a + 0.25) * 4 * sc;
+              const ry1 = headCy + 7 * sc + Math.sin(a + 0.25) * 3.5 * sc;
+              this.drawStrokeLine(frame, rx0, ry0, rx1, ry1, 14, Math.max(1, Math.round(1.5 * sc)));
+            }
           }
+
+          // 8. Little Paws
+          const pawY = bodyCy + 2 * sc;
+          this.fillCircle(frame, cx - 14 * sc, pawY, 7 * sc, 15);
+          this.fillCircle(frame, cx + 14 * sc, pawY, 7 * sc, 15);
+          this.strokeCircle(frame, cx - 14 * sc, pawY, 7 * sc, 14, 1);
+          this.strokeCircle(frame, cx + 14 * sc, pawY, 7 * sc, 14, 1);
         }
       } else if (name === 'wave') {
-        // Waving Hand across 4 frames
+        // ── 4-Frame Waving Streamer Mascot Emote ──
         for (let f = 0; f < 4; f++) {
           const frame = this.frames[f];
-          const angle = [-15, 0, 15, 0][f] * Math.PI / 180;
-          const armLen = Math.floor(w * 0.38);
-          // Draw waving stick arm + round hand
-          for (let step = 0; step < armLen; step++) {
-            const px = Math.round(cx + Math.sin(angle) * step);
-            const py = Math.round(cy + armLen / 2 - Math.cos(angle) * step);
-            if (px >= 0 && px < w && py >= 0 && py < h) {
-              frame[py * w + px] = 5; // Neon green arm
+          const headTiltX = [-2, 0, 2, 0][f] * sc;
+          const headY = cy + 2 * sc;
+
+          this.fillEllipse(frame, cx + headTiltX * 0.5, headY + 36 * sc, 28 * sc, 20 * sc, 4);
+          this.fillCircle(frame, cx + headTiltX, headY, 32 * sc, 4);
+
+          for (let a = 0; a < Math.PI * 2; a += 0.1) {
+            const x0 = cx + headTiltX + Math.cos(a) * 32 * sc;
+            const y0 = headY + Math.sin(a) * 32 * sc;
+            const x1 = cx + headTiltX + Math.cos(a + 0.1) * 32 * sc;
+            const y1 = headY + Math.sin(a + 0.1) * 32 * sc;
+            this.drawStrokeLine(frame, x0, y0, x1, y1, 14, Math.max(1, Math.round(2 * sc)));
+          }
+
+          this.fillCircle(frame, cx + headTiltX - 24 * sc, headY - 26 * sc, 10 * sc, 4);
+          this.fillCircle(frame, cx + headTiltX + 24 * sc, headY - 26 * sc, 10 * sc, 4);
+          this.fillCircle(frame, cx + headTiltX - 24 * sc, headY - 26 * sc, 5 * sc, 10);
+          this.fillCircle(frame, cx + headTiltX + 24 * sc, headY - 26 * sc, 5 * sc, 10);
+          this.strokeCircle(frame, cx + headTiltX - 24 * sc, headY - 26 * sc, 10 * sc, 14, 1);
+          this.strokeCircle(frame, cx + headTiltX + 24 * sc, headY - 26 * sc, 10 * sc, 14, 1);
+
+          this.fillCircle(frame, cx - 26 * sc, headY + 28 * sc, 7 * sc, 4);
+          this.strokeCircle(frame, cx - 26 * sc, headY + 28 * sc, 7 * sc, 14, 1);
+
+          const angles = [-0.48, 0.0, 0.48, -0.16];
+          const armAng = angles[f];
+          const armLen = 34 * sc;
+          const armBaseX = cx + 22 * sc;
+          const armBaseY = headY + 12 * sc;
+          const pawX = armBaseX + Math.sin(armAng) * armLen + 10 * sc;
+          const pawY = armBaseY - Math.cos(armAng) * armLen * 0.85;
+
+          this.drawStrokeLine(frame, armBaseX, armBaseY, pawX, pawY, 4, Math.max(1, Math.round(12 * sc)));
+          this.drawStrokeLine(frame, armBaseX, armBaseY, pawX, pawY, 14, Math.max(1, Math.round(2 * sc)));
+
+          this.fillCircle(frame, pawX, pawY, 9 * sc, 4);
+          this.strokeCircle(frame, pawX, pawY, 9 * sc, 14, 1);
+          this.fillCircle(frame, pawX, pawY, 4 * sc, 2);
+          for (let ti = -1; ti <= 1; ti++) {
+            const padA = -Math.PI / 2 + ti * 0.6;
+            this.fillCircle(frame, pawX + Math.cos(padA) * 6.5 * sc, pawY + Math.sin(padA) * 6.5 * sc, 1.8 * sc, 2);
+          }
+
+          if (f === 1 || f === 3) {
+            for (let sa = -0.3; sa <= 0.3; sa += 0.1) {
+              const sx0 = armBaseX + Math.sin(sa) * (armLen + 8 * sc) + 10 * sc;
+              const sy0 = armBaseY - Math.cos(sa) * (armLen + 8 * sc) * 0.85;
+              const sx1 = armBaseX + Math.sin(sa + 0.1) * (armLen + 8 * sc) + 10 * sc;
+              const sy1 = armBaseY - Math.cos(sa + 0.1) * (armLen + 8 * sc) * 0.85;
+              this.drawStrokeLine(frame, sx0, sy0, sx1, sy1, 6, Math.max(1, Math.round(2 * sc)));
             }
           }
-          const hx = Math.round(cx + Math.sin(angle) * armLen);
-          const hy = Math.round(cy + armLen / 2 - Math.cos(angle) * armLen);
-          this.stamp(frame, hx, hy, 6, 2, false); // Pink palm
+          if (f === 2) {
+            this.drawSparkle(frame, pawX + 12 * sc, pawY - 8 * sc, 7 * sc, 6);
+          }
+
+          this.fillEllipse(frame, cx + headTiltX - 18 * sc, headY + 8 * sc, 6 * sc, 3.5 * sc, 10);
+          this.fillEllipse(frame, cx + headTiltX + 18 * sc, headY + 8 * sc, 6 * sc, 3.5 * sc, 10);
+
+          this.fillCircle(frame, cx + headTiltX - 12 * sc, headY - 2 * sc, 5.5 * sc, 14);
+          this.fillCircle(frame, cx + headTiltX - 14 * sc, headY - 4 * sc, 2.0 * sc, 1);
+
+          if (f === 2) {
+            this.drawStrokeLine(frame, cx + headTiltX + 7 * sc, headY - 4 * sc, cx + headTiltX + 14 * sc, headY - 1 * sc, 14, 2);
+            this.drawStrokeLine(frame, cx + headTiltX + 14 * sc, headY - 1 * sc, cx + headTiltX + 7 * sc, headY + 2 * sc, 14, 2);
+          } else {
+            this.fillCircle(frame, cx + headTiltX + 12 * sc, headY - 2 * sc, 5.5 * sc, 14);
+            this.fillCircle(frame, cx + headTiltX + 10 * sc, headY - 4 * sc, 2.0 * sc, 1);
+          }
+
+          for (let a = 0.2; a <= Math.PI - 0.2; a += 0.2) {
+            const mx0 = cx + headTiltX + Math.cos(a) * 8 * sc;
+            const my0 = headY + 8 * sc + Math.sin(a) * 6 * sc;
+            const mx1 = cx + headTiltX + Math.cos(a + 0.2) * 8 * sc;
+            const my1 = headY + 8 * sc + Math.sin(a + 0.2) * 6 * sc;
+            this.drawStrokeLine(frame, mx0, my0, mx1, my1, 14, Math.max(1, Math.round(1.8 * sc)));
+          }
         }
       } else if (name === 'heart') {
-        // Beating Heart Bounce across 4 frames
-        const scales = [0.8, 1.15, 0.95, 1.05];
+        // ── 4-Frame Pumping Heart Pulse Emote ──
+        const scales = [1.0, 0.90, 1.25, 1.06];
         for (let f = 0; f < 4; f++) {
           const frame = this.frames[f];
-          const sc = scales[f];
-          const r = Math.floor(w * 0.22 * sc);
-          // Draw heart using parametric formula
+          const scH = (w / 38) * scales[f];
+
+          const heartPts: [number, number][] = [];
           for (let t = 0; t < Math.PI * 2; t += 0.05) {
-            const hx = cx + Math.round(sc * 16 * Math.sin(t) ** 3 * (w / 40));
-            const hy = cy - Math.round(sc * (13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t)) * (h / 40));
-            this.stamp(frame, hx, hy, Math.max(1, Math.floor(2 * sc)), 2, false);
+            const hx = cx + Math.round(scH * 16 * Math.sin(t) ** 3);
+            const hy = cy - Math.round(scH * (13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t)));
+            heartPts.push([hx, hy]);
           }
+          this.fillPoly(frame, heartPts, 2);
+
+          for (let i = 0; i < heartPts.length; i++) {
+            const p0 = heartPts[i];
+            const p1 = heartPts[(i + 1) % heartPts.length];
+            this.drawStrokeLine(frame, p0[0], p0[1], p1[0], p1[1], 14, Math.max(1, Math.round(2 * sc)));
+          }
+
+          this.fillEllipse(frame, cx - 14 * scales[f] * sc, cy - 12 * scales[f] * sc, 8 * scales[f] * sc, 4.5 * scales[f] * sc, 1);
+          this.fillCircle(frame, cx - 20 * scales[f] * sc, cy - 16 * scales[f] * sc, 2.5 * scales[f] * sc, 10);
+
+          if (f === 2) {
+            this.drawSparkle(frame, cx - 42 * sc, cy - 32 * sc, 9 * sc, 4);
+            this.drawSparkle(frame, cx + 42 * sc, cy - 30 * sc, 10 * sc, 6);
+            this.drawSparkle(frame, cx - 38 * sc, cy + 30 * sc, 8 * sc, 2);
+            this.drawSparkle(frame, cx + 40 * sc, cy + 28 * sc, 9 * sc, 4);
+          } else if (f === 3) {
+            this.drawSparkle(frame, cx - 48 * sc, cy - 38 * sc, 5 * sc, 4);
+            this.drawSparkle(frame, cx + 48 * sc, cy - 36 * sc, 6 * sc, 6);
+            this.drawSparkle(frame, cx - 44 * sc, cy + 36 * sc, 5 * sc, 2);
+            this.drawSparkle(frame, cx + 46 * sc, cy + 34 * sc, 5 * sc, 4);
+          }
+        }
+      } else if (name === 'fire') {
+        // ── 4-Frame Hype Dancing Flame Emote ──
+        for (let f = 0; f < 4; f++) {
+          const frame = this.frames[f];
+          const flameShift = [0, 2, -2, 1][f] * sc;
+          const flameHeight = [1.0, 1.15, 0.95, 1.08][f];
+
+          this.fillEllipse(frame, cx, cy + 24 * sc, 34 * sc, 24 * sc, 2);
+          this.fillPoly(frame, [
+            [cx - 30 * sc, cy + 24 * sc],
+            [cx + flameShift, cy - 44 * sc * flameHeight],
+            [cx + 30 * sc, cy + 24 * sc]
+          ], 2);
+          this.fillPoly(frame, [
+            [cx - 26 * sc, cy + 20 * sc],
+            [cx - 18 * sc + flameShift, cy - 26 * sc * flameHeight],
+            [cx, cy + 10 * sc]
+          ], 2);
+          this.fillPoly(frame, [
+            [cx, cy + 10 * sc],
+            [cx + 18 * sc + flameShift, cy - 28 * sc * flameHeight],
+            [cx + 26 * sc, cy + 20 * sc]
+          ], 2);
+
+          this.fillEllipse(frame, cx, cy + 26 * sc, 24 * sc, 18 * sc, 3);
+          this.fillPoly(frame, [
+            [cx - 20 * sc, cy + 26 * sc],
+            [cx + flameShift * 0.7, cy - 28 * sc * flameHeight],
+            [cx + 20 * sc, cy + 26 * sc]
+          ], 3);
+
+          this.fillEllipse(frame, cx, cy + 28 * sc, 15 * sc, 12 * sc, 4);
+          this.fillPoly(frame, [
+            [cx - 12 * sc, cy + 28 * sc],
+            [cx + flameShift * 0.5, cy - 12 * sc * flameHeight],
+            [cx + 12 * sc, cy + 28 * sc]
+          ], 4);
+
+          this.fillEllipse(frame, cx, cy + 30 * sc, 7 * sc, 6 * sc, 1);
+
+          const ember1Y = cy - 40 * sc - f * 8 * sc;
+          const ember2Y = cy - 20 * sc - ((f + 2) % 4) * 8 * sc;
+          const ember3Y = cy - 10 * sc - ((f + 1) % 4) * 9 * sc;
+
+          if (ember1Y > 6 * sc) this.fillCircle(frame, cx - 12 * sc + flameShift, ember1Y, 2.5 * sc, 4);
+          if (ember2Y > 6 * sc) this.fillCircle(frame, cx + 14 * sc - flameShift, ember2Y, 2.0 * sc, 3);
+          if (ember3Y > 6 * sc) this.fillCircle(frame, cx + flameShift * 1.5, ember3Y, 2.8 * sc, 1);
         }
       }
     }
@@ -1230,7 +1557,11 @@ const data = gameEntry?.data || {
 
   // ── Main UI Initialization ──
   function initStreamEmoji() {
-    const isEn = document.documentElement.lang === 'en';
+    const isEn = typeof window !== 'undefined' && (
+      new URLSearchParams(window.location.search).get('lang') === 'en' ||
+      window.location.pathname.startsWith('/en') ||
+      document.documentElement.lang === 'en'
+    );
     const canvas = document.getElementById('emoji-canvas') as HTMLCanvasElement;
     const onionPrevCanvas = document.getElementById('onion-prev-canvas') as HTMLCanvasElement;
     const onionNextCanvas = document.getElementById('onion-next-canvas') as HTMLCanvasElement;
@@ -1994,17 +2325,31 @@ const data = gameEntry?.data || {
     symQuadBtn?.addEventListener('click', () => setSymmetry('quad'));
 
     // ── Inspiration Presets ──
+    if (isEn) {
+      const emojiPresetEn: Record<string, { text: string; title: string }> = {
+        'blink': { text: '🐱 Blink', title: 'Load kawaii blinking & bouncing emote' },
+        'wave': { text: '👋 Wave', title: 'Load waving streamer mascot emote' },
+        'heart': { text: '❤️ Heartbeat', title: 'Load pumping heart pulse emote' },
+        'fire': { text: '🔥 Fire', title: 'Load hype dancing flame emote' }
+      };
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        const p = (btn as HTMLElement).dataset.preset || '';
+        if (emojiPresetEn[p]) {
+          btn.textContent = emojiPresetEn[p].text;
+          (btn as HTMLElement).title = emojiPresetEn[p].title;
+        }
+      });
+    }
+
     document.querySelectorAll('.preset-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const p = (btn as HTMLElement).dataset.preset;
         if (!p) return;
-        if (confirm(isEn ? 'Load preset animation? (Replaces existing frames)' : '프리셋 애니메이션을 불러오시겠습니까? (현재 프레임이 대체됩니다)')) {
-          engine.loadPreset(p);
-          audio.playBlip(600);
-          updateTimelineStrip();
-          render();
-          showToast(isEn ? 'Preset loaded!' : '프리셋 불러오기 완료!');
-        }
+        engine.loadPreset(p);
+        audio.playBlip(600);
+        updateTimelineStrip();
+        render();
+        showToast(isEn ? 'Preset loaded!' : '프리셋 불러오기 완료!');
       });
     });
 

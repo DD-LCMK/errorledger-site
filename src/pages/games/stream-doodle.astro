@@ -417,7 +417,7 @@ const data = gameEntry?.data || {
             <button type="button" class="preset-btn" data-preset="cat" title="고양이 밑그림 불러오기">🐱 고양이</button>
             <button type="button" class="preset-btn" data-preset="heart" title="하트 밑그림 불러오기">💖 하트</button>
             <button type="button" class="preset-btn" data-preset="star" title="별 밑그림 불러오기">⭐ 별</button>
-            <button type="button" class="preset-btn" data-preset="smile" title="스마일 밑그림 불러오기">😃 스마일</button>
+            <button type="button" class="preset-btn" data-preset="smile" title="파티 밑그림 불러오기">🎉 파티</button>
           </div>
         </div>
       </main>
@@ -1349,6 +1349,138 @@ const data = gameEntry?.data || {
       });
     }
 
+    // ── Preset Sticker Helpers: Procedural Boiling Shapes Across 3 Frames ──
+    public fillCircle(cx: number, cy: number, r: number, colorIdx: number, boilAmp: number = 1.0) {
+      const w = this.width;
+      const h = this.height;
+      const minX = Math.max(0, Math.floor(cx - r - boilAmp - 1));
+      const maxX = Math.min(w - 1, Math.ceil(cx + r + boilAmp + 1));
+      const minY = Math.max(0, Math.floor(cy - r - boilAmp - 1));
+      const maxY = Math.min(h - 1, Math.ceil(cy + r + boilAmp + 1));
+
+      for (let f = 0; f < FRAMES_COUNT; f++) {
+        const frameBuf = this.frames[f];
+        for (let y = minY; y <= maxY; y++) {
+          const dy = y - cy;
+          for (let x = minX; x <= maxX; x++) {
+            const dx = x - cx;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const a = Math.atan2(dy, dx);
+            const boil = boilAmp > 0 ? Math.sin(a * 4 + f * 2.1) * boilAmp : 0;
+            if (dist <= r + boil) {
+              frameBuf[y * w + x] = colorIdx;
+            }
+          }
+        }
+      }
+    }
+
+    public fillEllipse(cx: number, cy: number, rx: number, ry: number, colorIdx: number, boilAmp: number = 1.0) {
+      const w = this.width;
+      const h = this.height;
+      const minX = Math.max(0, Math.floor(cx - rx - boilAmp - 1));
+      const maxX = Math.min(w - 1, Math.ceil(cx + rx + boilAmp + 1));
+      const minY = Math.max(0, Math.floor(cy - ry - boilAmp - 1));
+      const maxY = Math.min(h - 1, Math.ceil(cy + ry + boilAmp + 1));
+
+      for (let f = 0; f < FRAMES_COUNT; f++) {
+        const frameBuf = this.frames[f];
+        for (let y = minY; y <= maxY; y++) {
+          const dy = (y - cy) / Math.max(1, ry);
+          for (let x = minX; x <= maxX; x++) {
+            const dx = (x - cx) / Math.max(1, rx);
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const a = Math.atan2(dy, dx);
+            const boil = boilAmp > 0 ? (Math.sin(a * 4 + f * 2.1) * boilAmp) / Math.min(rx, ry) : 0;
+            if (dist <= 1.0 + boil) {
+              frameBuf[y * w + x] = colorIdx;
+            }
+          }
+        }
+      }
+    }
+
+    public fillPoly(pts: [number, number][], colorIdx: number, boilAmp: number = 1.0) {
+      const w = this.width;
+      const h = this.height;
+      if (pts.length < 3) return;
+
+      let minX = w, maxX = 0, minY = h, maxY = 0;
+      for (const [px, py] of pts) {
+        if (px < minX) minX = px;
+        if (px > maxX) maxX = px;
+        if (py < minY) minY = py;
+        if (py > maxY) maxY = py;
+      }
+      minX = Math.max(0, Math.floor(minX - boilAmp - 1));
+      maxX = Math.min(w - 1, Math.ceil(maxX + boilAmp + 1));
+      minY = Math.max(0, Math.floor(minY - boilAmp - 1));
+      maxY = Math.min(h - 1, Math.ceil(maxY + boilAmp + 1));
+
+      for (let f = 0; f < FRAMES_COUNT; f++) {
+        const frameBuf = this.frames[f];
+        const jPts: [number, number][] = pts.map(([px, py], i) => [
+          px + (boilAmp > 0 ? Math.sin(i * 3.7 + f * 2.3) * boilAmp : 0),
+          py + (boilAmp > 0 ? Math.cos(i * 3.7 + f * 2.3) * boilAmp : 0)
+        ]);
+
+        for (let y = minY; y <= maxY; y++) {
+          for (let x = minX; x <= maxX; x++) {
+            let inside = false;
+            for (let i = 0, j = jPts.length - 1; i < jPts.length; j = i++) {
+              const xi = jPts[i][0], yi = jPts[i][1];
+              const xj = jPts[j][0], yj = jPts[j][1];
+              const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+              if (intersect) inside = !inside;
+            }
+            if (inside) {
+              frameBuf[y * w + x] = colorIdx;
+            }
+          }
+        }
+      }
+    }
+
+    public drawBoilLine(x0: number, y0: number, x1: number, y1: number, colorIdx: number, size: number, amp: number = 1.2) {
+      const w = this.width;
+      const h = this.height;
+      const r = Math.max(1, Math.round(size / 2));
+
+      for (let f = 0; f < FRAMES_COUNT; f++) {
+        const frameBuf = this.frames[f];
+        const jx0 = x0 + (Math.sin(f * 2.1 + x0 * 0.1) * 2 - 1) * amp;
+        const jy0 = y0 + (Math.cos(f * 2.1 + y0 * 0.1) * 2 - 1) * amp;
+        const jx1 = x1 + (Math.sin(f * 2.1 + x1 * 0.1) * 2 - 1) * amp;
+        const jy1 = y1 + (Math.cos(f * 2.1 + y1 * 0.1) * 2 - 1) * amp;
+
+        this.bresenhamLine(jx0, jy0, jx1, jy1, (cx, cy) => {
+          for (let dy = -r; dy <= r; dy++) {
+            for (let dx = -r; dx <= r; dx++) {
+              if (dx * dx + dy * dy <= r * r) {
+                const px = Math.round(cx + dx);
+                const py = Math.round(cy + dy);
+                if (px >= 0 && px < w && py >= 0 && py < h) {
+                  frameBuf[py * w + px] = colorIdx;
+                }
+              }
+            }
+          }
+        });
+      }
+    }
+
+    public drawSparkleStar(cx: number, cy: number, r: number, colorIdx: number) {
+      const pts: [number, number][] = [];
+      const numPts = 8;
+      for (let i = 0; i < numPts; i++) {
+        const rad = (i % 2 === 0 ? r : r * 0.28);
+        const a = (i * Math.PI) / 4 - Math.PI / 2;
+        pts.push([cx + Math.cos(a) * rad, cy + Math.sin(a) * rad]);
+      }
+      this.fillPoly(pts, colorIdx, 0.8);
+      this.fillCircle(cx, cy, Math.max(1.5, r * 0.22), 1, 0.3);
+    }
+
     // ── Preset Sticker Loading ──
     public loadPreset(name: string) {
       this.clear();
@@ -1357,66 +1489,255 @@ const data = gameEntry?.data || {
       const scale = Math.min(this.width, this.height) / 360;
 
       if (name === 'cat') {
-        this.activeColorIndex = 2; // Pink
-        this.brushSize = Math.max(2, Math.round(5 * scale));
-        for (let a = 0; a < Math.PI * 2; a += 0.05) {
-          const x = cx + Math.cos(a) * 70 * scale;
-          const y = cy + 10 * scale + Math.sin(a) * 60 * scale;
-          this.drawPointMirrored(x, y);
+        // ── 1. Soft Fluffy Body ──
+        this.fillEllipse(cx, cy + 124 * scale, 96 * scale, 56 * scale, 15, 1.2);
+        for (let a = 0.2; a < Math.PI - 0.2; a += 0.08) {
+          const x0 = cx + Math.cos(a) * 96 * scale;
+          const y0 = cy + 124 * scale + Math.sin(a) * 56 * scale;
+          const x1 = cx + Math.cos(a + 0.08) * 96 * scale;
+          const y1 = cy + 124 * scale + Math.sin(a + 0.08) * 56 * scale;
+          this.drawBoilLine(x0, y0, x1, y1, 12, 3.5 * scale, 1.0);
         }
-        this.drawLineMirrored(cx - 50 * scale, cy - 40 * scale, cx - 65 * scale, cy - 100 * scale);
-        this.drawLineMirrored(cx - 65 * scale, cy - 100 * scale, cx - 20 * scale, cy - 50 * scale);
-        this.drawLineMirrored(cx + 50 * scale, cy - 40 * scale, cx + 65 * scale, cy - 100 * scale);
-        this.drawLineMirrored(cx + 65 * scale, cy - 100 * scale, cx + 20 * scale, cy - 50 * scale);
-        this.activeColorIndex = 8; // Sky blue
-        this.drawPointMirrored(cx - 25 * scale, cy);
-        this.drawPointMirrored(cx + 25 * scale, cy);
-        this.activeColorIndex = 5; // Gold
-        this.drawPointMirrored(cx, cy + 20 * scale);
+
+        // ── 2. Ears Base & Cute Pink Insides ──
+        this.fillPoly([
+          [cx - 75 * scale, cy - 25 * scale],
+          [cx - 65 * scale, cy - 110 * scale],
+          [cx - 18 * scale, cy - 65 * scale]
+        ], 15, 1.4);
+        this.fillPoly([
+          [cx + 75 * scale, cy - 25 * scale],
+          [cx + 65 * scale, cy - 110 * scale],
+          [cx + 18 * scale, cy - 65 * scale]
+        ], 15, 1.4);
+
+        this.fillPoly([
+          [cx - 64 * scale, cy - 36 * scale],
+          [cx - 58 * scale, cy - 96 * scale],
+          [cx - 26 * scale, cy - 62 * scale]
+        ], 2, 0.8);
+        this.fillPoly([
+          [cx + 64 * scale, cy - 36 * scale],
+          [cx + 58 * scale, cy - 96 * scale],
+          [cx + 26 * scale, cy - 62 * scale]
+        ], 2, 0.8);
+
+        this.drawBoilLine(cx - 75 * scale, cy - 25 * scale, cx - 65 * scale, cy - 110 * scale, 12, 3.5 * scale, 1.2);
+        this.drawBoilLine(cx - 65 * scale, cy - 110 * scale, cx - 18 * scale, cy - 65 * scale, 12, 3.5 * scale, 1.2);
+        this.drawBoilLine(cx + 75 * scale, cy - 25 * scale, cx + 65 * scale, cy - 110 * scale, 12, 3.5 * scale, 1.2);
+        this.drawBoilLine(cx + 65 * scale, cy - 110 * scale, cx + 18 * scale, cy - 65 * scale, 12, 3.5 * scale, 1.2);
+
+        // ── 3. Round Head ──
+        this.fillCircle(cx, cy - 5 * scale, 78 * scale, 15, 1.5);
+        for (let a = 0; a < Math.PI * 2; a += 0.07) {
+          const x0 = cx + Math.cos(a) * 78 * scale;
+          const y0 = cy - 5 * scale + Math.sin(a) * 78 * scale;
+          const x1 = cx + Math.cos(a + 0.07) * 78 * scale;
+          const y1 = cy - 5 * scale + Math.sin(a + 0.07) * 78 * scale;
+          this.drawBoilLine(x0, y0, x1, y1, 12, 3.5 * scale, 1.2);
+        }
+
+        // ── 4. Rosy Blush Cheeks ──
+        this.fillEllipse(cx - 48 * scale, cy + 18 * scale, 16 * scale, 9 * scale, 3, 0.8);
+        this.fillEllipse(cx + 48 * scale, cy + 18 * scale, 16 * scale, 9 * scale, 3, 0.8);
+
+        // ── 5. Big Expressive Anime Eyes ──
+        const eyeOffsetX = 28 * scale;
+        const eyeOffsetY = -8 * scale;
+        this.fillCircle(cx - eyeOffsetX, cy + eyeOffsetY, 12 * scale, 12, 0.8);
+        this.fillCircle(cx + eyeOffsetX, cy + eyeOffsetY, 12 * scale, 12, 0.8);
+        this.fillCircle(cx - eyeOffsetX - 3.5 * scale, cy + eyeOffsetY - 3.5 * scale, 4.8 * scale, 1, 0.3);
+        this.fillCircle(cx + eyeOffsetX - 3.5 * scale, cy + eyeOffsetY - 3.5 * scale, 4.8 * scale, 1, 0.3);
+        this.fillCircle(cx - eyeOffsetX + 3.8 * scale, cy + eyeOffsetY + 3.8 * scale, 2.2 * scale, 1, 0.2);
+        this.fillCircle(cx + eyeOffsetX + 3.8 * scale, cy + eyeOffsetY + 3.8 * scale, 2.2 * scale, 1, 0.2);
+
+        // ── 6. Pink Nose & Cat Smile :3 ──
+        this.fillPoly([
+          [cx - 4 * scale, cy + 10 * scale],
+          [cx + 4 * scale, cy + 10 * scale],
+          [cx, cy + 15 * scale]
+        ], 2, 0.4);
+        for (let a = 0; a <= Math.PI; a += 0.2) {
+          const lx0 = cx - 7 * scale + Math.cos(a) * 7 * scale;
+          const ly0 = cy + 15 * scale + Math.sin(a) * 6 * scale;
+          const lx1 = cx - 7 * scale + Math.cos(a + 0.2) * 7 * scale;
+          const ly1 = cy + 15 * scale + Math.sin(a + 0.2) * 6 * scale;
+          this.drawBoilLine(lx0, ly0, lx1, ly1, 12, 2.5 * scale, 0.8);
+
+          const rx0 = cx + 7 * scale - Math.cos(a) * 7 * scale;
+          const ry0 = cy + 15 * scale + Math.sin(a) * 6 * scale;
+          const rx1 = cx + 7 * scale - Math.cos(a + 0.2) * 7 * scale;
+          const ry1 = cy + 15 * scale + Math.sin(a + 0.2) * 6 * scale;
+          this.drawBoilLine(rx0, ry0, rx1, ry1, 12, 2.5 * scale, 0.8);
+        }
+
+        // ── 7. Playful Whiskers ──
+        this.drawBoilLine(cx - 52 * scale, cy + 8 * scale, cx - 94 * scale, cy + 2 * scale, 12, 2.2 * scale, 1.2);
+        this.drawBoilLine(cx - 55 * scale, cy + 18 * scale, cx - 98 * scale, cy + 18 * scale, 12, 2.2 * scale, 1.2);
+        this.drawBoilLine(cx - 52 * scale, cy + 28 * scale, cx - 92 * scale, cy + 34 * scale, 12, 2.2 * scale, 1.2);
+
+        this.drawBoilLine(cx + 52 * scale, cy + 8 * scale, cx + 94 * scale, cy + 2 * scale, 12, 2.2 * scale, 1.2);
+        this.drawBoilLine(cx + 55 * scale, cy + 18 * scale, cx + 98 * scale, cy + 18 * scale, 12, 2.2 * scale, 1.2);
+        this.drawBoilLine(cx + 52 * scale, cy + 28 * scale, cx + 92 * scale, cy + 34 * scale, 12, 2.2 * scale, 1.2);
+
+        // ── 8. Paws Holding Sparkling Neon Heart ──
+        const hcy = cy + 80 * scale;
+        this.fillCircle(cx - 10 * scale, hcy - 8 * scale, 13 * scale, 2, 1.0);
+        this.fillCircle(cx + 10 * scale, hcy - 8 * scale, 13 * scale, 2, 1.0);
+        this.fillPoly([
+          [cx - 22 * scale, hcy - 4 * scale],
+          [cx + 22 * scale, hcy - 4 * scale],
+          [cx, hcy + 22 * scale]
+        ], 2, 1.0);
+        this.fillCircle(cx - 12 * scale, hcy - 11 * scale, 3.5 * scale, 1, 0.3);
+
+        this.fillCircle(cx - 28 * scale, cy + 82 * scale, 12 * scale, 15, 0.8);
+        this.fillCircle(cx + 28 * scale, cy + 82 * scale, 12 * scale, 15, 0.8);
+        for (let a = 0; a < Math.PI * 2; a += 0.2) {
+          this.drawBoilLine(
+            cx - 28 * scale + Math.cos(a) * 12 * scale, cy + 82 * scale + Math.sin(a) * 12 * scale,
+            cx - 28 * scale + Math.cos(a + 0.2) * 12 * scale, cy + 82 * scale + Math.sin(a + 0.2) * 12 * scale,
+            12, 2.2 * scale, 0.8
+          );
+          this.drawBoilLine(
+            cx + 28 * scale + Math.cos(a) * 12 * scale, cy + 82 * scale + Math.sin(a) * 12 * scale,
+            cx + 28 * scale + Math.cos(a + 0.2) * 12 * scale, cy + 82 * scale + Math.sin(a + 0.2) * 12 * scale,
+            12, 2.2 * scale, 0.8
+          );
+        }
+
+        // ── 9. Four Twinkling Sparkle Stars (★) ──
+        this.drawSparkleStar(cx - 115 * scale, cy - 90 * scale, 16 * scale, 5);
+        this.drawSparkleStar(cx + 118 * scale, cy - 82 * scale, 14 * scale, 7);
+        this.drawSparkleStar(cx - 122 * scale, cy + 70 * scale, 13 * scale, 2);
+        this.drawSparkleStar(cx + 120 * scale, cy + 82 * scale, 15 * scale, 5);
       } else if (name === 'heart') {
-        this.activeColorIndex = 2;
-        this.brushSize = Math.max(3, Math.round(6 * scale));
-        for (let t = 0; t < Math.PI * 2; t += 0.03) {
-          const x = cx + 16 * Math.pow(Math.sin(t), 3) * 6 * scale;
-          const y = cy - (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * 6 * scale;
-          this.drawPointMirrored(x, y);
+        // ── Pop-Art Glowing Neon Heart ──
+        for (let t = 0; t < Math.PI * 2; t += 0.04) {
+          const x0 = cx + 16 * Math.pow(Math.sin(t), 3) * 7.5 * scale;
+          const y0 = cy - (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * 7.5 * scale;
+          const x1 = cx + 16 * Math.pow(Math.sin(t + 0.04), 3) * 7.5 * scale;
+          const y1 = cy - (13 * Math.cos(t + 0.04) - 5 * Math.cos(2 * (t + 0.04)) - 2 * Math.cos(3 * (t + 0.04)) - Math.cos(4 * (t + 0.04))) * 7.5 * scale;
+          this.drawBoilLine(x0, y0, x1, y1, 3, 4.0 * scale, 1.4);
         }
+
+        const heartPts: [number, number][] = [];
+        for (let t = 0; t < Math.PI * 2; t += 0.05) {
+          const x = cx + 16 * Math.pow(Math.sin(t), 3) * 6.2 * scale;
+          const y = cy - (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * 6.2 * scale;
+          heartPts.push([x, y]);
+        }
+        this.fillPoly(heartPts, 2, 1.2);
+
+        this.fillEllipse(cx - 42 * scale, cy - 35 * scale, 24 * scale, 14 * scale, 1, 0.6);
+        this.fillCircle(cx - 52 * scale, cy - 42 * scale, 6 * scale, 15, 0.4);
+
+        this.drawSparkleStar(cx - 105 * scale, cy - 70 * scale, 15 * scale, 5);
+        this.drawSparkleStar(cx + 105 * scale, cy - 60 * scale, 16 * scale, 7);
+        this.drawSparkleStar(cx + 90 * scale, cy + 70 * scale, 12 * scale, 5);
+
+        const shx = cx + 95 * scale;
+        const shy = cy - 25 * scale;
+        this.fillCircle(shx - 6 * scale, shy - 4 * scale, 7 * scale, 2, 0.6);
+        this.fillCircle(shx + 6 * scale, shy - 4 * scale, 7 * scale, 2, 0.6);
+        this.fillPoly([[shx - 12 * scale, shy - 2 * scale], [shx + 12 * scale, shy - 2 * scale], [shx, shy + 12 * scale]], 2, 0.6);
       } else if (name === 'star') {
-        this.activeColorIndex = 5; // Gold
-        this.brushSize = Math.max(2, Math.round(5 * scale));
-        const pts: [number, number][] = [];
+        // ── Kawaii Super Star Mascot ──
+        const starPts: [number, number][] = [];
         for (let i = 0; i < 10; i++) {
-          const r = (i % 2 === 0 ? 80 : 35) * scale;
+          const r = (i % 2 === 0 ? 100 : 44) * scale;
           const a = (i * Math.PI) / 5 - Math.PI / 2;
-          pts.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]);
+          starPts.push([cx + Math.cos(a) * r, cy + 5 * scale + Math.sin(a) * r]);
         }
-        for (let i = 0; i < pts.length; i++) {
-          const p0 = pts[i];
-          const p1 = pts[(i + 1) % pts.length];
-          this.drawLineMirrored(p0[0], p0[1], p1[0], p1[1]);
+        this.fillPoly(starPts, 5, 1.4);
+
+        for (let i = 0; i < starPts.length; i++) {
+          const p0 = starPts[i];
+          const p1 = starPts[(i + 1) % starPts.length];
+          this.drawBoilLine(p0[0], p0[1], p1[0], p1[1], 12, 4.0 * scale, 1.2);
         }
+
+        this.fillCircle(cx - 24 * scale, cy - 5 * scale, 9 * scale, 12, 0.6);
+        this.fillCircle(cx + 24 * scale, cy - 5 * scale, 9 * scale, 12, 0.6);
+        this.fillCircle(cx - 26 * scale, cy - 8 * scale, 3.8 * scale, 1, 0.3);
+        this.fillCircle(cx + 22 * scale, cy - 8 * scale, 3.8 * scale, 1, 0.3);
+
+        this.fillEllipse(cx - 40 * scale, cy + 12 * scale, 11 * scale, 6 * scale, 3, 0.6);
+        this.fillEllipse(cx + 40 * scale, cy + 12 * scale, 11 * scale, 6 * scale, 3, 0.6);
+
+        for (let a = 0.15; a <= Math.PI - 0.15; a += 0.15) {
+          const x0 = cx + Math.cos(a) * 16 * scale;
+          const y0 = cy + 12 * scale + Math.sin(a) * 14 * scale;
+          const x1 = cx + Math.cos(a + 0.15) * 16 * scale;
+          const y1 = cy + 12 * scale + Math.sin(a + 0.15) * 14 * scale;
+          this.drawBoilLine(x0, y0, x1, y1, 12, 2.8 * scale, 0.8);
+        }
+        this.fillCircle(cx, cy + 20 * scale, 5 * scale, 2, 0.5);
+
+        this.drawSparkleStar(cx - 105 * scale, cy - 90 * scale, 14 * scale, 7);
+        this.drawSparkleStar(cx + 105 * scale, cy - 85 * scale, 15 * scale, 8);
+        this.drawSparkleStar(cx - 95 * scale, cy + 85 * scale, 12 * scale, 2);
+        this.drawSparkleStar(cx + 100 * scale, cy + 80 * scale, 14 * scale, 7);
       } else if (name === 'smile') {
-        this.activeColorIndex = 5; // Gold
-        this.brushSize = Math.max(3, Math.round(6 * scale));
-        // Circle face
-        for (let a = 0; a < Math.PI * 2; a += 0.04) {
-          const x = cx + Math.cos(a) * 90 * scale;
-          const y = cy + Math.sin(a) * 90 * scale;
-          this.drawPointMirrored(x, y);
+        // ── Joyful Celebration Party Mascot ──
+        this.fillCircle(cx, cy + 12 * scale, 72 * scale, 5, 1.4);
+        for (let a = 0; a < Math.PI * 2; a += 0.08) {
+          const x0 = cx + Math.cos(a) * 72 * scale;
+          const y0 = cy + 12 * scale + Math.sin(a) * 72 * scale;
+          const x1 = cx + Math.cos(a + 0.08) * 72 * scale;
+          const y1 = cy + 12 * scale + Math.sin(a + 0.08) * 72 * scale;
+          this.drawBoilLine(x0, y0, x1, y1, 12, 3.5 * scale, 1.2);
         }
-        // Eyes
-        this.activeColorIndex = 9; // Blue
-        this.brushSize = Math.max(4, Math.round(12 * scale));
-        this.drawPointMirrored(cx - 35 * scale, cy - 20 * scale);
-        this.drawPointMirrored(cx + 35 * scale, cy - 20 * scale);
-        // Smile arc
-        this.activeColorIndex = 2; // Pink
-        this.brushSize = Math.max(3, Math.round(6 * scale));
-        for (let a = 0.2; a < Math.PI - 0.2; a += 0.05) {
-          const x = cx + Math.cos(a) * 50 * scale;
-          const y = cy + 15 * scale + Math.sin(a) * 45 * scale;
-          this.drawPointMirrored(x, y);
+
+        this.fillPoly([
+          [cx - 36 * scale, cy - 48 * scale],
+          [cx, cy - 122 * scale],
+          [cx + 36 * scale, cy - 48 * scale]
+        ], 8, 1.2);
+        this.fillPoly([
+          [cx - 24 * scale, cy - 66 * scale],
+          [cx + 24 * scale, cy - 66 * scale],
+          [cx + 12 * scale, cy - 88 * scale],
+          [cx - 12 * scale, cy - 88 * scale]
+        ], 2, 1.0);
+        this.fillCircle(cx, cy - 125 * scale, 12 * scale, 6, 1.2);
+
+        this.drawBoilLine(cx - 36 * scale, cy - 48 * scale, cx, cy - 122 * scale, 12, 3.0 * scale, 1.0);
+        this.drawBoilLine(cx + 36 * scale, cy - 48 * scale, cx, cy - 122 * scale, 12, 3.0 * scale, 1.0);
+        this.drawBoilLine(cx - 36 * scale, cy - 48 * scale, cx + 36 * scale, cy - 48 * scale, 12, 3.0 * scale, 1.0);
+
+        for (let a = 0.2; a <= Math.PI - 0.2; a += 0.2) {
+          this.drawBoilLine(
+            cx - 28 * scale - Math.cos(a) * 14 * scale, cy - 2 * scale - Math.sin(a) * 11 * scale,
+            cx - 28 * scale - Math.cos(a + 0.2) * 14 * scale, cy - 2 * scale - Math.sin(a + 0.2) * 11 * scale,
+            12, 4.0 * scale, 1.0
+          );
+          this.drawBoilLine(
+            cx + 28 * scale - Math.cos(a) * 14 * scale, cy - 2 * scale - Math.sin(a) * 11 * scale,
+            cx + 28 * scale - Math.cos(a + 0.2) * 14 * scale, cy + 2 * scale - Math.sin(a + 0.2) * 11 * scale,
+            12, 4.0 * scale, 1.0
+          );
         }
+
+        this.fillEllipse(cx - 44 * scale, cy + 18 * scale, 14 * scale, 8 * scale, 2, 0.6);
+        this.fillEllipse(cx + 44 * scale, cy + 18 * scale, 14 * scale, 8 * scale, 2, 0.6);
+
+        const mouthPts: [number, number][] = [];
+        for (let a = 0.1; a <= Math.PI - 0.1; a += 0.1) {
+          mouthPts.push([cx + Math.cos(a) * 32 * scale, cy + 24 * scale + Math.sin(a) * 30 * scale]);
+        }
+        mouthPts.push([cx - 32 * scale, cy + 24 * scale]);
+        this.fillPoly(mouthPts, 12, 0.8);
+        this.fillCircle(cx, cy + 42 * scale, 14 * scale, 2, 0.6);
+
+        this.drawSparkleStar(cx - 108 * scale, cy - 85 * scale, 16 * scale, 2);
+        this.drawSparkleStar(cx + 108 * scale, cy - 80 * scale, 15 * scale, 7);
+        this.drawSparkleStar(cx - 110 * scale, cy + 75 * scale, 14 * scale, 6);
+        this.drawSparkleStar(cx + 115 * scale, cy + 70 * scale, 16 * scale, 8);
+        this.fillCircle(cx - 85 * scale, cy - 30 * scale, 4 * scale, 4, 0.4);
+        this.fillCircle(cx + 85 * scale, cy - 35 * scale, 4 * scale, 2, 0.4);
+        this.fillCircle(cx - 75 * scale, cy + 60 * scale, 4 * scale, 7, 0.4);
+        this.fillCircle(cx + 75 * scale, cy + 50 * scale, 4 * scale, 5, 0.4);
       }
       this.render();
       sound.playChime();
@@ -1627,10 +1948,10 @@ const data = gameEntry?.data || {
       if (sizeLabelText) sizeLabelText.textContent = 'Size';
 
       const presetStencils: Record<string, { text: string; title: string }> = {
-        'cat': { text: '🐱 Cat', title: 'Load cat stencil' },
-        'heart': { text: '💖 Heart', title: 'Load heart stencil' },
-        'star': { text: '⭐ Star', title: 'Load star stencil' },
-        'smile': { text: '😃 Smile', title: 'Load smile stencil' }
+        'cat': { text: '🐱 Cat', title: 'Load kawaii cat stencil' },
+        'heart': { text: '💖 Heart', title: 'Load neon heart stencil' },
+        'star': { text: '⭐ Star', title: 'Load super star stencil' },
+        'smile': { text: '🎉 Party', title: 'Load party mascot stencil' }
       };
       document.querySelectorAll('.preset-btn').forEach(btn => {
         const p = (btn as HTMLElement).dataset.preset || '';
