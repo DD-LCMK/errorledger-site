@@ -3,9 +3,6 @@ import BaseHead from '../../components/BaseHead.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import MbtiTestWidget from '../../components/MbtiTestWidget.astro';
-import RectangleAd from '../../components/ads/RectangleAd.astro';
-import LeaderboardAd from '../../components/ads/LeaderboardAd.astro';
-import NativeAd from '../../components/ads/NativeAd.astro';
 import { SITE_TITLE } from '../../consts';
 import { getKoUrl, getEnUrl } from '../../i18n';
 
@@ -41,9 +38,6 @@ const PAGE_DESCRIPTION = "Comprehensive 60-item personality test measuring 4 psy
       <section class="mbti-widget-section">
         <MbtiTestWidget lang="en" />
       </section>
-
-      <!-- Content Rectangle Ad -->
-      <RectangleAd streamerMode={streamerMode} />
 
       <!-- Deep Psychological Guide & Educational Section -->
       <section class="mbti-guide-section">
@@ -90,9 +84,6 @@ const PAGE_DESCRIPTION = "Comprehensive 60-item personality test measuring 4 psy
         </div>
       </section>
 
-      <!-- Leaderboard Ad Banner -->
-      <LeaderboardAd streamerMode={streamerMode} />
-
       <!-- FAQ Section -->
       <section class="mbti-faq-section">
         <div class="faq-container">
@@ -113,16 +104,13 @@ const PAGE_DESCRIPTION = "Comprehensive 60-item personality test measuring 4 psy
           </div>
 
           <div class="faq-item">
-            <h3>Q. Can I display this on OBS broadcast without ads?</h3>
+            <h3>Q. How do I display this cleanly on OBS broadcast?</h3>
             <p>
-              Absolutely. Append <code>?stream</code> or <code>?obs</code> to the URL in your browser source to activate clean streamer mode with all advertisements automatically suppressed.
+              Append <code>?stream</code> or <code>?obs</code> to the URL in your browser source to activate clean streamer mode with navigation headers and footers hidden. ErrorLedger is 100% free and ad-free.
             </p>
           </div>
         </div>
       </section>
-
-      <!-- Native Recommendation Widget Ad -->
-      <NativeAd streamerMode={streamerMode} />
     </main>
 
     {!streamerMode && <Footer />}

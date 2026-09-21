@@ -3,9 +3,6 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import MbtiTestWidget from '../components/MbtiTestWidget.astro';
-import RectangleAd from '../components/ads/RectangleAd.astro';
-import LeaderboardAd from '../components/ads/LeaderboardAd.astro';
-import NativeAd from '../components/ads/NativeAd.astro';
 import { SITE_TITLE } from '../consts';
 import { getKoUrl, getEnUrl } from '../i18n';
 
@@ -36,9 +33,6 @@ const PAGE_DESCRIPTION = "단순한 16가지 라벨을 넘어 4대 심리 축의
       <section class="mbti-widget-section">
         <MbtiTestWidget lang="ko" />
       </section>
-
-      <!-- Content Rectangle Ad -->
-      <RectangleAd streamerMode={streamerMode} />
 
       <!-- Deep Psychological Guide & Educational Section -->
       <section class="mbti-guide-section">
@@ -85,9 +79,6 @@ const PAGE_DESCRIPTION = "단순한 16가지 라벨을 넘어 4대 심리 축의
         </div>
       </section>
 
-      <!-- Leaderboard Ad Banner -->
-      <LeaderboardAd streamerMode={streamerMode} />
-
       <!-- FAQ Section -->
       <section class="mbti-faq-section">
         <div class="faq-container">
@@ -108,16 +99,13 @@ const PAGE_DESCRIPTION = "단순한 16가지 라벨을 넘어 4대 심리 축의
           </div>
 
           <div class="faq-item">
-            <h3>Q. 방송 화면(OBS)에 띄우고 싶은데 광고를 끌 수 있나요?</h3>
+            <h3>Q. 방송 화면(OBS)에 깔끔하게 띄우고 싶어요.</h3>
             <p>
-              물론입니다. 주소창 URL 끝에 <code>?stream</code> 또는 <code>?obs</code>를 붙여 브라우저 소스로 띄우시면 모든 광고가 100% 자동 숨김 처리되는 클린 스트리머 모드로 실행됩니다.
+              주소창 URL 끝에 <code>?stream</code> 또는 <code>?obs</code>를 붙여 브라우저 소스로 띄우시면 상단 메뉴와 푸터가 숨겨진 클린 스트리머 모드로 실행됩니다. 에러레저는 모든 이용자에게 광고 없이 100% 무료로 제공됩니다.
             </p>
           </div>
         </div>
       </section>
-
-      <!-- Native Recommendation Widget Ad -->
-      <NativeAd streamerMode={streamerMode} />
     </main>
 
     {!streamerMode && <Footer />}

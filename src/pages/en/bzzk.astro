@@ -2,9 +2,6 @@
 import BaseHead from '../../components/BaseHead.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
-import RectangleAd from '../../components/ads/RectangleAd.astro';
-import LeaderboardAd from '../../components/ads/LeaderboardAd.astro';
-import NativeAd from '../../components/ads/NativeAd.astro';
 import { SITE_TITLE } from '../../consts';
 import { getKoUrl, getEnUrl } from '../../i18n';
 
@@ -113,9 +110,6 @@ const PAGE_DESCRIPTION = "Real-time cross-channel intelligence network detecting
         </div>
       </section>
 
-      <!-- Content Rectangle Ad -->
-      <RectangleAd streamerMode={streamerMode} />
-
       <!-- How It Works Section -->
       <section class="bzzk-guide-section">
         <h2 class="section-title">How Does Bzzk Protect Your Stream?</h2>
@@ -184,9 +178,6 @@ const PAGE_DESCRIPTION = "Real-time cross-channel intelligence network detecting
         </div>
       </section>
 
-      <!-- Leaderboard Ad Banner -->
-      <LeaderboardAd streamerMode={streamerMode} />
-
       <!-- FAQ Section -->
       <section class="bzzk-faq-section">
         <div class="faq-container">
@@ -214,9 +205,6 @@ const PAGE_DESCRIPTION = "Real-time cross-channel intelligence network detecting
           </div>
         </div>
       </section>
-
-      <!-- Native Recommendation Widget Ad -->
-      <NativeAd streamerMode={streamerMode} />
     </main>
 
     {!streamerMode && <Footer />}

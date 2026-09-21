@@ -3,8 +3,6 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import DailyFortuneWidget from '../components/DailyFortuneWidget.astro';
-import RectangleAd from '../components/ads/RectangleAd.astro';
-import NativeAd from '../components/ads/NativeAd.astro';
 import { SITE_TITLE } from '../consts';
 import { getKoUrl, getEnUrl } from '../i18n';
 
@@ -51,9 +49,6 @@ const PAGE_DESCRIPTION = "매일 자정 자동으로 갱신되는 100% 무료 �
       <section class="fortune-widget-section">
         <DailyFortuneWidget showSectionHeader={false} />
       </section>
-
-      <!-- Content Rectangle Ad -->
-      <RectangleAd streamerMode={streamerMode} />
 
       <!-- Fortune Guide & Info Section -->
       <section class="fortune-info-section">
@@ -111,9 +106,6 @@ const PAGE_DESCRIPTION = "매일 자정 자동으로 갱신되는 100% 무료 �
           </div>
         </div>
       </section>
-
-      <!-- Native Recommendation Widget -->
-      <NativeAd streamerMode={streamerMode} />
     </main>
 
     {!streamerMode && <Footer />}

@@ -2,7 +2,6 @@
 import BaseHead from '../../../components/BaseHead.astro';
 import Header from '../../../components/Header.astro';
 import Footer from '../../../components/Footer.astro';
-import LeaderboardAd from '../../../components/ads/LeaderboardAd.astro';
 import { getKoUrl, getEnUrl } from '../../../i18n';
 
 const siteBase = Astro.site?.toString() || 'https://errorledger.com';
@@ -103,9 +102,6 @@ const webAppSchema = JSON.stringify({
           </div>
         </details>
       )}
-
-      <!-- Horizontal single-line ad below detail guide & FAQ -->
-      <LeaderboardAd streamerMode={streamerMode} />
     </main>
 
     {!streamerMode && <Footer />}

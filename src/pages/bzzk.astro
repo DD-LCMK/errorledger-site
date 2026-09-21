@@ -2,9 +2,6 @@
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import RectangleAd from '../components/ads/RectangleAd.astro';
-import LeaderboardAd from '../components/ads/LeaderboardAd.astro';
-import NativeAd from '../components/ads/NativeAd.astro';
 import { SITE_TITLE } from '../consts';
 import { getKoUrl, getEnUrl } from '../i18n';
 
@@ -107,9 +104,6 @@ const PAGE_DESCRIPTION = "네이버 치지직(CHZZK) 다중 채널에서 동시�
         </div>
       </section>
 
-      <!-- Content Rectangle Ad -->
-      <RectangleAd streamerMode={streamerMode} />
-
       <!-- How It Works Section -->
       <section class="bzzk-guide-section">
         <h2 class="section-title">검지직(Bzzk)은 어떻게 동작하나요?</h2>
@@ -178,9 +172,6 @@ const PAGE_DESCRIPTION = "네이버 치지직(CHZZK) 다중 채널에서 동시�
         </div>
       </section>
 
-      <!-- Leaderboard Ad Banner -->
-      <LeaderboardAd streamerMode={streamerMode} />
-
       <!-- FAQ Section -->
       <section class="bzzk-faq-section">
         <div class="faq-container">
@@ -208,9 +199,6 @@ const PAGE_DESCRIPTION = "네이버 치지직(CHZZK) 다중 채널에서 동시�
           </div>
         </div>
       </section>
-
-      <!-- Native Recommendation Widget Ad -->
-      <NativeAd streamerMode={streamerMode} />
     </main>
 
     {!streamerMode && <Footer />}
