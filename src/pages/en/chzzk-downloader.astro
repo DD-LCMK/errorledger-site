@@ -1,0 +1,1522 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { SITE_TITLE } from '../../consts';
+import { getKoUrl, getEnUrl } from '../../i18n';
+
+const PAGE_TITLE = `Chzzk Downloader - Free Lossless Naver CHZZK VOD & Clip Video Downloader | ${SITE_TITLE}`;
+const PAGE_DESCRIPTION = "Download Naver CHZZK VODs and clips in original 1080p FHD quality directly as MP4 files without re-encoding loss. 100% free local web application.";
+const PAGE_KEYWORDS = "Chzzk Downloader, CHZZK VOD Download, Chzzk Clip Download, Naver Chzzk Video Downloader, Chzzk 1080p MP4, Download Chzzk Stream, Naver Video Extractor";
+
+const fileHash = "0F634DDEABE75CC9D04FC79DF91BD4E866053A23FFABF85897DCC2C6E0602DFD";
+const fileSize = "8.12 MB";
+const appVersion = "v1.0.0";
+
+const softwareSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Chzzk Downloader",
+  "operatingSystem": "Windows 10, Windows 11 (64-bit)",
+  "applicationCategory": "MultimediaApplication",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "description": PAGE_DESCRIPTION,
+  "softwareVersion": appVersion,
+  "downloadUrl": "https://errorledger.com/downloads/Chzzk_Downloader.exe"
+});
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead 
+      title={PAGE_TITLE} 
+      description={PAGE_DESCRIPTION}
+      lang="en"
+      hreflangKo={getKoUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
+      hreflangEn={getEnUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
+      keywords={PAGE_KEYWORDS}
+    />
+    <script type="application/ld+json" set:html={softwareSchema}></script>
+  </head>
+  <body class="chzzk-page-body">
+    <Header />
+
+    <main class="chzzk-page-main">
+      <!-- 1. Hero Section -->
+      <section class="chzzk-hero">
+        <div class="hero-backdrop"></div>
+        <div class="hero-container">
+          <div class="hero-pill">
+            <span class="pulse-dot"></span>
+            <span>🎮 Official CHZZK Aesthetic • 100% Free Utility • No Ads</span>
+          </div>
+
+          <h1 class="hero-headline">
+            Chzzk <span class="chzzk-gradient">(CHZZK)</span> VOD & Clip<br />
+            Lossless High-Speed Downloader
+          </h1>
+
+          <p class="hero-subtext">
+            Simply paste your Naver CHZZK <strong>VOD</strong> or <strong>Clip</strong> URL,<br class="hide-mobile" />
+            and download pristine 1080p FHD MP4 files directly from Naver CDN with zero re-encoding loss.
+          </p>
+
+          <!-- Download Action Area -->
+          <div class="hero-download-box">
+            <div class="download-primary-row">
+              <a 
+                href="/downloads/Chzzk_Downloader.exe" 
+                download="Chzzk_Downloader.exe" 
+                class="btn-chzzk-download"
+                id="main-download-btn"
+              >
+                <span class="btn-icon">⚡</span>
+                <span class="btn-text-group">
+                  <span class="btn-main-label">Download Chzzk Downloader {appVersion}</span>
+                  <span class="btn-sub-label">Windows 64-bit • Standalone Executable (.exe)</span>
+                </span>
+                <span class="btn-badge">{fileSize}</span>
+              </a>
+
+              <a href="#how-to-use" class="btn-chzzk-guide">
+                <span>📖 User Guide</span>
+              </a>
+            </div>
+
+            <!-- Specs Chips -->
+            <div class="hero-specs-row">
+              <div class="spec-chip">
+                <span class="spec-label">Version:</span>
+                <span class="spec-val">{appVersion}</span>
+              </div>
+              <div class="spec-chip">
+                <span class="spec-label">Size:</span>
+                <span class="spec-val">{fileSize}</span>
+              </div>
+              <div class="spec-chip">
+                <span class="spec-label">OS:</span>
+                <span class="spec-val">Windows 10 / 11 (64-bit)</span>
+              </div>
+              <div class="spec-chip highlight">
+                <span class="spec-label">Price:</span>
+                <span class="spec-val">100% Free Forever (No Ads/Paywalls)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. CRITICAL Security & Safe Download Notice -->
+      <section class="chzzk-security-section" id="security-notice">
+        <div class="security-card">
+          <div class="security-header">
+            <div class="security-badge">
+              <span class="shield-icon">🛡️</span>
+              <span>100% Verified Safe & Clean Guarantee</span>
+            </div>
+            <h2>"Only files downloaded directly from our official website (ErrorLedger.com) are 100% authentic and safe."</h2>
+            <p class="security-lead">
+              Downloading modified or re-uploaded files from third-party blogs, untrusted forums, or Discord servers is risky.<br />
+              The executable provided on ErrorLedger is a clean, non-malicious standalone utility built with your security in mind.
+            </p>
+          </div>
+
+          <div class="security-grid">
+            <div class="sec-item">
+              <div class="sec-icon">🔒</div>
+              <div class="sec-content">
+                <h3>This is NOT Hacking (Direct Official CDN Stream)</h3>
+                <p>
+                  This application simply retrieves the public progressive MP4 media stream URL served by Naver CHZZK's official CDN for standard web playback, and saves it locally. It performs zero exploit techniques, zero privilege escalation, and zero modifications to your operating system.
+                </p>
+              </div>
+            </div>
+
+            <div class="sec-item">
+              <div class="sec-icon">💻</div>
+              <div class="sec-content">
+                <h3>Isolated Local Web Server (Runs on your PC)</h3>
+                <p>
+                  The utility launches an ultra-lightweight web server strictly inside your own computer (<code>http://localhost:5000</code>). No sensitive account tokens or private telemetry are ever sent to unknown external servers.
+                </p>
+              </div>
+            </div>
+
+            <div class="sec-item">
+              <div class="sec-icon">⚠️</div>
+              <div class="sec-content">
+                <h3>Windows SmartScreen "Unknown Publisher" Notice</h3>
+                <p>
+                  Because this is an independent, free open tool without a multi-thousand dollar commercial EV code-signing certificate, Windows Defender SmartScreen may display an <em>"Unknown Publisher / Windows protected your PC"</em> prompt on first run.<br />
+                  This is completely normal: simply click <strong>[More info] → [Run anyway]</strong> to launch the application.
+                </p>
+              </div>
+            </div>
+
+            <div class="sec-item">
+              <div class="sec-icon">🔑</div>
+              <div class="sec-content">
+                <h3>Cryptographic Checksum (SHA-256)</h3>
+                <p class="hash-desc">
+                  You can verify the authenticity and integrity of your downloaded binary using Windows PowerShell:
+                </p>
+                <div class="hash-box">
+                  <code>{fileHash}</code>
+                  <button class="btn-copy-hash" id="copy-hash-btn" title="Copy Hash">Copy</button>
+                </div>
+                <span class="hash-tip">PowerShell verification: <code>Get-FileHash Chzzk_Downloader.exe</code></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Visual Screenshots Showcase -->
+      <section class="chzzk-screenshots-section">
+        <div class="section-title-wrap">
+          <span class="section-pill">LIVE PREVIEW</span>
+          <h2>Intuitive & Modern User Interface</h2>
+          <p>Designed with CHZZK's authentic dark aesthetic and neon green accents for a seamless experience.</p>
+        </div>
+
+        <div class="screenshots-grid">
+          <!-- Web UI Screenshot -->
+          <div class="screenshot-card">
+            <div class="screenshot-card-header">
+              <div class="window-dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </div>
+              <span class="window-title">Chzzk Downloader Web UI (http://localhost:5000)</span>
+            </div>
+            <div class="screenshot-img-wrap">
+              <img 
+                src="/images/chzzk/chzzk-downloader-preview.png" 
+                alt="Chzzk Downloader Web UI Screenshot" 
+                loading="lazy" 
+                class="screenshot-img"
+              />
+            </div>
+            <div class="screenshot-caption">
+              <strong>✨ One-Click URL Fetch & Download Manager</strong>: Paste your VOD or clip link, verify the thumbnail, title, streamer name, and video duration, then initiate high-speed download at max resolution.
+            </div>
+          </div>
+
+          <!-- Console Terminal Screenshot -->
+          <div class="screenshot-card">
+            <div class="screenshot-card-header">
+              <div class="window-dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </div>
+              <span class="window-title">Chzzk_Downloader.exe Background Console</span>
+            </div>
+            <div class="screenshot-img-wrap">
+              <img 
+                src="/images/chzzk/chzzk-downloader-terminal.png" 
+                alt="Chzzk Downloader Terminal Console Screenshot" 
+                loading="lazy" 
+                class="screenshot-img terminal-img"
+              />
+            </div>
+            <div class="screenshot-caption">
+              <strong>⚡ Instant Standalone Server Launch</strong>: Double-click launches the background micro-server and automatically opens your default browser at <code>http://localhost:5000</code>. Press <code>Ctrl + C</code> anytime to quit.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Key Features Grid -->
+      <section class="chzzk-features-section">
+        <div class="section-title-wrap">
+          <span class="section-pill">KEY FEATURES</span>
+          <h2>5 Key Advantages Over Other Sites</h2>
+          <p>No paywalls, no download quotas, and zero quality compression.</p>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🎬</div>
+            <h3>1. Complete Support for VODs & Clips</h3>
+            <p>
+              Handles both long, full-broadcast stream replays and short highlight clips with ease.
+            </p>
+            <ul class="feature-list">
+              <li>VOD URL: <code>https://chzzk.naver.com/video/{'{videoNo}'}</code></li>
+              <li>Clip URL: <code>https://chzzk.naver.com/clips/{'{clipId}'}</code></li>
+              <li>Auto-detects whether you enter the full URL or just the ID string</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">💎</div>
+            <h3>2. Lossless Original MP4 Extraction</h3>
+            <p>
+              Extracts the original progressive MP4 stream directly from Naver's CDN servers without re-encoding loss.
+            </p>
+            <ul class="feature-list">
+              <li>Standard MP4 with video and audio fully multiplexed</li>
+              <li>No video degradation, audio distortion, or AV sync drift</li>
+              <li>Max available quality up to 1080p FHD 60fps</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🎨</div>
+            <h3>3. Intuitive Web Interface</h3>
+            <p>
+              Enjoy a clean graphical interface without messing with complex terminal commands.
+            </p>
+            <ul class="feature-list">
+              <li>Sleek dark theme styled in official CHZZK neon green</li>
+              <li>One-click clipboard paste button</li>
+              <li>Live preview of thumbnail, title, streamer name, and runtime</li>
+              <li>Quality selector (1080p, 720p, 480p, etc.)</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>4. Live Progress Dashboard & Explorer Link</h3>
+            <p>
+              Stay informed throughout the download process with real-time transfer telemetry.
+            </p>
+            <ul class="feature-list">
+              <li>Displays downloaded size, transfer speed (MB/s), % completion, and ETA</li>
+              <li>One-click <strong>[Open Saved Folder]</strong> to reveal the MP4 in Windows File Explorer</li>
+              <li>Recent download history list</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🍪</div>
+            <h3>5. 19+ Adult-Restricted Video Support</h3>
+            <p>
+              Download age-restricted broadcasts and clips securely using Naver session cookies.
+            </p>
+            <ul class="feature-list">
+              <li>Enter your verified Naver cookies (<code>NID_AUT</code>, <code>NID_SES</code>) in Settings</li>
+              <li>Bypass age-verification roadblocks safely</li>
+              <li>Cookies remain stored strictly on your local PC</li>
+            </ul>
+          </div>
+
+          <div class="feature-card highlight-card">
+            <div class="feature-icon">🎁</div>
+            <h3>100% Free Forever • Unlimited</h3>
+            <p>
+              Unlike commercial downloader websites, there are no artificial throttles, subscriptions, or predatory popups.
+            </p>
+            <ul class="feature-list">
+              <li>No account registration or login required</li>
+              <li>Unlimited downloads with no file-size caps</li>
+              <li>Clean, ad-free user interface</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. Step-by-Step Guide -->
+      <section class="chzzk-guide-section" id="how-to-use">
+        <div class="section-title-wrap">
+          <span class="section-pill">HOW TO RUN</span>
+          <h2>Quick 1-Minute Getting Started Guide</h2>
+          <p>No installer required. Simply download and double-click to launch.</p>
+        </div>
+
+        <div class="steps-container">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <div class="step-body">
+              <h3>Download the Executable</h3>
+              <p>
+                Click the <strong>[Download Chzzk Downloader]</strong> button above to download <code>Chzzk_Downloader.exe</code> to your computer.
+              </p>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <div class="step-body">
+              <h3>Double-Click to Launch (Recommended)</h3>
+              <p>
+                Double-click <code>Chzzk_Downloader.exe</code>. The terminal will start the server and automatically open <code>http://localhost:5000</code> in your default browser.
+              </p>
+              <div class="step-subtip">
+                * If the browser doesn't open automatically, open your browser and navigate to <code>http://localhost:5000</code> manually.
+              </div>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <div class="step-body">
+              <h3>Paste Link & Fetch Information</h3>
+              <p>
+                Copy your desired CHZZK VOD or clip URL, paste it into the input bar, and click <strong>[영상 정보 조회 (Fetch Info)]</strong>.
+              </p>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">4</div>
+            <div class="step-body">
+              <h3>Choose Quality & Download</h3>
+              <p>
+                Verify the video metadata, select your preferred resolution (1080p original, 720p, etc.), and click <strong>[다운로드 (Download)]</strong>.
+              </p>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">5</div>
+            <div class="step-body">
+              <h3>Open Saved Folder</h3>
+              <p>
+                When download finishes, click <strong>[저장된 폴더 열기 (Open Folder)]</strong> to view your pristine MP4 file in Windows File Explorer!
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Terminal Run Alternative -->
+        <div class="cli-method-box">
+          <div class="cli-title">
+            <span class="terminal-icon">⌨️</span>
+            <h4>For Developers & Python Users: Run from Source</h4>
+          </div>
+          <p>
+            You can also run the application directly from source on Python 3.9+:
+          </p>
+          <pre><code>python app.py</code></pre>
+          <p class="cli-subtext">After starting, open <code>http://localhost:5000</code> in your browser for the same graphical UI.</p>
+        </div>
+      </section>
+
+      <!-- 6. Save Location & Settings -->
+      <section class="chzzk-settings-section">
+        <div class="settings-box">
+          <div class="settings-left">
+            <span class="settings-icon">📁</span>
+            <div>
+              <h3>Default Save Location & Custom Folders</h3>
+              <p>
+                Downloaded files are stored by default at:<br />
+                <code>This PC &gt; Downloads &gt; Chzzk_Downloads</code>
+              </p>
+              <p class="settings-hint">
+                To save to an external hard drive or custom workspace, click the <strong>[Settings (Gear)]</strong> icon in the top right corner of the web interface anytime.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. Precautions & Copyright -->
+      <section class="chzzk-notice-section">
+        <div class="notice-card">
+          <div class="notice-header">
+            <span class="notice-icon">📌</span>
+            <h3>Copyright & Usage Disclaimer</h3>
+          </div>
+          <ul class="notice-list">
+            <li>This program is an unofficial open utility developed for <strong>personal archival, educational, and research purposes</strong>.</li>
+            <li>All copyrights, trademarks, and intellectual property rights in downloaded video content belong to <strong>the respective streamers and original copyright holders (Naver CHZZK)</strong>.</li>
+            <li>Redistributing, commercially broadcasting, or re-uploading protected content without the copyright holder's authorization may infringe applicable copyright laws. The user bears full legal responsibility for how downloaded content is used.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 8. FAQ Section -->
+      <section class="chzzk-faq-section">
+        <div class="section-title-wrap">
+          <span class="section-pill">FAQ</span>
+          <h2>Frequently Asked Questions</h2>
+        </div>
+
+        <div class="faq-accordion">
+          <details class="faq-item" open>
+            <summary class="faq-question">
+              <span>Q. Is it truly 100% free with no hidden fees or download limits?</span>
+              <span class="faq-arrow">▾</span>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                Yes, completely free! Unlike commercial web downloaders that charge recurring fees or restrict downloads to 3–5 videos per day, this utility runs <strong>locally on your own PC</strong> as a standalone micro-server. Because we incur zero central server hosting bandwidth costs, you enjoy unlimited high-speed downloads forever.
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>Q. Why does Windows show an "Unknown Publisher" warning? Is it safe?</span>
+              <span class="faq-arrow">▾</span>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                It is 100% safe. Microsoft Windows displays SmartScreen warnings for newly built executables that do not have expensive enterprise Extended Validation (EV) code-signing certificates. Simply click <strong>[More info] → [Run anyway]</strong>. You can verify the file integrity against our published SHA-256 hash (<code>{fileHash}</code>) anytime.
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>Q. How do I download age-restricted (19+) broadcasts?</span>
+              <span class="faq-arrow">▾</span>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                You need cookie credentials from an adult-verified Naver account (<code>NID_AUT</code> and <code>NID_SES</code>). Click the <strong>[Settings (Gear)]</strong> icon in the web UI, input your cookies, and you will be able to download restricted streams without issue. Cookies are stored locally on your machine only.
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>Q. Why is the download speed so much faster than other sites?</span>
+              <span class="faq-arrow">▾</span>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                Conventional downloader services route video streams through third-party proxy servers to perform on-the-fly video transcoding. This program connects <strong>directly from your computer to Naver's high-speed CDN</strong>, utilizing your full internet bandwidth.
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>Q. How do I shut down the program?</span>
+              <span class="faq-arrow">▾</span>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                Click inside the black console window and press <code>Ctrl + C</code> on your keyboard, or click the [X] close button on the console window. The local server will terminate immediately.
+              </p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- 9. Final CTA Section -->
+      <section class="chzzk-cta-section">
+        <div class="cta-card">
+          <div class="cta-glow"></div>
+          <h2>Preserve your favorite CHZZK streams in original quality today!</h2>
+          <p>Never lose memorable VODs and legendary stream clips to platform expirations.</p>
+          <div class="cta-buttons">
+            <a 
+              href="/downloads/Chzzk_Downloader.exe" 
+              download="Chzzk_Downloader.exe" 
+              class="btn-cta-download"
+            >
+              ⚡ Download Chzzk Downloader {appVersion} ({fileSize})
+            </a>
+          </div>
+          <span class="cta-safe-badge">🛡️ 100% Clean Freeware • Windows 10 / 11 64-bit Compatible</span>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<script>
+  // Copy SHA-256 Hash button interaction
+  const copyBtn = document.getElementById('copy-hash-btn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', async () => {
+      const hash = "0F634DDEABE75CC9D04FC79DF91BD4E866053A23FFABF85897DCC2C6E0602DFD";
+      try {
+        await navigator.clipboard.writeText(hash);
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = 'Copied! ✓';
+        copyBtn.classList.add('copied');
+        setTimeout(() => {
+          copyBtn.textContent = originalText;
+          copyBtn.classList.remove('copied');
+        }, 2000);
+      } catch (err) {
+        console.error('Clipboard copy failed', err);
+      }
+    });
+  }
+</script>
+
+<style>
+  :root {
+    --chzzk-green: #00ffa3;
+    --chzzk-green-hover: #00e575;
+    --chzzk-green-glow: rgba(0, 255, 163, 0.25);
+    --chzzk-dark-bg: #090d16;
+    --chzzk-card-bg: #0d121f;
+    --chzzk-card-surface: #131b2e;
+    --chzzk-border: rgba(255, 255, 255, 0.08);
+    --chzzk-border-glow: rgba(0, 255, 163, 0.35);
+  }
+
+  .chzzk-page-body {
+    background: var(--chzzk-dark-bg) !important;
+    color: #f1f5f9 !important;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: inherit;
+    overflow-x: hidden;
+  }
+
+  .chzzk-page-main {
+    flex: 1;
+    width: 100%;
+  }
+
+  /* 1. Hero Section */
+  .chzzk-hero {
+    position: relative;
+    padding: 4.5rem 1.5rem 3.5rem;
+    overflow: hidden;
+    text-align: center;
+    border-bottom: 1px solid var(--chzzk-border);
+  }
+
+  .hero-backdrop {
+    position: absolute;
+    top: -30%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 900px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(0, 255, 163, 0.12) 0%, rgba(9, 13, 22, 0) 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .hero-container {
+    position: relative;
+    max-width: 960px;
+    margin: 0 auto;
+    z-index: 1;
+  }
+
+  .hero-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(0, 255, 163, 0.1);
+    border: 1px solid rgba(0, 255, 163, 0.3);
+    color: var(--chzzk-green);
+    padding: 0.4rem 1.1rem;
+    border-radius: 9999px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+  }
+
+  .pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--chzzk-green);
+    box-shadow: 0 0 10px var(--chzzk-green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+  }
+
+  .hero-headline {
+    font-size: clamp(2rem, 4.5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    margin: 0 0 1.25rem;
+    color: #ffffff;
+  }
+
+  .chzzk-gradient {
+    color: var(--chzzk-green);
+    text-shadow: 0 0 25px rgba(0, 255, 163, 0.4);
+  }
+
+  .hero-subtext {
+    font-size: clamp(1rem, 1.8vw, 1.18rem);
+    line-height: 1.7;
+    color: #94a3b8;
+    max-width: 780px;
+    margin: 0 auto 2.5rem;
+  }
+
+  .hero-subtext strong {
+    color: #f1f5f9;
+  }
+
+  .hero-download-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .download-primary-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .btn-chzzk-download {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    background: linear-gradient(135deg, #00ffa3 0%, #00c760 100%);
+    color: #090d16;
+    text-decoration: none;
+    padding: 1rem 1.6rem;
+    border-radius: 14px;
+    font-weight: 700;
+    box-shadow: 0 8px 30px rgba(0, 255, 163, 0.35);
+    transition: all 0.25s ease;
+    flex: 1 1 320px;
+    max-width: 480px;
+    text-align: left;
+  }
+
+  .btn-chzzk-download:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(0, 255, 163, 0.5);
+    background: linear-gradient(135deg, #1effb0 0%, #00d668 100%);
+  }
+
+  .btn-icon {
+    font-size: 1.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-text-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .btn-main-label {
+    font-size: 1.08rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .btn-sub-label {
+    font-size: 0.78rem;
+    opacity: 0.85;
+    font-weight: 500;
+  }
+
+  .btn-badge {
+    background: rgba(9, 13, 22, 0.18);
+    padding: 0.25rem 0.6rem;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  .btn-chzzk-guide {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--chzzk-card-surface);
+    color: #e2e8f0;
+    text-decoration: none;
+    padding: 1rem 1.4rem;
+    border-radius: 14px;
+    font-weight: 600;
+    border: 1px solid var(--chzzk-border);
+    transition: all 0.2s ease;
+  }
+
+  .btn-chzzk-guide:hover {
+    background: #1c2640;
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+  }
+
+  .hero-specs-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    font-size: 0.82rem;
+    color: #94a3b8;
+  }
+
+  .spec-chip {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--chzzk-border);
+    padding: 0.3rem 0.75rem;
+    border-radius: 8px;
+  }
+
+  .spec-chip.highlight {
+    background: rgba(0, 255, 163, 0.08);
+    border-color: rgba(0, 255, 163, 0.25);
+    color: var(--chzzk-green);
+  }
+
+  .spec-val {
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-left: 0.25rem;
+  }
+
+  .spec-chip.highlight .spec-val {
+    color: var(--chzzk-green);
+  }
+
+  /* 2. Security Section */
+  .chzzk-security-section {
+    padding: 3.5rem 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .security-card {
+    background: linear-gradient(180deg, rgba(0, 255, 163, 0.05) 0%, rgba(13, 18, 31, 0.95) 100%);
+    border: 1px solid rgba(0, 255, 163, 0.3);
+    border-radius: 20px;
+    padding: 2.75rem 2rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  .security-header {
+    text-align: center;
+    max-width: 820px;
+    margin: 0 auto 2.5rem;
+  }
+
+  .security-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(0, 255, 163, 0.15);
+    color: var(--chzzk-green);
+    padding: 0.35rem 0.9rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(0, 255, 163, 0.3);
+  }
+
+  .security-header h2 {
+    font-size: clamp(1.3rem, 2.6vw, 1.85rem);
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.4;
+    margin: 0 0 1rem;
+  }
+
+  .security-lead {
+    font-size: 0.98rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .security-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .sec-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--chzzk-border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    display: flex;
+    gap: 1rem;
+  }
+
+  .sec-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .sec-content h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 0.5rem;
+  }
+
+  .sec-content p {
+    font-size: 0.88rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .hash-desc {
+    margin-bottom: 0.5rem !important;
+  }
+
+  .hash-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #060910;
+    border: 1px solid var(--chzzk-border);
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+  }
+
+  .hash-box code {
+    font-family: monospace;
+    font-size: 0.74rem;
+    color: var(--chzzk-green);
+    word-break: break-all;
+  }
+
+  .btn-copy-hash {
+    background: rgba(0, 255, 163, 0.15);
+    border: 1px solid rgba(0, 255, 163, 0.3);
+    color: var(--chzzk-green);
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+
+  .btn-copy-hash:hover {
+    background: var(--chzzk-green);
+    color: #090d16;
+  }
+
+  .btn-copy-hash.copied {
+    background: #10b981;
+    color: #ffffff;
+    border-color: #10b981;
+  }
+
+  .hash-tip {
+    font-size: 0.76rem;
+    color: #64748b;
+    display: block;
+  }
+
+  .hash-tip code {
+    color: #cbd5e1;
+  }
+
+  /* 3. Screenshots Showcase */
+  .chzzk-screenshots-section {
+    padding: 3.5rem 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-title-wrap {
+    text-align: center;
+    max-width: 780px;
+    margin: 0 auto 2.5rem;
+  }
+
+  .section-pill {
+    display: inline-block;
+    color: var(--chzzk-green);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-title-wrap h2 {
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 0.75rem;
+  }
+
+  .section-title-wrap p {
+    font-size: 1rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .screenshots-grid {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 1.75rem;
+    align-items: start;
+  }
+
+  .screenshot-card {
+    background: var(--chzzk-card-bg);
+    border: 1px solid var(--chzzk-border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .screenshot-card-header {
+    background: #060910;
+    padding: 0.7rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 1px solid var(--chzzk-border);
+  }
+
+  .window-dots {
+    display: flex;
+    gap: 0.35rem;
+  }
+
+  .window-dots .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .dot.red { background: #ef4444; }
+  .dot.yellow { background: #f59e0b; }
+  .dot.green { background: #10b981; }
+
+  .window-title {
+    font-size: 0.8rem;
+    color: #64748b;
+    font-family: monospace;
+  }
+
+  .screenshot-img-wrap {
+    background: #000000;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .screenshot-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .screenshot-img:hover {
+    transform: scale(1.015);
+  }
+
+  .screenshot-caption {
+    padding: 1.1rem 1.25rem;
+    font-size: 0.88rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    border-top: 1px solid var(--chzzk-border);
+  }
+
+  .screenshot-caption strong {
+    color: #e2e8f0;
+  }
+
+  /* 4. Features Grid */
+  .chzzk-features-section {
+    padding: 3.5rem 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .feature-card {
+    background: var(--chzzk-card-bg);
+    border: 1px solid var(--chzzk-border);
+    border-radius: 16px;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.25s ease;
+  }
+
+  .feature-card:hover {
+    border-color: rgba(0, 255, 163, 0.35);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  }
+
+  .feature-card.highlight-card {
+    background: linear-gradient(180deg, rgba(0, 255, 163, 0.08) 0%, var(--chzzk-card-bg) 100%);
+    border-color: rgba(0, 255, 163, 0.3);
+  }
+
+  .feature-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .feature-card h3 {
+    font-size: 1.18rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 0.6rem;
+  }
+
+  .feature-card p {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0 0 1rem;
+  }
+
+  .feature-list {
+    margin: auto 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .feature-list li {
+    font-size: 0.84rem;
+    color: #cbd5e1;
+    position: relative;
+    padding-left: 1.1rem;
+    line-height: 1.5;
+  }
+
+  .feature-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: var(--chzzk-green);
+    font-weight: 700;
+  }
+
+  .feature-list code {
+    background: rgba(255, 255, 255, 0.06);
+    padding: 0.15rem 0.35rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--chzzk-green);
+  }
+
+  /* 5. Guide Section */
+  .chzzk-guide-section {
+    padding: 3.5rem 1.5rem;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .steps-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .step-card {
+    display: flex;
+    gap: 1.25rem;
+    background: var(--chzzk-card-bg);
+    border: 1px solid var(--chzzk-border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    align-items: flex-start;
+  }
+
+  .step-number {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(0, 255, 163, 0.15);
+    border: 1px solid rgba(0, 255, 163, 0.4);
+    color: var(--chzzk-green);
+    font-weight: 800;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .step-body h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 0.4rem;
+  }
+
+  .step-body p {
+    font-size: 0.92rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .step-body code {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    color: var(--chzzk-green);
+  }
+
+  .step-subtip {
+    margin-top: 0.5rem;
+    font-size: 0.82rem;
+    color: #64748b;
+  }
+
+  .cli-method-box {
+    background: #060910;
+    border: 1px solid var(--chzzk-border);
+    border-radius: 14px;
+    padding: 1.5rem 1.75rem;
+  }
+
+  .cli-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .cli-title h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: #e2e8f0;
+  }
+
+  .cli-method-box p {
+    font-size: 0.88rem;
+    color: #94a3b8;
+    margin: 0 0 0.75rem;
+  }
+
+  .cli-method-box pre {
+    background: #000000;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 0 0 0.75rem;
+  }
+
+  .cli-method-box code {
+    color: var(--chzzk-green);
+    font-family: monospace;
+    font-size: 0.95rem;
+  }
+
+  .cli-subtext {
+    font-size: 0.82rem !important;
+    color: #64748b !important;
+    margin: 0 !important;
+  }
+
+  /* 6. Settings Box */
+  .chzzk-settings-section {
+    padding: 1.5rem 1.5rem 3rem;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .settings-box {
+    background: var(--chzzk-card-bg);
+    border: 1px solid var(--chzzk-border);
+    border-radius: 14px;
+    padding: 1.75rem;
+  }
+
+  .settings-left {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+  }
+
+  .settings-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+
+  .settings-left h3 {
+    font-size: 1.1rem;
+    color: #ffffff;
+    margin: 0 0 0.5rem;
+  }
+
+  .settings-left p {
+    font-size: 0.92rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0 0 0.5rem;
+  }
+
+  .settings-left code {
+    background: rgba(0, 255, 163, 0.1);
+    color: var(--chzzk-green);
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 0.88rem;
+  }
+
+  .settings-hint {
+    font-size: 0.86rem !important;
+    color: #64748b !important;
+    margin: 0 !important;
+  }
+
+  .settings-hint strong {
+    color: #cbd5e1;
+  }
+
+  /* 7. Notice Section */
+  .chzzk-notice-section {
+    padding: 1.5rem 1.5rem 3.5rem;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .notice-card {
+    background: rgba(239, 68, 68, 0.04);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 14px;
+    padding: 1.75rem;
+  }
+
+  .notice-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .notice-header h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    color: #fca5a5;
+  }
+
+  .notice-list {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .notice-list li {
+    font-size: 0.88rem;
+    color: #cbd5e1;
+    line-height: 1.6;
+  }
+
+  .notice-list strong {
+    color: #ffffff;
+  }
+
+  /* 8. FAQ Section */
+  .chzzk-faq-section {
+    padding: 3.5rem 1.5rem;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .faq-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .faq-item {
+    background: var(--chzzk-card-bg);
+    border: 1px solid var(--chzzk-border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .faq-item[open] {
+    border-color: rgba(0, 255, 163, 0.3);
+  }
+
+  .faq-question {
+    padding: 1.1rem 1.25rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+    font-size: 0.98rem;
+  }
+
+  .faq-question:hover {
+    color: var(--chzzk-green);
+  }
+
+  .faq-arrow {
+    transition: transform 0.2s;
+    color: #64748b;
+  }
+
+  .faq-item[open] .faq-arrow {
+    transform: rotate(180deg);
+    color: var(--chzzk-green);
+  }
+
+  .faq-answer {
+    padding: 0 1.25rem 1.25rem;
+    font-size: 0.9rem;
+    color: #94a3b8;
+    line-height: 1.7;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  .faq-answer p {
+    margin: 0.75rem 0 0;
+  }
+
+  .faq-answer strong {
+    color: #e2e8f0;
+  }
+
+  .faq-answer code {
+    background: rgba(0, 255, 163, 0.1);
+    color: var(--chzzk-green);
+    padding: 0.15rem 0.35rem;
+    border-radius: 4px;
+    font-size: 0.82rem;
+  }
+
+  /* 9. CTA Section */
+  .chzzk-cta-section {
+    padding: 4rem 1.5rem 5rem;
+    max-width: 960px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .cta-card {
+    position: relative;
+    background: linear-gradient(180deg, #10192e 0%, #0d121f 100%);
+    border: 1px solid rgba(0, 255, 163, 0.3);
+    border-radius: 20px;
+    padding: 3.5rem 2rem;
+    overflow: hidden;
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5);
+  }
+
+  .cta-glow {
+    position: absolute;
+    top: -50%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(0, 255, 163, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-card h2 {
+    font-size: clamp(1.6rem, 3.2vw, 2.2rem);
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 0.85rem;
+  }
+
+  .cta-card p {
+    font-size: 1.05rem;
+    color: #94a3b8;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+  }
+
+  .cta-buttons {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .btn-cta-download {
+    background: linear-gradient(135deg, #00ffa3 0%, #00c760 100%);
+    color: #090d16;
+    text-decoration: none;
+    padding: 1.1rem 2.2rem;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 1.1rem;
+    box-shadow: 0 10px 30px rgba(0, 255, 163, 0.4);
+    transition: all 0.25s ease;
+  }
+
+  .btn-cta-download:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 40px rgba(0, 255, 163, 0.6);
+    background: linear-gradient(135deg, #1effb0 0%, #00d668 100%);
+  }
+
+  .cta-safe-badge {
+    display: inline-block;
+    font-size: 0.84rem;
+    color: #64748b;
+  }
+
+  /* Responsive Adjustments */
+  @media (max-width: 900px) {
+    .screenshots-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .hide-mobile {
+      display: none;
+    }
+
+    .btn-chzzk-download {
+      flex: 1 1 100%;
+      text-align: center;
+      justify-content: center;
+    }
+
+    .btn-chzzk-guide {
+      width: 100%;
+    }
+
+    .security-card {
+      padding: 2rem 1.25rem;
+    }
+
+    .cta-card {
+      padding: 2.5rem 1.25rem;
+    }
+  }
+</style>

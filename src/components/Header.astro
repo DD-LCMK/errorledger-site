@@ -129,6 +129,14 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
           <span class="nav-icon">🛡️</span>
           <span class="nav-label">{t(lang, 'nav.bzzk')}</span>
         </a>
+        <a 
+          href={`${prefix}/chzzk-downloader`} 
+          class={`nav-item ${currentPath.includes('/chzzk-downloader') ? 'highlight active' : ''}`}
+          aria-current={currentPath.includes('/chzzk-downloader') ? 'page' : undefined}
+        >
+          <span class="nav-icon">📥</span>
+          <span class="nav-label">{t(lang, 'nav.chzzk_downloader')}</span>
+        </a>
       </div>
     </nav>
 
@@ -306,6 +314,16 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
             <div class="drawer-item-info">
               <span class="drawer-item-name">{t(lang, 'nav.bzzk')}</span>
               <span class="drawer-item-desc">{isEn ? "Stream Security Radar" : "치지직 방송 검지직 레이더"}</span>
+            </div>
+          </a>
+          <a 
+            href={`${prefix}/chzzk-downloader`} 
+            class={`drawer-nav-item ${currentPath.includes('/chzzk-downloader') ? 'active' : ''}`}
+          >
+            <span class="drawer-item-icon">📥</span>
+            <div class="drawer-item-info">
+              <span class="drawer-item-name">{t(lang, 'nav.chzzk_downloader')}</span>
+              <span class="drawer-item-desc">{isEn ? "VOD & Clip MP4 Downloader" : "치지직 다시보기·클립 다운로더"}</span>
             </div>
           </a>
         </div>
