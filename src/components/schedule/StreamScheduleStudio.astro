@@ -46,6 +46,10 @@ const isEn = lang === 'en';
             <span class="btn-icon">📋</span>
             <span>{isEn ? 'Copy Text' : '텍스트 복사'}</span>
           </button>
+          <button type="button" class="btn-action btn-copy-obs" id="btnCopyObsSchedule" title={isEn ? 'Copy OBS Browser Source URL' : 'OBS 브라우저 소스 URL 복사'}>
+            <span class="btn-icon">🎥</span>
+            <span>{isEn ? 'Copy OBS' : 'OBS 복사'}</span>
+          </button>
         </div>
       </div>
 
@@ -529,6 +533,18 @@ const isEn = lang === 'en';
   }
   .btn-copy-text:hover {
     background: rgba(168, 85, 247, 0.3);
+  }
+
+  .btn-copy-obs {
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(16, 185, 129, 0.2));
+    border: 1px solid rgba(6, 182, 212, 0.45);
+    color: #67e8f9;
+  }
+  .btn-copy-obs:hover {
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.35), rgba(16, 185, 129, 0.35));
+    border-color: #22d3ee;
+    color: #ffffff;
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
   }
 
   /* Row 2: Controls Toolbar */
@@ -2869,6 +2885,22 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
       });
     }
   });
+
+  // ─── OBS Source URL Copy ──────────────────────────────────────────────────
+  var btnCopyObsSchedule = document.getElementById('btnCopyObsSchedule');
+  if (btnCopyObsSchedule) {
+    btnCopyObsSchedule.addEventListener('click', function () {
+      var url = new URL(window.location.href);
+      url.searchParams.set('stream', 'true');
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(url.href).then(function () {
+          alert(isEn ? '🎥 OBS Browser Source URL copied! (1920x1080 recommended)' : '🎥 OBS 브라우저 소스 URL이 복사되었습니다! (1920x1080 권장)');
+        });
+      } else {
+        prompt('OBS URL:', url.href);
+      }
+    });
+  }
 
   // Check URL params for stream/obs mode
   var params = new URLSearchParams(window.location.search);

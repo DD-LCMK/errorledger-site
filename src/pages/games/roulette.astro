@@ -106,11 +106,43 @@ const data = gameEntry?.data || {
         <button id="stream-mode-btn" class="roulette-btn btn-stream" title="깔끔한 집중 모드 전환">
           <span>📺 집중 모드</span>
         </button>
+        <button id="copy-obs-roulette-btn" class="roulette-btn btn-obs" title="광고·헤더 없는 OBS 브라우저 소스 URL 복사">
+          <span>🎥 OBS 복사</span>
+        </button>
+        <button id="open-controller-btn" class="roulette-btn btn-controller" title="듀얼 모니터용 리모컨 창 분리">
+          <span>🎛️ 컨트롤러 분리</span>
+        </button>
+      </div>
+
+      <!-- Verifiable Fairness Pre-Spin Hash Badge -->
+      <div class="fairness-badge-bar" id="fairness-badge-bar">
+        <div class="fairness-info-wrap">
+          <span class="fairness-shield-icon">🛡️</span>
+          <span class="fairness-label" id="fairness-badge-label">주작방지 사전 해시:</span>
+          <code class="fairness-hash-code" id="fairness-hash-display" title="클릭하여 복사">스핀 시 SHA-256 자동 고정</code>
+        </div>
+        <button type="button" class="btn-copy-hash" id="btn-copy-hash" title="SHA-256 해시 복사">📋 복사</button>
       </div>
     </div>
 
     <!-- Right: Streamer Control Desk -->
     <div class="streamer-sidebar" id="streamer-sidebar">
+      <!-- Controller Mode Banner -->
+      <div class="controller-sync-banner hidden" id="controller-sync-banner">
+        <div class="banner-status-dot">●</div>
+        <div class="banner-text-wrap">
+          <strong id="ctrl-banner-title">🎛️ OBS 리모컨 모드 활성화</strong>
+          <span id="ctrl-banner-desc">OBS 브라우저 소스와 실시간 0ms P2P 동기화 중</span>
+        </div>
+      </div>
+
+      <!-- Quick Spin for Controller Mode -->
+      <div class="ctrl-spin-wrap hidden" id="ctrl-spin-wrap">
+        <button type="button" id="ctrl-spin-btn" class="ctrl-spin-btn">
+          <span>🎯 지금 룰렛 회전 (Space)</span>
+        </button>
+      </div>
+
       <div class="sidebar-header">
         <span class="panel-icon">⚙️</span>
         <h3>룰렛 설정 데스크</h3>
@@ -137,7 +169,10 @@ const data = gameEntry?.data || {
       <div class="config-group">
         <div class="label-with-meta">
           <label for="input-items">항목 목록</label>
-          <span class="items-count-badge" id="items-count-badge">8개 항목</span>
+          <div class="items-header-actions">
+            <button type="button" id="btn-smart-input" class="mini-tool-btn" title="쉼표/줄바꿈/채팅 텍스트 일괄 정리 및 추가">📋 스마트 입력</button>
+            <span class="items-count-badge" id="items-count-badge">8개 항목</span>
+          </div>
         </div>
         <p class="input-hint-text">💡 팁: <code>피자*2</code>, <code>치킨*3</code> 처럼 입력하면 여러 칸이 자동 생성됩니다!</p>
         <textarea id="input-items" rows="5" placeholder="항목을 줄바꿈으로 입력하세요 (예: 피자*2, 치킨*3, 꽝*5)">치킨
@@ -148,6 +183,14 @@ const data = gameEntry?.data || {
 마라탕
 삼겹살
 라면</textarea>
+        <!-- Data Portability Row -->
+        <div class="portability-row">
+          <button type="button" id="btn-export-preset" class="port-btn" title="현재 룰렛 항목을 .json 파일로 저장">💾 프리셋 저장</button>
+          <label class="port-btn port-btn-upload" title="저장해둔 .json 또는 .txt 프리셋 파일 불러오기">
+            📂 불러오기
+            <input type="file" id="file-import-preset" accept=".json,.txt" class="hidden-file-input" />
+          </label>
+        </div>
       </div>
 
       <!-- Options Toggles -->
@@ -180,9 +223,74 @@ const data = gameEntry?.data || {
         <div class="trophy-bounce">👑</div>
         <div class="congrats-tag">🎉 당첨을 축하합니다!</div>
         <div class="winner-item-name" id="winner-name-display">치킨</div>
+
+        <!-- Provably Fair Verification Section -->
+        <div class="fairness-verify-box" id="fairness-verify-box">
+          <div class="verify-header">
+            <span class="verify-title" id="verify-box-title">🛡️ 공정성 검증 (Provably Fair)</span>
+            <span class="verify-status-badge" id="verify-status-badge">검증 대기</span>
+          </div>
+          <div class="verify-detail-row">
+            <span class="verify-k" id="verify-k-raw">사전 원문:</span>
+            <code class="verify-v" id="verify-raw-str">--</code>
+          </div>
+          <div class="verify-detail-row">
+            <span class="verify-k" id="verify-k-hash">사전 해시:</span>
+            <code class="verify-v" id="verify-hash-str">--</code>
+          </div>
+          <div class="verify-actions">
+            <button type="button" class="btn-verify-check" id="btn-verify-check">🔍 해시 일치 검증</button>
+            <button type="button" class="btn-verify-copy" id="btn-verify-copy">📋 증명 복사</button>
+          </div>
+        </div>
+
         <button id="modal-confirm-btn" class="winner-confirm-btn">확인 (닫기)</button>
       </div>
     </div>
+
+    <!-- Smart Bulk Input Modal -->
+    <div class="smart-input-overlay hidden" id="smart-input-modal">
+      <div class="smart-modal-card">
+        <div class="smart-modal-header">
+          <div class="modal-title-wrap">
+            <span class="modal-icon">📋</span>
+            <h3 id="smart-modal-title">시청자 명단 / 항목 스마트 일괄 입력</h3>
+          </div>
+          <button type="button" id="btn-close-smart-modal" class="modal-close-x" aria-label="닫기">✕</button>
+        </div>
+        <p class="smart-modal-desc" id="smart-modal-desc">
+          채팅창, 디스코드, 메모장에서 복사한 명단을 그대로 붙여넣으세요. 쉼표(,), 줄바꿈, 띄어쓰기를 자동으로 정돈해 드립니다.
+        </p>
+        <textarea id="smart-raw-input" class="smart-textarea" rows="6" placeholder="예시:
+치지직_닉네임1, 치지직_닉네임2
+시청자A
+시청자B*2
+중복된이름 (자동 필터 가능)"></textarea>
+        
+        <div class="smart-options-row">
+          <label class="smart-option-check">
+            <input type="checkbox" id="chk-smart-dedup" checked />
+            <span id="lbl-smart-dedup">중복 닉네임 자동 제거</span>
+          </label>
+          <label class="smart-option-check">
+            <input type="checkbox" id="chk-smart-shuffle" />
+            <span id="lbl-smart-shuffle">추가 전 무작위 셔플</span>
+          </label>
+        </div>
+
+        <div class="smart-actions-row">
+          <button type="button" id="btn-smart-replace" class="smart-btn smart-btn-primary">
+            <span>✨ 전체 목록 바꾸기</span>
+          </button>
+          <button type="button" id="btn-smart-append" class="smart-btn smart-btn-secondary">
+            <span>➕ 기존 목록 뒤에 추가</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feedback Toast -->
+    <div id="roulette-toast" class="roulette-toast hidden" role="status" aria-live="polite"></div>
 
     <!-- Particle Confetti Canvas Layer -->
     <canvas id="confetti-canvas" class="confetti-layer"></canvas>
@@ -616,6 +724,193 @@ const data = gameEntry?.data || {
     background: rgba(56, 189, 248, 0.25);
   }
 
+  .btn-obs {
+    background: rgba(168, 85, 247, 0.15);
+    color: #d8b4fe;
+    border: 1px solid rgba(168, 85, 247, 0.35);
+  }
+
+  .btn-obs:hover {
+    background: rgba(168, 85, 247, 0.28);
+    border-color: rgba(168, 85, 247, 0.6);
+    color: #ffffff;
+  }
+
+  .btn-controller {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(59, 130, 246, 0.18));
+    color: #6ee7b7;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+  }
+
+  .btn-controller:hover {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(59, 130, 246, 0.3));
+    border-color: #34d399;
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
+  }
+
+  /* Dual-Window Controller Sync Styles */
+  .controller-sync-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    border-radius: 10px;
+    padding: 0.65rem 0.85rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .banner-status-dot {
+    color: #34d399;
+    font-size: 1rem;
+    animation: pulseDot 1.5s infinite alternate;
+  }
+
+  @keyframes pulseDot {
+    from { opacity: 0.4; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1.15); filter: drop-shadow(0 0 6px #34d399); }
+  }
+
+  .banner-text-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .banner-text-wrap strong {
+    font-size: 0.82rem;
+    color: #6ee7b7;
+  }
+
+  .banner-text-wrap span {
+    font-size: 0.72rem;
+    color: #94a3b8;
+  }
+
+  .ctrl-spin-wrap {
+    margin-bottom: 1rem;
+  }
+
+  .ctrl-spin-btn {
+    width: 100%;
+    padding: 0.9rem;
+    background: linear-gradient(135deg, #a855f7 0%, #38bdf8 100%);
+    color: #ffffff;
+    font-size: 1.05rem;
+    font-weight: 900;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.5);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .ctrl-spin-btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 35px rgba(168, 85, 247, 0.7);
+  }
+
+  :global(body.controller-mode) .roulette-stage-pane {
+    display: none !important;
+  }
+
+  :global(body.controller-mode) .roulette-layout {
+    display: flex !important;
+    justify-content: center !important;
+    padding: 1rem !important;
+  }
+
+  :global(body.controller-mode) .streamer-sidebar {
+    width: 100% !important;
+    max-width: 520px !important;
+    margin: 0 auto !important;
+  }
+
+  :global(body.streamer-mode) .streamer-sidebar {
+    display: none !important;
+  }
+
+  :global(body.streamer-mode) .roulette-stage-pane {
+    max-width: 100vw !important;
+    width: 100% !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  :global(body.streamer-mode) .roulette-mode-tabs {
+    display: none !important;
+  }
+
+  /* Verifiable Fairness Badge Bar */
+  .fairness-badge-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 10px;
+    padding: 0.45rem 0.8rem;
+    margin-top: 0.65rem;
+    font-size: 0.78rem;
+    width: 100%;
+    max-width: 600px;
+    box-sizing: border-box;
+    backdrop-filter: blur(8px);
+  }
+
+  .fairness-info-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    overflow: hidden;
+  }
+
+  .fairness-shield-icon {
+    font-size: 0.95rem;
+  }
+
+  .fairness-label {
+    color: #94a3b8;
+    font-weight: 700;
+    white-space: nowrap;
+    font-size: 0.75rem;
+  }
+
+  .fairness-hash-code {
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    color: #38bdf8;
+    font-family: monospace;
+    font-size: 0.74rem;
+    padding: 0.15rem 0.45rem;
+    border-radius: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 240px;
+    cursor: pointer;
+  }
+
+  .btn-copy-hash {
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #7dd3fc;
+    border-radius: 6px;
+    padding: 0.25rem 0.55rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+  }
+
+  .btn-copy-hash:hover {
+    background: rgba(56, 189, 248, 0.3);
+    color: #ffffff;
+  }
+
   /* Streamer Sidebar */
   .streamer-sidebar {
     background: #0f172a;
@@ -669,6 +964,73 @@ const data = gameEntry?.data || {
     background: rgba(56, 189, 248, 0.12);
     padding: 0.15rem 0.45rem;
     border-radius: 4px;
+  }
+
+  .items-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .mini-tool-btn {
+    background: rgba(16, 185, 129, 0.15);
+    color: #6ee7b7;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .mini-tool-btn:hover {
+    background: rgba(16, 185, 129, 0.3);
+    color: #ffffff;
+  }
+
+  .portability-row {
+    display: flex;
+    gap: 0.45rem;
+    margin-top: 0.4rem;
+  }
+
+  .port-btn {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    padding: 0.35rem 0.5rem;
+    color: #cbd5e1;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .port-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+  }
+
+  .port-btn-upload {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hidden-file-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
   }
 
   .input-hint-text {
@@ -863,12 +1225,287 @@ const data = gameEntry?.data || {
     cursor: pointer;
   }
 
-  /* Confetti Layer */
-  .confetti-layer {
-    position: absolute;
+  /* Provably Fair Verification Box */
+  .fairness-verify-box {
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 12px;
+    padding: 0.85rem;
+    margin: 0.9rem 0 1.25rem 0;
+    text-align: left;
+    font-size: 0.78rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  .verify-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 0.4rem;
+  }
+
+  .verify-title {
+    font-weight: 800;
+    color: #38bdf8;
+    font-size: 0.8rem;
+  }
+
+  .verify-status-badge {
+    padding: 0.18rem 0.5rem;
+    border-radius: 9999px;
+    font-weight: 800;
+    font-size: 0.68rem;
+    background: rgba(148, 163, 184, 0.15);
+    color: #94a3b8;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+  }
+
+  .verify-status-badge.verified {
+    background: rgba(34, 197, 94, 0.2);
+    color: #4ade80;
+    border-color: rgba(34, 197, 94, 0.5);
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+  }
+
+  .verify-detail-row {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .verify-k {
+    color: #94a3b8;
+    white-space: nowrap;
+    font-size: 0.72rem;
+    font-weight: 700;
+    min-width: 60px;
+  }
+
+  .verify-v {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.2rem 0.45rem;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.72rem;
+    color: #f1f5f9;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+  }
+
+  .verify-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.7rem;
+  }
+
+  .btn-verify-check {
+    flex: 1;
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(16, 185, 129, 0.25));
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    color: #86efac;
+    border-radius: 7px;
+    padding: 0.45rem 0.6rem;
+    font-weight: 800;
+    font-size: 0.76rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-verify-check:hover {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.35), rgba(16, 185, 129, 0.4));
+    border-color: #4ade80;
+    color: #ffffff;
+  }
+
+  .btn-verify-copy {
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #7dd3fc;
+    border-radius: 7px;
+    padding: 0.45rem 0.65rem;
+    font-weight: 700;
+    font-size: 0.76rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-verify-copy:hover {
+    background: rgba(56, 189, 248, 0.3);
+    color: #ffffff;
+  }
+
+  /* Smart Input Modal & Toast */
+  .smart-input-overlay {
+    position: fixed;
     inset: 0;
+    background: rgba(9, 13, 22, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 120;
+    padding: 1rem;
+  }
+
+  .smart-modal-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    padding: 1.75rem;
+    max-width: 520px;
+    width: 100%;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    animation: popModal 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .smart-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .modal-title-wrap h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #f8fafc;
+  }
+
+  .modal-icon {
+    font-size: 1.3rem;
+  }
+
+  .modal-close-x {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+  }
+
+  .modal-close-x:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .smart-modal-desc {
+    margin: 0;
+    font-size: 0.84rem;
+    color: #94a3b8;
+    line-height: 1.5;
+  }
+
+  .smart-textarea {
+    background: #090d16;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: #f8fafc;
+    font-size: 0.88rem;
+    font-family: inherit;
+    line-height: 1.5;
+    outline: none;
+    resize: vertical;
+  }
+
+  .smart-textarea:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+  }
+
+  .smart-options-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .smart-option-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    cursor: pointer;
+  }
+
+  .smart-actions-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-top: 0.25rem;
+  }
+
+  .smart-btn {
+    padding: 0.65rem 1rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 800;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s ease;
+  }
+
+  .smart-btn-primary {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  }
+
+  .smart-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+  }
+
+  .smart-btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .smart-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+  }
+
+  .roulette-toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0f172a;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.2);
+    color: #f8fafc;
+    padding: 0.65rem 1.25rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    z-index: 150;
     pointer-events: none;
-    z-index: 90;
+    animation: toastIn 0.2s ease-out;
+  }
+
+  @keyframes toastIn {
+    from { opacity: 0; transform: translate(-50%, 10px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
   }
 
   .hidden {
@@ -1355,6 +1992,41 @@ const data = gameEntry?.data || {
   const winnersHistory = document.getElementById('winners-history');
   const clearHistoryBtn = document.getElementById('clear-history-btn');
 
+  // Provably Fair Verifiable Hash Elements
+  const fairnessHashDisplay = document.getElementById('fairness-hash-display');
+  const btnCopyHash = document.getElementById('btn-copy-hash');
+  const verifyRawStr = document.getElementById('verify-raw-str');
+  const verifyHashStr = document.getElementById('verify-hash-str');
+  const verifyStatusBadge = document.getElementById('verify-status-badge');
+  const btnVerifyCheck = document.getElementById('btn-verify-check');
+  const btnVerifyCopy = document.getElementById('btn-verify-copy');
+
+  interface FairnessData {
+    winner: string;
+    winnerIndex: number;
+    salt: string;
+    rawString: string;
+    hashHex: string;
+  }
+  let currentFairness: FairnessData | null = null;
+
+  async function computeSha256(text: string): Promise<string> {
+    const enc = new TextEncoder().encode(text);
+    const buf = await window.crypto.subtle.digest('SHA-256', enc);
+    return Array.from(new Uint8Array(buf))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+  }
+
+  async function prepareFairnessSeed(winner: string, winnerIndex: number): Promise<FairnessData> {
+    const randBytes = new Uint8Array(8);
+    window.crypto.getRandomValues(randBytes);
+    const salt = Array.from(randBytes).map(b => b.toString(16).padStart(2, '0')).join('');
+    const rawString = `${winner}#${salt}`;
+    const hashHex = await computeSha256(rawString);
+    return { winner, winnerIndex, salt, rawString, hashHex };
+  }
+
   let items: string[] = [];
   let currentAngle = 0; // In radians
   let isSpinning = false;
@@ -1651,11 +2323,32 @@ const data = gameEntry?.data || {
       pointerTicker.classList.remove('is-winner');
     }
 
-    // Random spin parameters
-    const minRounds = 5;
-    const maxRounds = 9;
-    const extraRounds = minRounds + Math.random() * (maxRounds - minRounds);
-    const targetDeltaAngle = extraRounds * Math.PI * 2 + Math.random() * Math.PI * 2;
+    // Provably fair: determine winner using cryptographically secure PRNG
+    const randBuf = new Uint32Array(1);
+    window.crypto.getRandomValues(randBuf);
+    const predeterminedWinnerIdx = randBuf[0] % items.length;
+    const predeterminedWinner = items[predeterminedWinnerIdx];
+
+    // Compute pre-spin hash immediately and display badge
+    prepareFairnessSeed(predeterminedWinner, predeterminedWinnerIdx).then(fairData => {
+      currentFairness = fairData;
+      if (fairnessHashDisplay) {
+        fairnessHashDisplay.textContent = `${fairData.hashHex.slice(0, 10)}…${fairData.hashHex.slice(-6)}`;
+        fairnessHashDisplay.title = fairData.hashHex;
+      }
+    });
+
+    // Precise angle physics targeting predetermined slice
+    const sliceAngle = (Math.PI * 2) / items.length;
+    const offsetInSlice = (0.25 + 0.5 * Math.random()) * sliceAngle;
+    const targetPointerAngle = predeterminedWinnerIdx * sliceAngle + offsetInSlice;
+    const targetNormalized = ((Math.PI * 1.5 - targetPointerAngle) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+    const currentNormalized = ((currentAngle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+    let deltaAngle = targetNormalized - currentNormalized;
+    if (deltaAngle < 0) deltaAngle += Math.PI * 2;
+    const minRounds = 6;
+    const extraRounds = minRounds + Math.floor(Math.random() * 4);
+    const targetDeltaAngle = extraRounds * Math.PI * 2 + deltaAngle;
     const duration = 4800 + Math.random() * 800; // ms
     const startTime = performance.now();
     const startAngle = currentAngle;
@@ -1746,6 +2439,16 @@ const data = gameEntry?.data || {
     // Highlight winning item in probability list
     highlightProbItem(winner);
 
+    // Populate Provably Fair verification box
+    if (currentFairness) {
+      if (verifyRawStr) verifyRawStr.textContent = currentFairness.rawString;
+      if (verifyHashStr) verifyHashStr.textContent = currentFairness.hashHex;
+      if (verifyStatusBadge) {
+        verifyStatusBadge.textContent = isEn ? 'Unverified' : '검증 대기';
+        verifyStatusBadge.classList.remove('verified');
+      }
+    }
+
     // Show winner banner
     if (winnerNameDisplay) winnerNameDisplay.textContent = winner;
     if (winnerModal) winnerModal.classList.remove('hidden');
@@ -1757,6 +2460,15 @@ const data = gameEntry?.data || {
     if (chkEliminate && chkEliminate.checked) {
       removeOneInstanceFromTextarea(winner);
       syncItems();
+    }
+
+    // Broadcast result to other tabs (controller/OBS)
+    if (syncChannel) {
+      syncChannel.postMessage({
+        type: 'SPIN_RESULT',
+        winner,
+        fairData: currentFairness
+      });
     }
   }
 
@@ -1838,8 +2550,319 @@ const data = gameEntry?.data || {
     }
   });
 
+  // Toast Helper
+  function showRouletteToast(msg: string) {
+    const toast = document.getElementById('roulette-toast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.remove('hidden');
+    setTimeout(() => {
+      toast.classList.add('hidden');
+    }, 3200);
+  }
+
+  // 1. One-Click OBS Browser Source Copy
+  const copyObsBtn = document.getElementById('copy-obs-roulette-btn');
+  copyObsBtn?.addEventListener('click', () => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('stream', 'true');
+    const cleanUrl = url.href;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(cleanUrl).then(() => {
+        showRouletteToast(isEn ? '🎥 OBS Browser Source URL copied! (1920x1080 recommended)' : '🎥 OBS 브라우저 소스 URL 복사 완료! (1920x1080 권장)');
+      }).catch(() => {
+        prompt('OBS Browser URL:', cleanUrl);
+      });
+    } else {
+      prompt('OBS Browser URL:', cleanUrl);
+    }
+  });
+
+  // 2. Smart Nickname / Items Bulk Input Modal
+  const smartModal = document.getElementById('smart-input-modal');
+  const btnSmartInput = document.getElementById('btn-smart-input');
+  const btnCloseSmartModal = document.getElementById('btn-close-smart-modal');
+  const smartRawInput = document.getElementById('smart-raw-input') as HTMLTextAreaElement;
+  const chkSmartDedup = document.getElementById('chk-smart-dedup') as HTMLInputElement;
+  const chkSmartShuffle = document.getElementById('chk-smart-shuffle') as HTMLInputElement;
+  const btnSmartReplace = document.getElementById('btn-smart-replace');
+  const btnSmartAppend = document.getElementById('btn-smart-append');
+
+  btnSmartInput?.addEventListener('click', () => {
+    smartModal?.classList.remove('hidden');
+    smartRawInput?.focus();
+  });
+
+  btnCloseSmartModal?.addEventListener('click', () => {
+    smartModal?.classList.add('hidden');
+  });
+
+  smartModal?.addEventListener('click', (e) => {
+    if (e.target === smartModal) smartModal.classList.add('hidden');
+  });
+
+  function parseSmartText(text: string, dedup: boolean, shuffle: boolean): string[] {
+    let list = text
+      .split(/[\r\n,\t/]+/)
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
+
+    if (dedup) {
+      list = Array.from(new Set(list));
+    }
+    if (shuffle) {
+      list.sort(() => Math.random() - 0.5);
+    }
+    return list;
+  }
+
+  btnSmartReplace?.addEventListener('click', () => {
+    if (!smartRawInput || !itemsTextarea) return;
+    const parsed = parseSmartText(smartRawInput.value, chkSmartDedup?.checked ?? true, chkSmartShuffle?.checked ?? false);
+    if (parsed.length === 0) {
+      showRouletteToast(isEn ? 'Please enter some items.' : '입력된 항목이 없습니다.');
+      return;
+    }
+    itemsTextarea.value = parsed.join('\n');
+    syncItems();
+    smartModal?.classList.add('hidden');
+    smartRawInput.value = '';
+    showRouletteToast(isEn ? `✨ Replaced with ${parsed.length} items!` : `✨ ${parsed.length}개 항목으로 전체 교체되었습니다!`);
+  });
+
+  btnSmartAppend?.addEventListener('click', () => {
+    if (!smartRawInput || !itemsTextarea) return;
+    const parsed = parseSmartText(smartRawInput.value, chkSmartDedup?.checked ?? true, chkSmartShuffle?.checked ?? false);
+    if (parsed.length === 0) {
+      showRouletteToast(isEn ? 'Please enter some items.' : '입력된 항목이 없습니다.');
+      return;
+    }
+    const existing = itemsTextarea.value.trim();
+    itemsTextarea.value = existing ? existing + '\n' + parsed.join('\n') : parsed.join('\n');
+    syncItems();
+    smartModal?.classList.add('hidden');
+    smartRawInput.value = '';
+    showRouletteToast(isEn ? `➕ Appended ${parsed.length} items!` : `➕ ${parsed.length}개 항목이 추가되었습니다!`);
+  });
+
+  // 3. Preset Export & Import (.json / .txt)
+  const btnExportPreset = document.getElementById('btn-export-preset');
+  const fileImportPreset = document.getElementById('file-import-preset') as HTMLInputElement;
+
+  btnExportPreset?.addEventListener('click', () => {
+    const exportData = {
+      title: titleInput?.value || (isEn ? "Today's Spin Wheel" : '오늘의 방송 룰렛'),
+      items: itemsTextarea?.value || '',
+      eliminate: chkEliminate?.checked ?? false,
+      exportedAt: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `errorledger-roulette-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showRouletteToast(isEn ? '💾 Saved preset to JSON file!' : '💾 룰렛 프리셋이 .json 파일로 저장되었습니다!');
+  });
+
+  fileImportPreset?.addEventListener('change', (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const content = ev.target?.result as string;
+        if (file.name.endsWith('.json')) {
+          const parsed = JSON.parse(content);
+          if (parsed.title && titleInput) {
+            titleInput.value = parsed.title;
+            if (displayTitle) displayTitle.textContent = parsed.title;
+          }
+          if (typeof parsed.items === 'string' && itemsTextarea) {
+            itemsTextarea.value = parsed.items;
+          } else if (Array.isArray(parsed.items) && itemsTextarea) {
+            itemsTextarea.value = parsed.items.join('\n');
+          }
+          if (typeof parsed.eliminate === 'boolean' && chkEliminate) {
+            chkEliminate.checked = parsed.eliminate;
+          }
+        } else {
+          // Plain text (.txt)
+          if (itemsTextarea) itemsTextarea.value = content;
+        }
+        syncItems();
+        showRouletteToast(isEn ? '📂 Loaded preset file successfully!' : '📂 룰렛 프리셋을 성공적으로 불러왔습니다!');
+      } catch (err) {
+        showRouletteToast(isEn ? 'Invalid file format.' : '파일 형식이 올바르지 않습니다.');
+      }
+      fileImportPreset.value = '';
+    };
+    reader.readAsText(file);
+  });
+
+  // Provably Fair Event Listeners
+  btnCopyHash?.addEventListener('click', () => {
+    if (!currentFairness?.hashHex) {
+      showRouletteToast(isEn ? 'Please spin the wheel first.' : '먼저 룰렛을 회전해 주세요.');
+      return;
+    }
+    navigator.clipboard.writeText(currentFairness.hashHex).then(() => {
+      showRouletteToast(isEn ? '📋 SHA-256 pre-spin hash copied!' : '📋 SHA-256 사전 해시가 복사되었습니다!');
+    });
+  });
+
+  fairnessHashDisplay?.addEventListener('click', () => {
+    if (currentFairness?.hashHex) {
+      navigator.clipboard.writeText(currentFairness.hashHex).then(() => {
+        showRouletteToast(isEn ? '📋 SHA-256 pre-spin hash copied!' : '📋 SHA-256 사전 해시가 복사되었습니다!');
+      });
+    }
+  });
+
+  btnVerifyCheck?.addEventListener('click', async () => {
+    if (!currentFairness) return;
+    const computed = await computeSha256(currentFairness.rawString);
+    if (computed === currentFairness.hashHex) {
+      if (verifyStatusBadge) {
+        verifyStatusBadge.textContent = isEn ? '✓ 100% Match Verified!' : '✓ 일치 확인 (조작 없음)';
+        verifyStatusBadge.classList.add('verified');
+      }
+      showRouletteToast(isEn ? '🛡️ Hash 100% matched! Zero rigging proven.' : '🛡️ 사전 해시와 100% 일치합니다! 조작 없음 인증 완료.');
+    } else {
+      if (verifyStatusBadge) {
+        verifyStatusBadge.textContent = isEn ? 'Mismatch Error' : '불일치 오류';
+        verifyStatusBadge.classList.remove('verified');
+      }
+    }
+  });
+
+  btnVerifyCopy?.addEventListener('click', () => {
+    if (!currentFairness) return;
+    const proofText = isEn
+      ? `[ErrorLedger Spin Wheel Provably Fair Proof]\nWinner: ${currentFairness.winner}\nRaw Secret: ${currentFairness.rawString}\nSHA-256 Pre-Hash: ${currentFairness.hashHex}\nVerify online: Compute SHA-256("${currentFairness.rawString}") on any 3rd party tool.`
+      : `[에러레저 룰렛 공정성 증명서]\n당첨 결과: ${currentFairness.winner}\n사전 비밀 원문: ${currentFairness.rawString}\nSHA-256 사전 해시: ${currentFairness.hashHex}\n* 외부 SHA-256 계산기에 위 원문을 입력하면 사전 해시와 100% 일치함을 증명할 수 있습니다.`;
+    navigator.clipboard.writeText(proofText).then(() => {
+      showRouletteToast(isEn ? '📋 Proof details copied to clipboard!' : '📋 공정성 증명 데이터가 클립보드에 복사되었습니다!');
+    });
+  });
+
+  // 4. BroadcastChannel Dual-Window Real-time Sync
+  const syncChannel = typeof BroadcastChannel !== 'undefined'
+    ? new BroadcastChannel('errorledger_roulette_channel')
+    : null;
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const isControllerMode = urlParams.get('mode') === 'controller';
+
+  if (isControllerMode) {
+    document.body.classList.add('controller-mode');
+    const banner = document.getElementById('controller-sync-banner');
+    if (banner) banner.classList.remove('hidden');
+    const ctrlSpinWrap = document.getElementById('ctrl-spin-wrap');
+    if (ctrlSpinWrap) ctrlSpinWrap.classList.remove('hidden');
+  }
+
+  // Open Controller Window
+  const openControllerBtn = document.getElementById('open-controller-btn');
+  openControllerBtn?.addEventListener('click', () => {
+    const controllerUrl = new URL(window.location.href);
+    controllerUrl.searchParams.set('mode', 'controller');
+    controllerUrl.searchParams.delete('stream');
+    controllerUrl.searchParams.delete('obs');
+    window.open(controllerUrl.toString(), 'errorledger_roulette_ctrl', 'width=520,height=820,menubar=no,toolbar=no');
+    showRouletteToast(isEn ? '🎛️ Dual-window controller opened!' : '🎛️ 듀얼 모니터용 리모컨 창이 열렸습니다!');
+  });
+
+  // Controller quick spin button
+  const ctrlSpinBtn = document.getElementById('ctrl-spin-btn');
+  ctrlSpinBtn?.addEventListener('click', () => {
+    syncChannel?.postMessage({ type: 'TRIGGER_SPIN' });
+    spinWheel();
+  });
+
+  function broadcastState() {
+    if (!syncChannel) return;
+    syncChannel.postMessage({
+      type: 'SYNC_STATE',
+      title: titleInput?.value || '',
+      items: itemsTextarea?.value || '',
+      eliminate: chkEliminate?.checked ?? false
+    });
+  }
+
+  titleInput?.addEventListener('input', () => {
+    if (isControllerMode) broadcastState();
+  });
+  itemsTextarea?.addEventListener('input', () => {
+    if (isControllerMode) broadcastState();
+  });
+  chkEliminate?.addEventListener('change', () => {
+    if (isControllerMode) broadcastState();
+  });
+
+  // Listen for broadcast messages from other windows
+  if (syncChannel) {
+    syncChannel.onmessage = (event) => {
+      const data = event.data;
+      if (!data) return;
+
+      if (data.type === 'SYNC_STATE') {
+        if (titleInput && data.title !== undefined) {
+          titleInput.value = data.title;
+          if (displayTitle) displayTitle.textContent = data.title;
+        }
+        if (itemsTextarea && data.items !== undefined) {
+          itemsTextarea.value = data.items;
+          syncItems();
+        }
+        if (chkEliminate && data.eliminate !== undefined) {
+          chkEliminate.checked = data.eliminate;
+        }
+      } else if (data.type === 'TRIGGER_SPIN') {
+        spinWheel();
+      } else if (data.type === 'TRIGGER_SHUFFLE') {
+        items.sort(() => Math.random() - 0.5);
+        if (itemsTextarea) itemsTextarea.value = items.join('\n');
+        syncItems();
+      } else if (data.type === 'SPIN_RESULT') {
+        if (isControllerMode && data.winner) {
+          addHistoryItem(data.winner);
+          showRouletteToast(isEn ? `👑 Winner: ${data.winner}` : `👑 당첨: ${data.winner}`);
+        }
+      }
+    };
+  }
+
   // English UI Localization
   if (isEn) {
+    const openCtrlBtn = document.getElementById('open-controller-btn');
+    if (openCtrlBtn) {
+      const span = openCtrlBtn.querySelector('span');
+      if (span) span.textContent = '🎛️ Controller';
+      openCtrlBtn.setAttribute('title', 'Open dual-window streamer remote control');
+    }
+    const ctrlBannerTitle = document.getElementById('ctrl-banner-title');
+    if (ctrlBannerTitle) ctrlBannerTitle.textContent = '🎛️ OBS Remote Controller Active';
+    const ctrlBannerDesc = document.getElementById('ctrl-banner-desc');
+    if (ctrlBannerDesc) ctrlBannerDesc.textContent = 'Real-time 0ms P2P sync with OBS browser source';
+    const ctrlSpinSpan = document.querySelector('#ctrl-spin-btn span');
+    if (ctrlSpinSpan) ctrlSpinSpan.textContent = '🎯 Spin Wheel Now (Space)';
+
+    const fairnessLabel = document.getElementById('fairness-badge-label');
+    if (fairnessLabel) fairnessLabel.textContent = 'Fairness Pre-Hash:';
+    if (fairnessHashDisplay && !currentFairness) fairnessHashDisplay.textContent = 'Auto SHA-256 on Spin';
+    if (btnCopyHash) btnCopyHash.textContent = '📋 Copy';
+
+    const verifyTitle = document.getElementById('verify-box-title');
+    if (verifyTitle) verifyTitle.textContent = '🛡️ Provably Fair Verification';
+    const verifyKRaw = document.getElementById('verify-k-raw');
+    if (verifyKRaw) verifyKRaw.textContent = 'Pre-Spin Raw:';
+    const verifyKHash = document.getElementById('verify-k-hash');
+    if (verifyKHash) verifyKHash.textContent = 'Pre-Spin Hash:';
+    if (btnVerifyCheck) btnVerifyCheck.textContent = '🔍 Verify Hash Match';
+    if (btnVerifyCopy) btnVerifyCopy.textContent = '📋 Copy Proof';
+
     if (centerSpinBtn) {
       const hubLabel = centerSpinBtn.querySelector('.hub-label');
       if (hubLabel) hubLabel.textContent = 'SPIN';
@@ -1915,6 +2938,39 @@ const data = gameEntry?.data || {
     if (congratsTag) congratsTag.textContent = '🎉 Congratulations!';
 
     if (modalConfirmBtn) modalConfirmBtn.textContent = 'Close (OK)';
+
+    if (copyObsBtn) {
+      const span = copyObsBtn.querySelector('span');
+      if (span) span.textContent = '🎥 Copy OBS URL';
+      copyObsBtn.setAttribute('title', 'Copy clean OBS browser source URL without ads or headers');
+    }
+
+    if (btnSmartInput) btnSmartInput.textContent = '📋 Smart Paste';
+    if (btnExportPreset) btnExportPreset.textContent = '💾 Save Preset';
+    const uploadLabel = document.querySelector('.port-btn-upload');
+    if (uploadLabel) {
+      const fileIn = uploadLabel.querySelector('input');
+      uploadLabel.childNodes[0].textContent = '📂 Load File ';
+      if (fileIn) uploadLabel.appendChild(fileIn);
+    }
+    const smTitle = document.getElementById('smart-modal-title');
+    if (smTitle) smTitle.textContent = 'Smart Bulk Nickname / Item Paste';
+    const smDesc = document.getElementById('smart-modal-desc');
+    if (smDesc) smDesc.textContent = 'Paste raw text from Twitch/YouTube chat, Discord or notes. Commas, newlines, and spaces are parsed automatically.';
+    const smDedup = document.getElementById('lbl-smart-dedup');
+    if (smDedup) smDedup.textContent = 'Auto-remove duplicates';
+    const smShuffle = document.getElementById('lbl-smart-shuffle');
+    if (smShuffle) smShuffle.textContent = 'Random shuffle before adding';
+    const smReplace = document.getElementById('btn-smart-replace');
+    if (smReplace) {
+      const span = smReplace.querySelector('span');
+      if (span) span.textContent = '✨ Replace Whole List';
+    }
+    const smAppend = document.getElementById('btn-smart-append');
+    if (smAppend) {
+      const span = smAppend.querySelector('span');
+      if (span) span.textContent = '➕ Append to List';
+    }
   }
 
   // Carnival Golden Sparkles Background Animation

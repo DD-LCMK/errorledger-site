@@ -58,6 +58,16 @@ const data = gameEntry?.data || {
 
     <!-- Left: The Interactive Ladder Stage Wrapper -->
     <div class="ladder-stage-wrap">
+      <!-- Verifiable Provably Fair Pre-Hash Badge Bar -->
+      <div class="ladder-fairness-bar" id="ladder-fairness-bar">
+        <div class="fairness-info-wrap">
+          <span class="fairness-dot">🛡️</span>
+          <span class="fairness-title" id="ladder-fairness-title">공정성 검증 (SHA-256):</span>
+          <code class="fairness-hash" id="ladder-fairness-hash" title="사다리 생성 시 고유 SHA-256 해시">생성 대기 중...</code>
+        </div>
+        <button type="button" class="btn-copy-hash" id="btn-copy-ladder-hash" title="사전 해시 복사">📋 복사</button>
+      </div>
+
       <div class="ladder-canvas-stage" id="ladder-stage">
         <div class="ladder-stage-inner" id="ladder-stage-inner">
           <!-- Top Participants Row -->
@@ -90,6 +100,15 @@ const data = gameEntry?.data || {
 
     <!-- Right: Streamer Control Panel Sidebar -->
     <aside class="ladder-side-panel" id="ladder-toolbar">
+      <!-- Controller Sync Banner (Visible when in controller mode) -->
+      <div class="ladder-ctrl-banner hidden" id="ladder-ctrl-banner">
+        <div class="ctrl-banner-header">
+          <span class="ctrl-indicator">● P2P LIVE SYNC</span>
+          <span class="ctrl-title" id="ctrl-ladder-banner-title">🎛️ OBS 리모컨 모드 동작 중</span>
+        </div>
+        <p class="ctrl-banner-desc" id="ctrl-ladder-banner-desc">방송 화면(OBS/메인창)과 0ms 실시간 동기화됩니다. 인원 설정, 출발, 다시 섞기를 원격 제어하세요.</p>
+      </div>
+
       <!-- Panel Header / Brand -->
       <div class="panel-section panel-brand">
         <span class="brand-badge">⚡ Ladder Studio</span>
@@ -109,9 +128,19 @@ const data = gameEntry?.data || {
             <span>⚡ 즉시 결과</span>
           </button>
         </div>
-        <button id="reroll-ladder-btn" class="action-btn-secondary full-width" title="사다리 가로줄을 무작위로 다시 생성합니다">
-          <span>🎲 사다리 다시 섞기</span>
-        </button>
+        <div class="action-btn-row">
+          <button id="reroll-ladder-btn" class="action-btn-secondary" title="사다리 가로줄을 무작위로 다시 생성합니다">
+            <span>🎲 다시 섞기</span>
+          </button>
+          <button id="copy-obs-ladder-btn" class="action-btn-obs" title="광고·헤더 없는 OBS 브라우저 소스 URL 복사">
+            <span>🎥 OBS 복사</span>
+          </button>
+        </div>
+        <div class="action-btn-row" style="margin-top: 0.35rem;">
+          <button id="open-controller-ladder-btn" class="action-btn-ctrl full-width" title="듀얼 모니터용 리모컨/컨트롤러 분리 창 열기">
+            <span>🎛️ 듀얼 컨트롤러 리모컨 분리</span>
+          </button>
+        </div>
       </div>
 
       <!-- Player Count Controls (Stepper + Quick Buttons Grid) -->
@@ -134,6 +163,27 @@ const data = gameEntry?.data || {
           <button class="count-btn" data-count="12">12</button>
           <button class="count-btn" data-count="16">16</button>
           <button class="count-btn" data-count="20">20</button>
+        </div>
+      </div>
+
+      <!-- Smart Input & Portability -->
+      <div class="panel-section">
+        <div class="panel-section-header">
+          <label class="panel-label" id="lbl-ladder-manage">📋 명단 및 프리셋 관리</label>
+        </div>
+        <div class="portability-btns-grid">
+          <button type="button" id="btn-smart-input-ladder" class="port-btn-pill full-width" title="채팅/디스코드 닉네임 일괄 정리 및 자동 인원 설정">
+            <span>📋 시청자 닉네임 스마트 입력</span>
+          </button>
+          <div class="port-sub-row">
+            <button type="button" id="btn-export-ladder" class="port-btn-pill" title="현재 사다리 설정과 참가자를 .json 파일로 저장">
+              <span>💾 프리셋 저장</span>
+            </button>
+            <label class="port-btn-pill port-upload-label" title="저장해둔 사다리 파일 불러오기">
+              <span>📂 불러오기</span>
+              <input type="file" id="file-import-ladder" accept=".json,.txt" class="hidden-file-input" />
+            </label>
+          </div>
         </div>
       </div>
 
@@ -178,9 +228,71 @@ const data = gameEntry?.data || {
         <div class="res-icon">🎯</div>
         <h2>사다리 결과 확인</h2>
         <div class="result-summary-list" id="result-summary-list"></div>
+
+        <!-- Provably Fair Verification Box -->
+        <div class="ladder-fairness-verify-box hidden" id="ladder-fairness-verify-box">
+          <div class="verify-header">
+            <span class="verify-title" id="ladder-verify-title">🛡️ SHA-256 공정성 무결함 검증</span>
+            <span class="verify-status-badge" id="ladder-verify-badge">사전 검증 대기</span>
+          </div>
+          <div class="verify-detail-row">
+            <span class="verify-k" id="ladder-verify-k-raw">생성 원문:</span>
+            <code class="verify-v" id="ladder-verify-raw">대기 중...</code>
+          </div>
+          <div class="verify-detail-row">
+            <span class="verify-k" id="ladder-verify-k-hash">사전 공개 해시:</span>
+            <code class="verify-v" id="ladder-verify-hash">대기 중...</code>
+          </div>
+          <div class="verify-actions">
+            <button type="button" class="btn-verify-check" id="btn-verify-ladder-check">🔍 해시 일치 검증</button>
+            <button type="button" class="btn-verify-copy" id="btn-verify-ladder-copy">📋 증명서 복사</button>
+          </div>
+          <p class="verify-status-msg" id="ladder-verify-status-msg"></p>
+        </div>
+
         <button id="close-result-btn" class="result-close-btn">닫기</button>
       </div>
     </div>
+
+    <!-- Smart Bulk Input Modal for Ladder -->
+    <div class="smart-input-overlay hidden" id="smart-ladder-modal">
+      <div class="smart-modal-card">
+        <div class="smart-modal-header">
+          <div class="modal-title-wrap">
+            <span class="modal-icon">📋</span>
+            <h3 id="smart-ladder-modal-title">사다리 참가자 닉네임 스마트 일괄 입력</h3>
+          </div>
+          <button type="button" id="btn-close-smart-ladder" class="modal-close-x" aria-label="닫기">✕</button>
+        </div>
+        <p class="smart-modal-desc" id="smart-ladder-modal-desc">
+          채팅창, 디스코드, 메모장에서 복사한 참가자 명단을 그대로 붙여넣으세요. 최대 20명까지 자동으로 인원수를 조절하고 사다리를 새로 생성합니다.
+        </p>
+        <textarea id="smart-ladder-raw-input" class="smart-textarea" rows="6" placeholder="예시:
+치지직_시청자1, 치지직_시청자2, 김스트리머, 박매니저
+시청자A
+시청자B"></textarea>
+        
+        <div class="smart-options-row">
+          <label class="smart-option-check">
+            <input type="checkbox" id="chk-smart-ladder-dedup" checked />
+            <span id="lbl-smart-ladder-dedup">중복 닉네임 자동 제거</span>
+          </label>
+          <label class="smart-option-check">
+            <input type="checkbox" id="chk-smart-ladder-shuffle" />
+            <span id="lbl-smart-ladder-shuffle">적용 전 무작위 셔플</span>
+          </label>
+        </div>
+
+        <div class="smart-actions-row">
+          <button type="button" id="btn-smart-ladder-apply" class="smart-btn smart-btn-primary full-width">
+            <span>✨ 명단 적용하고 사다리 생성</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feedback Toast -->
+    <div id="ladder-toast" class="ladder-toast hidden" role="status" aria-live="polite"></div>
   </div>
 
   <div slot="guide">
@@ -372,6 +484,75 @@ const data = gameEntry?.data || {
   .action-btn-secondary:hover {
     background: rgba(255, 255, 255, 0.14);
     transform: translateY(-1px);
+  }
+
+  .action-btn-obs {
+    background: rgba(168, 85, 247, 0.15);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    color: #d8b4fe;
+    padding: 0.55rem 0.6rem;
+    border-radius: 9px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: center;
+  }
+
+  .action-btn-obs:hover {
+    background: rgba(168, 85, 247, 0.28);
+    border-color: rgba(168, 85, 247, 0.6);
+    color: #ffffff;
+  }
+
+  /* Ladder Portability & Smart Input Buttons */
+  .portability-btns-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .port-sub-row {
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .port-btn-pill {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+    padding: 0.45rem 0.6rem;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s ease;
+  }
+
+  .port-btn-pill:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+
+  .port-upload-label {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hidden-file-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
   }
 
   .full-width {
@@ -998,8 +1179,439 @@ const data = gameEntry?.data || {
     cursor: pointer;
   }
 
-  .hidden {
+  /* Smart Input Modal & Toast for Ladder */
+  .smart-input-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(9, 13, 22, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 120;
+    padding: 1rem;
+  }
+
+  .smart-modal-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    padding: 1.75rem;
+    max-width: 520px;
+    width: 100%;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    animation: popModal 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes popModal {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .smart-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .modal-title-wrap h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #f8fafc;
+  }
+
+  .modal-icon {
+    font-size: 1.3rem;
+  }
+
+  .modal-close-x {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+  }
+
+  .modal-close-x:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .smart-modal-desc {
+    margin: 0;
+    font-size: 0.84rem;
+    color: #94a3b8;
+    line-height: 1.5;
+  }
+
+  .smart-textarea {
+    background: #090d16;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: #f8fafc;
+    font-size: 0.88rem;
+    font-family: inherit;
+    line-height: 1.5;
+    outline: none;
+    resize: vertical;
+  }
+
+  .smart-textarea:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+  }
+
+  .smart-options-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .smart-option-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    cursor: pointer;
+  }
+
+  .smart-actions-row {
+    display: flex;
+    margin-top: 0.25rem;
+  }
+
+  .smart-btn {
+    padding: 0.65rem 1rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 800;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s ease;
+  }
+
+  .smart-btn-primary {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  }
+
+  .smart-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+  }
+
+  .ladder-toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0f172a;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.2);
+    color: #f8fafc;
+    padding: 0.65rem 1.25rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    z-index: 150;
+    pointer-events: none;
+    animation: toastIn 0.2s ease-out;
+  }
+
+  @keyframes toastIn {
+    from { opacity: 0; transform: translate(-50%, 10px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+  }
+
+  /* Verifiable Provably Fair Pre-Hash Badge Bar */
+  .ladder-fairness-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 10px;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.76rem;
+    margin-bottom: 0.65rem;
+    backdrop-filter: blur(8px);
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .ladder-fairness-bar .fairness-info-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    overflow: hidden;
+    min-width: 0;
+  }
+
+  .ladder-fairness-bar .fairness-dot {
+    font-size: 0.9rem;
+  }
+
+  .ladder-fairness-bar .fairness-title {
+    color: #94a3b8;
+    font-weight: 700;
+    white-space: nowrap;
+    font-size: 0.74rem;
+  }
+
+  .ladder-fairness-bar .fairness-hash {
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    color: #38bdf8;
+    font-family: monospace;
+    font-size: 0.72rem;
+    padding: 0.12rem 0.45rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 260px;
+  }
+
+  .ladder-fairness-bar .btn-copy-hash {
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #7dd3fc;
+    border-radius: 5px;
+    padding: 0.18rem 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .ladder-fairness-bar .btn-copy-hash:hover {
+    background: rgba(56, 189, 248, 0.3);
+    color: #ffffff;
+  }
+
+  /* Controller Button */
+  .action-btn-ctrl {
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    color: #7dd3fc;
+    border-radius: 8px;
+    padding: 0.45rem;
+    font-size: 0.78rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .action-btn-ctrl:hover {
+    background: rgba(56, 189, 248, 0.3);
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+  }
+
+  /* Controller Sync Banner */
+  .ladder-ctrl-banner {
+    background: rgba(14, 165, 233, 0.12);
+    border: 1px solid rgba(14, 165, 233, 0.35);
+    border-radius: 12px;
+    padding: 0.75rem 0.9rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .ladder-ctrl-banner .ctrl-banner-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+  }
+
+  .ladder-ctrl-banner .ctrl-indicator {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.2);
+    padding: 0.15rem 0.45rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+  }
+
+  .ladder-ctrl-banner .ctrl-title {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: #f0f9ff;
+  }
+
+  .ladder-ctrl-banner .ctrl-banner-desc {
+    margin: 0;
+    font-size: 0.72rem;
+    color: #94a3b8;
+    line-height: 1.35;
+  }
+
+  /* Controller Mode Layout */
+  :global(body.controller-mode) .ladder-stage-wrap {
     display: none !important;
+  }
+
+  :global(body.controller-mode) .ladder-app-root {
+    display: flex !important;
+    justify-content: center !important;
+    padding: 1rem !important;
+  }
+
+  :global(body.controller-mode) .ladder-side-panel {
+    width: 100% !important;
+    max-width: 480px !important;
+    margin: 0 auto !important;
+  }
+
+  :global(body.streamer-mode) .ladder-side-panel {
+    display: none !important;
+  }
+
+  :global(body.streamer-mode) .ladder-stage-wrap {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Provably Fair Verification Box inside Result Modal */
+  .ladder-fairness-verify-box {
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 12px;
+    padding: 0.85rem;
+    margin: 0.9rem 0 1rem 0;
+    text-align: left;
+    font-size: 0.78rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  .ladder-fairness-verify-box .verify-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 0.4rem;
+  }
+
+  .ladder-fairness-verify-box .verify-title {
+    font-weight: 800;
+    color: #38bdf8;
+    font-size: 0.8rem;
+  }
+
+  .ladder-fairness-verify-box .verify-status-badge {
+    padding: 0.18rem 0.5rem;
+    border-radius: 9999px;
+    font-weight: 800;
+    font-size: 0.68rem;
+    background: rgba(148, 163, 184, 0.15);
+    color: #94a3b8;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+  }
+
+  .ladder-fairness-verify-box .verify-status-badge.verified {
+    background: rgba(34, 197, 94, 0.2);
+    color: #4ade80;
+    border-color: rgba(34, 197, 94, 0.5);
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+  }
+
+  .ladder-fairness-verify-box .verify-detail-row {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .ladder-fairness-verify-box .verify-k {
+    color: #94a3b8;
+    white-space: nowrap;
+    font-size: 0.72rem;
+    font-weight: 700;
+    min-width: 65px;
+  }
+
+  .ladder-fairness-verify-box .verify-v {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.2rem 0.45rem;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.72rem;
+    color: #f1f5f9;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+  }
+
+  .ladder-fairness-verify-box .verify-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.7rem;
+  }
+
+  .ladder-fairness-verify-box .btn-verify-check {
+    flex: 1;
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(16, 185, 129, 0.25));
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    color: #86efac;
+    border-radius: 7px;
+    padding: 0.45rem 0.6rem;
+    font-weight: 800;
+    font-size: 0.76rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .ladder-fairness-verify-box .btn-verify-check:hover {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.35), rgba(16, 185, 129, 0.4));
+    border-color: #4ade80;
+    color: #ffffff;
+  }
+
+  .ladder-fairness-verify-box .btn-verify-copy {
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #7dd3fc;
+    border-radius: 7px;
+    padding: 0.45rem 0.65rem;
+    font-weight: 700;
+    font-size: 0.76rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .ladder-fairness-verify-box .btn-verify-copy:hover {
+    background: rgba(56, 189, 248, 0.3);
+    color: #ffffff;
+  }
+
+  .ladder-fairness-verify-box .verify-status-msg {
+    margin: 0.45rem 0 0 0;
+    font-size: 0.72rem;
+    color: #38bdf8;
+    min-height: 1rem;
   }
 </style>
 
@@ -1209,6 +1821,26 @@ const data = gameEntry?.data || {
   const resultSummaryList = document.getElementById('result-summary-list');
   const closeResultBtn = document.getElementById('close-result-btn');
 
+  // Web Crypto SHA-256 Helper for Provably Fair Verification
+  async function sha256Hex(str: string): Promise<string> {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(str);
+    const hashBuf = await window.crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(hashBuf))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+  }
+
+  interface LadderFairness {
+    seed: string;
+    timestamp: string;
+    playerCount: number;
+    rawSecret: string;
+    hashHex: string;
+    results: string[];
+  }
+  let currentLadderFairness: LadderFairness | null = null;
+
   let isBlindActive = true;
 
   function cancelActiveAnimation() {
@@ -1351,6 +1983,34 @@ const data = gameEntry?.data || {
     renderUI();
     renderLadderSVG();
     coverBlind();
+
+    // Generate Provably Fair SHA-256 Pre-Hash of the generated ladder
+    const ladderSeedArr = new Uint8Array(8);
+    window.crypto.getRandomValues(ladderSeedArr);
+    const ladderSeed = Array.from(ladderSeedArr, b => b.toString(16).padStart(2, '0')).join('');
+    const timestamp = new Date().toISOString();
+    const bridgeSig = bridges.map(b => `${b.poleA}-${b.poleB}@${Math.round(b.y)}`).join(';');
+    const rawSecret = `seed=${ladderSeed}|time=${timestamp}|players=${playerCount}|bridges=${bridgeSig}|p0=${participantNames[0] || ''}`;
+
+    sha256Hex(rawSecret).then(hashHex => {
+      currentLadderFairness = {
+        seed: ladderSeed,
+        timestamp,
+        playerCount,
+        rawSecret,
+        hashHex,
+        results: []
+      };
+      const hashElem = document.getElementById('ladder-fairness-hash');
+      if (hashElem) {
+        hashElem.textContent = hashHex;
+        hashElem.title = hashHex;
+      }
+      syncChannel?.postMessage({
+        type: 'PRE_HASH_GENERATED',
+        hashHex
+      });
+    });
   }
 
   function renderUI() {
@@ -1707,24 +2367,56 @@ const data = gameEntry?.data || {
         }
 
         setTimeout(() => {
-          if (resultSummaryList && resultModal) {
-            resultSummaryList.innerHTML = results.map(r => `
-              <div class="summary-item" style="border-left: 4px solid ${r.color}">
-                <div class="summary-player">
-                  <span>${r.emoji}</span>
-                  <strong>${r.player}</strong>
-                </div>
-                <div class="summary-arrow">➔</div>
-                <div class="summary-outcome">${r.outcome}</div>
-              </div>
-            `).join('');
-            resultModal.classList.remove('hidden');
-          }
+          showLadderResults(results);
         }, 500);
       }
     }
 
     animFrameId = requestAnimationFrame(step);
+  }
+
+  function showLadderResults(results: { player: string; outcome: string; color: string; emoji: string }[]) {
+    if (!resultSummaryList || !resultModal) return;
+
+    resultSummaryList.innerHTML = results.map(r => `
+      <div class="summary-item" style="border-left: 4px solid ${r.color}">
+        <div class="summary-player">
+          <span>${r.emoji}</span>
+          <strong>${r.player}</strong>
+        </div>
+        <div class="summary-arrow">➔</div>
+        <div class="summary-outcome">${r.outcome}</div>
+      </div>
+    `).join('');
+
+    // Update Provably Fair Verification Card
+    if (currentLadderFairness) {
+      currentLadderFairness.results = results.map(r => `${r.player} -> ${r.outcome}`);
+      const verifyBox = document.getElementById('ladder-fairness-verify-box');
+      const verifyRaw = document.getElementById('ladder-verify-raw');
+      const verifyHash = document.getElementById('ladder-verify-hash');
+      const verifyBadge = document.getElementById('ladder-verify-badge');
+      const verifyMsg = document.getElementById('ladder-verify-status-msg');
+
+      if (verifyBox) {
+        verifyBox.classList.remove('hidden');
+        if (verifyRaw) verifyRaw.textContent = currentLadderFairness.rawSecret;
+        if (verifyHash) verifyHash.textContent = currentLadderFairness.hashHex;
+        if (verifyBadge) {
+          verifyBadge.className = 'verify-status-badge';
+          verifyBadge.textContent = isEn ? 'Pre-Hash Match Pending' : '사전 검증 대기';
+        }
+        if (verifyMsg) verifyMsg.textContent = '';
+      }
+    }
+
+    // Broadcast results to controller window
+    syncChannel?.postMessage({
+      type: 'LADDER_RESULTS',
+      results
+    });
+
+    resultModal.classList.remove('hidden');
   }
 
   // Reveal all paths at once (Instant)
@@ -1769,20 +2461,7 @@ const data = gameEntry?.data || {
 
     renderLadderSVG(allPaths);
     audio.playWin();
-
-    if (resultSummaryList && resultModal) {
-      resultSummaryList.innerHTML = results.map(r => `
-        <div class="summary-item" style="border-left: 4px solid ${r.color}">
-          <div class="summary-player">
-            <span>${r.emoji}</span>
-            <strong>${r.player}</strong>
-          </div>
-          <div class="summary-arrow">➔</div>
-          <div class="summary-outcome">${r.outcome}</div>
-        </div>
-      `).join('');
-      resultModal.classList.remove('hidden');
-    }
+    showLadderResults(results);
   }
 
   // Change Player Count
@@ -1861,6 +2540,277 @@ const data = gameEntry?.data || {
     }
     renderLadderSVG();
   });
+
+  // Toast Helper
+  function showLadderToast(msg: string) {
+    const toast = document.getElementById('ladder-toast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.remove('hidden');
+    setTimeout(() => {
+      toast.classList.add('hidden');
+    }, 3200);
+  }
+
+  // 1. OBS Browser Source Copy
+  const copyObsLadderBtn = document.getElementById('copy-obs-ladder-btn');
+  copyObsLadderBtn?.addEventListener('click', () => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('stream', 'true');
+    const cleanUrl = url.href;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(cleanUrl).then(() => {
+        showLadderToast(isEn ? '🎥 OBS Browser Source URL copied! (1920x1080 recommended)' : '🎥 OBS 브라우저 소스 URL 복사 완료! (1920x1080 권장)');
+      }).catch(() => {
+        prompt('OBS Browser URL:', cleanUrl);
+      });
+    } else {
+      prompt('OBS Browser URL:', cleanUrl);
+    }
+  });
+
+  // 2. Smart Nickname Bulk Input Modal
+  const smartLadderModal = document.getElementById('smart-ladder-modal');
+  const btnSmartInputLadder = document.getElementById('btn-smart-input-ladder');
+  const btnCloseSmartLadder = document.getElementById('btn-close-smart-ladder');
+  const smartLadderRawInput = document.getElementById('smart-ladder-raw-input') as HTMLTextAreaElement;
+  const chkSmartLadderDedup = document.getElementById('chk-smart-ladder-dedup') as HTMLInputElement;
+  const chkSmartLadderShuffle = document.getElementById('chk-smart-ladder-shuffle') as HTMLInputElement;
+  const btnSmartLadderApply = document.getElementById('btn-smart-ladder-apply');
+
+  btnSmartInputLadder?.addEventListener('click', () => {
+    smartLadderModal?.classList.remove('hidden');
+    smartLadderRawInput?.focus();
+  });
+
+  btnCloseSmartLadder?.addEventListener('click', () => {
+    smartLadderModal?.classList.add('hidden');
+  });
+
+  smartLadderModal?.addEventListener('click', (e) => {
+    if (e.target === smartLadderModal) smartLadderModal.classList.add('hidden');
+  });
+
+  btnSmartLadderApply?.addEventListener('click', () => {
+    if (!smartLadderRawInput) return;
+    let names = smartLadderRawInput.value
+      .split(/[\r\n,\t/]+/)
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
+
+    if (chkSmartLadderDedup?.checked) {
+      names = Array.from(new Set(names));
+    }
+    if (chkSmartLadderShuffle?.checked) {
+      names.sort(() => Math.random() - 0.5);
+    }
+    if (names.length === 0) {
+      showLadderToast(isEn ? 'Please enter participant names.' : '입력된 참가자 이름이 없습니다.');
+      return;
+    }
+
+    const targetCount = Math.min(20, Math.max(2, names.length));
+    playerCount = targetCount;
+    participantNames = names.slice(0, targetCount);
+    while (participantNames.length < playerCount) {
+      participantNames.push(isEn ? `Player ${participantNames.length + 1}` : `참가자 ${participantNames.length + 1}`);
+    }
+    initLadder();
+    smartLadderModal?.classList.add('hidden');
+    smartLadderRawInput.value = '';
+    showLadderToast(isEn ? `✨ ${targetCount} players applied to ladder!` : `✨ ${targetCount}명의 참가자로 사다리가 생성되었습니다!`);
+  });
+
+  // 3. Preset Export & Import (.json / .txt)
+  const btnExportLadder = document.getElementById('btn-export-ladder');
+  const fileImportLadder = document.getElementById('file-import-ladder') as HTMLInputElement;
+
+  btnExportLadder?.addEventListener('click', () => {
+    const exportData = {
+      playerCount,
+      participantNames: participantNames.slice(0, playerCount),
+      outcomeNames: outcomeNames.slice(0, playerCount),
+      speedMode,
+      exportedAt: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `errorledger-ladder-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showLadderToast(isEn ? '💾 Saved ladder setup to JSON file!' : '💾 사다리 설정이 .json 파일로 저장되었습니다!');
+  });
+
+  fileImportLadder?.addEventListener('change', (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const content = ev.target?.result as string;
+        if (file.name.endsWith('.json')) {
+          const parsed = JSON.parse(content);
+          if (parsed.playerCount) {
+            playerCount = Math.min(20, Math.max(2, parseInt(parsed.playerCount, 10)));
+          }
+          if (Array.isArray(parsed.participantNames)) {
+            participantNames = parsed.participantNames;
+          }
+          if (Array.isArray(parsed.outcomeNames)) {
+            outcomeNames = parsed.outcomeNames;
+          }
+        } else {
+          // Plain text (.txt)
+          const lines = content.split(/[\r\n,]+/).map(s => s.trim()).filter(s => s.length > 0);
+          if (lines.length > 0) {
+            playerCount = Math.min(20, Math.max(2, lines.length));
+            participantNames = lines.slice(0, playerCount);
+          }
+        }
+        initLadder();
+        showLadderToast(isEn ? '📂 Ladder file loaded successfully!' : '📂 사다리 파일을 성공적으로 불러왔습니다!');
+      } catch (err) {
+        showLadderToast(isEn ? 'Invalid file format.' : '파일 형식이 올바르지 않습니다.');
+      }
+      fileImportLadder.value = '';
+    };
+    reader.readAsText(file);
+  });
+
+  // 4. Provably Fair SHA-256 Verification & Proof Copy
+  const ladderFairnessBar = document.getElementById('ladder-fairness-bar');
+  const ladderFairnessHash = document.getElementById('ladder-fairness-hash');
+  const btnCopyLadderHash = document.getElementById('btn-copy-ladder-hash');
+  const ladderFairnessVerifyBox = document.getElementById('ladder-fairness-verify-box');
+  const ladderVerifyRaw = document.getElementById('ladder-verify-raw');
+  const ladderVerifyHash = document.getElementById('ladder-verify-hash');
+  const ladderVerifyBadge = document.getElementById('ladder-verify-badge');
+  const ladderVerifyStatusMsg = document.getElementById('ladder-verify-status-msg');
+  const btnVerifyLadderCheck = document.getElementById('btn-verify-ladder-check');
+  const btnVerifyLadderCopy = document.getElementById('btn-verify-ladder-copy');
+
+  btnCopyLadderHash?.addEventListener('click', () => {
+    const hash = ladderFairnessHash?.textContent || '';
+    if (!hash || hash.includes('대기') || hash.includes('Waiting')) {
+      showLadderToast(isEn ? 'Ladder hash will be generated upon creation.' : '사다리가 생성되면 사전 해시가 계산됩니다.');
+      return;
+    }
+    navigator.clipboard.writeText(hash).then(() => {
+      showLadderToast(isEn ? '📋 SHA-256 Pre-Hash copied!' : '📋 사다리 사전 SHA-256 해시가 복사되었습니다!');
+    });
+  });
+
+  btnVerifyLadderCheck?.addEventListener('click', async () => {
+    if (!currentLadderFairness) return;
+    const computed = await sha256Hex(currentLadderFairness.rawSecret);
+    const matches = computed === currentLadderFairness.hashHex;
+
+    if (ladderVerifyBadge) {
+      if (matches) {
+        ladderVerifyBadge.className = 'verify-status-badge verified';
+        ladderVerifyBadge.textContent = isEn ? '✅ 100% Match Verified' : '✅ 100% 무결함 검증 완료';
+      } else {
+        ladderVerifyBadge.className = 'verify-status-badge';
+        ladderVerifyBadge.textContent = isEn ? '❌ Verification Failed' : '❌ 해시 불일치';
+      }
+    }
+
+    if (ladderVerifyStatusMsg) {
+      if (matches) {
+        ladderVerifyStatusMsg.style.color = '#4ade80';
+        ladderVerifyStatusMsg.textContent = isEn
+          ? 'Passed: The pre-hash perfectly matches the generated rungs and secret parameters.'
+          : '검증 성공: 사다리 생성 시 공개된 해시와 가로줄 구조가 완벽히 일치하여 임의 조작이 불가능함을 증명합니다.';
+      } else {
+        ladderVerifyStatusMsg.style.color = '#ef4444';
+        ladderVerifyStatusMsg.textContent = isEn
+          ? 'Failed: Hash mismatch detected.'
+          : '검증 실패: 해시가 일치하지 않습니다.';
+      }
+    }
+  });
+
+  btnVerifyLadderCopy?.addEventListener('click', () => {
+    if (!currentLadderFairness) return;
+    const resultsStr = currentLadderFairness.results.join('\n');
+    const proofText = isEn
+      ? `[ErrorLedger Ladder Game Provably Fair Proof]\nPlayers: ${currentLadderFairness.playerCount}\nResults:\n${resultsStr}\nRaw Secret: ${currentLadderFairness.rawSecret}\nSHA-256 Pre-Hash: ${currentLadderFairness.hashHex}\nVerify online: Compute SHA-256("${currentLadderFairness.rawSecret}") on any 3rd party tool.`
+      : `[에러레저 사다리타기 공정성 증명서]\n참여 인원: ${currentLadderFairness.playerCount}명\n결과 매핑:\n${resultsStr}\n사다리 생성 원문: ${currentLadderFairness.rawSecret}\nSHA-256 사전 해시: ${currentLadderFairness.hashHex}\n* 외부 SHA-256 계산기에 위 원문을 입력하면 사전 해시와 100% 일치함을 증명할 수 있습니다.`;
+    navigator.clipboard.writeText(proofText).then(() => {
+      showLadderToast(isEn ? '📋 Proof details copied to clipboard!' : '📋 공정성 증명 데이터가 클립보드에 복사되었습니다!');
+    });
+  });
+
+  // 5. Dual-Window Real-time Sync (BroadcastChannel)
+  const syncChannel = typeof BroadcastChannel !== 'undefined'
+    ? new BroadcastChannel('errorledger_ladder_sync')
+    : null;
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const isControllerMode = urlParams.get('mode') === 'controller';
+
+  if (isControllerMode) {
+    document.body.classList.add('controller-mode');
+    const banner = document.getElementById('ladder-ctrl-banner');
+    if (banner) banner.classList.remove('hidden');
+  }
+
+  // Open Controller Window
+  const openControllerLadderBtn = document.getElementById('open-controller-ladder-btn');
+  openControllerLadderBtn?.addEventListener('click', () => {
+    const controllerUrl = new URL(window.location.href);
+    controllerUrl.searchParams.set('mode', 'controller');
+    controllerUrl.searchParams.delete('stream');
+    window.open(controllerUrl.toString(), 'errorledger_ladder_ctrl', 'width=520,height=840,menubar=no,toolbar=no');
+    showLadderToast(isEn ? '🎛️ Dual-window controller opened!' : '🎛️ 듀얼 모니터용 리모컨 창이 열렸습니다!');
+  });
+
+  // Controller broadcast hooks
+  startAllBtn?.addEventListener('click', () => {
+    if (isControllerMode) syncChannel?.postMessage({ type: 'TRIGGER_START_ALL' });
+  });
+
+  revealAllBtn?.addEventListener('click', () => {
+    if (isControllerMode) syncChannel?.postMessage({ type: 'TRIGGER_REVEAL_ALL' });
+  });
+
+  rerollBtn?.addEventListener('click', () => {
+    if (isControllerMode) syncChannel?.postMessage({ type: 'TRIGGER_REROLL' });
+  });
+
+  toggleBlindBtn?.addEventListener('click', () => {
+    if (isControllerMode) syncChannel?.postMessage({ type: 'TRIGGER_TOGGLE_BLIND' });
+  });
+
+  // Listen for broadcast messages from other windows
+  if (syncChannel) {
+    syncChannel.onmessage = (event) => {
+      const data = event.data;
+      if (!data) return;
+
+      if (data.type === 'TRIGGER_START_ALL') {
+        startAll();
+      } else if (data.type === 'TRIGGER_REVEAL_ALL') {
+        revealAll();
+      } else if (data.type === 'TRIGGER_REROLL') {
+        initLadder();
+      } else if (data.type === 'TRIGGER_TOGGLE_BLIND') {
+        toggleBlind();
+      } else if (data.type === 'PRE_HASH_GENERATED') {
+        const hashElem = document.getElementById('ladder-fairness-hash');
+        if (hashElem && data.hashHex) {
+          hashElem.textContent = data.hashHex;
+          hashElem.title = data.hashHex;
+        }
+      } else if (data.type === 'LADDER_RESULTS') {
+        if (isControllerMode && Array.isArray(data.results)) {
+          showLadderToast(isEn ? `🎯 ${data.results.length} results revealed on main screen!` : `🎯 메인 화면에 ${data.results.length}개의 결과가 공개되었습니다!`);
+        }
+      }
+    };
+  }
 
   // English UI Localization
   if (isEn) {
@@ -1956,6 +2906,79 @@ const data = gameEntry?.data || {
 
     const closeResultBtn = document.getElementById('close-result-btn');
     if (closeResultBtn) closeResultBtn.textContent = 'Close';
+
+    const obsBtn = document.getElementById('copy-obs-ladder-btn');
+    if (obsBtn) {
+      const span = obsBtn.querySelector('span');
+      if (span) span.textContent = '🎥 Copy OBS';
+      obsBtn.setAttribute('title', 'Copy clean OBS browser source URL without ads or headers');
+    }
+
+    const lblManage = document.getElementById('lbl-ladder-manage');
+    if (lblManage) lblManage.textContent = '📋 Player & Preset Management';
+
+    const btnSmart = document.getElementById('btn-smart-input-ladder');
+    if (btnSmart) {
+      const span = btnSmart.querySelector('span');
+      if (span) span.textContent = '📋 Smart Nickname Paste';
+    }
+
+    const btnExp = document.getElementById('btn-export-ladder');
+    if (btnExp) {
+      const span = btnExp.querySelector('span');
+      if (span) span.textContent = '💾 Save';
+    }
+
+    const uploadLabel = document.querySelector('.port-upload-label');
+    if (uploadLabel) {
+      const span = uploadLabel.querySelector('span');
+      if (span) span.textContent = '📂 Load';
+    }
+
+    const smTitle = document.getElementById('smart-ladder-modal-title');
+    if (smTitle) smTitle.textContent = 'Smart Bulk Nicknames Input';
+    const smDesc = document.getElementById('smart-ladder-modal-desc');
+    if (smDesc) smDesc.textContent = 'Paste participant names from Twitch/YouTube chat, Discord or notepad. Auto-adjusts player count up to 20.';
+    const smDedup = document.getElementById('lbl-smart-ladder-dedup');
+    if (smDedup) smDedup.textContent = 'Auto-remove duplicates';
+    const smShuffle = document.getElementById('lbl-smart-ladder-shuffle');
+    if (smShuffle) smShuffle.textContent = 'Random shuffle before applying';
+    const smApply = document.getElementById('btn-smart-ladder-apply');
+    if (smApply) {
+      const span = smApply.querySelector('span');
+      if (span) span.textContent = '✨ Apply Players & Generate Ladder';
+    }
+
+    const openCtrlBtn = document.getElementById('open-controller-ladder-btn');
+    if (openCtrlBtn) {
+      const span = openCtrlBtn.querySelector('span');
+      if (span) span.textContent = '🎛️ Controller Remote';
+      openCtrlBtn.setAttribute('title', 'Open dual-window streamer remote control');
+    }
+    const ctrlBannerTitle = document.getElementById('ctrl-ladder-banner-title');
+    if (ctrlBannerTitle) ctrlBannerTitle.textContent = '🎛️ OBS Remote Controller Active';
+    const ctrlBannerDesc = document.getElementById('ctrl-ladder-banner-desc');
+    if (ctrlBannerDesc) ctrlBannerDesc.textContent = 'Real-time 0ms P2P sync with OBS browser source';
+
+    const fairnessTitle = document.getElementById('ladder-fairness-title');
+    if (fairnessTitle) fairnessTitle.textContent = 'Fairness (SHA-256):';
+    const fairnessHashDisp = document.getElementById('ladder-fairness-hash');
+    if (fairnessHashDisp && (!currentLadderFairness || !currentLadderFairness.hashHex)) {
+      fairnessHashDisp.textContent = 'Waiting for generation...';
+    }
+    const btnCopyHash = document.getElementById('btn-copy-ladder-hash');
+    if (btnCopyHash) btnCopyHash.textContent = '📋 Copy';
+
+    const verifyTitle = document.getElementById('ladder-verify-title');
+    if (verifyTitle) verifyTitle.textContent = '🛡️ Provably Fair SHA-256 Verification';
+    const verifyKRaw = document.getElementById('ladder-verify-k-raw');
+    if (verifyKRaw) verifyKRaw.textContent = 'Generation Secret:';
+    const verifyKHash = document.getElementById('ladder-verify-k-hash');
+    if (verifyKHash) verifyKHash.textContent = 'Pre-Hash:';
+    const btnVerifyCheck = document.getElementById('btn-verify-ladder-check');
+    if (btnVerifyCheck) btnVerifyCheck.textContent = '🔍 Verify Hash Match';
+    const btnVerifyCopy = document.getElementById('btn-verify-ladder-copy');
+    if (btnVerifyCopy) btnVerifyCopy.textContent = '📋 Copy Proof';
   }
 
   // Enchanted Night Fireflies Background Animation

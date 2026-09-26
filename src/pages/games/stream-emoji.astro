@@ -148,6 +148,10 @@ const data = gameEntry?.data || {
         <button type="button" class="tool-btn export-btn" id="export-gif-btn" title="움직이는 애니메이션 GIF로 저장">
           <span class="export-sparkle">✨</span> GIF 내보내기
         </button>
+        <!-- OBS Overlay Source Copy -->
+        <button type="button" class="tool-btn obs-btn" id="copy-obs-emoji-btn" title="OBS 브라우저 소스 투명 오버레이 URL 복사">
+          🎥 OBS 복사
+        </button>
       </div>
     </header>
 
@@ -2472,6 +2476,24 @@ const data = gameEntry?.data || {
       }
     });
 
+    // OBS Browser Source Copy
+    const copyObsEmojiBtn = document.getElementById('copy-obs-emoji-btn');
+    copyObsEmojiBtn?.addEventListener('click', () => {
+      const url = new URL(window.location.href);
+      url.searchParams.set('stream', 'true');
+      url.searchParams.set('bg', 'transparent');
+      navigator.clipboard.writeText(url.href).then(() => {
+        showToast(isEn ? '🎥 OBS Transparent Overlay URL copied!' : '🎥 OBS 투명 오버레이 소스 URL 복사 완료!');
+      }).catch(() => {
+        prompt('OBS URL:', url.href);
+      });
+    });
+
+    if (isEn && copyObsEmojiBtn) {
+      copyObsEmojiBtn.textContent = '🎥 Copy OBS';
+      copyObsEmojiBtn.setAttribute('title', 'Copy transparent OBS browser overlay URL');
+    }
+
     // Initial preset & render
     engine.loadPreset('blink');
     updateTimelineStrip();
@@ -2496,6 +2518,41 @@ const data = gameEntry?.data || {
     color: #f8fafc;
     user-select: none;
     -webkit-user-select: none;
+  }
+
+  .obs-btn {
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(16, 185, 129, 0.2)) !important;
+    border: 1px solid rgba(6, 182, 212, 0.5) !important;
+    color: #67e8f9 !important;
+    font-weight: 800 !important;
+  }
+
+  .obs-btn:hover {
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.35), rgba(16, 185, 129, 0.35)) !important;
+    border-color: #22d3ee !important;
+    box-shadow: 0 0 12px rgba(6, 182, 212, 0.4) !important;
+  }
+
+  :global(body.streamer-mode) .emoji-header-bar,
+  :global(body.streamer-mode) .emoji-sidebar,
+  :global(body.streamer-mode) .emoji-timeline-bar,
+  :global(body.streamer-mode) .live-chat-preview-card,
+  :global(body.streamer-mode) .canvas-header-bar,
+  :global(body.streamer-mode) .canvas-zoom-hud {
+    display: none !important;
+  }
+
+  :global(body.streamer-mode) .emoji-workspace {
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0 !important;
+    background: transparent !important;
+  }
+
+  :global(body.streamer-mode) .canvas-viewport {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
   /* ── Top Header Bar ── */

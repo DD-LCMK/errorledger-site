@@ -34,29 +34,68 @@ const enUrl = getEnUrl(siteBase, rawPath);
 
         <hr class="divider" />
 
+        <!-- Interactive Web Feedback Form -->
+        <section class="feedback-form-section">
+          <h2>💬 Instant Web Feedback & Inquiry</h2>
+          <p class="form-subtext">Send your message directly via your email client or copy formatted text with one click.</p>
+
+          <form id="contact-form" class="feedback-form" onsubmit="return false;">
+            <div class="form-row form-grid-2">
+              <div class="form-group">
+                <label for="feedback-category">Topic <span class="req">*</span></label>
+                <select id="feedback-category" required>
+                  <option value="💡 Feature Suggestion">💡 Feature / Game Suggestion</option>
+                  <option value="🐛 Bug Report">🐛 Bug Report</option>
+                  <option value="🤝 Partnership">🤝 Stream / Creator Partnership</option>
+                  <option value="❓ General Inquiry">❓ General Inquiry</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="feedback-sender">Nickname / Channel Name</label>
+                <input type="text" id="feedback-sender" placeholder="e.g. Streamer Alex (Twitch/YouTube)" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="feedback-email">Reply Email (Optional)</label>
+              <input type="email" id="feedback-email" placeholder="alex@gmail.com" />
+            </div>
+
+            <div class="form-group">
+              <label for="feedback-content">Message & Feedback Details <span class="req">*</span></label>
+              <textarea id="feedback-content" rows="6" required placeholder="Describe the issue you encountered or suggest a new interactive game format for your stream."></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" id="btn-send-mail" class="btn-primary-action">
+                <span>✉️ Open in Mail Client</span>
+              </button>
+              <button type="button" id="btn-copy-form" class="btn-secondary-action">
+                <span>📋 Copy Form to Clipboard</span>
+              </button>
+            </div>
+            <div id="form-toast" class="form-toast hidden" role="status" aria-live="polite"></div>
+          </form>
+        </section>
+
+        <hr class="divider" />
+
         <div class="contact-channels">
           <div class="channel-card">
             <span class="channel-icon">📧</span>
             <div>
-              <h3>Email</h3>
+              <h3>Email Directly</h3>
               <p>For bug reports, feature requests, or general questions:</p>
               <a href="mailto:contact@errorledger.com" class="contact-link">contact@errorledger.com</a>
             </div>
           </div>
 
           <div class="channel-card">
-            <span class="channel-icon">💡</span>
+            <span class="channel-icon">⚡</span>
             <div>
-              <h3>Feature Suggestions</h3>
-              <p>Have an idea for a new broadcast utility, draw format, or stream integration? We read every message and prioritize based on creator demand.</p>
-            </div>
-          </div>
-
-          <div class="channel-card">
-            <span class="channel-icon">🐛</span>
-            <div>
-              <h3>Bug Reports</h3>
-              <p>Please describe your browser (Chrome/Firefox/Edge/Safari), OS/device, and steps to reproduce. For Chzzk Downloader, include error logs if applicable.</p>
+              <h3>Response Time</h3>
+              <p>Streamer feedback and bug reports are prioritized in our bi-weekly updates. Expect review within 24-48 business hours.</p>
             </div>
           </div>
         </div>
@@ -75,10 +114,234 @@ const enUrl = getEnUrl(siteBase, rawPath);
     </main>
 
     <Footer />
+
+    <script is:inline>
+      (function() {
+        var categoryEl = document.getElementById('feedback-category');
+        var senderEl = document.getElementById('feedback-sender');
+        var emailEl = document.getElementById('feedback-email');
+        var contentEl = document.getElementById('feedback-content');
+        var btnSend = document.getElementById('btn-send-mail');
+        var btnCopy = document.getElementById('btn-copy-form');
+        var toast = document.getElementById('form-toast');
+
+        function showToast(msg, isSuccess) {
+          if (!toast) return;
+          toast.textContent = msg;
+          toast.className = 'form-toast ' + (isSuccess ? 'toast-success' : 'toast-warn');
+          setTimeout(function() {
+            toast.className = 'form-toast hidden';
+          }, 3500);
+        }
+
+        function buildMessage() {
+          var cat = categoryEl ? categoryEl.value : 'General Inquiry';
+          var sender = senderEl && senderEl.value.trim() ? senderEl.value.trim() : 'Anonymous';
+          var replyEmail = emailEl && emailEl.value.trim() ? emailEl.value.trim() : 'Not provided';
+          var body = contentEl ? contentEl.value.trim() : '';
+          
+          var subject = '[ErrorLedger Feedback] ' + cat + (sender !== 'Anonymous' ? ' - ' + sender : '');
+          var formattedBody = '■ Topic: ' + cat + '\n'
+            + '■ Sender / Channel: ' + sender + '\n'
+            + '■ Reply Email: ' + replyEmail + '\n'
+            + '■ Timestamp: ' + new Date().toUTCString() + '\n'
+            + '-----------------------------------------\n\n'
+            + body;
+
+          return { subject: subject, body: formattedBody, rawBody: body };
+        }
+
+        if (btnSend) {
+          btnSend.addEventListener('click', function() {
+            var data = buildMessage();
+            if (!data.rawBody) {
+              showToast('Please enter your feedback message!', false);
+              if (contentEl) contentEl.focus();
+              return;
+            }
+            var mailtoUrl = 'mailto:contact@errorledger.com?subject=' + encodeURIComponent(data.subject) + '&body=' + encodeURIComponent(data.body);
+            window.location.href = mailtoUrl;
+            showToast('Mail client launched. Please send your email!', true);
+          });
+        }
+
+        if (btnCopy) {
+          btnCopy.addEventListener('click', function() {
+            var data = buildMessage();
+            if (!data.rawBody) {
+              showToast('Please enter your feedback message!', false);
+              if (contentEl) contentEl.focus();
+              return;
+            }
+            var textToCopy = 'Subject: ' + data.subject + '\n\n' + data.body;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(textToCopy).then(function() {
+                showToast('📋 Copied to clipboard! Paste into Gmail/Outlook to send to contact@errorledger.com', true);
+              }).catch(function() {
+                fallbackCopy(textToCopy);
+              });
+            } else {
+              fallbackCopy(textToCopy);
+            }
+          });
+        }
+
+        function fallbackCopy(text) {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          try {
+            document.execCommand('copy');
+            showToast('📋 Copied to clipboard!', true);
+          } catch (e) {
+            showToast('Failed to copy. Please manually copy the text.', false);
+          }
+          document.body.removeChild(ta);
+        }
+      })();
+    </script>
   </body>
 </html>
 
 <style>
+  /* Feedback Form Styling */
+  .feedback-form-section {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .feedback-form-section h2 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 0.4rem;
+  }
+
+  .form-subtext {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin: 0 0 1.5rem;
+  }
+
+  .feedback-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+  }
+
+  .form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .form-group label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #cbd5e1;
+  }
+
+  .req {
+    color: #f43f5e;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    background: #090d16;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 8px;
+    padding: 0.65rem 0.85rem;
+    color: #f8fafc;
+    font-size: 0.92rem;
+    font-family: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+  }
+
+  .form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .btn-primary-action {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 0.75rem 1.4rem;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.15s, opacity 0.15s;
+  }
+
+  .btn-primary-action:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+  }
+
+  .btn-secondary-action {
+    background: rgba(255, 255, 255, 0.06);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .btn-secondary-action:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .form-toast {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .toast-success {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    color: #6ee7b7;
+  }
+
+  .toast-warn {
+    background: rgba(244, 63, 94, 0.15);
+    border: 1px solid rgba(244, 63, 94, 0.35);
+    color: #fda4af;
+  }
+
+  .hidden {
+    display: none !important;
+  }
   .static-page-body {
     background: #090d16;
     color: #e2e8f0;

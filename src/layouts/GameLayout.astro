@@ -179,6 +179,9 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
             <h1 class="game-bar-h1">{title}</h1>
           </div>
           <div class="game-bar-actions">
+            <button id="obs-copy-btn-layout" class="stage-obs-btn" title={lang === 'en' ? 'Copy Clean OBS Browser Source URL (?stream=true)' : '광고·헤더 없는 OBS 브라우저 소스 URL 복사 (?stream=true)'}>
+              <span>🎥 {lang === 'en' ? 'Copy OBS URL' : 'OBS 소스 복사'}</span>
+            </button>
             <button id="fullscreen-btn" class="stage-fullscreen-btn" title={lang === 'en' ? 'Toggle Fullscreen' : '전체화면 전환'}>
               <span>{lang === 'en' ? '⛶ Fullscreen' : '⛶ 전체화면'}</span>
             </button>
@@ -302,6 +305,24 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
         display: flex;
         align-items: center;
         gap: 0.5rem;
+      }
+
+      .stage-obs-btn {
+        background: rgba(168, 85, 247, 0.12);
+        color: #d8b4fe;
+        border: 1px solid rgba(168, 85, 247, 0.3);
+        padding: 0.25rem 0.65rem;
+        border-radius: 6px;
+        font-size: 0.76rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .stage-obs-btn:hover {
+        background: rgba(168, 85, 247, 0.25);
+        border-color: rgba(168, 85, 247, 0.55);
+        color: #ffffff;
       }
 
       .stage-fullscreen-btn {
@@ -525,6 +546,26 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
     <script>
       const fsBtn = document.getElementById('fullscreen-btn');
       const viewport = document.getElementById('game-viewport');
+      const obsLayoutBtn = document.getElementById('obs-copy-btn-layout');
+
+      if (obsLayoutBtn) {
+        obsLayoutBtn.addEventListener('click', () => {
+          const url = new URL(window.location.href);
+          url.searchParams.set('stream', 'true');
+          const cleanUrl = url.href;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(cleanUrl).then(() => {
+              const orig = obsLayoutBtn.innerHTML;
+              obsLayoutBtn.innerHTML = '<span>✅ OBS URL 복사됨!</span>';
+              setTimeout(() => { obsLayoutBtn.innerHTML = orig; }, 2200);
+            }).catch(() => {
+              prompt('OBS 브라우저 소스에 아래 URL을 입력하세요 (권장: 1920x1080):', cleanUrl);
+            });
+          } else {
+            prompt('OBS 브라우저 소스에 아래 URL을 입력하세요 (권장: 1920x1080):', cleanUrl);
+          }
+        });
+      }
 
       if (fsBtn && viewport) {
         fsBtn.addEventListener('click', () => {

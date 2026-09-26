@@ -30,32 +30,168 @@ import { getKoUrl, getEnUrl } from '../i18n';
 
         <hr class="divider" />
 
+        <!-- Interactive Web Feedback Form -->
+        <section class="feedback-form-section">
+          <h2>💬 빠른 웹 문의 & 피드백 작성</h2>
+          <p class="form-subtext">작성하신 내용은 개발팀 공식 이메일(contact@errorledger.com)로 즉시 전송하거나 클립보드에 복사할 수 있습니다.</p>
+
+          <form id="contact-form" class="feedback-form" onsubmit="return false;">
+            <div class="form-row form-grid-2">
+              <div class="form-group">
+                <label for="feedback-category">문의 유형 <span class="req">*</span></label>
+                <select id="feedback-category" required>
+                  <option value="💡 신규 도구/게임 건의">💡 신규 도구/게임 건의 (Feature Suggestion)</option>
+                  <option value="🐛 버그 제보">🐛 버그 제보 (Bug Report)</option>
+                  <option value="🤝 방송/채널 제휴">🤝 방송/채널 제휴 (Partnership)</option>
+                  <option value="❓ 기타 일반 문의">❓ 기타 일반 문의 (General)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="feedback-sender">닉네임 / 스트리머 채널명</label>
+                <input type="text" id="feedback-sender" placeholder="예: 치지직 스트리머 OOO" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="feedback-email">답변받으실 이메일 (선택)</label>
+              <input type="email" id="feedback-email" placeholder="example@naver.com" />
+            </div>
+
+            <div class="form-group">
+              <label for="feedback-content">문의 및 제안 내용 <span class="req">*</span></label>
+              <textarea id="feedback-content" rows="6" required placeholder="발견하신 버그의 상세 증상이나, 방송에서 시청자와 함께 즐기고 싶은 새로운 미니게임 아이디어를 자유롭게 적어주세요."></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" id="btn-send-mail" class="btn-primary-action">
+                <span>✉️ 이메일 앱으로 바로 보내기</span>
+              </button>
+              <button type="button" id="btn-copy-form" class="btn-secondary-action">
+                <span>📋 내용 클립보드 복사</span>
+              </button>
+            </div>
+            <div id="form-toast" class="form-toast hidden" role="status" aria-live="polite"></div>
+          </form>
+        </section>
+
+        <hr class="divider" />
+
         <div class="contact-channels">
           <div class="channel-card">
             <span class="ch-icon">📧</span>
-            <h3>공식 문의 & 제휴</h3>
-            <p>기능 문의, 버그 제보, 방송 협업 및 일반 문의:</p>
+            <h3>직접 이메일 발송</h3>
+            <p>메일 프로그램을 직접 사용하고 싶으신 경우 아래 주소로 보내주세요:</p>
             <a href="mailto:contact@errorledger.com" class="ch-link">contact@errorledger.com</a>
           </div>
 
           <div class="channel-card">
-            <span class="ch-icon">💡</span>
-            <h3>게임 & 도구 건의</h3>
-            <p>방송에서 시청자와 함께 즐기고 싶은 미니게임이나 추첨 도구 아이디어:</p>
-            <a href="mailto:contact@errorledger.com" class="ch-link">contact@errorledger.com</a>
+            <span class="ch-icon">⚡</span>
+            <h3>반영 및 응답 주기</h3>
+            <p>스트리머분들의 버그 제보 및 룰렛/미니게임 제안은 정기 업데이트에 우선 검토·반영됩니다.</p>
+            <span class="ch-meta">영업일 기준 24~48시간 이내 확인</span>
           </div>
         </div>
 
         <div class="faq-box-notice">
           <h3>⚡ 빠른 해결을 위한 개발자 팁</h3>
           <p>
-            에러레저의 모든 도구는 100% 무료 클라이언트 기반으로 동작합니다. 만약 게임 화면이멈추거나 네트워크 지연 등으로 이상이 생길 경우, 브라우저 새로고침(<code>Ctrl + R</code> 또는 모바일 화면 아래로 당기기)을 하시면 저장된 참가자 목록이나 설정 손실 없이 즉시 상태가 정상 복구됩니다.
+            에러레저의 모든 도구는 100% 무료 클라이언트 기반으로 동작합니다. 만약 게임 화면이 멈추거나 네트워크 지연 등으로 이상이 생길 경우, 브라우저 새로고침(<code>Ctrl + R</code> 또는 모바일 화면 아래로 당기기)을 하시면 저장된 참가자 목록이나 설정 손실 없이 즉시 상태가 정상 복구됩니다.
           </p>
         </div>
       </div>
     </main>
 
     <Footer />
+
+    <script is:inline>
+      (function() {
+        var categoryEl = document.getElementById('feedback-category');
+        var senderEl = document.getElementById('feedback-sender');
+        var emailEl = document.getElementById('feedback-email');
+        var contentEl = document.getElementById('feedback-content');
+        var btnSend = document.getElementById('btn-send-mail');
+        var btnCopy = document.getElementById('btn-copy-form');
+        var toast = document.getElementById('form-toast');
+
+        function showToast(msg, isSuccess) {
+          if (!toast) return;
+          toast.textContent = msg;
+          toast.className = 'form-toast ' + (isSuccess ? 'toast-success' : 'toast-warn');
+          setTimeout(function() {
+            toast.className = 'form-toast hidden';
+          }, 3500);
+        }
+
+        function buildMessage() {
+          var cat = categoryEl ? categoryEl.value : '문의';
+          var sender = senderEl && senderEl.value.trim() ? senderEl.value.trim() : '미기재';
+          var replyEmail = emailEl && emailEl.value.trim() ? emailEl.value.trim() : '미기재';
+          var body = contentEl ? contentEl.value.trim() : '';
+          
+          var subject = '[에러레저 문의] ' + cat + (sender !== '미기재' ? ' - ' + sender : '');
+          var formattedBody = '■ 문의 유형: ' + cat + '\n'
+            + '■ 작성자/채널명: ' + sender + '\n'
+            + '■ 회신받을 이메일: ' + replyEmail + '\n'
+            + '■ 작성 시각: ' + new Date().toLocaleString() + '\n'
+            + '-----------------------------------------\n\n'
+            + body;
+
+          return { subject: subject, body: formattedBody, rawBody: body };
+        }
+
+        if (btnSend) {
+          btnSend.addEventListener('click', function() {
+            var data = buildMessage();
+            if (!data.rawBody) {
+              showToast('문의 내용을 입력해 주세요!', false);
+              if (contentEl) contentEl.focus();
+              return;
+            }
+            var mailtoUrl = 'mailto:contact@errorledger.com?subject=' + encodeURIComponent(data.subject) + '&body=' + encodeURIComponent(data.body);
+            window.location.href = mailtoUrl;
+            showToast('이메일 프로그램을 호출했습니다. 메일을 발송해 주세요!', true);
+          });
+        }
+
+        if (btnCopy) {
+          btnCopy.addEventListener('click', function() {
+            var data = buildMessage();
+            if (!data.rawBody) {
+              showToast('문의 내용을 입력해 주세요!', false);
+              if (contentEl) contentEl.focus();
+              return;
+            }
+            var textToCopy = '제목: ' + data.subject + '\n\n' + data.body;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(textToCopy).then(function() {
+                showToast('📋 내용이 클립보드에 복사되었습니다! Gmail이나 네이버 메일에 붙여넣어 contact@errorledger.com 으로 전송하세요.', true);
+              }).catch(function() {
+                fallbackCopy(textToCopy);
+              });
+            } else {
+              fallbackCopy(textToCopy);
+            }
+          });
+        }
+
+        function fallbackCopy(text) {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          try {
+            document.execCommand('copy');
+            showToast('📋 내용이 클립보드에 복사되었습니다!', true);
+          } catch (e) {
+            showToast('복사에 실패했습니다. 직접 내용을 복사해 주세요.', false);
+          }
+          document.body.removeChild(ta);
+        }
+      })();
+    </script>
   </body>
 </html>
 
@@ -116,6 +252,153 @@ import { getKoUrl, getEnUrl } from '../i18n';
     border: none;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     margin: 2rem 0;
+  }
+
+  /* Feedback Form Styling */
+  .feedback-form-section {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .feedback-form-section h2 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 0.4rem;
+  }
+
+  .form-subtext {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin: 0 0 1.5rem;
+  }
+
+  .feedback-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+  }
+
+  .form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .form-group label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #cbd5e1;
+  }
+
+  .req {
+    color: #f43f5e;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    background: #090d16;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 8px;
+    padding: 0.65rem 0.85rem;
+    color: #f8fafc;
+    font-size: 0.92rem;
+    font-family: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+  }
+
+  .form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .btn-primary-action {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 0.75rem 1.4rem;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.15s, opacity 0.15s;
+  }
+
+  .btn-primary-action:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+  }
+
+  .btn-secondary-action {
+    background: rgba(255, 255, 255, 0.06);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .btn-secondary-action:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .form-toast {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .toast-success {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    color: #6ee7b7;
+  }
+
+  .toast-warn {
+    background: rgba(244, 63, 94, 0.15);
+    border: 1px solid rgba(244, 63, 94, 0.35);
+    color: #fda4af;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  .ch-meta {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    margin-top: 0.5rem;
   }
 
   .contact-channels {

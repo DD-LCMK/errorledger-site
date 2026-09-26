@@ -104,7 +104,19 @@ const data = gameEntry?.data || {
                 <span id="hud-sound-icon">🔊</span>
               </button>
               <button class="theater-btn" id="theater-toggle-btn" title="설정창 접기/펼치기 (게임 화면 집중 모드)">📺 집중 모드</button>
+              <button class="controller-hud-btn" id="open-controller-marble-btn" title="듀얼 모니터용 리모컨/컨트롤러 분리 창 열기">🎛️ 컨트롤러</button>
+              <button class="obs-hud-btn" id="copy-obs-marble-btn" title="광고·헤더 없는 OBS 브라우저 소스 URL 복사">🎥 OBS 복사</button>
             </div>
+          </div>
+
+          <!-- Provably Fair SHA-256 Pre-Race Hash Bar -->
+          <div class="marble-fairness-bar" id="marble-fairness-bar">
+            <div class="fairness-info-wrap">
+              <span class="fairness-dot">🛡️</span>
+              <span class="fairness-title" id="marble-fairness-title">공정성 검증 (SHA-256):</span>
+              <code class="fairness-hash" id="marble-fairness-hash" title="출발 전 SHA-256 해시">출발 시 자동 생성 대기...</code>
+            </div>
+            <button type="button" class="btn-copy-hash" id="btn-copy-marble-hash" title="SHA-256 사전 해시 복사">📋 복사</button>
           </div>
 
           <!-- Canvas Viewport -->
@@ -146,6 +158,25 @@ const data = gameEntry?.data || {
       <!-- Right Column: Settings, Inputs & Live Log -->
       <div class="control-column">
         
+        <!-- Controller Sync Banner (Visible when in controller mode) -->
+        <div class="marble-ctrl-banner hidden" id="marble-ctrl-banner">
+          <div class="ctrl-banner-header">
+            <span class="ctrl-indicator">● P2P LIVE SYNC</span>
+            <span class="ctrl-title" id="ctrl-marble-banner-title">🎛️ OBS 리모컨 모드 동작 중</span>
+          </div>
+          <p class="ctrl-banner-desc" id="ctrl-marble-banner-desc">방송 화면(OBS/메인창)과 0ms 실시간 동기화됩니다. 명단 수정 및 레이스 출발을 원격 제어하세요.</p>
+        </div>
+
+        <!-- Quick Start/Reset for Controller -->
+        <div class="ctrl-race-trigger-wrap hidden" id="ctrl-race-trigger-wrap">
+          <button type="button" class="ctrl-race-btn" id="ctrl-start-btn">
+            <span>🚀 레이스 원격 출발 (Space)</span>
+          </button>
+          <button type="button" class="ctrl-reset-btn" id="ctrl-reset-btn">
+            <span>🔄 원격 초기화</span>
+          </button>
+        </div>
+
         <!-- Winner Mode Dropdown Selection (Compact Space-Saving UI) -->
         <div class="panel-box">
           <div class="panel-header compact-header">
@@ -183,7 +214,15 @@ const data = gameEntry?.data || {
           <textarea id="names-input" class="names-textarea" rows="6" placeholder="참가자 이름을 한 줄에 하나씩 입력하세요.&#10;예시:&#10;김팀장&#10;이대리&#10;박사원 * 2 (구슬 2개)&#10;최인턴"></textarea>
           <div class="input-actions-row">
             <button id="shuffle-btn" class="btn-small-action">🔀 무작위 섞기</button>
+            <button id="smart-marble-btn" class="btn-small-action">📋 스마트 입력</button>
             <button id="apply-btn" class="btn-small-action primary">✓ 구슬 배치하기</button>
+          </div>
+          <div class="portability-row-marble">
+            <button type="button" id="btn-export-marble" class="port-btn-marble" title="현재 구슬 명단을 .json 파일로 저장">💾 프리셋 저장</button>
+            <label class="port-btn-marble port-upload-marble" title="저장해둔 구슬 파일 불러오기">
+              📂 불러오기
+              <input type="file" id="file-import-marble" accept=".json,.txt" class="hidden-file-input" />
+            </label>
           </div>
         </div>
 
@@ -228,6 +267,27 @@ const data = gameEntry?.data || {
           <p class="spotlight-sub" id="spotlight-sub">커피 당첨을 축하드립니다!</p>
         </div>
 
+        <!-- Provably Fair Verification Box -->
+        <div class="marble-fairness-verify-box hidden" id="marble-fairness-verify-box">
+          <div class="verify-header">
+            <span class="verify-title" id="marble-verify-title">🛡️ SHA-256 공정성 무결함 검증</span>
+            <span class="verify-status-badge" id="marble-verify-badge">사전 검증 대기</span>
+          </div>
+          <div class="verify-detail-row">
+            <span class="verify-k" id="marble-verify-k-raw">출발 전 원문:</span>
+            <code class="verify-v" id="marble-verify-raw">대기 중...</code>
+          </div>
+          <div class="verify-detail-row">
+            <span class="verify-k" id="marble-verify-k-hash">사전 공개 해시:</span>
+            <code class="verify-v" id="marble-verify-hash">대기 중...</code>
+          </div>
+          <div class="verify-actions">
+            <button type="button" class="btn-verify-check" id="btn-verify-marble-check">🔍 해시 일치 검증</button>
+            <button type="button" class="btn-verify-copy" id="btn-verify-marble-copy">📋 증명서 복사</button>
+          </div>
+          <p class="verify-status-msg" id="marble-verify-status-msg"></p>
+        </div>
+
         <div class="modal-ranks-scroll" id="modal-ranks-scroll">
           <!-- Injected dynamically -->
         </div>
@@ -239,6 +299,49 @@ const data = gameEntry?.data || {
       </div>
     </div>
 
+    <!-- Smart Bulk Input Modal for Marble Roulette -->
+    <div class="smart-input-overlay hidden" id="smart-marble-modal">
+      <div class="smart-modal-card">
+        <div class="smart-modal-header">
+          <div class="modal-title-wrap">
+            <span class="modal-icon">🔮</span>
+            <h3 id="smart-marble-modal-title">구슬 참가자 닉네임 스마트 일괄 입력</h3>
+          </div>
+          <button type="button" id="btn-close-smart-marble" class="modal-close-x" aria-label="닫기">✕</button>
+        </div>
+        <p class="smart-modal-desc" id="smart-marble-modal-desc">
+          채팅창, 디스코드, 메모장에서 복사한 명단을 그대로 붙여넣으세요. 쉼표(,), 줄바꿈, 가중치(이름*3)를 자동으로 인식합니다.
+        </p>
+        <textarea id="smart-marble-raw-input" class="smart-textarea" rows="6" placeholder="예시:
+김스트리머, 박매니저, 시청자A
+시청자B * 2 (구슬 2개)
+시청자C
+중복된이름 (자동 필터 가능)"></textarea>
+        
+        <div class="smart-options-row">
+          <label class="smart-option-check">
+            <input type="checkbox" id="chk-smart-marble-dedup" checked />
+            <span id="lbl-smart-marble-dedup">중복 닉네임 자동 제거</span>
+          </label>
+          <label class="smart-option-check">
+            <input type="checkbox" id="chk-smart-marble-shuffle" />
+            <span id="lbl-smart-marble-shuffle">적용 전 무작위 셔플</span>
+          </label>
+        </div>
+
+        <div class="smart-actions-row">
+          <button type="button" id="btn-smart-marble-replace" class="smart-btn smart-btn-primary">
+            <span>✨ 전체 목록 바꾸기</span>
+          </button>
+          <button type="button" id="btn-smart-marble-append" class="smart-btn smart-btn-secondary">
+            <span>➕ 기존 명단 뒤에 추가</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feedback Toast -->
+    <div id="marble-toast" class="marble-toast hidden" role="status" aria-live="polite"></div>
   </div>
 
   <div slot="guide">
@@ -584,6 +687,111 @@ const data = gameEntry?.data || {
     color: #ffffff;
     border-color: #c084fc;
     box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+  }
+
+  .obs-hud-btn {
+    background: rgba(168, 85, 247, 0.15);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    color: #d8b4fe;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .obs-hud-btn:hover {
+    background: rgba(168, 85, 247, 0.3);
+    border-color: rgba(168, 85, 247, 0.6);
+    color: #ffffff;
+  }
+
+  .controller-hud-btn {
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #7dd3fc;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .controller-hud-btn:hover {
+    background: rgba(56, 189, 248, 0.3);
+    border-color: rgba(56, 189, 248, 0.6);
+    color: #ffffff;
+  }
+
+  /* Provably Fair Pre-Race Hash Bar */
+  .marble-fairness-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    background: rgba(15, 23, 42, 0.85);
+    border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+    padding: 0.35rem 0.75rem;
+    font-size: 0.72rem;
+    width: 100%;
+    box-sizing: border-box;
+    backdrop-filter: blur(6px);
+    z-index: 5;
+  }
+
+  .marble-fairness-bar .fairness-info-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    overflow: hidden;
+    min-width: 0;
+  }
+
+  .marble-fairness-bar .fairness-dot {
+    font-size: 0.85rem;
+  }
+
+  .marble-fairness-bar .fairness-title {
+    color: #94a3b8;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .marble-fairness-bar .fairness-hash {
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    color: #38bdf8;
+    font-family: monospace;
+    font-size: 0.72rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 320px;
+  }
+
+  .marble-fairness-bar .btn-copy-hash {
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #7dd3fc;
+    border-radius: 5px;
+    padding: 0.15rem 0.45rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .marble-fairness-bar .btn-copy-hash:hover {
+    background: rgba(56, 189, 248, 0.3);
+    color: #ffffff;
   }
 
   /* Canvas Viewport (Zero-Scroll 660px Height on Desktop) */
@@ -1126,6 +1334,72 @@ const data = gameEntry?.data || {
     color: #38bdf8;
   }
 
+  .portability-row-marble {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.45rem;
+  }
+
+  .port-btn-marble {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    padding: 0.35rem 0.5rem;
+    color: #cbd5e1;
+    font-size: 0.73rem;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .port-btn-marble:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+  }
+
+  .port-upload-marble {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hidden-file-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  .marble-toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0f172a;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.2);
+    color: #f8fafc;
+    padding: 0.65rem 1.25rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    z-index: 150;
+    pointer-events: none;
+    animation: toastIn 0.2s ease-out;
+  }
+
+  @keyframes toastIn {
+    from { opacity: 0; transform: translate(-50%, 10px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+  }
+
   /* Finish List Box */
   .finish-log-box {
     max-height: 180px;
@@ -1325,6 +1599,235 @@ const data = gameEntry?.data || {
     font-size: 0.75rem;
     color: #94a3b8;
     line-height: 1.4;
+  }
+
+  /* Controller Mode Layout & Remote Styling */
+  :global(body.controller-mode) .track-column {
+    display: none !important;
+  }
+
+  :global(body.controller-mode) .marble-layout {
+    display: flex !important;
+    justify-content: center !important;
+    padding: 1rem !important;
+  }
+
+  :global(body.controller-mode) .control-column {
+    width: 100% !important;
+    max-width: 520px !important;
+    margin: 0 auto !important;
+  }
+
+  :global(body.streamer-mode) .control-column {
+    display: none !important;
+  }
+
+  :global(body.streamer-mode) .track-column {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .marble-ctrl-banner {
+    background: rgba(14, 165, 233, 0.12);
+    border: 1px solid rgba(14, 165, 233, 0.35);
+    border-radius: 12px;
+    padding: 0.75rem 0.9rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .marble-ctrl-banner .ctrl-banner-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+  }
+
+  .marble-ctrl-banner .ctrl-indicator {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.2);
+    padding: 0.15rem 0.45rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+  }
+
+  .marble-ctrl-banner .ctrl-title {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: #f0f9ff;
+  }
+
+  .marble-ctrl-banner .ctrl-banner-desc {
+    margin: 0;
+    font-size: 0.72rem;
+    color: #94a3b8;
+    line-height: 1.35;
+  }
+
+  .ctrl-race-trigger-wrap {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .ctrl-race-btn {
+    flex: 2;
+    background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+    transition: all 0.18s ease;
+  }
+
+  .ctrl-race-btn:hover {
+    background: linear-gradient(135deg, #0369a1 0%, #1d4ed8 100%);
+    transform: translateY(-1px);
+  }
+
+  .ctrl-reset-btn {
+    flex: 1;
+    background: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    border-radius: 10px;
+    padding: 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+
+  .ctrl-reset-btn:hover {
+    background: rgba(239, 68, 68, 0.25);
+    color: #ffffff;
+  }
+
+  /* Provably Fair Verification Box inside Result Modal */
+  .marble-fairness-verify-box {
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 12px;
+    padding: 0.85rem;
+    margin: 0.9rem 0 1rem 0;
+    text-align: left;
+    font-size: 0.78rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  .marble-fairness-verify-box .verify-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 0.4rem;
+  }
+
+  .marble-fairness-verify-box .verify-title {
+    font-weight: 800;
+    color: #38bdf8;
+    font-size: 0.8rem;
+  }
+
+  .marble-fairness-verify-box .verify-status-badge {
+    padding: 0.18rem 0.5rem;
+    border-radius: 9999px;
+    font-weight: 800;
+    font-size: 0.68rem;
+    background: rgba(148, 163, 184, 0.15);
+    color: #94a3b8;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+  }
+
+  .marble-fairness-verify-box .verify-status-badge.verified {
+    background: rgba(34, 197, 94, 0.2);
+    color: #4ade80;
+    border-color: rgba(34, 197, 94, 0.5);
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+  }
+
+  .marble-fairness-verify-box .verify-detail-row {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .marble-fairness-verify-box .verify-k {
+    color: #94a3b8;
+    white-space: nowrap;
+    font-size: 0.72rem;
+    font-weight: 700;
+    min-width: 72px;
+  }
+
+  .marble-fairness-verify-box .verify-v {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.2rem 0.45rem;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.72rem;
+    color: #f1f5f9;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+  }
+
+  .marble-fairness-verify-box .verify-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.7rem;
+  }
+
+  .marble-fairness-verify-box .btn-verify-check {
+    flex: 1;
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(16, 185, 129, 0.25));
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    color: #86efac;
+    border-radius: 7px;
+    padding: 0.45rem 0.6rem;
+    font-weight: 800;
+    font-size: 0.76rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .marble-fairness-verify-box .btn-verify-check:hover {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.35), rgba(16, 185, 129, 0.4));
+    border-color: #4ade80;
+    color: #ffffff;
+  }
+
+  .marble-fairness-verify-box .btn-verify-copy {
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #7dd3fc;
+    border-radius: 7px;
+    padding: 0.45rem 0.65rem;
+    font-weight: 700;
+    font-size: 0.76rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .marble-fairness-verify-box .btn-verify-copy:hover {
+    background: rgba(56, 189, 248, 0.3);
+    color: #ffffff;
+  }
+
+  .marble-fairness-verify-box .verify-status-msg {
+    margin: 0.45rem 0 0 0;
+    font-size: 0.72rem;
+    color: #38bdf8;
+    min-height: 1rem;
   }
 </style>
 
@@ -2038,6 +2541,27 @@ const data = gameEntry?.data || {
   const customRankInput = document.getElementById('custom-rank-input') as HTMLInputElement;
   const energyToggle = document.getElementById('energy-gauge-toggle') as HTMLInputElement | null;
 
+  // Web Crypto SHA-256 Helper for Provably Fair Verification
+  async function sha256Hex(str: string): Promise<string> {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(str);
+    const hashBuf = await window.crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(hashBuf))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+  }
+
+  interface MarbleFairness {
+    seed: string;
+    timestamp: string;
+    mode: string;
+    count: number;
+    rawString: string;
+    hashHex: string;
+    winner: string;
+  }
+  let currentMarbleFairness: MarbleFairness | null = null;
+
   // Parse names and multipliers (e.g. "홍길동 * 3")
   function parseNamesList(): string[] {
     const raw = namesInput?.value || '';
@@ -2301,6 +2825,15 @@ const data = gameEntry?.data || {
     if (countdownOverlay) countdownOverlay.classList.add('hidden');
     spawnMarbles();
     updateRaceButton();
+
+    currentMarbleFairness = null;
+    const hashDisp = document.getElementById('marble-fairness-hash');
+    if (hashDisp) {
+      hashDisp.textContent = isEn ? 'Waiting for race start...' : '출발 시 자동 생성 대기...';
+      hashDisp.title = '';
+    }
+    const verifyBox = document.getElementById('marble-fairness-verify-box');
+    if (verifyBox) verifyBox.classList.add('hidden');
   }
 
   // Countdown & Start (always resets first before starting)
@@ -2314,6 +2847,35 @@ const data = gameEntry?.data || {
     cannonAlertTimer = 0;
     updateRaceButton();
     if (countdownOverlay) countdownOverlay.classList.remove('hidden');
+
+    // Generate Provably Fair SHA-256 Pre-Race Hash
+    const randArr = new Uint8Array(8);
+    window.crypto.getRandomValues(randArr);
+    const raceSeed = Array.from(randArr, b => b.toString(16).padStart(2, '0')).join('');
+    const timestamp = new Date().toISOString();
+    const rawString = `seed=${raceSeed}|time=${timestamp}|mode=${winnerMode}|count=${marbles.length}|lead=${marbles[0]?.name || ''}`;
+    sha256Hex(rawString).then(hashHex => {
+      currentMarbleFairness = {
+        seed: raceSeed,
+        timestamp,
+        mode: winnerMode,
+        count: marbles.length,
+        rawString,
+        hashHex,
+        winner: ''
+      };
+      const hashDisp = document.getElementById('marble-fairness-hash');
+      if (hashDisp) {
+        hashDisp.textContent = hashHex;
+        hashDisp.title = hashHex;
+      }
+      syncChannel?.postMessage({
+        type: 'PRE_HASH_GENERATED',
+        hashHex
+      });
+    });
+
+    syncChannel?.postMessage({ type: 'RACE_STARTED' });
 
     let count = 3;
     if (countdownNumber) countdownNumber.textContent = '3';
@@ -3816,6 +4378,36 @@ const data = gameEntry?.data || {
       }).join('');
     }
 
+    // Update Provably Fair Verification Box
+    const winnerString = winners.map(w => w.name).join(', ');
+    if (currentMarbleFairness) {
+      currentMarbleFairness.winner = winnerString;
+      const verifyBox = document.getElementById('marble-fairness-verify-box');
+      const verifyRaw = document.getElementById('marble-verify-raw');
+      const verifyHash = document.getElementById('marble-verify-hash');
+      const verifyBadge = document.getElementById('marble-verify-badge');
+      const verifyMsg = document.getElementById('marble-verify-status-msg');
+
+      if (verifyBox) {
+        verifyBox.classList.remove('hidden');
+        if (verifyRaw) verifyRaw.textContent = currentMarbleFairness.rawString;
+        if (verifyHash) verifyHash.textContent = currentMarbleFairness.hashHex;
+        if (verifyBadge) {
+          verifyBadge.className = 'verify-status-badge';
+          verifyBadge.textContent = isEn ? 'Pre-Race Hash Match Pending' : '사전 검증 대기';
+        }
+        if (verifyMsg) verifyMsg.textContent = '';
+      }
+    }
+
+    // Broadcast result to controller window
+    syncChannel?.postMessage({
+      type: 'RACE_FINISHED',
+      winner: winnerString,
+      winnerMode,
+      ranks: sorted.slice(0, 5).map(m => ({ rank: m.finishRank, name: m.name, time: m.finishTime }))
+    });
+
     resultModal.classList.remove('hidden');
   }
 
@@ -4115,6 +4707,311 @@ const data = gameEntry?.data || {
     }
   });
 
+  // Toast Helper
+  function showMarbleToast(msg: string) {
+    const toast = document.getElementById('marble-toast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.remove('hidden');
+    setTimeout(() => {
+      toast.classList.add('hidden');
+    }, 3200);
+  }
+
+  // 1. One-Click OBS Browser Source Copy
+  const copyObsMarbleBtn = document.getElementById('copy-obs-marble-btn');
+  copyObsMarbleBtn?.addEventListener('click', () => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('stream', 'true');
+    const cleanUrl = url.href;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(cleanUrl).then(() => {
+        showMarbleToast(isEn ? '🎥 OBS Browser Source URL copied! (1920x1080 recommended)' : '🎥 OBS 브라우저 소스 URL 복사 완료! (1920x1080 권장)');
+      }).catch(() => {
+        prompt('OBS Browser URL:', cleanUrl);
+      });
+    } else {
+      prompt('OBS Browser URL:', cleanUrl);
+    }
+  });
+
+  // 2. Smart Marble Nicknames Bulk Input Modal
+  const smartMarbleModal = document.getElementById('smart-marble-modal');
+  const btnSmartMarble = document.getElementById('smart-marble-btn');
+  const btnCloseSmartMarble = document.getElementById('btn-close-smart-marble');
+  const smartMarbleRawInput = document.getElementById('smart-marble-raw-input') as HTMLTextAreaElement;
+  const chkSmartMarbleDedup = document.getElementById('chk-smart-marble-dedup') as HTMLInputElement;
+  const chkSmartMarbleShuffle = document.getElementById('chk-smart-marble-shuffle') as HTMLInputElement;
+  const btnSmartMarbleReplace = document.getElementById('btn-smart-marble-replace');
+  const btnSmartMarbleAppend = document.getElementById('btn-smart-marble-append');
+
+  btnSmartMarble?.addEventListener('click', () => {
+    smartMarbleModal?.classList.remove('hidden');
+    smartMarbleRawInput?.focus();
+  });
+
+  btnCloseSmartMarble?.addEventListener('click', () => {
+    smartMarbleModal?.classList.add('hidden');
+  });
+
+  smartMarbleModal?.addEventListener('click', (e) => {
+    if (e.target === smartMarbleModal) smartMarbleModal.classList.add('hidden');
+  });
+
+  function parseSmartMarbleLines(text: string, dedup: boolean, shuffle: boolean): string[] {
+    let lines = text
+      .split(/[\r\n,\t/]+/)
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
+
+    if (dedup) {
+      lines = Array.from(new Set(lines));
+    }
+    if (shuffle) {
+      lines.sort(() => Math.random() - 0.5);
+    }
+    return lines;
+  }
+
+  btnSmartMarbleReplace?.addEventListener('click', () => {
+    if (!smartMarbleRawInput || !namesInput) return;
+    const parsed = parseSmartMarbleLines(smartMarbleRawInput.value, chkSmartMarbleDedup?.checked ?? true, chkSmartMarbleShuffle?.checked ?? false);
+    if (parsed.length === 0) {
+      showMarbleToast(isEn ? 'Please enter participant names.' : '입력된 참가자 이름이 없습니다.');
+      return;
+    }
+    namesInput.value = parsed.join('\n');
+    activeMarbleNames = parseNamesList();
+    resetRace();
+    smartMarbleModal?.classList.add('hidden');
+    smartMarbleRawInput.value = '';
+    showMarbleToast(isEn ? `✨ Replaced with ${activeMarbleNames.length} marbles!` : `✨ ${activeMarbleNames.length}개 구슬로 전체 교체되었습니다!`);
+  });
+
+  btnSmartMarbleAppend?.addEventListener('click', () => {
+    if (!smartMarbleRawInput || !namesInput) return;
+    const parsed = parseSmartMarbleLines(smartMarbleRawInput.value, chkSmartMarbleDedup?.checked ?? true, chkSmartMarbleShuffle?.checked ?? false);
+    if (parsed.length === 0) {
+      showMarbleToast(isEn ? 'Please enter participant names.' : '입력된 참가자 이름이 없습니다.');
+      return;
+    }
+    const existing = namesInput.value.trim();
+    namesInput.value = existing ? existing + '\n' + parsed.join('\n') : parsed.join('\n');
+    activeMarbleNames = parseNamesList();
+    resetRace();
+    smartMarbleModal?.classList.add('hidden');
+    smartMarbleRawInput.value = '';
+    showMarbleToast(isEn ? `➕ Appended ${parsed.length} marbles!` : `➕ ${parsed.length}개 구슬이 추가되었습니다!`);
+  });
+
+  // 3. Preset Export & Import (.json / .txt)
+  const btnExportMarble = document.getElementById('btn-export-marble');
+  const fileImportMarble = document.getElementById('file-import-marble') as HTMLInputElement;
+
+  btnExportMarble?.addEventListener('click', () => {
+    const exportData = {
+      names: namesInput?.value || '',
+      winnerMode,
+      exportedAt: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `errorledger-marble-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showMarbleToast(isEn ? '💾 Saved marble setup to JSON!' : '💾 구슬 명단이 .json 파일로 저장되었습니다!');
+  });
+
+  fileImportMarble?.addEventListener('change', (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const content = ev.target?.result as string;
+        if (file.name.endsWith('.json')) {
+          const parsed = JSON.parse(content);
+          if (typeof parsed.names === 'string' && namesInput) {
+            namesInput.value = parsed.names;
+          } else if (Array.isArray(parsed.names) && namesInput) {
+            namesInput.value = parsed.names.join('\n');
+          }
+          if (parsed.winnerMode && winnerModeSelect) {
+            winnerModeSelect.value = parsed.winnerMode;
+            winnerMode = parsed.winnerMode;
+          }
+        } else {
+          if (namesInput) namesInput.value = content;
+        }
+        activeMarbleNames = parseNamesList();
+        resetRace();
+        showMarbleToast(isEn ? '📂 Loaded marble preset successfully!' : '📂 구슬 프리셋을 성공적으로 불러왔습니다!');
+      } catch (err) {
+        showMarbleToast(isEn ? 'Invalid file format.' : '파일 형식이 올바르지 않습니다.');
+      }
+      fileImportMarble.value = '';
+    };
+    reader.readAsText(file);
+  });
+
+  // 4. Provably Fair SHA-256 Verification & Proof Copy
+  const marbleFairnessBar = document.getElementById('marble-fairness-bar');
+  const marbleFairnessHash = document.getElementById('marble-fairness-hash');
+  const btnCopyMarbleHash = document.getElementById('btn-copy-marble-hash');
+  const marbleFairnessVerifyBox = document.getElementById('marble-fairness-verify-box');
+  const marbleVerifyRaw = document.getElementById('marble-verify-raw');
+  const marbleVerifyHash = document.getElementById('marble-verify-hash');
+  const marbleVerifyBadge = document.getElementById('marble-verify-badge');
+  const marbleVerifyStatusMsg = document.getElementById('marble-verify-status-msg');
+  const btnVerifyMarbleCheck = document.getElementById('btn-verify-marble-check');
+  const btnVerifyMarbleCopy = document.getElementById('btn-verify-marble-copy');
+
+  btnCopyMarbleHash?.addEventListener('click', () => {
+    const hash = marbleFairnessHash?.textContent || '';
+    if (!hash || hash.includes('대기') || hash.includes('Waiting')) {
+      showMarbleToast(isEn ? 'Race hash will be generated upon race start.' : '레이스가 출발하면 사전 해시가 생성됩니다.');
+      return;
+    }
+    navigator.clipboard.writeText(hash).then(() => {
+      showMarbleToast(isEn ? '📋 SHA-256 Pre-Race Hash copied!' : '📋 출발 전 SHA-256 사전 해시가 복사되었습니다!');
+    });
+  });
+
+  btnVerifyMarbleCheck?.addEventListener('click', async () => {
+    if (!currentMarbleFairness) return;
+    const computed = await sha256Hex(currentMarbleFairness.rawString);
+    const matches = computed === currentMarbleFairness.hashHex;
+
+    if (marbleVerifyBadge) {
+      if (matches) {
+        marbleVerifyBadge.className = 'verify-status-badge verified';
+        marbleVerifyBadge.textContent = isEn ? '✅ 100% Match Verified' : '✅ 100% 무결함 검증 완료';
+      } else {
+        marbleVerifyBadge.className = 'verify-status-badge';
+        marbleVerifyBadge.textContent = isEn ? '❌ Verification Failed' : '❌ 해시 불일치';
+      }
+    }
+
+    if (marbleVerifyStatusMsg) {
+      if (matches) {
+        marbleVerifyStatusMsg.style.color = '#4ade80';
+        marbleVerifyStatusMsg.textContent = isEn
+          ? 'Passed: The pre-race SHA-256 hash perfectly matches the secret parameters.'
+          : '검증 성공: 출발 전 공개된 해시와 완벽히 일치하여 조작 없는 공정한 레이스임을 증명합니다.';
+      } else {
+        marbleVerifyStatusMsg.style.color = '#ef4444';
+        marbleVerifyStatusMsg.textContent = isEn
+          ? 'Failed: Hash mismatch detected.'
+          : '검증 실패: 해시가 일치하지 않습니다.';
+      }
+    }
+  });
+
+  btnVerifyMarbleCopy?.addEventListener('click', () => {
+    if (!currentMarbleFairness) return;
+    const proofText = isEn
+      ? `[ErrorLedger Marble Race Provably Fair Proof]\nWinner: ${currentMarbleFairness.winner}\nMode: ${currentMarbleFairness.mode}\nRaw Secret: ${currentMarbleFairness.rawString}\nSHA-256 Pre-Hash: ${currentMarbleFairness.hashHex}\nVerify online: Compute SHA-256("${currentMarbleFairness.rawString}") on any 3rd party tool.`
+      : `[에러레저 구슬 레이스 공정성 증명서]\n당첨 결과: ${currentMarbleFairness.winner}\n진행 모드: ${currentMarbleFairness.mode}\n사전 비밀 원문: ${currentMarbleFairness.rawString}\nSHA-256 사전 해시: ${currentMarbleFairness.hashHex}\n* 외부 SHA-256 계산기에 위 원문을 입력하면 출발 전 해시와 100% 일치함을 증명할 수 있습니다.`;
+    navigator.clipboard.writeText(proofText).then(() => {
+      showMarbleToast(isEn ? '📋 Proof details copied to clipboard!' : '📋 공정성 증명 데이터가 클립보드에 복사되었습니다!');
+    });
+  });
+
+  // 5. Dual-Window Real-time Sync (BroadcastChannel)
+  const syncChannel = typeof BroadcastChannel !== 'undefined'
+    ? new BroadcastChannel('errorledger_marble_sync')
+    : null;
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const isControllerMode = urlParams.get('mode') === 'controller';
+
+  if (isControllerMode) {
+    document.body.classList.add('controller-mode');
+    const banner = document.getElementById('marble-ctrl-banner');
+    if (banner) banner.classList.remove('hidden');
+    const ctrlWrap = document.getElementById('ctrl-race-trigger-wrap');
+    if (ctrlWrap) ctrlWrap.classList.remove('hidden');
+  }
+
+  // Open Controller Window
+  const openControllerMarbleBtn = document.getElementById('open-controller-marble-btn');
+  openControllerMarbleBtn?.addEventListener('click', () => {
+    const controllerUrl = new URL(window.location.href);
+    controllerUrl.searchParams.set('mode', 'controller');
+    controllerUrl.searchParams.delete('stream');
+    window.open(controllerUrl.toString(), 'errorledger_marble_ctrl', 'width=520,height=840,menubar=no,toolbar=no');
+    showMarbleToast(isEn ? '🎛️ Dual-window controller opened!' : '🎛️ 듀얼 모니터용 리모컨 창이 열렸습니다!');
+  });
+
+  // Controller remote triggers
+  const ctrlStartBtn = document.getElementById('ctrl-start-btn');
+  const ctrlResetBtn = document.getElementById('ctrl-reset-btn');
+
+  ctrlStartBtn?.addEventListener('click', () => {
+    syncChannel?.postMessage({ type: 'TRIGGER_START' });
+    startRace();
+  });
+
+  ctrlResetBtn?.addEventListener('click', () => {
+    syncChannel?.postMessage({ type: 'TRIGGER_RESET' });
+    resetRace();
+  });
+
+  function broadcastMarbleState() {
+    if (!syncChannel) return;
+    syncChannel.postMessage({
+      type: 'SYNC_STATE',
+      names: namesInput?.value || '',
+      winnerMode: winnerModeSelect?.value || 'last'
+    });
+  }
+
+  namesInput?.addEventListener('input', () => {
+    if (isControllerMode) broadcastMarbleState();
+  });
+
+  winnerModeSelect?.addEventListener('change', () => {
+    if (isControllerMode) broadcastMarbleState();
+  });
+
+  // Listen for broadcast messages from other windows
+  if (syncChannel) {
+    syncChannel.onmessage = (event) => {
+      const data = event.data;
+      if (!data) return;
+
+      if (data.type === 'SYNC_STATE') {
+        if (namesInput && data.names !== undefined) {
+          namesInput.value = data.names;
+          activeMarbleNames = parseNamesList();
+          resetRace();
+        }
+        if (winnerModeSelect && data.winnerMode !== undefined) {
+          winnerModeSelect.value = data.winnerMode;
+          winnerMode = data.winnerMode;
+          if (multiSettingsRow) multiSettingsRow.classList.toggle('hidden', winnerMode !== 'multi');
+          if (customSettingsRow) customSettingsRow.classList.toggle('hidden', winnerMode !== 'custom');
+        }
+      } else if (data.type === 'TRIGGER_START') {
+        startRace();
+      } else if (data.type === 'TRIGGER_RESET') {
+        resetRace();
+      } else if (data.type === 'PRE_HASH_GENERATED') {
+        const hashElem = document.getElementById('marble-fairness-hash');
+        if (hashElem && data.hashHex) {
+          hashElem.textContent = data.hashHex;
+          hashElem.title = data.hashHex;
+        }
+      } else if (data.type === 'RACE_FINISHED') {
+        if (isControllerMode && data.winner) {
+          showMarbleToast(isEn ? `👑 Winner: ${data.winner}` : `👑 당첨: ${data.winner}`);
+        }
+      }
+    };
+  }
+
   // English UI Localization
   function applyEnglishMarbleUI() {
     // HUD
@@ -4247,6 +5144,78 @@ const data = gameEntry?.data || {
 
     const closeBtn = document.getElementById('modal-close-btn');
     if (closeBtn) closeBtn.textContent = 'Close';
+
+    const obsBtn = document.getElementById('copy-obs-marble-btn');
+    if (obsBtn) {
+      obsBtn.textContent = '🎥 Copy OBS';
+      obsBtn.setAttribute('title', 'Copy clean OBS browser source URL without ads or headers');
+    }
+
+    const smartBtn = document.getElementById('smart-marble-btn');
+    if (smartBtn) smartBtn.textContent = '📋 Smart Paste';
+
+    const expBtn = document.getElementById('btn-export-marble');
+    if (expBtn) expBtn.textContent = '💾 Save Preset';
+
+    const loadLabel = document.querySelector('.port-upload-marble');
+    if (loadLabel) {
+      const fileIn = loadLabel.querySelector('input');
+      loadLabel.childNodes[0].textContent = '📂 Load File ';
+      if (fileIn) loadLabel.appendChild(fileIn);
+    }
+
+    const smTitle = document.getElementById('smart-marble-modal-title');
+    if (smTitle) smTitle.textContent = 'Smart Bulk Marble Nicknames Input';
+    const smDesc = document.getElementById('smart-marble-modal-desc');
+    if (smDesc) smDesc.textContent = 'Paste participant names from Twitch/YouTube chat, Discord or notepad. Commas, newlines and weights (Name*3) are auto-parsed.';
+    const smDedup = document.getElementById('lbl-smart-marble-dedup');
+    if (smDedup) smDedup.textContent = 'Auto-remove duplicates';
+    const smShuffle = document.getElementById('lbl-smart-marble-shuffle');
+    if (smShuffle) smShuffle.textContent = 'Random shuffle before applying';
+    const smReplace = document.getElementById('btn-smart-marble-replace');
+    if (smReplace) {
+      const span = smReplace.querySelector('span');
+      if (span) span.textContent = '✨ Replace Whole List';
+    }
+    const smAppend = document.getElementById('btn-smart-marble-append');
+    if (smAppend) {
+      const span = smAppend.querySelector('span');
+      if (span) span.textContent = '➕ Append to List';
+    }
+
+    const openCtrlBtn = document.getElementById('open-controller-marble-btn');
+    if (openCtrlBtn) {
+      openCtrlBtn.textContent = '🎛️ Controller';
+      openCtrlBtn.setAttribute('title', 'Open dual-window streamer remote control');
+    }
+    const ctrlBannerTitle = document.getElementById('ctrl-marble-banner-title');
+    if (ctrlBannerTitle) ctrlBannerTitle.textContent = '🎛️ OBS Remote Controller Active';
+    const ctrlBannerDesc = document.getElementById('ctrl-marble-banner-desc');
+    if (ctrlBannerDesc) ctrlBannerDesc.textContent = 'Real-time 0ms P2P sync with OBS browser source';
+    const ctrlStartSpan = document.querySelector('#ctrl-start-btn span');
+    if (ctrlStartSpan) ctrlStartSpan.textContent = '🚀 Start Race (Space)';
+    const ctrlResetSpan = document.querySelector('#ctrl-reset-btn span');
+    if (ctrlResetSpan) ctrlResetSpan.textContent = '🔄 Remote Reset';
+
+    const fairnessTitle = document.getElementById('marble-fairness-title');
+    if (fairnessTitle) fairnessTitle.textContent = 'Fairness (SHA-256):';
+    const fairnessHashDisp = document.getElementById('marble-fairness-hash');
+    if (fairnessHashDisp && (!currentMarbleFairness || !currentMarbleFairness.hashHex)) {
+      fairnessHashDisp.textContent = 'Waiting for race start...';
+    }
+    const btnCopyHash = document.getElementById('btn-copy-marble-hash');
+    if (btnCopyHash) btnCopyHash.textContent = '📋 Copy';
+
+    const verifyTitle = document.getElementById('marble-verify-title');
+    if (verifyTitle) verifyTitle.textContent = '🛡️ Provably Fair SHA-256 Verification';
+    const verifyKRaw = document.getElementById('marble-verify-k-raw');
+    if (verifyKRaw) verifyKRaw.textContent = 'Pre-Race Raw:';
+    const verifyKHash = document.getElementById('marble-verify-k-hash');
+    if (verifyKHash) verifyKHash.textContent = 'Pre-Race Hash:';
+    const btnVerifyCheck = document.getElementById('btn-verify-marble-check');
+    if (btnVerifyCheck) btnVerifyCheck.textContent = '🔍 Verify Hash Match';
+    const btnVerifyCopy = document.getElementById('btn-verify-marble-copy');
+    if (btnVerifyCopy) btnVerifyCopy.textContent = '📋 Copy Proof';
   }
 
   // Cyber Space & Nebula Cosmic Dust Background Animation
