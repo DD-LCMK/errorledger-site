@@ -16,6 +16,20 @@ const streamerMode = urlParams.has('stream') || urlParams.has('obs');
 
 const PAGE_TITLE = `Scientific MBTI & Jungian Cognitive Function Assessment | ${SITE_TITLE}`;
 const PAGE_DESCRIPTION = "Comprehensive 60-item personality test measuring 4 psychological dimensions, 8 Jungian cognitive function stacks (Dominant, Auxiliary, Tertiary, Inferior), career blueprints, love compatibility, and creator personas.";
+const webAppSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Scientific MBTI Assessment",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "All",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "description": PAGE_DESCRIPTION
+});
 ---
 
 <!doctype html>
@@ -27,8 +41,9 @@ const PAGE_DESCRIPTION = "Comprehensive 60-item personality test measuring 4 psy
       lang="en"
       hreflangKo={koUrl}
       hreflangEn={enUrl}
-      keywords="MBTI Test, Free MBTI assessment, Jungian cognitive functions, accurate 60 questions MBTI, 16 personalities test, cognitive function stack, streamer personality test"
+      keywords="MBTI Test, Free MBTI assessment, Jungian cognitive functions, accurate 60 questions MBTI, 16 personalities test, cognitive function stack, streamer personality test, psychology quiz"
     />
+    <script type="application/ld+json" set:html={webAppSchema}></script>
   </head>
   <body class="mbti-page-body">
     <Header />

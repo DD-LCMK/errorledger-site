@@ -1,3 +1,18 @@
+# Korean Search Crawlers (Naver & Daum)
+User-agent: Yeti
+Allow: /
+
+User-agent: Daumoa
+Allow: /
+
+# Global Search Crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Default for all other crawlers
 User-agent: *
 Allow: /
 

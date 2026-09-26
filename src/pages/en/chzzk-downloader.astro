@@ -7,7 +7,7 @@ import { getKoUrl, getEnUrl } from '../../i18n';
 
 const PAGE_TITLE = `Chzzk Downloader - Free Lossless Naver CHZZK VOD & Clip Video Downloader | ${SITE_TITLE}`;
 const PAGE_DESCRIPTION = "Download Naver CHZZK VODs and clips in original 1080p FHD quality directly as MP4 files without re-encoding loss. 100% free local web application.";
-const PAGE_KEYWORDS = "Chzzk Downloader, CHZZK VOD Download, Chzzk Clip Download, Naver Chzzk Video Downloader, Chzzk 1080p MP4, Download Chzzk Stream, Naver Video Extractor";
+const PAGE_KEYWORDS = "Chzzk Downloader, CHZZK VOD Download, Chzzk Clip Download, Naver Chzzk Video Downloader, Chzzk 1080p MP4, Download Chzzk Stream, Naver Video Extractor, How to download Chzzk, Free Chzzk Video Downloader";
 
 const fileHash = "0F634DDEABE75CC9D04FC79DF91BD4E866053A23FFABF85897DCC2C6E0602DFD";
 const fileSize = "8.12 MB";
@@ -28,6 +28,53 @@ const softwareSchema = JSON.stringify({
   "softwareVersion": appVersion,
   "downloadUrl": "https://errorledger.com/downloads/Chzzk_Downloader.exe"
 });
+
+const faqSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is Chzzk Downloader really 100% free with no limits?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, it is 100% free with zero costs or download limits. Unlike web services that charge fees or restrict daily downloads, this app runs locally on your PC so there are no remote server hosting costs."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Windows SmartScreen warns about an 'Unknown Publisher'. Is it safe?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, it is completely safe. Windows shows this dialog for any software from independent developers that does not carry an expensive corporate code-signing certificate. You can verify its integrity via the official SHA-256 hash."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How can I download 19+ age-restricted streams?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Open Settings in the web downloader UI and provide your verified Naver login cookies (NID_AUT, NID_SES). The cookies remain strictly stored on your local machine."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why is the download speed much faster than other sites?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Traditional tools route videos through third-party servers with slow transcoding. Chzzk Downloader establishes a direct CDN stream connection to your computer, maximizing your full internet bandwidth."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I exit the downloader?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Press Ctrl + C in the running terminal window, or simply click the close (X) button on the console window."
+      }
+    }
+  ]
+});
 ---
 
 <!doctype html>
@@ -42,6 +89,7 @@ const softwareSchema = JSON.stringify({
       keywords={PAGE_KEYWORDS}
     />
     <script type="application/ld+json" set:html={softwareSchema}></script>
+    <script type="application/ld+json" set:html={faqSchema}></script>
   </head>
   <body class="chzzk-page-body">
     <Header />

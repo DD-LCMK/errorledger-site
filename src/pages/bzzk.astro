@@ -10,6 +10,22 @@ const streamerMode = urlParams.has('stream') || urlParams.has('obs');
 
 const PAGE_TITLE = `검지직 (Bzzk) - 치지직 실시간 악성 유저 탐지 & 방송 보호 레이더 | ${SITE_TITLE}`;
 const PAGE_DESCRIPTION = "네이버 치지직(CHZZK) 다중 채널에서 동시다발적으로 제재된 악성 분탕 계정을 실시간으로 분석하고 방송을 안전하게 보호하는 검지직(Bzzk) 실시간 레이더.";
+const PAGE_KEYWORDS = "검지직, Bzzk, 치지직 분탕, 치지직 악성 유저, 치지직 밴 목록, 치지직 블랙리스트, 치지직 밴 현황, 스트리머 방송 보호, 치지직 실시간 레이더, 채팅창 분탕 방어";
+
+const webAppSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Bzzk (검지직)",
+  "applicationCategory": "SecurityApplication",
+  "operatingSystem": "All",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "KRW"
+  },
+  "description": PAGE_DESCRIPTION
+});
 ---
 
 <!doctype html>
@@ -21,7 +37,9 @@ const PAGE_DESCRIPTION = "네이버 치지직(CHZZK) 다중 채널에서 동시�
       lang="ko"
       hreflangKo={getKoUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
       hreflangEn={getEnUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
+      keywords={PAGE_KEYWORDS}
     />
+    <script type="application/ld+json" set:html={webAppSchema}></script>
   </head>
   <body class="bzzk-page-body">
     <Header />

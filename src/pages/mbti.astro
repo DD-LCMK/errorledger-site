@@ -11,6 +11,22 @@ const streamerMode = urlParams.has('stream') || urlParams.has('obs');
 
 const PAGE_TITLE = `정밀 MBTI 성격 유형 검사 - 60문항 융(Jung) 인지기능 기반 심층 분석 | ${SITE_TITLE}`;
 const PAGE_DESCRIPTION = "단순한 16가지 라벨을 넘어 4대 심리 축의 정밀 백분율과 8대 인지기능 스택(주기능/부기능/3차/열등기능), 5대 강점, 스트레스 루프, 추천 직업, 연애 궁합 및 크리에이터 방송 성향까지 심층 분석하는 정통 60문항 무료 MBTI 검사.";
+const PAGE_KEYWORDS = "MBTI 검사, 무료 MBTI 테스트, 정밀 MBTI, 융 인지기능, MBTI 60문항, 16가지 성격 유형, MBTI 궁합, 인지기능 스택, 스트리머 MBTI, 성격 테스트, 심리테스트 무료, MBTI 성향 검사";
+
+const webAppSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Scientific MBTI Assessment (정밀 MBTI 성격 검사)",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "All",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "KRW"
+  },
+  "description": PAGE_DESCRIPTION
+});
 ---
 
 <!doctype html>
@@ -22,8 +38,9 @@ const PAGE_DESCRIPTION = "단순한 16가지 라벨을 넘어 4대 심리 축의
       lang="ko"
       hreflangKo={getKoUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
       hreflangEn={getEnUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
-      keywords="MBTI 검사, 무료 MBTI 테스트, 정밀 MBTI, 융 인지기능, MBTI 60문항, 16가지 성격 유형, MBTI 궁합, 인지기능 스택, 스트리머 MBTI, 성격 테스트"
+      keywords={PAGE_KEYWORDS}
     />
+    <script type="application/ld+json" set:html={webAppSchema}></script>
   </head>
   <body class="mbti-page-body">
     <Header />

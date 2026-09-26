@@ -15,6 +15,20 @@ const streamerMode = urlParams.has('stream') || urlParams.has('obs');
 
 const PAGE_TITLE = `Bzzk (검지직) - Real-Time Chzzk Stream Security Radar | ${SITE_TITLE}`;
 const PAGE_DESCRIPTION = "Real-time cross-channel intelligence network detecting high-risk malicious raid accounts across Naver Chzzk live streams. Protect your stream chat before trolls arrive.";
+const webAppSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Bzzk (Stream Security Radar)",
+  "applicationCategory": "SecurityApplication",
+  "operatingSystem": "All",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "description": PAGE_DESCRIPTION
+});
 ---
 
 <!doctype html>
@@ -26,8 +40,9 @@ const PAGE_DESCRIPTION = "Real-time cross-channel intelligence network detecting
       lang="en"
       hreflangKo={koUrl}
       hreflangEn={enUrl}
-      keywords="Bzzk, 검지직, Chzzk moderation, Chzzk ban list, Chzzk bot, Naver Chzzk security, stream chat filter, streamer security radar"
+      keywords="Bzzk, 검지직, Chzzk moderation, Chzzk ban list, Chzzk bot, Naver Chzzk security, stream chat filter, streamer security radar, stream raid defense"
     />
+    <script type="application/ld+json" set:html={webAppSchema}></script>
   </head>
   <body class="bzzk-page-body">
     <Header />

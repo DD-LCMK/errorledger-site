@@ -11,6 +11,22 @@ const streamerMode = urlParams.has('stream') || urlParams.has('obs');
 
 const PAGE_TITLE = `Stream Schedule Studio - Weekly & Monthly Broadcast Calendar & Template Maker | ${SITE_TITLE}`;
 const PAGE_DESCRIPTION = "Free broadcast schedule maker for Twitch, YouTube Live, Chzzk, and SOOP streamers. 7 stunning themes, save & load templates to your local PC (JSON), and one-click text formatting for Discord.";
+const PAGE_KEYWORDS = "stream schedule, weekly broadcast schedule, twitch schedule maker, vtuber schedule template, stream calendar, chzzk schedule, discord stream schedule, stream announcement copy, free schedule generator, broadcast timetable, streamer calendar";
+
+const webAppSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Stream Schedule Studio",
+  "applicationCategory": "DesignApplication",
+  "operatingSystem": "All",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "description": PAGE_DESCRIPTION
+});
 ---
 
 <!doctype html>
@@ -22,8 +38,9 @@ const PAGE_DESCRIPTION = "Free broadcast schedule maker for Twitch, YouTube Live
       lang="en"
       hreflangKo={getKoUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
       hreflangEn={getEnUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
-      keywords="stream schedule, weekly broadcast schedule, twitch schedule maker, vtuber schedule template, stream calendar, chzzk schedule, discord stream schedule, stream announcement copy, free schedule generator"
+      keywords={PAGE_KEYWORDS}
     />
+    <script type="application/ld+json" set:html={webAppSchema}></script>
   </head>
   <body class="schedule-page-body">
     {!streamerMode && <Header />}
