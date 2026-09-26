@@ -36,43 +36,62 @@ const enUrl = getEnUrl(siteBase, rawPath);
 
         <hr class="divider" />
 
-        <h2>1. Client-Side Architecture & Local Storage</h2>
+        <h2>1. Core Principle: Local-First & Zero-Log Architecture</h2>
         <p>
-          ErrorLedger runs entirely in your browser. No account registration or login is required, and no personal profiles are stored on remote servers.
+          ErrorLedger runs entirely on client-side web technologies. We do not require any account registration or login, and we never collect or store your personal identity, credentials, or profile data on remote server databases.
         </p>
+
+        <h2>2. Browser Local Storage (localStorage) Usage</h2>
         <p>
-          Solely to improve your experience, the following preferences are saved locally in your browser's <strong>localStorage</strong>:
+          Solely to preserve your settings and provide work continuity across sessions, the following preference data is saved locally on your device's <strong>localStorage</strong>:
         </p>
         <ul>
-          <li>Participant lists and game settings you enter</li>
-          <li>Sound mute state (<code>aether_sound_muted</code>)</li>
-          <li>Language preference (<code>preferred_lang</code>)</li>
-          <li>Dark mode setting (<code>theme</code>)</li>
+          <li><strong>Broadcast Games:</strong> Participant names, custom wheel items, penalty presets, sound mute states (<code>aether_sound_muted</code>), and theme modes</li>
+          <li><strong>Stream Schedule Studio:</strong> Active timetable drafts, platform selections, time slot text, and local JSON template export/import configurations</li>
+          <li><strong>Scientific MBTI:</strong> Temporary quiz state and selected question responses</li>
         </ul>
-        <p>This data never leaves your device. You can clear it at any time via your browser's developer tools or site data settings.</p>
+        <p>This data never leaves your device. You can erase it at any time by clearing your browser cache and site data.</p>
 
-        <hr class="divider" />
-
-        <h2>2. Google AdSense</h2>
+        <h2>3. Chzzk Downloader Local Processing & Cookie Security</h2>
         <p>
-          ErrorLedger uses Google AdSense to display advertisements. Google may use cookies and collect data to serve personalized ads in accordance with <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google's Privacy Policy</a>.
+          The <strong>Chzzk Downloader</strong> distributed through ErrorLedger is a standalone desktop utility that runs on your local machine (hosted on <code>localhost:5000</code>).
         </p>
+        <ul>
+          <li><strong>Zero Remote Transmission:</strong> Target video URLs, download progress, and saved MP4 video files are never routed to or stored on ErrorLedger servers. Downloads connect directly from official Naver CDN servers straight to your computer.</li>
+          <li><strong>Adult Cookie Protection:</strong> If you input Naver login cookies (<code>NID_AUT</code>, <code>NID_SES</code>) to download 19+ age-restricted streams, these credentials remain strictly stored in your local computer memory and are only used for direct session validation with Naver servers. They are never transmitted or logged anywhere externally.</li>
+        </ul>
+
+        <h2>4. Bzzk Security Radar Data Policy</h2>
         <p>
-          <strong>Streamer Mode:</strong> Appending <code>?stream=true</code> to any game URL completely disables ad scripts — no cookies are set and no ad data is collected during broadcast sessions.
+          Bzzk Radar aggregates publicly broadcasted moderation actions across live Naver Chzzk channels to help streamers preemptively defend against malicious raids.
+        </p>
+        <ul>
+          <li>No private chats, direct messages, or personal chatter data are ever recorded or monitored.</li>
+          <li>All account identifiers and nicknames displayed on radar boards are <strong>100% automatically pseudonymized and masked</strong> to protect user privacy.</li>
+        </ul>
+
+        <h2>5. Scientific MBTI & Psychological Test Privacy</h2>
+        <p>
+          Scoring for the 60-item MBTI test and calculations of the 8 Jungian cognitive function stacks (Ni, Ne, Si, Se, Ti, Te, Fi, Fe) occur <strong>100% client-side inside your browser's JavaScript runtime</strong>. Individual responses and test results are never stored or transmitted to remote databases.
         </p>
 
-        <hr class="divider" />
-
-        <h2>3. No Analytics or Tracking</h2>
+        <h2>6. Advertisements & Third-Party Cookies</h2>
         <p>
-          ErrorLedger does not use Google Analytics, Facebook Pixel, or any third-party user-tracking services beyond what Google AdSense requires.
+          To maintain 100% free access for all creators, ErrorLedger may serve non-intrusive advertisements via Google AdSense in compliance with <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google's Privacy Policy</a>.
+        </p>
+        <ul>
+          <li>Standard cookies may be used for statistical traffic analysis and ad delivery. You can opt out of personalized ads at any time via <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer">Google Ad Settings</a>.</li>
+          <li><strong>Streamer Mode:</strong> Appending <code>?stream=true</code> or <code>?obs=true</code> to any URL completely disables ad scripts — zero ad cookies are set during live broadcasts.</li>
+        </ul>
+
+        <h2>7. Technical Server Logs</h2>
+        <p>
+          Standard web server logs (IP address, browser type, timestamp, referral URLs) may be temporarily captured for network security, rate limiting, and DDoS mitigation purposes only.
         </p>
 
-        <hr class="divider" />
-
-        <h2>4. Contact</h2>
+        <h2>8. Contact Us</h2>
         <p>
-          For privacy-related questions, contact us at <a href="mailto:contact@errorledger.com">contact@errorledger.com</a>.
+          If you have questions regarding this Privacy Policy or your data rights, please contact us at <a href="mailto:contact@errorledger.com">contact@errorledger.com</a> or via our <a href="/en/contact">Contact Page</a>.
         </p>
       </div>
     </main>
