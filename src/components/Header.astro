@@ -27,116 +27,181 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
     </div>
 
     <nav class="header-nav" aria-label="Main Navigation">
-      <!-- 1. Games (게임) -->
-      <div class="nav-category-group nav-group-games" title={isEn ? "Games" : "게임"}>
-        <a 
-          href={`${prefix}/games/marble-roulette`} 
-          class={`nav-item ${currentPath.includes('/games/marble-roulette') ? 'highlight active' : ''}`}
-          aria-current={currentPath.includes('/games/marble-roulette') ? 'page' : undefined}
+      <!-- 1. Games Dropdown -->
+      <div class="nav-dropdown" data-dropdown="games">
+        <button 
+          type="button" 
+          class={`nav-dropdown-btn ${currentPath.includes('/games/') ? 'active' : ''}`}
+          aria-haspopup="true" 
+          aria-expanded="false"
         >
-          <span class="nav-icon">🔮</span>
-          <span class="nav-label">{t(lang, 'nav.marble')}</span>
-        </a>
-        <a 
-          href={`${prefix}/games/roulette`} 
-          class={`nav-item ${currentPath.includes('/games/roulette') && !currentPath.includes('marble') ? 'highlight active' : ''}`}
-          aria-current={currentPath.includes('/games/roulette') && !currentPath.includes('marble') ? 'page' : undefined}
-        >
-          <span class="nav-icon">🎡</span>
-          <span class="nav-label">{t(lang, 'nav.roulette')}</span>
-        </a>
-        <a 
-          href={`${prefix}/games/ladder`} 
-          class={`nav-item ${currentPath.includes('/games/ladder') ? 'highlight active' : ''}`}
-          aria-current={currentPath.includes('/games/ladder') ? 'page' : undefined}
-        >
-          <span class="nav-icon">🪜</span>
-          <span class="nav-label">{t(lang, 'nav.ladder')}</span>
-        </a>
-        <a 
-          href={`${prefix}/games/drinking-marble`} 
-          class={`nav-item ${currentPath.includes('/games/drinking-marble') ? 'highlight active' : ''}`}
-          aria-current={currentPath.includes('/games/drinking-marble') ? 'page' : undefined}
-        >
-          <span class="nav-icon">🌸</span>
-          <span class="nav-label">{t(lang, 'nav.drinking_marble')}</span>
-        </a>
-        <a 
-          href={`${prefix}/games/stream-doodle`} 
-          class={`nav-item ${currentPath.includes('/games/stream-doodle') ? 'highlight active' : ''}`}
-          aria-current={currentPath.includes('/games/stream-doodle') ? 'page' : undefined}
-        >
-          <span class="nav-icon">🎨</span>
-          <span class="nav-label">{t(lang, 'nav.stream_doodle')}</span>
-        </a>
-        <a 
-          href={`${prefix}/games/stream-emoji`} 
-          class={`nav-item ${currentPath.includes('/games/stream-emoji') ? 'highlight active' : ''}`}
-          aria-current={currentPath.includes('/games/stream-emoji') ? 'page' : undefined}
-        >
-          <span class="nav-icon">🎬</span>
-          <span class="nav-label">{t(lang, 'nav.stream_emoji')}</span>
-        </a>
-        <a 
-          href={`${prefix}/games/ai-music-quiz`} 
-          class={`nav-item ${currentPath.includes('/games/ai-music-quiz') ? 'highlight active' : ''}`}
-          aria-current={currentPath.includes('/games/ai-music-quiz') ? 'page' : undefined}
-        >
-          <span class="nav-icon">🎧</span>
-          <span class="nav-label">{t(lang, 'nav.ai_music_quiz')}</span>
-        </a>
+          <span class="nav-icon">🎮</span>
+          <span class="nav-label">{t(lang, 'nav.category.games')}</span>
+          <span class="chevron-icon">▾</span>
+        </button>
+
+        <div class="dropdown-menu dropdown-menu-games" role="menu">
+          <div class="dropdown-menu-inner">
+            <div class="dropdown-header">
+              <span class="dropdown-category-title">🎮 {isEn ? "INTERACTIVE GAMES" : "인기 인터랙티브 게임"}</span>
+              <span class="dropdown-category-badge">{isEn ? "7 Games" : "7종 무료"}</span>
+            </div>
+            <div class="dropdown-grid-games">
+              <a href={`${prefix}/games/marble-roulette`} class={`dropdown-item ${currentPath.includes('/games/marble-roulette') ? 'active' : ''}`}>
+                <span class="dropdown-item-icon">🔮</span>
+                <div class="dropdown-item-content">
+                  <div class="dropdown-item-header">
+                    <span class="dropdown-item-title">{t(lang, 'nav.marble')}</span>
+                    <span class="dropdown-pill hot">HOT</span>
+                  </div>
+                  <span class="dropdown-item-desc">{isEn ? "3D Physics Racing" : "3D 물리 시뮬레이션 레이스"}</span>
+                </div>
+              </a>
+              <a href={`${prefix}/games/roulette`} class={`dropdown-item ${currentPath.includes('/games/roulette') && !currentPath.includes('marble') ? 'active' : ''}`}>
+                <span class="dropdown-item-icon">🎡</span>
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">{t(lang, 'nav.roulette')}</span>
+                  <span class="dropdown-item-desc">{isEn ? "Custom Wheel Spinner" : "확률 커스텀 돌림판"}</span>
+                </div>
+              </a>
+              <a href={`${prefix}/games/ladder`} class={`dropdown-item ${currentPath.includes('/games/ladder') ? 'active' : ''}`}>
+                <span class="dropdown-item-icon">🪜</span>
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">{t(lang, 'nav.ladder')}</span>
+                  <span class="dropdown-item-desc">{isEn ? "Ghost Leg Match" : "복불복 사다리타기"}</span>
+                </div>
+              </a>
+              <a href={`${prefix}/games/drinking-marble`} class={`dropdown-item ${currentPath.includes('/games/drinking-marble') ? 'active' : ''}`}>
+                <span class="dropdown-item-icon">🌸</span>
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">{t(lang, 'nav.drinking_marble')}</span>
+                  <span class="dropdown-item-desc">{isEn ? "Drinking & Board Game" : "주류마블 파티 보드게임"}</span>
+                </div>
+              </a>
+              <a href={`${prefix}/games/stream-doodle`} class={`dropdown-item ${currentPath.includes('/games/stream-doodle') ? 'active' : ''}`}>
+                <span class="dropdown-item-icon">🎨</span>
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">{t(lang, 'nav.stream_doodle')}</span>
+                  <span class="dropdown-item-desc">{isEn ? "Animated GIF Doodle" : "움직이는 GIF 낙서장"}</span>
+                </div>
+              </a>
+              <a href={`${prefix}/games/stream-emoji`} class={`dropdown-item ${currentPath.includes('/games/stream-emoji') ? 'active' : ''}`}>
+                <span class="dropdown-item-icon">🎬</span>
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">{t(lang, 'nav.stream_emoji')}</span>
+                  <span class="dropdown-item-desc">{isEn ? "Animated Emote Studio" : "움직이는 이모티콘 메이커"}</span>
+                </div>
+              </a>
+              <a href={`${prefix}/games/ai-music-quiz`} class={`dropdown-item ${currentPath.includes('/games/ai-music-quiz') ? 'active' : ''}`}>
+                <span class="dropdown-item-icon">🎧</span>
+                <div class="dropdown-item-content">
+                  <div class="dropdown-item-header">
+                    <span class="dropdown-item-title">{t(lang, 'nav.ai_music_quiz')}</span>
+                    <span class="dropdown-pill new">AI</span>
+                  </div>
+                  <span class="dropdown-item-desc">{isEn ? "Guess Song from AI Cover" : "AI 편곡 노래 맞추기 퀴즈"}</span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="nav-divider" aria-hidden="true"></div>
-
-      <!-- 2. Tests & Fortune (심리·운세) -->
-      <div class="nav-category-group nav-group-tests" title={isEn ? "Tests & Fortune" : "심리·운세"}>
-        <a 
-          href={`${prefix}/mbti`} 
-          class={`nav-item ${currentPath.includes('/mbti') ? 'highlight active' : ''}`}
-          aria-current={currentPath.includes('/mbti') ? 'page' : undefined}
+      <!-- 2. Tests & Fortune Dropdown -->
+      <div class="nav-dropdown" data-dropdown="tests">
+        <button 
+          type="button" 
+          class={`nav-dropdown-btn ${currentPath.includes('/mbti') || currentPath.endsWith('/fortune') ? 'active' : ''}`}
+          aria-haspopup="true" 
+          aria-expanded="false"
         >
           <span class="nav-icon">🧠</span>
-          <span class="nav-label">{t(lang, 'nav.mbti')}</span>
-        </a>
-        <a 
-          href={`${prefix}/fortune`} 
-          class={`nav-item ${currentPath.endsWith('/fortune') ? 'highlight active' : ''}`}
-          aria-current={currentPath.endsWith('/fortune') ? 'page' : undefined}
-        >
-          <span class="nav-icon">✨</span>
-          <span class="nav-label">{t(lang, 'nav.fortune')}</span>
-        </a>
+          <span class="nav-label">{t(lang, 'nav.category.tests')}</span>
+          <span class="chevron-icon">▾</span>
+        </button>
+
+        <div class="dropdown-menu dropdown-menu-tests" role="menu">
+          <div class="dropdown-menu-inner">
+            <div class="dropdown-header">
+              <span class="dropdown-category-title">🧠 {isEn ? "TESTS & FORTUNE" : "심리 검사 & 운세"}</span>
+            </div>
+            <div class="dropdown-list">
+              <a href={`${prefix}/mbti`} class={`dropdown-item ${currentPath.includes('/mbti') ? 'active' : ''}`}>
+                <span class="dropdown-item-icon">🧠</span>
+                <div class="dropdown-item-content">
+                  <div class="dropdown-item-header">
+                    <span class="dropdown-item-title">{t(lang, 'nav.mbti')}</span>
+                    <span class="dropdown-pill popular">{isEn ? "Detailed" : "정밀 60제"}</span>
+                  </div>
+                  <span class="dropdown-item-desc">{isEn ? "16 Personality Test" : "16가지 성격유형 정밀 검사"}</span>
+                </div>
+              </a>
+              <a href={`${prefix}/fortune`} class={`dropdown-item ${currentPath.endsWith('/fortune') ? 'active' : ''}`}>
+                <span class="dropdown-item-icon">✨</span>
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">{t(lang, 'nav.fortune')}</span>
+                  <span class="dropdown-item-desc">{isEn ? "Daily Zodiac & Stars" : "오늘의 띠별·별자리 운세"}</span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="nav-divider" aria-hidden="true"></div>
+      <!-- 3. Stream Utilities Dropdown (HIGHLIGHTED) -->
+      <div class="nav-dropdown nav-dropdown-highlight" data-dropdown="tools">
+        <button 
+          type="button" 
+          class={`nav-dropdown-btn btn-highlight ${currentPath.includes('/schedule') || currentPath.includes('/bzzk') || currentPath.includes('/chzzk-downloader') ? 'active' : ''}`}
+          aria-haspopup="true" 
+          aria-expanded="false"
+        >
+          <span class="nav-icon">🛠️</span>
+          <span class="nav-label">{isEn ? "Stream Tools" : "방송 유틸리티"}</span>
+          <span class="pulse-indicator"></span>
+          <span class="chevron-icon">▾</span>
+        </button>
 
-      <!-- 3. Stream Utilities (방송 도구) -->
-      <div class="nav-category-group nav-group-tools" title={isEn ? "Stream Tools" : "방송 유틸리티"}>
-        <a 
-          href={`${prefix}/schedule`} 
-          class={`nav-item ${currentPath.includes('/schedule') ? 'highlight active' : ''}`}
-          aria-current={currentPath.includes('/schedule') ? 'page' : undefined}
-        >
-          <span class="nav-icon">📅</span>
-          <span class="nav-label">{t(lang, 'nav.schedule')}</span>
-        </a>
-        <a 
-          href={`${prefix}/bzzk`} 
-          class={`nav-item ${currentPath.includes('/bzzk') ? 'highlight active' : ''}`}
-          aria-current={currentPath.includes('/bzzk') ? 'page' : undefined}
-        >
-          <span class="nav-icon">🛡️</span>
-          <span class="nav-label">{t(lang, 'nav.bzzk')}</span>
-        </a>
-        <a 
-          href={`${prefix}/chzzk-downloader`} 
-          class={`nav-item ${currentPath.includes('/chzzk-downloader') ? 'highlight active' : ''}`}
-          aria-current={currentPath.includes('/chzzk-downloader') ? 'page' : undefined}
-        >
-          <span class="nav-icon">📥</span>
-          <span class="nav-label">{t(lang, 'nav.chzzk_downloader')}</span>
-        </a>
+        <div class="dropdown-menu dropdown-menu-tools" role="menu">
+          <div class="dropdown-menu-inner">
+            <div class="dropdown-header">
+              <span class="dropdown-category-title">🛠️ {isEn ? "STREAM UTILITIES" : "스트리머 필수 방송 도구"}</span>
+              <span class="dropdown-category-badge highlight">{isEn ? "Suite" : "무설치 스튜디오"}</span>
+            </div>
+            <div class="dropdown-list">
+              <a href={`${prefix}/chzzk-downloader`} class={`dropdown-item ${currentPath.includes('/chzzk-downloader') ? 'active' : ''}`}>
+                <span class="dropdown-item-icon green-glow">📥</span>
+                <div class="dropdown-item-content">
+                  <div class="dropdown-item-header">
+                    <span class="dropdown-item-title chzzk-title">{t(lang, 'nav.chzzk_downloader')}</span>
+                    <span class="dropdown-pill chzzk-new">NEW</span>
+                  </div>
+                  <span class="dropdown-item-desc">{isEn ? "1080p Lossless VOD & Clip MP4" : "치지직 다시보기·클립 원본 고속 다운로드"}</span>
+                </div>
+              </a>
+              <a href={`${prefix}/schedule`} class={`dropdown-item ${currentPath.includes('/schedule') ? 'active' : ''}`}>
+                <span class="dropdown-item-icon cyan-glow">📅</span>
+                <div class="dropdown-item-content">
+                  <div class="dropdown-item-header">
+                    <span class="dropdown-item-title">{t(lang, 'nav.schedule')}</span>
+                    <span class="dropdown-pill popular">HOT</span>
+                  </div>
+                  <span class="dropdown-item-desc">{isEn ? "Weekly Broadcast Schedule Studio" : "주간/월간 방송 편성표 템플릿 메이커"}</span>
+                </div>
+              </a>
+              <a href={`${prefix}/bzzk`} class={`dropdown-item ${currentPath.includes('/bzzk') ? 'active' : ''}`}>
+                <span class="dropdown-item-icon purple-glow">🛡️</span>
+                <div class="dropdown-item-content">
+                  <div class="dropdown-item-header">
+                    <span class="dropdown-item-title">{t(lang, 'nav.bzzk')}</span>
+                    <span class="dropdown-pill live">LIVE</span>
+                  </div>
+                  <span class="dropdown-item-desc">{isEn ? "Real-time Chat Security Radar" : "치지직 실시간 악성 유저 사전 방어"}</span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </nav>
 
@@ -398,71 +463,288 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
   .header-nav {
     display: flex;
     align-items: center;
-    gap: 0.3rem;
-    flex-wrap: nowrap;
-    overflow: hidden;
+    gap: 0.5rem;
   }
 
-  .nav-category-group {
-    display: flex;
-    align-items: center;
-    gap: 0.15rem;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 8px;
-    padding: 2px 3px;
-    flex-shrink: 0;
+  .nav-dropdown {
+    position: relative;
   }
 
-  .nav-divider {
-    width: 1px;
-    height: 14px;
-    background: rgba(255, 255, 255, 0.12);
-    margin: 0 0.15rem;
-    flex-shrink: 0;
-  }
-
-  .nav-item {
+  .nav-dropdown-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
-    padding: 0.28rem 0.48rem;
-    border-radius: 6px;
-    color: #cbd5e1;
-    text-decoration: none;
-    font-size: 0.775rem;
-    font-weight: 600;
+    gap: 0.4rem;
+    padding: 0.42rem 0.8rem;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    user-select: none;
+    line-height: 1;
     white-space: nowrap;
-    transition: all 0.15s ease;
+  }
+
+  .nav-dropdown-btn:hover,
+  .nav-dropdown:hover .nav-dropdown-btn,
+  .nav-dropdown.open .nav-dropdown-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+  }
+
+  .nav-dropdown-btn.active {
+    background: rgba(168, 85, 247, 0.18);
+    border-color: rgba(168, 85, 247, 0.4);
+    color: #f3e8ff;
+  }
+
+  .nav-dropdown-btn.btn-highlight {
+    background: linear-gradient(135deg, rgba(0, 255, 163, 0.1) 0%, rgba(56, 189, 248, 0.1) 100%);
+    border-color: rgba(0, 255, 163, 0.35);
+    color: #f1f5f9;
+  }
+
+  .nav-dropdown-btn.btn-highlight:hover,
+  .nav-dropdown.nav-dropdown-highlight:hover .nav-dropdown-btn,
+  .nav-dropdown.nav-dropdown-highlight.open .nav-dropdown-btn {
+    background: linear-gradient(135deg, rgba(0, 255, 163, 0.2) 0%, rgba(56, 189, 248, 0.2) 100%);
+    border-color: rgba(0, 255, 163, 0.55);
+    box-shadow: 0 0 16px rgba(0, 255, 163, 0.2);
+  }
+
+  .pulse-indicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #00ffa3;
+    box-shadow: 0 0 6px #00ffa3;
+    animation: pulseHeader 2s infinite;
+  }
+
+  @keyframes pulseHeader {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(0.8); opacity: 0.5; }
+  }
+
+  .chevron-icon {
+    font-size: 0.72rem;
+    opacity: 0.65;
+    transition: transform 0.2s ease;
+  }
+
+  .nav-dropdown:hover .chevron-icon,
+  .nav-dropdown.open .chevron-icon {
+    transform: rotate(180deg);
+  }
+
+  /* Dropdown Menu Floating Panels */
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 1000;
+    background: rgba(13, 18, 31, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 16px;
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+    padding: 0.85rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+    pointer-events: none;
+  }
+
+  /* Invisible hover bridge between trigger and menu */
+  .dropdown-menu::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 0;
+    right: 0;
+    height: 10px;
+  }
+
+  .nav-dropdown:hover .dropdown-menu,
+  .nav-dropdown:focus-within .dropdown-menu,
+  .nav-dropdown.open .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .dropdown-menu-games {
+    width: 480px;
+  }
+
+  .dropdown-menu-tests {
+    width: 290px;
+  }
+
+  .dropdown-menu-tools {
+    width: 350px;
+    left: 50%;
+    transform: translateX(-50%) translateY(6px);
+  }
+
+  .nav-dropdown:hover .dropdown-menu-tools,
+  .nav-dropdown:focus-within .dropdown-menu-tools,
+  .nav-dropdown.open .dropdown-menu-tools {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .dropdown-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.25rem 0.5rem 0.65rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 0.5rem;
+  }
+
+  .dropdown-category-title {
+    font-size: 0.76rem;
+    font-weight: 800;
+    color: #94a3b8;
+    letter-spacing: 0.04em;
+  }
+
+  .dropdown-category-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #cbd5e1;
+  }
+
+  .dropdown-category-badge.highlight {
+    background: rgba(0, 255, 163, 0.15);
+    color: #00ffa3;
+    border: 1px solid rgba(0, 255, 163, 0.3);
+  }
+
+  .dropdown-grid-games {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.4rem;
+  }
+
+  .dropdown-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 10px;
+    background: transparent;
     border: 1px solid transparent;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(2px);
+  }
+
+  .dropdown-item.active {
+    background: rgba(168, 85, 247, 0.15);
+    border-color: rgba(168, 85, 247, 0.3);
+  }
+
+  .dropdown-item-icon {
+    font-size: 1.35rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .dropdown-item-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .dropdown-item-header {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .dropdown-item-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    white-space: nowrap;
+  }
+
+  .dropdown-item:hover .dropdown-item-title {
+    color: #ffffff;
+  }
+
+  .dropdown-item-title.chzzk-title {
+    color: #00ffa3;
+  }
+
+  .dropdown-item-desc {
+    font-size: 0.74rem;
+    color: #94a3b8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dropdown-pill {
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 4px;
     line-height: 1.2;
   }
 
-  .nav-label {
-    white-space: nowrap;
+  .dropdown-pill.hot {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.4);
   }
 
-  .nav-icon {
-    font-size: 0.85rem;
-    line-height: 1;
+  .dropdown-pill.new {
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.4);
   }
 
-  .nav-item:hover {
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.08);
+  .dropdown-pill.popular {
+    background: rgba(168, 85, 247, 0.2);
+    color: #c084fc;
+    border: 1px solid rgba(168, 85, 247, 0.4);
   }
 
-  .nav-item.highlight {
-    background: rgba(168, 85, 247, 0.18);
-    border-color: rgba(168, 85, 247, 0.35);
-    color: #f3e8ff;
-    font-weight: 700;
+  .dropdown-pill.live {
+    background: rgba(236, 72, 153, 0.2);
+    color: #f472b6;
+    border: 1px solid rgba(236, 72, 153, 0.4);
   }
 
-  .nav-item.highlight:hover {
-    background: rgba(168, 85, 247, 0.28);
-    border-color: rgba(168, 85, 247, 0.5);
-    color: #ffffff;
+  .dropdown-pill.chzzk-new {
+    background: rgba(0, 255, 163, 0.2);
+    color: #00ffa3;
+    border: 1px solid rgba(0, 255, 163, 0.4);
   }
 
   .header-actions {
@@ -697,15 +979,7 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
     color: #ffffff;
   }
 
-  @media (max-width: 1360px) {
-    .nav-item {
-      padding: 0.25rem 0.42rem;
-      font-size: 0.74rem;
-      gap: 0.2rem;
-    }
-  }
-
-  @media (max-width: 1140px) {
+  @media (max-width: 860px) {
     .arcade-header {
       padding: 0.45rem 0.75rem;
     }
@@ -728,6 +1002,40 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
 </style>
 
 <script>
+  // Dropdown toggle logic for touch and keyboard accessibility
+  const dropdownWraps = document.querySelectorAll('.nav-dropdown');
+  dropdownWraps.forEach(wrap => {
+    const btn = wrap.querySelector('.nav-dropdown-btn');
+    if (!btn) return;
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = wrap.classList.contains('open');
+      dropdownWraps.forEach(w => {
+        w.classList.remove('open');
+        w.querySelector('.nav-dropdown-btn')?.setAttribute('aria-expanded', 'false');
+      });
+      if (!isOpen) {
+        wrap.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+
+  document.addEventListener('click', () => {
+    dropdownWraps.forEach(w => {
+      w.classList.remove('open');
+      w.querySelector('.nav-dropdown-btn')?.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      dropdownWraps.forEach(w => {
+        w.classList.remove('open');
+        w.querySelector('.nav-dropdown-btn')?.setAttribute('aria-expanded', 'false');
+      });
+    }
+  });
   // Mobile Drawer Toggle Logic
   const mobileToggleBtn = document.getElementById('mobile-menu-toggle');
   const mobileDrawer = document.getElementById('mobile-drawer');
