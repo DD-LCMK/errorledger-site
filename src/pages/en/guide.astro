@@ -1,0 +1,1486 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { SITE_TITLE } from '../../consts';
+import { getKoUrl, getEnUrl } from '../../i18n';
+
+const siteBase = (Astro.site || 'https://errorledger.com').toString();
+const rawPath = Astro.url.pathname.replace(/\/$/, '') || '/en/guide';
+const koUrl = getKoUrl(siteBase, rawPath);
+const enUrl = getEnUrl(siteBase, rawPath);
+
+const breadcrumbs = [
+  { name: 'Home', url: '/en' },
+  { name: 'Streamer Guide & Data Bank' }
+];
+
+const schemaArticle = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Chzzk (치지직) Streamer Master Guide & Data Bank — OBS Multi-track, Monetization & Studio Workflows",
+  "description": "Essential field manual for live streamers on Naver Chzzk, YouTube Live, and Twitch. Toonation vs Cheese Pro policy, OBS 4-track audio separation for YouTube copyright defense, Chzzk Studio remote controller, and OSMU editing pipeline.",
+  "author": {
+    "@type": "Organization",
+    "name": "ErrorLedger"
+  },
+  "inLanguage": "en-US",
+  "keywords": "Chzzk Guide, Chzzk Pro Partner, OBS Audio Multi-track, YouTube Copyright Defense, Chzzk Remote Controller, Weflab Roulette, Chzzk VOD Download, OSMU Shorts Editing"
+});
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead
+      title={`Chzzk Streamer Master Guide & Data Bank — ${SITE_TITLE}`}
+      description="Field-verified live streaming workflows for Naver Chzzk and YouTube Live: Toonation vs Cheese Pro policies, OBS 4-track audio recording for copyright defense, Studio Remote, and OSMU shorts pipeline."
+      lang="en"
+      hreflangKo={koUrl}
+      hreflangEn={enUrl}
+      breadcrumb={breadcrumbs}
+      keywords="Chzzk Streamer Guide, Naver Chzzk OBS Setup, Toonation vs Cheese, OBS Multitrack Audio, YouTube Copyright Claim Defense, Chzzk Studio Remote, OSMU Video Editing"
+    />
+    <script type="application/ld+json" set:html={schemaArticle}></script>
+  </head>
+
+  <body class="guide-body">
+    <Header />
+
+    <!-- Top Reading Progress Indicator -->
+    <div class="reading-progress-track" aria-hidden="true">
+      <div class="reading-progress-bar" id="reading-progress-bar"></div>
+    </div>
+
+    <!-- Mobile Table of Contents Toggle Floating Bar -->
+    <aside class="mobile-toc-bar" id="mobile-toc-bar">
+      <button type="button" class="mobile-toc-trigger" id="mobile-toc-trigger" aria-expanded="false" aria-controls="guide-sidebar">
+        <span class="toc-icon">📑</span>
+        <span class="toc-label">Table of Contents</span>
+        <span class="toc-chevron">▾</span>
+      </button>
+    </aside>
+
+    <div class="guide-wrapper">
+      <!-- Left Sticky Sidebar -->
+      <aside class="guide-sidebar" id="guide-sidebar" aria-label="Documentation Navigation">
+        <div class="sidebar-inner">
+          <div class="sidebar-header">
+            <div class="sidebar-brand-badge">
+              <span class="badge-icon">⚡</span>
+              <span class="badge-text">CHZZK STREAM LAB</span>
+            </div>
+            <h2 class="sidebar-title">Streamer Guide Data Bank</h2>
+            <p class="sidebar-desc">Verified Broadcasting Workflows</p>
+          </div>
+
+          <!-- Quick Filter Input -->
+          <div class="sidebar-search-box">
+            <input 
+              type="text" 
+              id="sidebar-filter-input" 
+              class="sidebar-filter-input" 
+              placeholder="Filter topics or keywords..." 
+              aria-label="Filter documentation"
+            />
+          </div>
+
+          <!-- Table of Contents Nav Links -->
+          <nav class="sidebar-nav" id="sidebar-nav">
+            <div class="nav-section-title">CHAPTERS</div>
+
+            <a href="#intro" class="nav-link active" data-target="intro">
+              <span class="nav-num">00</span>
+              <span class="nav-name">Overview & Philosophy</span>
+            </a>
+
+            <!-- Chapter 1 -->
+            <div class="nav-chapter-group">
+              <a href="#chapter-1" class="nav-link nav-chapter-header" data-target="chapter-1">
+                <span class="nav-num">01</span>
+                <span class="nav-name">Monetization: Toonation vs Cheese</span>
+              </a>
+              <div class="nav-sub-list">
+                <a href="#ch1-toonation" class="nav-sub-link" data-target="ch1-toonation">What is Toonation?</a>
+                <a href="#ch1-rookie-reason" class="nav-sub-link" data-target="ch1-rookie-reason">Why Rookies Use It Early</a>
+                <a href="#ch1-pro-policy" class="nav-sub-link" data-target="ch1-pro-policy">Pro Contract & Banner Ban</a>
+                <a href="#ch1-pro-reasons" class="nav-sub-link" data-target="ch1-pro-reasons">3 Reasons to Go Pro</a>
+                <a href="#ch1-comparison-table" class="nav-sub-link" data-target="ch1-comparison-table">Comparison Matrix</a>
+              </div>
+            </div>
+
+            <!-- Chapter 2 -->
+            <div class="nav-chapter-group">
+              <a href="#chapter-2" class="nav-link nav-chapter-header" data-target="chapter-2">
+                <span class="nav-num">02</span>
+                <span class="nav-name">OBS Multi-track Audio Recording</span>
+              </a>
+              <div class="nav-sub-list">
+                <a href="#ch2-chzzk-truth" class="nav-sub-link" data-target="ch2-chzzk-truth">Truth About Chzzk & OBS VOD</a>
+                <a href="#ch2-three-benefits" class="nav-sub-link" data-target="ch2-three-benefits">3 Benefits of Multi-track</a>
+                <a href="#ch2-step-by-step" class="nav-sub-link" data-target="ch2-step-by-step">Windows Native Setup</a>
+                <a href="#ch2-track-matrix" class="nav-sub-link" data-target="ch2-track-matrix">OBS Audio Mapping Matrix</a>
+              </div>
+            </div>
+
+            <!-- Chapter 3 -->
+            <div class="nav-chapter-group">
+              <a href="#chapter-3" class="nav-link nav-chapter-header" data-target="chapter-3">
+                <span class="nav-num">03</span>
+                <span class="nav-name">Chzzk Studio Mastery</span>
+              </a>
+              <div class="nav-sub-list">
+                <a href="#ch3-remote-control" class="nav-sub-link" data-target="ch3-remote-control">Studio Remote Controller 200%</a>
+                <a href="#ch3-anonymous-donor" class="nav-sub-link" data-target="ch3-anonymous-donor">Anonymous Donor Nicknames</a>
+                <a href="#ch3-weflab-roulette" class="nav-sub-link" data-target="ch3-weflab-roulette">Weflab Cheese Roulette Setup</a>
+              </div>
+            </div>
+
+            <!-- Chapter 4 -->
+            <div class="nav-chapter-group">
+              <a href="#chapter-4" class="nav-link nav-chapter-header" data-target="chapter-4">
+                <span class="nav-num">04</span>
+                <span class="nav-name">OSMU Video Editing & Survival</span>
+              </a>
+              <div class="nav-sub-list">
+                <a href="#ch4-editor-comparison" class="nav-sub-link" data-target="ch4-editor-comparison">Video Editors Comparison</a>
+                <a href="#ch4-five-step-pipeline" class="nav-sub-link" data-target="ch4-five-step-pipeline">5-Step OSMU Pipeline</a>
+                <a href="#ch4-vod-retention" class="nav-sub-link" data-target="ch4-vod-retention">Chzzk VOD Retention Limits</a>
+                <a href="#ch4-log-theory" class="nav-sub-link" data-target="ch4-log-theory">Slang: 'Lifting the Log'</a>
+              </div>
+            </div>
+          </nav>
+
+          <!-- Sidebar Tools Widget -->
+          <div class="sidebar-tools-box">
+            <span class="st-label">ERRORLEDGER TOOLS</span>
+            <div class="st-list">
+              <a href="/en/games/soundboard" class="st-item">🔊 Keypad Soundboard</a>
+              <a href="/en/chzzk-downloader" class="st-item">📥 1080p VOD Downloader</a>
+              <a href="/en/schedule" class="st-item">📅 Broadcast Scheduler</a>
+              <a href="/en/bzzk" class="st-item">🛡️ Bzzk Security Radar</a>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Reading Area -->
+      <main class="guide-main" id="guide-main">
+        <nav class="guide-breadcrumbs" aria-label="Breadcrumb">
+          <ol>
+            <li><a href="/en">ErrorLedger Home</a></li>
+            <li><span class="bc-sep">/</span></li>
+            <li><span class="bc-current">Streamer Guide Data Bank</span></li>
+          </ol>
+        </nav>
+
+        <header class="doc-hero" id="intro">
+          <div class="hero-tag-row">
+            <span class="hero-badge emerald">CHZZK BROADCASTING FIELD MANUAL</span>
+            <span class="hero-meta-item">⏱️ 12 min read</span>
+            <span class="hero-meta-item">Updated: September 2026 Edition</span>
+          </div>
+          <h1 class="doc-title">Chzzk Streamer Master Guide & Data Bank</h1>
+          <p class="doc-lead">
+            From your very first broadcast to affiliate contract and multi-platform distribution: verified workflows for <strong>monetization policies, OBS 4-track audio separation for copyright defense, Studio Remote, and the 5-step OSMU video editing pipeline</strong>.
+          </p>
+        </header>
+
+        <hr class="doc-divider" />
+
+        <!-- CHAPTER 1 -->
+        <section class="doc-section" id="chapter-1">
+          <div class="section-badge-row">
+            <span class="section-num-tag">CHAPTER 01</span>
+            <span class="section-topic-tag">MONETIZATION & POLICY</span>
+          </div>
+          <h2 class="section-title">Chzzk Monetization: Toonation vs Naver Cheese & Pro Contract Rules</h2>
+          
+          <article class="doc-card" id="ch1-toonation">
+            <h3 class="card-heading">1. What is Toonation?</h3>
+            <p>
+              <strong>Toonation</strong> is an external third-party donation intermediary service. Streamers generate a custom browser source widget URL and embed it into OBS. Viewers charge Toonation cash to send <strong>TTS voice messages, video donations, and roulette games</strong> directly to the broadcast screen.
+            </p>
+          </article>
+
+          <article class="doc-card" id="ch1-rookie-reason">
+            <h3 class="card-heading">2. Why Rookie Streamers Use Toonation Early On</h3>
+            <div class="feature-grid">
+              <div class="feature-item">
+                <div class="fi-icon">💵</div>
+                <div class="fi-title">Low Payout Threshold</div>
+                <div class="fi-desc">Allows beginner streamers to withdraw small donation sums quickly to fund gear upgrades like microphones and lighting.</div>
+              </div>
+              <div class="feature-item">
+                <div class="fi-icon">🎙️</div>
+                <div class="fi-title">Rich AI Voice TTS & Video Widgets</div>
+                <div class="fi-desc">Hundreds of AI character voices and interactive roulette/mission widgets to drive early community engagement.</div>
+              </div>
+              <div class="feature-item">
+                <div class="fi-icon">🔄</div>
+                <div class="fi-title">Unified Multi-stream Alerts</div>
+                <div class="fi-desc">Rookies can dual-stream to Chzzk and YouTube simultaneously with a single unified donation overlay.</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="doc-card" id="ch1-pro-policy">
+            <h3 class="card-heading">3. Chzzk Pro Contract Requirements & Third-Party Banner Ban</h3>
+            <div class="callout-box warning">
+              <div class="callout-icon">⚠️</div>
+              <div class="callout-body">
+                <strong>[Crucial Policy Notice] Third-Party Banners Strictly Prohibited:</strong>
+                <p>
+                  Upon signing the official Chzzk Pro contract, <strong>all third-party donation widgets (Toonation, Twip) and profile banner links are strictly forbidden</strong> on screen and channel info. Violations result in immediate banner removal by Chzzk admins without prior warning.
+                </p>
+              </div>
+            </div>
+
+            <h4 class="sub-heading">Chzzk Pro Qualification Criteria:</h4>
+            <ul class="styled-list">
+              <li><strong>Followers:</strong> 150+ followers</li>
+              <li><strong>Broadcasting Time:</strong> 20+ cumulative hours within the past year</li>
+            </ul>
+          </article>
+
+          <article class="doc-card" id="ch1-pro-reasons">
+            <h3 class="card-heading">4. Three Key Reasons to Transition to Pro</h3>
+            <ol class="step-list">
+              <li>
+                <div class="step-title">Naver Pay 1-Click Checkout Conversion Surge</div>
+                <p class="step-desc">Most Korean viewers already have Naver Pay registered, making Cheese donations instant with zero friction.</p>
+              </li>
+              <li>
+                <div class="step-title">Monthly Subscriptions & Custom Emotes/Badges</div>
+                <p class="step-desc">Enables recurring monthly subscription revenue and unlocks custom channel badges and emote tiers.</p>
+              </li>
+              <li>
+                <div class="step-title">1080p 60fps High-Bandwidth Priority Allocation</div>
+                <p class="step-desc">Guaranteed peak-hour server bandwidth to maintain crisp 1080p 60fps streaming without stutter.</p>
+              </li>
+            </ol>
+          </article>
+
+          <article class="doc-card" id="ch1-comparison-table">
+            <h3 class="card-heading">5. Comparison: Toonation vs Naver Cheese (Pro)</h3>
+            <div class="table-responsive">
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>Feature</th>
+                    <th>Toonation (Third-party)</th>
+                    <th>Naver Cheese (Chzzk Pro)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Eligibility</strong></td>
+                    <td>Rookies only (Prohibited on Pro)</td>
+                    <td>Pro & Partner Streamers</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Payment Checkout</strong></td>
+                    <td>Separate cash recharge required</td>
+                    <td>Naver Pay 1-Click instant payment</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Channel Banners</strong></td>
+                    <td>Allowed on Rookie tier</td>
+                    <td>Strictly prohibited (Violations removed)</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Subscriptions</strong></td>
+                    <td>External membership links only</td>
+                    <td>Native Chzzk monthly memberships</td>
+                  </tr>
+                  <tr>
+                    <td><strong>1080p Bandwidth</strong></td>
+                    <td>Standard</td>
+                    <td>Priority server bandwidth allocation</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="inline-cta-banner">
+              <div class="cta-info">
+                <span class="cta-tag">RECOMMENDED TOOL</span>
+                <strong>Need an interactive penalty or giveaway spinner?</strong>
+                <p>Try ErrorLedger's free client-side Spin Wheel Roulette without installing software.</p>
+              </div>
+              <a href="/en/games/roulette" class="cta-btn">🎡 Open Spin Wheel →</a>
+            </div>
+          </article>
+        </section>
+
+        <hr class="doc-divider" />
+
+        <!-- CHAPTER 2 -->
+        <section class="doc-section" id="chapter-2">
+          <div class="section-badge-row">
+            <span class="section-num-tag">CHAPTER 02</span>
+            <span class="section-topic-tag">OBS AUDIO & YOUTUBE DEFENSE</span>
+          </div>
+          <h2 class="section-title">OBS Multi-track Audio Recording (YouTube Copyright Defense)</h2>
+          
+          <article class="doc-card" id="ch2-chzzk-truth">
+            <h3 class="card-heading">1. The Truth About Chzzk Server & OBS Multi-track</h3>
+            <div class="callout-box info">
+              <div class="callout-icon">💡</div>
+              <div class="callout-body">
+                <strong>Chzzk does not support separate server-side VOD mute tracks:</strong>
+                <p>
+                  Unlike Twitch's legacy Track 6 VOD mute feature, Chzzk encodes live stream audio (Track 1) directly into its VOD replay. Therefore, the primary purpose of multi-track audio is <strong>local multi-track recording for YouTube video editing</strong>.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <article class="doc-card" id="ch2-three-benefits">
+            <h3 class="card-heading">2. Three Key Benefits of Local Multi-track Separation</h3>
+            <div class="feature-grid">
+              <div class="feature-item">
+                <div class="fi-icon">🛡️</div>
+                <div class="fi-title">100% YouTube Copyright Defense</div>
+                <div class="fi-desc">Even if you played copyrighted pop songs live, you simply mute Track 4 (Music) in your video editor and keep the game sound and voice intact!</div>
+              </div>
+              <div class="feature-item">
+                <div class="fi-icon">🎚️</div>
+                <div class="fi-title">Post-Broadcast Volume Balancing</div>
+                <div class="fi-desc">If in-game gunshots overpowered your microphone, adjust the game audio track down and boost your voice track independently in Premiere or DaVinci.</div>
+              </div>
+              <div class="feature-item">
+                <div class="fi-icon">🤐</div>
+                <div class="fi-title">Discord Slip-of-the-Tongue Censorship</div>
+                <div class="fi-desc">Censor an unwanted Discord remark by cutting only the Discord track while keeping game audio and your reaction seamless.</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="doc-card" id="ch2-step-by-step">
+            <h3 class="card-heading">3. Windows Native Audio Capture Setup (Zero Virtual Cables)</h3>
+            <p>Modern OBS versions include native <strong>Application Audio Capture</strong>:</p>
+            <ol class="step-list">
+              <li>Disable Global Desktop Audio in OBS Settings > Audio.</li>
+              <li>Add individual Application Audio Capture sources: <code>Audio_Game</code>, <code>Audio_Discord</code>, and <code>Audio_Music</code>.</li>
+              <li>In OBS Settings > Output > Recording (Advanced mode), check <strong>Audio Tracks 1, 2, 3, and 4</strong>.</li>
+            </ol>
+          </article>
+
+          <article class="doc-card" id="ch2-track-matrix">
+            <h3 class="card-heading">4. OBS Advanced Audio Properties Matrix</h3>
+            <div class="table-responsive">
+              <table class="doc-table matrix-table">
+                <thead>
+                  <tr>
+                    <th>Audio Source</th>
+                    <th>Track 1 (Live Stream)</th>
+                    <th>Track 2 (Mic Only)</th>
+                    <th>Track 3 (Game Only)</th>
+                    <th>Track 4 (Music / Discord)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Microphone (Mic)</strong></td>
+                    <td class="check-yes">✅ Yes</td>
+                    <td class="check-yes">✅ Yes</td>
+                    <td class="check-no">❌ No</td>
+                    <td class="check-no">❌ No</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Audio_Game (In-Game)</strong></td>
+                    <td class="check-yes">✅ Yes</td>
+                    <td class="check-no">❌ No</td>
+                    <td class="check-yes">✅ Yes</td>
+                    <td class="check-no">❌ No</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Audio_Discord (Voice Chat)</strong></td>
+                    <td class="check-yes">✅ Yes</td>
+                    <td class="check-no">❌ No</td>
+                    <td class="check-no">❌ No</td>
+                    <td class="check-yes">✅ Yes</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Audio_Music (BGM)</strong></td>
+                    <td class="check-yes">✅ Yes</td>
+                    <td class="check-no">❌ No</td>
+                    <td class="check-no">❌ No</td>
+                    <td class="check-yes">✅ Yes</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="inline-cta-banner">
+              <div class="cta-info">
+                <span class="cta-tag">RECOMMENDED TOOL</span>
+                <strong>Trigger instant sound effects without loading lag?</strong>
+                <p>Use ErrorLedger's Keypad Soundboard powered by the Web Audio API with zero latency.</p>
+              </div>
+              <a href="/en/games/soundboard" class="cta-btn">🔊 Open Keypad Soundboard →</a>
+            </div>
+          </article>
+        </section>
+
+        <hr class="doc-divider" />
+
+        <!-- CHAPTER 3 -->
+        <section class="doc-section" id="chapter-3">
+          <div class="section-badge-row">
+            <span class="section-num-tag">CHAPTER 03</span>
+            <span class="section-topic-tag">STUDIO MASTER & WIDGETS</span>
+          </div>
+          <h2 class="section-title">Chzzk Studio Mastery: Remote Controller, Anonymous Donors & Weflab</h2>
+          
+          <article class="doc-card" id="ch3-remote-control">
+            <h3 class="card-heading">1. Real-time Studio Remote Controller Mastery</h3>
+            <ul class="styled-list">
+              <li><strong>Remote Location:</strong> Chzzk Studio > Dashboard > Newsfeed tab > [Remote] button (opens in popup).</li>
+              <li><strong>Replay Missed Video Donations:</strong> Click [Replay on Stream] to replay any video donation you missed during intense gameplay.</li>
+              <li><strong>Pre-screening Dangerous Videos:</strong> Disable autoplay in Studio settings and approve video donations manually in the Remote to avoid copyright and TOS strikes.</li>
+              <li><strong>Live Mission Judgment:</strong> Approve or reject viewer missions and register success/failure with a single click.</li>
+            </ul>
+          </article>
+
+          <article class="doc-card" id="ch3-anonymous-donor">
+            <h3 class="card-heading">2. Identifying Anonymous Donor Real Nicknames</h3>
+            <div class="callout-box info">
+              <div class="callout-icon">🔍</div>
+              <div class="callout-body">
+                <strong>Official Naver System Policy:</strong>
+                <p>
+                  Even if a viewer selects "Donate Anonymously", their actual Naver nickname and profile photo are <strong>100% visible inside the streamer's Studio Donation History and Remote Controller</strong>.
+                </p>
+              </div>
+            </div>
+            <p><strong>Streamer Etiquette Tip:</strong> Don't expose their real identity on stream. Acknowledge with: <em>"Thank you Anonymous donor! I can see who you are on my screen, but I'll keep your secret!"</em></p>
+          </article>
+
+          <article class="doc-card" id="ch3-weflab-roulette">
+            <h3 class="card-heading">3. Weflab Cheese Roulette Setup</h3>
+            <ol class="step-list">
+              <li>Log in to Weflab with your Chzzk account and enable Roulette in Donation Alerts.</li>
+              <li>Configure amounts (e.g. 1,000 Cheese) and prize/penalty probabilities.</li>
+              <li><strong>Critical Step:</strong> Copy the <strong>[Donation Alert URL]</strong> (NOT the separate roulette page URL) and paste it into an OBS Browser Source (1920x1080).</li>
+            </ol>
+
+            <div class="inline-cta-banner">
+              <div class="cta-info">
+                <span class="cta-tag">RECOMMENDED TOOL</span>
+                <strong>Protect your chat from cross-channel trolls?</strong>
+                <p>Activate Bzzk Radar to detect known disruptive accounts in real time.</p>
+              </div>
+              <a href="/en/bzzk" class="cta-btn">🛡️ Open Bzzk Radar →</a>
+            </div>
+          </article>
+        </section>
+
+        <hr class="doc-divider" />
+
+        <!-- CHAPTER 4 -->
+        <section class="doc-section" id="chapter-4">
+          <div class="section-badge-row">
+            <span class="section-num-tag">CHAPTER 04</span>
+            <span class="section-topic-tag">OSMU WORKFLOW & SURVIVAL</span>
+          </div>
+          <h2 class="section-title">One Source Multi-Use (OSMU) Video Pipeline & Survival Tactics</h2>
+          
+          <article class="doc-card" id="ch4-editor-comparison">
+            <h3 class="card-heading">1. Video Editor Comparison for Streamers</h3>
+            <div class="table-responsive">
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>Software</th>
+                    <th>Cost</th>
+                    <th>Strengths</th>
+                    <th>Recommended For</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>CapCut PC</strong></td>
+                    <td>Free</td>
+                    <td>AI auto captions, rich shorts templates, fast rendering</td>
+                    <td><strong>Shorts/Reels creators & beginners</strong></td>
+                  </tr>
+                  <tr>
+                    <td><strong>DaVinci Resolve</strong></td>
+                    <td>100% Free (No watermark)</td>
+                    <td>Hollywood color grading, Fairlight audio, robust cut editor</td>
+                    <td><strong>Long-form YouTube creators</strong></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Adobe Premiere Pro</strong></td>
+                    <td>Monthly subscription</td>
+                    <td>Industry standard, project sharing with freelance editors</td>
+                    <td><strong>Streamers hiring external editors</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="doc-card" id="ch4-five-step-pipeline">
+            <h3 class="card-heading">2. The 5-Step OSMU Pipeline from 1 Live Stream</h3>
+            <div class="timeline-container">
+              <div class="timeline-step">
+                <div class="tl-marker">1</div>
+                <div class="tl-content">
+                  <h4>STEP 1: Log Timestamps During Broadcast</h4>
+                  <p>Clip funny moments in Chzzk Studio or jot down notes (e.g. <code>1:24:10 Boss comeback</code>).</p>
+                </div>
+              </div>
+              <div class="timeline-step">
+                <div class="tl-marker">2</div>
+                <div class="tl-content">
+                  <h4>STEP 2: Cut 8~12 Minute Main YouTube Video</h4>
+                  <p>Edit highlights, remove audio dead air, and craft a 5-second hook intro.</p>
+                </div>
+              </div>
+              <div class="timeline-step">
+                <div class="tl-marker">3</div>
+                <div class="tl-content">
+                  <h4>STEP 3: Extract 1~2 Killer 30~50s Clips</h4>
+                  <p>Isolate the highest-intensity punchlines or gameplay moments from the long-form cut.</p>
+                </div>
+              </div>
+              <div class="timeline-step">
+                <div class="tl-marker">4</div>
+                <div class="tl-content">
+                  <h4>STEP 4: Reframe into 9:16 Vertical Video</h4>
+                  <p>Stack your webcam on top and high-action gameplay with bold captions on the bottom.</p>
+                </div>
+              </div>
+              <div class="timeline-step">
+                <div class="tl-marker">5</div>
+                <div class="tl-content">
+                  <h4>STEP 5: Cross-post to YouTube Shorts, Reels, and TikTok</h4>
+                  <p>Maximize organic algorithm impressions to funnel viewers directly to your live stream.</p>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="doc-card" id="ch4-vod-retention">
+            <h3 class="card-heading">3. Chzzk VOD Retention Warning</h3>
+            <div class="callout-box danger">
+              <div class="callout-icon">🚨</div>
+              <div class="callout-body">
+                <strong>Permanent VOD Deletion Policy:</strong>
+                <p>
+                  Chzzk VOD replays expire automatically:
+                  <br/>&bull; <strong>Rookie tier:</strong> Deleted after <strong>7 days</strong>
+                  <br/>&bull; <strong>Pro tier:</strong> Deleted after <strong>60 days</strong>
+                </p>
+                <p>
+                  Once deleted, VODs cannot be recovered. Back them up immediately or use ErrorLedger's Chzzk Downloader for lossless 1080p MP4 downloads.
+                </p>
+              </div>
+            </div>
+
+            <div class="inline-cta-banner">
+              <div class="cta-info">
+                <span class="cta-tag">RECOMMENDED TOOL</span>
+                <strong>Want to archive your VODs in lossless 1080p?</strong>
+                <p>Use ErrorLedger's free Chzzk Downloader to save MP4 replays directly in your browser.</p>
+              </div>
+              <a href="/en/chzzk-downloader" class="cta-btn">📥 Open Chzzk Downloader →</a>
+            </div>
+          </article>
+
+          <article class="doc-card" id="ch4-log-theory">
+            <h3 class="card-heading">4. Korean Streamer Slang: 'Lifting the Log' (통나무를 든다)</h3>
+            <div class="slang-box">
+              <div class="slang-term">🪵 Lifting the Log (통나무를 든다)</div>
+              <div class="slang-origin">
+                <strong>Origin:</strong> Coined by former LoL esports head coach cvMax. Refers to military log exercises where if teammates slack off, one member must bear the entire crushing weight alone.
+              </div>
+              <div class="slang-usage">
+                <strong>Streaming Context:</strong> When energy dips or awkward silence hits a group collaboration, a single streamer carries the entire broadcast tension through relentless humor, self-deprecating banter, and high energy.
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <!-- Document Footer -->
+        <footer class="doc-end-card">
+          <div class="dec-badge">ALL-IN-ONE STREAM LAB</div>
+          <h3>Empowering Streamers Worldwide</h3>
+          <p>ErrorLedger builds 100% free, zero-install interactive streaming tools.</p>
+          <div class="dec-buttons">
+            <a href="/en/schedule" class="dec-btn primary">📅 Weekly Schedule Studio</a>
+            <a href="/en/games/soundboard" class="dec-btn secondary">🔊 Keypad Soundboard</a>
+            <a href="/en/contact" class="dec-btn outline">✉️ Contact & Feedback</a>
+          </div>
+        </footer>
+      </main>
+    </div>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  :root {
+    --doc-bg: #090d16;
+    --doc-card: #121824;
+    --doc-card-inner: #0d121c;
+    --doc-border: #233147;
+    --doc-border-hover: #3b4e73;
+    --doc-cyan: #00ffcc;
+    --doc-violet: #7928ca;
+    --doc-pink: #ff007a;
+    --doc-yellow: #fbbf24;
+    --doc-red: #ef4444;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #546582;
+  }
+
+  body.guide-body {
+    background-color: var(--doc-bg);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  .reading-progress-track {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: transparent;
+    z-index: 10001;
+    pointer-events: none;
+  }
+
+  .reading-progress-bar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--doc-cyan), #38bdf8, var(--doc-violet));
+    box-shadow: 0 0 10px var(--doc-cyan);
+    transition: width 0.1s ease-out;
+  }
+
+  .mobile-toc-bar {
+    display: none;
+    position: sticky;
+    top: 60px;
+    z-index: 999;
+    background: rgba(18, 24, 36, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--doc-border);
+    padding: 0.6rem 1.25rem;
+  }
+
+  .mobile-toc-trigger {
+    width: 100%;
+    background: #162032;
+    border: 1px solid var(--doc-border);
+    color: var(--doc-cyan);
+    padding: 0.55rem 1rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+
+  .guide-wrapper {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 1.5rem 1.5rem 4rem;
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 2.5rem;
+    position: relative;
+    box-sizing: border-box;
+  }
+
+  .guide-sidebar {
+    position: sticky;
+    top: 80px;
+    height: calc(100vh - 100px);
+    overflow-y: auto;
+    padding-right: 0.5rem;
+  }
+
+  .guide-sidebar::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .guide-sidebar::-webkit-scrollbar-thumb {
+    background: #233147;
+    border-radius: 4px;
+  }
+
+  .sidebar-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .sidebar-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .sidebar-brand-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--doc-cyan);
+    font-family: monospace;
+  }
+
+  .sidebar-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .sidebar-desc {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .sidebar-search-box {
+    width: 100%;
+  }
+
+  .sidebar-filter-input {
+    width: 100%;
+    background: var(--doc-card);
+    border: 1px solid var(--doc-border);
+    color: var(--text-primary);
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .sidebar-filter-input:focus {
+    border-color: var(--doc-cyan);
+    box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .nav-section-title {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    font-family: monospace;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.15s ease;
+    border-left: 2px solid transparent;
+  }
+
+  .nav-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .nav-link.active {
+    color: var(--doc-cyan);
+    background: rgba(0, 255, 204, 0.08);
+    border-left-color: var(--doc-cyan);
+  }
+
+  .nav-num {
+    font-size: 0.72rem;
+    font-family: monospace;
+    font-weight: 800;
+    color: var(--text-muted);
+  }
+
+  .nav-link.active .nav-num {
+    color: var(--doc-cyan);
+  }
+
+  .nav-chapter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .nav-sub-list {
+    display: flex;
+    flex-direction: column;
+    padding-left: 1.5rem;
+    gap: 0.2rem;
+    border-left: 1px solid #1a2436;
+    margin-left: 0.75rem;
+  }
+
+  .nav-sub-link {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .nav-sub-link:hover {
+    color: var(--text-primary);
+  }
+
+  .nav-sub-link.active {
+    color: var(--doc-cyan);
+    font-weight: 700;
+  }
+
+  .sidebar-tools-box {
+    background: var(--doc-card);
+    border: 1px solid var(--doc-border);
+    border-radius: 10px;
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .st-label {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: var(--text-muted);
+  }
+
+  .st-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .st-item {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 0.35rem 0.5rem;
+    border-radius: 6px;
+  }
+
+  .st-item:hover {
+    color: var(--doc-cyan);
+    background: rgba(0, 255, 204, 0.06);
+  }
+
+  .guide-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    min-width: 0;
+  }
+
+  .guide-breadcrumbs ol {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  .guide-breadcrumbs a {
+    color: var(--text-secondary);
+    text-decoration: none;
+  }
+
+  .guide-breadcrumbs a:hover {
+    color: var(--doc-cyan);
+  }
+
+  .bc-sep {
+    color: var(--text-muted);
+  }
+
+  .bc-current {
+    color: var(--text-primary);
+    font-weight: 700;
+  }
+
+  .doc-hero {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .hero-tag-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-badge.emerald {
+    background: rgba(0, 255, 204, 0.15);
+    color: var(--doc-cyan);
+    border: 1px solid rgba(0, 255, 204, 0.4);
+    font-size: 0.7rem;
+    font-weight: 800;
+    font-family: monospace;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+
+  .hero-meta-item {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  .doc-title {
+    font-size: 2.25rem;
+    font-weight: 900;
+    color: #fff;
+    margin: 0;
+  }
+
+  .doc-lead {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .doc-divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, var(--doc-border) 0%, transparent 100%);
+    margin: 0;
+  }
+
+  .doc-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    scroll-margin-top: 90px;
+  }
+
+  .section-badge-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .section-num-tag {
+    background: var(--doc-violet);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: monospace;
+  }
+
+  .section-topic-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    font-family: monospace;
+  }
+
+  .section-title {
+    font-size: 1.65rem;
+    font-weight: 900;
+    color: #fff;
+    margin: 0;
+  }
+
+  .doc-card {
+    background: var(--doc-card);
+    border: 1px solid var(--doc-border);
+    border-radius: 14px;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    scroll-margin-top: 100px;
+  }
+
+  .card-heading {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0;
+  }
+
+  .sub-heading {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0.5rem 0 0;
+  }
+
+  p {
+    margin: 0;
+    color: var(--text-secondary);
+  }
+
+  strong {
+    color: var(--text-primary);
+  }
+
+  .callout-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 1.15rem 1.25rem;
+    border-radius: 12px;
+    background: var(--doc-card-inner);
+    border: 1px solid transparent;
+  }
+
+  .callout-icon {
+    font-size: 1.35rem;
+    flex-shrink: 0;
+  }
+
+  .callout-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .callout-box.warning {
+    border-color: rgba(251, 191, 36, 0.4);
+    background: linear-gradient(145deg, rgba(251, 191, 36, 0.08), rgba(20, 15, 8, 0.6));
+    color: #fef08a;
+  }
+  .callout-box.warning strong {
+    color: #fbbf24;
+  }
+
+  .callout-box.info {
+    border-color: rgba(56, 189, 248, 0.4);
+    background: linear-gradient(145deg, rgba(56, 189, 248, 0.08), rgba(8, 15, 24, 0.6));
+  }
+  .callout-box.info strong {
+    color: #38bdf8;
+  }
+
+  .callout-box.danger {
+    border-color: rgba(239, 68, 68, 0.4);
+    background: linear-gradient(145deg, rgba(239, 68, 68, 0.1), rgba(24, 8, 8, 0.6));
+  }
+  .callout-box.danger strong {
+    color: #f87171;
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+
+  .feature-item {
+    background: var(--doc-card-inner);
+    border: 1px solid var(--doc-border);
+    border-radius: 12px;
+    padding: 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .fi-icon {
+    font-size: 1.6rem;
+  }
+
+  .fi-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  .fi-desc {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+
+  .styled-list {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+
+  .step-list {
+    margin: 0;
+    padding-left: 1.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .step-title {
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  .step-desc {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    border-radius: 10px;
+    border: 1px solid var(--doc-border);
+  }
+
+  .doc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.86rem;
+    text-align: left;
+    background: var(--doc-card-inner);
+  }
+
+  .doc-table th {
+    background: #162032;
+    color: #fff;
+    font-weight: 800;
+    padding: 0.85rem 1rem;
+    border-bottom: 2px solid var(--doc-border);
+  }
+
+  .doc-table td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid #1a2538;
+    color: var(--text-secondary);
+  }
+
+  .matrix-table td.check-yes {
+    color: var(--doc-cyan);
+    font-weight: 800;
+  }
+
+  .matrix-table td.check-no {
+    color: var(--text-muted);
+  }
+
+  .timeline-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .timeline-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: var(--doc-card-inner);
+    border: 1px solid var(--doc-border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+  }
+
+  .tl-marker {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--doc-cyan), #00b4d8);
+    color: #07101e;
+    font-weight: 900;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .tl-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .tl-content h4 {
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0;
+  }
+
+  .tl-content p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .slang-box {
+    background: linear-gradient(145deg, #151d2e, #0e1522);
+    border: 1.5px solid #2a3a54;
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .slang-term {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--doc-cyan);
+  }
+
+  .slang-origin,
+  .slang-usage {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  .inline-cta-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background: linear-gradient(135deg, rgba(0, 255, 204, 0.08), rgba(121, 40, 202, 0.12));
+    border: 1px solid rgba(0, 255, 204, 0.35);
+    border-radius: 12px;
+    padding: 1.15rem 1.35rem;
+  }
+
+  .cta-tag {
+    font-size: 0.65rem;
+    font-weight: 800;
+    font-family: monospace;
+    color: var(--doc-cyan);
+  }
+
+  .cta-info strong {
+    font-size: 0.95rem;
+    color: #fff;
+  }
+
+  .cta-info p {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+  }
+
+  .cta-btn {
+    background: linear-gradient(135deg, var(--doc-cyan), #00b4d8);
+    color: #07101e;
+    font-size: 0.82rem;
+    font-weight: 800;
+    padding: 0.6rem 1.1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .doc-end-card {
+    background: radial-gradient(circle at 50% 20%, #1c273c 0%, #101726 100%);
+    border: 1.5px solid var(--doc-border);
+    border-radius: 16px;
+    padding: 2.25rem 1.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .dec-badge {
+    font-size: 0.7rem;
+    font-weight: 800;
+    font-family: monospace;
+    color: var(--doc-cyan);
+  }
+
+  .doc-end-card h3 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0;
+  }
+
+  .dec-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+  }
+
+  .dec-btn {
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 0.6rem 1.1rem;
+    border-radius: 8px;
+    text-decoration: none;
+  }
+
+  .dec-btn.primary {
+    background: var(--doc-cyan);
+    color: #07101e;
+  }
+
+  .dec-btn.secondary {
+    background: #1e293b;
+    color: #fff;
+    border: 1px solid #334155;
+  }
+
+  .dec-btn.outline {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--doc-border);
+  }
+
+  @media (max-width: 1024px) {
+    .guide-wrapper {
+      grid-template-columns: 1fr;
+      padding: 1rem 1rem 3rem;
+    }
+
+    .mobile-toc-bar {
+      display: block;
+    }
+
+    .guide-sidebar {
+      display: none;
+      position: fixed;
+      top: 108px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: calc(100vh - 108px);
+      background: rgba(10, 13, 20, 0.98);
+      backdrop-filter: blur(14px);
+      z-index: 998;
+      padding: 1.5rem;
+    }
+
+    .guide-sidebar.active {
+      display: block;
+    }
+
+    .inline-cta-banner {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    const progressBar = document.getElementById('reading-progress-bar');
+    const mobileBtn = document.getElementById('mobile-toc-trigger');
+    const sidebar = document.getElementById('guide-sidebar');
+    const filterInput = document.getElementById('sidebar-filter-input');
+    const navLinks = document.querySelectorAll('.nav-link, .nav-sub-link');
+    const sections = document.querySelectorAll('.doc-section, .doc-card, .doc-hero');
+
+    function updateProgress() {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+      if (progressBar) progressBar.style.width = Math.min(100, Math.max(0, progress)) + '%';
+    }
+
+    window.addEventListener('scroll', updateProgress, { passive: true });
+
+    if (mobileBtn && sidebar) {
+      mobileBtn.addEventListener('click', function () {
+        sidebar.classList.toggle('active');
+        mobileBtn.setAttribute('aria-expanded', sidebar.classList.contains('active') ? 'true' : 'false');
+      });
+
+      navLinks.forEach(link => {
+        link.addEventListener('click', function () {
+          if (window.innerWidth <= 1024) {
+            sidebar.classList.remove('active');
+            mobileBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+      });
+    }
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+          if (!id) return;
+          navLinks.forEach(link => {
+            if (link.getAttribute('data-target') === id) {
+              link.classList.add('active');
+            } else {
+              link.classList.remove('active');
+            }
+          });
+        }
+      });
+    }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+
+    sections.forEach(sec => observer.observe(sec));
+
+    if (filterInput) {
+      filterInput.addEventListener('input', function () {
+        const query = this.value.trim().toLowerCase();
+        navLinks.forEach(link => {
+          const text = link.textContent.toLowerCase();
+          const parentGroup = link.closest('.nav-chapter-group');
+          if (!query || text.includes(query)) {
+            link.style.display = '';
+            if (parentGroup) parentGroup.style.display = '';
+          } else {
+            link.style.display = 'none';
+          }
+        });
+      });
+    }
+  })();
+</script>

@@ -152,7 +152,7 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
       <div class="nav-dropdown nav-dropdown-highlight" data-dropdown="tools">
         <button 
           type="button" 
-          class={`nav-dropdown-btn btn-highlight ${currentPath.includes('/schedule') || currentPath.includes('/bzzk') || currentPath.includes('/chzzk-downloader') || currentPath.includes('/games/soundboard') ? 'active' : ''}`}
+          class={`nav-dropdown-btn btn-highlight ${currentPath.includes('/schedule') || currentPath.includes('/bzzk') || currentPath.includes('/chzzk-downloader') || currentPath.includes('/games/soundboard') || currentPath.includes('/guide') ? 'active' : ''}`}
           aria-haspopup="true" 
           aria-expanded="false"
         >
@@ -169,6 +169,16 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
               <span class="dropdown-category-badge highlight">{isEn ? "Suite" : "무설치 스튜디오"}</span>
             </div>
             <div class="dropdown-list">
+              <a href={`${prefix}/guide`} class={`dropdown-item ${currentPath.includes('/guide') ? 'active' : ''}`}>
+                <span class="dropdown-item-icon green-glow">📖</span>
+                <div class="dropdown-item-content">
+                  <div class="dropdown-item-header">
+                    <span class="dropdown-item-title chzzk-title">{t(lang, 'nav.guide')}</span>
+                    <span class="dropdown-pill chzzk-new">HOT</span>
+                  </div>
+                  <span class="dropdown-item-desc">{isEn ? "OBS, Monetization & Studio Guide" : "수익화·OBS 멀티트랙·스튜디오 노하우"}</span>
+                </div>
+              </a>
               <a href={`${prefix}/games/soundboard`} class={`dropdown-item ${currentPath.includes('/games/soundboard') ? 'active' : ''}`}>
                 <span class="dropdown-item-icon green-glow">🔊</span>
                 <div class="dropdown-item-content">
@@ -399,6 +409,16 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
             <div class="drawer-item-info">
               <span class="drawer-item-name">{t(lang, 'nav.soundboard')}</span>
               <span class="drawer-item-desc">{isEn ? "Keypad Soundboard (Web Audio)" : "방송용 효과음 키패드"}</span>
+            </div>
+          </a>
+          <a 
+            href={`${prefix}/guide`} 
+            class={`drawer-nav-item ${currentPath.includes('/guide') ? 'active' : ''}`}
+          >
+            <span class="drawer-item-icon">📖</span>
+            <div class="drawer-item-info">
+              <span class="drawer-item-name">{t(lang, 'nav.guide')}</span>
+              <span class="drawer-item-desc">{isEn ? "Chzzk Streamer Master Guide" : "치지직 스트리머 가이드"}</span>
             </div>
           </a>
           <a 

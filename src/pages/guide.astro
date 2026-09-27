@@ -1,0 +1,1919 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE } from '../consts';
+import { getKoUrl, getEnUrl } from '../i18n';
+
+const siteBase = (Astro.site || 'https://errorledger.com').toString();
+const rawPath = Astro.url.pathname.replace(/\/$/, '') || '/guide';
+const koUrl = getKoUrl(siteBase, rawPath);
+const enUrl = getEnUrl(siteBase, rawPath);
+
+const breadcrumbs = [
+  { name: '홈', url: '/' },
+  { name: '스트리머 가이드 데이터뱅크' }
+];
+
+const schemaArticle = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "치지직(CHZZK) 스트리머 완벽 가이드 & 방송 데이터뱅크 — 수익화, OBS 멀티트랙, 스튜디오 마스터",
+  "description": "네이버 치지직 스트리머를 위한 실전 가이드. 투네이션 vs 치즈 프로 계약 규정, 유튜브 저작권 방어용 OBS 오디오 멀티트랙 분리 녹화, 치지직 스튜디오 리모컨 200% 활용, 위플랩 룰렛 세팅, OSMU 영상 편집 파이프라인 정리.",
+  "author": {
+    "@type": "Organization",
+    "name": "ErrorLedger"
+  },
+  "inLanguage": "ko-KR",
+  "keywords": "치지직 가이드, 치지직 프로 계약, 투네이션 치지직, OBS 멀티트랙 녹화, 치지직 리모컨, 위플랩 룰렛, 치지직 VOD 보관, 통나무를 든다, 치지직 스트리머 세팅"
+});
+---
+
+<!doctype html>
+<html lang="ko" class="dark">
+  <head>
+    <BaseHead
+      title={`치지직 스트리머 완벽 가이드 & 데이터뱅크 — ${SITE_TITLE}`}
+      description="치지직(CHZZK) 생방송 입문부터 수익화, OBS 4트랙 오디오 분리, 스튜디오 리모컨, 위플랩 룰렛, 유튜브 쇼츠 OSMU 편집 파이프라인까지 검증된 실전 방송 노하우 총정리."
+      lang="ko"
+      hreflangKo={koUrl}
+      hreflangEn={enUrl}
+      breadcrumb={breadcrumbs}
+      keywords="치지직 스트리머 가이드, 치지직 프로 조건, 투네이션 치즈 비교, OBS 오디오 트랙 분리, 유튜브 저작권 노딱 방어, 치지직 리모컨, 위플랩 치즈 룰렛, OSMU 숏폼 편집, 치지직 다시보기 다운로드"
+    />
+    <script type="application/ld+json" set:html={schemaArticle}></script>
+  </head>
+
+  <body class="guide-body">
+    <Header />
+
+    <!-- Top Reading Progress Indicator -->
+    <div class="reading-progress-track" aria-hidden="true">
+      <div class="reading-progress-bar" id="reading-progress-bar"></div>
+    </div>
+
+    <!-- Mobile Table of Contents Toggle Floating Bar -->
+    <aside class="mobile-toc-bar" id="mobile-toc-bar">
+      <button type="button" class="mobile-toc-trigger" id="mobile-toc-trigger" aria-expanded="false" aria-controls="guide-sidebar">
+        <span class="toc-icon">📑</span>
+        <span class="toc-label">목차 펼치기 (가이드 목차)</span>
+        <span class="toc-chevron">▾</span>
+      </button>
+    </aside>
+
+    <div class="guide-wrapper">
+      <!-- ====================================================================
+           LEFT STICKY SIDEBAR (GitBook / Technical Docs Style)
+           ==================================================================== -->
+      <aside class="guide-sidebar" id="guide-sidebar" aria-label="가이드 목차 탐색">
+        <div class="sidebar-inner">
+          <div class="sidebar-header">
+            <div class="sidebar-brand-badge">
+              <span class="badge-icon">⚡</span>
+              <span class="badge-text">CHZZK STREAM LAB</span>
+            </div>
+            <h2 class="sidebar-title">치지직 가이드 데이터뱅크</h2>
+            <p class="sidebar-desc">검증된 실전 방송 워크플로우</p>
+          </div>
+
+          <!-- Quick Filter Input -->
+          <div class="sidebar-search-box">
+            <input 
+              type="text" 
+              id="sidebar-filter-input" 
+              class="sidebar-filter-input" 
+              placeholder="챕터 또는 키워드 검색..." 
+              aria-label="가이드 목차 필터링"
+            />
+          </div>
+
+          <!-- Table of Contents Nav Links -->
+          <nav class="sidebar-nav" id="sidebar-nav">
+            <div class="nav-section-title">GUIDE DIRECTORY</div>
+
+            <!-- Intro Section -->
+            <a href="#intro" class="nav-link active" data-target="intro">
+              <span class="nav-num">00</span>
+              <span class="nav-name">가이드 개요 & 핵심 철학</span>
+            </a>
+
+            <!-- Chapter 1 -->
+            <div class="nav-chapter-group">
+              <a href="#chapter-1" class="nav-link nav-chapter-header" data-target="chapter-1">
+                <span class="nav-num">01</span>
+                <span class="nav-name">수익화 기초: 투네이션 vs 치즈</span>
+              </a>
+              <div class="nav-sub-list">
+                <a href="#ch1-toonation" class="nav-sub-link" data-target="ch1-toonation">투네이션이란 무엇인가?</a>
+                <a href="#ch1-rookie-reason" class="nav-sub-link" data-target="ch1-rookie-reason">루키가 초기에 쓰는 이유</a>
+                <a href="#ch1-pro-policy" class="nav-sub-link" data-target="ch1-pro-policy">프로 계약 & 서드파티 배너 금지</a>
+                <a href="#ch1-pro-reasons" class="nav-sub-link" data-target="ch1-pro-reasons">프로 전환을 권장하는 3대 이유</a>
+                <a href="#ch1-comparison-table" class="nav-sub-link" data-target="ch1-comparison-table">투네이션 vs 치즈 비교표</a>
+              </div>
+            </div>
+
+            <!-- Chapter 2 -->
+            <div class="nav-chapter-group">
+              <a href="#chapter-2" class="nav-link nav-chapter-header" data-target="chapter-2">
+                <span class="nav-num">02</span>
+                <span class="nav-name">OBS 오디오 멀티트랙 분리 녹화</span>
+              </a>
+              <div class="nav-sub-list">
+                <a href="#ch2-chzzk-truth" class="nav-sub-link" data-target="ch2-chzzk-truth">치지직 서버와 OBS의 진실</a>
+                <a href="#ch2-three-benefits" class="nav-sub-link" data-target="ch2-three-benefits">로컬 분리의 3대 이득</a>
+                <a href="#ch2-step-by-step" class="nav-sub-link" data-target="ch2-step-by-step">Windows 내장 캡처 설정법</a>
+                <a href="#ch2-track-matrix" class="nav-sub-link" data-target="ch2-track-matrix">OBS 고급 오디오 매핑 표</a>
+              </div>
+            </div>
+
+            <!-- Chapter 3 -->
+            <div class="nav-chapter-group">
+              <a href="#chapter-3" class="nav-link nav-chapter-header" data-target="chapter-3">
+                <span class="nav-num">03</span>
+                <span class="nav-name">치지직 스튜디오 마스터</span>
+              </a>
+              <div class="nav-sub-list">
+                <a href="#ch3-remote-control" class="nav-sub-link" data-target="ch3-remote-control">실시간 '리모컨' 200% 활용</a>
+                <a href="#ch3-anonymous-donor" class="nav-sub-link" data-target="ch3-anonymous-donor">익명 후원자 실명 확인 위치</a>
+                <a href="#ch3-weflab-roulette" class="nav-sub-link" data-target="ch3-weflab-roulette">위플랩 치즈 룰렛 완벽 연동</a>
+              </div>
+            </div>
+
+            <!-- Chapter 4 -->
+            <div class="nav-chapter-group">
+              <a href="#chapter-4" class="nav-link nav-chapter-header" data-target="chapter-4">
+                <span class="nav-num">04</span>
+                <span class="nav-name">OSMU 영상 편집 & 방송 생존학</span>
+              </a>
+              <div class="nav-sub-list">
+                <a href="#ch4-editor-comparison" class="nav-sub-link" data-target="ch4-editor-comparison">영상 편집 프로그램 3대장 비교</a>
+                <a href="#ch4-five-step-pipeline" class="nav-sub-link" data-target="ch4-five-step-pipeline">생방송 1회 5단계 파이프라인</a>
+                <a href="#ch4-vod-retention" class="nav-sub-link" data-target="ch4-vod-retention">치지직 VOD 보관 기한 경고</a>
+                <a href="#ch4-log-theory" class="nav-sub-link" data-target="ch4-log-theory">은어 '통나무를 든다'의 유래</a>
+              </div>
+            </div>
+          </nav>
+
+          <!-- Sidebar Footer Quick Tools Widget -->
+          <div class="sidebar-tools-box">
+            <span class="st-label">에러레저 방송 도구 바로가기</span>
+            <div class="st-list">
+              <a href="/games/soundboard" class="st-item">🔊 효과음 키패드</a>
+              <a href="/chzzk-downloader" class="st-item">📥 1080p VOD 다운로더</a>
+              <a href="/schedule" class="st-item">📅 방송 편성표 메이커</a>
+              <a href="/bzzk" class="st-item">🛡️ 검지직 보안 레이더</a>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ====================================================================
+           MAIN READING AREA (Prose, Comparison Tables, Callouts, Code Blocks)
+           ==================================================================== -->
+      <main class="guide-main" id="guide-main">
+        <!-- Top Breadcrumbs -->
+        <nav class="guide-breadcrumbs" aria-label="Breadcrumb">
+          <ol>
+            <li><a href="/">에러레저 홈</a></li>
+            <li><span class="bc-sep">/</span></li>
+            <li><span class="bc-current">가이드 데이터뱅크</span></li>
+          </ol>
+        </nav>
+
+        <!-- Document Hero Header -->
+        <header class="doc-hero" id="intro">
+          <div class="hero-tag-row">
+            <span class="hero-badge emerald">CHZZK BROADCASTING FIELD MANUAL</span>
+            <span class="hero-meta-item">⏱️ 완독 12분</span>
+            <span class="hero-meta-item">업데이트: 2026년 최신 개정판</span>
+          </div>
+          <h1 class="doc-title">치지직 스트리머 실전 가이드 & 데이터뱅크</h1>
+          <p class="doc-lead">
+            네이버 치지직(CHZZK) 루키 스트리머부터 중견 파트너까지, 방송 현장에서 직면하는 <strong>수익화 규정 분쟁, 유튜브 저작권 노딱 방어, OBS 오디오 세팅, 스튜디오 리모컨 및 OSMU 쇼츠 편집 파이프라인</strong>의 정답만을 명쾌하게 정리한 무설치 방송 지식 베이스입니다.
+          </p>
+
+          <div class="doc-stat-strip">
+            <div class="stat-pill">
+              <span class="stat-num">4개</span>
+              <span class="stat-lbl">핵심 챕터</span>
+            </div>
+            <div class="stat-pill">
+              <span class="stat-num">0%</span>
+              <span class="stat-lbl">외주 비용 절약</span>
+            </div>
+            <div class="stat-pill">
+              <span class="stat-num">100%</span>
+              <span class="stat-lbl">클라이언트 사이드 검증</span>
+            </div>
+          </div>
+        </header>
+
+        <hr class="doc-divider" />
+
+        <!-- ==================================================================
+             CHAPTER 1
+             ================================================================== -->
+        <section class="doc-section" id="chapter-1">
+          <div class="section-badge-row">
+            <span class="section-num-tag">CHAPTER 01</span>
+            <span class="section-topic-tag">MONETIZATION & POLICY</span>
+          </div>
+          <h2 class="section-title">치지직 수익화 기초: 투네이션 vs 네이버 치즈 & 프로 계약 완벽 정리</h2>
+          <p class="section-desc">
+            방송 초기 많은 스트리머가 "투네이션을 달아야 할까, 치즈만 받아야 할까?"라는 고민에 빠집니다. 각 시스템의 본질적인 작동 방식과 치지직 프로(Pro) 계약 시 반드시 숙지해야 할 운영 정책을 정리합니다.
+          </p>
+
+          <!-- 1.1 투네이션이란 무엇인가? -->
+          <article class="doc-card" id="ch1-toonation">
+            <h3 class="card-heading">1. 투네이션(Toonation)이란 무엇인가?</h3>
+            <p>
+              <strong>투네이션(Toonation)</strong>은 네이버 치지직 공식 시스템이 아닌 <em>제3자 외부 서드파티 후원 중개 플랫폼</em>입니다. 스트리머가 투네이션 웹사이트에서 고유한 위젯 URL을 발급받아 OBS 브라우저 소스로 등록하면, 시청자가 투네이션 캐시를 충전하여 전송한 <strong>TTS(음성 메시지), 영상 도네이션, 음성 녹음, 미션/룰렛</strong>이 방송 화면에 실시간으로 출력되는 구조입니다.
+            </p>
+          </article>
+
+          <!-- 1.2 루키가 초기에 투네이션을 쓰는 현실적 이유 -->
+          <article class="doc-card" id="ch1-rookie-reason">
+            <h3 class="card-heading">2. 루키 스트리머가 초기에 투네이션을 쓰는 3대 현실적 이유</h3>
+            <p>
+              치지직 공식 후원 수단인 '치즈'가 있음에도 불구하고, 갓 방송을 시작한 루키(Rookie) 등급 스트리머들이 투네이션을 병행하는 데에는 명확한 이유가 있습니다:
+            </p>
+            <div class="feature-grid">
+              <div class="feature-item">
+                <div class="fi-icon">💵</div>
+                <div class="fi-title">소액 정산 가능 (초기 장비 충당)</div>
+                <div class="fi-desc">
+                  치지직 공식 치즈 정산은 사업자/개인 세무 검증 및 최소 정산 기준 금액이 설정되어 있지만, 투네이션은 소액 후원금도 비교적 빠른 주기로 스트리머 계좌로 출금할 수 있어 마이크나 조명 등 초기 장비 업그레이드 비용을 빠르게 충당할 수 있습니다.
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="fi-icon">🎙️</div>
+                <div class="fi-title">다양한 AI 보이스 & 영상 도네 위젯</div>
+                <div class="fi-desc">
+                  수백 가지의 개성 넘치는 AI 캐릭터 TTS 음성과 시청자 참여형 미션, 룰렛 등 서드파티 특유의 풍부한 리액션 위젯을 활용해 초반 시청자와의 오디오 티키타카를 극대화할 수 있습니다.
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="fi-icon">🔄</div>
+                <div class="fi-title">타 플랫폼 동시송출 시 후원 창구 단일화</div>
+                <div class="fi-desc">
+                  루키 등급에서는 치지직과 유튜브 동시송출이 자유롭기 때문에, 두 플랫폼 시청자의 도네이션 알림 창구를 투네이션 화면 하나로 통일할 수 있다는 강점이 있습니다.
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 1.3 프로 계약 & 서드파티 배너 전면 금지 규정 -->
+          <article class="doc-card" id="ch1-pro-policy">
+            <h3 class="card-heading">3. 치지직 프로(Pro) 계약 조건과 서드파티 배너 금지 규정</h3>
+
+            <div class="callout-box warning">
+              <div class="callout-icon">⚠️</div>
+              <div class="callout-body">
+                <strong>[중요] 치지직 운영 정책 위반 주의:</strong>
+                <p>
+                  치지직 프로(Pro) 계약을 체결한 스트리머는 공식 운영 정책상 <strong>투네이션/트윕 등 외부 서드파티 후원 서비스의 사용 및 방송 화면/채널 하단 소개란 배너 등록이 전면 금지</strong>됩니다. 이를 어기고 외부 배너 링크를 남겨둘 경우, 치지직 모니터링 팀에 의해 사전 경고 없이 배너가 강제 삭제 처리되거나 제재 조치가 취해질 수 있습니다.
+                </p>
+              </div>
+            </div>
+
+            <h4 class="sub-heading">치지직 프로(Pro) 계약 달성 조건</h4>
+            <ul class="styled-list">
+              <li><strong>팔로워 수:</strong> 150명 이상 달성</li>
+              <li><strong>방송 시간:</strong> 최근 1년 기준 누적 20시간 이상 생방송 진행</li>
+              <li><strong>신청 방법:</strong> 치지직 스튜디오 > 설정 > 수익 관리에서 프로 전환 신청서 접수 (신분증 및 정산용 통장 사본 등록)</li>
+            </ul>
+          </article>
+
+          <!-- 1.4 프로 전환을 권장하는 이유 -->
+          <article class="doc-card" id="ch1-pro-reasons">
+            <h3 class="card-heading">4. 외부 후원을 포기하고 프로(Pro)로 전환해야 하는 3대 이유</h3>
+            <p>
+              서드파티 후원 배너가 금지됨에도 불구하고 상위 스트리머들이 프로 계약을 필수적으로 체결하는 이유는 다음과 같습니다:
+            </p>
+            <ol class="step-list">
+              <li>
+                <div class="step-title">네이버페이(NPay) 1초 결제 연동으로 후원 전환율 급상승</div>
+                <p class="step-desc">
+                  국내 시청자의 대다수가 이미 가입되어 있는 네이버페이 간편결제 및 포인트 연동 덕분에, 별도 계좌이체나 신용카드 번호 입력 없이 지문/비밀번호 하나로 치즈를 충전할 수 있어 시청자의 후원 허들이 극적으로 낮아집니다.
+                </p>
+              </li>
+              <li>
+                <div class="step-title">정기 구독(월간 멤버십) & 전용 이모티콘/뱃지 활성화</div>
+                <p class="step-desc">
+                  스트리머 고유의 월간 구독 시스템(티어별 구독료)이 열려 고정적인 월 수익이 창출되며, 채팅창에서 팬덤을 결속시키는 전용 구독자 뱃지와 이모티콘 팩을 등록할 수 있습니다.
+                </p>
+              </li>
+              <li>
+                <div class="step-title">1080p 60fps 고화질 트래픽 대역폭 우선 배정</div>
+                <p class="step-desc">
+                  시청자 트래픽이 몰리는 피크 시간대(저녁 8시~자정)에도 버퍼링 없이 풀HD 60프레임 송출 품질을 안정적으로 보장받습니다.
+                </p>
+              </li>
+            </ol>
+          </article>
+
+          <!-- 1.5 비교표 -->
+          <article class="doc-card" id="ch1-comparison-table">
+            <h3 class="card-heading">5. [비교 요약] 투네이션 vs 네이버 치즈(프로)</h3>
+            <div class="table-responsive">
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>비교 항목</th>
+                    <th>투네이션 (서드파티)</th>
+                    <th>네이버 치즈 (치지직 프로)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>이용 등급</strong></td>
+                    <td>루키(Rookie) 권장 (프로 불가)</td>
+                    <td>프로(Pro) 및 파트너(Partner) 전용</td>
+                  </tr>
+                  <tr>
+                    <td><strong>결제 편의성</strong></td>
+                    <td>전용 캐시 충전 필요 (계좌, 카드 등)</td>
+                    <td>네이버페이(NPay) 간편결제 1초 연동</td>
+                  </tr>
+                  <tr>
+                    <td><strong>방송 배너 게시</strong></td>
+                    <td>루키만 가능 (프로 계약 시 전면 금지)</td>
+                    <td>치지직 공식 후원 버튼 기본 연동</td>
+                  </tr>
+                  <tr>
+                    <td><strong>정기 구독 지원</strong></td>
+                    <td>외부 멤버십 링크 별도 운영</td>
+                    <td>치지직 자체 월간 구독 & 이모티콘 지원</td>
+                  </tr>
+                  <tr>
+                    <td><strong>화질 대역폭 우선권</strong></td>
+                    <td>영향 없음</td>
+                    <td>피크 타임 1080p 60fps 우선 배정</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Tool CTA Link -->
+            <div class="inline-cta-banner">
+              <div class="cta-info">
+                <span class="cta-tag">추천 도구</span>
+                <strong>방송 미션이나 벌칙 추첨이 필요하신가요?</strong>
+                <p>설치 없이 브라우저에서 1초 만에 돌리는 무료 에러레저 돌림판 룰렛을 사용해 보세요.</p>
+              </div>
+              <a href="/games/roulette" class="cta-btn">🎡 돌림판 룰렛 열기 →</a>
+            </div>
+          </article>
+        </section>
+
+        <hr class="doc-divider" />
+
+        <!-- ==================================================================
+             CHAPTER 2
+             ================================================================== -->
+        <section class="doc-section" id="chapter-2">
+          <div class="section-badge-row">
+            <span class="section-num-tag">CHAPTER 02</span>
+            <span class="section-topic-tag">OBS AUDIO & YOUTUBE DEFENSE</span>
+          </div>
+          <h2 class="section-title">OBS 오디오 멀티트랙 분리 녹화 (유튜브 저작권 노딱 완전 방어)</h2>
+          <p class="section-desc">
+            생방송 중 최신 K-POP이나 팝송을 신나게 틀며 텐션을 올렸다가, 유튜브에 녹화본을 올릴 때 음원 저작권 경고(노란 딱지, 수익 창출 제한, 영상 차단)를 받는 비극을 원천 차단하는 OBS 멀티트랙 세팅법입니다.
+          </p>
+
+          <!-- 2.1 치지직 서버와 OBS의 진실 -->
+          <article class="doc-card" id="ch2-chzzk-truth">
+            <h3 class="card-heading">1. 치지직 서버와 OBS 멀티트랙 녹화의 진실</h3>
+            <div class="callout-box info">
+              <div class="callout-icon">💡</div>
+              <div class="callout-body">
+                <strong>치지직 서버는 VOD 트랙 분리를 지원하지 않습니다:</strong>
+                <p>
+                  과거 트위치(Twitch)에서는 '트랙 1은 생방송, 트랙 6은 VOD 트랙'으로 설정하여 방송 다시보기에서만 음악을 무음 처리하는 기능이 있었습니다. 그러나 <strong>치지직 서버는 생방송에 송출된 오디오(트랙 1)를 그대로 단일 인코딩하여 다시보기에 영구 저장</strong>합니다.
+                </p>
+                <p>
+                  따라서 스트리머가 OBS 오디오 트랙을 분리하는 진짜 이유는 <strong>"유튜브 편집용 로컬 다중 트랙 동시 녹화(Local Multi-track Recording)"</strong> 때문입니다.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <!-- 2.2 로컬 멀티트랙 분리의 3대 이득 -->
+          <article class="doc-card" id="ch2-three-benefits">
+            <h3 class="card-heading">2. 로컬 멀티트랙 분리가 가져오는 3대 이득</h3>
+            <div class="feature-grid">
+              <div class="feature-item">
+                <div class="fi-icon">🛡️</div>
+                <div class="fi-title">유튜브 저작권 노딱 100% 방어</div>
+                <div class="fi-desc">
+                  생방송 중 저작권 가요를 틀었더라도, 영상 편집기(프리미어/다빈치)에서 <strong>음악 트랙(트랙 4)만 타임라인에서 음소거(Mute)하거나 삭제</strong>한 뒤 무료 BGM을 얹으면 저작권 침해 없이 깨끗하게 수익을 창출할 수 있습니다.
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="fi-icon">🎚️</div>
+                <div class="fi-title">사운드 밸런스 사후 자유 보정</div>
+                <div class="fi-desc">
+                  배틀그라운드나 발로란트 플레이 중 총소리가 너무 커서 내 마이크 목소리가 묻혔을 때, 이미 녹화된 영상이라도 편집기에서 게임 볼륨만 낮추고 마이크 트랙만 증폭할 수 있습니다.
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="fi-icon">🤐</div>
+                <div class="fi-title">합방 멤버 돌발 실언 & 디스코드 검열</div>
+                <div class="fi-desc">
+                  디스코드 통화 멤버가 사적인 이야기나 실언을 했을 때, 디스코드 트랙만 골라서 잘라내면 게임 소리와 내 목소리는 끊기지 않고 자연스럽게 유튜브 영상으로 살릴 수 있습니다.
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 2.3 스텝 바이 스텝 설정법 -->
+          <article class="doc-card" id="ch2-step-by-step">
+            <h3 class="card-heading">3. 가상 오디오 케이블 없이 Windows 내장 기능으로 분리하기</h3>
+            <p>
+              과거처럼 Voicemeeter 같은 복잡하고 블루스크린을 유발하는 가상 오디오 케이블을 설치할 필요가 없습니다. 최신 OBS는 Windows 10/11의 내장 <strong>[응용 프로그램 오디오 캡처(베타)]</strong> 소스를 지원합니다.
+            </p>
+
+            <ol class="step-list">
+              <li>
+                <div class="step-title">기본 데스크톱 오디오 비활성화</div>
+                <p class="step-desc">
+                  OBS 설정 > 오디오 > 전역 오디오 장치에서 [데스크톱 오디오]를 <strong>[사용 안 함]</strong>으로 설정합니다. (모든 소리가 하나로 합쳐지는 것을 방지)
+                </p>
+              </li>
+              <li>
+                <div class="step-title">소스 목록에서 개별 오디오 캡처 추가</div>
+                <p class="step-desc">
+                  OBS 소스 목록 [+] 버튼 클릭 > <strong>[응용 프로그램 오디오 캡처]</strong>를 3개 생성합니다:
+                  <br/>&bull; 소스 1: <code>오디오_게임</code> (실행 중인 게임 exe 선택)
+                  <br/>&bull; 소스 2: <code>오디오_디스코드</code> (Discord.exe 선택)
+                  <br/>&bull; 소스 3: <code>오디오_음악</code> (크롬 브라우저 또는 멜론/스포티파이 선택)
+                  <br/>&bull; 기존 [마이크/보조 오디오]는 스트리머 본인의 마이크 입력으로 설정.
+                </p>
+              </li>
+              <li>
+                <div class="step-title">OBS 출력 설정에서 녹화 트랙 1, 2, 3, 4 모두 체크</div>
+                <p class="step-desc">
+                  OBS 설정 > <strong>[출력]</strong> > 출력 방식을 <strong>[고급]</strong>으로 변경 > <strong>[녹화]</strong> 탭 클릭:
+                  <br/>&bull; 녹화 형식: <strong>MP4</strong> 또는 <strong>MKV</strong> 권장
+                  <br/>&bull; <strong>오디오 트랙 체크박스: 1, 2, 3, 4 모두 체크</strong>
+                </p>
+              </li>
+            </ol>
+          </article>
+
+          <!-- 2.4 오디오 매핑 표 -->
+          <article class="doc-card" id="ch2-track-matrix">
+            <h3 class="card-heading">4. [완벽 매핑] OBS 고급 오디오 속성 체크리스트</h3>
+            <p>
+              OBS 하단 오디오 믹서의 아무 톱니바퀴나 우클릭 > <strong>[고급 오디오 속성]</strong>을 열고, 아래 표와 정확히 일치하도록 체크박스를 설정하세요:
+            </p>
+
+            <div class="table-responsive">
+              <table class="doc-table matrix-table">
+                <thead>
+                  <tr>
+                    <th>오디오 소스 이름</th>
+                    <th>트랙 1<br/><span class="sub-th">생방송 송출</span></th>
+                    <th>트랙 2<br/><span class="sub-th">마이크 단독</span></th>
+                    <th>트랙 3<br/><span class="sub-th">인게임 단독</span></th>
+                    <th>트랙 4<br/><span class="sub-th">음악/디코(삭제용)</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>내 마이크 (Mic)</strong></td>
+                    <td class="check-yes">✅ 체크</td>
+                    <td class="check-yes">✅ 체크</td>
+                    <td class="check-no">❌ 해제</td>
+                    <td class="check-no">❌ 해제</td>
+                  </tr>
+                  <tr>
+                    <td><strong>오디오_게임 (Game Sound)</strong></td>
+                    <td class="check-yes">✅ 체크</td>
+                    <td class="check-no">❌ 해제</td>
+                    <td class="check-yes">✅ 체크</td>
+                    <td class="check-no">❌ 해제</td>
+                  </tr>
+                  <tr>
+                    <td><strong>오디오_디스코드 (Discord)</strong></td>
+                    <td class="check-yes">✅ 체크</td>
+                    <td class="check-no">❌ 해제</td>
+                    <td class="check-no">❌ 해제</td>
+                    <td class="check-yes">✅ 체크</td>
+                  </tr>
+                  <tr>
+                    <td><strong>오디오_음악 (BGM / Music)</strong></td>
+                    <td class="check-yes">✅ 체크</td>
+                    <td class="check-no">❌ 해제</td>
+                    <td class="check-no">❌ 해제</td>
+                    <td class="check-yes">✅ 체크</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="callout-box success">
+              <div class="callout-icon">✨</div>
+              <div class="callout-body">
+                <strong>결과:</strong> 생방송 시청자는 트랙 1을 통해 모든 소리를 완벽하게 듣고, 녹화된 MP4 파일을 프리미어/다빈치에 불러오면 오디오 트랙이 4줄로 분리되어 음악/디스코드 트랙만 딸깍 클릭하여 삭제할 수 있습니다!
+              </div>
+            </div>
+
+            <!-- Tool CTA Link -->
+            <div class="inline-cta-banner">
+              <div class="cta-info">
+                <span class="cta-tag">추천 도구</span>
+                <strong>방송 중 찰진 리액션 효과음이 필요하신가요?</strong>
+                <p>숫자 키패드로 0초 즉각 재생되는 100% 무료 에러레저 효과음 사운드보드를 띄워보세요.</p>
+              </div>
+              <a href="/games/soundboard" class="cta-btn">🔊 효과음 키패드 열기 →</a>
+            </div>
+          </article>
+        </section>
+
+        <hr class="doc-divider" />
+
+        <!-- ==================================================================
+             CHAPTER 3
+             ================================================================== -->
+        <section class="doc-section" id="chapter-3">
+          <div class="section-badge-row">
+            <span class="section-num-tag">CHAPTER 03</span>
+            <span class="section-topic-tag">STUDIO MASTER & WIDGETS</span>
+          </div>
+          <h2 class="section-title">치지직 스튜디오 기능 마스터: 리모컨 200% 활용 & 익명 후원 추적 & 위플랩 룰렛</h2>
+          <p class="section-desc">
+            치지직 공식 대시보드인 '치지직 스튜디오'의 숨겨진 강력한 기능들과, 많은 스트리머들이 헷갈려하는 익명 후원 추적 및 위플랩(Weflab) 치즈 룰렛 연동 노하우를 공개합니다.
+          </p>
+
+          <!-- 3.1 리모컨 기능 -->
+          <article class="doc-card" id="ch3-remote-control">
+            <h3 class="card-heading">1. 치지직 실시간 '리모컨' 기능 200% 활용법</h3>
+            <p>
+              방송 중 게임 플레이나 토크에 집중하다 보면 시청자의 영상 후원을 놓치거나, 부적절한 영상이 송출되는 방송 사고의 위험이 있습니다. 이때 치지직 스튜디오의 <strong>[리모컨]</strong>이 필수 무기가 됩니다.
+            </p>
+
+            <ul class="styled-list">
+              <li>
+                <strong>리모컨 위치:</strong> 치지직 스튜디오 > 좌측 [방송하기] 대시보드 진입 > 우측 상단 뉴스피드/알림 탭의 <strong>[리모컨]</strong> 버튼 클릭 (별도 팝업창으로 분리 가능하여 보조 모니터나 스마트폰에 띄워두기 최적).
+              </li>
+              <li>
+                <strong>영상 후원 놓쳤을 때 즉시 재시청:</strong> 게임 중 집중하느라 시청자가 보낸 영도를 못 봤다면, 리모컨 후원 내역에서 <strong>[방송에 재생]</strong>을 클릭하면 화면에 즉시 재송출되어 깔끔한 리액션이 가능합니다.
+              </li>
+              <li>
+                <strong>치명적 방송사고 사전 방어:</strong> 치지직 스튜디오 설정에서 '영상 후원 자동 재생'을 끄고 <strong>[수동 승인 모드]</strong>로 변경하세요. 리모컨에서 스트리머가 썸네일과 제목을 먼저 검수한 뒤 [승인]을 눌러야만 방송에 나가므로, 테러성 유해 영상을 100% 차단할 수 있습니다.
+              </li>
+              <li>
+                <strong>미션 후원 실시간 승인 & 판정:</strong> 시청자가 건 킬 미션, 노데스 미션의 수락/거절 및 성공/실패 판정을 게임 창을 내리지 않고 리모컨 팝업에서 원클릭으로 제어할 수 있습니다.
+              </li>
+            </ul>
+          </article>
+
+          <!-- 3.2 익명 후원자 실명 확인 -->
+          <article class="doc-card" id="ch3-anonymous-donor">
+            <h3 class="card-heading">2. '익명 후원자'의 실제 네이버 닉네임 확인 위치와 방송 매너</h3>
+            <p>
+              시청자가 치즈 후원 창에서 <em>[익명으로 후원]</em> 체크박스를 켜고 후원하면, 방송 화면과 채팅창에는 "익명의 후원자"로 표시됩니다. 하지만 스트리머는 이 사람이 누구인지 알 수 있을까요?
+            </p>
+
+            <div class="callout-box info">
+              <div class="callout-icon">🔍</div>
+              <div class="callout-body">
+                <strong>네이버 치지직 공식 시스템 정책:</strong>
+                <p>
+                  네이버 정책상 시청자가 익명을 켜더라도, 스트리머 전용 대시보드인 <strong>[치지직 스튜디오 > 후원 관리 > 후원 내역]</strong> 및 <strong>[리모컨 알림창]</strong>에는 해당 시청자의 <strong>실제 네이버 닉네임과 프로필 사진이 100% 실시간 노출</strong>됩니다!
+                </p>
+              </div>
+            </div>
+
+            <h4 class="sub-heading">💡 센스 있는 스트리머의 리액션 화법</h4>
+            <p>
+              시청자가 굳이 익명을 켠 데에는 쑥스러움이나 조용한 응원 등의 이유가 있습니다. 따라서 방송에서 <em>"어? 철수님이네? 철수님 왜 익명 켜셨어요?"</em>라고 실명을 폭로하는 것은 시청자를 당황하게 만듭니다.
+            </p>
+            <div class="snippet-box">
+              <div class="snippet-header">
+                <span>추천 리액션 멘트</span>
+              </div>
+              <p class="snippet-content">
+                "익명의 후원자님 5,000치즈 후원 정말 감사드립니다! 사실 제 스튜디오 모니터엔 누군지 다 보이지만~ 우리 의리 지켜서 비밀로 해드릴게요! 익명님 고마워요!"
+              </p>
+            </div>
+          </article>
+
+          <!-- 3.3 위플랩 룰렛 연동 -->
+          <article class="doc-card" id="ch3-weflab-roulette">
+            <h3 class="card-heading">3. 위플랩(Weflab) 연동 치즈 룰렛 완벽 세팅</h3>
+            <p>
+              치지직 공식 후원 시스템과 연동되는 대표적인 서드파티 룰렛 플랫폼인 <strong>위플랩(Weflab)</strong> 세팅 시 가장 많은 스트리머가 실수하는 핵심 포인트를 정리합니다.
+            </p>
+
+            <ol class="step-list">
+              <li>
+                <div class="step-title">위플랩 치지직 계정 로그인 & 치즈 룰렛 활성화</div>
+                <p class="step-desc">
+                  위플랩 공식 사이트 접속 > 치지직 계정으로 간편 로그인 > 좌측 메뉴 <strong>[후원 관리] > [후원 알림]</strong> 진입 > <strong>[룰렛 후원 사용]</strong> 옵션을 활성화(체크)합니다.
+                </p>
+              </li>
+              <li>
+                <div class="step-title">룰렛 항목 및 금액, 확률 세팅</div>
+                <p class="step-desc">
+                  [룰렛 후원 설정]으로 이동하여 최소 실행 금액(예: 1,000치즈 또는 3,000치즈)을 정하고, 당첨 항목(음료수 마시기, 노래 부르기, 애교, 꽝 등)의 확률 가중치를 입력합니다.
+                </p>
+              </li>
+              <li>
+                <div class="step-title">가장 중요한 URL 복사 (실수 방지!)</div>
+                <p class="step-desc">
+                  많은 분들이 메뉴의 [룰렛] 페이지에 있는 URL을 복사하여 OBS에 넣었다가 화면이 안 뜨는 문제를 겪습니다. <strong>반드시 [후원 관리] > [후원 알림] 상단에 있는 [후원 알림 URL]을 복사</strong>해야 룰렛과 도네이션이 정상 작동합니다!
+                </p>
+              </li>
+              <li>
+                <div class="step-title">OBS 브라우저 소스 등록</div>
+                <p class="step-desc">
+                  OBS 소스 목록 [+] > [브라우저] 추가 > URL에 복사한 [후원 알림 URL] 붙여넣기 > 너비 <strong>1920</strong>, 높이 <strong>1080</strong> 입력 > [종료할 때 소스 끄기] 체크 해제 후 확인.
+                </p>
+              </li>
+            </ol>
+
+            <!-- Tool CTA Link -->
+            <div class="inline-cta-banner">
+              <div class="cta-info">
+                <span class="cta-tag">추천 도구</span>
+                <strong>악성 어그로나 분탕 시청자가 걱정되시나요?</strong>
+                <p>치지직 다중 방송 제재 이력을 실시간 교차 검증하는 무료 검지직 레이더를 켜두세요.</p>
+              </div>
+              <a href="/bzzk" class="cta-btn">🛡️ 검지직 보안 레이더 열기 →</a>
+            </div>
+          </article>
+        </section>
+
+        <hr class="doc-divider" />
+
+        <!-- ==================================================================
+             CHAPTER 4
+             ================================================================== -->
+        <section class="doc-section" id="chapter-4">
+          <div class="section-badge-row">
+            <span class="section-num-tag">CHAPTER 04</span>
+            <span class="section-topic-tag">OSMU WORKFLOW & SURVIVAL</span>
+          </div>
+          <h2 class="section-title">원소스 멀티유즈(OSMU) 영상 편집 & 방송 생존학</h2>
+          <p class="section-desc">
+            생방송만 켜놓는 스트리머는 알고리즘의 유입을 받기 어렵습니다. 생방송 1회의 원본으로 유튜브 롱폼 1편, 쇼츠 3편을 쏟아내는 OSMU(One Source Multi-Use) 파이프라인과 스트리머 필수 생존 지식을 전수합니다.
+          </p>
+
+          <!-- 4.1 영상 편집 프로그램 비교 -->
+          <article class="doc-card" id="ch4-editor-comparison">
+            <h3 class="card-heading">1. 영상 편집 프로그램 3대장 선택 가이드</h3>
+            <div class="table-responsive">
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>프로그램</th>
+                    <th>비용 / 라이선스</th>
+                    <th>주요 특징 및 장점</th>
+                    <th>추천 대상 스트리머</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>캡컷 PC (CapCut)</strong></td>
+                    <td>무료 (일부 Pro 유료)</td>
+                    <td>AI 자동 음성 자막 생성, 풍부한 무료 숏폼 템플릿, 초고속 렌더링</td>
+                    <td><strong>1인 쇼츠/릴스 제작자, 입문자 강력 추천</strong></td>
+                  </tr>
+                  <tr>
+                    <td><strong>다빈치 리졸브 (DaVinci)</strong></td>
+                    <td>완전 무료 (워터마크 없음)</td>
+                    <td>할리우드급 색보정, 고성능 페어라이트 오디오 편집, 안정적 컷편집</td>
+                    <td><strong>유튜브 롱폼 중심의 장기 운영 스트리머</strong></td>
+                  </tr>
+                  <tr>
+                    <td><strong>프리미어 프로 (Premiere)</strong></td>
+                    <td>월간 정기 구독료 발생</td>
+                    <td>포토샵/애프터이펙트 연동, 국내 영상 외주 시장의 표준 프로젝트 호환</td>
+                    <td><strong>추후 전문 외주 편집자를 둘 계획이 있는 분</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <!-- 4.2 5단계 OSMU 파이프라인 -->
+          <article class="doc-card" id="ch4-five-step-pipeline">
+            <h3 class="card-heading">2. 생방송 1회로 끝내는 5단계 OSMU 실전 파이프라인</h3>
+            <p>
+              생방송 4시간을 진행하고 지친 상태에서 처음부터 영상을 다 훑어보려면 편집이 불가능합니다. 아래 5단계 루틴을 습관화하세요:
+            </p>
+
+            <div class="timeline-container">
+              <div class="timeline-step">
+                <div class="tl-marker">1</div>
+                <div class="tl-content">
+                  <h4>STEP 1: 생방송 중 빵 터진 순간 타임스탬프 기록</h4>
+                  <p>
+                    치지직 스튜디오의 [클립 만들기] 버튼을 누르거나, 메모장에 <code>1:24:10 보스전 레전드 역전</code> 같이 시간대를 즉시 메모합니다.
+                  </p>
+                </div>
+              </div>
+
+              <div class="timeline-step">
+                <div class="tl-marker">2</div>
+                <div class="tl-content">
+                  <h4>STEP 2: 8~12분 유튜브 메인 롱폼 1차 컷편집</h4>
+                  <p>
+                    타임스탬프로 체크해 둔 하이라이트 구간 위주로 오디오 파형이 비는 구간을 쳐내고 인트로 5초 훅(Hook)을 배치하여 메인 영상을 완성합니다.
+                  </p>
+                </div>
+              </div>
+
+              <div class="timeline-step">
+                <div class="tl-marker">3</div>
+                <div class="tl-content">
+                  <h4>STEP 3: 롱폼 중 30~50초 킬러 파트 1~2개 추출</h4>
+                  <p>
+                    완성된 롱폼 영상 중 기승전결이 가장 뚜렷하거나 빵 터지는 리액션 구간 1~2개를 별도로 복사합니다.
+                  </p>
+                </div>
+              </div>
+
+              <div class="timeline-step">
+                <div class="tl-marker">4</div>
+                <div class="tl-content">
+                  <h4>STEP 4: 9:16 세로 화면 스마트 리프레이밍</h4>
+                  <p>
+                    캡컷이나 프리미어에서 1080x1920 세로 캔버스를 열고, <strong>상단에는 웹캠 얼굴 확대, 하단에는 인게임 핵심 화면 및 굵은 자막</strong>을 상하 2단으로 재배치합니다.
+                  </p>
+                </div>
+              </div>
+
+              <div class="timeline-step">
+                <div class="tl-marker">5</div>
+                <div class="tl-content">
+                  <h4>STEP 5: 유튜브 쇼츠, 인스타 릴스, 틱톡 3사 동시 업로드</h4>
+                  <p>
+                    생성된 9:16 영상을 유튜브 쇼츠, 인스타그램 릴스, 틱톡 3개 플랫폼에 동일하게 게시하여, 잠재 시청자를 내 치지직 생방송으로 유입시킵니다.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 4.3 VOD 보관 기한 경고 -->
+          <article class="doc-card" id="ch4-vod-retention">
+            <h3 class="card-heading">3. 치지직 다시보기(VOD) 보관 기한 주의사항</h3>
+            <div class="callout-box danger">
+              <div class="callout-icon">🚨</div>
+              <div class="callout-body">
+                <strong>[영구 삭제 주의] 치지직 VOD 보관 만료 정책:</strong>
+                <p>
+                  네이버 치지직의 다시보기(VOD)는 무제한 보관되지 않습니다:
+                  <br/>&bull; <strong>루키(Rookie) 등급:</strong> 방송 종료 후 <strong>단 7일</strong> 보관 후 자동 영구 삭제
+                  <br/>&bull; <strong>프로(Pro) 등급:</strong> 방송 종료 후 <strong>60일</strong> 보관 후 자동 영구 삭제
+                </p>
+                <p>
+                  기한이 지나면 네이버 서버에서 영구 파기되어 복구가 불가능하므로, <strong>생방송 직후 로컬에 녹화본을 남기거나 에러레저 치지직 다운로더를 통해 즉시 고화질 MP4로 백업</strong>해 두어야 합니다.
+                </p>
+              </div>
+            </div>
+
+            <!-- Tool CTA Link -->
+            <div class="inline-cta-banner">
+              <div class="cta-info">
+                <span class="cta-tag">추천 도구</span>
+                <strong>내 VOD 다시보기와 클립을 고화질로 백업하고 싶다면?</strong>
+                <p>설치 없이 브라우저에서 1080p FHD 60fps 무손실 원본으로 즉시 받는 치지직 다운로더를 사용하세요.</p>
+              </div>
+              <a href="/chzzk-downloader" class="cta-btn">📥 치지직 다운로더 열기 →</a>
+            </div>
+          </article>
+
+          <!-- 4.4 통나무를 든다 유래와 실전 활용 -->
+          <article class="doc-card" id="ch4-log-theory">
+            <h3 class="card-heading">4. 스트리머 필수 방송 은어 '통나무를 든다'의 유래와 실전 활용법</h3>
+
+            <div class="slang-box">
+              <div class="slang-term">🪵 통나무를 든다 (Lifting the Log)</div>
+              <div class="slang-origin">
+                <strong>유래:</strong> 전 리그 오브 레전드 프로팀 감독인 씨맥(cvMax, 김대호)의 <em>'통나무론'</em>에서 유래되었습니다. 군대 유격 훈련의 목봉(통나무) 체조에서 팀원 여러 명이 함께 통나무를 들 때, 누군가 힘을 빼면 남은 사람이 그 무게를 온몸으로 짊어져야 하는 상황을 빗댄 인터넷 방송계의 명언입니다.
+              </div>
+              <div class="slang-usage">
+                <strong>실전 방송 적용:</strong>
+                합방이나 크루 단체 게임을 진행할 때 한두 명의 텐션이 떨어지거나 어색한 정적이 흐를 때, 한 명의 스트리머가 <em>폭풍 입담, 자폭 개그, 과장된 리액션으로 오디오를 꽉 채우며 방송 전체의 텐션을 멱살 잡고 캐리하는 행위</em>를 "○○님이 통나무를 든다"라고 표현합니다.
+              </div>
+            </div>
+
+            <h4 class="sub-heading">💡 프로 스트리머의 통나무 들기 3대 수칙</h4>
+            <ul class="styled-list">
+              <li><strong>오디오 1.5초 법칙:</strong> 합방 중 1.5초 이상 침묵이 이어지면 시청자는 뒤로가기를 누릅니다. 상대방의 사소한 플레이나 닉네임, 장비라도 집어서 질문을 던지세요.</li>
+              <li><strong>자폭 개그의 미학:</strong> 분위기가 가라앉았을 때 타인을 깎아내리기보다 본인의 실수나 게임 실력을 유쾌하게 디스하면 합방 멤버 전체의 웃음 장벽이 무너집니다.</li>
+              <li><strong>타인의 리액션 토스:</strong> 혼자서 100% 떠들기보다 "○○님 아까 그 플레이 보셨어요? 솔직히 심장 떨어질 뻔했죠?"처럼 상대방에게 공을 넘겨 자연스럽게 말을 이끌어내세요.</li>
+            </ul>
+          </article>
+        </section>
+
+        <!-- Final Help & Community Link -->
+        <footer class="doc-end-card">
+          <div class="dec-badge">ALL-IN-ONE STREAM LAB</div>
+          <h3>스트리머 여러분의 즐거운 방송 여정을 응원합니다</h3>
+          <p>
+            에러레저(ErrorLedger)는 방송 중 프로그램 튕김이나 리소스 낭비 없는 100% 무설치 웹 솔루션을 지향합니다.<br/>
+            추가로 궁금한 방송 세팅이나 원하는 기능이 있다면 언제든 문의해 주세요.
+          </p>
+          <div class="dec-buttons">
+            <a href="/schedule" class="dec-btn primary">📅 주간 방송 편성표 만들기</a>
+            <a href="/games/soundboard" class="dec-btn secondary">🔊 방송 효과음 키패드</a>
+            <a href="/contact" class="dec-btn outline">✉️ 피드백 & 문의하기</a>
+          </div>
+        </footer>
+      </main>
+    </div>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  /* ==========================================================================
+     High-Contrast Dark Mode & Documentation Layout (#0f1117 / #161b22, #00ffcc)
+     ========================================================================== */
+  :root {
+    --doc-bg: #090d16;
+    --doc-card: #121824;
+    --doc-card-inner: #0d121c;
+    --doc-border: #233147;
+    --doc-border-hover: #3b4e73;
+    --doc-cyan: #00ffcc;
+    --doc-violet: #7928ca;
+    --doc-pink: #ff007a;
+    --doc-yellow: #fbbf24;
+    --doc-red: #ef4444;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #546582;
+  }
+
+  body.guide-body {
+    background-color: var(--doc-bg);
+    color: var(--text-primary);
+    font-family: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* Reading Progress Track */
+  .reading-progress-track {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: transparent;
+    z-index: 10001;
+    pointer-events: none;
+  }
+
+  .reading-progress-bar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--doc-cyan), #38bdf8, var(--doc-violet));
+    box-shadow: 0 0 10px var(--doc-cyan);
+    transition: width 0.1s ease-out;
+  }
+
+  /* Mobile TOC Bar */
+  .mobile-toc-bar {
+    display: none;
+    position: sticky;
+    top: 60px;
+    z-index: 999;
+    background: rgba(18, 24, 36, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--doc-border);
+    padding: 0.6rem 1.25rem;
+  }
+
+  .mobile-toc-trigger {
+    width: 100%;
+    background: #162032;
+    border: 1px solid var(--doc-border);
+    color: var(--doc-cyan);
+    padding: 0.55rem 1rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+
+  /* 2-Column Documentation Wrapper */
+  .guide-wrapper {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 1.5rem 1.5rem 4rem;
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 2.5rem;
+    position: relative;
+    box-sizing: border-box;
+  }
+
+  /* --------------------------------------------------------------------------
+     Sidebar (Sticky GitBook Style)
+     -------------------------------------------------------------------------- */
+  .guide-sidebar {
+    position: sticky;
+    top: 80px;
+    height: calc(100vh - 100px);
+    overflow-y: auto;
+    padding-right: 0.5rem;
+  }
+
+  .guide-sidebar::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .guide-sidebar::-webkit-scrollbar-thumb {
+    background: #233147;
+    border-radius: 4px;
+  }
+
+  .sidebar-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .sidebar-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .sidebar-brand-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--doc-cyan);
+    font-family: monospace;
+  }
+
+  .sidebar-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .sidebar-desc {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .sidebar-search-box {
+    width: 100%;
+  }
+
+  .sidebar-filter-input {
+    width: 100%;
+    background: var(--doc-card);
+    border: 1px solid var(--doc-border);
+    color: var(--text-primary);
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .sidebar-filter-input:focus {
+    border-color: var(--doc-cyan);
+    box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .nav-section-title {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    font-family: monospace;
+    padding-bottom: 0.25rem;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.15s ease;
+    border-left: 2px solid transparent;
+  }
+
+  .nav-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .nav-link.active {
+    color: var(--doc-cyan);
+    background: rgba(0, 255, 204, 0.08);
+    border-left-color: var(--doc-cyan);
+    box-shadow: 0 0 12px rgba(0, 255, 204, 0.15);
+  }
+
+  .nav-num {
+    font-size: 0.72rem;
+    font-family: monospace;
+    font-weight: 800;
+    color: var(--text-muted);
+  }
+
+  .nav-link.active .nav-num {
+    color: var(--doc-cyan);
+  }
+
+  .nav-chapter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .nav-sub-list {
+    display: flex;
+    flex-direction: column;
+    padding-left: 1.5rem;
+    gap: 0.2rem;
+    border-left: 1px solid #1a2436;
+    margin-left: 0.75rem;
+  }
+
+  .nav-sub-link {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .nav-sub-link:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .nav-sub-link.active {
+    color: var(--doc-cyan);
+    font-weight: 700;
+  }
+
+  /* Sidebar Tools Widget */
+  .sidebar-tools-box {
+    background: var(--doc-card);
+    border: 1px solid var(--doc-border);
+    border-radius: 10px;
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .st-label {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  .st-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .st-item {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 0.35rem 0.5rem;
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+
+  .st-item:hover {
+    color: var(--doc-cyan);
+    background: rgba(0, 255, 204, 0.06);
+  }
+
+  /* --------------------------------------------------------------------------
+     Main Content Prose
+     -------------------------------------------------------------------------- */
+  .guide-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    min-width: 0;
+  }
+
+  /* Breadcrumbs */
+  .guide-breadcrumbs ol {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  .guide-breadcrumbs a {
+    color: var(--text-secondary);
+    text-decoration: none;
+  }
+
+  .guide-breadcrumbs a:hover {
+    color: var(--doc-cyan);
+  }
+
+  .bc-sep {
+    color: var(--text-muted);
+  }
+
+  .bc-current {
+    color: var(--text-primary);
+    font-weight: 700;
+  }
+
+  /* Hero Header */
+  .doc-hero {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .hero-tag-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-badge {
+    font-size: 0.7rem;
+    font-weight: 800;
+    font-family: monospace;
+    letter-spacing: 0.08em;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+
+  .hero-badge.emerald {
+    background: rgba(0, 255, 204, 0.15);
+    color: var(--doc-cyan);
+    border: 1px solid rgba(0, 255, 204, 0.4);
+    box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+  }
+
+  .hero-meta-item {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  .doc-title {
+    font-size: 2.25rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    margin: 0;
+    color: #fff;
+  }
+
+  .doc-lead {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .doc-stat-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .stat-pill {
+    background: var(--doc-card);
+    border: 1px solid var(--doc-border);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .stat-num {
+    font-size: 1.45rem;
+    font-weight: 900;
+    color: var(--doc-cyan);
+    font-family: monospace;
+    line-height: 1;
+  }
+
+  .stat-lbl {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  .doc-divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, var(--doc-border) 0%, transparent 100%);
+    margin: 0;
+  }
+
+  /* --------------------------------------------------------------------------
+     Chapters & Articles
+     -------------------------------------------------------------------------- */
+  .doc-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    scroll-margin-top: 90px;
+  }
+
+  .section-badge-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .section-num-tag {
+    background: var(--doc-violet);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: monospace;
+  }
+
+  .section-topic-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    font-family: monospace;
+    letter-spacing: 0.05em;
+  }
+
+  .section-title {
+    font-size: 1.65rem;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+    color: #fff;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .section-desc {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.65;
+  }
+
+  /* Article Cards */
+  .doc-card {
+    background: var(--doc-card);
+    border: 1px solid var(--doc-border);
+    border-radius: 14px;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    scroll-margin-top: 100px;
+  }
+
+  .card-heading {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .sub-heading {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0.5rem 0 0;
+  }
+
+  p {
+    margin: 0;
+    color: var(--text-secondary);
+  }
+
+  strong {
+    color: var(--text-primary);
+  }
+
+  /* Callout Boxes */
+  .callout-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 1.15rem 1.25rem;
+    border-radius: 12px;
+    background: var(--doc-card-inner);
+    border: 1px solid transparent;
+  }
+
+  .callout-icon {
+    font-size: 1.35rem;
+    line-height: 1.2;
+    flex-shrink: 0;
+  }
+
+  .callout-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .callout-box.warning {
+    border-color: rgba(251, 191, 36, 0.4);
+    background: linear-gradient(145deg, rgba(251, 191, 36, 0.08), rgba(20, 15, 8, 0.6));
+    color: #fef08a;
+  }
+  .callout-box.warning strong {
+    color: #fbbf24;
+  }
+
+  .callout-box.info {
+    border-color: rgba(56, 189, 248, 0.4);
+    background: linear-gradient(145deg, rgba(56, 189, 248, 0.08), rgba(8, 15, 24, 0.6));
+  }
+  .callout-box.info strong {
+    color: #38bdf8;
+  }
+
+  .callout-box.success {
+    border-color: rgba(0, 255, 204, 0.4);
+    background: linear-gradient(145deg, rgba(0, 255, 204, 0.08), rgba(8, 24, 20, 0.6));
+  }
+  .callout-box.success strong {
+    color: var(--doc-cyan);
+  }
+
+  .callout-box.danger {
+    border-color: rgba(239, 68, 68, 0.4);
+    background: linear-gradient(145deg, rgba(239, 68, 68, 0.1), rgba(24, 8, 8, 0.6));
+  }
+  .callout-box.danger strong {
+    color: #f87171;
+  }
+
+  /* Feature Grid */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-top: 0.25rem;
+  }
+
+  .feature-item {
+    background: var(--doc-card-inner);
+    border: 1px solid var(--doc-border);
+    border-radius: 12px;
+    padding: 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .fi-icon {
+    font-size: 1.6rem;
+  }
+
+  .fi-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  .fi-desc {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+
+  /* Styled Lists */
+  .styled-list {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+
+  .styled-list li strong {
+    color: #fff;
+  }
+
+  /* Step Lists */
+  .step-list {
+    margin: 0;
+    padding-left: 1.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .step-title {
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 0.2rem;
+  }
+
+  .step-desc {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* Comparison Tables */
+  .table-responsive {
+    overflow-x: auto;
+    border-radius: 10px;
+    border: 1px solid var(--doc-border);
+  }
+
+  .doc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.86rem;
+    text-align: left;
+    background: var(--doc-card-inner);
+  }
+
+  .doc-table th {
+    background: #162032;
+    color: #fff;
+    font-weight: 800;
+    padding: 0.85rem 1rem;
+    border-bottom: 2px solid var(--doc-border);
+    white-space: nowrap;
+  }
+
+  .doc-table td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid #1a2538;
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+
+  .doc-table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .sub-th {
+    font-size: 0.72rem;
+    font-weight: normal;
+    color: var(--text-muted);
+  }
+
+  .matrix-table td.check-yes {
+    color: var(--doc-cyan);
+    font-weight: 800;
+    background: rgba(0, 255, 204, 0.04);
+  }
+
+  .matrix-table td.check-no {
+    color: var(--text-muted);
+  }
+
+  /* Snippet Box */
+  .snippet-box {
+    background: var(--doc-card-inner);
+    border: 1px solid var(--doc-border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .snippet-header {
+    background: #141c2c;
+    border-bottom: 1px solid var(--doc-border);
+    padding: 0.4rem 0.85rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--doc-cyan);
+    letter-spacing: 0.05em;
+  }
+
+  .snippet-content {
+    padding: 0.9rem 1rem;
+    font-size: 0.9rem;
+    color: #e2e8f0;
+    font-style: italic;
+    line-height: 1.6;
+  }
+
+  /* Timeline Steps (Chapter 4) */
+  .timeline-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: relative;
+    padding-left: 0.5rem;
+  }
+
+  .timeline-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: var(--doc-card-inner);
+    border: 1px solid var(--doc-border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+  }
+
+  .tl-marker {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--doc-cyan), #00b4d8);
+    color: #07101e;
+    font-weight: 900;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 0 10px var(--doc-cyan);
+  }
+
+  .tl-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .tl-content h4 {
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0;
+  }
+
+  .tl-content p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  /* Slang Box */
+  .slang-box {
+    background: linear-gradient(145deg, #151d2e, #0e1522);
+    border: 1.5px solid #2a3a54;
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .slang-term {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--doc-cyan);
+    letter-spacing: -0.01em;
+  }
+
+  .slang-origin,
+  .slang-usage {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  .slang-origin strong,
+  .slang-usage strong {
+    color: #fff;
+  }
+
+  /* Inline CTA Banners */
+  .inline-cta-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background: linear-gradient(135deg, rgba(0, 255, 204, 0.08), rgba(121, 40, 202, 0.12));
+    border: 1px solid rgba(0, 255, 204, 0.35);
+    border-radius: 12px;
+    padding: 1.15rem 1.35rem;
+    margin-top: 0.5rem;
+  }
+
+  .cta-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .cta-tag {
+    font-size: 0.65rem;
+    font-weight: 800;
+    font-family: monospace;
+    color: var(--doc-cyan);
+    letter-spacing: 0.08em;
+  }
+
+  .cta-info strong {
+    font-size: 0.95rem;
+    color: #fff;
+  }
+
+  .cta-info p {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+  }
+
+  .cta-btn {
+    background: linear-gradient(135deg, var(--doc-cyan), #00b4d8);
+    color: #07101e;
+    font-size: 0.82rem;
+    font-weight: 800;
+    padding: 0.6rem 1.1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0 12px rgba(0, 255, 204, 0.3);
+  }
+
+  .cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.6);
+  }
+
+  /* Final End Card */
+  .doc-end-card {
+    background: radial-gradient(circle at 50% 20%, #1c273c 0%, #101726 100%);
+    border: 1.5px solid var(--doc-border);
+    border-radius: 16px;
+    padding: 2.25rem 1.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  .dec-badge {
+    font-size: 0.7rem;
+    font-weight: 800;
+    font-family: monospace;
+    letter-spacing: 0.1em;
+    color: var(--doc-cyan);
+  }
+
+  .doc-end-card h3 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0;
+  }
+
+  .doc-end-card p {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .dec-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+  }
+
+  .dec-btn {
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 0.6rem 1.1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .dec-btn.primary {
+    background: var(--doc-cyan);
+    color: #07101e;
+    box-shadow: 0 0 14px rgba(0, 255, 204, 0.3);
+  }
+  .dec-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 24px rgba(0, 255, 204, 0.6);
+  }
+
+  .dec-btn.secondary {
+    background: #1e293b;
+    color: #fff;
+    border: 1px solid #334155;
+  }
+  .dec-btn.secondary:hover {
+    background: #2a374f;
+    border-color: #475569;
+  }
+
+  .dec-btn.outline {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--doc-border);
+  }
+  .dec-btn.outline:hover {
+    color: #fff;
+    border-color: #475569;
+  }
+
+  /* --------------------------------------------------------------------------
+     Responsive Media Queries
+     -------------------------------------------------------------------------- */
+  @media (max-width: 1024px) {
+    .guide-wrapper {
+      grid-template-columns: 1fr;
+      padding: 1rem 1rem 3rem;
+    }
+
+    .mobile-toc-bar {
+      display: block;
+    }
+
+    .guide-sidebar {
+      display: none;
+      position: fixed;
+      top: 108px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: calc(100vh - 108px);
+      background: rgba(10, 13, 20, 0.98);
+      backdrop-filter: blur(14px);
+      z-index: 998;
+      padding: 1.5rem;
+      box-sizing: border-box;
+    }
+
+    .guide-sidebar.active {
+      display: block;
+    }
+
+    .inline-cta-banner {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .doc-title {
+      font-size: 1.75rem;
+    }
+    .section-title {
+      font-size: 1.35rem;
+    }
+    .doc-card {
+      padding: 1.25rem;
+    }
+  }
+</style>
+
+<script is:inline>
+  // ============================================================================
+  // GUIDE SCROLLSPY, READING PROGRESS, FILTER & MOBILE DRAWER SCRIPT
+  // ============================================================================
+  (function () {
+    const progressBar = document.getElementById('reading-progress-bar');
+    const mobileBtn = document.getElementById('mobile-toc-trigger');
+    const sidebar = document.getElementById('guide-sidebar');
+    const filterInput = document.getElementById('sidebar-filter-input');
+    const navLinks = document.querySelectorAll('.nav-link, .nav-sub-link');
+    const sections = document.querySelectorAll('.doc-section, .doc-card, .doc-hero');
+
+    // 1. Reading Progress Bar
+    function updateProgress() {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+      if (progressBar) {
+        progressBar.style.width = Math.min(100, Math.max(0, progress)) + '%';
+      }
+    }
+
+    window.addEventListener('scroll', updateProgress, { passive: true });
+
+    // 2. Mobile TOC Drawer Toggle
+    if (mobileBtn && sidebar) {
+      mobileBtn.addEventListener('click', function () {
+        sidebar.classList.toggle('active');
+        const expanded = sidebar.classList.contains('active');
+        mobileBtn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      });
+
+      // Close mobile sidebar on navigation click
+      navLinks.forEach(link => {
+        link.addEventListener('click', function () {
+          if (window.innerWidth <= 1024) {
+            sidebar.classList.remove('active');
+            mobileBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+      });
+    }
+
+    // 3. ScrollSpy: Highlight active section in sidebar
+    const observerOptions = {
+      root: null,
+      rootMargin: '-80px 0px -60% 0px',
+      threshold: 0
+    };
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+          if (!id) return;
+
+          navLinks.forEach(link => {
+            const target = link.getAttribute('data-target');
+            if (target === id) {
+              link.classList.add('active');
+            } else {
+              link.classList.remove('active');
+            }
+          });
+        }
+      });
+    }, observerOptions);
+
+    sections.forEach(sec => observer.observe(sec));
+
+    // 4. Client-side Navigation Filter
+    if (filterInput) {
+      filterInput.addEventListener('input', function () {
+        const query = this.value.trim().toLowerCase();
+        navLinks.forEach(link => {
+          const text = link.textContent.toLowerCase();
+          const parentGroup = link.closest('.nav-chapter-group');
+          if (!query || text.includes(query)) {
+            link.style.display = '';
+            if (parentGroup) parentGroup.style.display = '';
+          } else {
+            link.style.display = 'none';
+          }
+        });
+      });
+    }
+  })();
+</script>
