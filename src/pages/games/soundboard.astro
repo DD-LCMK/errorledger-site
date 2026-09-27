@@ -13,25 +13,31 @@ const data = gameEntry?.data || {
   players: '스트리머 1인 (생방송)',
   playTime: '즉시 재생 (무제한)',
   controls: [
-    '숫자 키패드(Num 1~9) 또는 상단 숫자키(1~9)로 효과음 즉시 재생',
+    'PC 숫자 키패드(Num 7~9, 4~6, 1~3)와 1:1 일치하는 직관적 레이아웃',
     '스페이스바(Space) 또는 ESC 키로 모든 효과음 즉시 긴급 정지',
-    '0(Q) 또는 .(W) 키로 나만의 커스텀 사운드(슬롯 A, B) 재생',
-    '상단 마스터 볼륨 슬라이더 및 동시/단일 컷 재생 모드 토글',
-    '집중 모드(Focus) 및 OBS 브라우저 소스(?stream=true) 지원'
+    '0(Q) 및 .(W) 키로 나만의 커스텀 사운드(슬롯 A, B) 즉각 재생',
+    '누를 때만 재생되는 [HOLD] 모드 지원 (연타 시 찰진 스터터 컷 효과 연출)',
+    '선명한 마스터 볼륨 슬라이더 및 동시/단일 컷 재생 모드 토글',
+    '집중 모드(Focus) 및 OBS 브라우저 소스(?stream=true) 완벽 지원'
   ],
   rules: [
     '외부 오디오 다운로드 없이 Web Audio API로 0ms 초저지연 합성 재생됩니다.',
     '동시 재생(Overlap) 모드는 소리가 겹치며, 단일(Cut) 모드는 새 소리가 이전 소리를 즉시 컷합니다.',
+    'Hold 모드에서는 버튼이나 키를 누르고 있는 동안만 소리가 나며 손을 떼면 즉시 컷됩니다.',
     '커스텀 슬롯에 원하는 MP3/WAV 파일을 드래그하여 방송 시그니처 사운드로 활용할 수 있습니다.'
   ],
   faqItems: [
     {
-      q: 'OBS 방송 화면이나 보조 모니터에서 리모컨처럼 사용할 수 있나요?',
-      a: '네! 상단의 [🎥 OBS 복사] 버튼을 누르면 불필요한 UI 없이 패드만 깔끔하게 노출되는 투명 오버레이 URL(?stream=true)이 복사됩니다. OBS 브라우저 소스나 보조 모니터에 띄워두고 편리하게 사용하세요.'
+      q: '키패드 배치 순서가 어떻게 되나요?',
+      a: 'PC 키보드 우측 숫자 키패드(Numpad)의 물리적 배열과 100% 동일하게 배치되어 있습니다. 상단 7-8-9, 중단 4-5-6, 하단 1-2-3, 최하단 0(커스텀 A) 및 .(커스텀 B) 순서로 손의 감각 그대로 방송 중 화면을 보지 않고도 원클릭 재생할 수 있습니다.'
     },
     {
-      q: '키보드 숫자패드로 소리가 안 날 때는 어떻게 하나요?',
-      a: '키보드의 "Num Lock" 키가 켜져 있는지 확인해 주세요. 키패드뿐만 아니라 키보드 상단의 일반 숫자 1~9 키로도 동일하게 즉각 재생됩니다.'
+      q: '누를 때만 짧게 소리를 내고 싶을 때는 어떻게 하나요?',
+      a: '상단 제어바의 [TRIGGER] 옵션을 [HOLD]로 설정하세요! 버튼을 누르거나 키를 누르고 있는 동안만 소리가 나며, 손을 떼면 즉시 컷됩니다. [CUT] 모드와 함께 키를 연타하면 "땡-땡-땡" 같은 재미있는 리액션 스터터 효과를 낼 수 있습니다.'
+    },
+    {
+      q: '커스텀 MP3 파일은 어디서 등록하나요?',
+      a: '키패드 맨 아래의 넓은 [CUSTOM SLOT A (0 / Q)] 및 [CUSTOM SLOT B (. / W)] 패드를 클릭하거나, 컴퓨터에 있는 MP3/WAV 오디오 파일을 해당 패드로 바로 드래그 앤 드롭하시면 0초 만에 로컬 등록됩니다.'
     },
     {
       q: '내가 등록한 커스텀 MP3 파일이 서버로 전송되나요?',
@@ -70,26 +76,28 @@ const data = gameEntry?.data || {
 
       <!-- Live Master Controls -->
       <div class="sb-master-controls">
-        <!-- Master Volume -->
+        <!-- 1. Master Volume with Ultra-Visible Track Line -->
         <div class="control-group volume-group">
-          <label for="master-volume" class="control-label">
+          <div class="vol-label-row">
             <span class="ctrl-icon" id="vol-icon">🔊</span>
-            <span class="label-text">MASTER</span>
+            <span class="label-text">VOLUME</span>
             <span class="vol-value" id="vol-display">100%</span>
-          </label>
-          <input 
-            type="range" 
-            id="master-volume" 
-            class="vol-slider" 
-            min="0" 
-            max="150" 
-            value="100" 
-            step="1"
-            aria-label="Master Volume"
-          />
+          </div>
+          <div class="vol-track-container" title="마스터 볼륨 조절 (0% ~ 150%)">
+            <input 
+              type="range" 
+              id="master-volume" 
+              class="vol-slider" 
+              min="0" 
+              max="150" 
+              value="100" 
+              step="1"
+              aria-label="Master Volume Control"
+            />
+          </div>
         </div>
 
-        <!-- Polyphony Mode Toggle -->
+        <!-- 2. Polyphony Mode (Overlap vs Cut) -->
         <div class="control-group polyphony-group">
           <span class="control-label">
             <span class="ctrl-icon">🔀</span>
@@ -105,7 +113,23 @@ const data = gameEntry?.data || {
           </div>
         </div>
 
-        <!-- Panic Stop Button -->
+        <!-- 3. Trigger Mode (One-Shot vs Hold-to-play) -->
+        <div class="control-group trigger-group">
+          <span class="control-label">
+            <span class="ctrl-icon">⏱️</span>
+            <span class="label-text">TRIGGER</span>
+          </span>
+          <div class="toggle-pill-wrap">
+            <button type="button" class="poly-btn active" id="btn-trig-oneshot" data-trig="oneshot" title="1회 클릭 시 전체 효과음을 끝까지 재생합니다">
+              ONE-SHOT
+            </button>
+            <button type="button" class="poly-btn" id="btn-trig-hold" data-trig="hold" title="누르고 있는 동안만 재생되고 손을 떼면 즉시 컷됩니다 (연타 리액션 가능)">
+              HOLD
+            </button>
+          </div>
+        </div>
+
+        <!-- 4. Panic Stop Button -->
         <button type="button" class="panic-stop-btn" id="panic-stop-btn" title="모든 재생 중인 효과음을 즉시 긴급 정지합니다 (Space / Esc)">
           <span class="panic-icon">🛑</span>
           <span class="panic-text">PANIC STOP</span>
@@ -132,62 +156,68 @@ const data = gameEntry?.data || {
 
     <!-- Real-time Oscilloscope / Spectrum Ribbon -->
     <div class="visualizer-container">
-      <canvas id="visualizer-canvas" class="visualizer-canvas" height="36"></canvas>
+      <canvas id="visualizer-canvas" class="visualizer-canvas" height="34"></canvas>
       <div class="visualizer-status">
         <span class="status-dot active" id="audio-status-dot"></span>
         <span class="status-text" id="audio-status-text">AUDIO ENGINE READY</span>
       </div>
     </div>
 
-    <!-- Main Soundboard Section -->
+    <!-- Main Soundboard Section: Physical Numpad Layout (789, 456, 123, 0.) -->
     <main class="sb-main-stage">
-      <!-- 3x3 Primary Tactical Grid -->
-      <div class="pad-grid-3x3" id="pad-grid" role="region" aria-label="3x3 Soundboard Pads">
-        <!-- Pad 1 -->
-        <button type="button" class="sound-pad pad-danger" data-pad="1" data-key="1" id="pad-1">
+      <div class="pad-grid-keypad" id="pad-grid" role="region" aria-label="Keypad Soundboard Pads">
+        
+        <!-- ====================================================================
+             ROW 1 (TOP OF NUMPAD): 7, 8, 9
+             ==================================================================== -->
+        <!-- Pad 7 -->
+        <button type="button" class="sound-pad pad-cyan" data-pad="7" data-key="7" id="pad-7">
           <div class="pad-header">
-            <span class="pad-badge">PAD 1</span>
-            <span class="pad-hotkey">NUM 1</span>
+            <span class="pad-badge">PAD 7</span>
+            <span class="pad-hotkey">NUM 7</span>
           </div>
           <div class="pad-body">
-            <div class="pad-icon-wrap">❌</div>
-            <div class="pad-title">땡! (오답 버저)</div>
-            <div class="pad-sub">Harsh Low Buzzer</div>
+            <div class="pad-icon-wrap">🎪</div>
+            <div class="pad-title">드럼롤 (긴장감)</div>
+            <div class="pad-sub">Drumroll & Crash Hit</div>
           </div>
           <div class="pad-ripple"></div>
           <div class="pad-glow"></div>
         </button>
 
-        <!-- Pad 2 -->
-        <button type="button" class="sound-pad pad-success" data-pad="2" data-key="2" id="pad-2">
+        <!-- Pad 8 -->
+        <button type="button" class="sound-pad pad-gold" data-pad="8" data-key="8" id="pad-8">
           <div class="pad-header">
-            <span class="pad-badge">PAD 2</span>
-            <span class="pad-hotkey">NUM 2</span>
+            <span class="pad-badge">PAD 8</span>
+            <span class="pad-hotkey">NUM 8</span>
           </div>
           <div class="pad-body">
-            <div class="pad-icon-wrap">🔔</div>
-            <div class="pad-title">딩동댕! (정답 차임)</div>
-            <div class="pad-sub">Crystal Bell Chime</div>
+            <div class="pad-icon-wrap">🎺</div>
+            <div class="pad-title">팡파르 (승리/축하)</div>
+            <div class="pad-sub">Brass Triad Fanfare</div>
           </div>
           <div class="pad-ripple"></div>
           <div class="pad-glow"></div>
         </button>
 
-        <!-- Pad 3 -->
-        <button type="button" class="sound-pad pad-primary" data-pad="3" data-key="3" id="pad-3">
+        <!-- Pad 9 -->
+        <button type="button" class="sound-pad pad-violet" data-pad="9" data-key="9" id="pad-9">
           <div class="pad-header">
-            <span class="pad-badge">PAD 3</span>
-            <span class="pad-hotkey">NUM 3</span>
+            <span class="pad-badge">PAD 9</span>
+            <span class="pad-hotkey">NUM 9</span>
           </div>
           <div class="pad-body">
-            <div class="pad-icon-wrap">🥁</div>
-            <div class="pad-title">두둥탁! (펀치라인)</div>
-            <div class="pad-sub">Ba-Dum-Tss Punchline</div>
+            <div class="pad-icon-wrap">👏</div>
+            <div class="pad-title">박수 갈채 (환호)</div>
+            <div class="pad-sub">Crowd Applause Burst</div>
           </div>
           <div class="pad-ripple"></div>
           <div class="pad-glow"></div>
         </button>
 
+        <!-- ====================================================================
+             ROW 2 (MIDDLE OF NUMPAD): 4, 5, 6
+             ==================================================================== -->
         <!-- Pad 4 -->
         <button type="button" class="sound-pad pad-warning" data-pad="4" data-key="4" id="pad-4">
           <div class="pad-header">
@@ -233,122 +263,135 @@ const data = gameEntry?.data || {
           <div class="pad-glow"></div>
         </button>
 
-        <!-- Pad 7 -->
-        <button type="button" class="sound-pad pad-cyan" data-pad="7" data-key="7" id="pad-7">
+        <!-- ====================================================================
+             ROW 3 (BOTTOM OF NUMPAD): 1, 2, 3
+             ==================================================================== -->
+        <!-- Pad 1 -->
+        <button type="button" class="sound-pad pad-danger" data-pad="1" data-key="1" id="pad-1">
           <div class="pad-header">
-            <span class="pad-badge">PAD 7</span>
-            <span class="pad-hotkey">NUM 7</span>
+            <span class="pad-badge">PAD 1</span>
+            <span class="pad-hotkey">NUM 1</span>
           </div>
           <div class="pad-body">
-            <div class="pad-icon-wrap">🎪</div>
-            <div class="pad-title">드럼롤 (긴장감)</div>
-            <div class="pad-sub">Roll with Crash Hit</div>
+            <div class="pad-icon-wrap">❌</div>
+            <div class="pad-title">땡! (오답 버저)</div>
+            <div class="pad-sub">Harsh Low Buzzer</div>
           </div>
           <div class="pad-ripple"></div>
           <div class="pad-glow"></div>
         </button>
 
-        <!-- Pad 8 -->
-        <button type="button" class="sound-pad pad-gold" data-pad="8" data-key="8" id="pad-8">
+        <!-- Pad 2 -->
+        <button type="button" class="sound-pad pad-success" data-pad="2" data-key="2" id="pad-2">
           <div class="pad-header">
-            <span class="pad-badge">PAD 8</span>
-            <span class="pad-hotkey">NUM 8</span>
+            <span class="pad-badge">PAD 2</span>
+            <span class="pad-hotkey">NUM 2</span>
           </div>
           <div class="pad-body">
-            <div class="pad-icon-wrap">🎺</div>
-            <div class="pad-title">팡파르 (승리/축하)</div>
-            <div class="pad-sub">Victorious Brass Fanfare</div>
+            <div class="pad-icon-wrap">🔔</div>
+            <div class="pad-title">딩동댕! (정답 차임)</div>
+            <div class="pad-sub">Crystal Bell Chime</div>
           </div>
           <div class="pad-ripple"></div>
           <div class="pad-glow"></div>
         </button>
 
-        <!-- Pad 9 -->
-        <button type="button" class="sound-pad pad-violet" data-pad="9" data-key="9" id="pad-9">
+        <!-- Pad 3 -->
+        <button type="button" class="sound-pad pad-primary" data-pad="3" data-key="3" id="pad-3">
           <div class="pad-header">
-            <span class="pad-badge">PAD 9</span>
-            <span class="pad-hotkey">NUM 9</span>
+            <span class="pad-badge">PAD 3</span>
+            <span class="pad-hotkey">NUM 3</span>
           </div>
           <div class="pad-body">
-            <div class="pad-icon-wrap">👏</div>
-            <div class="pad-title">박수 갈채 (환호)</div>
-            <div class="pad-sub">Crowd Applause Burst</div>
+            <div class="pad-icon-wrap">🥁</div>
+            <div class="pad-title">두둥탁! (펀치라인)</div>
+            <div class="pad-sub">Ba-Dum-Tss Punchline</div>
           </div>
           <div class="pad-ripple"></div>
           <div class="pad-glow"></div>
         </button>
-      </div>
 
-      <!-- Extra Custom Slots (Slot A & Slot B) -->
-      <div class="custom-slots-panel">
-        <div class="custom-panel-header">
-          <span class="panel-icon">📂</span>
-          <span class="panel-title">커스텀 방송 사운드 슬롯 (내 MP3/WAV 파일 등록)</span>
-          <span class="panel-hint">드래그 앤 드롭 또는 파일 선택 &bull; 브라우저 로컬 저장</span>
+        <!-- ====================================================================
+             ROW 4: CUSTOM SLOTS (0 = 2 COLS WIDE, . = 1 COL WIDE)
+             Directly in the keypad - 100% visible without scrolling!
+             ==================================================================== -->
+        <!-- Custom Slot A (Numpad 0 / Key Q) -->
+        <div class="sound-pad custom-slot-pad slot-span-2" data-slot="0" id="slot-card-0" title="클릭하여 오디오 등록 또는 재생 (단축키: 0 또는 Q)">
+          <div class="pad-header">
+            <div class="slot-badge-group">
+              <span class="pad-badge highlight">CUSTOM SLOT A</span>
+              <span class="slot-status-tag" id="slot-tag-0">미등록</span>
+            </div>
+            <div class="slot-actions-top">
+              <button type="button" class="slot-delete-btn hidden" id="slot-delete-0" title="사운드 삭제">✕</button>
+              <span class="pad-hotkey">NUM 0 / Q</span>
+            </div>
+          </div>
+          
+          <div class="slot-pad-content" id="slot-content-0">
+            <!-- Empty State -->
+            <div class="slot-view-empty">
+              <span class="slot-plus-icon">📁</span>
+              <div class="slot-action-text">+ 내 MP3/WAV 사운드 등록</div>
+              <div class="slot-action-sub">클릭하여 파일 선택 또는 드래그 앤 드롭</div>
+            </div>
+            <!-- Loaded State -->
+            <div class="slot-view-loaded hidden">
+              <span class="slot-loaded-icon">🎵</span>
+              <div class="slot-loaded-info">
+                <div class="slot-loaded-name" id="slot-name-0">custom-sound.mp3</div>
+                <div class="slot-loaded-meta" id="slot-meta-0">0.0s • 클릭 또는 [0] 키로 즉각 재생</div>
+              </div>
+            </div>
+          </div>
+
+          <input type="file" id="file-input-0" class="file-hidden-input" accept="audio/*" />
+          <div class="pad-ripple"></div>
+          <div class="pad-glow"></div>
         </div>
 
-        <div class="custom-slots-grid">
-          <!-- Custom Slot A -->
-          <div class="custom-slot-card" id="slot-card-0" data-slot="0">
-            <div class="slot-top">
-              <span class="slot-badge">CUSTOM SLOT A</span>
-              <span class="slot-hotkey">NUM 0 / Q</span>
+        <!-- Custom Slot B (Numpad . / Key W) -->
+        <div class="sound-pad custom-slot-pad slot-span-1" data-slot="1" id="slot-card-1" title="클릭하여 오디오 등록 또는 재생 (단축키: . 또는 W)">
+          <div class="pad-header">
+            <div class="slot-badge-group">
+              <span class="pad-badge highlight">CUSTOM SLOT B</span>
+              <span class="slot-status-tag" id="slot-tag-1">미등록</span>
             </div>
-            <div class="slot-content" id="slot-content-0">
-              <div class="slot-empty-view">
-                <span class="slot-upload-icon">📁</span>
-                <span class="slot-prompt">오디오 파일 드래그 또는 클릭</span>
-                <span class="slot-formats">MP3, WAV, OGG, M4A 지원</span>
-              </div>
-              <div class="slot-loaded-view hidden">
-                <span class="slot-sound-icon">🎵</span>
-                <div class="slot-sound-info">
-                  <div class="slot-sound-name" id="slot-name-0">custom-audio.mp3</div>
-                  <div class="slot-sound-meta" id="slot-meta-0">0.0s &bull; Ready</div>
-                </div>
-                <button type="button" class="slot-clear-btn" data-slot="0" title="사운드 삭제">✕</button>
+            <div class="slot-actions-top">
+              <button type="button" class="slot-delete-btn hidden" id="slot-delete-1" title="사운드 삭제">✕</button>
+              <span class="pad-hotkey">NUM . / W</span>
+            </div>
+          </div>
+          
+          <div class="slot-pad-content" id="slot-content-1">
+            <!-- Empty State -->
+            <div class="slot-view-empty">
+              <span class="slot-plus-icon">📁</span>
+              <div class="slot-action-text">+ 파일 등록</div>
+              <div class="slot-action-sub">MP3 / WAV 클릭·드롭</div>
+            </div>
+            <!-- Loaded State -->
+            <div class="slot-view-loaded hidden">
+              <span class="slot-loaded-icon">🎵</span>
+              <div class="slot-loaded-info">
+                <div class="slot-loaded-name" id="slot-name-1">sound.mp3</div>
+                <div class="slot-loaded-meta" id="slot-meta-1">0.0s • [.] 키 재생</div>
               </div>
             </div>
-            <input type="file" id="file-input-0" class="file-hidden-input" accept="audio/*" data-slot="0" />
-            <button type="button" class="slot-trigger-btn" id="btn-play-slot-0" data-slot="0" title="커스텀 사운드 A 재생 (0 또는 Q)">
-              ▶ 재생 (PLAY)
-            </button>
           </div>
 
-          <!-- Custom Slot B -->
-          <div class="custom-slot-card" id="slot-card-1" data-slot="1">
-            <div class="slot-top">
-              <span class="slot-badge">CUSTOM SLOT B</span>
-              <span class="slot-hotkey">NUM . / W</span>
-            </div>
-            <div class="slot-content" id="slot-content-1">
-              <div class="slot-empty-view">
-                <span class="slot-upload-icon">📁</span>
-                <span class="slot-prompt">오디오 파일 드래그 또는 클릭</span>
-                <span class="slot-formats">MP3, WAV, OGG, M4A 지원</span>
-              </div>
-              <div class="slot-loaded-view hidden">
-                <span class="slot-sound-icon">🎵</span>
-                <div class="slot-sound-info">
-                  <div class="slot-sound-name" id="slot-name-1">custom-audio.mp3</div>
-                  <div class="slot-sound-meta" id="slot-meta-1">0.0s &bull; Ready</div>
-                </div>
-                <button type="button" class="slot-clear-btn" data-slot="1" title="사운드 삭제">✕</button>
-              </div>
-            </div>
-            <input type="file" id="file-input-1" class="file-hidden-input" accept="audio/*" data-slot="1" />
-            <button type="button" class="slot-trigger-btn" id="btn-play-slot-1" data-slot="1" title="커스텀 사운드 B 재생 (. 또는 W)">
-              ▶ 재생 (PLAY)
-            </button>
-          </div>
+          <input type="file" id="file-input-1" class="file-hidden-input" accept="audio/*" />
+          <div class="pad-ripple"></div>
+          <div class="pad-glow"></div>
         </div>
+
       </div>
     </main>
 
     <!-- Streamer Shortcuts Floating Cheat-strip -->
     <footer class="sb-footer-bar">
       <div class="footer-tip">
-        <span class="tip-kbd">1 ~ 9</span> 기본 효과음
+        <span class="tip-kbd">7 ~ 9, 4 ~ 6, 1 ~ 3</span> 물리 키패드 1:1 대응
       </div>
       <div class="footer-tip">
         <span class="tip-kbd">0 / Q</span> 커스텀 A
@@ -359,8 +402,11 @@ const data = gameEntry?.data || {
       <div class="footer-tip">
         <span class="tip-kbd danger">SPACE / ESC</span> 긴급 컷 (All Stop)
       </div>
+      <div class="footer-tip">
+        <span class="tip-kbd mode-tip">TRIGGER: HOLD</span> 누르는 동안만 재생 (연타 컷)
+      </div>
       <div class="footer-tip obs-tip">
-        <span class="tip-tag">OBS</span> ?stream=true 파라미터로 투명 오버레이 지원
+        <span class="tip-tag">OBS</span> ?stream=true 투명 오버레이
       </div>
     </footer>
 
@@ -378,7 +424,7 @@ const data = gameEntry?.data || {
         <button type="button" class="unlock-action-btn" id="unlock-start-btn">
           ⚡ 클릭하여 사운드보드 시작
         </button>
-        <span class="unlock-sub-hint">아무 키나 키패드를 눌러도 즉시 시작됩니다</span>
+        <span class="unlock-sub-hint">키패드(1~9, 0, .)나 스페이스바를 눌러도 즉시 시작됩니다</span>
       </div>
     </div>
 
@@ -409,7 +455,7 @@ const data = gameEntry?.data || {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 1.25rem;
+    padding: 1rem 1.25rem;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Pretendard Variable", sans-serif;
     color: var(--text-main);
     box-sizing: border-box;
@@ -418,13 +464,12 @@ const data = gameEntry?.data || {
     min-height: calc(100vh - 120px);
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1rem;
   }
 
-  /* Fullscreen & Focus Mode Adjustments */
   .soundboard-root.focus-mode {
     max-width: 100vw;
-    padding: 1rem 2rem;
+    padding: 0.75rem 1.5rem;
     justify-content: center;
   }
 
@@ -436,28 +481,28 @@ const data = gameEntry?.data || {
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    background: rgba(18, 24, 36, 0.85);
+    gap: 0.85rem;
+    background: rgba(18, 24, 36, 0.88);
     backdrop-filter: blur(12px);
     border: 1px solid var(--border-color);
     border-radius: 14px;
-    padding: 0.9rem 1.25rem;
+    padding: 0.75rem 1.15rem;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   }
 
   .sb-brand {
     display: flex;
     align-items: center;
-    gap: 0.85rem;
+    gap: 0.75rem;
   }
 
   .sb-brand-icon {
-    font-size: 1.9rem;
+    font-size: 1.8rem;
     filter: drop-shadow(0 0 12px var(--neon-cyan));
   }
 
   .sb-title {
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     font-weight: 800;
     letter-spacing: 0.05em;
     background: linear-gradient(135deg, #00ffcc 0%, #38bdf8 50%, #c084fc 100%);
@@ -468,30 +513,31 @@ const data = gameEntry?.data || {
   }
 
   .sb-sub {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: var(--text-muted);
     margin: 0;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-family: ui-monospace, SFMono-Regular, monospace;
     letter-spacing: 0.04em;
   }
 
   .sb-master-controls {
     display: flex;
     align-items: center;
-    gap: 1.2rem;
+    gap: 1.1rem;
     flex-wrap: wrap;
   }
 
   .control-group {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.3rem;
   }
 
-  .control-label {
+  .control-label,
+  .vol-label-row {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.35rem;
     font-size: 0.72rem;
     font-weight: 700;
     color: var(--text-muted);
@@ -505,38 +551,78 @@ const data = gameEntry?.data || {
   .vol-value {
     color: var(--neon-cyan);
     font-family: monospace;
+    font-weight: 800;
     margin-left: auto;
+  }
+
+  /* Ultra-Visible Volume Slider Track Line */
+  .vol-track-container {
+    display: flex;
+    align-items: center;
+    width: 150px;
+    height: 22px;
   }
 
   .vol-slider {
     -webkit-appearance: none;
     appearance: none;
-    width: 140px;
-    height: 7px;
-    background: #1e293b;
-    border-radius: 4px;
+    width: 100%;
+    height: 8px;
+    border-radius: 999px;
+    background: linear-gradient(to right, #00ffcc 0%, #00ffcc 66.6%, #233147 66.6%, #233147 100%);
+    border: 1.5px solid #00ffcc;
+    box-shadow: 0 0 10px rgba(0, 255, 204, 0.25), inset 0 1px 3px rgba(0, 0, 0, 0.6);
     outline: none;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: box-shadow 0.2s;
+  }
+
+  .vol-slider:hover {
+    box-shadow: 0 0 16px rgba(0, 255, 204, 0.5);
   }
 
   .vol-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 17px;
-    height: 17px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
-    background: var(--neon-cyan);
+    background: #ffffff;
+    border: 2px solid #00ffcc;
+    box-shadow: 0 0 12px #00ffcc, 0 2px 4px rgba(0, 0, 0, 0.6);
     cursor: pointer;
-    box-shadow: 0 0 10px var(--neon-cyan);
-    transition: transform 0.1s;
+    transition: transform 0.1s, box-shadow 0.1s;
   }
 
   .vol-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.18);
+    transform: scale(1.2);
+    box-shadow: 0 0 18px #00ffcc;
   }
 
-  /* Polyphony Mode Toggle */
+  .vol-slider::-moz-range-track {
+    height: 8px;
+    border-radius: 999px;
+    background: #233147;
+    border: 1.5px solid #00ffcc;
+  }
+
+  .vol-slider::-moz-range-progress {
+    height: 8px;
+    border-radius: 999px;
+    background: #00ffcc;
+  }
+
+  .vol-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid #00ffcc;
+    box-shadow: 0 0 12px #00ffcc;
+    cursor: pointer;
+  }
+
+  /* Toggle Pills (Polyphony & Trigger Mode) */
   .toggle-pill-wrap {
     display: flex;
     background: #0d121c;
@@ -549,13 +635,13 @@ const data = gameEntry?.data || {
     border: none;
     background: transparent;
     color: var(--text-muted);
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 700;
-    padding: 0.35rem 0.65rem;
+    padding: 0.3rem 0.55rem;
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
   }
 
   .poly-btn.active {
@@ -569,14 +655,14 @@ const data = gameEntry?.data || {
   .panic-stop-btn {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.45rem;
     background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(185, 28, 28, 0.3));
     border: 1px solid rgba(239, 68, 68, 0.5);
     color: #ff5e62;
-    padding: 0.55rem 0.95rem;
+    padding: 0.5rem 0.85rem;
     border-radius: 10px;
     font-weight: 800;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 0 14px rgba(239, 68, 68, 0.25);
@@ -598,8 +684,8 @@ const data = gameEntry?.data || {
     background: rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(239, 68, 68, 0.4);
     border-radius: 4px;
-    padding: 1px 6px;
-    font-size: 0.68rem;
+    padding: 1px 5px;
+    font-size: 0.65rem;
     font-family: monospace;
   }
 
@@ -607,19 +693,19 @@ const data = gameEntry?.data || {
   .sb-stream-actions {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.45rem;
   }
 
   .action-btn-item {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.3rem;
     background: #161f30;
     border: 1px solid var(--border-color);
     color: var(--text-muted);
     font-size: 0.75rem;
     font-weight: 600;
-    padding: 0.45rem 0.75rem;
+    padding: 0.45rem 0.7rem;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -645,7 +731,7 @@ const data = gameEntry?.data || {
     background: #0d121c;
     border: 1px solid var(--border-color);
     border-radius: 10px;
-    padding: 0.35rem 0.85rem;
+    padding: 0.3rem 0.8rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -656,7 +742,7 @@ const data = gameEntry?.data || {
   .visualizer-canvas {
     flex: 1;
     width: 100%;
-    height: 32px;
+    height: 30px;
     display: block;
   }
 
@@ -695,18 +781,23 @@ const data = gameEntry?.data || {
   }
 
   /* --------------------------------------------------------------------------
-     Tactical 3x3 Soundboard Pads Grid
+     Keypad Grid: 3x3 + 2 Custom Slots (Exact Physical Numpad Layout)
+     Row 1: 7, 8, 9
+     Row 2: 4, 5, 6
+     Row 3: 1, 2, 3
+     Row 4: 0 (2 cols), . (1 col)
      -------------------------------------------------------------------------- */
   .sb-main-stage {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1rem;
+    width: 100%;
   }
 
-  .pad-grid-3x3 {
+  .pad-grid-keypad {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
+    gap: 0.9rem;
     width: 100%;
   }
 
@@ -714,32 +805,32 @@ const data = gameEntry?.data || {
     position: relative;
     background: radial-gradient(circle at 50% 20%, #1e2a42 0%, #131b2c 100%);
     border: 1.5px solid var(--border-color);
-    border-radius: 16px;
-    padding: 1.4rem 1.1rem;
+    border-radius: 14px;
+    padding: 1.15rem 1rem;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: space-between;
-    min-height: 155px;
+    min-height: 135px;
     cursor: pointer;
     overflow: hidden;
-    transition: transform 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
-                box-shadow 0.2s ease, 
-                border-color 0.2s ease,
-                background 0.2s ease;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+    transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                box-shadow 0.15s ease, 
+                border-color 0.15s ease,
+                background 0.15s ease;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.08);
   }
 
   .sound-pad:hover {
     transform: translateY(-2px);
     border-color: #3b4e73;
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
   }
 
   .sound-pad:active,
   .sound-pad.pressed {
     transform: translateY(2px) scale(0.975);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
   }
 
   .pad-header {
@@ -747,27 +838,31 @@ const data = gameEntry?.data || {
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
     z-index: 2;
   }
 
   .pad-badge {
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 800;
     letter-spacing: 0.08em;
     color: var(--text-dim);
     font-family: monospace;
   }
 
+  .pad-badge.highlight {
+    color: var(--neon-cyan);
+  }
+
   .pad-hotkey {
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.45);
     border: 1px solid var(--border-color);
     color: var(--neon-cyan);
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     font-weight: 800;
     font-family: ui-monospace, SFMono-Regular, monospace;
-    padding: 2px 7px;
-    border-radius: 6px;
+    padding: 2px 6px;
+    border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
 
@@ -775,25 +870,25 @@ const data = gameEntry?.data || {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.25rem;
+    gap: 0.2rem;
     width: 100%;
     z-index: 2;
   }
 
   .pad-icon-wrap {
-    font-size: 2.1rem;
+    font-size: 1.85rem;
     line-height: 1;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.25rem;
     filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
-    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
   .sound-pad:hover .pad-icon-wrap {
-    transform: scale(1.12);
+    transform: scale(1.1);
   }
 
   .pad-title {
-    font-size: 1.05rem;
+    font-size: 0.98rem;
     font-weight: 800;
     color: var(--text-main);
     letter-spacing: -0.01em;
@@ -801,7 +896,7 @@ const data = gameEntry?.data || {
   }
 
   .pad-sub {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: var(--text-muted);
     font-weight: 500;
   }
@@ -822,24 +917,18 @@ const data = gameEntry?.data || {
   }
 
   .sound-pad.playing .pad-ripple {
-    animation: pad-pulse-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+    animation: pad-pulse-ripple 0.9s cubic-bezier(0, 0.2, 0.8, 1) infinite;
   }
 
   @keyframes pad-pulse-ripple {
-    0% {
-      transform: translate(-50%, -50%) scale(0);
-      opacity: 0.9;
-    }
-    100% {
-      transform: translate(-50%, -50%) scale(35);
-      opacity: 0;
-    }
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 0.9; }
+    100% { transform: translate(-50%, -50%) scale(35); opacity: 0; }
   }
 
   /* Glow Effects for Playing Pads */
   .sound-pad.playing {
     border-color: var(--active-color, #00ffcc) !important;
-    box-shadow: 0 0 30px var(--active-glow, rgba(0, 255, 204, 0.5)), inset 0 0 20px var(--active-glow, rgba(0, 255, 204, 0.25)) !important;
+    box-shadow: 0 0 28px var(--active-glow, rgba(0, 255, 204, 0.5)), inset 0 0 18px var(--active-glow, rgba(0, 255, 204, 0.25)) !important;
   }
 
   /* Color Schemes for Individual Pads */
@@ -888,217 +977,163 @@ const data = gameEntry?.data || {
   }
 
   /* --------------------------------------------------------------------------
-     Custom Audio Slots Section
+     Row 4: Custom Slots Embedded in Keypad (0: Span 2 cols, .: Span 1 col)
      -------------------------------------------------------------------------- */
-  .custom-slots-panel {
-    background: rgba(18, 24, 36, 0.65);
-    border: 1px dashed var(--border-color);
-    border-radius: 14px;
-    padding: 1.1rem 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.9rem;
+  .slot-span-2 {
+    grid-column: span 2;
   }
 
-  .custom-panel-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.85rem;
-    font-weight: 700;
+  .slot-span-1 {
+    grid-column: span 1;
   }
 
-  .panel-icon {
-    font-size: 1.05rem;
-  }
-
-  .panel-title {
-    color: var(--text-main);
-  }
-
-  .panel-hint {
-    margin-left: auto;
-    font-size: 0.72rem;
-    color: var(--text-muted);
-  }
-
-  .custom-slots-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-
-  .custom-slot-card {
-    background: #141c2c;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    position: relative;
-    transition: all 0.2s ease;
-  }
-
-  .custom-slot-card.drag-over {
-    border-color: var(--neon-cyan);
-    background: rgba(0, 255, 204, 0.08);
-  }
-
-  .slot-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .slot-badge {
-    font-size: 0.7rem;
-    font-weight: 800;
-    color: var(--text-dim);
-    font-family: monospace;
-  }
-
-  .slot-hotkey {
-    background: #0d121c;
-    border: 1px solid var(--border-color);
-    color: var(--neon-cyan);
-    font-size: 0.7rem;
-    font-weight: 700;
-    font-family: monospace;
-    padding: 1px 6px;
-    border-radius: 4px;
-  }
-
-  .slot-content {
-    background: #0d121c;
-    border: 1px dashed #26334d;
-    border-radius: 8px;
-    padding: 0.85rem;
+  .custom-slot-pad {
+    background: radial-gradient(circle at 40% 20%, #152238 0%, #0d1524 100%);
+    border: 1.5px dashed #30476e;
     cursor: pointer;
-    min-height: 60px;
+  }
+
+  .custom-slot-pad:hover {
+    border-color: var(--neon-cyan);
+    background: radial-gradient(circle at 40% 20%, #1b2d4b 0%, #101a2e 100%);
+  }
+
+  .custom-slot-pad.drag-over {
+    border-color: var(--neon-cyan);
+    border-style: solid;
+    box-shadow: 0 0 24px rgba(0, 255, 204, 0.4);
+    background: rgba(0, 255, 204, 0.1);
+  }
+
+  .slot-badge-group {
     display: flex;
     align-items: center;
-    justify-content: center;
-    transition: border-color 0.2s;
+    gap: 0.45rem;
   }
 
-  .slot-content:hover {
-    border-color: #3b4e73;
-  }
-
-  .slot-empty-view {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25rem;
-    text-align: center;
-  }
-
-  .slot-upload-icon {
-    font-size: 1.3rem;
-  }
-
-  .slot-prompt {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--text-main);
-  }
-
-  .slot-formats {
-    font-size: 0.7rem;
+  .slot-status-tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: #1e293b;
     color: var(--text-dim);
   }
 
-  .slot-loaded-view {
+  .slot-status-tag.loaded {
+    background: rgba(0, 255, 204, 0.2);
+    color: var(--neon-cyan);
+    border: 1px solid rgba(0, 255, 204, 0.4);
+  }
+
+  .slot-actions-top {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    width: 100%;
+    gap: 0.4rem;
   }
 
-  .slot-loaded-view.hidden {
-    display: none;
-  }
-
-  .slot-empty-view.hidden {
-    display: none;
-  }
-
-  .slot-sound-icon {
-    font-size: 1.4rem;
-  }
-
-  .slot-sound-info {
-    flex: 1;
-    overflow: hidden;
-  }
-
-  .slot-sound-name {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--neon-cyan);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .slot-sound-meta {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-  }
-
-  .slot-clear-btn {
+  .slot-delete-btn {
     border: none;
     background: rgba(239, 68, 68, 0.2);
     color: #f87171;
-    width: 26px;
-    height: 26px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 0.72rem;
     font-weight: bold;
     transition: all 0.2s;
   }
 
-  .slot-clear-btn:hover {
+  .slot-delete-btn:hover {
     background: #ef4444;
-    color: white;
+    color: #fff;
+    transform: scale(1.1);
+  }
+
+  .slot-delete-btn.hidden {
+    display: none;
+  }
+
+  .slot-pad-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    z-index: 2;
+  }
+
+  .slot-view-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+  }
+
+  .slot-plus-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+    margin-bottom: 0.2rem;
+  }
+
+  .slot-action-text {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--neon-cyan);
+    letter-spacing: -0.01em;
+  }
+
+  .slot-action-sub {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+  }
+
+  .slot-view-loaded {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    width: 100%;
+  }
+
+  .slot-view-loaded.hidden {
+    display: none;
+  }
+
+  .slot-view-empty.hidden {
+    display: none;
+  }
+
+  .slot-loaded-icon {
+    font-size: 1.85rem;
+    line-height: 1;
+    filter: drop-shadow(0 0 10px var(--neon-cyan));
+  }
+
+  .slot-loaded-info {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .slot-loaded-name {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .slot-loaded-meta {
+    font-size: 0.72rem;
+    color: var(--neon-cyan);
+    font-weight: 600;
   }
 
   .file-hidden-input {
     display: none;
-  }
-
-  .slot-trigger-btn {
-    width: 100%;
-    background: #1e2c45;
-    border: 1px solid var(--border-color);
-    color: var(--text-main);
-    font-size: 0.8rem;
-    font-weight: 700;
-    padding: 0.6rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .slot-trigger-btn:hover:not(:disabled) {
-    background: linear-gradient(135deg, rgba(0, 255, 204, 0.3), rgba(0, 180, 216, 0.35));
-    border-color: var(--neon-cyan);
-    color: var(--neon-cyan);
-    box-shadow: 0 0 12px rgba(0, 255, 204, 0.25);
-  }
-
-  .slot-trigger-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-
-  .custom-slot-card.playing {
-    border-color: var(--neon-cyan);
-    box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
   }
 
   /* --------------------------------------------------------------------------
@@ -1109,11 +1144,11 @@ const data = gameEntry?.data || {
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 1.25rem;
+    gap: 1.1rem;
     background: #0d121c;
     border: 1px solid var(--border-color);
     border-radius: 10px;
-    padding: 0.65rem 1rem;
+    padding: 0.55rem 0.9rem;
     font-size: 0.75rem;
     color: var(--text-muted);
   }
@@ -1121,7 +1156,7 @@ const data = gameEntry?.data || {
   .footer-tip {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.35rem;
   }
 
   .tip-kbd {
@@ -1139,6 +1174,12 @@ const data = gameEntry?.data || {
     color: #ff5e62;
     border-color: rgba(239, 68, 68, 0.4);
     background: rgba(239, 68, 68, 0.15);
+  }
+
+  .tip-kbd.mode-tip {
+    color: #fbbf24;
+    border-color: rgba(251, 191, 36, 0.4);
+    background: rgba(251, 191, 36, 0.15);
   }
 
   .tip-tag {
@@ -1319,31 +1360,35 @@ const data = gameEntry?.data || {
     .sb-stream-actions {
       justify-content: flex-end;
     }
-    .pad-grid-3x3 {
+    .pad-grid-keypad {
       grid-template-columns: repeat(3, 1fr);
-      gap: 0.75rem;
+      gap: 0.65rem;
     }
     .sound-pad {
-      min-height: 130px;
-      padding: 1rem 0.85rem;
+      min-height: 120px;
+      padding: 0.9rem 0.75rem;
     }
     .pad-icon-wrap {
-      font-size: 1.7rem;
+      font-size: 1.6rem;
     }
     .pad-title {
-      font-size: 0.92rem;
+      font-size: 0.88rem;
     }
   }
 
   @media (max-width: 640px) {
-    .pad-grid-3x3 {
-      grid-template-columns: repeat(2, 1fr);
+    .pad-grid-keypad {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
     }
-    .custom-slots-grid {
-      grid-template-columns: 1fr;
+    .slot-span-2 {
+      grid-column: span 2;
     }
-    .vol-slider {
-      width: 100px;
+    .slot-span-1 {
+      grid-column: span 1;
+    }
+    .vol-track-container {
+      width: 110px;
     }
   }
 </style>
@@ -1359,7 +1404,9 @@ const data = gameEntry?.data || {
     let analyserNode = null;
     let masterVolume = 1.0;
     let polyphonyMode = 'overlap'; // 'overlap' | 'cut'
-    const activeInstances = new Set(); // Tracks active sounds for cut mode & panic stop
+    let triggerMode = 'oneshot';   // 'oneshot' | 'hold'
+    const activeInstances = new Set(); // Tracks active sounds
+    const heldPadInstances = new Map(); // Tracks currently held sounds in Hold mode (padId -> instance)
 
     // Noise Buffer Cache
     let noiseBufferCache = null;
@@ -1377,6 +1424,8 @@ const data = gameEntry?.data || {
     const volIcon = document.getElementById('vol-icon');
     const btnOverlap = document.getElementById('btn-mode-overlap');
     const btnCut = document.getElementById('btn-mode-cut');
+    const btnTrigOneshot = document.getElementById('btn-trig-oneshot');
+    const btnTrigHold = document.getElementById('btn-trig-hold');
     const panicStopBtn = document.getElementById('panic-stop-btn');
     const btnFocus = document.getElementById('btn-focus-mode');
     const btnObsCopy = document.getElementById('btn-obs-copy');
@@ -1437,7 +1486,7 @@ const data = gameEntry?.data || {
     }
 
     // --------------------------------------------------------------------------
-    // 2. Panic Stop & Sound Tracking
+    // 2. Sound Instance Registration & Stopping
     // --------------------------------------------------------------------------
     function registerInstance(gainNode, sources, padElement) {
       const instance = { gainNode, sources, padElement };
@@ -1452,9 +1501,10 @@ const data = gameEntry?.data || {
     }
 
     function unregisterInstance(instance) {
+      if (!instance) return;
       activeInstances.delete(instance);
+
       if (instance.padElement) {
-        // If no other instance is currently using this pad, remove 'playing'
         let hasOther = false;
         activeInstances.forEach(it => {
           if (it.padElement === instance.padElement) hasOther = true;
@@ -1469,6 +1519,27 @@ const data = gameEntry?.data || {
       }
     }
 
+    // Stop a single instance smoothly without clicks
+    function stopSingleInstance(instance) {
+      if (!instance || !audioCtx) return;
+      const now = audioCtx.currentTime;
+      try {
+        if (instance.gainNode) {
+          instance.gainNode.gain.cancelScheduledValues(now);
+          instance.gainNode.gain.setValueAtTime(instance.gainNode.gain.value, now);
+          instance.gainNode.gain.linearRampToValueAtTime(0.0001, now + 0.015);
+        }
+        if (instance.sources) {
+          instance.sources.forEach(src => {
+            try { src.stop(now + 0.02); } catch (e) {}
+          });
+        }
+      } catch (e) {}
+
+      unregisterInstance(instance);
+    }
+
+    // Global Panic Stop (Space / Esc)
     function panicStop(showFeedback = true) {
       if (!audioCtx) return;
       const now = audioCtx.currentTime;
@@ -1478,22 +1549,20 @@ const data = gameEntry?.data || {
           if (instance.gainNode) {
             instance.gainNode.gain.cancelScheduledValues(now);
             instance.gainNode.gain.setValueAtTime(instance.gainNode.gain.value, now);
-            instance.gainNode.gain.linearRampToValueAtTime(0.0001, now + 0.02);
+            instance.gainNode.gain.linearRampToValueAtTime(0.0001, now + 0.015);
           }
           if (instance.sources) {
             instance.sources.forEach(src => {
-              try { src.stop(now + 0.025); } catch (e) {}
+              try { src.stop(now + 0.02); } catch (e) {}
             });
           }
-        } catch (e) {
-          // ignore
-        }
+        } catch (e) {}
       });
 
       activeInstances.clear();
+      heldPadInstances.clear();
 
-      // Clear visual ripples & playing classes
-      document.querySelectorAll('.sound-pad, .custom-slot-card').forEach(el => {
+      document.querySelectorAll('.sound-pad').forEach(el => {
         el.classList.remove('playing', 'pressed');
       });
 
@@ -1516,14 +1585,12 @@ const data = gameEntry?.data || {
       const voiceGain = audioCtx.createGain();
       voiceGain.connect(masterGainNode);
 
-      // Lowpass filter for punchy analog tone
       const filter = audioCtx.createBiquadFilter();
       filter.type = 'lowpass';
       filter.frequency.setValueAtTime(1400, now);
       filter.Q.setValueAtTime(3, now);
       filter.connect(voiceGain);
 
-      // Two slightly detuned oscillators for buzzy dissonance
       const osc1 = audioCtx.createOscillator();
       osc1.type = 'sawtooth';
       osc1.frequency.setValueAtTime(125, now);
@@ -1535,7 +1602,6 @@ const data = gameEntry?.data || {
       osc1.connect(filter);
       osc2.connect(filter);
 
-      // Volume envelope: fast attack, steady buzz, sharp decay
       voiceGain.gain.setValueAtTime(0.001, now);
       voiceGain.gain.linearRampToValueAtTime(0.85, now + 0.015);
       voiceGain.gain.setValueAtTime(0.85, now + 0.45);
@@ -1548,6 +1614,7 @@ const data = gameEntry?.data || {
 
       const instance = registerInstance(voiceGain, [osc1, osc2], padEl);
       setTimeout(() => unregisterInstance(instance), 660);
+      return instance;
     }
 
     // Pad 2: 딩동댕! (Crystal Bell Arpeggio Chime)
@@ -1561,7 +1628,6 @@ const data = gameEntry?.data || {
       const voiceGain = audioCtx.createGain();
       voiceGain.connect(masterGainNode);
 
-      // 4 ascending notes: C5 (523Hz), E5 (659Hz), G5 (784Hz), C6 (1046Hz)
       const freqs = [523.25, 659.25, 783.99, 1046.50];
       const sources = [];
 
@@ -1572,7 +1638,6 @@ const data = gameEntry?.data || {
         osc.type = 'sine';
         osc.frequency.setValueAtTime(freq, noteStart);
 
-        // Soft harmonic overtone for chime sparkle
         const overtone = audioCtx.createOscillator();
         overtone.type = 'sine';
         overtone.frequency.setValueAtTime(freq * 2.76, noteStart);
@@ -1602,6 +1667,7 @@ const data = gameEntry?.data || {
 
       const instance = registerInstance(voiceGain, sources, padEl);
       setTimeout(() => unregisterInstance(instance), 1400);
+      return instance;
     }
 
     // Pad 3: 두둥탁! (Ba-Dum-Tss Punchline)
@@ -1645,8 +1711,6 @@ const data = gameEntry?.data || {
 
       // Snare + Cymbal Hit: "탁!" (t=0.34s)
       const hitTime = now + 0.34;
-
-      // Snare body
       const snareBody = audioCtx.createOscillator();
       snareBody.type = 'triangle';
       snareBody.frequency.setValueAtTime(210, hitTime);
@@ -1660,7 +1724,6 @@ const data = gameEntry?.data || {
       snareBody.stop(hitTime + 0.13);
       sources.push(snareBody);
 
-      // Cymbal Crash (Filtered Noise)
       if (noiseBufferCache) {
         const noise = audioCtx.createBufferSource();
         noise.buffer = noiseBufferCache;
@@ -1684,10 +1747,11 @@ const data = gameEntry?.data || {
 
       const instance = registerInstance(voiceGain, sources, padEl);
       setTimeout(() => unregisterInstance(instance), 1500);
+      return instance;
     }
 
     // Pad 4: 삐-! (1kHz Pure Sine Censor Tone)
-    function playCensorBeep() {
+    function playCensorBeep(isHold = false) {
       ensureAudioContext();
       if (polyphonyMode === 'cut') panicStop(false);
 
@@ -1701,18 +1765,24 @@ const data = gameEntry?.data || {
       osc.type = 'sine';
       osc.frequency.setValueAtTime(1000, now);
 
-      // Smooth attack/release to eliminate click
       voiceGain.gain.setValueAtTime(0.0001, now);
-      voiceGain.gain.linearRampToValueAtTime(0.7, now + 0.015);
-      voiceGain.gain.setValueAtTime(0.7, now + 0.85);
-      voiceGain.gain.linearRampToValueAtTime(0.0001, now + 0.88);
+      voiceGain.gain.linearRampToValueAtTime(0.75, now + 0.015);
+
+      const maxDur = isHold ? 15 : 0.9;
+      if (!isHold) {
+        voiceGain.gain.setValueAtTime(0.75, now + 0.85);
+        voiceGain.gain.linearRampToValueAtTime(0.0001, now + 0.88);
+      }
 
       osc.connect(voiceGain);
       osc.start(now);
-      osc.stop(now + 0.9);
+      osc.stop(now + maxDur);
 
       const instance = registerInstance(voiceGain, [osc], padEl);
-      setTimeout(() => unregisterInstance(instance), 900);
+      if (!isHold) {
+        setTimeout(() => unregisterInstance(instance), 900);
+      }
+      return instance;
     }
 
     // Pad 5: 쾅! (Filtered Low-Pass Explosion Boom)
@@ -1727,7 +1797,6 @@ const data = gameEntry?.data || {
       voiceGain.connect(masterGainNode);
       const sources = [];
 
-      // Sub Bass Drop
       const sub = audioCtx.createOscillator();
       sub.type = 'sine';
       sub.frequency.setValueAtTime(120, now);
@@ -1742,7 +1811,6 @@ const data = gameEntry?.data || {
       sub.stop(now + 0.85);
       sources.push(sub);
 
-      // Resonant Noise Explosion Sweep
       if (noiseBufferCache) {
         const noise = audioCtx.createBufferSource();
         noise.buffer = noiseBufferCache;
@@ -1768,6 +1836,7 @@ const data = gameEntry?.data || {
 
       const instance = registerInstance(voiceGain, sources, padEl);
       setTimeout(() => unregisterInstance(instance), 1800);
+      return instance;
     }
 
     // Pad 6: 풀벌레 (High-Frequency Cricket Chirps)
@@ -1781,12 +1850,10 @@ const data = gameEntry?.data || {
       const voiceGain = audioCtx.createGain();
       voiceGain.connect(masterGainNode);
 
-      // 4600Hz Sine carrier
       const carrier = audioCtx.createOscillator();
       carrier.type = 'sine';
       carrier.frequency.setValueAtTime(4600, now);
 
-      // AM Modulator (40Hz wing flutter)
       const modulator = audioCtx.createOscillator();
       modulator.type = 'sine';
       modulator.frequency.setValueAtTime(40, now);
@@ -1794,7 +1861,6 @@ const data = gameEntry?.data || {
       const modGain = audioCtx.createGain();
       modGain.gain.setValueAtTime(0.5, now);
 
-      // Pulse pattern for crickets
       const chirps = [
         { t: 0.00, dur: 0.09 },
         { t: 0.12, dur: 0.09 },
@@ -1825,9 +1891,10 @@ const data = gameEntry?.data || {
 
       const instance = registerInstance(voiceGain, [carrier, modulator], padEl);
       setTimeout(() => unregisterInstance(instance), 1500);
+      return instance;
     }
 
-    // Pad 7: 드럼롤 (Rapid Noise-Burst Snare Roll & Crash)
+    // Pad 7: 드럼롤 (Rapid Snare Roll & Finale Crash)
     function playDrumRoll() {
       ensureAudioContext();
       if (polyphonyMode === 'cut') panicStop(false);
@@ -1839,7 +1906,6 @@ const data = gameEntry?.data || {
       voiceGain.connect(masterGainNode);
       const sources = [];
 
-      // 18 Rapid Micro-hits accelerating in gain
       const numHits = 18;
       const step = 0.038;
 
@@ -1871,10 +1937,7 @@ const data = gameEntry?.data || {
         }
       }
 
-      // Finale Hit at t = 0.72s
       const finaleTime = now + numHits * step + 0.02;
-
-      // Punch kick
       const kick = audioCtx.createOscillator();
       const kickGain = audioCtx.createGain();
       kick.frequency.setValueAtTime(150, finaleTime);
@@ -1887,7 +1950,6 @@ const data = gameEntry?.data || {
       kick.stop(finaleTime + 0.2);
       sources.push(kick);
 
-      // Finale Crash Cymbal
       if (noiseBufferCache) {
         const crash = audioCtx.createBufferSource();
         crash.buffer = noiseBufferCache;
@@ -1911,9 +1973,10 @@ const data = gameEntry?.data || {
 
       const instance = registerInstance(voiceGain, sources, padEl);
       setTimeout(() => unregisterInstance(instance), 2100);
+      return instance;
     }
 
-    // Pad 8: 팡파르 (Victorious Brass Fanfare Chords)
+    // Pad 8: 팡파르 (Brass Fanfare Triad Chords)
     function playFanfare() {
       ensureAudioContext();
       if (polyphonyMode === 'cut') panicStop(false);
@@ -1925,13 +1988,11 @@ const data = gameEntry?.data || {
       voiceGain.connect(masterGainNode);
       const sources = [];
 
-      // Notes: G4(392), C5(523), E5(659), G5(784), Triad Chord
       const notes = [
         { t: 0.00, dur: 0.12, freqs: [392.00] },
         { t: 0.14, dur: 0.12, freqs: [523.25] },
         { t: 0.28, dur: 0.12, freqs: [659.25] },
         { t: 0.42, dur: 0.45, freqs: [783.99] },
-        // Grand Finish Triad
         { t: 0.95, dur: 1.25, freqs: [261.63, 523.25, 659.25, 783.99, 1046.50] }
       ];
 
@@ -1942,7 +2003,6 @@ const data = gameEntry?.data || {
           osc.type = 'sawtooth';
           osc.frequency.setValueAtTime(freq, start);
 
-          // Warm brass lowpass filter
           const filter = audioCtx.createBiquadFilter();
           filter.type = 'lowpass';
           filter.frequency.setValueAtTime(2400, start);
@@ -1967,9 +2027,10 @@ const data = gameEntry?.data || {
 
       const instance = registerInstance(voiceGain, sources, padEl);
       setTimeout(() => unregisterInstance(instance), 2300);
+      return instance;
     }
 
-    // Pad 9: 박수 갈채 (Shaped Bandpass Applause Burst)
+    // Pad 9: 박수 갈채 (Shaped Bandpass Applause)
     function playApplause() {
       ensureAudioContext();
       if (polyphonyMode === 'cut') panicStop(false);
@@ -1982,7 +2043,6 @@ const data = gameEntry?.data || {
       const sources = [];
 
       if (noiseBufferCache) {
-        // Dual filtered noise sources for width
         const noise = audioCtx.createBufferSource();
         noise.buffer = noiseBufferCache;
 
@@ -1991,7 +2051,6 @@ const data = gameEntry?.data || {
         filter.frequency.setValueAtTime(1750, now);
         filter.Q.setValueAtTime(1.2, now);
 
-        // AM flutter to simulate thousands of clapping hands
         const tremolo = audioCtx.createOscillator();
         tremolo.type = 'sine';
         tremolo.frequency.setValueAtTime(14, now);
@@ -2000,7 +2059,6 @@ const data = gameEntry?.data || {
         tremoloGain.gain.setValueAtTime(0.25, now);
         tremolo.connect(tremoloGain);
 
-        // Amplitude Envelope: Swells in, sustains, fades smoothly
         voiceGain.gain.setValueAtTime(0.001, now);
         voiceGain.gain.linearRampToValueAtTime(0.8, now + 0.35);
         voiceGain.gain.setValueAtTime(0.8, now + 2.0);
@@ -2020,21 +2078,22 @@ const data = gameEntry?.data || {
 
       const instance = registerInstance(voiceGain, sources, padEl);
       setTimeout(() => unregisterInstance(instance), 2850);
+      return instance;
     }
 
-    // Dispatcher for Pads 1 to 9
-    function triggerPad(padNumber) {
+    // Sound Dispatcher
+    function startSound(padNumber, isHold = false) {
       switch (parseInt(padNumber, 10)) {
-        case 1: playBuzzer(); break;
-        case 2: playChime(); break;
-        case 3: playPunchline(); break;
-        case 4: playCensorBeep(); break;
-        case 5: playExplosion(); break;
-        case 6: playCrickets(); break;
-        case 7: playDrumRoll(); break;
-        case 8: playFanfare(); break;
-        case 9: playApplause(); break;
-        default: break;
+        case 1: return playBuzzer();
+        case 2: return playChime();
+        case 3: return playPunchline();
+        case 4: return playCensorBeep(isHold);
+        case 5: return playExplosion();
+        case 6: return playCrickets();
+        case 7: return playDrumRoll();
+        case 8: return playFanfare();
+        case 9: return playApplause();
+        default: return null;
       }
     }
 
@@ -2044,8 +2103,10 @@ const data = gameEntry?.data || {
     function playCustomSlot(slotIndex) {
       ensureAudioContext();
       if (!customBuffers[slotIndex]) {
-        showToast(`슬롯 ${slotIndex === 0 ? 'A' : 'B'}에 등록된 오디오가 없습니다`, 'warning');
-        return;
+        // Open file dialog if empty
+        const fileInput = document.getElementById(`file-input-${slotIndex}`);
+        if (fileInput) fileInput.click();
+        return null;
       }
 
       if (polyphonyMode === 'cut') panicStop(false);
@@ -2066,6 +2127,7 @@ const data = gameEntry?.data || {
       const instance = registerInstance(voiceGain, [source], cardEl);
       const durationMs = Math.min(customBuffers[slotIndex].duration * 1000, 30000);
       setTimeout(() => unregisterInstance(instance), durationMs);
+      return instance;
     }
 
     function handleAudioFileUpload(file, slotIndex) {
@@ -2084,7 +2146,7 @@ const data = gameEntry?.data || {
           updateCustomSlotUI(slotIndex);
           showToast(`슬롯 ${slotIndex === 0 ? 'A' : 'B'} 등록 완료: ${file.name}`);
 
-          // Try caching in localStorage if < 1.5MB
+          // LocalStorage caching if < 1.5MB
           if (file.size < 1.5 * 1024 * 1024) {
             try {
               const base64Reader = new FileReader();
@@ -2097,8 +2159,8 @@ const data = gameEntry?.data || {
               base64Reader.readAsDataURL(file);
             } catch (e) {}
           }
-        }, function (decodeErr) {
-          showToast('오디오 디코딩 실패 (지원되지 않는 코덱/파일)', 'warning');
+        }, function () {
+          showToast('오디오 디코딩 실패 (지원되지 않는 오디오 코덱)', 'warning');
         });
       };
       reader.readAsArrayBuffer(file);
@@ -2106,22 +2168,32 @@ const data = gameEntry?.data || {
 
     function updateCustomSlotUI(slotIndex) {
       const card = document.getElementById(`slot-card-${slotIndex}`);
-      const emptyView = card.querySelector('.slot-empty-view');
-      const loadedView = card.querySelector('.slot-loaded-view');
+      if (!card) return;
+      const emptyView = card.querySelector('.slot-view-empty');
+      const loadedView = card.querySelector('.slot-view-loaded');
+      const tagEl = document.getElementById(`slot-tag-${slotIndex}`);
       const nameEl = document.getElementById(`slot-name-${slotIndex}`);
       const metaEl = document.getElementById(`slot-meta-${slotIndex}`);
-      const triggerBtn = document.getElementById(`btn-play-slot-${slotIndex}`);
+      const deleteBtn = document.getElementById(`slot-delete-${slotIndex}`);
 
       if (customBuffers[slotIndex] && customMeta[slotIndex]) {
         emptyView.classList.add('hidden');
         loadedView.classList.remove('hidden');
-        nameEl.textContent = customMeta[slotIndex].name;
-        metaEl.textContent = `${customMeta[slotIndex].duration}s • Ready`;
-        triggerBtn.disabled = false;
+        if (tagEl) {
+          tagEl.textContent = '등록됨';
+          tagEl.classList.add('loaded');
+        }
+        if (nameEl) nameEl.textContent = customMeta[slotIndex].name;
+        if (metaEl) metaEl.textContent = `${customMeta[slotIndex].duration}s • 클릭 / 단축키 재생`;
+        if (deleteBtn) deleteBtn.classList.remove('hidden');
       } else {
         emptyView.classList.remove('hidden');
         loadedView.classList.add('hidden');
-        triggerBtn.disabled = true;
+        if (tagEl) {
+          tagEl.textContent = '미등록';
+          tagEl.classList.remove('loaded');
+        }
+        if (deleteBtn) deleteBtn.classList.add('hidden');
       }
     }
 
@@ -2136,7 +2208,6 @@ const data = gameEntry?.data || {
       showToast(`슬롯 ${slotIndex === 0 ? 'A' : 'B'} 초기화 완료`);
     }
 
-    // Restore cached slots on startup
     function restoreCachedCustomSlots() {
       [0, 1].forEach(slotIndex => {
         try {
@@ -2144,7 +2215,6 @@ const data = gameEntry?.data || {
           const metaStr = localStorage.getItem(`errorledger_sound_meta_${slotIndex}`);
           if (cachedData && metaStr) {
             const meta = JSON.parse(metaStr);
-            // Fetch blob from data URI
             fetch(cachedData)
               .then(res => res.arrayBuffer())
               .then(buf => {
@@ -2166,7 +2236,48 @@ const data = gameEntry?.data || {
     }
 
     // --------------------------------------------------------------------------
-    // 5. Canvas Real-time Oscilloscope / Spectrum Ribbon
+    // 5. Trigger Handler: One-Shot vs Hold-To-Play
+    // --------------------------------------------------------------------------
+    function handlePadDown(padKey) {
+      ensureAudioContext();
+
+      // If already holding this pad, avoid re-triggering
+      if (heldPadInstances.has(padKey)) return;
+
+      const isHold = (triggerMode === 'hold');
+      let instance = null;
+
+      if (padKey.startsWith('slot-')) {
+        const slotIdx = parseInt(padKey.replace('slot-', ''), 10);
+        instance = playCustomSlot(slotIdx);
+      } else {
+        instance = startSound(padKey, isHold);
+      }
+
+      if (instance && isHold) {
+        heldPadInstances.set(padKey, instance);
+      }
+    }
+
+    function handlePadUp(padKey) {
+      if (triggerMode === 'hold' && heldPadInstances.has(padKey)) {
+        const instance = heldPadInstances.get(padKey);
+        stopSingleInstance(instance);
+        heldPadInstances.delete(padKey);
+      }
+
+      // Remove visual pressed state
+      let padEl = null;
+      if (padKey.startsWith('slot-')) {
+        padEl = document.getElementById(`slot-card-${padKey.replace('slot-', '')}`);
+      } else {
+        padEl = document.getElementById(`pad-${padKey}`);
+      }
+      if (padEl) padEl.classList.remove('pressed');
+    }
+
+    // --------------------------------------------------------------------------
+    // 6. Visualizer Canvas
     // --------------------------------------------------------------------------
     function startVisualizerLoop() {
       if (!visualizerCanvas || !analyserNode) return;
@@ -2215,7 +2326,7 @@ const data = gameEntry?.data || {
     }
 
     // --------------------------------------------------------------------------
-    // 6. UI & Keyboard Event Listeners
+    // 7. Event Setup
     // --------------------------------------------------------------------------
     function setupEvents() {
       // 1. Overlay Unlock
@@ -2225,41 +2336,75 @@ const data = gameEntry?.data || {
         });
       }
 
-      // Any first click or touch resumes audio context
       window.addEventListener('click', function () {
         ensureAudioContext();
       }, { once: true });
 
-      // 2. Click on 3x3 Pads
-      document.querySelectorAll('.sound-pad').forEach(pad => {
-        pad.addEventListener('click', function () {
-          const padNum = this.getAttribute('data-pad');
-          triggerPad(padNum);
+      // 2. 3x3 Tactile Sound Pads Pointer Events (PointerDown & PointerUp for Hold Mode)
+      document.querySelectorAll('.sound-pad[data-pad]').forEach(pad => {
+        const padNum = pad.getAttribute('data-pad');
+
+        pad.addEventListener('pointerdown', function (e) {
+          pad.classList.add('pressed');
+          handlePadDown(padNum);
+        });
+
+        pad.addEventListener('pointerup', function () {
+          handlePadUp(padNum);
+        });
+
+        pad.addEventListener('pointerleave', function () {
+          handlePadUp(padNum);
+        });
+
+        pad.addEventListener('pointercancel', function () {
+          handlePadUp(padNum);
         });
       });
 
-      // 3. Custom Slot Interactions
+      // 3. Custom Slot Pads
       [0, 1].forEach(slotIndex => {
         const card = document.getElementById(`slot-card-${slotIndex}`);
-        const contentBox = card.querySelector('.slot-content');
         const fileInput = document.getElementById(`file-input-${slotIndex}`);
-        const playBtn = document.getElementById(`btn-play-slot-${slotIndex}`);
-        const clearBtn = card.querySelector('.slot-clear-btn');
+        const deleteBtn = document.getElementById(`slot-delete-${slotIndex}`);
+        const slotKey = `slot-${slotIndex}`;
 
-        // Click to browse file when empty
-        contentBox.addEventListener('click', function (e) {
-          if (!customBuffers[slotIndex]) {
-            fileInput.click();
-          } else {
-            playCustomSlot(slotIndex);
-          }
+        if (!card) return;
+
+        card.addEventListener('pointerdown', function (e) {
+          if (e.target.closest('.slot-delete-btn')) return;
+          card.classList.add('pressed');
+          handlePadDown(slotKey);
         });
 
-        fileInput.addEventListener('change', function () {
-          if (this.files && this.files[0]) {
-            handleAudioFileUpload(this.files[0], slotIndex);
-          }
+        card.addEventListener('pointerup', function () {
+          handlePadUp(slotKey);
         });
+
+        card.addEventListener('pointerleave', function () {
+          handlePadUp(slotKey);
+        });
+
+        card.addEventListener('pointercancel', function () {
+          handlePadUp(slotKey);
+        });
+
+        // File picker
+        if (fileInput) {
+          fileInput.addEventListener('change', function () {
+            if (this.files && this.files[0]) {
+              handleAudioFileUpload(this.files[0], slotIndex);
+            }
+          });
+        }
+
+        // Delete button
+        if (deleteBtn) {
+          deleteBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            clearCustomSlot(slotIndex);
+          });
+        }
 
         // Drag & Drop
         card.addEventListener('dragover', function (e) {
@@ -2278,24 +2423,25 @@ const data = gameEntry?.data || {
             handleAudioFileUpload(e.dataTransfer.files[0], slotIndex);
           }
         });
-
-        // Play button click
-        playBtn.addEventListener('click', function () {
-          playCustomSlot(slotIndex);
-        });
-
-        // Clear button
-        clearBtn.addEventListener('click', function (e) {
-          e.stopPropagation();
-          clearCustomSlot(slotIndex);
-        });
       });
 
-      // 4. Keyboard Shortcuts Mapping
-      window.addEventListener('keydown', function (e) {
-        // If typing in input, ignore
-        if (e.target.tagName === 'INPUT' && e.target.type !== 'range') return;
+      // 4. Keyboard Shortcuts: Keydown & Keyup (Exact Numpad 789, 456, 123, 0, .)
+      const keyToPadMap = {
+        'Digit7': '7', 'Numpad7': '7', '7': '7',
+        'Digit8': '8', 'Numpad8': '8', '8': '8',
+        'Digit9': '9', 'Numpad9': '9', '9': '9',
+        'Digit4': '4', 'Numpad4': '4', '4': '4',
+        'Digit5': '5', 'Numpad5': '5', '5': '5',
+        'Digit6': '6', 'Numpad6': '6', '6': '6',
+        'Digit1': '1', 'Numpad1': '1', '1': '1',
+        'Digit2': '2', 'Numpad2': '2', '2': '2',
+        'Digit3': '3', 'Numpad3': '3', '3': '3',
+        'Digit0': 'slot-0', 'Numpad0': 'slot-0', '0': 'slot-0', 'KeyQ': 'slot-0', 'q': 'slot-0',
+        'Period': 'slot-1', 'NumpadDecimal': 'slot-1', '.': 'slot-1', 'KeyW': 'slot-1', 'w': 'slot-1'
+      };
 
+      window.addEventListener('keydown', function (e) {
+        if (e.target.tagName === 'INPUT' && e.target.type !== 'range') return;
         ensureAudioContext();
 
         // Panic Stop: Space or Escape
@@ -2305,59 +2451,41 @@ const data = gameEntry?.data || {
           return;
         }
 
-        // Numpad 1 ~ 9 & Standard 1 ~ 9
-        const keyMap = {
-          'Digit1': 1, 'Numpad1': 1, '1': 1,
-          'Digit2': 2, 'Numpad2': 2, '2': 2,
-          'Digit3': 3, 'Numpad3': 3, '3': 3,
-          'Digit4': 4, 'Numpad4': 4, '4': 4,
-          'Digit5': 5, 'Numpad5': 5, '5': 5,
-          'Digit6': 6, 'Numpad6': 6, '6': 6,
-          'Digit7': 7, 'Numpad7': 7, '7': 7,
-          'Digit8': 8, 'Numpad8': 8, '8': 8,
-          'Digit9': 9, 'Numpad9': 9, '9': 9,
-        };
+        const padKey = keyToPadMap[e.code] || keyToPadMap[e.key];
+        if (padKey) {
+          if (e.repeat && triggerMode === 'hold') return; // ignore OS key repeat in hold mode
 
-        if (keyMap[e.code] || keyMap[e.key]) {
-          const padNum = keyMap[e.code] || keyMap[e.key];
-          const padEl = document.getElementById(`pad-${padNum}`);
-          if (padEl) {
-            padEl.classList.add('pressed');
-            setTimeout(() => padEl.classList.remove('pressed'), 120);
+          let padEl = null;
+          if (padKey.startsWith('slot-')) {
+            padEl = document.getElementById(`slot-card-${padKey.replace('slot-', '')}`);
+          } else {
+            padEl = document.getElementById(`pad-${padKey}`);
           }
-          triggerPad(padNum);
-          return;
-        }
 
-        // Custom Slot A: '0', 'Numpad0', 'KeyQ', 'q'
-        if (e.code === 'Digit0' || e.code === 'Numpad0' || e.key === '0' || e.code === 'KeyQ' || e.key.toLowerCase() === 'q') {
-          const slotCard = document.getElementById('slot-card-0');
-          if (slotCard) {
-            slotCard.classList.add('pressed');
-            setTimeout(() => slotCard.classList.remove('pressed'), 120);
-          }
-          playCustomSlot(0);
-          return;
-        }
-
-        // Custom Slot B: 'Period', 'NumpadDecimal', 'KeyW', 'w'
-        if (e.code === 'Period' || e.code === 'NumpadDecimal' || e.key === '.' || e.code === 'KeyW' || e.key.toLowerCase() === 'w') {
-          const slotCard = document.getElementById('slot-card-1');
-          if (slotCard) {
-            slotCard.classList.add('pressed');
-            setTimeout(() => slotCard.classList.remove('pressed'), 120);
-          }
-          playCustomSlot(1);
-          return;
+          if (padEl) padEl.classList.add('pressed');
+          handlePadDown(padKey);
         }
       });
 
-      // 5. Master Volume Slider
+      window.addEventListener('keyup', function (e) {
+        if (e.target.tagName === 'INPUT' && e.target.type !== 'range') return;
+
+        const padKey = keyToPadMap[e.code] || keyToPadMap[e.key];
+        if (padKey) {
+          handlePadUp(padKey);
+        }
+      });
+
+      // 5. Master Volume Slider (With Dynamic Track Fill)
       if (volSlider) {
-        volSlider.addEventListener('input', function () {
-          const pct = parseInt(this.value, 10);
+        function updateVolVisual(val) {
+          const pct = Math.round(val);
           masterVolume = pct / 100;
           if (volDisplay) volDisplay.textContent = `${pct}%`;
+
+          // Update visible track line gradient fill
+          const fillPercent = (pct / 150) * 100;
+          volSlider.style.background = `linear-gradient(to right, #00ffcc 0%, #00ffcc ${fillPercent}%, #233147 ${fillPercent}%, #233147 100%)`;
 
           if (volIcon) {
             if (pct === 0) volIcon.textContent = '🔇';
@@ -2368,7 +2496,14 @@ const data = gameEntry?.data || {
           if (masterGainNode && audioCtx) {
             masterGainNode.gain.setValueAtTime(masterVolume, audioCtx.currentTime);
           }
+        }
+
+        volSlider.addEventListener('input', function () {
+          updateVolVisual(this.value);
         });
+
+        // Initialize track visuals
+        updateVolVisual(volSlider.value);
       }
 
       // 6. Polyphony Mode (Overlap vs Cut)
@@ -2384,18 +2519,35 @@ const data = gameEntry?.data || {
           polyphonyMode = 'cut';
           btnCut.classList.add('active');
           btnOverlap.classList.remove('active');
-          showToast('재생 모드: 단일 컷 (Cut Mode - 새 소리 시 이전 소리 정지)');
+          showToast('재생 모드: 단일 컷 (Cut Mode - 새 소리 재생 시 이전 소리 컷)');
         });
       }
 
-      // 7. Panic Stop Button
+      // 7. Trigger Mode (One-Shot vs Hold)
+      if (btnTrigOneshot && btnTrigHold) {
+        btnTrigOneshot.addEventListener('click', function () {
+          triggerMode = 'oneshot';
+          btnTrigOneshot.classList.add('active');
+          btnTrigHold.classList.remove('active');
+          showToast('트리거 모드: 1회 전체 재생 (One-Shot)');
+        });
+
+        btnTrigHold.addEventListener('click', function () {
+          triggerMode = 'hold';
+          btnTrigHold.classList.add('active');
+          btnTrigOneshot.classList.remove('active');
+          showToast('트리거 모드: 누르는 동안만 재생 (Hold to Play)');
+        });
+      }
+
+      // 8. Panic Stop Button
       if (panicStopBtn) {
         panicStopBtn.addEventListener('click', function () {
           panicStop(true);
         });
       }
 
-      // 8. Stream Utilities: Focus Mode
+      // 9. Stream Utilities: Focus Mode
       if (btnFocus) {
         btnFocus.addEventListener('click', function () {
           root.classList.toggle('focus-mode');
@@ -2405,7 +2557,7 @@ const data = gameEntry?.data || {
         });
       }
 
-      // 9. Stream Utilities: Fullscreen
+      // 10. Stream Utilities: Fullscreen
       if (btnFullscreen) {
         btnFullscreen.addEventListener('click', function () {
           if (!document.fullscreenElement) {
@@ -2418,7 +2570,7 @@ const data = gameEntry?.data || {
         });
       }
 
-      // 10. Stream Utilities: OBS Copy
+      // 11. Stream Utilities: OBS Copy
       if (btnObsCopy) {
         btnObsCopy.addEventListener('click', function () {
           const obsUrl = `${window.location.origin}${window.location.pathname}?stream=true`;
@@ -2432,7 +2584,7 @@ const data = gameEntry?.data || {
     }
 
     // --------------------------------------------------------------------------
-    // 7. OBS / Stream Mode Detection (?stream=true)
+    // 8. OBS / Stream Mode Detection
     // --------------------------------------------------------------------------
     function checkStreamMode() {
       const params = new URLSearchParams(window.location.search);
@@ -2443,7 +2595,7 @@ const data = gameEntry?.data || {
     }
 
     // --------------------------------------------------------------------------
-    // 8. Toast Helper
+    // 9. Toast Notification
     // --------------------------------------------------------------------------
     let toastTimeout = null;
     function showToast(msg, type = 'info') {
@@ -2459,7 +2611,7 @@ const data = gameEntry?.data || {
     }
 
     // --------------------------------------------------------------------------
-    // 9. Boot Initialization
+    // 10. Boot Initialization
     // --------------------------------------------------------------------------
     function init() {
       checkStreamMode();
