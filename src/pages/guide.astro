@@ -25,7 +25,7 @@ const schemaArticle = JSON.stringify({
     "name": "ErrorLedger"
   },
   "inLanguage": "ko-KR",
-  "keywords": "치지직 가이드, 치지직 프로 계약, 투네이션 치지직, OBS 멀티트랙 녹화, 치지직 리모컨, 위플랩 룰렛, 치지직 VOD 보관, 통나무를 든다, 치지직 스트리머 세팅"
+  "keywords": "치지직 가이드, 치지직 프로 계약, 투네이션 치지직, OBS 멀티트랙 녹화, 치지직 리모컨, 위플랩 룰렛, 치지직 VOD 보관, 치지직 통나무 포인트, 치지직 스트리머 세팅"
 });
 ---
 
@@ -39,7 +39,7 @@ const schemaArticle = JSON.stringify({
       hreflangKo={koUrl}
       hreflangEn={enUrl}
       breadcrumb={breadcrumbs}
-      keywords="치지직 스트리머 가이드, 치지직 프로 조건, 투네이션 치즈 비교, OBS 오디오 트랙 분리, 유튜브 저작권 노딱 방어, 치지직 리모컨, 위플랩 치즈 룰렛, OSMU 숏폼 편집, 치지직 다시보기 다운로드"
+      keywords="치지직 스트리머 가이드, 치지직 프로 조건, 투네이션 치즈 비교, OBS 오디오 트랙 분리, 유튜브 저작권 노딱 방어, 치지직 리모컨, 위플랩 치즈 룰렛, OSMU 숏폼 편집, 치지직 다시보기 다운로드, 치지직 통나무 포인트"
     />
     <script type="application/ld+json" set:html={schemaArticle}></script>
   </head>
@@ -107,7 +107,7 @@ const schemaArticle = JSON.stringify({
                 <a href="#ch1-toonation" class="nav-sub-link" data-target="ch1-toonation">투네이션이란 무엇인가?</a>
                 <a href="#ch1-rookie-reason" class="nav-sub-link" data-target="ch1-rookie-reason">루키가 초기에 쓰는 이유</a>
                 <a href="#ch1-pro-policy" class="nav-sub-link" data-target="ch1-pro-policy">프로 계약 & 서드파티 배너 금지</a>
-                <a href="#ch1-pro-reasons" class="nav-sub-link" data-target="ch1-pro-reasons">프로 전환을 권장하는 3대 이유</a>
+                <a href="#ch1-pro-reasons" class="nav-sub-link" data-target="ch1-pro-reasons">프로 전환을 권장하는 이유</a>
                 <a href="#ch1-comparison-table" class="nav-sub-link" data-target="ch1-comparison-table">투네이션 vs 치즈 비교표</a>
               </div>
             </div>
@@ -149,7 +149,7 @@ const schemaArticle = JSON.stringify({
                 <a href="#ch4-editor-comparison" class="nav-sub-link" data-target="ch4-editor-comparison">영상 편집 프로그램 3대장 비교</a>
                 <a href="#ch4-five-step-pipeline" class="nav-sub-link" data-target="ch4-five-step-pipeline">생방송 1회 5단계 파이프라인</a>
                 <a href="#ch4-vod-retention" class="nav-sub-link" data-target="ch4-vod-retention">치지직 VOD 보관 기한 경고</a>
-                <a href="#ch4-log-theory" class="nav-sub-link" data-target="ch4-log-theory">은어 '통나무를 든다'의 유래</a>
+                <a href="#ch4-log-theory" class="nav-sub-link" data-target="ch4-log-theory">치지직 통나무 포인트 & 랭킹 세팅</a>
               </div>
             </div>
           </nav>
@@ -233,11 +233,18 @@ const schemaArticle = JSON.stringify({
 
           <!-- 1.2 루키가 초기에 투네이션을 쓰는 현실적 이유 -->
           <article class="doc-card" id="ch1-rookie-reason">
-            <h3 class="card-heading">2. 루키 스트리머가 초기에 투네이션을 쓰는 3대 현실적 이유</h3>
+            <h3 class="card-heading">2. 루키 스트리머가 초기에 투네이션을 쓰는 현실적 이유</h3>
             <p>
               치지직 공식 후원 수단인 '치즈'가 있음에도 불구하고, 갓 방송을 시작한 루키(Rookie) 등급 스트리머들이 투네이션을 병행하는 데에는 명확한 이유가 있습니다:
             </p>
             <div class="feature-grid">
+              <div class="feature-item">
+                <div class="fi-icon">💰</div>
+                <div class="fi-title">매우 저렴한 수수료 (정산 효율 극대화)</div>
+                <div class="fi-desc">
+                  투네이션은 플랫폼 수수료가 매우 저렴하여 스트리머가 실제로 손에 쥐는 실수령 정산 효율이 매우 높습니다. 초반 후원 금액이 적더라도 수수료로 많이 깎이지 않고 온전하게 내 몫으로 챙길 수 있습니다.
+                </div>
+              </div>
               <div class="feature-item">
                 <div class="fi-icon">💵</div>
                 <div class="fi-title">소액 정산 가능 (초기 장비 충당)</div>
@@ -280,33 +287,27 @@ const schemaArticle = JSON.stringify({
             <ul class="styled-list">
               <li><strong>팔로워 수:</strong> 150명 이상 달성</li>
               <li><strong>방송 시간:</strong> 최근 1년 기준 누적 20시간 이상 생방송 진행</li>
-              <li><strong>신청 방법:</strong> 치지직 스튜디오 > 설정 > 수익 관리에서 프로 전환 신청서 접수 (신분증 및 정산용 통장 사본 등록)</li>
+              <li><strong>신청 방법:</strong> 치지직 스튜디오 > 설정 > 수익 관리에서 프로 전환 신청서 접수</li>
             </ul>
           </article>
 
           <!-- 1.4 프로 전환을 권장하는 이유 -->
           <article class="doc-card" id="ch1-pro-reasons">
-            <h3 class="card-heading">4. 외부 후원을 포기하고 프로(Pro)로 전환해야 하는 3대 이유</h3>
+            <h3 class="card-heading">4. 외부 후원을 포기하고 프로(Pro)로 전환해야 하는 이유</h3>
             <p>
               서드파티 후원 배너가 금지됨에도 불구하고 상위 스트리머들이 프로 계약을 필수적으로 체결하는 이유는 다음과 같습니다:
             </p>
             <ol class="step-list">
               <li>
-                <div class="step-title">네이버페이(NPay) 1초 결제 연동으로 후원 전환율 급상승</div>
+                <div class="step-title">네이버페이(NPay) 결제 편의성으로 인한 높은 후원 접근성</div>
                 <p class="step-desc">
-                  국내 시청자의 대다수가 이미 가입되어 있는 네이버페이 간편결제 및 포인트 연동 덕분에, 별도 계좌이체나 신용카드 번호 입력 없이 지문/비밀번호 하나로 치즈를 충전할 수 있어 시청자의 후원 허들이 극적으로 낮아집니다.
+                  국내 시청자의 대다수가 이미 등록하고 사용하는 네이버페이 간편결제 및 보유 포인트 덕분에, 결제 절차가 매우 간편하여 시청자가 부담 없이 훨씬 쉽게 도네이션에 참여하게 됩니다.
                 </p>
               </li>
               <li>
                 <div class="step-title">정기 구독(월간 멤버십) & 전용 이모티콘/뱃지 활성화</div>
                 <p class="step-desc">
                   스트리머 고유의 월간 구독 시스템(티어별 구독료)이 열려 고정적인 월 수익이 창출되며, 채팅창에서 팬덤을 결속시키는 전용 구독자 뱃지와 이모티콘 팩을 등록할 수 있습니다.
-                </p>
-              </li>
-              <li>
-                <div class="step-title">1080p 60fps 고화질 트래픽 대역폭 우선 배정</div>
-                <p class="step-desc">
-                  시청자 트래픽이 몰리는 피크 시간대(저녁 8시~자정)에도 버퍼링 없이 풀HD 60프레임 송출 품질을 안정적으로 보장받습니다.
                 </p>
               </li>
             </ol>
@@ -333,7 +334,7 @@ const schemaArticle = JSON.stringify({
                   <tr>
                     <td><strong>결제 편의성</strong></td>
                     <td>전용 캐시 충전 필요 (계좌, 카드 등)</td>
-                    <td>네이버페이(NPay) 간편결제 1초 연동</td>
+                    <td>네이버페이(NPay) 간편결제 & 보유 포인트 연동</td>
                   </tr>
                   <tr>
                     <td><strong>방송 배너 게시</strong></td>
@@ -346,9 +347,9 @@ const schemaArticle = JSON.stringify({
                     <td>치지직 자체 월간 구독 & 이모티콘 지원</td>
                   </tr>
                   <tr>
-                    <td><strong>화질 대역폭 우선권</strong></td>
-                    <td>영향 없음</td>
-                    <td>피크 타임 1080p 60fps 우선 배정</td>
+                    <td><strong>수수료 및 정산</strong></td>
+                    <td>수수료가 매우 저렴하여 높은 실수령 정산 효율</td>
+                    <td>네이버페이 및 치지직 공식 정산 정책 적용</td>
                   </tr>
                 </tbody>
               </table>
@@ -376,7 +377,7 @@ const schemaArticle = JSON.stringify({
             <span class="section-num-tag">CHAPTER 02</span>
             <span class="section-topic-tag">OBS AUDIO & YOUTUBE DEFENSE</span>
           </div>
-          <h2 class="section-title">OBS 오디오 멀티트랙 분리 녹화 (유튜브 저작권 노딱 완전 방어)</h2>
+          <h2 class="section-title">OBS 오디오 멀티트랙 분리 녹화 (유튜브 저작권 노딱 방어)</h2>
           <p class="section-desc">
             생방송 중 최신 K-POP이나 팝송을 신나게 틀며 텐션을 올렸다가, 유튜브에 녹화본을 올릴 때 음원 저작권 경고(노란 딱지, 수익 창출 제한, 영상 차단)를 받는 비극을 원천 차단하는 OBS 멀티트랙 세팅법입니다.
           </p>
@@ -389,10 +390,13 @@ const schemaArticle = JSON.stringify({
               <div class="callout-body">
                 <strong>치지직 서버는 VOD 트랙 분리를 지원하지 않습니다:</strong>
                 <p>
-                  과거 트위치(Twitch)에서는 '트랙 1은 생방송, 트랙 6은 VOD 트랙'으로 설정하여 방송 다시보기에서만 음악을 무음 처리하는 기능이 있었습니다. 그러나 <strong>치지직 서버는 생방송에 송출된 오디오(트랙 1)를 그대로 단일 인코딩하여 다시보기에 영구 저장</strong>합니다.
+                  과거 트위치(Twitch)에서는 '트랙 1은 생방송, 트랙 6은 VOD 트랙'으로 설정하여 방송 다시보기에서만 음악을 무음 처리하는 기능이 있었습니다. 그러나 <strong>치지직 서버는 생방송에 송출된 오디오(트랙 1)를 그대로 단일 인코딩하여 다시보기 영상으로 생성</strong>합니다.
                 </p>
                 <p>
-                  따라서 스트리머가 OBS 오디오 트랙을 분리하는 진짜 이유는 <strong>"유튜브 편집용 로컬 다중 트랙 동시 녹화(Local Multi-track Recording)"</strong> 때문입니다.
+                  특히 치지직 다시보기(VOD)는 영구 보관되지 않고 등급별 보관 기한(루키 7일, 프로 60일)이 지나면 자동 영구 삭제되므로 주의가 필요합니다. (<a href="#ch4-vod-retention" style="color: var(--doc-cyan); text-decoration: underline;">치지직 다시보기(VOD) 보관 기한 주의사항</a> 참고)
+                </p>
+                <p>
+                  따라서 스트리머가 OBS 오디오 트랙을 분리하는 진짜 이유는 <strong>"유튜브 편집 및 영구 보관용 로컬 다중 트랙 동시 녹화(Local Multi-track Recording)"</strong> 때문입니다.
                 </p>
               </div>
             </div>
@@ -404,7 +408,7 @@ const schemaArticle = JSON.stringify({
             <div class="feature-grid">
               <div class="feature-item">
                 <div class="fi-icon">🛡️</div>
-                <div class="fi-title">유튜브 저작권 노딱 100% 방어</div>
+                <div class="fi-title">유튜브 저작권 노딱 방어</div>
                 <div class="fi-desc">
                   생방송 중 저작권 가요를 틀었더라도, 영상 편집기(프리미어/다빈치)에서 <strong>음악 트랙(트랙 4)만 타임라인에서 음소거(Mute)하거나 삭제</strong>한 뒤 무료 BGM을 얹으면 저작권 침해 없이 깨끗하게 수익을 창출할 수 있습니다.
                 </div>
@@ -787,27 +791,44 @@ const schemaArticle = JSON.stringify({
             </div>
           </article>
 
-          <!-- 4.4 통나무를 든다 유래와 실전 활용 -->
+          <!-- 4.4 치지직 통나무 포인트와 랭킹 설정 노하우 -->
           <article class="doc-card" id="ch4-log-theory">
-            <h3 class="card-heading">4. 스트리머 필수 방송 은어 '통나무를 든다'의 유래와 실전 활용법</h3>
+            <h3 class="card-heading">4. 치지직 '통나무' 시스템과 방송 랭킹 세팅 노하우</h3>
 
             <div class="slang-box">
-              <div class="slang-term">🪵 통나무를 든다 (Lifting the Log)</div>
+              <div class="slang-term">🪵 치지직 통나무(Log) 포인트란?</div>
               <div class="slang-origin">
-                <strong>유래:</strong> 전 리그 오브 레전드 프로팀 감독인 씨맥(cvMax, 김대호)의 <em>'통나무론'</em>에서 유래되었습니다. 군대 유격 훈련의 목봉(통나무) 체조에서 팀원 여러 명이 함께 통나무를 들 때, 누군가 힘을 빼면 남은 사람이 그 무게를 온몸으로 짊어져야 하는 상황을 빗댄 인터넷 방송계의 명언입니다.
+                <strong>개념:</strong> 치지직에서 생방송을 시청하면 <strong>1시간마다 자동으로 적립되는 시청 포인트</strong>입니다. 단순히 방송을 오래 보는 것뿐만 아니라 <strong>구독 선물, 치즈 후원 등</strong> 스트리머를 응원하는 다양한 활동을 통해서도 통나무 포인트가 함께 누적됩니다. 즉, 시청자의 '시청 시간(시간 기여) + 후원(물질 기여)'이 종합된 치지직만의 대표적인 팬덤 기여 지표입니다.
               </div>
               <div class="slang-usage">
-                <strong>실전 방송 적용:</strong>
-                합방이나 크루 단체 게임을 진행할 때 한두 명의 텐션이 떨어지거나 어색한 정적이 흐를 때, 한 명의 스트리머가 <em>폭풍 입담, 자폭 개그, 과장된 리액션으로 오디오를 꽉 채우며 방송 전체의 텐션을 멱살 잡고 캐리하는 행위</em>를 "○○님이 통나무를 든다"라고 표현합니다.
+                <strong>실전 방송 랭킹 위젯 세팅 꿀팁:</strong>
+                치지직 방송 화면에 후원 순위를 띄울 때, 순수 현금 금액만 따지는 <em>'치즈 후원 랭킹'을 끄고 '통나무 후원 랭킹'으로 변경하여 노출하는 것이 대세 세팅</em>입니다.
               </div>
             </div>
 
-            <h4 class="sub-heading">💡 프로 스트리머의 통나무 들기 3대 수칙</h4>
-            <ul class="styled-list">
-              <li><strong>오디오 1.5초 법칙:</strong> 합방 중 1.5초 이상 침묵이 이어지면 시청자는 뒤로가기를 누릅니다. 상대방의 사소한 플레이나 닉네임, 장비라도 집어서 질문을 던지세요.</li>
-              <li><strong>자폭 개그의 미학:</strong> 분위기가 가라앉았을 때 타인을 깎아내리기보다 본인의 실수나 게임 실력을 유쾌하게 디스하면 합방 멤버 전체의 웃음 장벽이 무너집니다.</li>
-              <li><strong>타인의 리액션 토스:</strong> 혼자서 100% 떠들기보다 "○○님 아까 그 플레이 보셨어요? 솔직히 심장 떨어질 뻔했죠?"처럼 상대방에게 공을 넘겨 자연스럽게 말을 이끌어내세요.</li>
-            </ul>
+            <div class="feature-grid" style="margin-top: 1.25rem;">
+              <div class="feature-item">
+                <div class="fi-icon">🤝</div>
+                <div class="fi-title">후원 위화감 해소 & 진입 장벽 완화</div>
+                <div class="fi-desc">
+                  순수 금액 중심의 치즈 랭킹만 화면에 크게 노출되면 신규 시청자나 라이트 팬층이 후원에 부담을 느끼고 소외감을 느낄 수 있습니다. 통나무 랭킹은 방송을 꾸준히 지켜봐 준 시청자의 정성도 함께 반영되므로 위화감을 줄여줍니다.
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="fi-icon">⏱️</div>
+                <div class="fi-title">시간 기여 시청자도 인정받는 문화</div>
+                <div class="fi-desc">
+                  금전적 후원이 어려운 학생이나 일반 시청자도 매시간 방송을 챙겨보며 쌓은 통나무로 랭킹 순위권에 이름을 올릴 수 있어, 채팅방 전체의 소속감과 충성도가 눈에 띄게 높아집니다.
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="fi-icon">⚙️</div>
+                <div class="fi-title">치지직 스튜디오 설정 방법</div>
+                <div class="fi-desc">
+                  <strong>치지직 스튜디오 > 방송 화면 위젯 설정</strong>에서 후원 랭킹 위젯을 추가할 때 집계 방식을 <code>치즈 금액</code> 대신 <code>통나무 포인트</code>로 선택하여 화면에 배치하면 즉시 적용됩니다.
+                </div>
+              </div>
+            </div>
           </article>
         </section>
 
