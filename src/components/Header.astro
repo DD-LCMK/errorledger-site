@@ -152,7 +152,7 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
       <div class="nav-dropdown" data-dropdown="tools">
         <button 
           type="button" 
-          class={`nav-dropdown-btn ${currentPath.includes('/schedule') || currentPath.includes('/games/soundboard') || currentPath.includes('/guide') ? 'active' : ''}`}
+          class={`nav-dropdown-btn ${currentPath.includes('/schedule') || currentPath.includes('/games/soundboard') || currentPath.includes('/guide') || currentPath.includes('/creators') ? 'active' : ''}`}
           aria-haspopup="true" 
           aria-expanded="false"
         >
@@ -165,7 +165,7 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
           <div class="dropdown-menu-inner">
             <div class="dropdown-header">
               <span class="dropdown-category-title">🛠️ {isEn ? "STREAM UTILITIES" : "방송 유틸리티"}</span>
-              <span class="dropdown-category-badge">{isEn ? "3 Tools" : "3종 도구"}</span>
+              <span class="dropdown-category-badge">{isEn ? "4 Tools" : "4종 도구"}</span>
             </div>
             <div class="dropdown-list">
               <a href={`${prefix}/guide`} class={`dropdown-item ${currentPath.includes('/guide') ? 'active' : ''}`}>
@@ -176,6 +176,16 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
                     <span class="dropdown-pill chzzk-new">HOT</span>
                   </div>
                   <span class="dropdown-item-desc">{isEn ? "OBS, Monetization & Studio Guide" : "수익화·OBS 멀티트랙·스튜디오 노하우"}</span>
+                </div>
+              </a>
+              <a href={`${prefix}/creators`} class={`dropdown-item ${currentPath.includes('/creators') ? 'active' : ''}`}>
+                <span class="dropdown-item-icon violet-glow">🎨</span>
+                <div class="dropdown-item-content">
+                  <div class="dropdown-item-header">
+                    <span class="dropdown-item-title">{t(lang, 'nav.creators')}</span>
+                    <span class="dropdown-pill soon">{isEn ? "SOON" : "준비중"}</span>
+                  </div>
+                  <span class="dropdown-item-desc">{isEn ? "Chzzk Live Broadcast Artists Showcase" : "치지직 현역 방송 작가 큐레이션 디렉토리"}</span>
                 </div>
               </a>
               <a href={`${prefix}/games/soundboard`} class={`dropdown-item ${currentPath.includes('/games/soundboard') ? 'active' : ''}`}>
@@ -417,6 +427,16 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
             <div class="drawer-item-info">
               <span class="drawer-item-name">{t(lang, 'nav.guide')}</span>
               <span class="drawer-item-desc">{isEn ? "Chzzk Streamer Master Guide" : "치지직 스트리머 가이드"}</span>
+            </div>
+          </a>
+          <a 
+            href={`${prefix}/creators`} 
+            class={`drawer-nav-item ${currentPath.includes('/creators') ? 'active' : ''}`}
+          >
+            <span class="drawer-item-icon">🎨</span>
+            <div class="drawer-item-info">
+              <span class="drawer-item-name">{t(lang, 'nav.creators')} <span class="drawer-pill-soon">{isEn ? "SOON" : "준비중"}</span></span>
+              <span class="drawer-item-desc">{isEn ? "Chzzk Artists Showcase" : "치지직 방송 작가 큐레이션"}</span>
             </div>
           </a>
           <a 
@@ -892,6 +912,28 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
     background: rgba(0, 255, 163, 0.2);
     color: #00ffa3;
     border: 1px solid rgba(0, 255, 163, 0.4);
+  }
+
+  .dropdown-pill.soon {
+    background: rgba(251, 191, 36, 0.2);
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.4);
+  }
+
+  .dropdown-item-icon.violet-glow {
+    filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.6));
+  }
+
+  .drawer-pill-soon {
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: rgba(251, 191, 36, 0.2);
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.4);
+    margin-left: 0.35rem;
+    vertical-align: middle;
   }
 
   .header-actions {

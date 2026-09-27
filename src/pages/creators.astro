@@ -1,0 +1,1308 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE } from '../consts';
+import { getKoUrl, getEnUrl } from '../i18n';
+import artistsData from '../data/chzzk_artists.json';
+
+const siteBase = (Astro.site || 'https://errorledger.com').toString();
+const rawPath = Astro.url.pathname.replace(/\/$/, '') || '/creators';
+const koUrl = getKoUrl(siteBase, rawPath);
+const enUrl = getEnUrl(siteBase, rawPath);
+
+const PAGE_TITLE = `치지직 방송 아티스트 쇼케이스 (준비 중) — ${SITE_TITLE}`;
+const PAGE_DESCRIPTION = "치지직 감성을 가장 잘 아는 현역 방송 작가 큐레이션 디렉토리. 중개 수수료 0원, 작가 치지직 채널 직통 연결! Live2D, 구독 이모티콘, 대기화면, 방송 오버레이 작가 사전 등록 접수 중.";
+const PAGE_KEYWORDS = "치지직 작가, 치지직 크리에이터, 치지직 외주, 치지직 이모티콘 작가, 치지직 Live2D 리깅, 방송 대기화면 일러스트, 방송 오버레이 디자인, 치지직 아트머그, 치지직 그림방송";
+
+const schemaArticle = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "치지직 방송 아티스트 쇼케이스",
+  "description": PAGE_DESCRIPTION,
+  "publisher": {
+    "@type": "Organization",
+    "name": "ErrorLedger"
+  }
+});
+---
+
+<!doctype html>
+<html lang="ko" class="dark">
+  <head>
+    <BaseHead
+      title={PAGE_TITLE}
+      description={PAGE_DESCRIPTION}
+      lang="ko"
+      hreflangKo={koUrl}
+      hreflangEn={enUrl}
+      keywords={PAGE_KEYWORDS}
+    />
+    <script type="application/ld+json" set:html={schemaArticle}></script>
+  </head>
+
+  <body class="creators-body">
+    <Header />
+
+    <main class="creators-container">
+      <!-- Breadcrumb -->
+      <nav class="creators-breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="/">홈</a></li>
+          <li><span class="bc-sep">/</span></li>
+          <li><span class="bc-current">크리에이터 쇼케이스</span></li>
+        </ol>
+      </nav>
+
+      <!-- Coming Soon Hero Banner -->
+      <section class="creators-hero">
+        <div class="hero-glow-sphere"></div>
+        <div class="hero-status-pill">
+          <span class="status-pulse-dot"></span>
+          <span class="status-text">🛠️ 서비스 론칭 준비 중 | COMING SOON</span>
+        </div>
+
+        <h1 class="hero-title">
+          치지직 방송 아티스트 <span class="gradient-text">쇼케이스</span>
+        </h1>
+
+        <p class="hero-slogan">
+          "치지직 감성을 가장 잘 아는 현역 방송 작가들을 만나보세요."
+        </p>
+
+        <p class="hero-desc">
+          에러레저는 외주 중개 수수료를 1원도 떼지 않습니다.<br/>
+          치지직에서 직접 작업 방송을 켜는 검증된 실력파 작가님들의 생방송 채널과 포트폴리오를 <strong>100% 무료 직통 연결</strong>하는 큐레이션 디렉토리입니다.
+        </p>
+
+        <!-- Core Value Proposition Badges -->
+        <div class="value-prop-strip">
+          <div class="vp-item">
+            <span class="vp-icon">🚫</span>
+            <div class="vp-text">
+              <strong>중개 수수료 0원</strong>
+              <span>작가님에게 실수령 100% 보장</span>
+            </div>
+          </div>
+          <div class="vp-item">
+            <span class="vp-icon">🟢</span>
+            <div class="vp-text">
+              <strong>치지직 채널 직통 연결</strong>
+              <span>작업 라이브 방송 무료 시청자 유입</span>
+            </div>
+          </div>
+          <div class="vp-item">
+            <span class="vp-icon">🛡️</span>
+            <div class="vp-text">
+              <strong>라이브로 검증된 실력</strong>
+              <span>실시간 작업 과정으로 사기/AI 불안 제로</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pre-registration Artist Callout Box -->
+      <section class="artist-apply-card">
+        <div class="apply-header">
+          <div class="apply-tag">ARTIST PRE-REGISTRATION</div>
+          <h2 class="apply-title">🎨 치지직 현역 작업 방송 작가님을 모십니다</h2>
+          <p class="apply-desc">
+            치지직에서 그림, 일러스트, Live2D, 디자인, 웹툰 등 창작 방송을 진행하고 계신가요?<br/>
+            에러레저를 방문하는 수천 명의 스트리머들에게 작가님의 작업물과 치지직 생방송 채널을 <strong>평생 무료로 홍보</strong>해 드립니다.
+          </p>
+        </div>
+
+        <div class="apply-criteria-grid">
+          <div class="criteria-box">
+            <span class="cb-icon">📋</span>
+            <strong>단순 명료한 등록 조건</strong>
+            <p>치지직 채널이 개설되어 있고, 최근 1~2개월 내 <em>그림/디자인/서브컬처</em> 카테고리 방송 이력이 있는 작가님</p>
+          </div>
+          <div class="criteria-box">
+            <span class="cb-icon">🎁</span>
+            <strong>등록 혜택</strong>
+            <p>쇼케이스 메인에 <strong>[치지직 생방송 보러가기]</strong> 및 작가님 개인 포트폴리오(X, 아트머그 등) 영구 무료 노출</p>
+          </div>
+          <div class="criteria-box">
+            <span class="cb-icon">⚡</span>
+            <strong>간편한 신청</strong>
+            <p>치지직 채널 주소, 닉네임, 전문 분야, 대표 포트폴리오 이미지 1~2장만 제출하면 1분 안에 신청 완료</p>
+          </div>
+        </div>
+
+        <div class="apply-action-bar">
+          <button type="button" class="apply-btn primary" id="open-apply-modal-btn">
+            📝 작가 무료 사전 등록 신청하기 →
+          </button>
+          <a href="/contact" class="apply-btn secondary">
+            ✉️ 서비스 제휴 및 사전 문의
+          </a>
+        </div>
+      </section>
+
+      <!-- Interactive Preview Showcase -->
+      <section class="preview-showcase-section">
+        <div class="preview-section-header">
+          <div class="preview-badge">SHOWCASE PREVIEW</div>
+          <h2 class="section-title">카드 구성 & 큐레이션 디렉토리 미리보기</h2>
+          <p class="section-desc">
+            정식 오픈 시 아래와 같이 카테고리별로 정돈된 작가 카드와 라이브 직통 연결 링크가 제공됩니다.
+          </p>
+        </div>
+
+        <!-- Filter Category Tabs -->
+        <div class="category-tabs" role="tablist" aria-label="작가 카테고리 필터">
+          <button class="cat-tab active" data-cat="all">전체 보기 (4)</button>
+          <button class="cat-tab" data-cat="emotes">#구독이모티콘/뱃지</button>
+          <button class="cat-tab" data-cat="live2d">#Live2D/리깅</button>
+          <button class="cat-tab" data-cat="illustration">#일러스트/대기화면</button>
+          <button class="cat-tab" data-cat="overlay">#방송오버레이/로고</button>
+        </div>
+
+        <!-- Artists Card Grid -->
+        <div class="artists-grid" id="artists-grid">
+          {artistsData.map((artist) => (
+            <article class="artist-card" data-category={artist.category}>
+              <!-- Preview Watermark Badge -->
+              <div class="preview-watermark">PREVIEW 예시</div>
+
+              <!-- Card Header -->
+              <div class="ac-header">
+                <div class="ac-avatar" style={`background: ${artist.avatarBg};`}>
+                  <span>{artist.avatar}</span>
+                </div>
+                <div class="ac-info">
+                  <div class="ac-name-row">
+                    <h3 class="ac-name">{artist.name}</h3>
+                    <span class="ac-live-badge">CHZZK CREATOR</span>
+                  </div>
+                  <div class="ac-category-tag">{artist.categoryLabel}</div>
+                </div>
+              </div>
+
+              <!-- Tags -->
+              <div class="ac-tags">
+                {artist.tags.map((tag) => (
+                  <span class="tag-pill">{tag}</span>
+                ))}
+              </div>
+
+              <!-- Bio -->
+              <p class="ac-bio">{artist.bio}</p>
+
+              <!-- Thumbnails Gallery Preview -->
+              <div class="ac-gallery">
+                {artist.previewThumbnails.map((thumb) => (
+                  <div 
+                    class="gallery-item" 
+                    style={`background: ${thumb.gradient};`}
+                    data-title={thumb.title}
+                    data-artist={artist.name}
+                  >
+                    <span class="thumb-badge">{thumb.badge}</span>
+                    <span class="thumb-title">{thumb.title}</span>
+                    <span class="thumb-zoom-icon">🔍 확대보기</span>
+                  </div>
+                ))}
+              </div>
+
+              <!-- Action Outlink Buttons -->
+              <div class="ac-actions">
+                <a 
+                  href={artist.chzzkUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  class="ac-btn chzzk-btn"
+                >
+                  <span class="btn-dot"></span>
+                  🟢 치지직 생방송 채널
+                </a>
+                <a 
+                  href={artist.portfolioUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  class="ac-btn portfolio-btn"
+                >
+                  🎨 {artist.portfolioLabel} ↗
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <!-- Why Choose Chzzk Artists Section -->
+      <section class="why-us-section">
+        <h2 class="why-title">왜 일반 외주 사이트 대신 치지직 방송 작가인가요?</h2>
+        <div class="why-grid">
+          <div class="why-card">
+            <div class="wc-num">01</div>
+            <h3>치지직 시스템 규격 완벽 이해</h3>
+            <p>
+              일반 외주 사이트 작가들은 치지직의 구독 뱃지 규격, 다크모드 채팅창에서의 112px 이모티콘 가독성, 투명도 배경 세팅을 잘 모르는 경우가 많습니다. 반면 치지직 현역 작가는 플랫폼을 매일 방송하므로 재작업 없이 단번에 완성합니다.
+            </p>
+          </div>
+          <div class="why-card">
+            <div class="wc-num">02</div>
+            <h3>생방송으로 증명된 작업 과정 (AI & 도용 방어)</h3>
+            <p>
+              외주 사기나 무단 AI 생성에 대한 불안감이 커진 요즘, 치지직에서 직접 라이브로 작업하는 작가는 스케치부터 완성까지 모든 실력과 과정이 투명하게 증명되므로 믿고 의뢰할 수 있습니다.
+            </p>
+          </div>
+          <div class="why-card">
+            <div class="wc-num">03</div>
+            <h3>스트리머 & 작가 상생 생태계</h3>
+            <p>
+              에러레저는 중개 수수료를 전혀 취하지 않습니다. 스트리머는 훌륭한 작가를 만나고, 작가님은 치지직 방송 시청자와 팬을 유입받는 가장 건강한 윈-윈 구조를 지향합니다.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ Section -->
+      <section class="creators-faq-section">
+        <h2 class="faq-headline">쇼케이스 운영 및 자주 묻는 질문</h2>
+        <div class="faq-list">
+          <details class="faq-item" open>
+            <summary class="faq-question">
+              <span>Q. 정말로 외주 중개 수수료나 입점 비용이 0원인가요?</span>
+              <span class="faq-chevron">▾</span>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                네, 100% 무료입니다! 에러레저는 결제나 계약을 중개하지 않으며, 치지직 방송 생태계 활성화를 위해 스트리머와 작가님의 채널을 직접 연결해 드리는 큐레이션 디렉토리입니다.
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>Q. 작가 등록 신청을 하면 언제 쇼케이스에 반영되나요?</span>
+              <span class="faq-chevron">▾</span>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                제출해주신 치지직 채널의 최근 작업 방송 이력을 검수한 후, 정기 업데이트 주기에 맞춰 정적 디렉토리에 순차적으로 등록됩니다. 현재 1차 사전 등록을 접수하고 있습니다.
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>Q. 스트리머는 작가님께 어떻게 외주를 의뢰하나요?</span>
+              <span class="faq-chevron">▾</span>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                각 작가 카드의 <strong>[치지직 생방송 보러가기]</strong>를 눌러 작가님의 라이브 방송에 방문해 소통하시거나, <strong>[포트폴리오 / 외주 문의]</strong> 링크를 통해 작가님이 운영하시는 공식 외주 창구(X, 아트머그 등)로 직접 연락하시면 됩니다.
+              </p>
+            </div>
+          </details>
+        </div>
+      </section>
+    </main>
+
+    <!-- Pre-registration Modal -->
+    <div id="apply-modal" class="modal-backdrop" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <button type="button" class="modal-close-btn" id="close-apply-modal-btn" aria-label="닫기">✕</button>
+        <div class="modal-header">
+          <div class="modal-badge">ARTIST REGISTRATION</div>
+          <h3 id="modal-title" class="modal-headline">치지직 방송 작가 쇼케이스 무료 사전 등록</h3>
+          <p class="modal-sub">
+            아래 필수 정보를 확인해 주시면, 검수 후 쇼케이스 정식 오픈 시 우선적으로 등록해 드립니다.
+          </p>
+        </div>
+
+        <div class="modal-body">
+          <div class="modal-info-box">
+            <strong>📌 수집 및 확인 항목:</strong>
+            <ul>
+              <li><strong>치지직 채널 URL</strong> (필수, 최근 1~2개월 내 작업 방송 이력 확인)</li>
+              <li><strong>작가 활동 닉네임</strong></li>
+              <li><strong>주요 전문 분야</strong> (Live2D, 구독 이모티콘, 대기화면, 오버레이/로고 중 택 1~2)</li>
+              <li><strong>대표 포트폴리오 이미지 1~2장</strong></li>
+              <li><strong>외부 외주 문의 링크</strong> (X/트위터, 아트머그, 크레페 등)</li>
+            </ul>
+          </div>
+
+          <div class="modal-action-buttons">
+            <a 
+              href="/contact?subject=artist_apply" 
+              class="modal-btn primary"
+            >
+              ✉️ 에러레저 온라인 양식으로 신청하기
+            </a>
+            <button type="button" class="modal-btn secondary" id="modal-close-btn-bottom">
+              닫기
+            </button>
+          </div>
+          <p class="modal-notice">
+            * 중개 수수료가 전혀 없으며, 작가님의 치지직 생방송 채널로 무료 유입이 발생하는 순수 상생 프로그램입니다.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Artwork Lightbox Modal -->
+    <div id="lightbox-modal" class="modal-backdrop" aria-hidden="true">
+      <div class="lightbox-card" role="dialog" aria-modal="true">
+        <button type="button" class="modal-close-btn" id="close-lightbox-btn" aria-label="닫기">✕</button>
+        <div class="lightbox-preview-box" id="lightbox-box">
+          <div class="lightbox-content">
+            <span class="lightbox-tag">PREVIEW SAMPLE</span>
+            <h3 id="lightbox-title">작품 제목</h3>
+            <p id="lightbox-artist">작가 닉네임</p>
+            <div class="lightbox-visual" id="lightbox-visual"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <Footer />
+
+    <script is:inline>
+      // 1. Category Filtering
+      const tabs = document.querySelectorAll('.cat-tab');
+      const cards = document.querySelectorAll('.artist-card');
+
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+
+          const category = tab.getAttribute('data-cat');
+          cards.forEach(card => {
+            if (category === 'all' || card.getAttribute('data-category') === category) {
+              card.style.display = 'flex';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      });
+
+      // 2. Pre-registration Modal
+      const openModalBtn = document.getElementById('open-apply-modal-btn');
+      const closeModalBtn = document.getElementById('close-apply-modal-btn');
+      const closeModalBtnBottom = document.getElementById('modal-close-btn-bottom');
+      const applyModal = document.getElementById('apply-modal');
+
+      function openModal() {
+        applyModal.classList.add('active');
+        applyModal.setAttribute('aria-hidden', 'false');
+      }
+
+      function closeModal() {
+        applyModal.classList.remove('active');
+        applyModal.setAttribute('aria-hidden', 'true');
+      }
+
+      if (openModalBtn) openModalBtn.addEventListener('click', openModal);
+      if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+      if (closeModalBtnBottom) closeModalBtnBottom.addEventListener('click', closeModal);
+      if (applyModal) {
+        applyModal.addEventListener('click', (e) => {
+          if (e.target === applyModal) closeModal();
+        });
+      }
+
+      // 3. Artwork Lightbox
+      const galleryItems = document.querySelectorAll('.gallery-item');
+      const lightboxModal = document.getElementById('lightbox-modal');
+      const closeLightboxBtn = document.getElementById('close-lightbox-btn');
+      const lightboxTitle = document.getElementById('lightbox-title');
+      const lightboxArtist = document.getElementById('lightbox-artist');
+      const lightboxVisual = document.getElementById('lightbox-visual');
+
+      galleryItems.forEach(item => {
+        item.addEventListener('click', () => {
+          const title = item.getAttribute('data-title');
+          const artist = item.getAttribute('data-artist');
+          const bg = item.style.background;
+
+          if (lightboxTitle) lightboxTitle.textContent = title || '작품 미리보기';
+          if (lightboxArtist) lightboxArtist.textContent = `제작: ${artist || '치지직 방송 작가'}`;
+          if (lightboxVisual) lightboxVisual.style.background = bg;
+
+          if (lightboxModal) {
+            lightboxModal.classList.add('active');
+            lightboxModal.setAttribute('aria-hidden', 'false');
+          }
+        });
+      });
+
+      if (closeLightboxBtn) {
+        closeLightboxBtn.addEventListener('click', () => {
+          lightboxModal.classList.remove('active');
+          lightboxModal.setAttribute('aria-hidden', 'true');
+        });
+      }
+      if (lightboxModal) {
+        lightboxModal.addEventListener('click', (e) => {
+          if (e.target === lightboxModal) {
+            lightboxModal.classList.remove('active');
+            lightboxModal.setAttribute('aria-hidden', 'true');
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
+
+<style>
+  :root {
+    --cr-bg: #090d16;
+    --cr-card: #121824;
+    --cr-card-inner: #0d121c;
+    --cr-border: #233147;
+    --cr-border-hover: #3b4e73;
+    --cr-cyan: #00ffcc;
+    --cr-violet: #7928ca;
+    --cr-pink: #ff007a;
+    --cr-yellow: #fbbf24;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+  }
+
+  body.creators-body {
+    background-color: var(--cr-bg);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  .creators-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem 1.5rem 5rem;
+  }
+
+  /* Breadcrumb */
+  .creators-breadcrumb ol {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .creators-breadcrumb a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .creators-breadcrumb a:hover {
+    color: var(--cr-cyan);
+  }
+
+  .creators-breadcrumb .bc-sep {
+    color: var(--cr-border);
+  }
+
+  .creators-breadcrumb .bc-current {
+    color: var(--cr-cyan);
+    font-weight: 600;
+  }
+
+  /* Hero Section */
+  .creators-hero {
+    position: relative;
+    text-align: center;
+    padding: 3rem 1.5rem 2.5rem;
+    background: linear-gradient(180deg, rgba(18, 24, 36, 0.7) 0%, rgba(9, 13, 22, 0.4) 100%);
+    border: 1px solid var(--cr-border);
+    border-radius: 16px;
+    margin-bottom: 2.5rem;
+    overflow: hidden;
+  }
+
+  .hero-glow-sphere {
+    position: absolute;
+    top: -120px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 450px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(0, 255, 204, 0.15) 0%, rgba(121, 40, 202, 0.1) 60%, transparent 80%);
+    filter: blur(50px);
+    pointer-events: none;
+  }
+
+  .hero-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(251, 191, 36, 0.12);
+    border: 1px solid rgba(251, 191, 36, 0.35);
+    padding: 0.35rem 0.9rem;
+    border-radius: 9999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--cr-yellow);
+    margin-bottom: 1.25rem;
+  }
+
+  .status-pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--cr-yellow);
+    box-shadow: 0 0 8px var(--cr-yellow);
+    animation: statusPulse 1.8s infinite;
+  }
+
+  @keyframes statusPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+  }
+
+  .hero-title {
+    font-size: 2.35rem;
+    font-weight: 800;
+    margin: 0 0 0.75rem;
+    letter-spacing: -0.02em;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, var(--cr-cyan) 0%, #38bdf8 50%, var(--cr-violet) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-slogan {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin: 0 0 1rem;
+  }
+
+  .hero-desc {
+    max-width: 720px;
+    margin: 0 auto 2rem;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  /* Value Proposition Strip */
+  .value-prop-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: left;
+  }
+
+  .vp-item {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    background: rgba(13, 18, 28, 0.8);
+    border: 1px solid var(--cr-border);
+    padding: 0.85rem 1.15rem;
+    border-radius: 12px;
+  }
+
+  .vp-icon {
+    font-size: 1.6rem;
+  }
+
+  .vp-text strong {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+  }
+
+  .vp-text span {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  /* Artist Pre-registration Card */
+  .artist-apply-card {
+    background: linear-gradient(135deg, rgba(18, 24, 36, 0.95) 0%, rgba(20, 28, 44, 0.9) 100%);
+    border: 1px solid rgba(0, 255, 204, 0.3);
+    box-shadow: 0 0 25px rgba(0, 255, 204, 0.06);
+    border-radius: 16px;
+    padding: 2.25rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .apply-tag {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--cr-cyan);
+    margin-bottom: 0.4rem;
+  }
+
+  .apply-title {
+    font-size: 1.65rem;
+    font-weight: 800;
+    margin: 0 0 0.75rem;
+  }
+
+  .apply-desc {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    max-width: 820px;
+    margin: 0 0 1.5rem;
+  }
+
+  .apply-criteria-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .criteria-box {
+    background: var(--cr-card-inner);
+    border: 1px solid var(--cr-border);
+    padding: 1.15rem;
+    border-radius: 10px;
+  }
+
+  .cb-icon {
+    font-size: 1.4rem;
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  .criteria-box strong {
+    display: block;
+    font-size: 0.92rem;
+    color: var(--cr-cyan);
+    margin-bottom: 0.35rem;
+  }
+
+  .criteria-box p {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .apply-action-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .apply-btn {
+    padding: 0.75rem 1.4rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.92rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .apply-btn.primary {
+    background: linear-gradient(135deg, var(--cr-cyan) 0%, #00d2ff 100%);
+    color: #041018;
+    border: none;
+    box-shadow: 0 4px 14px rgba(0, 255, 204, 0.3);
+  }
+
+  .apply-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 255, 204, 0.45);
+  }
+
+  .apply-btn.secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    border: 1px solid var(--cr-border);
+  }
+
+  .apply-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--cr-border-hover);
+  }
+
+  /* Preview Showcase Section */
+  .preview-showcase-section {
+    margin-bottom: 4rem;
+  }
+
+  .preview-section-header {
+    text-align: center;
+    margin-bottom: 1.75rem;
+  }
+
+  .preview-badge {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--cr-yellow);
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem;
+  }
+
+  .section-desc {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
+
+  /* Category Filter Tabs */
+  .category-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
+  .cat-tab {
+    background: var(--cr-card);
+    border: 1px solid var(--cr-border);
+    color: var(--text-secondary);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .cat-tab:hover {
+    color: var(--text-primary);
+    border-color: var(--cr-border-hover);
+  }
+
+  .cat-tab.active {
+    background: rgba(0, 255, 204, 0.12);
+    color: var(--cr-cyan);
+    border-color: var(--cr-cyan);
+  }
+
+  /* Artists Grid */
+  .artists-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .artist-card {
+    position: relative;
+    background: var(--cr-card);
+    border: 1px solid var(--cr-border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .artist-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--cr-border-hover);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  .preview-watermark {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: var(--cr-yellow);
+    background: rgba(251, 191, 36, 0.12);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .ac-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .ac-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .ac-name-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .ac-name {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--text-primary);
+  }
+
+  .ac-live-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(0, 255, 163, 0.15);
+    color: #00ffa3;
+    border: 1px solid rgba(0, 255, 163, 0.3);
+  }
+
+  .ac-category-tag {
+    font-size: 0.78rem;
+    color: var(--cr-cyan);
+    font-weight: 600;
+    margin-top: 0.15rem;
+  }
+
+  .ac-tags {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.85rem;
+  }
+
+  .tag-pill {
+    font-size: 0.72rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+
+  .ac-bio {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    margin: 0 0 1rem;
+    line-height: 1.5;
+    flex-grow: 1;
+  }
+
+  /* Gallery Item Box */
+  .ac-gallery {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+    margin-bottom: 1.15rem;
+  }
+
+  .gallery-item {
+    position: relative;
+    height: 90px;
+    border-radius: 8px;
+    padding: 0.65rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: transform 0.15s ease, border-color 0.15s ease;
+    overflow: hidden;
+  }
+
+  .gallery-item:hover {
+    transform: scale(1.02);
+    border-color: var(--cr-cyan);
+  }
+
+  .thumb-badge {
+    align-self: flex-start;
+    font-size: 0.62rem;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.6);
+    color: var(--text-primary);
+  }
+
+  .thumb-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #f8fafc;
+    line-height: 1.3;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  }
+
+  .thumb-zoom-icon {
+    font-size: 0.65rem;
+    color: var(--cr-cyan);
+    font-weight: 700;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  .gallery-item:hover .thumb-zoom-icon {
+    opacity: 1;
+  }
+
+  /* Card Action Buttons */
+  .ac-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+  }
+
+  .ac-btn {
+    padding: 0.55rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: all 0.15s ease;
+  }
+
+  .ac-btn.chzzk-btn {
+    background: linear-gradient(135deg, #00ffa3 0%, #00b4d8 100%);
+    color: #03141f;
+    font-weight: 800;
+  }
+
+  .ac-btn.chzzk-btn:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 255, 163, 0.35);
+  }
+
+  .ac-btn.portfolio-btn {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    border: 1px solid var(--cr-border);
+  }
+
+  .ac-btn.portfolio-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--cr-border-hover);
+  }
+
+  /* Why Us Section */
+  .why-us-section {
+    margin-bottom: 4rem;
+  }
+
+  .why-title {
+    font-size: 1.65rem;
+    font-weight: 800;
+    text-align: center;
+    margin: 0 0 2rem;
+  }
+
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .why-card {
+    background: var(--cr-card);
+    border: 1px solid var(--cr-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    position: relative;
+  }
+
+  .wc-num {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--cr-cyan);
+    opacity: 0.3;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .why-card h3 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    margin: 0 0 0.65rem;
+    color: var(--text-primary);
+  }
+
+  .why-card p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* FAQ Section */
+  .creators-faq-section {
+    max-width: 850px;
+    margin: 0 auto;
+  }
+
+  .faq-headline {
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-align: center;
+    margin: 0 0 1.5rem;
+  }
+
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .faq-item {
+    background: var(--cr-card);
+    border: 1px solid var(--cr-border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .faq-question {
+    padding: 1rem 1.25rem;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+  }
+
+  .faq-question:hover {
+    color: var(--cr-cyan);
+  }
+
+  .faq-answer {
+    padding: 0 1.25rem 1rem;
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* Modals */
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 1.5rem;
+  }
+
+  .modal-backdrop.active {
+    display: flex;
+  }
+
+  .modal-card {
+    background: #121824;
+    border: 1px solid var(--cr-border);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    border-radius: 16px;
+    max-width: 580px;
+    width: 100%;
+    padding: 2rem;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-close-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .modal-badge {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--cr-cyan);
+    margin-bottom: 0.3rem;
+  }
+
+  .modal-headline {
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem;
+  }
+
+  .modal-sub {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 0 0 1.25rem;
+  }
+
+  .modal-info-box {
+    background: var(--cr-card-inner);
+    border: 1px solid var(--cr-border);
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.25rem;
+  }
+
+  .modal-info-box ul {
+    margin: 0.5rem 0 0;
+    padding-left: 1.2rem;
+  }
+
+  .modal-info-box li {
+    margin-bottom: 0.25rem;
+  }
+
+  .modal-action-buttons {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .modal-btn {
+    padding: 0.7rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-align: center;
+    cursor: pointer;
+    text-decoration: none;
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-btn.primary {
+    background: linear-gradient(135deg, var(--cr-cyan) 0%, #00b4d8 100%);
+    color: #03141f;
+    border: none;
+  }
+
+  .modal-btn.secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    border: 1px solid var(--cr-border);
+  }
+
+  .modal-notice {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin: 1rem 0 0;
+  }
+
+  /* Lightbox Card */
+  .lightbox-card {
+    background: #121824;
+    border: 1px solid var(--cr-border);
+    border-radius: 16px;
+    max-width: 600px;
+    width: 100%;
+    padding: 1.5rem;
+    position: relative;
+  }
+
+  .lightbox-preview-box {
+    text-align: center;
+  }
+
+  .lightbox-tag {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--cr-cyan);
+    letter-spacing: 0.05em;
+  }
+
+  #lightbox-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin: 0.25rem 0;
+  }
+
+  #lightbox-artist {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 0 0 1rem;
+  }
+
+  .lightbox-visual {
+    width: 100%;
+    height: 280px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 900px) {
+    .value-prop-strip {
+      grid-template-columns: 1fr;
+    }
+
+    .apply-criteria-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .artists-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .why-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .hero-title {
+      font-size: 1.85rem;
+    }
+  }
+</style>

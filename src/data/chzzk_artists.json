@@ -1,0 +1,114 @@
+[
+  {
+    "id": "sample-1",
+    "name": "모리 (Mori)",
+    "category": "emotes",
+    "categoryLabel": "#구독이모티콘/뱃지",
+    "avatar": "🎨",
+    "avatarBg": "linear-gradient(135deg, #ff007a, #7928ca)",
+    "tags": ["#구독이모티콘", "#SD캐릭터", "#채팅뱃지"],
+    "bio": "치지직 채팅창에서 가장 돋보이는 112px 가독성 극대화 SD 이모티콘과 티어별 구독 뱃지를 실시간 라이브로 제작합니다.",
+    "bioEn": "Crafts high-readability 112px SD emotes and tier subscription badges live on Chzzk broadcasts.",
+    "chzzkUrl": "https://chzzk.naver.com",
+    "portfolioUrl": "https://x.com",
+    "portfolioLabel": "X (트위터) 포트폴리오",
+    "portfolioLabelEn": "X (Twitter) Portfolio",
+    "previewThumbnails": [
+      {
+        "title": "치지직 맞춤형 112px SD 이모티콘 팩",
+        "badge": "이모티콘",
+        "gradient": "linear-gradient(135deg, #1e1b4b, #312e81)"
+      },
+      {
+        "title": "티어 1~3 치즈 구독 뱃지 세트",
+        "badge": "구독 뱃지",
+        "gradient": "linear-gradient(135deg, #14532d, #065f46)"
+      }
+    ],
+    "isFeatured": true
+  },
+  {
+    "id": "sample-2",
+    "name": "루아 (Lua Rigging)",
+    "category": "live2d",
+    "categoryLabel": "#Live2D/리깅",
+    "avatar": "✨",
+    "avatarBg": "linear-gradient(135deg, #00ffcc, #0284c7)",
+    "tags": ["#Live2D", "#버튜버리깅", "#원화작업"],
+    "bio": "자연스러운 입모양 파츠 분리와 부드러운 물리 연산(헤어/의상)을 전문으로 치지직에서 실시간 리깅 작업을 방송합니다.",
+    "bioEn": "Specializes in natural facial physics and ultra-smooth cloth rigging, streamed live on Chzzk.",
+    "chzzkUrl": "https://chzzk.naver.com",
+    "portfolioUrl": "https://artmug.kr",
+    "portfolioLabel": "아트머그 포트폴리오",
+    "portfolioLabelEn": "Artmug Portfolio",
+    "previewThumbnails": [
+      {
+        "title": "고가동 역동형 Live2D 버츄얼 모델링",
+        "badge": "Live2D",
+        "gradient": "linear-gradient(135deg, #3b0764, #581c87)"
+      },
+      {
+        "title": "물리 연산 헤어 & 표정 트래킹 세팅",
+        "badge": "물리 연산",
+        "gradient": "linear-gradient(135deg, #0f172a, #1e293b)"
+      }
+    ],
+    "isFeatured": true
+  },
+  {
+    "id": "sample-3",
+    "name": "시온 (Sion Art)",
+    "category": "illustration",
+    "categoryLabel": "#일러스트/대기화면",
+    "avatar": "🌌",
+    "avatarBg": "linear-gradient(135deg, #6366f1, #a855f7)",
+    "tags": ["#대기화면", "#일러스트", "#유튜브썸네일"],
+    "bio": "방송 시작 전 시청자 몰입도를 극대화하는 사이버펑크 & 판타지 분위기의 16:9 대기화면과 채널 아트를 제작합니다.",
+    "bioEn": "Creates immersive 16:9 waiting screens and channel key visuals in cyberpunk and fantasy aesthetics.",
+    "chzzkUrl": "https://chzzk.naver.com",
+    "portfolioUrl": "https://x.com",
+    "portfolioLabel": "X (트위터) 아트워크",
+    "portfolioLabelEn": "X (Twitter) Artwork",
+    "previewThumbnails": [
+      {
+        "title": "1920x1080 FHD 방송 오프닝 대기 일러스트",
+        "badge": "대기화면",
+        "gradient": "linear-gradient(135deg, #1e1e38, #2e1065)"
+      },
+      {
+        "title": "치지직 채널 상단 와이드 배너 & 프로필 아트",
+        "badge": "채널 아트",
+        "gradient": "linear-gradient(135deg, #022c22, #064e3b)"
+      }
+    ],
+    "isFeatured": true
+  },
+  {
+    "id": "sample-4",
+    "name": "넥서스 디자인 (Nexus)",
+    "category": "overlay",
+    "categoryLabel": "#방송오버레이/로고",
+    "avatar": "⚡",
+    "avatarBg": "linear-gradient(135deg, #059669, #10b981)",
+    "tags": ["#OBS오버레이", "#채널로고", "#도네이션창"],
+    "bio": "웹캠 프레임, 투명 채팅창 테두리, 치즈 도네이션 알림 오버레이 및 스트리머 시그니처 캘리/타이포 로고를 전문으로 작업합니다.",
+    "bioEn": "Designs bespoke OBS webcam frames, clean chat borders, Cheese alert overlays, and signature logos.",
+    "chzzkUrl": "https://chzzk.naver.com",
+    "portfolioUrl": "https://artmug.kr",
+    "portfolioLabel": "외주 문의 & 샘플북",
+    "portfolioLabelEn": "Inquiry & Sample Book",
+    "previewThumbnails": [
+      {
+        "title": "하이테크 네온 스트림 오버레이 풀 패키지",
+        "badge": "오버레이",
+        "gradient": "linear-gradient(135deg, #0c4a6e, #075985)"
+      },
+      {
+        "title": "스트리머 시그니처 네임 타이포그래피 로고",
+        "badge": "방송 로고",
+        "gradient": "linear-gradient(135deg, #451a03, #78350f)"
+      }
+    ],
+    "isFeatured": true
+  }
+]
