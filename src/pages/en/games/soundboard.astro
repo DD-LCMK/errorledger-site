@@ -1,0 +1,266 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import { getKoUrl, getEnUrl } from '../../../i18n';
+
+const siteBase = Astro.site?.toString() || 'https://errorledger.com';
+const rawPath = Astro.url.pathname.replace(/\/$/, '');
+const koUrl = getKoUrl(siteBase, rawPath);
+const enUrl = getEnUrl(siteBase, rawPath);
+
+const urlParams = Astro.url.searchParams;
+const streamerMode = urlParams.has('stream') || urlParams.has('obs');
+const gameUrl = streamerMode
+  ? '/games/soundboard?bare=1&stream=true&lang=en'
+  : '/games/soundboard?bare=1&lang=en';
+
+const webAppSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Broadcast Keypad Soundboard — ErrorLedger",
+  "alternateName": ["Soundboard", "Web Soundboard", "Stream Deck Keypad", "Live Soundboard", "방송 효과음 키패드"],
+  "url": enUrl,
+  "description": "Zero-dependency client-side keypad soundboard for live streamers on YouTube Live, Twitch, Kick, and CHZZK. 9 synthesized instant SFX pads plus custom MP3/WAV slots with Numpad hotkeys and Space panic stop.",
+  "applicationCategory": "MultimediaApplication",
+  "operatingSystem": "All (Web Browser, Chrome, Edge, Safari, Mobile)",
+  "inLanguage": ["en-US", "ko-KR"],
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+});
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead
+      title="Broadcast Keypad Soundboard — Free Instant Web Soundboard for Streamers | ErrorLedger"
+      description="Instant zero-latency web soundboard for live broadcasts. Trigger 9 procedural broadcast sounds (Buzzer, Chime, Punchline, Censor, Boom, Drumroll, Fanfare, Applause) with Numpad 1~9, plus custom MP3 drag-and-drop slots. Free & client-side!"
+      lang="en"
+      hreflangKo={koUrl}
+      hreflangEn={enUrl}
+      keywords="Web Soundboard, Stream Soundboard, Keypad Soundboard, Twitch Soundboard, YouTube Live SFX, Stream Deck Soundboard, Free Online Soundboard, Zero Latency Audio"
+    />
+    <script type="application/ld+json" set:html={webAppSchema}></script>
+  </head>
+  <body class="en-game-body">
+    <Header />
+
+    <main class="en-game-main">
+      <div class="en-game-frame-wrap">
+        <iframe
+          src={gameUrl}
+          class="en-game-iframe"
+          id="game-iframe"
+          title="Broadcast Keypad Soundboard — ErrorLedger"
+          allowfullscreen
+          loading="eager"
+          scrolling="no"
+        ></iframe>
+      </div>
+
+      <!-- Guide & FAQ -->
+      {!streamerMode && (
+        <details class="stream-bottom-details">
+          <summary class="details-summary">
+            <span>📖 Detailed Streamer Guide & FAQ</span>
+            <span class="chevron">▼</span>
+          </summary>
+          <div class="details-content">
+            <div class="details-faq-section">
+              <h3>Broadcast Soundboard FAQ</h3>
+              <div class="details-faq-grid">
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. How do I use this inside OBS Studio or on a second monitor?</strong>
+                  <p class="faq-a">Click the [🎥 OBS Copy] button in the soundboard utility bar to copy the dedicated transparent overlay link (<code>?stream=true</code>). Add it as an OBS Browser Source or open it in a secondary window as an ultra-clean Stream Deck soundpad.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Do my custom uploaded audio files get sent to a server?</strong>
+                  <p class="faq-a">No! 100% of audio decoding and playback happens strictly inside your local browser via the Web Audio API. No external databases, no cloud servers, and complete privacy.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Why are there no audio loading delays or buffering?</strong>
+                  <p class="faq-a">All 9 core broadcast sound effects are synthesized procedurally in real time directly by your device's audio hardware using pure Web Audio oscillators, filters, and envelopes with 0ms delay.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. How does Emergency Panic Stop work?</strong>
+                  <p class="faq-a">Pressing <kbd>Space</kbd> or <kbd>Esc</kbd> at any time ramps all active audio gain nodes to zero within 15 milliseconds without annoying clicks or pops, instantly silencing every sound.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </details>
+      )}
+    </main>
+
+    {!streamerMode && <Footer />}
+
+    <script>
+      const iframe = document.getElementById('game-iframe') as HTMLIFrameElement;
+      if (iframe) {
+        var sp = new URLSearchParams(window.location.search);
+        if (sp.has('stream') || sp.has('obs')) {
+          var s = document.createElement('style');
+          s.textContent = [
+            '.leaderboard-ad-wrap { display: none !important; }',
+            'footer { display: none !important; }',
+            '.stream-bottom-details { display: none !important; }',
+            '.arcade-header { display: none !important; }',
+            '.en-game-main { padding: 0 !important; margin: 0 !important; max-width: none !important; }',
+            '.en-game-frame-wrap { height: 100vh !important; }',
+            '.en-game-iframe { height: 100vh !important; }'
+          ].join(' ');
+          document.head.appendChild(s);
+
+          if (!iframe.src.includes('stream=true')) {
+            iframe.src = iframe.src + '&stream=true';
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
+
+<style>
+  .en-game-body {
+    background: #090d16;
+    color: #f1f5f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+  }
+
+  .en-game-main {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0.5rem 0.75rem 2rem !important;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+  }
+
+  .en-game-frame-wrap {
+    width: 100%;
+    max-width: 1300px;
+    height: 820px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #0a0d14;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+    border: 1px solid #1e293b;
+    position: relative;
+  }
+
+  .en-game-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+
+  /* Expandable FAQ details */
+  .stream-bottom-details {
+    width: 100%;
+    max-width: 1300px;
+    margin-top: 1.5rem;
+    background: #0d121c;
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .details-summary {
+    padding: 1rem 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #94a3b8;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: color 0.2s;
+  }
+
+  .details-summary:hover {
+    color: #00ffcc;
+  }
+
+  .chevron {
+    font-size: 0.75rem;
+    transition: transform 0.2s;
+  }
+
+  .stream-bottom-details[open] .chevron {
+    transform: rotate(180deg);
+  }
+
+  .details-content {
+    padding: 0 1.25rem 1.5rem;
+  }
+
+  .details-faq-section h3 {
+    font-size: 1.1rem;
+    color: #f1f5f9;
+    margin: 0 0 1rem;
+  }
+
+  .details-faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .details-faq-card {
+    background: #141c2c;
+    border: 1px solid #26334d;
+    border-radius: 10px;
+    padding: 1rem;
+  }
+
+  .faq-q {
+    display: block;
+    color: #00ffcc;
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .faq-a {
+    color: #94a3b8;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .faq-a code {
+    background: #090d16;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #38bdf8;
+  }
+
+  .faq-a kbd {
+    background: #1e293b;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #fff;
+    border: 1px solid #334155;
+    font-size: 0.75rem;
+  }
+
+  @media (max-width: 900px) {
+    .en-game-frame-wrap {
+      height: 980px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .en-game-frame-wrap {
+      height: 1100px;
+      border-radius: 8px;
+    }
+  }
+</style>
