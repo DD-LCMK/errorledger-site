@@ -120,53 +120,124 @@ const homeFaqSchema = JSON.stringify({
     <main class="arcade-home-main">
       <!-- Hero Section -->
       <section class="hero-showcase">
-        <div class="hero-backdrop"></div>
-        <div class="hero-content">
-          <div class="hero-pill">
-            <span>🎥</span>
-            <span>100% Free for Streaming, YouTube & Monetization</span>
-          </div>
-          <h1 class="hero-headline">
-            Free <span class="gradient-text">Stream Tools</span> for Live Creators
-          </h1>
+        <div class="hero-ambient-glow glow-left"></div>
+        <div class="hero-ambient-glow glow-right"></div>
+        <div class="hero-cyber-grid"></div>
 
-          <p class="hero-subtext">
-            Launch in 1 second — no install, no login. Marble race, spin wheel, and ladder game built for streamers.
-          </p>
+        <div class="hero-split-container">
+          <!-- Left Column: Value Prop & Actions -->
+          <div class="hero-col-content">
+            <div class="hero-pill">
+              <span class="live-indicator"></span>
+              <span>100% Free for Streaming, YouTube & Monetization</span>
+            </div>
 
-          <!-- Featured Game Hero Banner -->
-          <div class="featured-hero-card">
-            <div class="featured-main-row">
-              <div class="featured-icon-box">🔮</div>
-              <div class="featured-text">
-                <span class="flagship-label">🔥 #1 Featured Tool</span>
-                <h2>Marble Race Roulette</h2>
-                <p>A 7,200px long track with physics pins, spinners, and a finale propeller — the most exciting way to pick a winner live.</p>
+            <h1 class="hero-headline">
+              Free Stream Tools<br />
+              <span class="gradient-text">for Live Creators</span>
+            </h1>
+
+            <p class="hero-subtext">
+              Launch in 1 second — no install, no login. Marble race roulette, Chzzk downloader, fraud protection radar, and streamer utilities.
+            </p>
+
+            <div class="hero-cta-group">
+              <a href="/en/games/marble-roulette" class="hero-btn-primary">
+                <span class="btn-icon">🔮</span>
+                <span class="btn-text">Start Marble Race</span>
+                <span class="btn-arrow">→</span>
+              </a>
+              <a href="/en/chzzk-downloader" class="hero-btn-secondary">
+                <span class="btn-icon">📥</span>
+                <span class="btn-text">Chzzk Downloader</span>
+              </a>
+            </div>
+
+            <div class="hero-trust-bar">
+              <div class="trust-item">
+                <span class="trust-icon">⚡</span>
+                <span class="trust-text">100% Free Forever</span>
               </div>
-              <div class="featured-action">
-                <a href="/en/games/marble-roulette" class="btn-play-hero">
-                  <span>Start Marble Race →</span>
-                </a>
+              <div class="trust-item">
+                <span class="trust-icon">🔒</span>
+                <span class="trust-text">No Install · No Login</span>
+              </div>
+              <div class="trust-item">
+                <span class="trust-icon">🎙️</span>
+                <span class="trust-text">Built for Streamers</span>
               </div>
             </div>
           </div>
 
-          <!-- Hero Quick Utilities Bar -->
-          <div class="hero-quick-tools-bar">
-            <span class="quick-tools-label">🛠️ Creator Tool Suite:</span>
-            <div class="quick-tools-pills">
-              <a href="/en/chzzk-downloader" class="quick-tool-pill chzzk">
-                <span class="pill-dot green"></span>
-                <span>Chzzk Downloader</span>
-                <span class="pill-tag new">NEW</span>
+          <!-- Right Column: 4-Card Flagship Deck -->
+          <div class="hero-col-deck">
+            <div class="hero-deck-grid">
+              <!-- Card 1: Marble Race Roulette -->
+              <a href="/en/games/marble-roulette" class="deck-card card-marble">
+                <div class="deck-card-glow"></div>
+                <div class="deck-card-header">
+                  <div class="deck-icon-badge marble-icon">🔮</div>
+                  <span class="deck-badge badge-hot">🔥 #1 Flagship</span>
+                </div>
+                <div class="deck-card-body">
+                  <h2 class="deck-card-title">Marble Race Roulette</h2>
+                  <p class="deck-card-desc">7,200px long track with physics pins, spinners, and spring bouncers for thrilling live giveaways</p>
+                </div>
+                <div class="deck-card-footer">
+                  <span class="deck-action-text">Start Marble Race</span>
+                  <span class="deck-action-arrow">→</span>
+                </div>
               </a>
-              <a href="/en/schedule" class="quick-tool-pill schedule">
-                <span class="pill-dot cyan"></span>
-                <span>Schedule Studio</span>
+
+              <!-- Card 2: Chzzk Downloader -->
+              <a href="/en/chzzk-downloader" class="deck-card card-downloader">
+                <div class="deck-card-glow"></div>
+                <div class="deck-card-header">
+                  <div class="deck-icon-badge downloader-icon">📥</div>
+                  <span class="deck-badge badge-green">⚡ Lossless 1080p</span>
+                </div>
+                <div class="deck-card-body">
+                  <h2 class="deck-card-title">Chzzk Downloader</h2>
+                  <p class="deck-card-desc">Download full VOD replays and clips at original maximum bitrate with single URL paste</p>
+                </div>
+                <div class="deck-card-footer">
+                  <span class="deck-action-text">Download Free</span>
+                  <span class="deck-action-arrow">→</span>
+                </div>
               </a>
-              <a href="/en/bzzk" class="quick-tool-pill bzzk">
-                <span class="pill-dot purple"></span>
-                <span>Bzzk Radar</span>
+
+              <!-- Card 3: Bzzk Radar -->
+              <a href="/en/bzzk" class="deck-card card-radar">
+                <div class="deck-card-glow"></div>
+                <div class="deck-card-header">
+                  <div class="deck-icon-badge radar-icon">🛡️</div>
+                  <span class="deck-badge badge-purple">🛡️ Live Radar</span>
+                </div>
+                <div class="deck-card-body">
+                  <h2 class="deck-card-title">Bzzk Malicious Radar</h2>
+                  <p class="deck-card-desc">Detect griefers, multi-account ban evaders, and suspicious bot accounts before your stream starts</p>
+                </div>
+                <div class="deck-card-footer">
+                  <span class="deck-action-text">Check Radar</span>
+                  <span class="deck-action-arrow">→</span>
+                </div>
+              </a>
+
+              <!-- Card 4: Creator Showcase & Guide -->
+              <a href="/en/chzzk-guide" class="deck-card card-guide">
+                <div class="deck-card-glow"></div>
+                <div class="deck-card-header">
+                  <div class="deck-icon-badge guide-icon">🎨</div>
+                  <span class="deck-badge badge-cyan">📖 Guide & Artists</span>
+                </div>
+                <div class="deck-card-body">
+                  <h2 class="deck-card-title">Guide & Creators</h2>
+                  <p class="deck-card-desc">OBS streaming setup guides and curated artists proving their work process live on stream</p>
+                </div>
+                <div class="deck-card-footer">
+                  <span class="deck-action-text">Explore Showcase</span>
+                  <span class="deck-action-arrow">→</span>
+                </div>
               </a>
             </div>
           </div>
@@ -511,65 +582,113 @@ const homeFaqSchema = JSON.stringify({
 
   .arcade-home-main {
     flex: 1;
-    max-width: 1200px;
+    max-width: 1260px;
     margin: 0 auto;
-    padding: 2rem 1.5rem 7rem;
+    padding: 1.5rem 1.25rem 7rem;
     width: 100%;
     box-sizing: border-box;
   }
 
+  /* Hero Section */
   .hero-showcase {
     position: relative;
-    padding: 3rem 1rem 2.5rem;
-    text-align: center;
+    padding: 2.5rem 0.5rem 3.5rem;
     overflow: hidden;
   }
 
-  .hero-backdrop {
+  /* Ambient glowing spheres */
+  .hero-ambient-glow {
     position: absolute;
-    top: -30%;
-    left: 50%;
-    transform: translateX(-50%);
     width: 650px;
-    height: 450px;
-    background: radial-gradient(circle, rgba(168, 85, 247, 0.22) 0%, rgba(56, 189, 248, 0.1) 50%, transparent 80%);
-    filter: blur(60px);
+    height: 520px;
+    border-radius: 50%;
+    filter: blur(110px);
     pointer-events: none;
     z-index: 0;
+    opacity: 0.65;
   }
 
-  .hero-content {
+  .glow-left {
+    top: -120px;
+    left: -160px;
+    background: radial-gradient(circle, rgba(0, 255, 204, 0.18) 0%, rgba(56, 189, 248, 0.08) 50%, transparent 70%);
+  }
+
+  .glow-right {
+    top: 40px;
+    right: -120px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.24) 0%, rgba(236, 72, 153, 0.1) 50%, transparent 70%);
+  }
+
+  .hero-cyber-grid {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+    z-index: 0;
+    mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 45%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 45%, transparent 80%);
+  }
+
+  .hero-split-container {
     position: relative;
     z-index: 1;
-    max-width: 850px;
+    display: grid;
+    grid-template-columns: 1fr 1.22fr;
+    gap: 2.75rem;
+    align-items: center;
+    max-width: 1240px;
     margin: 0 auto;
+    text-align: left;
+  }
+
+  .hero-col-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .live-indicator {
+    width: 8px;
+    height: 8px;
+    background: #00ffcc;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #00ffcc;
+    display: inline-block;
+    animation: livePulse 2s infinite ease-in-out;
+  }
+
+  @keyframes livePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
   }
 
   .hero-pill {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    background: rgba(168, 85, 247, 0.15);
+    gap: 0.5rem;
+    background: rgba(168, 85, 247, 0.12);
     border: 1px solid rgba(168, 85, 247, 0.35);
     color: #e9d5ff;
     font-size: 0.8rem;
     font-weight: 700;
-    padding: 0.3rem 0.85rem;
+    padding: 0.35rem 0.85rem;
     border-radius: 999px;
     margin-bottom: 1.25rem;
   }
 
   .hero-headline {
-    font-size: clamp(1.9rem, 5vw, 3.2rem);
+    font-size: 2.85rem;
     font-weight: 900;
-    line-height: 1.15;
-    margin-bottom: 1rem;
-    color: #f8fafc;
+    line-height: 1.18;
     letter-spacing: -0.03em;
+    color: #ffffff;
+    margin: 0 0 1rem;
   }
 
   .gradient-text {
-    background: linear-gradient(135deg, #a855f7 0%, #38bdf8 100%);
+    background: linear-gradient(135deg, #00ffcc 0%, #38bdf8 50%, #a855f7 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -577,86 +696,317 @@ const homeFaqSchema = JSON.stringify({
   .hero-subtext {
     font-size: 1.05rem;
     color: #94a3b8;
+    line-height: 1.65;
+    margin: 0 0 1.75rem;
+    max-width: 540px;
+  }
+
+  .hero-cta-group {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
     margin-bottom: 2rem;
-    max-width: 560px;
-    margin-left: auto;
-    margin-right: auto;
+    flex-wrap: wrap;
   }
 
-  .featured-hero-card {
-    background: linear-gradient(135deg, rgba(168, 85, 247, 0.12) 0%, rgba(56, 189, 248, 0.08) 100%);
-    border: 1px solid rgba(168, 85, 247, 0.25);
-    border-radius: 16px;
-    padding: 1.5rem;
-    text-align: left;
+  .hero-btn-primary {
+    background: linear-gradient(135deg, #a855f7 0%, #38bdf8 100%);
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 1.02rem;
+    padding: 0.85rem 1.65rem;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 8px 24px rgba(168, 85, 247, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
-  .featured-main-row {
+  .hero-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(168, 85, 247, 0.55);
+  }
+
+  .btn-arrow {
+    transition: transform 0.2s ease;
+  }
+
+  .hero-btn-primary:hover .btn-arrow {
+    transform: translateX(3px);
+  }
+
+  .hero-btn-secondary {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #38bdf8;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.02rem;
+    padding: 0.85rem 1.5rem;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+  }
+
+  .hero-btn-secondary:hover {
+    background: rgba(56, 189, 248, 0.12);
+    border-color: rgba(56, 189, 248, 0.6);
+    color: #ffffff;
+    transform: translateY(-2px);
+  }
+
+  .hero-trust-bar {
     display: flex;
     align-items: center;
     gap: 1.25rem;
     flex-wrap: wrap;
   }
 
-  .featured-icon-box {
-    font-size: 2.8rem;
-    flex-shrink: 0;
-  }
-
-  .featured-text {
-    flex: 1;
-    min-width: 200px;
-  }
-
-  .flagship-label {
-    display: inline-block;
-    font-size: 0.72rem;
-    font-weight: 800;
-    color: #fb923c;
-    background: rgba(251, 146, 60, 0.12);
-    border: 1px solid rgba(251, 146, 60, 0.3);
-    padding: 0.2rem 0.55rem;
-    border-radius: 999px;
-    margin-bottom: 0.4rem;
-    letter-spacing: 0.04em;
-  }
-
-  .featured-text h2 {
-    font-size: 1.35rem;
-    font-weight: 900;
-    color: #f8fafc;
-    margin: 0 0 0.35rem;
-  }
-
-  .featured-text p {
-    font-size: 0.88rem;
-    color: #94a3b8;
-    margin: 0;
-    line-height: 1.55;
-  }
-
-  .featured-action {
-    flex-shrink: 0;
-  }
-
-  .btn-play-hero {
+  .trust-item {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    background: linear-gradient(135deg, #a855f7 0%, #38bdf8 100%);
-    color: #ffffff;
-    text-decoration: none;
-    font-size: 0.92rem;
-    font-weight: 800;
-    padding: 0.65rem 1.3rem;
-    border-radius: 10px;
-    transition: all 0.15s ease;
-    white-space: nowrap;
+    gap: 0.35rem;
+    color: #94a3b8;
+    font-size: 0.82rem;
+    font-weight: 600;
   }
 
-  .btn-play-hero:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(168, 85, 247, 0.35);
+  .trust-icon {
+    font-size: 0.95rem;
+  }
+
+  /* Right Column: 2x2 Flagship Card Deck */
+  .hero-deck-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.1rem;
+  }
+
+  .deck-card {
+    position: relative;
+    background: rgba(15, 23, 42, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 1.25rem;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    backdrop-filter: blur(12px);
+    overflow: hidden;
+  }
+
+  .deck-card-glow {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .deck-card:hover {
+    transform: translateY(-4px);
+  }
+
+  /* Marble Card */
+  .card-marble:hover {
+    border-color: rgba(168, 85, 247, 0.6);
+    box-shadow: 0 12px 30px rgba(168, 85, 247, 0.25);
+    background: rgba(168, 85, 247, 0.08);
+  }
+
+  /* Downloader Card */
+  .card-downloader:hover {
+    border-color: rgba(0, 255, 204, 0.6);
+    box-shadow: 0 12px 30px rgba(0, 255, 204, 0.2);
+    background: rgba(0, 255, 204, 0.06);
+  }
+
+  /* Radar Card */
+  .card-radar:hover {
+    border-color: rgba(244, 63, 94, 0.6);
+    box-shadow: 0 12px 30px rgba(244, 63, 94, 0.2);
+    background: rgba(244, 63, 94, 0.06);
+  }
+
+  /* Guide Card */
+  .card-guide:hover {
+    border-color: rgba(56, 189, 248, 0.6);
+    box-shadow: 0 12px 30px rgba(56, 189, 248, 0.25);
+    background: rgba(56, 189, 248, 0.06);
+  }
+
+  .deck-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.85rem;
+  }
+
+  .deck-icon-badge {
+    font-size: 1.5rem;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .marble-icon {
+    background: rgba(168, 85, 247, 0.15);
+    border-color: rgba(168, 85, 247, 0.35);
+  }
+
+  .downloader-icon {
+    background: rgba(0, 255, 204, 0.12);
+    border-color: rgba(0, 255, 204, 0.3);
+  }
+
+  .radar-icon {
+    background: rgba(244, 63, 94, 0.12);
+    border-color: rgba(244, 63, 94, 0.3);
+  }
+
+  .guide-icon {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: rgba(56, 189, 248, 0.35);
+  }
+
+  .deck-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 0.22rem 0.55rem;
+    border-radius: 6px;
+    letter-spacing: -0.01em;
+  }
+
+  .badge-hot {
+    background: linear-gradient(135deg, #ef4444, #f97316);
+    color: #ffffff;
+  }
+
+  .badge-green {
+    background: rgba(0, 255, 204, 0.18);
+    color: #00ffcc;
+    border: 1px solid rgba(0, 255, 204, 0.35);
+  }
+
+  .badge-purple {
+    background: rgba(168, 85, 247, 0.2);
+    color: #d8b4fe;
+    border: 1px solid rgba(168, 85, 247, 0.35);
+  }
+
+  .badge-cyan {
+    background: rgba(56, 189, 248, 0.18);
+    color: #7dd3fc;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+  }
+
+  .deck-card-body {
+    flex: 1;
+    margin-bottom: 0.85rem;
+  }
+
+  .deck-card-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 0.35rem;
+    letter-spacing: -0.02em;
+  }
+
+  .deck-card-desc {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .deck-card-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 0.65rem;
+    transition: color 0.2s ease, gap 0.2s ease;
+  }
+
+  .deck-card:hover .deck-card-footer {
+    color: #ffffff;
+    gap: 0.55rem;
+  }
+
+  .deck-action-arrow {
+    transition: transform 0.2s ease;
+  }
+
+  .deck-card:hover .deck-action-arrow {
+    transform: translateX(3px);
+  }
+
+  /* Responsive Breakpoints */
+  @media (max-width: 1040px) {
+    .hero-split-container {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+      text-align: center;
+    }
+
+    .hero-col-content {
+      align-items: center;
+    }
+
+    .hero-subtext {
+      margin: 0 auto 1.75rem;
+    }
+
+    .hero-cta-group {
+      justify-content: center;
+    }
+
+    .hero-trust-bar {
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .hero-headline {
+      font-size: 2.1rem;
+    }
+
+    .hero-deck-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .hero-cta-group {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .hero-btn-primary, .hero-btn-secondary {
+      width: 100%;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+
+    .hero-trust-bar {
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+    }
   }
 
   .games-directory-section {
