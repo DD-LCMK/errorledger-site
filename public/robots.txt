@@ -1,19 +1,18 @@
-# Korean Search Crawlers (Naver & Daum)
+User-agent: *
+Allow: /
+
+# Korean Search Crawlers (Naver Yeti & Daum)
 User-agent: Yeti
 Allow: /
 
 User-agent: Daumoa
 Allow: /
 
-# Global Search Crawlers
+# Global Search Crawlers (Google & Bing)
 User-agent: Googlebot
 Allow: /
 
 User-agent: Bingbot
-Allow: /
-
-# Default for all other crawlers
-User-agent: *
 Allow: /
 
 Sitemap: https://errorledger.com/sitemap-index.xml
