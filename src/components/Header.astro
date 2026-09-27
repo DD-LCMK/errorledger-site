@@ -148,25 +148,24 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
         </div>
       </div>
 
-      <!-- 3. Stream Utilities Dropdown (HIGHLIGHTED) -->
-      <div class="nav-dropdown nav-dropdown-highlight" data-dropdown="tools">
+      <!-- 3. Stream Utilities Dropdown -->
+      <div class="nav-dropdown" data-dropdown="tools">
         <button 
           type="button" 
-          class={`nav-dropdown-btn btn-highlight ${currentPath.includes('/schedule') || currentPath.includes('/bzzk') || currentPath.includes('/chzzk-downloader') || currentPath.includes('/games/soundboard') || currentPath.includes('/guide') ? 'active' : ''}`}
+          class={`nav-dropdown-btn ${currentPath.includes('/schedule') || currentPath.includes('/games/soundboard') || currentPath.includes('/guide') ? 'active' : ''}`}
           aria-haspopup="true" 
           aria-expanded="false"
         >
           <span class="nav-icon">🛠️</span>
           <span class="nav-label">{isEn ? "Stream Tools" : "방송 유틸리티"}</span>
-          <span class="pulse-indicator"></span>
           <span class="chevron-icon">▾</span>
         </button>
 
         <div class="dropdown-menu dropdown-menu-tools" role="menu">
           <div class="dropdown-menu-inner">
             <div class="dropdown-header">
-              <span class="dropdown-category-title">🛠️ {isEn ? "STREAM UTILITIES" : "스트리머 필수 방송 도구"}</span>
-              <span class="dropdown-category-badge highlight">{isEn ? "Suite" : "무설치 스튜디오"}</span>
+              <span class="dropdown-category-title">🛠️ {isEn ? "STREAM UTILITIES" : "방송 유틸리티"}</span>
+              <span class="dropdown-category-badge">{isEn ? "3 Tools" : "3종 도구"}</span>
             </div>
             <div class="dropdown-list">
               <a href={`${prefix}/guide`} class={`dropdown-item ${currentPath.includes('/guide') ? 'active' : ''}`}>
@@ -189,16 +188,6 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
                   <span class="dropdown-item-desc">{isEn ? "Keypad Soundboard & Web SFX" : "방송용 효과음 키패드 사운드보드"}</span>
                 </div>
               </a>
-              <a href={`${prefix}/chzzk-downloader`} class={`dropdown-item ${currentPath.includes('/chzzk-downloader') ? 'active' : ''}`}>
-                <span class="dropdown-item-icon green-glow">📥</span>
-                <div class="dropdown-item-content">
-                  <div class="dropdown-item-header">
-                    <span class="dropdown-item-title chzzk-title">{t(lang, 'nav.chzzk_downloader')}</span>
-                    <span class="dropdown-pill chzzk-new">NEW</span>
-                  </div>
-                  <span class="dropdown-item-desc">{isEn ? "1080p Lossless VOD & Clip MP4" : "치지직 다시보기·클립 원본 고속 다운로드"}</span>
-                </div>
-              </a>
               <a href={`${prefix}/schedule`} class={`dropdown-item ${currentPath.includes('/schedule') ? 'active' : ''}`}>
                 <span class="dropdown-item-icon cyan-glow">📅</span>
                 <div class="dropdown-item-content">
@@ -209,20 +198,32 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
                   <span class="dropdown-item-desc">{isEn ? "Weekly Broadcast Schedule Studio" : "주간/월간 방송 편성표 템플릿 메이커"}</span>
                 </div>
               </a>
-              <a href={`${prefix}/bzzk`} class={`dropdown-item ${currentPath.includes('/bzzk') ? 'active' : ''}`}>
-                <span class="dropdown-item-icon purple-glow">🛡️</span>
-                <div class="dropdown-item-content">
-                  <div class="dropdown-item-header">
-                    <span class="dropdown-item-title">{t(lang, 'nav.bzzk')}</span>
-                    <span class="dropdown-pill live">LIVE</span>
-                  </div>
-                  <span class="dropdown-item-desc">{isEn ? "Real-time Chat Security Radar" : "치지직 실시간 악성 유저 사전 방어"}</span>
-                </div>
-              </a>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Navigation Divider -->
+      <div class="nav-divider" aria-hidden="true"></div>
+
+      <!-- 4. Standalone Special Features (Chzzk Downloader & Bzzk Radar) -->
+      <a 
+        href={`${prefix}/chzzk-downloader`} 
+        class={`nav-standalone-link link-chzzk ${currentPath.includes('/chzzk-downloader') ? 'active' : ''}`}
+      >
+        <span class="nav-icon">📥</span>
+        <span class="nav-label">{t(lang, 'nav.chzzk_downloader')}</span>
+        <span class="standalone-badge emerald">1080p</span>
+      </a>
+
+      <a 
+        href={`${prefix}/bzzk`} 
+        class={`nav-standalone-link link-bzzk ${currentPath.includes('/bzzk') ? 'active' : ''}`}
+      >
+        <span class="nav-icon">🛡️</span>
+        <span class="nav-label">{t(lang, 'nav.bzzk')}</span>
+        <span class="standalone-radar-dot" title="Live Radar"></span>
+      </a>
     </nav>
 
     <div class="header-actions">
@@ -377,28 +378,45 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
         </div>
       </div>
 
-      <!-- 3. Tools -->
+      <!-- 3. Signature Tools -->
       <div class="drawer-section">
-        <div class="drawer-section-title">{isEn ? "🛠️ BROADCAST TOOLS" : "🛠️ 방송 유틸리티"}</div>
+        <div class="drawer-section-title">{isEn ? "⚡ SIGNATURE TOOLS" : "⚡ 대표 방송 도구"}</div>
         <div class="drawer-nav-list">
           <a 
-            href={`${prefix}/schedule`} 
-            class={`drawer-nav-item ${currentPath.includes('/schedule') ? 'active' : ''}`}
+            href={`${prefix}/chzzk-downloader`} 
+            class={`drawer-nav-item drawer-item-highlight-chzzk ${currentPath.includes('/chzzk-downloader') ? 'active' : ''}`}
           >
-            <span class="drawer-item-icon">📅</span>
+            <span class="drawer-item-icon">📥</span>
             <div class="drawer-item-info">
-              <span class="drawer-item-name">{t(lang, 'nav.schedule')}</span>
-              <span class="drawer-item-desc">{isEn ? "Weekly Broadcast Schedule" : "주간 방송 편성표 스튜디오"}</span>
+              <span class="drawer-item-name">{t(lang, 'nav.chzzk_downloader')}</span>
+              <span class="drawer-item-desc">{isEn ? "1080p Lossless VOD & Clip Downloader" : "치지직 다시보기·클립 1080p 다운로더"}</span>
             </div>
           </a>
           <a 
             href={`${prefix}/bzzk`} 
-            class={`drawer-nav-item ${currentPath.includes('/bzzk') ? 'active' : ''}`}
+            class={`drawer-nav-item drawer-item-highlight-bzzk ${currentPath.includes('/bzzk') ? 'active' : ''}`}
           >
             <span class="drawer-item-icon">🛡️</span>
             <div class="drawer-item-info">
               <span class="drawer-item-name">{t(lang, 'nav.bzzk')}</span>
-              <span class="drawer-item-desc">{isEn ? "Stream Security Radar" : "치지직 방송 검지직 레이더"}</span>
+              <span class="drawer-item-desc">{isEn ? "Real-time Chat Security Radar" : "치지직 실시간 악성 유저 사전 방어"}</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- 4. Broadcast Utilities -->
+      <div class="drawer-section">
+        <div class="drawer-section-title">{isEn ? "🛠️ BROADCAST UTILITIES" : "🛠️ 방송 유틸리티"}</div>
+        <div class="drawer-nav-list">
+          <a 
+            href={`${prefix}/guide`} 
+            class={`drawer-nav-item ${currentPath.includes('/guide') ? 'active' : ''}`}
+          >
+            <span class="drawer-item-icon">📖</span>
+            <div class="drawer-item-info">
+              <span class="drawer-item-name">{t(lang, 'nav.guide')}</span>
+              <span class="drawer-item-desc">{isEn ? "Chzzk Streamer Master Guide" : "치지직 스트리머 가이드"}</span>
             </div>
           </a>
           <a 
@@ -412,23 +430,13 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
             </div>
           </a>
           <a 
-            href={`${prefix}/guide`} 
-            class={`drawer-nav-item ${currentPath.includes('/guide') ? 'active' : ''}`}
+            href={`${prefix}/schedule`} 
+            class={`drawer-nav-item ${currentPath.includes('/schedule') ? 'active' : ''}`}
           >
-            <span class="drawer-item-icon">📖</span>
+            <span class="drawer-item-icon">📅</span>
             <div class="drawer-item-info">
-              <span class="drawer-item-name">{t(lang, 'nav.guide')}</span>
-              <span class="drawer-item-desc">{isEn ? "Chzzk Streamer Master Guide" : "치지직 스트리머 가이드"}</span>
-            </div>
-          </a>
-          <a 
-            href={`${prefix}/chzzk-downloader`} 
-            class={`drawer-nav-item ${currentPath.includes('/chzzk-downloader') ? 'active' : ''}`}
-          >
-            <span class="drawer-item-icon">📥</span>
-            <div class="drawer-item-info">
-              <span class="drawer-item-name">{t(lang, 'nav.chzzk_downloader')}</span>
-              <span class="drawer-item-desc">{isEn ? "VOD & Clip MP4 Downloader" : "치지직 다시보기·클립 다운로더"}</span>
+              <span class="drawer-item-name">{t(lang, 'nav.schedule')}</span>
+              <span class="drawer-item-desc">{isEn ? "Weekly Broadcast Schedule" : "주간 방송 편성표 스튜디오"}</span>
             </div>
           </a>
         </div>
@@ -579,6 +587,105 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
   .nav-dropdown:hover .chevron-icon,
   .nav-dropdown.open .chevron-icon {
     transform: rotate(180deg);
+  }
+
+  /* Navigation Divider */
+  .nav-divider {
+    width: 1px;
+    height: 18px;
+    background: rgba(255, 255, 255, 0.12);
+    margin: 0 0.15rem;
+    flex-shrink: 0;
+  }
+
+  /* Standalone Direct Feature Links */
+  .nav-standalone-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.42rem;
+    padding: 0.42rem 0.8rem;
+    border-radius: 9px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    text-decoration: none;
+    line-height: 1;
+    white-space: nowrap;
+    transition: all 0.18s ease;
+    user-select: none;
+    flex-shrink: 0;
+  }
+
+  /* Chzzk Downloader Standalone Button */
+  .link-chzzk {
+    background: linear-gradient(135deg, rgba(0, 255, 163, 0.08) 0%, rgba(56, 189, 248, 0.06) 100%);
+    border: 1px solid rgba(0, 255, 163, 0.32);
+    color: #e2fbf1;
+  }
+
+  .link-chzzk:hover {
+    background: linear-gradient(135deg, rgba(0, 255, 163, 0.18) 0%, rgba(56, 189, 248, 0.14) 100%);
+    border-color: rgba(0, 255, 163, 0.65);
+    color: #ffffff;
+    box-shadow: 0 0 16px rgba(0, 255, 163, 0.25);
+    transform: translateY(-1px);
+  }
+
+  .link-chzzk.active {
+    background: linear-gradient(135deg, rgba(0, 255, 163, 0.24) 0%, rgba(56, 189, 248, 0.18) 100%);
+    border-color: #00ffa3;
+    color: #ffffff;
+    box-shadow: 0 0 18px rgba(0, 255, 163, 0.35);
+  }
+
+  /* Bzzk Standalone Button */
+  .link-bzzk {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.09) 0%, rgba(236, 72, 153, 0.06) 100%);
+    border: 1px solid rgba(168, 85, 247, 0.32);
+    color: #f5edff;
+  }
+
+  .link-bzzk:hover {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(236, 72, 153, 0.14) 100%);
+    border-color: rgba(168, 85, 247, 0.65);
+    color: #ffffff;
+    box-shadow: 0 0 16px rgba(168, 85, 247, 0.25);
+    transform: translateY(-1px);
+  }
+
+  .link-bzzk.active {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.26) 0%, rgba(236, 72, 153, 0.18) 100%);
+    border-color: #c084fc;
+    color: #ffffff;
+    box-shadow: 0 0 18px rgba(168, 85, 247, 0.35);
+  }
+
+  .standalone-badge {
+    font-size: 0.64rem;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 4px;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+  }
+
+  .standalone-badge.emerald {
+    background: rgba(0, 255, 163, 0.18);
+    color: #00ffa3;
+    border: 1px solid rgba(0, 255, 163, 0.45);
+  }
+
+  .standalone-radar-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ec4899;
+    box-shadow: 0 0 6px #ec4899;
+    animation: radarPulse 1.8s infinite;
+  }
+
+  @keyframes radarPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(0.7); opacity: 0.45; }
   }
 
   /* Dropdown Menu Floating Panels */
@@ -1019,7 +1126,43 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
     color: #ffffff;
   }
 
-  @media (max-width: 860px) {
+  .drawer-item-highlight-chzzk {
+    background: linear-gradient(135deg, rgba(0, 255, 163, 0.08) 0%, rgba(56, 189, 248, 0.06) 100%);
+    border-color: rgba(0, 255, 163, 0.3);
+  }
+
+  .drawer-item-highlight-chzzk:hover,
+  .drawer-item-highlight-chzzk.active {
+    background: linear-gradient(135deg, rgba(0, 255, 163, 0.18) 0%, rgba(56, 189, 248, 0.14) 100%);
+    border-color: rgba(0, 255, 163, 0.6);
+  }
+
+  .drawer-item-highlight-bzzk {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.09) 0%, rgba(236, 72, 153, 0.06) 100%);
+    border-color: rgba(168, 85, 247, 0.3);
+  }
+
+  .drawer-item-highlight-bzzk:hover,
+  .drawer-item-highlight-bzzk.active {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(236, 72, 153, 0.14) 100%);
+    border-color: rgba(168, 85, 247, 0.6);
+  }
+
+  @media (max-width: 1040px) {
+    .header-nav {
+      gap: 0.35rem;
+    }
+    .nav-dropdown-btn,
+    .nav-standalone-link {
+      padding: 0.38rem 0.62rem;
+      font-size: 0.82rem;
+    }
+    .standalone-badge {
+      display: none;
+    }
+  }
+
+  @media (max-width: 890px) {
     .arcade-header {
       padding: 0.45rem 0.75rem;
     }
