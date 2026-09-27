@@ -147,9 +147,9 @@ const schemaArticle = JSON.stringify({
               </a>
               <div class="nav-sub-list">
                 <a href="#ch4-editor-comparison" class="nav-sub-link" data-target="ch4-editor-comparison">영상 편집 프로그램 3대장 비교</a>
-                <a href="#ch4-five-step-pipeline" class="nav-sub-link" data-target="ch4-five-step-pipeline">생방송 1회 5단계 파이프라인</a>
-                <a href="#ch4-vod-retention" class="nav-sub-link" data-target="ch4-vod-retention">치지직 VOD 보관 기한 경고</a>
-                <a href="#ch4-log-theory" class="nav-sub-link" data-target="ch4-log-theory">치지직 통나무 포인트 & 랭킹 세팅</a>
+                <a href="#ch4-five-step-pipeline" class="nav-sub-link" data-target="ch4-five-step-pipeline">추천 OSMU 워크플로우 예시</a>
+                <a href="#ch4-vod-retention" class="nav-sub-link" data-target="ch4-vod-retention">치지직 VOD 공식 보관 기한 규정</a>
+                <a href="#ch4-log-theory" class="nav-sub-link" data-target="ch4-log-theory">치지직 통나무 파워 & 팬덤 랭킹</a>
               </div>
             </div>
           </nav>
@@ -278,16 +278,17 @@ const schemaArticle = JSON.stringify({
               <div class="callout-body">
                 <strong>[중요] 치지직 운영 정책 위반 주의:</strong>
                 <p>
-                  치지직 프로(Pro) 계약을 체결한 스트리머는 공식 운영 정책상 <strong>투네이션/트윕 등 외부 서드파티 후원 서비스의 사용 및 방송 화면/채널 하단 소개란 배너 등록이 전면 금지</strong>됩니다. 이를 어기고 외부 배너 링크를 남겨둘 경우, 치지직 모니터링 팀에 의해 사전 경고 없이 배너가 강제 삭제 처리되거나 제재 조치가 취해질 수 있습니다.
+                  치지직 프로(Pro) 계약을 체결한 스트리머는 공식 운영 정책상 <strong>투네이션/트윕 등 외부 서드파티 후원 서비스의 사용 및 방송 화면/채널 하단 소개란 배너 등록이 전면 금지</strong>됩니다. 이를 어기고 외부 배너 링크를 남겨둘 경우, 운영 정책 위반으로 경고 조치를 받게 되며, 위반이 지속되거나 심할 경우 수익 창출 권한 박탈 및 계정이 정지될 수 있습니다.
                 </p>
               </div>
             </div>
 
             <h4 class="sub-heading">치지직 프로(Pro) 계약 달성 조건</h4>
             <ul class="styled-list">
-              <li><strong>팔로워 수:</strong> 150명 이상 달성</li>
-              <li><strong>방송 시간:</strong> 최근 1년 기준 누적 20시간 이상 생방송 진행</li>
-              <li><strong>신청 방법:</strong> 치지직 스튜디오 > 설정 > 수익 관리에서 프로 전환 신청서 접수</li>
+              <li><strong>팔로워 수:</strong> 150명 이상</li>
+              <li><strong>총 시청자 수:</strong> 최근 1년간 총 시청자 수 500명 이상</li>
+              <li><strong>총 방송 시간:</strong> 최근 1년간 총 방송 시간 20시간 이상 생방송 진행</li>
+              <li><strong>신청 경로:</strong> 치지직 스튜디오 > 수익 관리 > 수익 창출에서 프로 전환 신청</li>
             </ul>
           </article>
 
@@ -393,7 +394,7 @@ const schemaArticle = JSON.stringify({
                   과거 트위치(Twitch)에서는 '트랙 1은 생방송, 트랙 6은 VOD 트랙'으로 설정하여 방송 다시보기에서만 음악을 무음 처리하는 기능이 있었습니다. 그러나 <strong>치지직 서버는 생방송에 송출된 오디오(트랙 1)를 그대로 단일 인코딩하여 다시보기 영상으로 생성</strong>합니다.
                 </p>
                 <p>
-                  특히 치지직 다시보기(VOD)는 영구 보관되지 않고 등급별 보관 기한(루키 7일, 프로 60일)이 지나면 자동 영구 삭제되므로 주의가 필요합니다. (<a href="#ch4-vod-retention" style="color: var(--doc-cyan); text-decoration: underline;">치지직 다시보기(VOD) 보관 기한 주의사항</a> 참고)
+                  특히 치지직 다시보기(VOD)는 등급 및 시청자 수 기준에 따라 보관 기한이 상이하며(루키 30일/조건부 7일, 프로 60일/조건부 14일, 미게시 2일), 기한이 지나면 자동 삭제되므로 주의가 필요합니다. (<a href="#ch4-vod-retention" style="color: var(--doc-cyan); text-decoration: underline;">치지직 공식 다시보기(VOD) 보관 기한 규정</a> 참고)
                 </p>
                 <p>
                   따라서 스트리머가 OBS 오디오 트랙을 분리하는 진짜 이유는 <strong>"유튜브 편집 및 영구 보관용 로컬 다중 트랙 동시 녹화(Local Multi-track Recording)"</strong> 때문입니다.
@@ -565,7 +566,7 @@ const schemaArticle = JSON.stringify({
                 <strong>영상 후원 놓쳤을 때 즉시 재시청:</strong> 게임 중 집중하느라 시청자가 보낸 영도를 못 봤다면, 리모컨 후원 내역에서 <strong>[방송에 재생]</strong>을 클릭하면 화면에 즉시 재송출되어 깔끔한 리액션이 가능합니다.
               </li>
               <li>
-                <strong>치명적 방송사고 사전 방어:</strong> 치지직 스튜디오 설정에서 '영상 후원 자동 재생'을 끄고 <strong>[수동 승인 모드]</strong>로 변경하세요. 리모컨에서 스트리머가 썸네일과 제목을 먼저 검수한 뒤 [승인]을 눌러야만 방송에 나가므로, 테러성 유해 영상을 100% 차단할 수 있습니다.
+                <strong>치명적 방송사고 사전 방어:</strong> 치지직 스튜디오 설정에서 '영상 후원 자동 재생'을 끄고 <strong>[수동 승인 모드]</strong>로 변경하세요. 리모컨에서 스트리머가 썸네일과 제목을 먼저 검수한 뒤 [승인]을 눌러야만 방송에 나가므로, 테러성 유해 영상을 사전에 어느 정도 방지할 수 있습니다.
               </li>
               <li>
                 <strong>미션 후원 실시간 승인 & 판정:</strong> 시청자가 건 킬 미션, 노데스 미션의 수락/거절 및 성공/실패 판정을 게임 창을 내리지 않고 리모컨 팝업에서 원클릭으로 제어할 수 있습니다.
@@ -694,28 +695,28 @@ const schemaArticle = JSON.stringify({
                   <tr>
                     <td><strong>프리미어 프로 (Premiere)</strong></td>
                     <td>월간 정기 구독료 발생</td>
-                    <td>포토샵/애프터이펙트 연동, 국내 영상 외주 시장의 표준 프로젝트 호환</td>
-                    <td><strong>추후 전문 외주 편집자를 둘 계획이 있는 분</strong></td>
+                    <td>포토샵/애프터이펙트 연동, Adobe 생태계와의 높은 호환성을 중요하게 보는 전문 편집 워크플로우</td>
+                    <td><strong>Adobe 제품군 연동 및 전문 편집 워크플로우를 구성할 분</strong></td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </article>
 
-          <!-- 4.2 5단계 OSMU 파이프라인 -->
+          <!-- 4.2 추천 OSMU 워크플로우 예시 -->
           <article class="doc-card" id="ch4-five-step-pipeline">
-            <h3 class="card-heading">2. 생방송 1회로 끝내는 5단계 OSMU 실전 파이프라인</h3>
+            <h3 class="card-heading">2. 추천 OSMU 워크플로우 예시 (생방송 1회 ➔ 롱폼 & 쇼츠)</h3>
             <p>
-              생방송 4시간을 진행하고 지친 상태에서 처음부터 영상을 다 훑어보려면 편집이 불가능합니다. 아래 5단계 루틴을 습관화하세요:
+              생방송을 마친 뒤 원본 전체를 무작정 다시 보려면 시간과 체력 소모가 큽니다. 방송 내용과 분량에 따라 숏폼은 0개가 나올 수도 있고 2개 혹은 10개가 나올 수도 있으므로, 아래 5단계는 <strong>가장 효율적인 추천 워크플로우 예시</strong>로 참고하세요:
             </p>
 
             <div class="timeline-container">
               <div class="timeline-step">
                 <div class="tl-marker">1</div>
                 <div class="tl-content">
-                  <h4>STEP 1: 생방송 중 빵 터진 순간 타임스탬프 기록</h4>
+                  <h4>STEP 1: 생방송 중 하이라이트 순간 타임스탬프 기록</h4>
                   <p>
-                    치지직 스튜디오의 [클립 만들기] 버튼을 누르거나, 메모장에 <code>1:24:10 보스전 레전드 역전</code> 같이 시간대를 즉시 메모합니다.
+                    치지직 스튜디오의 [클립 만들기] 버튼을 활용하거나, 메모장에 <code>1:24:10 보스전 레전드 역전</code> 같이 시간대를 즉시 메모해 둡니다.
                   </p>
                 </div>
               </div>
@@ -723,9 +724,9 @@ const schemaArticle = JSON.stringify({
               <div class="timeline-step">
                 <div class="tl-marker">2</div>
                 <div class="tl-content">
-                  <h4>STEP 2: 8~12분 유튜브 메인 롱폼 1차 컷편집</h4>
+                  <h4>STEP 2: 유튜브 메인 롱폼 1차 컷편집 (추천 길이: 8~12분)</h4>
                   <p>
-                    타임스탬프로 체크해 둔 하이라이트 구간 위주로 오디오 파형이 비는 구간을 쳐내고 인트로 5초 훅(Hook)을 배치하여 메인 영상을 완성합니다.
+                    타임스탬프로 체크해 둔 하이라이트 구간 위주로 오디오 파형이 비는 구간을 쳐내고 인트로 5초 훅(Hook)을 배치합니다. (8~12분은 시청 지속 시간을 유지하기 좋은 실전 추천 가이드라인입니다.)
                   </p>
                 </div>
               </div>
@@ -733,9 +734,9 @@ const schemaArticle = JSON.stringify({
               <div class="timeline-step">
                 <div class="tl-marker">3</div>
                 <div class="tl-content">
-                  <h4>STEP 3: 롱폼 중 30~50초 킬러 파트 1~2개 추출</h4>
+                  <h4>STEP 3: 킬러 파트 숏폼 클립 추출 (유동적 분량)</h4>
                   <p>
-                    완성된 롱폼 영상 중 기승전결이 가장 뚜렷하거나 빵 터지는 리액션 구간 1~2개를 별도로 복사합니다.
+                    완성된 영상 중 기승전결이 가장 뚜렷하거나 빵 터지는 리액션 구간을 숏폼용으로 추출합니다. (방송 내용과 재미 요소에 따라 쇼츠 1~2편 혹은 그 이상 자유롭게 제작 가능)
                   </p>
                 </div>
               </div>
@@ -762,23 +763,58 @@ const schemaArticle = JSON.stringify({
             </div>
           </article>
 
-          <!-- 4.3 VOD 보관 기한 경고 -->
+          <!-- 4.3 VOD 공식 보관 기한 규정 -->
           <article class="doc-card" id="ch4-vod-retention">
-            <h3 class="card-heading">3. 치지직 다시보기(VOD) 보관 기한 주의사항</h3>
+            <h3 class="card-heading">3. 치지직 다시보기(VOD) 공식 보관 기한 규정 (2025년 11월 5일 개정)</h3>
             <div class="callout-box danger">
               <div class="callout-icon">🚨</div>
               <div class="callout-body">
-                <strong>[영구 삭제 주의] 치지직 VOD 보관 만료 정책:</strong>
+                <strong>[영구 삭제 주의] 치지직 VOD 공식 보관 만료 정책:</strong>
                 <p>
-                  네이버 치지직의 다시보기(VOD)는 무제한 보관되지 않습니다:
-                  <br/>&bull; <strong>루키(Rookie) 등급:</strong> 방송 종료 후 <strong>단 7일</strong> 보관 후 자동 영구 삭제
-                  <br/>&bull; <strong>프로(Pro) 등급:</strong> 방송 종료 후 <strong>60일</strong> 보관 후 자동 영구 삭제
-                </p>
-                <p>
-                  기한이 지나면 네이버 서버에서 영구 파기되어 복구가 불가능하므로, <strong>생방송 직후 로컬에 녹화본을 남기거나 에러레저 치지직 다운로더를 통해 즉시 고화질 MP4로 백업</strong>해 두어야 합니다.
+                  네이버 치지직의 다시보기(VOD)는 무제한 보관되지 않으며, 공식 정책(2025.11.5 개정)에 따라 스트리머 등급 및 해당 영상의 누적 시청자 수, 게시 여부에 따라 보관 기한이 엄격하게 차등 적용됩니다.
                 </p>
               </div>
             </div>
+
+            <div class="table-responsive" style="margin-top: 1rem;">
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>스트리머 등급</th>
+                    <th>게시된 VOD 보관 기한</th>
+                    <th>게시하지 않은 VOD (공통)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>루키 (Rookie)</strong></td>
+                    <td>
+                      <strong>30일</strong><br/>
+                      <span style="font-size: 0.85rem; color: var(--text-muted);">(단, 해당 영상 누적 시청자 100명 미만 시: <strong>7일</strong>)</span>
+                    </td>
+                    <td rowspan="3" style="vertical-align: middle; text-align: center; color: var(--doc-yellow);">
+                      <strong>전 등급 공통 2일</strong><br/>
+                      <span style="font-size: 0.85rem; color: var(--text-muted);">(2일 이내 미게시 시 자동 영구 삭제)</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>프로 (Pro)</strong></td>
+                    <td>
+                      <strong>60일</strong><br/>
+                      <span style="font-size: 0.85rem; color: var(--text-muted);">(단, 해당 영상 누적 시청자 100명 미만 시: <strong>14일</strong>)</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>파트너 (Partner)</strong></td>
+                    <td><strong style="color: var(--doc-cyan);">영구 보관</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p style="margin-top: 1rem;">
+              보관 기한이 만료되면 네이버 서버에서 영구 파기되어 복구가 불가능하므로, <strong>생방송 직후 로컬에 녹화본을 남기거나 에러레저 치지직 다운로더를 통해 즉시 고화질 MP4로 백업</strong>해 두어야 합니다.
+            </p>
 
             <!-- Tool CTA Link -->
             <div class="inline-cta-banner">
@@ -791,41 +827,41 @@ const schemaArticle = JSON.stringify({
             </div>
           </article>
 
-          <!-- 4.4 치지직 통나무 포인트와 랭킹 설정 노하우 -->
+          <!-- 4.4 치지직 통나무 파워와 랭킹 설정 노하우 -->
           <article class="doc-card" id="ch4-log-theory">
-            <h3 class="card-heading">4. 치지직 '통나무' 시스템과 방송 랭킹 세팅 노하우</h3>
+            <h3 class="card-heading">4. 치지직 '통나무 파워' 시스템과 채널 팬덤 랭킹 관리</h3>
 
             <div class="slang-box">
-              <div class="slang-term">🪵 치지직 통나무(Log) 포인트란?</div>
+              <div class="slang-term">🪵 치지직 통나무(Log) 파워란?</div>
               <div class="slang-origin">
-                <strong>개념:</strong> 치지직에서 생방송을 시청하면 <strong>1시간마다 자동으로 적립되는 시청 포인트</strong>입니다. 단순히 방송을 오래 보는 것뿐만 아니라 <strong>구독 선물, 치즈 후원 등</strong> 스트리머를 응원하는 다양한 활동을 통해서도 통나무 포인트가 함께 누적됩니다. 즉, 시청자의 '시청 시간(시간 기여) + 후원(물질 기여)'이 종합된 치지직만의 대표적인 팬덤 기여 지표입니다.
+                <strong>개념:</strong> 시청자 활동을 여러 방식으로 반영하는 <strong>채널별 팬덤 활동 포인트</strong>입니다. 단순히 시간을 켜두기만 하면 무한 자동 적립되는 것이 아니며, <strong>5분 시청(10 파워), 1시간 시청 후 인증 버튼 선택(100 파워, 버튼을 1시간 이내 누르지 않으면 만료), 팔로우, 후원, 월별 첫 후원, 구독 선물</strong> 등의 적극적인 방송 참여 활동을 통해 통나무 파워를 획득할 수 있습니다.
               </div>
               <div class="slang-usage">
-                <strong>실전 방송 랭킹 위젯 세팅 꿀팁:</strong>
-                치지직 방송 화면에 후원 순위를 띄울 때, 순수 현금 금액만 따지는 <em>'치즈 후원 랭킹'을 끄고 '통나무 후원 랭킹'으로 변경하여 노출하는 것이 대세 세팅</em>입니다.
+                <strong>채널 내 팬덤 랭킹 (주간/월간 통나무 파워 랭킹) 활용:</strong>
+                치지직에서는 단순한 현금 후원 순위 외에도, 시청자가 다양한 활동으로 획득한 통나무 파워를 기준으로 하는 <em>'주간/월간 통나무 파워 랭킹'</em>을 제공하여 팬덤의 결속력과 참여도를 높일 수 있습니다. (플랫폼 전체 방송 순위가 아닌 해당 스트리머 채널 내 팬덤 랭킹입니다.)
               </div>
             </div>
 
             <div class="feature-grid" style="margin-top: 1.25rem;">
               <div class="feature-item">
                 <div class="fi-icon">🤝</div>
-                <div class="fi-title">후원 위화감 해소 & 진입 장벽 완화</div>
+                <div class="fi-title">후원 위화감 해소 & 참여 진입 장벽 완화</div>
                 <div class="fi-desc">
-                  순수 금액 중심의 치즈 랭킹만 화면에 크게 노출되면 신규 시청자나 라이트 팬층이 후원에 부담을 느끼고 소외감을 느낄 수 있습니다. 통나무 랭킹은 방송을 꾸준히 지켜봐 준 시청자의 정성도 함께 반영되므로 위화감을 줄여줍니다.
+                  순수 금액 중심의 치즈 랭킹만 화면에 노출되면 신규 시청자나 라이트 팬층이 후원에 부담을 느끼고 소외감을 느낄 수 있습니다. 통나무 파워 랭킹은 방송을 꾸준히 지켜보고 인증 버튼을 눌러준 시청자의 정성도 함께 반영되므로 위화감을 크게 줄여줍니다.
                 </div>
               </div>
               <div class="feature-item">
                 <div class="fi-icon">⏱️</div>
-                <div class="fi-title">시간 기여 시청자도 인정받는 문화</div>
+                <div class="fi-title">시청 & 인증 참여 시청자도 인정받는 문화</div>
                 <div class="fi-desc">
-                  금전적 후원이 어려운 학생이나 일반 시청자도 매시간 방송을 챙겨보며 쌓은 통나무로 랭킹 순위권에 이름을 올릴 수 있어, 채팅방 전체의 소속감과 충성도가 눈에 띄게 높아집니다.
+                  금전적 후원이 어려운 학생이나 일반 시청자도 매시간 방송을 시청하고 버튼 인증으로 쌓은 통나무 파워로 주간/월간 랭킹 순위권에 이름을 올릴 수 있어, 채널 전체의 소속감과 충성도가 눈에 띄게 높아집니다.
                 </div>
               </div>
               <div class="feature-item">
                 <div class="fi-icon">⚙️</div>
-                <div class="fi-title">치지직 스튜디오 설정 방법</div>
+                <div class="fi-title">통나무 파워 공식 설정 위치</div>
                 <div class="fi-desc">
-                  <strong>치지직 스튜디오 > 방송 화면 위젯 설정</strong>에서 후원 랭킹 위젯을 추가할 때 집계 방식을 <code>치즈 금액</code> 대신 <code>통나무 포인트</code>로 선택하여 화면에 배치하면 즉시 적용됩니다.
+                  <strong>치지직 스튜디오 > 채널/권한 관리 > 통나무 파워 관리</strong> 메뉴에서 <code>통나무 파워 활성화</code>, <code>주간 랭킹 표시</code>, <code>월간 랭킹 표시</code> 옵션을 스트리머가 직접 설정할 수 있습니다.
                 </div>
               </div>
             </div>
