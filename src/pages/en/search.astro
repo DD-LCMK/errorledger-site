@@ -1,20 +1,44 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { SITE_TITLE } from '../../consts';
 import { getCollection } from 'astro:content';
-import { getKoUrl, getEnUrl } from '../i18n';
+import { getKoUrl, getEnUrl } from '../../i18n';
 
 const allGames = await getCollection('games');
 
 const CATEGORY_MAP: Record<string, string> = {
-  stream: '방송/추첨',
-  arcade: '아케이드',
-  puzzle: '퍼즐',
-  word: '단어/두뇌',
-  card: '카드/보드',
-  strategy: '전략'
+  stream: 'Stream / Giveaway',
+  arcade: 'Arcade',
+  puzzle: 'Puzzle',
+  word: 'Word / Brain',
+  card: 'Card / Board',
+  strategy: 'Strategy'
+};
+
+const EN_TITLES: Record<string, string> = {
+  'marble-roulette': 'Marble Race Roulette',
+  'roulette': 'Random Spin Wheel',
+  'ladder': 'Ghost Leg Ladder Game (Amidakuji)',
+  'drinking-marble': 'Blossom Board (Party Dice Game)',
+  'stream-doodle': 'Stream Doodle (Animated GIF Studio)',
+  'stream-emoji': 'Stream Emoji (Animated Emote Maker)',
+  'ai-music-quiz': 'AI Music Quiz (Guess The Song)',
+  'soundboard': 'Broadcast Keypad Soundboard',
+  'fortune': 'Daily Fortune & Horoscope',
+};
+
+const EN_DESCS: Record<string, string> = {
+  'marble-roulette': 'Real-time 2D physics simulation marble race with 7,200px long track and bouncy obstacles.',
+  'roulette': 'Ratchet-click custom prize wheel with winner confetti and one-click quick presets.',
+  'ladder': 'Bijective 1-to-1 ghost leg ladder game for 2 to 20 players with neon footstep trail animation.',
+  'drinking-marble': 'Monopoly-style board game with 3D rolling dice, custom tiles, and streamer mini-penalties.',
+  'stream-doodle': 'Draw animated GIFs with live line boil, color palettes, and transparent OBS browser source overlay.',
+  'stream-emoji': 'Create 16-frame pixel & animated emote spritesheets for Twitch, YouTube, and Discord.',
+  'ai-music-quiz': 'Listen to AI rearranged song previews and guess the title with side-by-side video reveals.',
+  'soundboard': 'Instant zero-latency web soundboard with 9 numpad shortcuts, hold mode, and custom audio upload slots.',
+  'fortune': 'Daily auto-updated zodiac and horoscope fortune cookie for stream openers and viewer chat.',
 };
 
 const siteBase = (Astro.site || 'https://errorledger.com').toString();
@@ -23,12 +47,12 @@ const enUrl = getEnUrl(siteBase, '/search');
 ---
 
 <!doctype html>
-<html lang="ko" class="dark">
+<html lang="en" class="dark">
   <head>
     <BaseHead 
-      title={`방송 도구 및 게임 검색 | ${SITE_TITLE}`} 
-      description="에러레저의 구슬 룰렛, 돌림판, 사다리타기, 오늘의 운세 등 무료 웹게임 및 방송 도구를 검색하세요." 
-      lang="ko"
+      title={`Search Stream Tools & Games | ErrorLedger`} 
+      description="Search free browser-based interactive stream games, spin wheel roulette, marble race, ladder, soundboard, and stream tools on ErrorLedger." 
+      lang="en"
       hreflangKo={koUrl}
       hreflangEn={enUrl}
     />
@@ -38,13 +62,13 @@ const enUrl = getEnUrl(siteBase, '/search');
 
     <main class="search-main">
       <div class="search-header">
-        <h1>방송 도구 검색</h1>
-        <p>설치 없이 브라우저에서 바로 실행 가능한 방송용 웹게임과 추첨 도구를 검색해보세요.</p>
+        <h1>Search Stream Tools & Games</h1>
+        <p>Find no-install interactive browser games, giveaways, and stream utilities for live broadcasters.</p>
         <div class="search-input-wrapper">
           <input 
             type="text" 
             id="game-search-input" 
-            placeholder="게임 이름, 카테고리, 키워드로 검색 (예: 룰렛, 사다리, 구슬, 추첨...)" 
+            placeholder="Search by name, category, or keywords (e.g. wheel, marble, ladder, soundboard...)" 
             autocomplete="off" 
             autofocus 
           />
@@ -52,20 +76,32 @@ const enUrl = getEnUrl(siteBase, '/search');
       </div>
 
       <div class="games-results-grid" id="results-grid">
-        {allGames.map(game => (
-          <article class="search-game-card" data-title={game.data.title.toLowerCase()} data-cat={game.data.category.toLowerCase()} data-desc={game.data.description.toLowerCase()}>
-            <div class="card-icon">{game.data.icon}</div>
-            <div class="card-text">
-              <h3><a href={game.id === 'fortune' ? '/fortune' : `/games/${game.id}`}>{game.data.title}</a></h3>
-              <p class="tagline">{game.data.tagline}</p>
-              <p class="desc">{game.data.description}</p>
-              <div class="badge-row">
-                <span class="pill">{CATEGORY_MAP[game.data.category] || game.data.category}</span>
-                <span class="pill">{game.data.playTime}</span>
+        {allGames.map(game => {
+          const title = EN_TITLES[game.id] || game.data.title;
+          const desc = EN_DESCS[game.id] || game.data.description;
+          const href = game.id === 'fortune' ? '/en/fortune' : `/en/games/${game.id}`;
+          const cat = CATEGORY_MAP[game.data.category] || game.data.category;
+
+          return (
+            <article 
+              class="search-game-card" 
+              data-title={`${title} ${game.data.title}`.toLowerCase()} 
+              data-cat={`${cat} ${game.data.category}`.toLowerCase()} 
+              data-desc={`${desc} ${game.data.description}`.toLowerCase()}
+            >
+              <div class="card-icon">{game.data.icon}</div>
+              <div class="card-text">
+                <h3><a href={href}>{title}</a></h3>
+                <p class="tagline">{game.data.tagline}</p>
+                <p class="desc">{desc}</p>
+                <div class="badge-row">
+                  <span class="pill">{cat}</span>
+                  <span class="pill">{game.data.playTime}</span>
+                </div>
               </div>
-            </div>
-          </article>
-        ))}
+            </article>
+          );
+        })}
       </div>
     </main>
 

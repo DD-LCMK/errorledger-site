@@ -410,8 +410,8 @@ const data = gameEntry?.data || {
       </div>
     </footer>
 
-    <!-- Browser Autoplay Policy Interaction Prompt Overlay -->
-    <div class="audio-unlock-overlay active" id="audio-unlock-overlay" role="dialog" aria-modal="true" aria-label="오디오 엔진 활성화">
+    <!-- Browser Autoplay Policy Interaction Prompt Overlay (Inactive by default, transparent activation on first gesture) -->
+    <div class="audio-unlock-overlay" id="audio-unlock-overlay" role="dialog" aria-modal="true" aria-label="오디오 엔진 활성화">
       <div class="unlock-modal-box">
         <div class="unlock-icon-pulse">
           <span class="unlock-icon">🔊</span>

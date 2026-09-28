@@ -235,6 +235,15 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
     </nav>
 
     <div class="header-actions">
+      <!-- Quick Search Link -->
+      <a 
+        href={`${prefix}/search`} 
+        class="action-btn search-btn" 
+        title={isEn ? "Search Tools & Games" : "방송 도구 & 게임 검색"}
+        aria-label={isEn ? "Search Tools & Games" : "방송 도구 & 게임 검색"}
+      >
+        <span>🔍</span>
+      </a>
 
       <button id="global-sound-toggle" class="action-btn" title={t(lang, 'nav.sound.off')} aria-label={t(lang, 'nav.sound.off')}>
         <span id="sound-icon">🔊</span>
@@ -282,6 +291,12 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
     </div>
 
     <div class="drawer-content">
+      <!-- Quick Search Card in Drawer -->
+      <a href={`${prefix}/search`} class="drawer-search-card">
+        <span class="drawer-search-icon">🔍</span>
+        <span class="drawer-search-text">{isEn ? "Search Tools & Games..." : "방송 도구 & 게임 검색..."}</span>
+      </a>
+
       <!-- 1. Games -->
       <div class="drawer-section">
         <div class="drawer-section-title">{isEn ? "🎮 GAMES" : "🎮 인기 게임"}</div>
@@ -1113,6 +1128,31 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
     flex-direction: column;
     gap: 1.25rem;
     -webkit-overflow-scrolling: touch;
+  }
+
+  .drawer-search-card {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.75rem 1rem;
+    background: rgba(168, 85, 247, 0.08);
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    border-radius: 10px;
+    color: #cbd5e1;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .drawer-search-card:hover {
+    background: rgba(168, 85, 247, 0.18);
+    border-color: rgba(56, 189, 248, 0.5);
+    color: #f8fafc;
+  }
+
+  .drawer-search-icon {
+    font-size: 1.05rem;
   }
 
   .drawer-section-title {
