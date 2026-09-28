@@ -166,24 +166,39 @@ const data = gameEntry?.data || {
         </div>
       </div>
 
-      <!-- Smart Input & Portability -->
-      <div class="panel-section">
+      <!-- Smart Input & Portability (Inline in Sidebar) -->
+      <div class="panel-section smart-input-section">
         <div class="panel-section-header">
-          <label class="panel-label" id="lbl-ladder-manage">📋 명단 및 프리셋 관리</label>
+          <label class="panel-label" id="lbl-ladder-manage">📋 시청자 닉네임 일괄 입력</label>
         </div>
-        <div class="portability-btns-grid">
-          <button type="button" id="btn-smart-input-ladder" class="port-btn-pill full-width" title="채팅/디스코드 닉네임 일괄 정리 및 자동 인원 설정">
-            <span>📋 시청자 닉네임 스마트 입력</span>
+        <p class="smart-sidebar-desc" id="smart-ladder-desc">
+          채팅창/디스코드 명단을 붙여넣으면 인원수와 사다리가 즉시 자동 생성됩니다 (최대 20명):
+        </p>
+        <textarea id="smart-ladder-raw-input" class="smart-textarea" rows="4" placeholder="예시:&#10;치지직_시청자1&#10;김스트리머&#10;버튜버_루나&#10;열혈팬A"></textarea>
+        
+        <div class="smart-options-row" style="margin: 0.5rem 0;">
+          <label class="smart-option-check">
+            <input type="checkbox" id="chk-smart-ladder-dedup" checked />
+            <span id="lbl-smart-ladder-dedup">중복 닉네임 자동 제거</span>
+          </label>
+          <label class="smart-option-check">
+            <input type="checkbox" id="chk-smart-ladder-shuffle" />
+            <span id="lbl-smart-ladder-shuffle">적용 전 무작위 셔플</span>
+          </label>
+        </div>
+
+        <button type="button" id="btn-smart-ladder-apply" class="action-btn-primary full-width" style="margin-bottom: 0.6rem;">
+          <span>✨ 명단 적용하고 사다리 생성</span>
+        </button>
+
+        <div class="port-sub-row">
+          <button type="button" id="btn-export-ladder" class="port-btn-pill" title="현재 사다리 설정과 참가자를 .json 파일로 저장">
+            <span>💾 프리셋 저장</span>
           </button>
-          <div class="port-sub-row">
-            <button type="button" id="btn-export-ladder" class="port-btn-pill" title="현재 사다리 설정과 참가자를 .json 파일로 저장">
-              <span>💾 프리셋 저장</span>
-            </button>
-            <label class="port-btn-pill port-upload-label" title="저장해둔 사다리 파일 불러오기">
-              <span>📂 불러오기</span>
-              <input type="file" id="file-import-ladder" accept=".json,.txt" class="hidden-file-input" />
-            </label>
-          </div>
+          <label class="port-btn-pill port-upload-label" title="저장해둔 사다리 파일 불러오기">
+            <span>📂 불러오기</span>
+            <input type="file" id="file-import-ladder" accept=".json,.txt" class="hidden-file-input" />
+          </label>
         </div>
       </div>
 
@@ -251,43 +266,6 @@ const data = gameEntry?.data || {
         </div>
 
         <button id="close-result-btn" class="result-close-btn">닫기</button>
-      </div>
-    </div>
-
-    <!-- Smart Bulk Input Modal for Ladder -->
-    <div class="smart-input-overlay hidden" id="smart-ladder-modal">
-      <div class="smart-modal-card">
-        <div class="smart-modal-header">
-          <div class="modal-title-wrap">
-            <span class="modal-icon">📋</span>
-            <h3 id="smart-ladder-modal-title">사다리 참가자 닉네임 스마트 일괄 입력</h3>
-          </div>
-          <button type="button" id="btn-close-smart-ladder" class="modal-close-x" aria-label="닫기">✕</button>
-        </div>
-        <p class="smart-modal-desc" id="smart-ladder-modal-desc">
-          채팅창, 디스코드, 메모장에서 복사한 참가자 명단을 그대로 붙여넣으세요. 최대 20명까지 자동으로 인원수를 조절하고 사다리를 새로 생성합니다.
-        </p>
-        <textarea id="smart-ladder-raw-input" class="smart-textarea" rows="6" placeholder="예시:
-치지직_시청자1, 치지직_시청자2, 김스트리머, 박매니저
-시청자A
-시청자B"></textarea>
-        
-        <div class="smart-options-row">
-          <label class="smart-option-check">
-            <input type="checkbox" id="chk-smart-ladder-dedup" checked />
-            <span id="lbl-smart-ladder-dedup">중복 닉네임 자동 제거</span>
-          </label>
-          <label class="smart-option-check">
-            <input type="checkbox" id="chk-smart-ladder-shuffle" />
-            <span id="lbl-smart-ladder-shuffle">적용 전 무작위 셔플</span>
-          </label>
-        </div>
-
-        <div class="smart-actions-row">
-          <button type="button" id="btn-smart-ladder-apply" class="smart-btn smart-btn-primary full-width">
-            <span>✨ 명단 적용하고 사다리 생성</span>
-          </button>
-        </div>
       </div>
     </div>
 
@@ -1179,7 +1157,13 @@ const data = gameEntry?.data || {
     cursor: pointer;
   }
 
-  /* Smart Input Modal & Toast for Ladder */
+  .smart-sidebar-desc {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    line-height: 1.4;
+  }
+
   .smart-input-overlay {
     position: fixed;
     inset: 0;
@@ -2569,27 +2553,11 @@ const data = gameEntry?.data || {
     }
   });
 
-  // 2. Smart Nickname Bulk Input Modal
-  const smartLadderModal = document.getElementById('smart-ladder-modal');
-  const btnSmartInputLadder = document.getElementById('btn-smart-input-ladder');
-  const btnCloseSmartLadder = document.getElementById('btn-close-smart-ladder');
+  // 2. Smart Nickname Bulk Input in Sidebar
   const smartLadderRawInput = document.getElementById('smart-ladder-raw-input') as HTMLTextAreaElement;
   const chkSmartLadderDedup = document.getElementById('chk-smart-ladder-dedup') as HTMLInputElement;
   const chkSmartLadderShuffle = document.getElementById('chk-smart-ladder-shuffle') as HTMLInputElement;
   const btnSmartLadderApply = document.getElementById('btn-smart-ladder-apply');
-
-  btnSmartInputLadder?.addEventListener('click', () => {
-    smartLadderModal?.classList.remove('hidden');
-    smartLadderRawInput?.focus();
-  });
-
-  btnCloseSmartLadder?.addEventListener('click', () => {
-    smartLadderModal?.classList.add('hidden');
-  });
-
-  smartLadderModal?.addEventListener('click', (e) => {
-    if (e.target === smartLadderModal) smartLadderModal.classList.add('hidden');
-  });
 
   btnSmartLadderApply?.addEventListener('click', () => {
     if (!smartLadderRawInput) return;
@@ -2615,9 +2583,8 @@ const data = gameEntry?.data || {
     while (participantNames.length < playerCount) {
       participantNames.push(isEn ? `Player ${participantNames.length + 1}` : `참가자 ${participantNames.length + 1}`);
     }
+
     initLadder();
-    smartLadderModal?.classList.add('hidden');
-    smartLadderRawInput.value = '';
     showLadderToast(isEn ? `✨ ${targetCount} players applied to ladder!` : `✨ ${targetCount}명의 참가자로 사다리가 생성되었습니다!`);
   });
 
@@ -2935,10 +2902,8 @@ const data = gameEntry?.data || {
       if (span) span.textContent = '📂 Load';
     }
 
-    const smTitle = document.getElementById('smart-ladder-modal-title');
-    if (smTitle) smTitle.textContent = 'Smart Bulk Nicknames Input';
-    const smDesc = document.getElementById('smart-ladder-modal-desc');
-    if (smDesc) smDesc.textContent = 'Paste participant names from Twitch/YouTube chat, Discord or notepad. Auto-adjusts player count up to 20.';
+    const smDesc = document.getElementById('smart-ladder-desc');
+    if (smDesc) smDesc.textContent = 'Paste participant names from Twitch/YouTube chat, Discord or notepad. Auto-adjusts player count up to 20:';
     const smDedup = document.getElementById('lbl-smart-ladder-dedup');
     if (smDedup) smDedup.textContent = 'Auto-remove duplicates';
     const smShuffle = document.getElementById('lbl-smart-ladder-shuffle');

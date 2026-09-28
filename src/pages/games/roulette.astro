@@ -60,57 +60,32 @@ const data = gameEntry?.data || {
     <div class="wheel-stage-container">
       <div class="wheel-title-bar" id="display-title">오늘의 방송 룰렛</div>
 
-      <div class="wheel-stage-layout">
-        <!-- Probability & Items Panel (Utilizing Stage Left Space) -->
-        <div class="roulette-prob-panel" id="roulette-prob-panel">
-          <div class="prob-panel-header">
-            <div class="prob-title-row">
-              <span class="prob-icon">📊</span>
-              <span class="prob-title-text" id="prob-title-text">항목 및 당첨 확률</span>
-            </div>
-            <span class="prob-total-badge" id="prob-total-badge">총 0개 항목</span>
+      <div class="wheel-canvas-wrapper" id="wheel-wrapper">
+        <!-- Physical Pointer Needle with Live Arrow Ticker -->
+        <div class="roulette-pointer" id="wheel-pointer">
+          <div class="pointer-live-ticker" id="pointer-ticker">
+            <span class="ticker-dot" id="ticker-dot"></span>
+            <span class="ticker-text" id="ticker-text">준비 완료 (Space)</span>
           </div>
-          <div class="prob-items-list" id="prob-items-list">
-            <!-- Dynamically populated in JS -->
-          </div>
+          <div class="pointer-arrow"></div>
         </div>
 
-        <div class="wheel-canvas-wrapper" id="wheel-wrapper">
-          <!-- Physical Pointer Needle with Live Arrow Ticker -->
-          <div class="roulette-pointer" id="wheel-pointer">
-            <div class="pointer-live-ticker" id="pointer-ticker">
-              <span class="ticker-dot" id="ticker-dot"></span>
-              <span class="ticker-text" id="ticker-text">준비 완료 (Space)</span>
-            </div>
-            <div class="pointer-arrow"></div>
-          </div>
+        <!-- HTML5 High-DPI Canvas -->
+        <canvas id="roulette-canvas" width="600" height="600"></canvas>
 
-          <!-- HTML5 High-DPI Canvas -->
-          <canvas id="roulette-canvas" width="600" height="600"></canvas>
-
-          <!-- Center Glowing Hub & Spin Button -->
-          <button id="center-spin-btn" class="center-hub-btn" title="클릭하거나 스페이스바를 눌러 룰렛 회전">
-            <span class="hub-label">돌리기</span>
-          </button>
-        </div>
+        <!-- Center Glowing Hub & Spin Button -->
+        <button id="center-spin-btn" class="center-hub-btn" title="클릭하거나 스페이스바를 눌러 룰렛 회전">
+          <span class="hub-label">돌리기</span>
+        </button>
       </div>
 
-      <!-- Quick Action Controls -->
+      <!-- Clean Primary Action Controls -->
       <div class="wheel-action-bar">
         <button id="main-spin-btn" class="roulette-btn spin-btn-main">
           <span>🎯 룰렛 돌리기 (Space)</span>
         </button>
         <button id="shuffle-btn" class="roulette-btn btn-secondary">
           <span>🔀 항목 섞기</span>
-        </button>
-        <button id="stream-mode-btn" class="roulette-btn btn-stream" title="깔끔한 집중 모드 전환">
-          <span>📺 집중 모드</span>
-        </button>
-        <button id="copy-obs-roulette-btn" class="roulette-btn btn-obs" title="광고·헤더 없는 OBS 브라우저 소스 URL 복사">
-          <span>🎥 OBS 복사</span>
-        </button>
-        <button id="open-controller-btn" class="roulette-btn btn-controller" title="듀얼 모니터용 리모컨 창 분리">
-          <span>🎛️ 컨트롤러 분리</span>
         </button>
       </div>
 
@@ -127,22 +102,6 @@ const data = gameEntry?.data || {
 
     <!-- Right: Streamer Control Desk -->
     <div class="streamer-sidebar" id="streamer-sidebar">
-      <!-- Controller Mode Banner -->
-      <div class="controller-sync-banner hidden" id="controller-sync-banner">
-        <div class="banner-status-dot">●</div>
-        <div class="banner-text-wrap">
-          <strong id="ctrl-banner-title">🎛️ OBS 리모컨 모드 활성화</strong>
-          <span id="ctrl-banner-desc">OBS 브라우저 소스와 실시간 0ms P2P 동기화 중</span>
-        </div>
-      </div>
-
-      <!-- Quick Spin for Controller Mode -->
-      <div class="ctrl-spin-wrap hidden" id="ctrl-spin-wrap">
-        <button type="button" id="ctrl-spin-btn" class="ctrl-spin-btn">
-          <span>🎯 지금 룰렛 회전 (Space)</span>
-        </button>
-      </div>
-
       <div class="sidebar-header">
         <span class="panel-icon">⚙️</span>
         <h3>룰렛 설정 데스크</h3>
@@ -190,6 +149,17 @@ const data = gameEntry?.data || {
             📂 불러오기
             <input type="file" id="file-import-preset" accept=".json,.txt" class="hidden-file-input" />
           </label>
+        </div>
+      </div>
+
+      <!-- Probability Distribution Summary -->
+      <div class="config-group prob-summary-group">
+        <div class="label-with-meta">
+          <label>📊 항목별 당첨 확률</label>
+          <span class="prob-total-badge" id="prob-total-badge">총 8개 칸</span>
+        </div>
+        <div class="prob-items-list" id="prob-items-list">
+          <!-- Dynamically populated in JS -->
         </div>
       </div>
 
@@ -352,74 +322,49 @@ const data = gameEntry?.data || {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     background: #0f172a;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 14px;
-    padding: 0.85rem 1rem;
+    border-radius: 16px;
+    padding: 1.5rem 1.25rem 1.25rem;
     position: relative;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    min-height: 640px;
   }
 
   .wheel-title-bar {
-    font-size: 1.3rem;
+    font-size: 1.45rem;
     font-weight: 900;
     color: #f8fafc;
     letter-spacing: -0.02em;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
     text-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
     text-align: center;
   }
 
-  /* Wheel Stage Layout: Prob Panel + Canvas */
-  .wheel-stage-layout {
+  .wheel-canvas-wrapper {
+    position: relative;
+    width: 510px;
+    height: 510px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1.5rem;
-    width: 100%;
-    margin: 0.5rem 0;
+    margin: 0.5rem auto;
   }
 
-  /* Left Side: Probability & Items Panel */
-  .roulette-prob-panel {
-    width: 250px;
-    height: 480px;
-    background: rgba(10, 15, 29, 0.85);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 14px;
-    padding: 0.85rem;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    flex-shrink: 0;
+  #roulette-canvas {
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(168, 85, 247, 0.25);
   }
 
-  .prob-panel-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-bottom: 0.6rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    margin-bottom: 0.6rem;
-  }
-
-  .prob-title-row {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .prob-icon {
-    font-size: 1rem;
-  }
-
-  .prob-title-text {
-    font-size: 0.88rem;
-    font-weight: 800;
-    color: #f8fafc;
-    letter-spacing: -0.01em;
+  /* Probability Summary in Sidebar Desk */
+  .prob-summary-group {
+    background: rgba(0, 0, 0, 0.22);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 10px;
+    padding: 0.65rem 0.75rem;
   }
 
   .prob-total-badge {
@@ -435,9 +380,10 @@ const data = gameEntry?.data || {
   .prob-items-list {
     display: flex;
     flex-direction: column;
-    gap: 0.32rem;
+    gap: 0.3rem;
+    max-height: 165px;
     overflow-y: auto;
-    flex: 1;
+    margin-top: 0.35rem;
     padding-right: 0.2rem;
   }
 
@@ -449,7 +395,7 @@ const data = gameEntry?.data || {
     border-radius: 4px;
   }
 
-  .roulette-prob-panel :global(.prob-item-row) {
+  :global(.prob-item-row) {
     position: relative;
     display: flex !important;
     align-items: center !important;
@@ -457,27 +403,27 @@ const data = gameEntry?.data || {
     background: rgba(255, 255, 255, 0.035);
     border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 7px;
-    height: 32px;
-    min-height: 32px;
+    height: 30px;
+    min-height: 30px;
     padding: 0 0.55rem;
     gap: 0.35rem;
     transition: all 0.12s ease;
     overflow: hidden;
   }
 
-  .roulette-prob-panel :global(.prob-item-row:hover) {
+  :global(.prob-item-row:hover) {
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(255, 255, 255, 0.15);
   }
 
-  .roulette-prob-panel :global(.prob-item-row.is-active-slice) {
+  :global(.prob-item-row.is-active-slice) {
     background: rgba(255, 255, 255, 0.14);
     border-color: var(--item-color, #38bdf8);
-    box-shadow: 0 0 14px var(--item-color, rgba(56, 189, 248, 0.45));
+    box-shadow: 0 0 12px var(--item-color, rgba(56, 189, 248, 0.45));
     transform: scale(1.02) translateX(2px);
   }
 
-  .roulette-prob-panel :global(.prob-color-dot) {
+  :global(.prob-color-dot) {
     display: inline-block !important;
     width: 8px !important;
     height: 8px !important;
@@ -486,7 +432,7 @@ const data = gameEntry?.data || {
     box-shadow: 0 0 6px var(--item-color, currentColor);
   }
 
-  .roulette-prob-panel :global(.prob-item-name) {
+  :global(.prob-item-name) {
     font-size: 0.78rem;
     font-weight: 700;
     color: #f1f5f9;
@@ -497,7 +443,7 @@ const data = gameEntry?.data || {
     min-width: 0;
   }
 
-  .roulette-prob-panel :global(.prob-item-count) {
+  :global(.prob-item-count) {
     font-size: 0.64rem;
     font-weight: 700;
     color: #94a3b8;
@@ -508,8 +454,8 @@ const data = gameEntry?.data || {
     flex-shrink: 0;
   }
 
-  .roulette-prob-panel :global(.prob-inline-bar-track) {
-    width: 38px;
+  :global(.prob-inline-bar-track) {
+    width: 34px;
     height: 4px;
     background: rgba(255, 255, 255, 0.08);
     border-radius: 2px;
@@ -517,49 +463,33 @@ const data = gameEntry?.data || {
     flex-shrink: 0;
   }
 
-  .roulette-prob-panel :global(.prob-inline-bar-fill) {
+  :global(.prob-inline-bar-fill) {
     height: 100%;
     border-radius: 2px;
     transition: width 0.3s ease;
   }
 
-  .roulette-prob-panel :global(.prob-item-percent) {
+  :global(.prob-item-percent) {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 0.76rem;
+    font-size: 0.74rem;
     font-weight: 800;
     color: #38bdf8;
     background: rgba(56, 189, 248, 0.1);
     border: 1px solid rgba(56, 189, 248, 0.22);
     border-radius: 5px;
-    padding: 0.06rem 0.35rem;
+    padding: 0.05rem 0.32rem;
     flex-shrink: 0;
-    min-width: 44px;
+    min-width: 42px;
     text-align: right;
     letter-spacing: -0.02em;
   }
 
-  .roulette-prob-panel :global(.prob-empty-text) {
-    font-size: 0.78rem;
+  :global(.prob-empty-text) {
+    font-size: 0.76rem;
     color: #64748b;
     text-align: center;
-    padding: 1rem 0;
+    padding: 0.8rem 0;
     font-style: italic;
-  }
-
-  .wheel-canvas-wrapper {
-    position: relative;
-    width: 500px;
-    height: 500px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  #roulette-canvas {
-    width: 490px;
-    height: 490px;
-    border-radius: 50%;
-    box-shadow: 0 0 35px rgba(0, 0, 0, 0.7), 0 0 25px rgba(168, 85, 247, 0.3);
   }
 
   /* Top Needle Pointer with Live Arrow Ticker */
@@ -676,16 +606,19 @@ const data = gameEntry?.data || {
   /* Action Bar */
   .wheel-action-bar {
     display: flex;
-    gap: 0.75rem;
-    margin-top: 0.85rem;
-    flex-wrap: wrap;
+    gap: 0.85rem;
+    margin-top: 1rem;
     justify-content: center;
+    align-items: center;
   }
 
   .roulette-btn {
-    padding: 0.75rem 1.5rem;
-    border-radius: 10px;
-    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.85rem 2.2rem;
+    border-radius: 12px;
+    font-size: 1.05rem;
     font-weight: 800;
     cursor: pointer;
     border: none;
@@ -695,168 +628,44 @@ const data = gameEntry?.data || {
   .spin-btn-main {
     background: linear-gradient(135deg, #a855f7 0%, #38bdf8 100%);
     color: #ffffff;
-    box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.45);
+    min-width: 220px;
   }
 
   .spin-btn-main:hover {
-    transform: scale(1.04);
-    box-shadow: 0 0 25px rgba(168, 85, 247, 0.6);
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 0 30px rgba(168, 85, 247, 0.7);
+  }
+
+  .spin-btn-main:active {
+    transform: translateY(0) scale(0.98);
   }
 
   .btn-secondary {
     background: rgba(255, 255, 255, 0.08);
     color: #e2e8f0;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 0.85rem 1.4rem;
   }
 
   .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.16);
     color: #ffffff;
-  }
-
-  .btn-stream {
-    background: rgba(56, 189, 248, 0.15);
-    color: #38bdf8;
-    border: 1px solid rgba(56, 189, 248, 0.3);
-  }
-
-  .btn-stream:hover {
-    background: rgba(56, 189, 248, 0.25);
-  }
-
-  .btn-obs {
-    background: rgba(168, 85, 247, 0.15);
-    color: #d8b4fe;
-    border: 1px solid rgba(168, 85, 247, 0.35);
-  }
-
-  .btn-obs:hover {
-    background: rgba(168, 85, 247, 0.28);
-    border-color: rgba(168, 85, 247, 0.6);
-    color: #ffffff;
-  }
-
-  .btn-controller {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(59, 130, 246, 0.18));
-    color: #6ee7b7;
-    border: 1px solid rgba(16, 185, 129, 0.4);
-  }
-
-  .btn-controller:hover {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(59, 130, 246, 0.3));
-    border-color: #34d399;
-    color: #ffffff;
-    box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
-  }
-
-  /* Dual-Window Controller Sync Styles */
-  .controller-sync-banner {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    background: rgba(16, 185, 129, 0.12);
-    border: 1px solid rgba(16, 185, 129, 0.4);
-    border-radius: 10px;
-    padding: 0.65rem 0.85rem;
-    margin-bottom: 0.85rem;
-  }
-
-  .banner-status-dot {
-    color: #34d399;
-    font-size: 1rem;
-    animation: pulseDot 1.5s infinite alternate;
-  }
-
-  @keyframes pulseDot {
-    from { opacity: 0.4; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1.15); filter: drop-shadow(0 0 6px #34d399); }
-  }
-
-  .banner-text-wrap {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-  }
-
-  .banner-text-wrap strong {
-    font-size: 0.82rem;
-    color: #6ee7b7;
-  }
-
-  .banner-text-wrap span {
-    font-size: 0.72rem;
-    color: #94a3b8;
-  }
-
-  .ctrl-spin-wrap {
-    margin-bottom: 1rem;
-  }
-
-  .ctrl-spin-btn {
-    width: 100%;
-    padding: 0.9rem;
-    background: linear-gradient(135deg, #a855f7 0%, #38bdf8 100%);
-    color: #ffffff;
-    font-size: 1.05rem;
-    font-weight: 900;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 0 25px rgba(168, 85, 247, 0.5);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-  }
-
-  .ctrl-spin-btn:hover {
-    transform: scale(1.02);
-    box-shadow: 0 0 35px rgba(168, 85, 247, 0.7);
-  }
-
-  :global(body.controller-mode) .roulette-stage-pane {
-    display: none !important;
-  }
-
-  :global(body.controller-mode) .roulette-layout {
-    display: flex !important;
-    justify-content: center !important;
-    padding: 1rem !important;
-  }
-
-  :global(body.controller-mode) .streamer-sidebar {
-    width: 100% !important;
-    max-width: 520px !important;
-    margin: 0 auto !important;
-  }
-
-  :global(body.streamer-mode) .streamer-sidebar {
-    display: none !important;
-  }
-
-  :global(body.streamer-mode) .roulette-stage-pane {
-    max-width: 100vw !important;
-    width: 100% !important;
-    justify-content: center !important;
-    align-items: center !important;
-  }
-
-  :global(body.streamer-mode) .roulette-mode-tabs {
-    display: none !important;
+    transform: translateY(-2px);
   }
 
   /* Verifiable Fairness Badge Bar */
   .fairness-badge-bar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     gap: 0.6rem;
-    background: rgba(15, 23, 42, 0.7);
-    border: 1px solid rgba(56, 189, 248, 0.25);
-    border-radius: 10px;
-    padding: 0.45rem 0.8rem;
-    margin-top: 0.65rem;
-    font-size: 0.78rem;
-    width: 100%;
-    max-width: 600px;
-    box-sizing: border-box;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 9999px;
+    padding: 0.35rem 0.95rem;
+    margin-top: 0.85rem;
+    font-size: 0.76rem;
     backdrop-filter: blur(8px);
   }
 
@@ -1512,73 +1321,7 @@ const data = gameEntry?.data || {
     display: none !important;
   }
 
-  @media (max-width: 1100px) {
-    .wheel-stage-layout {
-      flex-direction: column-reverse;
-      gap: 1.25rem;
-    }
-    .roulette-prob-panel {
-      width: 100% !important;
-      max-width: 500px;
-      height: 240px;
-    }
-  }
-
-  @media (max-width: 900px) {
-    
-  /* Mode Switcher Tabs */
-  .roulette-mode-tabs {
-    grid-column: 1 / -1;
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    background: #0f172a;
-    padding: 0.35rem;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-    margin-bottom: 0.5rem;
-  }
-
-  .mode-tab {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 800;
-    color: #94a3b8;
-    text-decoration: none;
-    transition: all 0.15s ease;
-  }
-
-  .mode-tab:hover {
-    color: #f8fafc;
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .mode-tab.active {
-    background: #38bdf8;
-    color: #040813;
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
-  }
-
-  .tab-badge {
-    background: #ef4444;
-    color: #ffffff;
-    font-size: 0.65rem;
-    font-weight: 900;
-    padding: 0.1rem 0.35rem;
-    border-radius: 4px;
-    margin-left: 0.2rem;
-  }
-
   @media (max-width: 840px) {
-    .wheel-stage-layout {
-      flex-direction: column-reverse;
-      gap: 1.25rem;
-    }
     .wheel-canvas-wrapper {
       width: min(88vw, 420px);
       height: min(88vw, 420px);
@@ -1589,11 +1332,6 @@ const data = gameEntry?.data || {
       max-width: 410px;
       max-height: 410px;
     }
-    .roulette-prob-panel {
-      width: 100%;
-      max-width: 420px;
-      height: 220px;
-    }
     .streamer-sidebar {
       width: 100%;
     }
@@ -1601,7 +1339,7 @@ const data = gameEntry?.data || {
 
   @media (max-width: 480px) {
     .wheel-title-bar {
-      font-size: 1.15rem;
+      font-size: 1.2rem;
     }
     .wheel-canvas-wrapper {
       width: min(92vw, 340px);
@@ -1623,6 +1361,10 @@ const data = gameEntry?.data || {
     }
     .presets-grid {
       grid-template-columns: 1fr 1fr;
+    }
+    .fairness-badge-bar {
+      flex-wrap: wrap;
+      border-radius: 10px;
     }
   }
 </style>
@@ -1984,7 +1726,6 @@ const data = gameEntry?.data || {
   const mainSpinBtn = document.getElementById('main-spin-btn');
   const centerSpinBtn = document.getElementById('center-spin-btn');
   const shuffleBtn = document.getElementById('shuffle-btn');
-  const streamModeBtn = document.getElementById('stream-mode-btn');
 
   const winnerModal = document.getElementById('winner-modal');
   const winnerNameDisplay = document.getElementById('winner-name-display');
@@ -2529,15 +2270,6 @@ const data = gameEntry?.data || {
     sfx.enabled = chkSound.checked;
   });
 
-  // Stream Overlay Mode Toggle
-  const sidebar = document.getElementById('streamer-sidebar');
-  streamModeBtn?.addEventListener('click', () => {
-    if (sidebar) {
-      sidebar.classList.toggle('hidden');
-      streamModeBtn.classList.toggle('btn-secondary');
-    }
-  });
-
   // Spacebar to Spin
   window.addEventListener('keydown', (e) => {
     if (e.code === 'Space' && document.activeElement !== itemsTextarea && document.activeElement !== titleInput) {
@@ -2560,23 +2292,6 @@ const data = gameEntry?.data || {
       toast.classList.add('hidden');
     }, 3200);
   }
-
-  // 1. One-Click OBS Browser Source Copy
-  const copyObsBtn = document.getElementById('copy-obs-roulette-btn');
-  copyObsBtn?.addEventListener('click', () => {
-    const url = new URL(window.location.href);
-    url.searchParams.set('stream', 'true');
-    const cleanUrl = url.href;
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(cleanUrl).then(() => {
-        showRouletteToast(isEn ? '🎥 OBS Browser Source URL copied! (1920x1080 recommended)' : '🎥 OBS 브라우저 소스 URL 복사 완료! (1920x1080 권장)');
-      }).catch(() => {
-        prompt('OBS Browser URL:', cleanUrl);
-      });
-    } else {
-      prompt('OBS Browser URL:', cleanUrl);
-    }
-  });
 
   // 2. Smart Nickname / Items Bulk Input Modal
   const smartModal = document.getElementById('smart-input-modal');
@@ -2752,103 +2467,8 @@ const data = gameEntry?.data || {
     ? new BroadcastChannel('errorledger_roulette_channel')
     : null;
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const isControllerMode = urlParams.get('mode') === 'controller';
-
-  if (isControllerMode) {
-    document.body.classList.add('controller-mode');
-    const banner = document.getElementById('controller-sync-banner');
-    if (banner) banner.classList.remove('hidden');
-    const ctrlSpinWrap = document.getElementById('ctrl-spin-wrap');
-    if (ctrlSpinWrap) ctrlSpinWrap.classList.remove('hidden');
-  }
-
-  // Open Controller Window
-  const openControllerBtn = document.getElementById('open-controller-btn');
-  openControllerBtn?.addEventListener('click', () => {
-    const controllerUrl = new URL(window.location.href);
-    controllerUrl.searchParams.set('mode', 'controller');
-    controllerUrl.searchParams.delete('stream');
-    controllerUrl.searchParams.delete('obs');
-    window.open(controllerUrl.toString(), 'errorledger_roulette_ctrl', 'width=520,height=820,menubar=no,toolbar=no');
-    showRouletteToast(isEn ? '🎛️ Dual-window controller opened!' : '🎛️ 듀얼 모니터용 리모컨 창이 열렸습니다!');
-  });
-
-  // Controller quick spin button
-  const ctrlSpinBtn = document.getElementById('ctrl-spin-btn');
-  ctrlSpinBtn?.addEventListener('click', () => {
-    syncChannel?.postMessage({ type: 'TRIGGER_SPIN' });
-    spinWheel();
-  });
-
-  function broadcastState() {
-    if (!syncChannel) return;
-    syncChannel.postMessage({
-      type: 'SYNC_STATE',
-      title: titleInput?.value || '',
-      items: itemsTextarea?.value || '',
-      eliminate: chkEliminate?.checked ?? false
-    });
-  }
-
-  titleInput?.addEventListener('input', () => {
-    if (isControllerMode) broadcastState();
-  });
-  itemsTextarea?.addEventListener('input', () => {
-    if (isControllerMode) broadcastState();
-  });
-  chkEliminate?.addEventListener('change', () => {
-    if (isControllerMode) broadcastState();
-  });
-
-  // Listen for broadcast messages from other windows
-  if (syncChannel) {
-    syncChannel.onmessage = (event) => {
-      const data = event.data;
-      if (!data) return;
-
-      if (data.type === 'SYNC_STATE') {
-        if (titleInput && data.title !== undefined) {
-          titleInput.value = data.title;
-          if (displayTitle) displayTitle.textContent = data.title;
-        }
-        if (itemsTextarea && data.items !== undefined) {
-          itemsTextarea.value = data.items;
-          syncItems();
-        }
-        if (chkEliminate && data.eliminate !== undefined) {
-          chkEliminate.checked = data.eliminate;
-        }
-      } else if (data.type === 'TRIGGER_SPIN') {
-        spinWheel();
-      } else if (data.type === 'TRIGGER_SHUFFLE') {
-        items.sort(() => Math.random() - 0.5);
-        if (itemsTextarea) itemsTextarea.value = items.join('\n');
-        syncItems();
-      } else if (data.type === 'SPIN_RESULT') {
-        if (isControllerMode && data.winner) {
-          addHistoryItem(data.winner);
-          showRouletteToast(isEn ? `👑 Winner: ${data.winner}` : `👑 당첨: ${data.winner}`);
-        }
-      }
-    };
-  }
-
   // English UI Localization
   if (isEn) {
-    const openCtrlBtn = document.getElementById('open-controller-btn');
-    if (openCtrlBtn) {
-      const span = openCtrlBtn.querySelector('span');
-      if (span) span.textContent = '🎛️ Controller';
-      openCtrlBtn.setAttribute('title', 'Open dual-window streamer remote control');
-    }
-    const ctrlBannerTitle = document.getElementById('ctrl-banner-title');
-    if (ctrlBannerTitle) ctrlBannerTitle.textContent = '🎛️ OBS Remote Controller Active';
-    const ctrlBannerDesc = document.getElementById('ctrl-banner-desc');
-    if (ctrlBannerDesc) ctrlBannerDesc.textContent = 'Real-time 0ms P2P sync with OBS browser source';
-    const ctrlSpinSpan = document.querySelector('#ctrl-spin-btn span');
-    if (ctrlSpinSpan) ctrlSpinSpan.textContent = '🎯 Spin Wheel Now (Space)';
-
     const fairnessLabel = document.getElementById('fairness-badge-label');
     if (fairnessLabel) fairnessLabel.textContent = 'Fairness Pre-Hash:';
     if (fairnessHashDisplay && !currentFairness) fairnessHashDisplay.textContent = 'Auto SHA-256 on Spin';
@@ -2875,11 +2495,6 @@ const data = gameEntry?.data || {
     if (shuffleBtn) {
       const span = shuffleBtn.querySelector('span');
       if (span) span.textContent = '🔀 Shuffle Items';
-    }
-    if (streamModeBtn) {
-      const span = streamModeBtn.querySelector('span');
-      if (span) span.textContent = '📺 Focus Mode';
-      streamModeBtn.setAttribute('title', 'Toggle minimal focus mode');
     }
     const deskHeader = document.querySelector('.sidebar-header h3');
     if (deskHeader) deskHeader.textContent = 'Wheel Settings Desk';
@@ -2910,6 +2525,9 @@ const data = gameEntry?.data || {
     const itemsLabel = document.querySelector('label[for="input-items"]');
     if (itemsLabel) itemsLabel.textContent = 'Item List';
 
+    const probLabel = document.querySelector('.prob-summary-group label');
+    if (probLabel) probLabel.textContent = '📊 Odds & Probabilities';
+
     const hintText = document.querySelector('.input-hint-text');
     if (hintText) hintText.innerHTML = '💡 Tip: Enter <code>Pizza*2</code> or <code>Burger*3</code> to give items multiple slices!';
 
@@ -2938,12 +2556,6 @@ const data = gameEntry?.data || {
     if (congratsTag) congratsTag.textContent = '🎉 Congratulations!';
 
     if (modalConfirmBtn) modalConfirmBtn.textContent = 'Close (OK)';
-
-    if (copyObsBtn) {
-      const span = copyObsBtn.querySelector('span');
-      if (span) span.textContent = '🎥 Copy OBS URL';
-      copyObsBtn.setAttribute('title', 'Copy clean OBS browser source URL without ads or headers');
-    }
 
     if (btnSmartInput) btnSmartInput.textContent = '📋 Smart Paste';
     if (btnExportPreset) btnExportPreset.textContent = '💾 Save Preset';

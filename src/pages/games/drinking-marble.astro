@@ -2210,6 +2210,8 @@ const data = gameEntry?.data || {
       activeTiles = JSON.parse(JSON.stringify(dict[key].tiles));
       saveTiles();
       renderBoard();
+      populateEditorSelect();
+      populateAllTilesEditor();
     });
   });
 
@@ -2317,11 +2319,29 @@ const data = gameEntry?.data || {
   btnOpenEditor?.addEventListener('click', () => {
     populateEditorSelect();
     populateAllTilesEditor();
-    if (editorModal) editorModal.classList.remove('hidden');
+    if (editorModal) {
+      editorModal.classList.remove('hidden');
+      editorModal.style.display = 'flex';
+    }
   });
 
-  btnCloseEditor?.addEventListener('click', () => {
-    if (editorModal) editorModal.classList.add('hidden');
+  const hideEditorModal = () => {
+    if (editorModal) {
+      editorModal.classList.add('hidden');
+      editorModal.style.display = 'none';
+    }
+  };
+
+  btnCloseEditor?.addEventListener('click', hideEditorModal);
+
+  editorModal?.addEventListener('click', (e) => {
+    if (e.target === editorModal) hideEditorModal();
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && editorModal && !editorModal.classList.contains('hidden')) {
+      hideEditorModal();
+    }
   });
 
   // Editor Tabs
@@ -2342,56 +2362,105 @@ const data = gameEntry?.data || {
     tabSingle?.classList.remove('active');
     paneAll?.classList.remove('hidden');
     paneSingle?.classList.add('hidden');
+    populateAllTilesEditor();
   });
 
-  function populateEditorSelect() {
-    if (!editTileSelect) return;
-    editTileSelect.innerHTML = activeTiles.map((t, idx) => `
-      <option value="${idx}">#${idx + 1}: ${t.icon} ${t.title}</option>
-    `).join('');
-    loadTileIntoEditor(0);
+  let currentEditingTileIdx = 0;
+  let selectedEmoji = '🌸';
+
+  function updateEmojiPaletteSelection(emoji: string) {
+    selectedEmoji = emoji || '🌸';
+    emojiPalette?.querySelectorAll('span').forEach(span => {
+      const isMatch = span.textContent?.trim() === selectedEmoji.trim();
+      span.classList.toggle('active', isMatch);
+      if (isMatch) {
+        span.style.background = 'rgba(244, 114, 182, 0.45)';
+        span.style.border = '1px solid #f472b6';
+        span.style.borderRadius = '6px';
+        span.style.transform = 'scale(1.15)';
+      } else {
+        span.style.background = '';
+        span.style.border = '';
+        span.style.borderRadius = '';
+        span.style.transform = '';
+      }
+    });
   }
 
   function loadTileIntoEditor(idx: number) {
+    if (idx < 0 || idx >= activeTiles.length) return;
+    currentEditingTileIdx = idx;
     const t = activeTiles[idx];
     if (!t) return;
-    if (editTileTitle) editTileTitle.value = t.title;
-    if (editTileDesc) editTileDesc.value = t.desc;
+    if (editTileSelect && editTileSelect.value !== String(idx)) {
+      editTileSelect.value = String(idx);
+    }
+    if (editTileTitle) editTileTitle.value = t.title || '';
+    if (editTileDesc) editTileDesc.value = t.desc || '';
+    updateEmojiPaletteSelection(t.icon || '🌸');
+  }
+
+  function populateEditorSelect(targetIdx?: number) {
+    if (!editTileSelect) return;
+    const resolvedIdx = typeof targetIdx === 'number' ? targetIdx : currentEditingTileIdx;
+    editTileSelect.innerHTML = activeTiles.map((t, idx) => `
+      <option value="${idx}" ${idx === resolvedIdx ? 'selected' : ''}>#${idx + 1}: ${t.icon} ${t.title}</option>
+    `).join('');
+    loadTileIntoEditor(resolvedIdx);
   }
 
   function openEditorForTile(idx: number) {
-    if (editTileSelect) editTileSelect.value = String(idx);
+    currentEditingTileIdx = idx;
+    populateEditorSelect(idx);
     loadTileIntoEditor(idx);
     tabSingle?.click();
-    if (editorModal) editorModal.classList.remove('hidden');
+    if (editorModal) {
+      editorModal.classList.remove('hidden');
+      editorModal.style.display = 'flex';
+    }
   }
 
   editTileSelect?.addEventListener('change', () => {
-    loadTileIntoEditor(parseInt(editTileSelect.value, 10));
+    const val = parseInt(editTileSelect.value, 10);
+    if (!isNaN(val)) {
+      loadTileIntoEditor(val);
+    }
   });
 
   // Emoji Palette Selection
-  let selectedEmoji = '🌸';
   emojiPalette?.querySelectorAll('span').forEach(span => {
     span.addEventListener('click', () => {
-      selectedEmoji = span.textContent || '🌸';
-      if (editTileTitle && !editTileTitle.value.trim()) {
-        editTileTitle.value = selectedEmoji;
-      }
-      span.style.background = 'rgba(244, 114, 182, 0.4)';
-      setTimeout(() => { span.style.background = ''; }, 300);
+      const emoji = span.textContent?.trim() || '🌸';
+      updateEmojiPaletteSelection(emoji);
     });
   });
 
   btnSaveSingle?.addEventListener('click', () => {
-    if (!editTileSelect || !editTileTitle || !editTileDesc) return;
-    const idx = parseInt(editTileSelect.value, 10);
-    activeTiles[idx].title = editTileTitle.value.trim() || '지령';
-    activeTiles[idx].desc = editTileDesc.value.trim() || '';
-    if (selectedEmoji) activeTiles[idx].icon = selectedEmoji;
+    let idx = currentEditingTileIdx;
+    if (editTileSelect && editTileSelect.value !== '') {
+      const parsed = parseInt(editTileSelect.value, 10);
+      if (!isNaN(parsed) && parsed >= 0 && parsed < activeTiles.length) {
+        idx = parsed;
+      }
+    }
+    if (idx < 0 || idx >= activeTiles.length || !activeTiles[idx]) return;
+
+    if (editTileTitle) {
+      activeTiles[idx].title = editTileTitle.value.trim() || '지령';
+    }
+    if (editTileDesc) {
+      activeTiles[idx].desc = editTileDesc.value.trim() || '';
+    }
+    if (selectedEmoji) {
+      activeTiles[idx].icon = selectedEmoji;
+    }
+
     saveTiles();
     renderBoard();
-    if (editorModal) editorModal.classList.add('hidden');
+    populateEditorSelect(idx);
+    populateAllTilesEditor();
+    hideEditorModal();
+    showToast(isEn ? `✨ Tile #${idx + 1} updated!` : `✨ #${idx + 1} 칸이 성공적으로 수정되었습니다!`);
   });
 
   function populateAllTilesEditor() {
@@ -2410,11 +2479,15 @@ const data = gameEntry?.data || {
     const inputs = allTilesList.querySelectorAll<HTMLInputElement>('.all-tile-input-title');
     inputs.forEach(input => {
       const idx = parseInt(input.getAttribute('data-idx') || '0', 10);
-      activeTiles[idx].title = input.value.trim() || activeTiles[idx].title;
+      if (activeTiles[idx]) {
+        activeTiles[idx].title = input.value.trim() || activeTiles[idx].title;
+      }
     });
     saveTiles();
     renderBoard();
-    if (editorModal) editorModal.classList.add('hidden');
+    populateEditorSelect(currentEditingTileIdx);
+    hideEditorModal();
+    showToast(isEn ? '✨ All 24 tiles saved!' : '✨ 24개 칸 전체가 저장되었습니다!');
   });
 
   btnResetDefault?.addEventListener('click', () => {
@@ -2423,7 +2496,8 @@ const data = gameEntry?.data || {
     saveTiles();
     renderBoard();
     populateAllTilesEditor();
-    populateEditorSelect();
+    populateEditorSelect(0);
+    showToast(isEn ? '🔄 Reset to preset defaults' : '🔄 기본 칸 설정으로 복원되었습니다.');
   });
 
   // English UI Adjustments
@@ -2508,4 +2582,6 @@ const data = gameEntry?.data || {
   loadInitialTiles();
   renderBoard();
   renderPlayerNamesList();
+  populateEditorSelect(0);
+  populateAllTilesEditor();
 </script>
