@@ -79,9 +79,9 @@ const data = gameEntry?.data || {
         <!-- 1. Master Volume with Ultra-Visible Track Line -->
         <div class="control-group volume-group">
           <div class="vol-label-row">
-            <span class="ctrl-icon" id="vol-icon">🔊</span>
+            <span class="ctrl-icon" id="vol-icon">🔉</span>
             <span class="label-text">VOLUME</span>
-            <span class="vol-value" id="vol-display">100%</span>
+            <span class="vol-value" id="vol-display">50%</span>
           </div>
           <div class="vol-track-container" title="마스터 볼륨 조절 (0% ~ 150%)">
             <input 
@@ -90,7 +90,7 @@ const data = gameEntry?.data || {
               class="vol-slider" 
               min="0" 
               max="150" 
-              value="100" 
+              value="50" 
               step="1"
               aria-label="Master Volume Control"
             />
@@ -104,10 +104,10 @@ const data = gameEntry?.data || {
             <span class="label-text">PLAYBACK</span>
           </span>
           <div class="toggle-pill-wrap">
-            <button type="button" class="poly-btn active" id="btn-mode-overlap" data-mode="overlap" title="여러 소리가 동시에 겹쳐서 재생됩니다">
+            <button type="button" class="poly-btn" id="btn-mode-overlap" data-mode="overlap" title="여러 소리가 동시에 겹쳐서 재생됩니다">
               OVERLAP
             </button>
-            <button type="button" class="poly-btn" id="btn-mode-cut" data-mode="cut" title="새 소리가 재생되면 이전 소리를 즉시 컷합니다">
+            <button type="button" class="poly-btn active" id="btn-mode-cut" data-mode="cut" title="새 소리가 재생되면 이전 소리를 즉시 컷합니다">
               CUT
             </button>
           </div>
@@ -120,10 +120,10 @@ const data = gameEntry?.data || {
             <span class="label-text">TRIGGER</span>
           </span>
           <div class="toggle-pill-wrap">
-            <button type="button" class="poly-btn active" id="btn-trig-oneshot" data-trig="oneshot" title="1회 클릭 시 전체 효과음을 끝까지 재생합니다">
+            <button type="button" class="poly-btn" id="btn-trig-oneshot" data-trig="oneshot" title="1회 클릭 시 전체 효과음을 끝까지 재생합니다">
               ONE-SHOT
             </button>
-            <button type="button" class="poly-btn" id="btn-trig-hold" data-trig="hold" title="누르고 있는 동안만 재생되고 손을 떼면 즉시 컷됩니다 (연타 리액션 가능)">
+            <button type="button" class="poly-btn active" id="btn-trig-hold" data-trig="hold" title="누르고 있는 동안만 재생되고 손을 떼면 즉시 컷됩니다 (연타 리액션 가능)">
               HOLD
             </button>
           </div>
@@ -569,7 +569,7 @@ const data = gameEntry?.data || {
     width: 100%;
     height: 8px;
     border-radius: 999px;
-    background: linear-gradient(to right, #00ffcc 0%, #00ffcc 66.6%, #233147 66.6%, #233147 100%);
+    background: linear-gradient(to right, #00ffcc 0%, #00ffcc 33.3%, #233147 33.3%, #233147 100%);
     border: 1.5px solid #00ffcc;
     box-shadow: 0 0 10px rgba(0, 255, 204, 0.25), inset 0 1px 3px rgba(0, 0, 0, 0.6);
     outline: none;
@@ -1402,14 +1402,16 @@ const data = gameEntry?.data || {
     let audioCtx = null;
     let masterGainNode = null;
     let analyserNode = null;
-    let masterVolume = 1.0;
-    let polyphonyMode = 'overlap'; // 'overlap' | 'cut'
-    let triggerMode = 'oneshot';   // 'oneshot' | 'hold'
+    let masterVolume = 0.5;
+    let polyphonyMode = 'cut'; // 'overlap' | 'cut'
+    let triggerMode = 'hold';   // 'oneshot' | 'hold'
     const activeInstances = new Set(); // Tracks active sounds
     const heldPadInstances = new Map(); // Tracks currently held sounds in Hold mode (padId -> instance)
 
-    // Noise Buffer Cache
+    // Audio Caches
     let noiseBufferCache = null;
+    let applauseBufferCache = null;
+    let distortionCurveCache = null;
 
     // Custom Slots Decoded Buffers
     const customBuffers = [null, null];
@@ -1455,8 +1457,9 @@ const data = gameEntry?.data || {
         masterGainNode.connect(analyserNode);
         analyserNode.connect(audioCtx.destination);
 
-        // Pre-generate noise buffer
+        // Pre-generate noise buffer & physical applause buffer
         generateNoiseBuffer();
+        generateApplauseBuffer();
 
         // Start Canvas Visualizer
         startVisualizerLoop();
@@ -1483,6 +1486,123 @@ const data = gameEntry?.data || {
       for (let i = 0; i < bufferSize; i++) {
         data[i] = Math.random() * 2 - 1;
       }
+    }
+
+    // Soft-clipping saturation curve for punchy game show buzzers and impacts
+    function getDistortionCurve(k = 3.5) {
+      if (distortionCurveCache) return distortionCurveCache;
+      const n = 1024;
+      const curve = new Float32Array(n);
+      for (let i = 0; i < n; ++i) {
+        const x = (i * 2) / n - 1;
+        curve[i] = Math.tanh(k * x);
+      }
+      distortionCurveCache = curve;
+      return curve;
+    }
+
+    // High-Fidelity Granular Physical-Model Crowd Applause Buffer
+    // Synthesizes 42 realistic audience members with individual handclaps,
+    // micro-flams, Helmholtz palm resonances, and dynamic stereo panning.
+    function generateApplauseBuffer() {
+      if (!audioCtx || applauseBufferCache) return;
+      const sr = audioCtx.sampleRate;
+      const dur = 3.2;
+      const nSamples = Math.floor(sr * dur);
+      const left = new Float32Array(nSamples);
+      const right = new Float32Array(nSamples);
+
+      function makeClap(centerFreq, palmPitch, vol) {
+        const len = Math.floor(sr * 0.065);
+        const buf = new Float32Array(len);
+        const times = [0, 0.007, 0.015, 0.022];
+        const amps = [0.35 * vol, 0.5 * vol, 0.7 * vol, 1.2 * vol];
+        const durs = [0.004, 0.005, 0.006, 0.035];
+
+        const w0 = 2 * Math.PI * centerFreq / sr;
+        const alpha = Math.sin(w0) / (2 * 2.2);
+        const b0 = alpha / (1 + alpha);
+        const b2 = -alpha / (1 + alpha);
+        const a1 = -2 * Math.cos(w0) / (1 + alpha);
+        const a2 = (1 - alpha) / (1 + alpha);
+
+        let x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+        const filtered = new Float32Array(len);
+        for (let i = 0; i < len; i++) {
+          const x0 = Math.random() * 2 - 1;
+          const y0 = b0 * x0 + b2 * x2 - a1 * y1 - a2 * y2;
+          filtered[i] = y0;
+          x2 = x1; x1 = x0;
+          y2 = y1; y1 = y0;
+        }
+
+        for (let b = 0; b < 4; b++) {
+          const start = Math.floor(times[b] * sr);
+          const durSamples = Math.floor(durs[b] * sr);
+          const end = Math.min(len, start + durSamples);
+          const segLen = end - start;
+          for (let i = 0; i < segLen; i++) {
+            const env = Math.exp(- (i / segLen) * 5.0);
+            buf[start + i] += filtered[start + i] * env * amps[b];
+          }
+        }
+
+        // Helmholtz palm cavity resonance
+        const palmLen = Math.floor(0.025 * sr);
+        const palmStart = Math.floor(0.022 * sr);
+        for (let i = 0; i < palmLen && (palmStart + i) < len; i++) {
+          const t = i / sr;
+          buf[palmStart + i] += Math.sin(2 * Math.PI * palmPitch * t) * Math.exp(-t * 90) * 0.4 * vol;
+        }
+        return buf;
+      }
+
+      // Simulate 42 people clapping in an audience
+      const numPeople = 42;
+      for (let p = 0; p < numPeople; p++) {
+        const rate = 3.0 + Math.random() * 1.6;
+        const pan = Math.random() * 2 - 1;
+        const lg = Math.cos((pan + 1) * Math.PI / 4);
+        const rg = Math.sin((pan + 1) * Math.PI / 4);
+        const cf = 1000 + Math.random() * 1400;
+        const pf = 500 + Math.random() * 350;
+        const clap = makeClap(cf, pf, 0.5 + Math.random() * 0.7);
+        const cLen = clap.length;
+
+        let t = 0.02 + Math.random() * 0.35;
+        while (t < dur - 0.08) {
+          const idx = Math.floor(t * sr);
+          const copyLen = Math.min(cLen, nSamples - idx);
+          for (let i = 0; i < copyLen; i++) {
+            left[idx + i] += clap[i] * lg;
+            right[idx + i] += clap[i] * rg;
+          }
+          t += (1.0 / rate) + (Math.random() - 0.5) * 0.045;
+        }
+      }
+
+      // Master envelope & normalization
+      let maxVal = 0;
+      for (let i = 0; i < nSamples; i++) {
+        const t = i / sr;
+        let env = 1.0;
+        if (t < 0.25) env = t / 0.25;
+        else if (t > 2.4) env = Math.max(0, 1 - (t - 2.4) / 0.8);
+        left[i] *= env;
+        right[i] *= env;
+        if (Math.abs(left[i]) > maxVal) maxVal = Math.abs(left[i]);
+        if (Math.abs(right[i]) > maxVal) maxVal = Math.abs(right[i]);
+      }
+
+      const norm = maxVal > 0 ? (0.92 / maxVal) : 1;
+      for (let i = 0; i < nSamples; i++) {
+        left[i] *= norm;
+        right[i] *= norm;
+      }
+
+      applauseBufferCache = audioCtx.createBuffer(2, nSamples, sr);
+      applauseBufferCache.getChannelData(0).set(left);
+      applauseBufferCache.getChannelData(1).set(right);
     }
 
     // --------------------------------------------------------------------------
@@ -1574,8 +1694,8 @@ const data = gameEntry?.data || {
     // 3. Procedural Audio Synthesis (Pads 1 ~ 9)
     // --------------------------------------------------------------------------
 
-    // Pad 1: 땡! (Harsh Low Square Buzzer)
-    function playBuzzer() {
+    // Pad 1: 땡! (TV Game Show Dissonant Saturation Buzzer)
+    function playBuzzer(isHold = false) {
       ensureAudioContext();
       if (polyphonyMode === 'cut') panicStop(false);
 
@@ -1585,39 +1705,78 @@ const data = gameEntry?.data || {
       const voiceGain = audioCtx.createGain();
       voiceGain.connect(masterGainNode);
 
+      // Waveshaper distortion for aggressive TV game show buzzer bite
+      const shaper = audioCtx.createWaveShaper();
+      shaper.curve = getDistortionCurve(3.5);
+      shaper.oversample = '2x';
+
+      // Lowpass filter to shape harmonics (crisp bite, not muffled)
       const filter = audioCtx.createBiquadFilter();
       filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(1400, now);
-      filter.Q.setValueAtTime(3, now);
+      filter.frequency.setValueAtTime(2800, now);
+      filter.Q.setValueAtTime(1.8, now);
+
+      shaper.connect(filter);
       filter.connect(voiceGain);
 
+      // Dissonant dual-tone: Eb3 (155.56Hz) + E3 (164.81Hz) - harsh minor second discord
       const osc1 = audioCtx.createOscillator();
       osc1.type = 'sawtooth';
-      osc1.frequency.setValueAtTime(125, now);
+      osc1.frequency.setValueAtTime(155.56, now);
 
       const osc2 = audioCtx.createOscillator();
       osc2.type = 'square';
-      osc2.frequency.setValueAtTime(131, now);
+      osc2.frequency.setValueAtTime(164.81, now);
 
-      osc1.connect(filter);
-      osc2.connect(filter);
+      // Sub-bass oscillator for physical chest punch (Eb2 = 77.78Hz)
+      const sub = audioCtx.createOscillator();
+      sub.type = 'sine';
+      sub.frequency.setValueAtTime(77.78, now);
 
-      voiceGain.gain.setValueAtTime(0.001, now);
-      voiceGain.gain.linearRampToValueAtTime(0.85, now + 0.015);
-      voiceGain.gain.setValueAtTime(0.85, now + 0.45);
-      voiceGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.65);
+      const mixGain = audioCtx.createGain();
+      mixGain.gain.setValueAtTime(0.55, now);
+
+      osc1.connect(mixGain);
+      osc2.connect(mixGain);
+      sub.connect(mixGain);
+      mixGain.connect(shaper);
+
+      // Attack punch click transient
+      const click = audioCtx.createOscillator();
+      const clickGain = audioCtx.createGain();
+      click.frequency.setValueAtTime(280, now);
+      click.frequency.exponentialRampToValueAtTime(60, now + 0.02);
+      clickGain.gain.setValueAtTime(0.7, now);
+      clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
+      click.connect(clickGain);
+      clickGain.connect(voiceGain);
+      click.start(now);
+      click.stop(now + 0.03);
+
+      const maxDur = isHold ? 12 : 0.55;
+      voiceGain.gain.setValueAtTime(0.0001, now);
+      voiceGain.gain.linearRampToValueAtTime(0.9, now + 0.008);
+
+      if (!isHold) {
+        voiceGain.gain.setValueAtTime(0.9, now + 0.48);
+        voiceGain.gain.linearRampToValueAtTime(0.0001, now + 0.55);
+      }
 
       osc1.start(now);
       osc2.start(now);
-      osc1.stop(now + 0.66);
-      osc2.stop(now + 0.66);
+      sub.start(now);
+      osc1.stop(now + maxDur);
+      osc2.stop(now + maxDur);
+      sub.stop(now + maxDur);
 
-      const instance = registerInstance(voiceGain, [osc1, osc2], padEl);
-      setTimeout(() => unregisterInstance(instance), 660);
+      const instance = registerInstance(voiceGain, [osc1, osc2, sub, click], padEl);
+      if (!isHold) {
+        setTimeout(() => unregisterInstance(instance), 580);
+      }
       return instance;
     }
 
-    // Pad 2: 딩동댕! (Crystal Bell Arpeggio Chime)
+    // Pad 2: 딩동댕! (Korean Quiz Glockenspiel Bell Chime)
     function playChime() {
       ensureAudioContext();
       if (polyphonyMode === 'cut') panicStop(false);
@@ -1628,45 +1787,86 @@ const data = gameEntry?.data || {
       const voiceGain = audioCtx.createGain();
       voiceGain.connect(masterGainNode);
 
-      const freqs = [523.25, 659.25, 783.99, 1046.50];
+      // Authentic Korean Quiz "딩 - 동 - 댕~!"
+      // G5 (783.99Hz), E5 (659.25Hz), High C6 (1046.50Hz)
+      const notes = [
+        { t: 0.00, freq: 783.99, dur: 0.85, amp: 0.65 }, // 딩!
+        { t: 0.22, freq: 659.25, dur: 0.85, amp: 0.65 }, // 동!
+        { t: 0.44, freq: 1046.50, dur: 1.60, amp: 0.85 } // 댕~~!
+      ];
       const sources = [];
 
-      freqs.forEach((freq, idx) => {
-        const noteStart = now + idx * 0.09;
+      notes.forEach(note => {
+        const noteStart = now + note.t;
 
+        // 1. Fundamental
         const osc = audioCtx.createOscillator();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, noteStart);
+        osc.frequency.setValueAtTime(note.freq, noteStart);
 
-        const overtone = audioCtx.createOscillator();
-        overtone.type = 'sine';
-        overtone.frequency.setValueAtTime(freq * 2.76, noteStart);
+        // 2. Glockenspiel Inharmonic Mode 2 (2.757x)
+        const mode2 = audioCtx.createOscillator();
+        mode2.type = 'sine';
+        mode2.frequency.setValueAtTime(note.freq * 2.757, noteStart);
+
+        // 3. Glockenspiel Inharmonic Mode 3 (5.404x)
+        const mode3 = audioCtx.createOscillator();
+        mode3.type = 'sine';
+        mode3.frequency.setValueAtTime(note.freq * 5.404, noteStart);
 
         const noteGain = audioCtx.createGain();
         noteGain.gain.setValueAtTime(0.0001, noteStart);
-        noteGain.gain.linearRampToValueAtTime(0.45, noteStart + 0.01);
-        noteGain.gain.exponentialRampToValueAtTime(0.0001, noteStart + 1.1);
+        noteGain.gain.linearRampToValueAtTime(note.amp, noteStart + 0.006);
+        noteGain.gain.exponentialRampToValueAtTime(0.0001, noteStart + note.dur);
 
-        const overtoneGain = audioCtx.createGain();
-        overtoneGain.gain.setValueAtTime(0.0001, noteStart);
-        overtoneGain.gain.linearRampToValueAtTime(0.12, noteStart + 0.01);
-        overtoneGain.gain.exponentialRampToValueAtTime(0.0001, noteStart + 0.45);
+        const mode2Gain = audioCtx.createGain();
+        mode2Gain.gain.setValueAtTime(0.0001, noteStart);
+        mode2Gain.gain.linearRampToValueAtTime(note.amp * 0.4, noteStart + 0.006);
+        mode2Gain.gain.exponentialRampToValueAtTime(0.0001, noteStart + note.dur * 0.45);
+
+        const mode3Gain = audioCtx.createGain();
+        mode3Gain.gain.setValueAtTime(0.0001, noteStart);
+        mode3Gain.gain.linearRampToValueAtTime(note.amp * 0.18, noteStart + 0.004);
+        mode3Gain.gain.exponentialRampToValueAtTime(0.0001, noteStart + note.dur * 0.25);
+
+        // Mallet Strike Transient (wooden/brass hammer impact)
+        if (noiseBufferCache) {
+          const click = audioCtx.createBufferSource();
+          click.buffer = noiseBufferCache;
+          const clickFilter = audioCtx.createBiquadFilter();
+          clickFilter.type = 'bandpass';
+          clickFilter.frequency.setValueAtTime(note.freq * 3.5, noteStart);
+          clickFilter.Q.setValueAtTime(2.0, noteStart);
+          const clickGain = audioCtx.createGain();
+          clickGain.gain.setValueAtTime(0.35, noteStart);
+          clickGain.gain.exponentialRampToValueAtTime(0.001, noteStart + 0.015);
+          click.connect(clickFilter);
+          clickFilter.connect(clickGain);
+          clickGain.connect(voiceGain);
+          click.start(noteStart);
+          click.stop(noteStart + 0.02);
+          sources.push(click);
+        }
 
         osc.connect(noteGain);
-        overtone.connect(overtoneGain);
+        mode2.connect(mode2Gain);
+        mode3.connect(mode3Gain);
         noteGain.connect(voiceGain);
-        overtoneGain.connect(voiceGain);
+        mode2Gain.connect(voiceGain);
+        mode3Gain.connect(voiceGain);
 
         osc.start(noteStart);
-        overtone.start(noteStart);
-        osc.stop(noteStart + 1.15);
-        overtone.stop(noteStart + 0.5);
+        mode2.start(noteStart);
+        mode3.start(noteStart);
+        osc.stop(noteStart + note.dur + 0.05);
+        mode2.stop(noteStart + note.dur * 0.5);
+        mode3.stop(noteStart + note.dur * 0.3);
 
-        sources.push(osc, overtone);
+        sources.push(osc, mode2, mode3);
       });
 
       const instance = registerInstance(voiceGain, sources, padEl);
-      setTimeout(() => unregisterInstance(instance), 1400);
+      setTimeout(() => unregisterInstance(instance), 2100);
       return instance;
     }
 
@@ -1785,7 +1985,7 @@ const data = gameEntry?.data || {
       return instance;
     }
 
-    // Pad 5: 쾅! (Filtered Low-Pass Explosion Boom)
+    // Pad 5: 쾅! (Deep Cinematic Variety Shock Impact)
     function playExplosion() {
       ensureAudioContext();
       if (polyphonyMode === 'cut') panicStop(false);
@@ -1797,50 +1997,86 @@ const data = gameEntry?.data || {
       voiceGain.connect(masterGainNode);
       const sources = [];
 
+      // 1. Initial High-Frequency Slap / Crack (metal/wood impact)
+      const crackOsc = audioCtx.createOscillator();
+      crackOsc.type = 'triangle';
+      crackOsc.frequency.setValueAtTime(380, now);
+      crackOsc.frequency.exponentialRampToValueAtTime(75, now + 0.035);
+
+      const crackGain = audioCtx.createGain();
+      crackGain.gain.setValueAtTime(0.9, now);
+      crackGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+      crackOsc.connect(crackGain);
+      crackGain.connect(voiceGain);
+      crackOsc.start(now);
+      crackOsc.stop(now + 0.045);
+      sources.push(crackOsc);
+
+      // 2. Cinematic 808 Sub-Bass Dive (150Hz -> 38Hz)
       const sub = audioCtx.createOscillator();
       sub.type = 'sine';
-      sub.frequency.setValueAtTime(120, now);
-      sub.frequency.exponentialRampToValueAtTime(28, now + 0.6);
+      sub.frequency.setValueAtTime(150, now);
+      sub.frequency.exponentialRampToValueAtTime(38, now + 0.22);
+      sub.frequency.linearRampToValueAtTime(30, now + 1.4);
 
       const subGain = audioCtx.createGain();
-      subGain.gain.setValueAtTime(0.9, now);
-      subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+      subGain.gain.setValueAtTime(1.0, now);
+      subGain.gain.exponentialRampToValueAtTime(0.001, now + 1.4);
       sub.connect(subGain);
       subGain.connect(voiceGain);
       sub.start(now);
-      sub.stop(now + 0.85);
+      sub.stop(now + 1.45);
       sources.push(sub);
 
+      // 3. Fireball blast noise with sweeping lowpass/bandpass
       if (noiseBufferCache) {
         const noise = audioCtx.createBufferSource();
         noise.buffer = noiseBufferCache;
 
         const filter = audioCtx.createBiquadFilter();
         filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(1100, now);
-        filter.frequency.exponentialRampToValueAtTime(45, now + 1.6);
-        filter.Q.setValueAtTime(4.5, now);
+        filter.frequency.setValueAtTime(2200, now);
+        filter.frequency.exponentialRampToValueAtTime(80, now + 1.2);
+        filter.Q.setValueAtTime(3.5, now);
 
         const noiseGain = audioCtx.createGain();
         noiseGain.gain.setValueAtTime(1.0, now);
-        noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.7);
+        noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.5);
 
         noise.connect(filter);
         filter.connect(noiseGain);
         noiseGain.connect(voiceGain);
 
         noise.start(now);
-        noise.stop(now + 1.75);
+        noise.stop(now + 1.55);
         sources.push(noise);
+
+        // Crack noise burst
+        const crackNoise = audioCtx.createBufferSource();
+        crackNoise.buffer = noiseBufferCache;
+        const crackFilter = audioCtx.createBiquadFilter();
+        crackFilter.type = 'highpass';
+        crackFilter.frequency.setValueAtTime(1400, now);
+        const crackNoiseGain = audioCtx.createGain();
+        crackNoiseGain.gain.setValueAtTime(0.8, now);
+        crackNoiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+
+        crackNoise.connect(crackFilter);
+        crackFilter.connect(crackNoiseGain);
+        crackNoiseGain.connect(voiceGain);
+
+        crackNoise.start(now);
+        crackNoise.stop(now + 0.06);
+        sources.push(crackNoise);
       }
 
       const instance = registerInstance(voiceGain, sources, padEl);
-      setTimeout(() => unregisterInstance(instance), 1800);
+      setTimeout(() => unregisterInstance(instance), 1600);
       return instance;
     }
 
-    // Pad 6: 풀벌레 (High-Frequency Cricket Chirps)
-    function playCrickets() {
+    // Pad 6: 풀벌레 (Natural Awkward Silence Crickets Chirp)
+    function playCrickets(isHold = false) {
       ensureAudioContext();
       if (polyphonyMode === 'cut') panicStop(false);
 
@@ -1849,53 +2085,85 @@ const data = gameEntry?.data || {
 
       const voiceGain = audioCtx.createGain();
       voiceGain.connect(masterGainNode);
+      const sources = [];
 
-      const carrier = audioCtx.createOscillator();
-      carrier.type = 'sine';
-      carrier.frequency.setValueAtTime(4600, now);
-
-      const modulator = audioCtx.createOscillator();
-      modulator.type = 'sine';
-      modulator.frequency.setValueAtTime(40, now);
-
-      const modGain = audioCtx.createGain();
-      modGain.gain.setValueAtTime(0.5, now);
-
-      const chirps = [
-        { t: 0.00, dur: 0.09 },
-        { t: 0.12, dur: 0.09 },
-        { t: 0.24, dur: 0.11 },
-        { t: 0.55, dur: 0.09 },
-        { t: 0.67, dur: 0.09 },
-        { t: 0.79, dur: 0.11 },
-        { t: 1.10, dur: 0.09 },
-        { t: 1.22, dur: 0.09 }
+      // Pattern of cricket chirps: rhythmic stridulation pulse bursts
+      const pulseLen = 0.018;
+      const bursts = [
+        [0.00, 0.024, 0.048],
+        [0.16, 0.184, 0.208],
+        [0.78, 0.804, 0.828],
+        [0.94, 0.964, 0.988],
+        [1.58, 1.604, 1.628],
+        [1.74, 1.764, 1.788]
       ];
 
-      voiceGain.gain.setValueAtTime(0.0001, now);
-      chirps.forEach(c => {
-        const start = now + c.t;
-        voiceGain.gain.setValueAtTime(0.0001, start);
-        voiceGain.gain.linearRampToValueAtTime(0.65, start + 0.015);
-        voiceGain.gain.exponentialRampToValueAtTime(0.0001, start + c.dur);
+      bursts.forEach(group => {
+        group.forEach(tOffset => {
+          const tStart = now + tOffset;
+
+          // Carrier at 4850Hz + slight 9700Hz overtone
+          const osc1 = audioCtx.createOscillator();
+          osc1.type = 'sine';
+          osc1.frequency.setValueAtTime(4850, tStart);
+
+          // Subtle pitch vibrato
+          const fm = audioCtx.createOscillator();
+          fm.type = 'sine';
+          fm.frequency.setValueAtTime(130, tStart);
+          const fmGain = audioCtx.createGain();
+          fmGain.gain.setValueAtTime(45, tStart);
+          fm.connect(fmGain);
+          fmGain.connect(osc1.frequency);
+
+          const pulseGain = audioCtx.createGain();
+          pulseGain.gain.setValueAtTime(0.0001, tStart);
+          pulseGain.gain.linearRampToValueAtTime(0.45, tStart + 0.005);
+          pulseGain.gain.exponentialRampToValueAtTime(0.0001, tStart + pulseLen);
+
+          osc1.connect(pulseGain);
+          pulseGain.connect(voiceGain);
+
+          osc1.start(tStart);
+          fm.start(tStart);
+          osc1.stop(tStart + pulseLen + 0.005);
+          fm.stop(tStart + pulseLen + 0.005);
+          sources.push(osc1, fm);
+
+          // Wing friction noise texture
+          if (noiseBufferCache) {
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = noiseBufferCache;
+            const bpf = audioCtx.createBiquadFilter();
+            bpf.type = 'bandpass';
+            bpf.frequency.setValueAtTime(5200, tStart);
+            bpf.Q.setValueAtTime(3.0, tStart);
+            const ng = audioCtx.createGain();
+            ng.gain.setValueAtTime(0.08, tStart);
+            ng.gain.exponentialRampToValueAtTime(0.001, tStart + pulseLen);
+            noise.connect(bpf);
+            bpf.connect(ng);
+            ng.connect(voiceGain);
+            noise.start(tStart);
+            noise.stop(tStart + pulseLen + 0.005);
+            sources.push(noise);
+          }
+        });
       });
 
-      carrier.connect(voiceGain);
-      modulator.connect(modGain);
-      modGain.connect(voiceGain.gain);
+      const maxDur = isHold ? 15 : 2.1;
+      voiceGain.gain.setValueAtTime(0.0001, now);
+      voiceGain.gain.linearRampToValueAtTime(0.85, now + 0.02);
 
-      carrier.start(now);
-      modulator.start(now);
-      carrier.stop(now + 1.45);
-      modulator.stop(now + 1.45);
-
-      const instance = registerInstance(voiceGain, [carrier, modulator], padEl);
-      setTimeout(() => unregisterInstance(instance), 1500);
+      const instance = registerInstance(voiceGain, sources, padEl);
+      if (!isHold) {
+        setTimeout(() => unregisterInstance(instance), 2150);
+      }
       return instance;
     }
 
-    // Pad 7: 드럼롤 (Rapid Snare Roll & Finale Crash)
-    function playDrumRoll() {
+    // Pad 7: 드럼롤 (Suspense Snare Roll & Grand Finale Crash)
+    function playDrumRoll(isHold = false) {
       ensureAudioContext();
       if (polyphonyMode === 'cut') panicStop(false);
 
@@ -1906,77 +2174,104 @@ const data = gameEntry?.data || {
       voiceGain.connect(masterGainNode);
       const sources = [];
 
-      const numHits = 18;
-      const step = 0.038;
+      const rollDuration = 2.15;
+      let tCurr = 0.0;
+      let step = 0.034; // Accelerates from 34ms to 20ms
 
-      for (let i = 0; i < numHits; i++) {
-        const hitTime = now + i * step;
-        const progress = i / numHits;
-        const hitVol = 0.15 + progress * 0.7;
+      while (tCurr < rollDuration) {
+        const hitTime = now + tCurr;
+        const progress = tCurr / rollDuration;
+        const hitAmp = 0.15 + progress * 0.75; // Crescendo
 
+        // 1. Snare drum shell resonance (195Hz with fast drop)
+        const shell = audioCtx.createOscillator();
+        shell.type = 'triangle';
+        shell.frequency.setValueAtTime(230, hitTime);
+        shell.frequency.exponentialRampToValueAtTime(185, hitTime + 0.02);
+        const shellGain = audioCtx.createGain();
+        shellGain.gain.setValueAtTime(hitAmp * 0.35, hitTime);
+        shellGain.gain.exponentialRampToValueAtTime(0.001, hitTime + 0.022);
+        shell.connect(shellGain);
+        shellGain.connect(voiceGain);
+        shell.start(hitTime);
+        shell.stop(hitTime + 0.025);
+        sources.push(shell);
+
+        // 2. Snare wire sizzle (highpass noise)
         if (noiseBufferCache) {
           const noise = audioCtx.createBufferSource();
           noise.buffer = noiseBufferCache;
-
           const filter = audioCtx.createBiquadFilter();
-          filter.type = 'bandpass';
-          filter.frequency.setValueAtTime(2200 + progress * 800, hitTime);
-          filter.Q.setValueAtTime(1.5, hitTime);
-
+          filter.type = 'highpass';
+          filter.frequency.setValueAtTime(2400 + progress * 600, hitTime);
           const tapGain = audioCtx.createGain();
-          tapGain.gain.setValueAtTime(hitVol, hitTime);
-          tapGain.gain.exponentialRampToValueAtTime(0.001, hitTime + 0.035);
-
+          tapGain.gain.setValueAtTime(hitAmp * 0.65, hitTime);
+          tapGain.gain.exponentialRampToValueAtTime(0.001, hitTime + 0.02);
           noise.connect(filter);
           filter.connect(tapGain);
           tapGain.connect(voiceGain);
-
           noise.start(hitTime);
-          noise.stop(hitTime + 0.036);
+          noise.stop(hitTime + 0.022);
           sources.push(noise);
         }
+
+        step = 0.034 - progress * 0.014;
+        tCurr += step + (Math.random() - 0.5) * 0.003;
       }
 
-      const finaleTime = now + numHits * step + 0.02;
+      // 3. Grand Finale Hit (Crash Cymbal + Bass Kick) at t=2.18s
+      const finaleTime = now + rollDuration + 0.02;
+
+      // Bass Kick
       const kick = audioCtx.createOscillator();
       const kickGain = audioCtx.createGain();
-      kick.frequency.setValueAtTime(150, finaleTime);
-      kick.frequency.exponentialRampToValueAtTime(45, finaleTime + 0.15);
-      kickGain.gain.setValueAtTime(0.9, finaleTime);
-      kickGain.gain.exponentialRampToValueAtTime(0.001, finaleTime + 0.18);
+      kick.frequency.setValueAtTime(140, finaleTime);
+      kick.frequency.exponentialRampToValueAtTime(45, finaleTime + 0.16);
+      kickGain.gain.setValueAtTime(0.95, finaleTime);
+      kickGain.gain.exponentialRampToValueAtTime(0.001, finaleTime + 0.2);
       kick.connect(kickGain);
       kickGain.connect(voiceGain);
       kick.start(finaleTime);
-      kick.stop(finaleTime + 0.2);
+      kick.stop(finaleTime + 0.22);
       sources.push(kick);
 
+      // Shimmering Crash Cymbal
       if (noiseBufferCache) {
         const crash = audioCtx.createBufferSource();
         crash.buffer = noiseBufferCache;
-
         const crashFilter = audioCtx.createBiquadFilter();
         crashFilter.type = 'highpass';
-        crashFilter.frequency.setValueAtTime(4200, finaleTime);
-
+        crashFilter.frequency.setValueAtTime(3800, finaleTime);
         const crashGain = audioCtx.createGain();
-        crashGain.gain.setValueAtTime(0.85, finaleTime);
-        crashGain.gain.exponentialRampToValueAtTime(0.0001, finaleTime + 1.3);
-
+        crashGain.gain.setValueAtTime(0.9, finaleTime);
+        crashGain.gain.exponentialRampToValueAtTime(0.0001, finaleTime + 1.8);
         crash.connect(crashFilter);
         crashFilter.connect(crashGain);
         crashGain.connect(voiceGain);
-
         crash.start(finaleTime);
-        crash.stop(finaleTime + 1.35);
+        crash.stop(finaleTime + 1.85);
         sources.push(crash);
+
+        // Cymbal Ringing Resonator (4.8kHz bell ring)
+        const ring = audioCtx.createOscillator();
+        ring.type = 'sine';
+        ring.frequency.setValueAtTime(4800, finaleTime);
+        const ringGain = audioCtx.createGain();
+        ringGain.gain.setValueAtTime(0.2, finaleTime);
+        ringGain.gain.exponentialRampToValueAtTime(0.0001, finaleTime + 1.2);
+        ring.connect(ringGain);
+        ringGain.connect(voiceGain);
+        ring.start(finaleTime);
+        ring.stop(finaleTime + 1.25);
+        sources.push(ring);
       }
 
       const instance = registerInstance(voiceGain, sources, padEl);
-      setTimeout(() => unregisterInstance(instance), 2100);
+      setTimeout(() => unregisterInstance(instance), 3800);
       return instance;
     }
 
-    // Pad 8: 팡파르 (Brass Fanfare Triad Chords)
+    // Pad 8: 팡파르 (Majestic Brass Section Fanfare)
     function playFanfare() {
       ensureAudioContext();
       if (polyphonyMode === 'cut') panicStop(false);
@@ -1988,51 +2283,67 @@ const data = gameEntry?.data || {
       voiceGain.connect(masterGainNode);
       const sources = [];
 
+      // Brass Fanfare Melody + Grand Triumphant Final Chord
       const notes = [
-        { t: 0.00, dur: 0.12, freqs: [392.00] },
-        { t: 0.14, dur: 0.12, freqs: [523.25] },
-        { t: 0.28, dur: 0.12, freqs: [659.25] },
-        { t: 0.42, dur: 0.45, freqs: [783.99] },
-        { t: 0.95, dur: 1.25, freqs: [261.63, 523.25, 659.25, 783.99, 1046.50] }
+        { t: 0.00, dur: 0.13, freqs: [392.00] }, // G4
+        { t: 0.16, dur: 0.13, freqs: [523.25] }, // C5
+        { t: 0.32, dur: 0.13, freqs: [659.25] }, // E5
+        { t: 0.48, dur: 0.38, freqs: [783.99] }, // G5 (High)
+        // Grand Final Major Chord (Full Brass Section!)
+        { t: 0.94, dur: 1.50, freqs: [130.81, 196.00, 261.63, 329.63, 392.00, 523.25] }
       ];
 
       notes.forEach(item => {
         const start = now + item.t;
-        item.freqs.forEach(freq => {
-          const osc = audioCtx.createOscillator();
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(freq, start);
+        const isChord = item.freqs.length > 1;
 
+        item.freqs.forEach(freq => {
+          // Dual detuned sawtooths for rich brass chorus (+/- 5 cents)
+          const osc1 = audioCtx.createOscillator();
+          osc1.type = 'sawtooth';
+          osc1.frequency.setValueAtTime(freq, start);
+
+          const osc2 = audioCtx.createOscillator();
+          osc2.type = 'sawtooth';
+          osc2.frequency.setValueAtTime(freq * 1.004, start); // +7 cents chorus
+
+          // Dynamic Brass Filter Envelope ("BWAH!" brass articulation)
           const filter = audioCtx.createBiquadFilter();
           filter.type = 'lowpass';
-          filter.frequency.setValueAtTime(2400, start);
-          filter.Q.setValueAtTime(2.5, start);
+          filter.Q.setValueAtTime(2.2, start);
+          filter.frequency.setValueAtTime(450, start);
+          filter.frequency.linearRampToValueAtTime(3800, start + 0.025);
+          filter.frequency.exponentialRampToValueAtTime(2200, start + item.dur * 0.5);
 
           const noteGain = audioCtx.createGain();
-          const amp = item.freqs.length > 1 ? 0.22 : 0.45;
+          const amp = isChord ? 0.22 : 0.48;
           noteGain.gain.setValueAtTime(0.0001, start);
-          noteGain.gain.linearRampToValueAtTime(amp, start + 0.02);
-          noteGain.gain.setValueAtTime(amp, start + item.dur - 0.06);
+          noteGain.gain.linearRampToValueAtTime(amp, start + 0.015);
+          noteGain.gain.setValueAtTime(amp, start + item.dur - 0.05);
           noteGain.gain.exponentialRampToValueAtTime(0.0001, start + item.dur);
 
-          osc.connect(filter);
+          osc1.connect(filter);
+          osc2.connect(filter);
           filter.connect(noteGain);
           noteGain.connect(voiceGain);
 
-          osc.start(start);
-          osc.stop(start + item.dur + 0.05);
-          sources.push(osc);
+          osc1.start(start);
+          osc2.start(start);
+          osc1.stop(start + item.dur + 0.05);
+          osc2.stop(start + item.dur + 0.05);
+          sources.push(osc1, osc2);
         });
       });
 
       const instance = registerInstance(voiceGain, sources, padEl);
-      setTimeout(() => unregisterInstance(instance), 2300);
+      setTimeout(() => unregisterInstance(instance), 2600);
       return instance;
     }
 
-    // Pad 9: 박수 갈채 (Shaped Bandpass Applause)
-    function playApplause() {
+    // Pad 9: 박수 갈채 (Authentic Granular Crowd Applause & Cheers)
+    function playApplause(isHold = false) {
       ensureAudioContext();
+      if (!applauseBufferCache) generateApplauseBuffer();
       if (polyphonyMode === 'cut') panicStop(false);
 
       const now = audioCtx.currentTime;
@@ -2040,59 +2351,41 @@ const data = gameEntry?.data || {
 
       const voiceGain = audioCtx.createGain();
       voiceGain.connect(masterGainNode);
-      const sources = [];
 
-      if (noiseBufferCache) {
-        const noise = audioCtx.createBufferSource();
-        noise.buffer = noiseBufferCache;
+      const source = audioCtx.createBufferSource();
+      source.buffer = applauseBufferCache;
 
-        const filter = audioCtx.createBiquadFilter();
-        filter.type = 'bandpass';
-        filter.frequency.setValueAtTime(1750, now);
-        filter.Q.setValueAtTime(1.2, now);
-
-        const tremolo = audioCtx.createOscillator();
-        tremolo.type = 'sine';
-        tremolo.frequency.setValueAtTime(14, now);
-
-        const tremoloGain = audioCtx.createGain();
-        tremoloGain.gain.setValueAtTime(0.25, now);
-        tremolo.connect(tremoloGain);
-
-        voiceGain.gain.setValueAtTime(0.001, now);
-        voiceGain.gain.linearRampToValueAtTime(0.8, now + 0.35);
-        voiceGain.gain.setValueAtTime(0.8, now + 2.0);
-        voiceGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.75);
-
-        noise.connect(filter);
-        filter.connect(voiceGain);
-        tremoloGain.connect(voiceGain.gain);
-
-        noise.start(now);
-        tremolo.start(now);
-        noise.stop(now + 2.8);
-        tremolo.stop(now + 2.8);
-
-        sources.push(noise, tremolo);
+      if (isHold) {
+        source.loop = true;
+        source.loopStart = 0.3;
+        source.loopEnd = 2.4;
       }
 
-      const instance = registerInstance(voiceGain, sources, padEl);
-      setTimeout(() => unregisterInstance(instance), 2850);
+      voiceGain.gain.setValueAtTime(0.001, now);
+      voiceGain.gain.linearRampToValueAtTime(0.95, now + 0.08);
+
+      source.connect(voiceGain);
+      source.start(now);
+
+      const instance = registerInstance(voiceGain, [source], padEl);
+      if (!isHold) {
+        setTimeout(() => unregisterInstance(instance), 3250);
+      }
       return instance;
     }
 
     // Sound Dispatcher
     function startSound(padNumber, isHold = false) {
       switch (parseInt(padNumber, 10)) {
-        case 1: return playBuzzer();
+        case 1: return playBuzzer(isHold);
         case 2: return playChime();
         case 3: return playPunchline();
         case 4: return playCensorBeep(isHold);
         case 5: return playExplosion();
-        case 6: return playCrickets();
-        case 7: return playDrumRoll();
+        case 6: return playCrickets(isHold);
+        case 7: return playDrumRoll(isHold);
         case 8: return playFanfare();
-        case 9: return playApplause();
+        case 9: return playApplause(isHold);
         default: return null;
       }
     }

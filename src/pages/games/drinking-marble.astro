@@ -705,7 +705,7 @@ const data = gameEntry?.data || {
     text-align: center;
     cursor: pointer;
     transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-    overflow: hidden;
+    overflow: visible;
     backdrop-filter: blur(8px);
   }
 
@@ -807,21 +807,102 @@ const data = gameEntry?.data || {
   /* Tokens on Tile */
   :global(.tile-tokens-container) {
     position: absolute;
-    bottom: 3px;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
-    gap: 2px;
-    z-index: 5;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    z-index: 25;
+    pointer-events: none;
+    max-width: 98%;
   }
 
   :global(.pawn-token) {
-    font-size: 1.25rem;
-    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
-    animation: pawnBounce 0.4s ease infinite alternate;
+    position: relative;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #2a2244 0%, #111226 100%);
+    border: 2.5px solid var(--pawn-color, #f472b6);
+    box-shadow: 0 0 12px var(--pawn-color, #f472b6), 0 4px 10px rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  :global(.pawn-avatar) {
+    font-size: 1.35rem;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.7));
+    user-select: none;
+  }
+
+  :global(.pawn-badge) {
+    position: absolute;
+    top: -7px;
+    left: -5px;
+    background: var(--pawn-color, #f472b6);
+    color: #0b0c1b;
+    font-size: 0.6rem;
+    font-weight: 900;
+    padding: 0 5px;
+    border-radius: 999px;
+    line-height: 14px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+    border: 1.5px solid #ffffff;
+    letter-spacing: -0.2px;
+    z-index: 2;
+  }
+
+  :global(.pawn-turn-tag) {
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #f43f5e, #e11d48);
+    color: #ffffff;
+    font-size: 0.52rem;
+    font-weight: 900;
+    padding: 0 5px;
+    border-radius: 999px;
+    line-height: 13px;
+    box-shadow: 0 0 10px rgba(244, 63, 94, 0.9);
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    z-index: 3;
+    animation: pawnTurnGlow 0.8s ease-in-out infinite alternate;
+  }
+
+  :global(.pawn-token.active-turn-pawn) {
+    z-index: 30;
+    border: 3px solid #ffffff;
+    box-shadow: 0 0 0 3px var(--pawn-color, #f472b6), 0 0 20px var(--pawn-color, #f472b6), 0 6px 14px rgba(0, 0, 0, 0.95);
+    animation: pawnBounce 0.45s ease infinite alternate;
   }
 
   @keyframes pawnBounce {
-    from { transform: translateY(0); }
-    to { transform: translateY(-3px); }
+    from {
+      transform: translateY(0) scale(1.08);
+    }
+    to {
+      transform: translateY(-6px) scale(1.18);
+    }
+  }
+
+  @keyframes pawnTurnGlow {
+    from {
+      opacity: 0.85;
+      transform: translateX(-50%) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) scale(1.1);
+      box-shadow: 0 0 14px #f43f5e;
+    }
   }
 
   /* Center Arena (5x5 Inner Span) */
@@ -1355,6 +1436,27 @@ const data = gameEntry?.data || {
     :global(.board-tile) {
       padding: 3px 2px;
       border-radius: 6px;
+    }
+    :global(.pawn-token) {
+      width: 27px;
+      height: 27px;
+      border-width: 1.5px;
+    }
+    :global(.pawn-avatar) {
+      font-size: 1rem;
+    }
+    :global(.pawn-badge) {
+      font-size: 0.48rem;
+      line-height: 11px;
+      padding: 0 3px;
+      top: -5px;
+      left: -4px;
+    }
+    :global(.pawn-turn-tag) {
+      font-size: 0.42rem;
+      line-height: 10px;
+      padding: 0 3px;
+      bottom: -6px;
     }
     :global(.tile-icon) {
       font-size: 0.92rem;
@@ -2028,13 +2130,20 @@ const data = gameEntry?.data || {
     }
 
     // Place each player pawn on its current tile
-    players.forEach(p => {
+    players.forEach((p, idx) => {
       const container = document.getElementById(`tile-tokens-${p.position}`);
       if (container) {
-        const token = document.createElement('span');
-        token.className = 'pawn-token';
-        token.textContent = p.icon;
+        const isCurrent = idx === currentPlayerIdx;
+        const token = document.createElement('div');
+        token.className = `pawn-token ${isCurrent ? 'active-turn-pawn' : ''}`;
+        token.style.setProperty('--pawn-color', p.color);
         token.title = `${p.name} (#${p.position + 1})`;
+
+        token.innerHTML = `
+          <span class="pawn-badge" style="background-color: ${p.color};">P${idx + 1}</span>
+          <span class="pawn-avatar">${p.icon}</span>
+          ${isCurrent ? '<span class="pawn-turn-tag">TURN</span>' : ''}
+        `;
         container.appendChild(token);
       }
     });

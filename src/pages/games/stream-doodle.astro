@@ -946,7 +946,18 @@ const data = gameEntry?.data || {
       for (let f = 0; f < FRAMES_COUNT; f++) {
         const frame = this.frames[f];
         const targetIdx = frame[sy * w + sx];
-        if (targetIdx === fillColorIdx) continue;
+        let finalFillIdx = fillColorIdx;
+        if (this.brushOpacity < 1.0 && targetIdx !== 0) {
+          const targetColor = this.paletteTable[targetIdx] || this.paletteTable[1];
+          const curAlpha = this.brushOpacity;
+          const prevAlpha = (targetColor.alpha ?? 255) / 255;
+          const outAlpha = curAlpha + prevAlpha * (1 - curAlpha);
+          const outR = Math.round((curColor.rgb[0] * curAlpha + targetColor.rgb[0] * prevAlpha * (1 - curAlpha)) / outAlpha);
+          const outG = Math.round((curColor.rgb[1] * curAlpha + targetColor.rgb[1] * prevAlpha * (1 - curAlpha)) / outAlpha);
+          const outB = Math.round((curColor.rgb[2] * curAlpha + targetColor.rgb[2] * prevAlpha * (1 - curAlpha)) / outAlpha);
+          finalFillIdx = this.getOrCreateColorIndex(outR, outG, outB, undefined, Math.round(outAlpha * 255));
+        }
+        if (targetIdx === finalFillIdx) continue;
 
         const queue = new Int32Array(total * 2);
         let head = 0;
@@ -954,29 +965,29 @@ const data = gameEntry?.data || {
 
         queue[tail++] = sx;
         queue[tail++] = sy;
-        frame[sy * w + sx] = fillColorIdx;
+        frame[sy * w + sx] = finalFillIdx;
 
         while (head < tail) {
           const cx = queue[head++];
           const cy = queue[head++];
 
           if (cx + 1 < w && frame[cy * w + (cx + 1)] === targetIdx) {
-            frame[cy * w + (cx + 1)] = fillColorIdx;
+            frame[cy * w + (cx + 1)] = finalFillIdx;
             queue[tail++] = cx + 1;
             queue[tail++] = cy;
           }
           if (cx - 1 >= 0 && frame[cy * w + (cx - 1)] === targetIdx) {
-            frame[cy * w + (cx - 1)] = fillColorIdx;
+            frame[cy * w + (cx - 1)] = finalFillIdx;
             queue[tail++] = cx - 1;
             queue[tail++] = cy;
           }
           if (cy + 1 < h && frame[(cy + 1) * w + cx] === targetIdx) {
-            frame[(cy + 1) * w + cx] = fillColorIdx;
+            frame[(cy + 1) * w + cx] = finalFillIdx;
             queue[tail++] = cx;
             queue[tail++] = cy + 1;
           }
           if (cy - 1 >= 0 && frame[(cy - 1) * w + cx] === targetIdx) {
-            frame[(cy - 1) * w + cx] = fillColorIdx;
+            frame[(cy - 1) * w + cx] = finalFillIdx;
             queue[tail++] = cx;
             queue[tail++] = cy - 1;
           }
@@ -1008,6 +1019,7 @@ const data = gameEntry?.data || {
 
     public undo(): boolean {
       if (this.history.length <= 1) return false;
+      this.strokeStartFrames = [];
       const current = this.history.pop()!;
       this.redoHistory.push(current);
       const prev = this.history[this.history.length - 1];
@@ -1021,6 +1033,7 @@ const data = gameEntry?.data || {
 
     public redo(): boolean {
       if (this.redoHistory.length === 0) return false;
+      this.strokeStartFrames = [];
       const next = this.redoHistory.pop()!;
       this.history.push(next);
       for (let i = 0; i < FRAMES_COUNT; i++) {
@@ -1033,6 +1046,7 @@ const data = gameEntry?.data || {
 
     public clear() {
       this.pushHistory();
+      this.strokeStartFrames = [];
       for (let i = 0; i < FRAMES_COUNT; i++) {
         this.frames[i].fill(0);
       }
@@ -1047,10 +1061,13 @@ const data = gameEntry?.data || {
       if (redoBtn) redoBtn.disabled = this.redoHistory.length === 0;
     }
 
+    public strokeStartFrames: Uint8Array[] = [];
+
     // ── Rasterization with Procedural Jitter ──
     public startStroke(x: number, y: number) {
       this.pushHistory();
       this.isDrawing = true;
+      this.strokeStartFrames = this.frames.map(f => new Uint8Array(f));
       this.lastX = x;
       this.lastY = y;
       this.drawPointMirrored(x, y);
@@ -1067,6 +1084,7 @@ const data = gameEntry?.data || {
 
     public endStroke() {
       this.isDrawing = false;
+      this.strokeStartFrames = [];
     }
 
     private drawPointMirrored(x: number, y: number) {
@@ -1100,10 +1118,23 @@ const data = gameEntry?.data || {
 
       const cfg = BRUSH_CONFIGS[this.activeBrush] || BRUSH_CONFIGS.pen;
       const amp = cfg.amplitude;
-      const r = Math.max(1, Math.round(this.brushSize / 2));
+      const size = Math.max(1, Math.round(this.brushSize));
       const blend = cfg.blend;
       const isSquare = this.tipShape === 'square';
       const curColor = this.paletteTable[this.activeColorIndex] || PALETTE[2];
+
+      const isEven = (size % 2 === 0);
+      const k = Math.floor(size / 2);
+      let minDx = 0, maxDx = 0, minDy = 0, maxDy = 0;
+      if (size === 1) {
+        minDx = maxDx = minDy = maxDy = 0;
+      } else if (!isEven) {
+        minDx = -k; maxDx = k;
+        minDy = -k; maxDy = k;
+      } else {
+        minDx = -k; maxDx = k - 1;
+        minDy = -k; maxDy = k - 1;
+      }
 
       let colorIndex = this.activeColorIndex;
       const alpha = Math.max(15, Math.round(255 * this.brushOpacity));
@@ -1125,17 +1156,23 @@ const data = gameEntry?.data || {
         this.photoCtx.save();
         this.photoCtx.globalCompositeOperation = 'destination-out';
         this.photoCtx.beginPath();
+        const rad = size / 2;
         if (isSquare) {
-          this.photoCtx.rect(x1 - r, y1 - r, r * 2, r * 2);
+          this.photoCtx.rect(x1 - rad, y1 - rad, size, size);
         } else {
-          this.photoCtx.arc(x1, y1, r, 0, Math.PI * 2);
+          this.photoCtx.arc(x1, y1, rad, 0, Math.PI * 2);
         }
         this.photoCtx.fill();
         this.photoCtx.restore();
       }
 
+      const startFrames = (this.strokeStartFrames && this.strokeStartFrames.length === FRAMES_COUNT)
+        ? this.strokeStartFrames
+        : this.frames;
+
       for (let f = 0; f < FRAMES_COUNT; f++) {
         const frameBuf = this.frames[f];
+        const startBuf = startFrames[f];
         const jx0 = x0 + (Math.random() * 2 - 1) * amp;
         const jy0 = y0 + (Math.random() * 2 - 1) * amp;
         const jx1 = x1 + (Math.random() * 2 - 1) * amp;
@@ -1143,50 +1180,72 @@ const data = gameEntry?.data || {
 
         this.bresenhamLine(jx0, jy0, jx1, jy1, (cx, cy) => {
           if (blend === 'spray') {
-            const drops = Math.max(3, r * 2);
+            const sprayR = Math.max(2, size * 1.5);
+            const drops = Math.max(3, Math.round(size * 1.8));
             for (let d = 0; d < drops; d++) {
               const ang = Math.random() * Math.PI * 2;
-              const dist = Math.random() * r * 2.5;
+              const dist = Math.random() * sprayR;
               const px = Math.round(cx + Math.cos(ang) * dist);
               const py = Math.round(cy + Math.sin(ang) * dist);
               if (px >= 0 && px < this.width && py >= 0 && py < this.height) {
-                frameBuf[py * this.width + px] = colorIndex;
-              }
-            }
-          } else if (blend === 'dither') {
-            for (let dy = -r; dy <= r; dy++) {
-              for (let dx = -r; dx <= r; dx++) {
-                const inShape = isSquare ? true : (dx * dx + dy * dy <= r * r);
-                if (inShape && (cx + dx + cy + dy) % 2 === 0) {
-                  const px = Math.round(cx + dx);
-                  const py = Math.round(cy + dy);
-                  if (px >= 0 && px < this.width && py >= 0 && py < this.height) {
-                    frameBuf[py * this.width + px] = colorIndex;
+                const idx = py * this.width + px;
+                if (this.brushOpacity < 1.0) {
+                  const prevIdx = startBuf[idx];
+                  if (prevIdx === 0) {
+                    frameBuf[idx] = colorIndex;
+                  } else {
+                    const prevColor = this.paletteTable[prevIdx] || this.paletteTable[1];
+                    const curAlpha = this.brushOpacity;
+                    const prevAlpha = (prevColor.alpha ?? 255) / 255;
+                    const outAlpha = curAlpha + prevAlpha * (1 - curAlpha);
+                    const outR = Math.round((curColor.rgb[0] * curAlpha + prevColor.rgb[0] * prevAlpha * (1 - curAlpha)) / outAlpha);
+                    const outG = Math.round((curColor.rgb[1] * curAlpha + prevColor.rgb[1] * prevAlpha * (1 - curAlpha)) / outAlpha);
+                    const outB = Math.round((curColor.rgb[2] * curAlpha + prevColor.rgb[2] * prevAlpha * (1 - curAlpha)) / outAlpha);
+                    frameBuf[idx] = this.getOrCreateColorIndex(outR, outG, outB, undefined, Math.round(outAlpha * 255));
                   }
+                } else {
+                  frameBuf[idx] = colorIndex;
                 }
               }
             }
           } else {
-            for (let dy = -r; dy <= r; dy++) {
-              for (let dx = -r; dx <= r; dx++) {
-                const inShape = isSquare ? true : (dx * dx + dy * dy <= r * r);
+            for (let dy = minDy; dy <= maxDy; dy++) {
+              for (let dx = minDx; dx <= maxDx; dx++) {
+                let inShape = true;
+                if (!isSquare && size > 1) {
+                  if (!isEven) {
+                    inShape = (dx * dx + dy * dy <= (size / 2) * (size / 2));
+                  } else {
+                    const offX = dx + 0.5;
+                    const offY = dy + 0.5;
+                    inShape = (offX * offX + offY * offY <= k * k);
+                  }
+                }
                 if (inShape) {
                   const px = Math.round(cx + dx);
                   const py = Math.round(cy + dy);
                   if (px >= 0 && px < this.width && py >= 0 && py < this.height) {
                     const idx = py * this.width + px;
                     if (blend === 'behind') {
-                      if (frameBuf[idx] === 0) frameBuf[idx] = colorIndex;
+                      if (startBuf[idx] === 0) frameBuf[idx] = colorIndex;
+                    } else if (blend === 'erase' || blend === 'cutout') {
+                      frameBuf[idx] = 0;
                     } else {
-                      if (this.brushOpacity < 1.0 && frameBuf[idx] !== 0 && frameBuf[idx] !== colorIndex) {
-                        const prevColor = this.paletteTable[frameBuf[idx]] || this.paletteTable[1];
-                        const a = this.brushOpacity;
-                        const blendedR = Math.round(curColor.rgb[0] * a + prevColor.rgb[0] * (1 - a));
-                        const blendedG = Math.round(curColor.rgb[1] * a + prevColor.rgb[1] * (1 - a));
-                        const blendedB = Math.round(curColor.rgb[2] * a + prevColor.rgb[2] * (1 - a));
-                        const blendedAlpha = Math.round((curColor.alpha ?? 255) * a + (prevColor.alpha ?? 255) * (1 - a));
-                        const blendIdx = this.getOrCreateColorIndex(blendedR, blendedG, blendedB, undefined, blendedAlpha);
-                        frameBuf[idx] = blendIdx;
+                      if (this.brushOpacity < 1.0) {
+                        const prevIdx = startBuf[idx];
+                        if (prevIdx === 0) {
+                          frameBuf[idx] = colorIndex;
+                        } else {
+                          const prevColor = this.paletteTable[prevIdx] || this.paletteTable[1];
+                          const curAlpha = this.brushOpacity;
+                          const prevAlpha = (prevColor.alpha ?? 255) / 255;
+                          const outAlpha = curAlpha + prevAlpha * (1 - curAlpha);
+                          const outR = Math.round((curColor.rgb[0] * curAlpha + prevColor.rgb[0] * prevAlpha * (1 - curAlpha)) / outAlpha);
+                          const outG = Math.round((curColor.rgb[1] * curAlpha + prevColor.rgb[1] * prevAlpha * (1 - curAlpha)) / outAlpha);
+                          const outB = Math.round((curColor.rgb[2] * curAlpha + prevColor.rgb[2] * prevAlpha * (1 - curAlpha)) / outAlpha);
+                          const blendIdx = this.getOrCreateColorIndex(outR, outG, outB, undefined, Math.round(outAlpha * 255));
+                          frameBuf[idx] = blendIdx;
+                        }
                       } else {
                         frameBuf[idx] = colorIndex;
                       }
@@ -2015,9 +2074,9 @@ const data = gameEntry?.data || {
       const opacity = engine.brushOpacity;
 
       const scale = canvas.offsetWidth / engine.width;
-      let diameter = Math.max(3, engine.brushSize * scale);
+      let diameter = engine.brushSize * scale;
       if (bKey === 'spray') {
-        diameter = Math.max(6, engine.brushSize * 2.5 * scale);
+        diameter = Math.max(6, engine.brushSize * 3 * scale);
       }
       brushCursor.style.width = `${diameter}px`;
       brushCursor.style.height = `${diameter}px`;
