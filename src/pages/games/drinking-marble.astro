@@ -816,12 +816,23 @@ const data = gameEntry?.data || {
     left: 50%;
     transform: translateX(-50%);
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     gap: 3px;
     z-index: 25;
     pointer-events: none;
     max-width: 98%;
+    overflow: visible;
+  }
+
+  /* 4명일 때 2×2 그리드 배치 */
+  :global(.tile-tokens-container[data-count="4"]) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 2px;
+    width: 76px;
   }
 
   :global(.pawn-token) {
@@ -837,6 +848,9 @@ const data = gameEntry?.data || {
     justify-content: center;
     transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
     flex-shrink: 0;
+    /* 각 pawn이 독립적인 stacking context를 가져 badge가 항상 위에 보임 */
+    isolation: isolate;
+    z-index: 1;
   }
 
   :global(.pawn-avatar) {
@@ -860,14 +874,17 @@ const data = gameEntry?.data || {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
     border: 1.5px solid #ffffff;
     letter-spacing: -0.2px;
-    z-index: 2;
+    /* isolation: isolate 내부에서 항상 최상위 */
+    z-index: 10;
   }
 
   :global(.pawn-turn-tag) {
     position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
+    /* 아래(bottom)가 아닌 위(top)에 표시 */
+    top: -8px;
+    right: -5px;
+    left: auto;
+    transform: none;
     background: linear-gradient(135deg, #f43f5e, #e11d48);
     color: #ffffff;
     font-size: 0.52rem;
@@ -878,12 +895,13 @@ const data = gameEntry?.data || {
     box-shadow: 0 0 10px rgba(244, 63, 94, 0.9);
     letter-spacing: 0.3px;
     white-space: nowrap;
-    z-index: 3;
+    z-index: 11;
     animation: pawnTurnGlow 0.8s ease-in-out infinite alternate;
   }
 
   :global(.pawn-token.active-turn-pawn) {
-    z-index: 30;
+    /* 현재 턴 플레이어 말이 형제 말들보다 위에 렌더링 */
+    z-index: 5;
     border: 3px solid #ffffff;
     box-shadow: 0 0 0 3px var(--pawn-color, #f472b6), 0 0 20px var(--pawn-color, #f472b6), 0 6px 14px rgba(0, 0, 0, 0.95);
     animation: pawnBounce 0.45s ease infinite alternate;
@@ -901,11 +919,11 @@ const data = gameEntry?.data || {
   @keyframes pawnTurnGlow {
     from {
       opacity: 0.85;
-      transform: translateX(-50%) scale(0.95);
+      transform: scale(0.95);
     }
     to {
       opacity: 1;
-      transform: translateX(-50%) scale(1.1);
+      transform: scale(1.1);
       box-shadow: 0 0 14px #f43f5e;
     }
   }
@@ -1463,7 +1481,9 @@ const data = gameEntry?.data || {
       font-size: 0.42rem;
       line-height: 10px;
       padding: 0 3px;
-      bottom: -6px;
+      top: -5px;
+      right: -4px;
+      bottom: auto;
     }
     :global(.tile-icon) {
       font-size: 0.92rem;
@@ -2130,10 +2150,13 @@ const data = gameEntry?.data || {
 
   // Update Pawns on Tiles
   function updatePawnsOnBoard() {
-    // Clear all token containers
+    // Clear all token containers and reset data-count
     for (let i = 0; i < 24; i++) {
       const c = document.getElementById(`tile-tokens-${i}`);
-      if (c) c.innerHTML = '';
+      if (c) {
+        c.innerHTML = '';
+        c.removeAttribute('data-count');
+      }
     }
 
     // Place each player pawn on its current tile
@@ -2154,6 +2177,14 @@ const data = gameEntry?.data || {
         container.appendChild(token);
       }
     });
+
+    // 각 타일 컨테이너에 pawn 수를 data-count로 설정 (CSS 2×2 그리드 트리거)
+    for (let i = 0; i < 24; i++) {
+      const c = document.getElementById(`tile-tokens-${i}`);
+      if (c && c.childElementCount > 0) {
+        c.setAttribute('data-count', String(c.childElementCount));
+      }
+    }
 
     // Update Arena Players Bar
     if (arenaPlayersBar) {
