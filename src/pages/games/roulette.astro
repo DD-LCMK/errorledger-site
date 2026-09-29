@@ -77,6 +77,37 @@ const data = gameEntry?.data || {
         <button id="center-spin-btn" class="center-hub-btn" title="클릭하거나 스페이스바를 눌러 룰렛 회전">
           <span class="hub-label">돌리기</span>
         </button>
+
+        <!-- Celebration Modal: overlays the wheel canvas -->
+        <div class="winner-celebration-overlay hidden" id="winner-modal">
+          <div class="celebration-card">
+            <div class="trophy-bounce">👑</div>
+            <div class="congrats-tag">🎉 당첨을 축하합니다!</div>
+            <div class="winner-item-name" id="winner-name-display">치킨</div>
+
+            <!-- Provably Fair Verification Section -->
+            <div class="fairness-verify-box" id="fairness-verify-box">
+              <div class="verify-header">
+                <span class="verify-title" id="verify-box-title">🛡️ 공정성 검증 (Provably Fair)</span>
+                <span class="verify-status-badge" id="verify-status-badge">검증 대기</span>
+              </div>
+              <div class="verify-detail-row">
+                <span class="verify-k" id="verify-k-raw">사전 원문:</span>
+                <code class="verify-v" id="verify-raw-str">--</code>
+              </div>
+              <div class="verify-detail-row">
+                <span class="verify-k" id="verify-k-hash">사전 해시:</span>
+                <code class="verify-v" id="verify-hash-str">--</code>
+              </div>
+              <div class="verify-actions">
+                <button type="button" class="btn-verify-check" id="btn-verify-check">🔍 해시 일치 검증</button>
+                <button type="button" class="btn-verify-copy" id="btn-verify-copy">📋 증명 복사</button>
+              </div>
+            </div>
+
+            <button id="modal-confirm-btn" class="winner-confirm-btn">확인 (닫기)</button>
+          </div>
+        </div>
       </div>
 
       <!-- Clean Primary Action Controls -->
@@ -187,36 +218,7 @@ const data = gameEntry?.data || {
       </div>
     </div>
 
-    <!-- Celebration Modal / Banner Overlay -->
-    <div class="winner-celebration-overlay hidden" id="winner-modal">
-      <div class="celebration-card">
-        <div class="trophy-bounce">👑</div>
-        <div class="congrats-tag">🎉 당첨을 축하합니다!</div>
-        <div class="winner-item-name" id="winner-name-display">치킨</div>
 
-        <!-- Provably Fair Verification Section -->
-        <div class="fairness-verify-box" id="fairness-verify-box">
-          <div class="verify-header">
-            <span class="verify-title" id="verify-box-title">🛡️ 공정성 검증 (Provably Fair)</span>
-            <span class="verify-status-badge" id="verify-status-badge">검증 대기</span>
-          </div>
-          <div class="verify-detail-row">
-            <span class="verify-k" id="verify-k-raw">사전 원문:</span>
-            <code class="verify-v" id="verify-raw-str">--</code>
-          </div>
-          <div class="verify-detail-row">
-            <span class="verify-k" id="verify-k-hash">사전 해시:</span>
-            <code class="verify-v" id="verify-hash-str">--</code>
-          </div>
-          <div class="verify-actions">
-            <button type="button" class="btn-verify-check" id="btn-verify-check">🔍 해시 일치 검증</button>
-            <button type="button" class="btn-verify-copy" id="btn-verify-copy">📋 증명 복사</button>
-          </div>
-        </div>
-
-        <button id="modal-confirm-btn" class="winner-confirm-btn">확인 (닫기)</button>
-      </div>
-    </div>
 
     <!-- Smart Bulk Input Modal -->
     <div class="smart-input-overlay hidden" id="smart-input-modal">
@@ -964,12 +966,14 @@ const data = gameEntry?.data || {
     padding: 0.4rem 0;
   }
 
-  /* Celebration Modal */
+  /* Celebration Modal — positioned over the wheel canvas */
   .winner-celebration-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(9, 13, 22, 0.85);
-    backdrop-filter: blur(8px);
+    border-radius: 50%;
+    overflow: hidden;
+    background: rgba(9, 13, 22, 0.88);
+    backdrop-filter: blur(10px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -977,14 +981,14 @@ const data = gameEntry?.data || {
   }
 
   .celebration-card {
-    background: #0f172a;
-    border: 2px solid rgba(234, 179, 8, 0.6);
-    border-radius: 20px;
-    padding: 2.5rem 2rem;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 1.25rem 1rem;
     text-align: center;
-    max-width: 400px;
-    width: 90%;
-    box-shadow: 0 0 50px rgba(234, 179, 8, 0.4);
+    max-width: 340px;
+    width: 88%;
+    box-shadow: none;
     animation: popModal 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
