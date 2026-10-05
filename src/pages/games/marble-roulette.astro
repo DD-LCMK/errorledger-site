@@ -128,7 +128,7 @@ const data = gameEntry?.data || {
                   <span class="prob-icon">🔮</span>
                   <span class="prob-title-text" id="marble-prob-title-text">구슬 확률 &amp; 지분</span>
                 </div>
-                <span class="prob-total-badge" id="marble-prob-total-badge">총 8개 구슬</span>
+                <span class="prob-total-badge" id="marble-prob-total-badge">총 24개 구슬</span>
               </div>
               <div class="prob-items-list" id="marble-prob-items-list">
                 <!-- Injected dynamically -->
@@ -209,9 +209,9 @@ const data = gameEntry?.data || {
         <div class="panel-box">
           <div class="panel-header">
             <span class="panel-title">👥 참가자 목록</span>
-            <span class="marble-count-badge" id="marble-count-badge">총 8개 구슬 대기</span>
+            <span class="marble-count-badge" id="marble-count-badge">총 24개 구슬 대기</span>
           </div>
-          <textarea id="names-input" class="names-textarea" rows="6" placeholder="참가자 이름을 한 줄에 하나씩 입력하세요.&#10;예시:&#10;김팀장&#10;이대리&#10;박사원 * 2 (구슬 2개)&#10;최인턴"></textarea>
+          <textarea id="names-input" class="names-textarea" rows="6" placeholder="참가자 이름을 한 줄에 하나씩 입력하세요.&#10;예시:&#10;김팀장&#10;이대리&#10;박사원 * 2 (구슬 2개)&#10;최인턴">김팀장*3&#10;이대리*3&#10;박사원*3&#10;최인턴*3&#10;정부장*3&#10;강과장*3&#10;조선임*3&#10;윤연구원*3</textarea>
           <div class="input-actions-row">
             <button id="shuffle-btn" class="btn-small-action">🔀 무작위 섞기</button>
             <button id="smart-marble-btn" class="btn-small-action">📋 스마트 입력</button>
@@ -230,7 +230,7 @@ const data = gameEntry?.data || {
         <div class="panel-box finish-log-box">
           <div class="panel-header">
             <span class="panel-title">🏁 완주 현황 (실시간 순위)</span>
-            <span class="finish-progress-text" id="finish-progress">0 / 8 완주</span>
+            <span class="finish-progress-text" id="finish-progress">0 / 24 완주</span>
           </div>
           <div class="finish-list" id="finish-list">
             <div class="finish-empty-hint">레이스가 시작되면 결승선을 통과한 순서가 기록됩니다.</div>
@@ -2003,7 +2003,7 @@ const data = gameEntry?.data || {
   const PRESETS: Record<string, { mode: string; names: string[] }> = {
     coffee: {
       mode: 'last',
-      names: ['김팀장', '이대리', '박사원', '최인턴', '정부장', '강과장', '조선임', '윤연구원']
+      names: ['김팀장*3', '이대리*3', '박사원*3', '최인턴*3', '정부장*3', '강과장*3', '조선임*3', '윤연구원*3']
     },
     chicken: {
       mode: 'last',
@@ -2133,7 +2133,7 @@ const data = gameEntry?.data || {
     { y: 4680, title: 'ZONE 7 — 쿼드 크로스 스피너 & 킥백', sub: '4연속 크로스 스피너 & 킥백' },
     { y: 5480, title: 'ZONE 8 — 네온 범퍼 웨이브 숲', sub: '네온 범퍼 지그재그 웨이브' },
     { y: 6240, title: 'ZONE 9 — 파이널 바운스 아레나 & 자이언트 프로펠러', sub: '파이널 바운스 아레나 & 대형 프로펠러' },
-    { y: 7040, title: 'ZONE 10 — 파이널 퍼널 & 자이언트 프로펠러 (럭키 홀)', sub: '최종 깔때기, 역회전 프로펠러 & 행운의 홀' },
+    { y: 7040, title: 'ZONE 10 — 그랜드 네온 V-퍼널 & 자이언트 배트 (탈출로)', sub: '대칭 V-깔때기 & 결승 네온 프로펠러 + 럭키 탈출로' },
     { y: 7720, title: 'ZONE 11 — 결승선 & 챔피언 존', sub: '최종 결승선 & 영광의 챔피언 존' }
   ];
 
@@ -2147,7 +2147,7 @@ const data = gameEntry?.data || {
     { y: 4680, title: 'ZONE 7 — Quad Cross Spinners & Kickbacks', sub: '4-Way Cross Spinners & Rebounders' },
     { y: 5480, title: 'ZONE 8 — Neon Bumper Wave Forest', sub: 'Zigzag Bumper Wave Slalom' },
     { y: 6240, title: 'ZONE 9 — Final Bounce Arena & Giant Propeller', sub: 'Final Bounce Arena & Giant Rotor' },
-    { y: 7040, title: 'ZONE 10 — Final Funnel & Propeller (Lucky Hole)', sub: 'Finale Funnel, Counter-Rotor & Lucky Hole' },
+    { y: 7040, title: 'ZONE 10 — Grand Neon V-Funnel & Propeller (Escape Chute)', sub: 'Symmetrical V-Funnel & Propeller + Lucky Escape' },
     { y: 7720, title: 'ZONE 11 — Finish Line & Champion Zone', sub: 'Final Finish Line & Hall of Champions' }
   ];
 
@@ -2256,25 +2256,25 @@ const data = gameEntry?.data || {
     segments.push({ x1: COURSE_WIDTH - 20, y1: 2340, x2: 470, y2: 2370, type: 'guide' });
 
     // 1. Entrance gate decider bouncer (Center top - larger radius 32)
-    bouncers.push({ x: 280, y: 2370, radius: 32, power: 6.2, label: 'BOUNCE' });
+    bouncers.push({ x: 280, y: 2370, radius: 32, power: 4.5, label: 'BOUNCE' });
 
     // 2 & 3. Upper Left and Right bouncers (larger radius 32)
-    bouncers.push({ x: 160, y: 2460, radius: 32, power: 6.0, label: 'BOUNCE' });
-    bouncers.push({ x: 400, y: 2460, radius: 32, power: 6.0, label: 'BOUNCE' });
+    bouncers.push({ x: 160, y: 2460, radius: 32, power: 4.2, label: 'BOUNCE' });
+    bouncers.push({ x: 400, y: 2460, radius: 32, power: 4.2, label: 'BOUNCE' });
 
     // 4. Core Mega Bouncer (Center - extra large radius 36)
-    bouncers.push({ x: 280, y: 2610, radius: 36, power: 7.2, label: 'MEGA' });
+    bouncers.push({ x: 280, y: 2610, radius: 36, power: 5.0, label: 'MEGA' });
 
     // 5 & 6. Side Flank Kickers (larger radius 28)
-    bouncers.push({ x: 95, y: 2740, radius: 28, power: 5.8, label: 'KICK' });
-    bouncers.push({ x: 465, y: 2740, radius: 28, power: 5.8, label: 'KICK' });
+    bouncers.push({ x: 95, y: 2740, radius: 28, power: 4.0, label: 'KICK' });
+    bouncers.push({ x: 465, y: 2740, radius: 28, power: 4.0, label: 'KICK' });
 
     // 7. Mid-Lower Arena Center Bouncer (larger radius 34)
-    bouncers.push({ x: 280, y: 2820, radius: 34, power: 6.8, label: 'MEGA' });
+    bouncers.push({ x: 280, y: 2820, radius: 34, power: 4.8, label: 'MEGA' });
 
     // 8 & 9. Bottom Funnel Guides (larger radius 28)
-    bouncers.push({ x: 195, y: 2940, radius: 28, power: 6.0, label: 'BOUNCE' });
-    bouncers.push({ x: 365, y: 2940, radius: 28, power: 6.0, label: 'BOUNCE' });
+    bouncers.push({ x: 195, y: 2940, radius: 28, power: 4.2, label: 'BOUNCE' });
+    bouncers.push({ x: 365, y: 2940, radius: 28, power: 4.2, label: 'BOUNCE' });
 
     // Arena exit funnel into Zone 5
     segments.push({ x1: 20, y1: 2990, x2: 190, y2: 3080, type: 'ramp' });
@@ -2418,60 +2418,53 @@ const data = gameEntry?.data || {
     // POST-PROPELLER RE-CENTERING FUNNEL (y: 6950 - 7050)
     // Smoothly collects all marbles from the propeller exit and directs them into the grand finale approach
     segments.push({ x1: 50, y1: 6950, x2: 170, y2: 7040, type: 'ramp' });
-    segments.push({ x1: COURSE_WIDTH - 50, y1: 6950, x2: 390, y2: 7040, type: 'ramp' });
+    segments.push({ x1: COURSE_WIDTH - 50, y1: 6950, x2: 440, y2: 7040, type: 'ramp' });
 
-    // ZONE 10: 파이널 퍼널 & 자이언트 프로펠러 + 럭키 홀 (y: 7040 - 7730)
-    // 1 funnel with giant propeller and side hole that leads straight down to finish line for lucky marbles
-
-    // 1. LUCKY SIDE HOLE & DIRECT CHUTE (Right Flank: x: 475 to 540, y: 7050 to 7730)
-    // Outer boundary wall
+    // ZONE 10: 그랜드 네온 V-퍼널 & 자이언트 네온 프로펠러 + 오픈 럭키 탈출로 (y: 7040 - 7730)
+    // Outer boundary walls
+    segments.push({ x1: 20, y1: 7040, x2: 20, y2: 7730, type: 'wall' });
     segments.push({ x1: COURSE_WIDTH - 20, y1: 7040, x2: COURSE_WIDTH - 20, y2: 7730, type: 'wall' });
+
+    // 1. OPEN RIGHT SIDE ESCAPE SECTION (x: 475 to 540, y: 7040 to 7730)
+    // Mouth is completely OPEN between x: 475 and 540 at y: 7040-7120!
     // Inner divider wall: straight vertical separation down to finish line
     segments.push({ x1: 475, y1: 7120, x2: 475, y2: 7710, type: 'wall' });
-    // High-speed booster track in Lucky Chute (propels lucky marbles straight across the finish line!)
+    // High-speed booster track in Escape Chute (propels lucky marbles straight across the finish line!)
     segments.push({ x1: 507, y1: 7120, x2: 507, y2: 7700, type: 'booster', boostPower: 0.85 });
-
-    // Entrance Decider / Bounce Pin near Lucky Hole mouth
+    // Entrance Decider Bumper Pin near Escape mouth
     pins.push({ x: 440, y: 7080, radius: 9.5, isBumper: true });
 
-    // 2. MAIN TRACK: GRAND FINAL FUNNEL (Compresses from x: 20..475 into central throat)
-    // Left outer wall
-    segments.push({ x1: 20, y1: 7040, x2: 20, y2: 7730, type: 'wall' });
-    // Left funnel slope
-    segments.push({ x1: 20, y1: 7060, x2: 210, y2: 7360, type: 'ramp' });
-    // Right funnel slope (from lucky hole divider down to throat)
-    segments.push({ x1: 475, y1: 7120, x2: 310, y2: 7360, type: 'ramp' });
+    // 2. GRAND V-FUNNEL SLOPES (glowing neon cyan rails)
+    // Left funnel slope: down-right into chute entrance (x: 20..252, y: 7060..7380)
+    segments.push({ x1: 20, y1: 7060, x2: 252, y2: 7380, type: 'ramp' });
+    // Right funnel slope: down-left into chute entrance starting from escape divider top (x: 475..308, y: 7120..7380)
+    segments.push({ x1: 475, y1: 7120, x2: 308, y2: 7380, type: 'ramp' });
 
-    // Central Throat Walls (x: 210 to 310, width 100px)
-    // Right throat guide
-    segments.push({ x1: 310, y1: 7360, x2: 310, y2: 7680, type: 'wall' });
-    // Left throat lower guide
-    segments.push({ x1: 210, y1: 7520, x2: 210, y2: 7680, type: 'wall' });
-    // Deflector ramp below giant propeller hub (guides marbles from hub back into throat)
-    segments.push({ x1: 90, y1: 7520, x2: 210, y2: 7560, type: 'ramp' });
+    // 3. STRAIGHT VERTICAL CHUTE (width 56px, centered at x: 280)
+    // Right chute vertical wall: continuous straight rail down to finish line
+    segments.push({ x1: 308, y1: 7380, x2: 308, y2: 7730, type: 'ramp' });
+    // Left chute vertical wall: starts below propeller sweep window down to finish line
+    segments.push({ x1: 252, y1: 7460, x2: 252, y2: 7730, type: 'ramp' });
+    // Deflector ramp below giant propeller hub (guides marbles from left flank into chute)
+    segments.push({ x1: 120, y1: 7450, x2: 252, y2: 7460, type: 'ramp' });
 
-    // Mid-funnel bumper pin: adds tension and deflection into lucky hole
-    pins.push({ x: 260, y: 7220, radius: 9, isBumper: true });
-
-    // 3. GIANT FINALE PROPELLER (REVERSE KEEPER BAT)
-    // Placed at x: 170, y: 7450 (left of the throat x: 210..310)
-    // Length: 140px (10%+ longer, wingspan 280px). Extends x: 170 - 140 = 30px to 170 + 140 = 310px.
-    // Perfectly covers the entire 100px funnel throat width (x: 210 to 310) with zero gap!
-    // Spinning ANTICLOCKWISE (speed: -0.013).
-    // In the throat (x > 170), the blade ALWAYS sweeps UPWARDS, batting marbles BACK UP into the funnel!
+    // 4. GIANT FINALE PROPELLER (LONGER & 10% STRONGER BOUNCE)
+    // Positioned at x: 180, y: 7400 (left flank of the chute entrance)
+    // Length: 152px (extended longer wingspan). Fully covers the 56px central chute width (reaches x: 332) with zero gap!
+    // Spinning ANTICLOCKWISE (speed: -0.015) to sweep upward and bat marbles back into the funnel.
     spinners.push({
-      x: 170,
-      y: 7450,
-      length: 140,
+      x: 180,
+      y: 7400,
+      length: 152,
       angle: 0,
       speed: -0.015,
       isFinaleKeeper: true,
-      upwardBatPower: 14.8
+      upwardBatPower: 4.65
     });
 
     // ZONE 11: 결승선 (FINISH_LINE_Y = 7730) & 피니시 베이슨 (y: 7730 - 8120)
-    segments.push({ x1: 60, y1: 7740, x2: 20, y2: 7850, type: 'guide' });
-    segments.push({ x1: COURSE_WIDTH - 60, y1: 7740, x2: COURSE_WIDTH - 20, y2: 7850, type: 'guide' });
+    segments.push({ x1: 252, y1: 7730, x2: 60, y2: 7850, type: 'guide' });
+    segments.push({ x1: 308, y1: 7730, x2: COURSE_WIDTH - 60, y2: 7850, type: 'guide' });
     segments.push({ x1: 20, y1: 8080, x2: COURSE_WIDTH - 20, y2: 8080, type: 'wall' });
   }
 
@@ -3217,7 +3210,7 @@ const data = gameEntry?.data || {
         const y2 = sp.y + sin * sp.length;
 
         const dist = distToSegment(m.x, m.y, x1, y1, x2, y2);
-        const contactRadius = m.radius + 4;
+        const contactRadius = m.radius + (sp.isFinaleKeeper ? 10 : 4);
         if (dist.d < contactRadius) {
           const nx = (m.x - dist.px) / (dist.d || 1);
           const ny = (m.y - dist.py) / (dist.d || 1);
@@ -3237,13 +3230,11 @@ const data = gameEntry?.data || {
           const bladeVx = -sp.speed * 0.70 * 60 * ry;
           const bladeVy = sp.speed * 0.70 * 60 * rx;
 
-          // Special Finale Gatekeeper Propeller: High-Power Upward Bat Mechanism
+          // Special Finale Gatekeeper Propeller: High-Power Upward Bat Mechanism (10% stronger)
           if (sp.isFinaleKeeper) {
-            // Blade is sweeping UPWARDS through the funnel throat!
-            // Launch the caught marble vigorously BACK UP into the funnel with powerful impact!
-            const upwardPower = Math.max(13.5, (sp.upwardBatPower || 14.8));
+            const upwardPower = sp.upwardBatPower || 4.65;
             m.vy = -Math.abs(upwardPower);
-            m.vx = (nx >= 0 ? 1 : -1) * (6.5 + Math.random() * 4.5);
+            m.vx = (nx >= 0 ? 1 : -1) * (2.4 + Math.random() * 1.6);
             m.y = Math.min(m.y, dist.py - contactRadius - 10);
 
             sfx.playBlast();
@@ -3253,7 +3244,7 @@ const data = gameEntry?.data || {
               y: m.y,
               radius: 18,
               maxRadius: 110,
-              color: '#ea580c',
+              color: '#00f5ff',
               alpha: 1.0
             });
             return;
@@ -3337,32 +3328,34 @@ const data = gameEntry?.data || {
               alpha: 1.0
             });
 
-            // HIGH-POWER ELASTIC REBOUND (Powerful Red Spring Bubble)
+            // ELASTIC REBOUND (Red Spring Bubble - Tuned & Moderated for Zone 4)
+            const isZone4Bumper = bn.y >= 2300 && bn.y <= 3050;
             const dot = m.vx * nx + m.vy * ny;
             if (dot < 0) {
-              const restitution = 1.75;
+              const restitution = isZone4Bumper ? 1.15 : 1.75;
               m.vx -= (1 + restitution) * dot * nx;
               m.vy -= (1 + restitution) * dot * ny;
             } else {
-              m.vx += nx * 3.2;
-              m.vy += ny * 2.8;
+              m.vx += nx * (isZone4Bumper ? 1.8 : 3.2);
+              m.vy += ny * (isZone4Bumper ? 1.6 : 2.8);
             }
 
-            // Strong explosive outward launch proportional to bouncer power
-            const launchPower = Math.max(6.5, bn.power * 1.55);
+            // Outward launch proportional to bouncer power (softer in Zone 4)
+            const launchPower = isZone4Bumper ? bn.power * 0.95 : Math.max(6.5, bn.power * 1.55);
             m.vx += nx * launchPower;
             m.vy += ny * launchPower;
 
-            // Extra upward spring kick if marble impacts top half of the red bubble
+            // Upward spring kick if marble impacts top half of the red bubble (gentler in Zone 4)
             if (ny < -0.25) {
-              m.vy -= Math.abs(ny) * 2.8;
+              m.vy -= Math.abs(ny) * (isZone4Bumper ? 1.2 : 2.8);
             }
 
-            // Generous bounce speed ceiling (up to 11.5 px/frame) so marbles visibly rocket off
+            // Bounce speed ceiling
+            const maxBounce = isZone4Bumper ? 7.8 : 11.5;
             const bounceSpeed = Math.hypot(m.vx, m.vy);
-            if (bounceSpeed > 11.5) {
-              m.vx = (m.vx / bounceSpeed) * 11.5;
-              m.vy = (m.vy / bounceSpeed) * 11.5;
+            if (bounceSpeed > maxBounce) {
+              m.vx = (m.vx / bounceSpeed) * maxBounce;
+              m.vy = (m.vy / bounceSpeed) * maxBounce;
             }
           }
 
@@ -3568,7 +3561,7 @@ const data = gameEntry?.data || {
 
       // Smooth camera lerp (30% slower tracking)
       targetY = Math.max(0, Math.min(COURSE_HEIGHT - viewH + 80, targetY));
-      cameraY += (targetY - cameraY) * 0.060;
+      cameraY += (targetY - cameraY) * 0.030;
     } else {
       // Manual camera: strictly clamp bounds
       cameraY = Math.max(0, Math.min(COURSE_HEIGHT - viewH + 80, cameraY));
@@ -3821,42 +3814,45 @@ const data = gameEntry?.data || {
 
       const isKeeper = sp.isFinaleKeeper;
       const isGiant = sp.length >= 130;
-      const bladeH = isKeeper ? 14 : (isGiant ? 15 : 12);
+      const bladeH = isKeeper ? 22 : (isGiant ? 15 : 12);
 
       if (isKeeper) {
-        // High-stakes crimson/amber hazard styling for the reverse bat propeller
-        ctx.fillStyle = '#dc2626';
-        ctx.shadowColor = '#f97316';
-        ctx.shadowBlur = 16;
+        // High-stakes electric neon cyan styling for the finale gatekeeper propeller (matches concept)
+        ctx.fillStyle = '#00f5ff';
+        ctx.shadowColor = '#00f5ff';
+        ctx.shadowBlur = 20;
         ctx.beginPath();
         ctx.roundRect(-sp.length, -bladeH / 2, sp.length * 2, bladeH, 6);
         ctx.fill();
         ctx.shadowBlur = 0;
 
-        // Diagonal hazard stripes along the blades
-        ctx.fillStyle = '#fef08a';
-        for (let s = -sp.length + 12; s < sp.length - 12; s += 22) {
-          ctx.fillRect(s, -bladeH / 2 + 2, 7, bladeH - 4);
-        }
-
-        // Blade tip beacons
-        ctx.fillStyle = '#facc15';
+        // Core bright neon energy beam inside the blade
+        ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.arc(-sp.length + 6, 0, 4, 0, Math.PI * 2);
-        ctx.arc(sp.length - 6, 0, 4, 0, Math.PI * 2);
+        ctx.roundRect(-sp.length + 8, -bladeH / 2 + 5, (sp.length - 8) * 2, bladeH - 10, 3);
         ctx.fill();
 
-        // Metallic Center Hub with anticlockwise symbol
+        // Tip beacons (electric cyan glow)
+        ctx.fillStyle = '#38bdf8';
         ctx.beginPath();
-        ctx.arc(0, 0, 10, 0, Math.PI * 2);
-        ctx.fillStyle = '#1e293b';
+        ctx.arc(-sp.length + 8, 0, 4.5, 0, Math.PI * 2);
+        ctx.arc(sp.length - 8, 0, 4.5, 0, Math.PI * 2);
         ctx.fill();
-        ctx.strokeStyle = '#f97316';
+
+        // Metallic Center Hub with neon cyan rim and direction indicator
+        ctx.beginPath();
+        ctx.arc(0, 0, 13, 0, Math.PI * 2);
+        ctx.fillStyle = '#020617';
+        ctx.fill();
+        ctx.strokeStyle = '#00f5ff';
         ctx.lineWidth = 3;
+        ctx.shadowColor = '#00f5ff';
+        ctx.shadowBlur = 8;
         ctx.stroke();
+        ctx.shadowBlur = 0;
 
-        ctx.fillStyle = '#facc15';
-        ctx.font = '900 9px sans-serif';
+        ctx.fillStyle = '#00f5ff';
+        ctx.font = '900 11px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText('↺', 0, 0);
@@ -3977,43 +3973,20 @@ const data = gameEntry?.data || {
     ctx.fillText(isEn ? '⚡ BOOST ⚡' : '⚡ 가속 ⚡', 507, 7500);
     ctx.fillText('⬇ ⬇ ⬇', 507, 7620);
 
-    // B. Main Final Funnel (y: 7060 to 7360)
-    ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 3.5;
-    ctx.shadowColor = '#f59e0b';
-    ctx.shadowBlur = 10;
-    ctx.beginPath();
-    ctx.moveTo(20, 7060);
-    ctx.lineTo(210, 7360);
-    ctx.moveTo(475, 7120);
-    ctx.lineTo(310, 7360);
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-
-    // Funnel Entrance Label
+    // B. Final Funnel & Propeller Labels (Electric Cyan Theme, duplicate orange lines removed)
     ctx.font = '900 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    ctx.fillStyle = '#fbbf24';
+    ctx.fillStyle = '#38bdf8';
     ctx.textAlign = 'center';
-    ctx.fillText(isEn ? '⚡ FINALE FUNNEL ⚡' : '⚡ 최종 깔때기 (파이널 퍼널) ⚡', 260, 7180);
-
-    // C. Central Throat & Giant Keeper Propeller (y: 7360 to 7700)
-    ctx.strokeStyle = '#f97316';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(310, 7360);
-    ctx.lineTo(310, 7680);
-    ctx.moveTo(210, 7520);
-    ctx.lineTo(210, 7680);
-    ctx.stroke();
+    ctx.fillText(isEn ? '⚡ FINALE FUNNEL ⚡' : '⚡ 최종 깔때기 (파이널 퍼널) ⚡', 245, 7180);
 
     // Propeller Upward Bat Badge
     ctx.font = '900 10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    ctx.fillStyle = '#fed7aa';
+    ctx.fillStyle = '#67e8f9';
     ctx.textAlign = 'center';
-    ctx.fillText(isEn ? '↺ GIANT REVERSE PROPELLER' : '↺ 자이언트 리버스 프로펠러 (역회전)', 260, 7430);
+    ctx.fillText(isEn ? '↺ GIANT REVERSE PROPELLER' : '↺ 자이언트 리버스 프로펠러 (역회전)', 240, 7430);
     ctx.font = '800 8.5px sans-serif';
-    ctx.fillStyle = '#fdba74';
-    ctx.fillText(isEn ? '(Knocks marbles up — time your pass)' : '(구슬을 위로 쳐올림 - 타이밍 통과)', 260, 7445);
+    ctx.fillStyle = '#a5f3fc';
+    ctx.fillText(isEn ? '(Knocks marbles up — time your pass)' : '(구슬을 위로 쳐올림 - 타이밍 통과)', 240, 7445);
     ctx.restore();
 
     // 5. Finish Line Banner
