@@ -5,18 +5,18 @@ import Footer from '../../components/Footer.astro';
 import { SITE_TITLE } from '../../consts';
 import { getKoUrl, getEnUrl } from '../../i18n';
 
-const PAGE_TITLE = `Chzzk Downloader - Free Lossless Naver CHZZK VOD & Clip Video Downloader | ${SITE_TITLE}`;
-const PAGE_DESCRIPTION = "Download Naver CHZZK VODs and clips in original 1080p FHD quality directly as MP4 files without re-encoding loss. 100% free local web application.";
-const PAGE_KEYWORDS = "Chzzk Downloader, CHZZK VOD Download, Chzzk Clip Download, Naver Chzzk Video Downloader, Chzzk 1080p MP4, Download Chzzk Stream, Naver Video Extractor, How to download Chzzk, Free Chzzk Video Downloader";
+const PAGE_TITLE = `Chzzk & YouTube Downloader - Lossless Naver CHZZK & YouTube (4K/FHD/Shorts) Video Downloader | ${SITE_TITLE}`;
+const PAGE_DESCRIPTION = "Download Naver CHZZK VODs & clips and YouTube videos & Shorts in original 4K and 1080p FHD quality directly with zero re-encoding loss. Batch queue processing, bundled FFmpeg, 100% free local web app.";
+const PAGE_KEYWORDS = "Chzzk Downloader, YouTube Downloader, YouTube Shorts Download, CHZZK VOD Download, Chzzk Clip Download, Naver Chzzk Video Downloader, Chzzk 1080p MP4, YouTube 4K download, Download Chzzk Stream, Naver Video Extractor, Free Video Downloader";
 
-const fileHash = "0F634DDEABE75CC9D04FC79DF91BD4E866053A23FFABF85897DCC2C6E0602DFD";
-const fileSize = "8.12 MB";
-const appVersion = "v1.0.0";
+const fileHash = "007F51936190318FC32602021D8DE0B1A51471B6C161FD6190DCFA1B009D8099";
+const fileSize = "53.8 MB";
+const appVersion = "v2.0.0";
 
 const softwareSchema = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "Chzzk Downloader",
+  "name": "Chzzk & YouTube Downloader",
   "operatingSystem": "Windows 10, Windows 11 (64-bit)",
   "applicationCategory": "MultimediaApplication",
   "offers": {
@@ -35,7 +35,31 @@ const faqSchema = JSON.stringify({
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "Is Chzzk Downloader really 100% free with no limits?",
+      "name": "Does it support YouTube videos and YouTube Shorts?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes! The latest v2.0.0 update fully supports standard YouTube videos, YouTube Shorts, and shortlinks (youtu.be) alongside Naver Chzzk VODs and clips. Resolutions up to 4K / 1080p FHD as well as standalone audio extraction (.m4a) are supported."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I download multiple URLs at once (Batch Queue)?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes! Simply paste multiple video URLs on separate lines in the auto-expanding textarea and click [Add to Queue] (or press Ctrl + Enter). The sequential queue worker processes each job in the background while you continue browsing."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need to install FFmpeg separately?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, not at all! FFmpeg is automatically bundled and configured via imageio-ffmpeg inside the executable. High-resolution stream merging and audio extraction work out-of-the-box."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Chzzk & YouTube Downloader really 100% free with no limits?",
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "Yes, it is 100% free with zero costs or download limits. Unlike web services that charge fees or restrict daily downloads, this app runs locally on your PC so there are no remote server hosting costs."
@@ -55,14 +79,6 @@ const faqSchema = JSON.stringify({
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "Open Settings in the web downloader UI and provide your verified Naver login cookies (NID_AUT, NID_SES). The cookies remain strictly stored on your local machine."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Why is the download speed much faster than other sites?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Traditional tools route videos through third-party servers with slow transcoding. Chzzk Downloader establishes a direct CDN stream connection to your computer, maximizing your full internet bandwidth."
       }
     },
     {
@@ -101,17 +117,17 @@ const faqSchema = JSON.stringify({
         <div class="hero-container">
           <div class="hero-pill">
             <span class="pulse-dot"></span>
-            <span>🎮 Official CHZZK Aesthetic • 100% Free Utility • No Ads</span>
+            <span>🎮 Chzzk & YouTube Support • Continuous Session Queue • 100% Free Utility</span>
           </div>
 
           <h1 class="hero-headline">
-            Chzzk <span class="chzzk-gradient">(CHZZK)</span> VOD & Clip<br />
+            Chzzk <span class="chzzk-gradient">(CHZZK)</span> & <span class="yt-gradient">YouTube</span><br />
             Lossless High-Speed Downloader
           </h1>
 
           <p class="hero-subtext">
-            Simply paste your Naver CHZZK <strong>VOD</strong> or <strong>Clip</strong> URL,<br class="hide-mobile" />
-            and download pristine 1080p FHD MP4 files directly from Naver CDN with zero re-encoding loss.
+            Simply paste your Naver CHZZK (<strong>VOD/Clip</strong>) or YouTube (<strong>Video/Shorts</strong>) URL,<br class="hide-mobile" />
+            and download pristine 4K & 1080p FHD MP4 files and audio (.m4a) with zero re-encoding loss.
           </p>
 
           <!-- Download Action Area -->
@@ -125,7 +141,7 @@ const faqSchema = JSON.stringify({
               >
                 <span class="btn-icon">⚡</span>
                 <span class="btn-text-group">
-                  <span class="btn-main-label">Download Chzzk Downloader {appVersion}</span>
+                  <span class="btn-main-label">Download Chzzk & YouTube Downloader {appVersion}</span>
                   <span class="btn-sub-label">Windows 64-bit • Standalone Executable (.exe)</span>
                 </span>
                 <span class="btn-badge">{fileSize}</span>
@@ -252,7 +268,7 @@ const faqSchema = JSON.stringify({
               />
             </div>
             <div class="screenshot-caption">
-              <strong>✨ One-Click URL Fetch & Download Manager</strong>: Paste your VOD or clip link, verify the thumbnail, title, streamer name, and video duration, then initiate high-speed download at max resolution.
+              <strong>✨ One-Click URL Fetch & Multi-Link Queue Management</strong>: Paste single or multiple links at once! The background engine resolves titles in parallel and tracks live speed, ETA, and progress.
             </div>
           </div>
 
@@ -275,7 +291,7 @@ const faqSchema = JSON.stringify({
               />
             </div>
             <div class="screenshot-caption">
-              <strong>⚡ Instant Standalone Server Launch</strong>: Double-click launches the background micro-server and automatically opens your default browser at <code>http://localhost:5000</code>. Press <code>Ctrl + C</code> anytime to quit.
+              <strong>⚡ Bundled FFmpeg & Lightweight Server</strong>: <code>imageio-ffmpeg</code> is bundled automatically for seamless 4K/FHD merging. Double-click launches the server, and <code>Ctrl + C</code> safely shuts it down.
             </div>
           </div>
         </div>
@@ -285,87 +301,88 @@ const faqSchema = JSON.stringify({
       <section class="chzzk-features-section">
         <div class="section-title-wrap">
           <span class="section-pill">KEY FEATURES</span>
-          <h2>5 Key Advantages Over Other Sites</h2>
+          <h2>6 Key Advantages Over Other Sites</h2>
           <p>No paywalls, no download quotas, and zero quality compression.</p>
         </div>
 
         <div class="features-grid">
           <div class="feature-card">
-            <div class="feature-icon">🎬</div>
-            <h3>1. Complete Support for VODs & Clips</h3>
+            <div class="feature-icon">🎥</div>
+            <h3>1. Chzzk & YouTube Multi-Platform</h3>
             <p>
-              Handles both long, full-broadcast stream replays and short highlight clips with ease.
+              Download standard YouTube videos, YouTube Shorts, and shortlinks (<code>youtu.be</code>) alongside Naver CHZZK VODs and clips.
             </p>
             <ul class="feature-list">
-              <li>VOD URL: <code>https://chzzk.naver.com/video/{'{videoNo}'}</code></li>
-              <li>Clip URL: <code>https://chzzk.naver.com/clips/{'{clipId}'}</code></li>
-              <li>Auto-detects whether you enter the full URL or just the ID string</li>
+              <li>CHZZK VODs (<code>chzzk.naver.com/video/...</code>) & Clips</li>
+              <li>YouTube standard videos & YouTube Shorts</li>
+              <li>Resolutions up to 4K / 1080p FHD plus audio extraction (<code>.m4a</code>)</li>
             </ul>
           </div>
 
           <div class="feature-card">
-            <div class="feature-icon">💎</div>
-            <h3>2. Lossless Original MP4 Extraction</h3>
+            <div class="feature-icon">⚙️</div>
+            <h3>2. Automated Bundled FFmpeg Engine</h3>
             <p>
-              Extracts the original progressive MP4 stream directly from Naver's CDN servers without re-encoding loss.
+              Zero manual setup required. <code>imageio-ffmpeg</code> is bundled directly within the executable.
             </p>
             <ul class="feature-list">
-              <li>Standard MP4 with video and audio fully multiplexed</li>
-              <li>No video degradation, audio distortion, or AV sync drift</li>
-              <li>Max available quality up to 1080p FHD 60fps</li>
+              <li>Automatically multiplexes video and audio streams seamlessly</li>
+              <li>No external dependencies, Python runtimes, or system PATH editing needed</li>
+              <li>Lossless stream preservation with zero sync drift</li>
             </ul>
           </div>
 
           <div class="feature-card">
-            <div class="feature-icon">🎨</div>
-            <h3>3. Intuitive Web Interface</h3>
+            <div class="feature-icon">📋</div>
+            <h3>3. Session Download Queue & Background Worker</h3>
             <p>
-              Enjoy a clean graphical interface without messing with complex terminal commands.
+              Non-blocking downloads allow you to search and inspect new videos while active jobs download sequentially in the background.
             </p>
             <ul class="feature-list">
-              <li>Sleek dark theme styled in official CHZZK neon green</li>
-              <li>One-click clipboard paste button</li>
-              <li>Live preview of thumbnail, title, streamer name, and runtime</li>
-              <li>Quality selector (1080p, 720p, 480p, etc.)</li>
+              <li>Sequential queue worker prevents network bandwidth and CPU bottlenecks</li>
+              <li>Consistent session order numbers (<code>#1</code>, <code>#2</code>, <code>#3</code>...)</li>
+              <li>Live metrics: progress bar, speed (MB/s), ETA countdown, and status badges</li>
+              <li>Cancel individual jobs, cancel all remaining items, or clear completed items</li>
             </ul>
           </div>
 
           <div class="feature-card">
-            <div class="feature-icon">📊</div>
-            <h3>4. Live Progress Dashboard & Explorer Link</h3>
+            <div class="feature-icon">🚀</div>
+            <h3>4. Multi-URL Batch Input & Real-Time Title Resolution</h3>
             <p>
-              Stay informed throughout the download process with real-time transfer telemetry.
+              Paste multiple links separated by newlines to queue dozens of videos at once.
             </p>
             <ul class="feature-list">
-              <li>Displays downloaded size, transfer speed (MB/s), % completion, and ETA</li>
-              <li>One-click <strong>[Open Saved Folder]</strong> to reveal the MP4 in Windows File Explorer</li>
-              <li>Recent download history list</li>
+              <li>Auto-expanding multi-line textarea with intuitive <kbd>Ctrl</kbd> + <kbd>Enter</kbd> submit</li>
+              <li>Dynamic action button: switches from Single Fetch to <strong>[🚀 Add N Videos to Queue]</strong></li>
+              <li>Parallel thread pool (<code>ThreadPoolExecutor</code>) resolves video titles in 1–2s</li>
+              <li>Collision-safe filenames save directly to <code>[Title].mp4</code> with <code>(1)</code>, <code>(2)</code> fallbacks</li>
             </ul>
           </div>
 
           <div class="feature-card">
-            <div class="feature-icon">🍪</div>
-            <h3>5. 19+ Adult-Restricted Video Support</h3>
+            <div class="feature-icon">📁</div>
+            <h3>5. Live Telemetry & One-Click Folder Reveal</h3>
             <p>
-              Download age-restricted broadcasts and clips securely using Naver session cookies.
+              Monitor download throughput in real time and access files immediately upon completion.
             </p>
             <ul class="feature-list">
-              <li>Enter your verified Naver cookies (<code>NID_AUT</code>, <code>NID_SES</code>) in Settings</li>
-              <li>Bypass age-verification roadblocks safely</li>
-              <li>Cookies remain stored strictly on your local PC</li>
+              <li>One-click <strong>[Open Saved Folder]</strong> reveals downloaded MP4 files in Windows Explorer</li>
+              <li>Custom download directory selector in Settings (store to external drives, etc.)</li>
+              <li>19+ adult broadcast cookie authentication (<code>NID_AUT</code>, <code>NID_SES</code>)</li>
             </ul>
           </div>
 
           <div class="feature-card highlight-card">
             <div class="feature-icon">🎁</div>
-            <h3>100% Free Forever • Unlimited</h3>
+            <h3>6. 100% Free Forever • Unlimited</h3>
             <p>
               Unlike commercial downloader websites, there are no artificial throttles, subscriptions, or predatory popups.
             </p>
             <ul class="feature-list">
               <li>No account registration or login required</li>
               <li>Unlimited downloads with no file-size caps</li>
-              <li>Clean, ad-free user interface</li>
+              <li>Clean, ad-free local user interface</li>
             </ul>
           </div>
         </div>
@@ -385,7 +402,7 @@ const faqSchema = JSON.stringify({
             <div class="step-body">
               <h3>Download the Executable</h3>
               <p>
-                Click the <strong>[Download Chzzk Downloader]</strong> button above to download <code>Chzzk_Downloader.exe</code> to your computer.
+                Click the <strong>[Download Chzzk & YouTube Downloader]</strong> button above to download <code>Chzzk_Downloader.exe</code> to your computer.
               </p>
             </div>
           </div>
@@ -406,9 +423,9 @@ const faqSchema = JSON.stringify({
           <div class="step-card">
             <div class="step-number">3</div>
             <div class="step-body">
-              <h3>Paste Link & Fetch Information</h3>
+              <h3>Paste Chzzk or YouTube URLs</h3>
               <p>
-                Copy your desired CHZZK VOD or clip URL, paste it into the input bar, and click <strong>[영상 정보 조회 (Fetch Info)]</strong>.
+                Copy your CHZZK (VOD/Clip) or YouTube (Video/Shorts) URL. For batch downloading, simply paste multiple links separated by newlines into the input box.
               </p>
             </div>
           </div>
@@ -416,9 +433,9 @@ const faqSchema = JSON.stringify({
           <div class="step-card">
             <div class="step-number">4</div>
             <div class="step-body">
-              <h3>Choose Quality & Download</h3>
+              <h3>Select Quality or Batch Add to Queue</h3>
               <p>
-                Verify the video metadata, select your preferred resolution (1080p original, 720p, etc.), and click <strong>[다운로드 (Download)]</strong>.
+                For a single video, select your preferred resolution (4K, 1080p, audio) and download. For multiple URLs, click <strong>[🚀 Batch Add to Queue]</strong> to download in sequence.
               </p>
             </div>
           </div>
@@ -428,7 +445,7 @@ const faqSchema = JSON.stringify({
             <div class="step-body">
               <h3>Open Saved Folder</h3>
               <p>
-                When download finishes, click <strong>[저장된 폴더 열기 (Open Folder)]</strong> to view your pristine MP4 file in Windows File Explorer!
+                When download finishes, click <strong>[저장된 폴더 열기 (Open Folder)]</strong> to view your pristine video file in Windows File Explorer!
               </p>
             </div>
           </div>
@@ -492,6 +509,42 @@ const faqSchema = JSON.stringify({
         <div class="faq-accordion">
           <details class="faq-item" open>
             <summary class="faq-question">
+              <span>Q. Does it support YouTube videos and YouTube Shorts?</span>
+              <span class="faq-arrow">▾</span>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                Yes! The v2.0.0 update introduces full support for standard YouTube videos, YouTube Shorts, and shortlinks (<code>youtu.be</code>) alongside Naver CHZZK VODs and clips. Resolutions up to 4K / 1080p FHD as well as audio extraction (<code>.m4a</code>) are supported.
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>Q. Can I batch download multiple video URLs simultaneously?</span>
+              <span class="faq-arrow">▾</span>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                Yes! Paste multiple URLs on separate lines in the multi-line input box and click <strong>[🚀 Batch Add to Queue]</strong> (<kbd>Ctrl</kbd> + <kbd>Enter</kbd>). The sequential queue worker processes each download safely in the background while you inspect or add more videos.
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>Q. Do I need to install FFmpeg manually?</span>
+              <span class="faq-arrow">▾</span>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                No! The <code>imageio-ffmpeg</code> engine is pre-bundled inside the single executable. High-quality video merging and audio extractions are completely automated with zero configuration.
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">
               <span>Q. Is it truly 100% free with no hidden fees or download limits?</span>
               <span class="faq-arrow">▾</span>
             </summary>
@@ -528,18 +581,6 @@ const faqSchema = JSON.stringify({
 
           <details class="faq-item">
             <summary class="faq-question">
-              <span>Q. Why is the download speed so much faster than other sites?</span>
-              <span class="faq-arrow">▾</span>
-            </summary>
-            <div class="faq-answer">
-              <p>
-                Conventional downloader services route video streams through third-party proxy servers to perform on-the-fly video transcoding. This program connects <strong>directly from your computer to Naver's high-speed CDN</strong>, utilizing your full internet bandwidth.
-              </p>
-            </div>
-          </details>
-
-          <details class="faq-item">
-            <summary class="faq-question">
               <span>Q. How do I shut down the program?</span>
               <span class="faq-arrow">▾</span>
             </summary>
@@ -556,15 +597,15 @@ const faqSchema = JSON.stringify({
       <section class="chzzk-cta-section">
         <div class="cta-card">
           <div class="cta-glow"></div>
-          <h2>Preserve your favorite CHZZK streams in original quality today!</h2>
-          <p>Never lose memorable VODs and legendary stream clips to platform expirations.</p>
+          <h2>Preserve your favorite CHZZK & YouTube videos in pristine quality!</h2>
+          <p>Never lose memorable VODs, highlights, or YouTube gems to sudden deletions.</p>
           <div class="cta-buttons">
             <a 
               href="/downloads/Chzzk_Downloader.exe" 
               download="Chzzk_Downloader.exe" 
               class="btn-cta-download"
             >
-              ⚡ Download Chzzk Downloader {appVersion} ({fileSize})
+              ⚡ Download Chzzk & YouTube Downloader {appVersion} ({fileSize})
             </a>
           </div>
           <span class="cta-safe-badge">🛡️ 100% Clean Freeware • Windows 10 / 11 64-bit Compatible</span>
@@ -581,7 +622,7 @@ const faqSchema = JSON.stringify({
   const copyBtn = document.getElementById('copy-hash-btn');
   if (copyBtn) {
     copyBtn.addEventListener('click', async () => {
-      const hash = "0F634DDEABE75CC9D04FC79DF91BD4E866053A23FFABF85897DCC2C6E0602DFD";
+      const hash = "007F51936190318FC32602021D8DE0B1A51471B6C161FD6190DCFA1B009D8099";
       try {
         await navigator.clipboard.writeText(hash);
         const originalText = copyBtn.textContent;
@@ -693,6 +734,11 @@ const faqSchema = JSON.stringify({
   .chzzk-gradient {
     color: var(--chzzk-green);
     text-shadow: 0 0 25px rgba(0, 255, 163, 0.4);
+  }
+
+  .yt-gradient {
+    color: #ff334b;
+    text-shadow: 0 0 25px rgba(255, 0, 51, 0.45);
   }
 
   .hero-subtext {

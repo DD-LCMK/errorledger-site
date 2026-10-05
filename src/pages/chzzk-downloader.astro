@@ -5,18 +5,18 @@ import Footer from '../components/Footer.astro';
 import { SITE_TITLE } from '../consts';
 import { getKoUrl, getEnUrl } from '../i18n';
 
-const PAGE_TITLE = `치지직 다운로더 - CHZZK 다시보기(VOD) & 클립 무손실 원본 초고속 다운로드 | ${SITE_TITLE}`;
-const PAGE_DESCRIPTION = "네이버 치지직(CHZZK) 다시보기 VOD 및 클립 영상을 재인코딩 손실 없이 최고 화질(1080p FHD 등) MP4 파일로 내 컴퓨터에 바로 저장하는 100% 무료 로컬 다운로더.";
-const PAGE_KEYWORDS = "치지직 다운로더, 치지직 다시보기 다운로드, 치지직 VOD 다운로드, 치지직 클립 다운로드, 치지직 1080p 다운로드, 치지직 영상 추출, 치지직 원본 다운로드, CHZZK downloader, 치지직 다운받는법, 네이버 치지직 영상 저장, 치지직 vod 추출";
+const PAGE_TITLE = `치지직 & 유튜브 다운로더 - CHZZK 다시보기·클립 & YouTube 동영상·쇼츠 무손실 초고속 다운로드 | ${SITE_TITLE}`;
+const PAGE_DESCRIPTION = "네이버 치지직(CHZZK) VOD·클립 및 유튜브(동영상·Shorts) 영상을 재인코딩 손실 없이 최고 화질(4K·1080p FHD 등) MP4 파일로 내 컴퓨터에 바로 저장하는 100% 무료 로컬 다운로더.";
+const PAGE_KEYWORDS = "치지직 다운로더, 유튜브 다운로더, 유튜브 쇼츠 다운로드, 치지직 다시보기 다운로드, 치지직 VOD 다운로드, 치지직 클립 다운로드, 치지직 1080p 다운로드, 유튜브 4K 다운로드, 유튜브 mp4 추출, 치지직 원본 다운로드, CHZZK downloader, YouTube downloader, 치지직 다운받는법, 네이버 치지직 영상 저장, 치지직 vod 추출";
 
-const fileHash = "0F634DDEABE75CC9D04FC79DF91BD4E866053A23FFABF85897DCC2C6E0602DFD";
-const fileSize = "8.12 MB";
-const appVersion = "v1.0.0";
+const fileHash = "007F51936190318FC32602021D8DE0B1A51471B6C161FD6190DCFA1B009D8099";
+const fileSize = "53.8 MB";
+const appVersion = "v2.0.0";
 
 const softwareSchema = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "Chzzk Downloader (치지직 다운로더)",
+  "name": "Chzzk & YouTube Downloader (치지직 & 유튜브 다운로더)",
   "operatingSystem": "Windows 10, Windows 11 (64-bit)",
   "applicationCategory": "MultimediaApplication",
   "offers": {
@@ -33,6 +33,30 @@ const faqSchema = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "유튜브 영상 및 쇼츠(Shorts)도 다운로드할 수 있나요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "네, v2.0.0 업데이트로 일반 유튜브 영상은 물론 유튜브 쇼츠(Shorts), youtu.be 단축 링크까지 모두 완벽하게 지원합니다. 최대 4K / 1080p FHD 최고 화질 MP4 및 오디오(.m4a) 추출을 지원합니다."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "여러 개의 영상 링크를 한 번에 일괄 다운로드(대기열)할 수 있나요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "네, 지원합니다! 입력창에 링크를 줄바꿈(Enter)으로 여러 개 붙여넣은 뒤 Ctrl + Enter 또는 [대기열 추가] 버튼을 누르면 백그라운드 큐 워커가 순차적으로 다운로드를 진행합니다. 다운로드가 진행되는 동안에도 새로운 영상을 끊김 없이 계속 조회하고 추가할 수 있습니다."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "FFmpeg 프로그램을 따로 설치해야 하나요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "아니요, 전혀 필요 없습니다! imageio-ffmpeg 엔진이 실행 파일 내부에 완전 자동 번들링되어 있어 수동 설치나 환경 변수 설정 없이 고화질 스트림 병합 및 음원 추출이 자동으로 수행됩니다."
+      }
+    },
     {
       "@type": "Question",
       "name": "정말 아무런 비용이나 횟수 제한 없이 100% 무료인가요?",
@@ -59,15 +83,7 @@ const faqSchema = JSON.stringify({
     },
     {
       "@type": "Question",
-      "name": "치지직 다운로드 속도가 왜 다른 웹사이트보다 훨씬 빠른가요?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "일반 웹사이트는 중간 서버를 거치며 재인코딩을 하느라 속도가 느리지만, 본 프로그램은 네이버 CDN 서버에서 내 컴퓨터로 다이렉트 고속 연결하여 원본 프로그레시브 MP4를 바로 저장하므로 사용자의 인터넷 회선 대역폭을 100% 활용합니다."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "치지직 다운로더 프로그램을 종료하려면 어떻게 하나요?",
+      "name": "치지직 & 유튜브 다운로더 프로그램을 종료하려면 어떻게 하나요?",
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "실행된 검은색 콘솔 창을 클릭한 뒤 키보드의 Ctrl + C를 누르시거나, 콘솔 창 우측 상단의 닫기(X) 버튼을 누르면 서버가 즉시 안전하게 종료됩니다."
@@ -101,17 +117,17 @@ const faqSchema = JSON.stringify({
         <div class="hero-container">
           <div class="hero-pill">
             <span class="pulse-dot"></span>
-            <span>🎮 치지직 공식 감성 다크 & 네온 그린 • 100% 무료 유틸리티</span>
+            <span>🎮 치지직 & 유튜브 동영상·쇼츠 통합 지원 • 세션 일괄 대기열 • 100% 무료 유틸리티</span>
           </div>
 
           <h1 class="hero-headline">
-            치지직 <span class="chzzk-gradient">(CHZZK)</span> VOD & 클립<br />
+            치지직 <span class="chzzk-gradient">(CHZZK)</span> & <span class="yt-gradient">YouTube</span><br />
             원본 화질 초고속 다운로더
           </h1>
 
           <p class="hero-subtext">
-            네이버 치지직의 <strong>다시보기(VOD)</strong> 영상과 <strong>클립(Clip)</strong> 링크만 넣으면,<br class="hide-mobile" />
-            별도 재인코딩 손실 없는 네이버 CDN 원본 최고 화질(1080p FHD) MP4 파일로 내 컴퓨터에 바로 저장됩니다.
+            네이버 치지직의 <strong>다시보기(VOD)·클립</strong>과 유튜브 <strong>동영상·쇼츠(Shorts)</strong> 링크만 넣으면,<br class="hide-mobile" />
+            별도 FFmpeg 설치 없이 최고 화질(4K·1080p FHD) MP4 파일과 오디오(.m4a)로 내 컴퓨터에 바로 저장됩니다.
           </p>
 
           <!-- Download Action Area -->
@@ -125,7 +141,7 @@ const faqSchema = JSON.stringify({
               >
                 <span class="btn-icon">⚡</span>
                 <span class="btn-text-group">
-                  <span class="btn-main-label">Chzzk Downloader {appVersion} 다운로드</span>
+                  <span class="btn-main-label">Chzzk & YouTube Downloader {appVersion} 다운로드</span>
                   <span class="btn-sub-label">Windows 64-bit 전용 • 무설치 실행 파일 (.exe)</span>
                 </span>
                 <span class="btn-badge">{fileSize}</span>
@@ -252,7 +268,7 @@ const faqSchema = JSON.stringify({
               />
             </div>
             <div class="screenshot-caption">
-              <strong>✨ 원클릭 링크 조회 및 다운로드 관리</strong>: 다시보기나 클립 링크를 붙여넣고 버튼만 누르면 썸네일, 제목, 채널명, 재생시간 확인 후 최고 화질로 즉시 저장합니다.
+              <strong>✨ 원클릭 링크 조회 & 멀티 URL 대기열 관리</strong>: 단일 링크는 물론 여러 링크를 한 번에 붙여넣어 일괄 다운로드! 백그라운드에서 실시간 제목 변환과 진행률, 속도(MB/s), ETA를 실시간으로 확인합니다.
             </div>
           </div>
 
@@ -275,7 +291,7 @@ const faqSchema = JSON.stringify({
               />
             </div>
             <div class="screenshot-caption">
-              <strong>⚡ 초경량 로컬 서버 자동 구동</strong>: 더블 클릭 한 번으로 로컬 서버가 가동되며 기본 웹 브라우저가 자동으로 열립니다. 종료는 <code>Ctrl + C</code> 또는 창 닫기로 간편합니다.
+              <strong>⚡ 자동 내장 FFmpeg & 초경량 로컬 서버</strong>: <code>imageio-ffmpeg</code> 엔진 자동 내장으로 수동 설치 없이 4K/FHD 고화질 병합 지원. 더블 클릭 한 번으로 가동되며 종료는 <code>Ctrl + C</code>로 간편합니다.
             </div>
           </div>
         </div>
@@ -285,87 +301,88 @@ const faqSchema = JSON.stringify({
       <section class="chzzk-features-section">
         <div class="section-title-wrap">
           <span class="section-pill">KEY FEATURES</span>
-          <h2>다른 사이트와 차별화된 5대 핵심 강점</h2>
+          <h2>다른 사이트와 차별화된 6대 핵심 강점</h2>
           <p>유료 결제 요구, 속도 제한, 저화질 강등 없는 완전한 무손실 원본 다운로더</p>
         </div>
 
         <div class="features-grid">
           <div class="feature-card">
-            <div class="feature-icon">🎬</div>
-            <h3>1. VOD(다시보기) & 클립 모두 완벽 지원</h3>
+            <div class="feature-icon">🎥</div>
+            <h3>1. 치지직 & 유튜브 멀티 플랫폼 완벽 지원</h3>
             <p>
-              긴 풀버전 다시보기 영상부터 짧은 클립까지 모든 형태의 치지직 동영상을 지원합니다.
+              네이버 치지직뿐 아니라 유튜브 일반 영상, 유튜브 쇼츠(Shorts), youtu.be 단축 링크까지 모두 완벽하게 다운로드합니다.
             </p>
             <ul class="feature-list">
-              <li>VOD 주소: <code>https://chzzk.naver.com/video/{'{videoNo}'}</code></li>
-              <li>클립 주소: <code>https://chzzk.naver.com/clips/{'{clipId}'}</code></li>
-              <li>주소 전체뿐 아니라 짧은 고유 ID만 입력해도 자동 인식</li>
+              <li>치지직 VOD(<code>https://chzzk.naver.com/video/...</code>) & 클립</li>
+              <li>유튜브 일반 동영상 & 유튜브 쇼츠(<code>youtube.com/shorts/...</code>)</li>
+              <li>최대 4K / 1080p FHD 해상도 및 고음질 오디오(<code>.m4a</code>) 단독 추출 지원</li>
             </ul>
           </div>
 
           <div class="feature-card">
-            <div class="feature-icon">💎</div>
-            <h3>2. 무손실 원본 MP4 다운로드</h3>
+            <div class="feature-icon">⚙️</div>
+            <h3>2. FFmpeg 엔진 완전 자동 내장</h3>
             <p>
-              네이버 CDN 공식 제공 원본 프로그레시브 MP4 링크를 직접 추출하여 별도 재인코딩 손실 없이 내 회선 최대 속도로 다운로드합니다.
+              번거로운 FFmpeg 별도 다운로드나 시스템 환경 변수(Path) 설정이 필요 없습니다.
             </p>
             <ul class="feature-list">
-              <li>비디오와 오디오가 이미 완벽하게 통합된 표준 MP4 파일 저장</li>
-              <li>화질 손상이나 음성 밀림(Sync 탈락) 없는 깨끗한 원본 보존</li>
-              <li>최고 화질 1080p FHD 60fps 무손실 추출 지원</li>
+              <li><code>imageio-ffmpeg</code> 엔진이 실행 파일 내부에 자동 번들링</li>
+              <li>고해상도 비디오와 오디오 스트림을 손실 없이 무결점 자동 병합</li>
+              <li>외부 의존성 제로(Zero-Dependency) 원클릭 실행 보장</li>
             </ul>
           </div>
 
           <div class="feature-card">
-            <div class="feature-icon">🎨</div>
-            <h3>3. 직관적인 모던 웹 인터페이스</h3>
+            <div class="feature-icon">📋</div>
+            <h3>3. 논블로킹 세션 대기열 & 순차 큐 워커</h3>
             <p>
-              명령어 입력 없이 브라우저에서 편리하게 마우스 클릭만으로 모든 조작이 가능합니다.
+              이전 다운로드가 진행되는 중에도 멈추지 않고 새로운 영상을 계속 조회하고 대기열에 추가할 수 있습니다.
             </p>
             <ul class="feature-list">
-              <li>치지직 공식 감성의 세련된 다크 테마 & 네온 그린 디자인</li>
-              <li>클립보드 원클릭 자동 붙여넣기 버튼 지원</li>
-              <li>썸네일, 제목, 방송자 닉네임, 재생시간 실시간 프리뷰</li>
-              <li>화질 선택 옵션 (1080p 원본, 720p, 480p 등)</li>
+              <li>네트워크 대역폭과 CPU를 최적화하는 스마트 순차 큐 워커 탑재</li>
+              <li>모든 작업에 세션 일련번호(<code>#1</code>, <code>#2</code>, <code>#3</code>...) 자동 부여</li>
+              <li>실시간 진행률 프로그레스 바, 속도(MB/s), 예상 남은 시간(ETA), 상태 배지 제공</li>
+              <li>개별 다운로드 취소, 전체 대기열 취소, 완료 항목 원클릭 정리 지원</li>
             </ul>
           </div>
 
           <div class="feature-card">
-            <div class="feature-icon">📊</div>
-            <h3>4. 실시간 다운로드 대시보드 & 폴더 열기</h3>
+            <div class="feature-icon">🚀</div>
+            <h3>4. 멀티 URL 일괄 입력 & 실시간 제목 변환</h3>
             <p>
-              대용량 풀버전 VOD도 안심하고 받을 수 있도록 실시간 전송 상태를 투명하게 표시합니다.
+              여러 영상 링크를 줄바꿈으로 한 번에 붙여넣어 순식간에 대기열에 담을 수 있습니다.
             </p>
             <ul class="feature-list">
-              <li>현재 다운로드 용량, 다운로드 속도(MB/s), 진행률(%), 예상 남은 시간 실시간 표시</li>
-              <li>다운로드 완료 즉시 <strong>[저장된 폴더 열기]</strong> 원클릭으로 윈도우 파일 탐색기 즉시 연결</li>
-              <li>최근 다운로드 완료 목록 히스토리 제공</li>
+              <li>자동 확장 텍스트 에어리어: 엔터(Enter) 줄바꿈, <code>Ctrl + Enter</code> 즉시 등록</li>
+              <li>단일 조회에서 <strong>[🚀 N개 영상 일괄 대기열 추가]</strong>로 스마트 동적 전환</li>
+              <li>백그라운드 멀티스레드(<code>ThreadPoolExecutor</code>)가 1~2초 내 실제 제목 자동 추출</li>
+              <li>중복 파일명 시 <code>(1)</code>, <code>(2)</code> 자동 넘버링으로 덮어쓰기 방지 안전 저장</li>
             </ul>
           </div>
 
           <div class="feature-card">
-            <div class="feature-icon">🍪</div>
-            <h3>5. 성인(19+) 영상 쿠키 지원</h3>
+            <div class="feature-icon">📁</div>
+            <h3>5. 실시간 다운로드 대시보드 & 폴더 열기</h3>
             <p>
-              연령 제한이 걸려 있는 성인 인증 방송 다시보기나 클립도 완벽하게 지원합니다.
+              대용량 풀버전 VOD와 유튜브 영상도 실시간 전송 상태를 투명하게 확인하고 바로 열 수 있습니다.
             </p>
             <ul class="feature-list">
-              <li>웹 화면 우측 상단 [설정 (톱니바퀴)]에서 네이버 로그인 쿠키 입력</li>
-              <li><code>NID_AUT</code>, <code>NID_SES</code> 쿠키를 통해 안전하게 인증 후 19+ 영상 다운로드 가능</li>
-              <li>쿠키는 오직 본인 컴퓨터 로컬에만 보관되어 외부 유출 위험 제로</li>
+              <li>다운로드 완료 즉시 <strong>[저장된 폴더 열기]</strong> 원클릭으로 파일 탐색기 즉시 연결</li>
+              <li>우측 상단 설정에서 원하는 다운로드 저장 경로(외장하드 등) 자유롭게 변경</li>
+              <li>치지직 19+ 성인 인증 VOD/클립을 위한 네이버 쿠키(<code>NID_AUT</code>, <code>NID_SES</code>) 지원</li>
             </ul>
           </div>
 
           <div class="feature-card highlight-card">
             <div class="feature-icon">🎁</div>
-            <h3>100% 무료 • 무제한 이용</h3>
+            <h3>6. 100% 평생 무료 • 무제한 이용</h3>
             <p>
               기존 다운로더 사이트들의 악질적인 일일 횟수 제한, 느린 무료 속도, 결제 유도, 랜섬웨어성 팝업 광고가 일절 없습니다.
             </p>
             <ul class="feature-list">
               <li>회원가입 / 로그인 불필요</li>
               <li>영상 다운로드 용량 및 개수 무제한</li>
-              <li>광고 없는 깨끗한 인터페이스</li>
+              <li>광고 없는 깨끗한 로컬 인터페이스</li>
             </ul>
           </div>
         </div>
@@ -385,7 +402,7 @@ const faqSchema = JSON.stringify({
             <div class="step-body">
               <h3>실행 파일 다운로드</h3>
               <p>
-                상단의 <strong>[Chzzk Downloader 다운로드]</strong> 버튼을 클릭하여 <code>Chzzk_Downloader.exe</code> 파일을 컴퓨터에 받습니다.
+                상단의 <strong>[Chzzk & YouTube Downloader 다운로드]</strong> 버튼을 클릭하여 <code>Chzzk_Downloader.exe</code> 파일을 컴퓨터에 받습니다.
               </p>
             </div>
           </div>
@@ -406,9 +423,9 @@ const faqSchema = JSON.stringify({
           <div class="step-card">
             <div class="step-number">3</div>
             <div class="step-body">
-              <h3>치지직 영상 링크 입력 & 정보 조회</h3>
+              <h3>치지직 또는 유튜브 영상 링크 입력</h3>
               <p>
-                치지직 웹사이트나 앱에서 다운로드하고 싶은 다시보기(VOD) 또는 클립 링크를 복사하여 입력창에 붙여넣은 뒤 <strong>[영상 정보 조회]</strong>를 누릅니다.
+                치지직(다시보기/클립) 또는 유튜브(동영상/Shorts) 링크를 붙여넣습니다. 여러 개를 한 번에 받을 땐 줄바꿈(Enter)으로 여러 링크를 붙여넣으세요.
               </p>
             </div>
           </div>
@@ -416,9 +433,9 @@ const faqSchema = JSON.stringify({
           <div class="step-card">
             <div class="step-number">4</div>
             <div class="step-body">
-              <h3>화질 선택 및 다운로드 시작</h3>
+              <h3>화질 선택 또는 일괄 대기열 추가</h3>
               <p>
-                영상 썸네일과 제목을 확인하고 원하는 화질(1080p 원본, 720p 등)을 선택한 뒤 <strong>[다운로드]</strong>를 누르면 실시간 속도와 함께 다운로드가 진행됩니다.
+                단일 영상은 화질(4K, 1080p, 오디오 등)을 선택해 다운로드하고, 여러 링크는 <strong>[🚀 일괄 대기열 추가]</strong>를 누르면 백그라운드에서 순차적으로 안전하게 다운로드됩니다.
               </p>
             </div>
           </div>
@@ -428,7 +445,7 @@ const faqSchema = JSON.stringify({
             <div class="step-body">
               <h3>저장 폴더 확인</h3>
               <p>
-                다운로드가 완료되면 <strong>[저장된 폴더 열기]</strong> 버튼을 눌러 내 컴퓨터에 저장된 원본 MP4 파일을 확인하고 동영상 플레이어로 감상하거나 편집에 활용하세요!
+                다운로드가 완료되면 <strong>[저장된 폴더 열기]</strong> 버튼을 눌러 내 컴퓨터에 저장된 고화질 비디오를 확인하고 동영상 플레이어로 감상하거나 편집에 활용하세요!
               </p>
             </div>
           </div>
@@ -492,6 +509,42 @@ const faqSchema = JSON.stringify({
         <div class="faq-accordion">
           <details class="faq-item" open>
             <summary class="faq-question">
+              <span>Q. 유튜브 영상 및 쇼츠(Shorts)도 다운로드할 수 있나요?</span>
+              <span class="faq-arrow">▾</span>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                네, 최신 v2.0.0 업데이트로 일반 유튜브 동영상은 물론 유튜브 쇼츠(Shorts), youtu.be 단축 링크까지 모두 완벽하게 지원합니다. 최대 4K / 1080p FHD 최고 화질 MP4 및 오디오(.m4a) 단독 추출도 지원합니다.
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>Q. 여러 개의 영상 링크를 한 번에 일괄 다운로드(대기열)할 수 있나요?</span>
+              <span class="faq-arrow">▾</span>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                네, 완벽하게 지원합니다! 링크 입력창에 여러 줄로 링크를 붙여넣은 뒤 <strong>[🚀 일괄 대기열 추가]</strong> (단축키 Ctrl + Enter)를 누르면 백그라운드 큐 워커가 순차적으로 다운로드합니다. 다운로드 중에도 다른 영상을 계속 검색하고 추가할 수 있습니다.
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>Q. FFmpeg 프로그램을 따로 설치해야 하나요?</span>
+              <span class="faq-arrow">▾</span>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                아니요, 전혀 필요 없습니다! <code>imageio-ffmpeg</code> 엔진이 실행 파일 내부에 완전 자동 번들링되어 있어 수동 설치나 환경 변수 설정 없이 고화질 스트림 병합 및 음원 추출이 자동으로 수행됩니다.
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">
               <span>Q. 정말 아무런 비용이나 횟수 제한 없이 100% 무료인가요?</span>
               <span class="faq-arrow">▾</span>
             </summary>
@@ -528,18 +581,6 @@ const faqSchema = JSON.stringify({
 
           <details class="faq-item">
             <summary class="faq-question">
-              <span>Q. 다운로드 속도가 왜 다른 웹사이트보다 훨씬 빠른가요?</span>
-              <span class="faq-arrow">▾</span>
-            </summary>
-            <div class="faq-answer">
-              <p>
-                일반 다운로더 웹사이트는 [네이버 서버 ➔ 타사 중계 서버 ➔ 사용자 브라우저]라는 2중 단계를 거치며 인코딩 변환을 하느라 속도가 극도로 느립니다. 반면 본 프로그램은 <strong>[네이버 CDN 서버 ➔ 내 컴퓨터]</strong>로 다이렉트 고속 연결하여 원본 프로그레시브 MP4를 바로 저장하므로 사용자의 인터넷 회선 대역폭을 100% 활용합니다.
-              </p>
-            </div>
-          </details>
-
-          <details class="faq-item">
-            <summary class="faq-question">
               <span>Q. 프로그램을 종료하려면 어떻게 하나요?</span>
               <span class="faq-arrow">▾</span>
             </summary>
@@ -556,15 +597,15 @@ const faqSchema = JSON.stringify({
       <section class="chzzk-cta-section">
         <div class="cta-card">
           <div class="cta-glow"></div>
-          <h2>지금 바로 치지직 영상을 원본 화질로 소장해 보세요!</h2>
-          <p>사라질 수 있는 좋아하는 스트리머의 소중한 방송 다시보기와 레전드 클립을 영구 소장하세요.</p>
+          <h2>지금 바로 치지직 & 유튜브 영상을 최고 화질로 소장해 보세요!</h2>
+          <p>사라질 수 있는 좋아하는 스트리머의 방송 다시보기와 유튜브 레전드 영상을 영구 소장하세요.</p>
           <div class="cta-buttons">
             <a 
               href="/downloads/Chzzk_Downloader.exe" 
               download="Chzzk_Downloader.exe" 
               class="btn-cta-download"
             >
-              ⚡ Chzzk Downloader {appVersion} 다운로드 ({fileSize})
+              ⚡ Chzzk & YouTube Downloader {appVersion} 다운로드 ({fileSize})
             </a>
           </div>
           <span class="cta-safe-badge">🛡️ 100% 클린 프리웨어 • Windows 10 / 11 64-bit 호환</span>
@@ -581,7 +622,7 @@ const faqSchema = JSON.stringify({
   const copyBtn = document.getElementById('copy-hash-btn');
   if (copyBtn) {
     copyBtn.addEventListener('click', async () => {
-      const hash = "0F634DDEABE75CC9D04FC79DF91BD4E866053A23FFABF85897DCC2C6E0602DFD";
+      const hash = "007F51936190318FC32602021D8DE0B1A51471B6C161FD6190DCFA1B009D8099";
       try {
         await navigator.clipboard.writeText(hash);
         const originalText = copyBtn.textContent;
@@ -693,6 +734,11 @@ const faqSchema = JSON.stringify({
   .chzzk-gradient {
     color: var(--chzzk-green);
     text-shadow: 0 0 25px rgba(0, 255, 163, 0.4);
+  }
+
+  .yt-gradient {
+    color: #ff334b;
+    text-shadow: 0 0 25px rgba(255, 0, 51, 0.45);
   }
 
   .hero-subtext {
