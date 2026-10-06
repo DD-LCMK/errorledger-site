@@ -1836,6 +1836,7 @@ const data = gameEntry?.data || {
   class MarbleAudio {
     private ctx: AudioContext | null = null;
     private masterGain: GainNode | null = null;
+    private baseVolume: number = 0.5; // Master SFX volume reduced by 50%
 
     constructor() {
       window.addEventListener('sound-toggle', (e: any) => {
@@ -1859,7 +1860,7 @@ const data = gameEntry?.data || {
     public syncMute(forceMuted?: boolean) {
       const muted = forceMuted !== undefined ? forceMuted : this.isMuted();
       if (this.masterGain && this.ctx) {
-        this.masterGain.gain.setValueAtTime(muted ? 0 : 1, this.ctx.currentTime);
+        this.masterGain.gain.setValueAtTime(muted ? 0 : this.baseVolume, this.ctx.currentTime);
       }
     }
 
