@@ -1,0 +1,495 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { SITE_TITLE } from '../../consts';
+import { getKoUrl, getEnUrl } from '../../i18n';
+
+const PAGE_TITLE = `Changelog & Release Notes | ${SITE_TITLE}`;
+const PAGE_DESCRIPTION = "Explore ErrorLedger's version history, feature releases, Chzzk Downloader updates, and marble roulette physics refinements.";
+const PAGE_KEYWORDS = "ErrorLedger changelog, Chzzk downloader update, patch notes, stream tools releases, release history";
+
+const breadcrumbItems = [
+  { name: "Home", url: "/en" },
+  { name: "Changelog" }
+];
+
+const changelogData = [
+  {
+    version: "v2.0.0",
+    date: "2026-03-28",
+    title: "Chzzk & YouTube Downloader v2.0.0 Major Release",
+    badge: "MAJOR RELEASE",
+    badgeType: "hot",
+    summary: "Expanded support for YouTube videos & Shorts, sequential batch queue worker, and official GitHub Releases distribution.",
+    changes: [
+      { type: "feat", text: "Added lossless download support for YouTube videos, Shorts, and youtu.be shortlinks" },
+      { type: "feat", text: "Introduced background session queue worker for batch processing multiple URLs sequentially" },
+      { type: "feat", text: "Bundled imageio-ffmpeg inside binary for zero-configuration 4K/FHD stream merging" },
+      { type: "security", text: "Official GitHub Releases distribution with public SHA-256 hashes & VirusTotal scan reports" }
+    ]
+  },
+  {
+    version: "v1.9.5",
+    date: "2026-03-20",
+    title: "3D Marble Roulette Audio Balancing & Physics Polish",
+    badge: "POLISH",
+    badgeType: "popular",
+    summary: "Reduced collision SFX volume by 50% for optimal mic/BGM mixing and smoothed track finale obstacles.",
+    changes: [
+      { type: "improved", text: "Reduced all marble sound effect volumes by 50% default to balance live microphone audio" },
+      { type: "improved", text: "Fine-tuned obstacle restitution coefficients and camera smoothing near the finish gate" },
+      { type: "fix", text: "Mitigated intermittent camera stuttering in large races with 30+ participants" }
+    ]
+  },
+  {
+    version: "v1.9.0",
+    date: "2026-03-10",
+    title: "Information Architecture: New /tools and /games Hubs",
+    badge: "ARCHITECTURE",
+    badgeType: "new",
+    summary: "Built centralized directory hubs for intuitive browsing of utilities and stream games.",
+    changes: [
+      { type: "feat", text: "Created /tools directory hub unifying Downloader, Schedule, Bzzk, and Soundboard" },
+      { type: "feat", text: "Created /games directory hub with integrated OBS Browser Source setup guide" },
+      { type: "feat", text: "Integrated global Breadcrumb navigation and BreadcrumbList JSON-LD structured data" },
+      { type: "improved", text: "Optimized header navigation and footer category layout with bilingual links" }
+    ]
+  },
+  {
+    version: "v1.8.0",
+    date: "2026-02-25",
+    title: "Broadcast Schedule Studio & Soundboard Hotkeys",
+    badge: "UPDATE",
+    badgeType: "popular",
+    summary: "7 customizable schedule design templates and keypad-triggered live SFX soundboard.",
+    changes: [
+      { type: "feat", text: "Stream Schedule Studio: 7 design templates with high-res PNG export" },
+      { type: "feat", text: "Keypad Soundboard: Numpad hotkey triggers and low-latency audio playback" },
+      { type: "feat", text: "Ghost Leg Ladder Match: Expanded support for up to 20 contestants with live line-tracing" }
+    ]
+  }
+];
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead 
+      title={PAGE_TITLE} 
+      description={PAGE_DESCRIPTION}
+      lang="en"
+      hreflangKo={getKoUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
+      hreflangEn={getEnUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
+      keywords={PAGE_KEYWORDS}
+    />
+  </head>
+  <body class="changelog-page-body">
+    <Header />
+
+    <main class="changelog-main">
+      <div class="changelog-container">
+        <!-- Breadcrumbs Navigation -->
+        <Breadcrumbs items={breadcrumbItems} />
+
+        <!-- Hero Section -->
+        <header class="changelog-hero">
+          <div class="changelog-hero-badge">
+            <span class="badge-icon">📜</span>
+            <span>ERRORLEDGER RELEASE LOG</span>
+          </div>
+          <h1 class="changelog-title">
+            Changelog & <span class="accent-text">Release Notes</span>
+          </h1>
+          <p class="changelog-subtitle">
+            ErrorLedger evolves continuously based on streamer feedback.<br />
+            Explore our release history, new features, and security improvements.
+          </p>
+        </header>
+
+        <!-- Timeline Container -->
+        <section class="timeline-section">
+          <div class="timeline-list">
+            {changelogData.map((release) => (
+              <article class="timeline-item">
+                <div class="timeline-marker">
+                  <div class="marker-dot"></div>
+                  <div class="marker-line"></div>
+                </div>
+
+                <div class="timeline-card">
+                  <div class="card-header">
+                    <div class="version-badge-group">
+                      <span class="version-tag">{release.version}</span>
+                      <span class={`pill-badge ${release.badgeType}`}>{release.badge}</span>
+                    </div>
+                    <time class="release-date">{release.date}</time>
+                  </div>
+
+                  <h2 class="release-title">{release.title}</h2>
+                  <p class="release-summary">{release.summary}</p>
+
+                  <div class="changes-list">
+                    {release.changes.map((item) => (
+                      <div class="change-entry">
+                        <span class={`type-pill ${item.type}`}>
+                          {item.type === 'feat' && 'New Feature'}
+                          {item.type === 'improved' && 'Improved'}
+                          {item.type === 'fix' && 'Fix'}
+                          {item.type === 'security' && 'Security/Trust'}
+                        </span>
+                        <span class="change-text">{item.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <!-- GitHub Releases Callout -->
+        <section class="github-release-banner">
+          <div class="banner-icon">📦</div>
+          <div class="banner-text">
+            <h3>View Releases & Binaries on GitHub</h3>
+            <p>
+              Official executable releases, source code, and release notes are published directly on GitHub Releases.
+            </p>
+          </div>
+          <a 
+            href="https://github.com/DD-LCMK/errorledger-engine/releases" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="btn-github-releases"
+          >
+            Visit GitHub Releases ↗
+          </a>
+        </section>
+      </div>
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .changelog-page-body {
+    background: #090d16;
+    color: #f1f5f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: inherit;
+    overflow-x: hidden;
+  }
+
+  .changelog-main {
+    flex: 1;
+    width: 100%;
+    padding: 1rem 1.5rem 5rem;
+  }
+
+  .changelog-container {
+    max-width: 920px;
+    margin: 0 auto;
+  }
+
+  /* Hero Section */
+  .changelog-hero {
+    text-align: center;
+    padding: 2.5rem 1rem 3rem;
+    position: relative;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 3.5rem;
+  }
+
+  .changelog-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(0, 255, 163, 0.1);
+    border: 1px solid rgba(0, 255, 163, 0.3);
+    color: #00ffa3;
+    padding: 0.4rem 1.1rem;
+    border-radius: 9999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  .changelog-title {
+    font-size: clamp(2rem, 4.2vw, 3rem);
+    font-weight: 800;
+    line-height: 1.3;
+    color: #ffffff;
+    margin: 0 0 1.25rem;
+    letter-spacing: -0.02em;
+  }
+
+  .accent-text {
+    background: linear-gradient(135deg, #00ffa3 0%, #38bdf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .changelog-subtitle {
+    font-size: clamp(1rem, 1.8vw, 1.12rem);
+    line-height: 1.7;
+    color: #94a3b8;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  /* Timeline */
+  .timeline-section {
+    margin-bottom: 4rem;
+  }
+
+  .timeline-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    position: relative;
+  }
+
+  .timeline-item {
+    display: flex;
+    gap: 1.5rem;
+    position: relative;
+  }
+
+  .timeline-marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 24px;
+    flex-shrink: 0;
+    padding-top: 0.5rem;
+  }
+
+  .marker-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #00ffa3;
+    box-shadow: 0 0 12px #00ffa3;
+    z-index: 1;
+  }
+
+  .marker-line {
+    flex: 1;
+    width: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    margin-top: 0.5rem;
+  }
+
+  .timeline-card {
+    flex: 1;
+    background: #0e1526;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 1.85rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+    transition: border-color 0.2s ease;
+  }
+
+  .timeline-card:hover {
+    border-color: rgba(0, 255, 163, 0.3);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .version-badge-group {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .version-tag {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #ffffff;
+    font-family: monospace;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 0.2rem 0.6rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .pill-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    text-transform: uppercase;
+  }
+
+  .pill-badge.hot {
+    background: rgba(255, 75, 75, 0.15);
+    border: 1px solid rgba(255, 75, 75, 0.35);
+    color: #ff6b6b;
+  }
+
+  .pill-badge.popular {
+    background: rgba(0, 255, 163, 0.15);
+    border: 1px solid rgba(0, 255, 163, 0.35);
+    color: #00ffa3;
+  }
+
+  .pill-badge.new {
+    background: rgba(168, 85, 247, 0.15);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    color: #c084fc;
+  }
+
+  .release-date {
+    font-size: 0.85rem;
+    color: #64748b;
+    font-family: monospace;
+  }
+
+  .release-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 0.65rem;
+    line-height: 1.4;
+  }
+
+  .release-summary {
+    font-size: 0.94rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0 0 1.25rem;
+  }
+
+  .changes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    background: #090e1a;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.15rem;
+  }
+
+  .change-entry {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .type-pill {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 5px;
+    white-space: nowrap;
+    line-height: 1.2;
+    margin-top: 0.15rem;
+  }
+
+  .type-pill.feat {
+    background: rgba(0, 255, 163, 0.15);
+    color: #00ffa3;
+    border: 1px solid rgba(0, 255, 163, 0.3);
+  }
+
+  .type-pill.improved {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+  }
+
+  .type-pill.fix {
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+  }
+
+  .type-pill.security {
+    background: rgba(168, 85, 247, 0.15);
+    color: #c084fc;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+  }
+
+  .change-text {
+    color: #cbd5e1;
+  }
+
+  /* GitHub Release Banner */
+  .github-release-banner {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1.75rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .banner-icon {
+    font-size: 2.2rem;
+  }
+
+  .banner-text {
+    flex: 1 1 360px;
+  }
+
+  .banner-text h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 0.35rem;
+  }
+
+  .banner-text p {
+    font-size: 0.88rem;
+    color: #94a3b8;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .btn-github-releases {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    padding: 0.75rem 1.25rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .btn-github-releases:hover {
+    background: #00ffa3;
+    color: #090d16;
+    border-color: #00ffa3;
+  }
+
+  @media (max-width: 640px) {
+    .timeline-marker {
+      display: none;
+    }
+    .timeline-card {
+      padding: 1.25rem;
+    }
+  }
+</style>

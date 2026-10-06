@@ -2,6 +2,7 @@
 import BaseHead from '../../components/BaseHead.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { SITE_TITLE } from '../../consts';
 import { getKoUrl, getEnUrl } from '../../i18n';
 
@@ -9,9 +10,18 @@ const PAGE_TITLE = `Chzzk & YouTube Downloader - Lossless Naver CHZZK & YouTube 
 const PAGE_DESCRIPTION = "Download Naver CHZZK VODs & clips and YouTube videos & Shorts in original 4K and 1080p FHD quality directly with zero re-encoding loss. Batch queue processing, bundled FFmpeg, 100% free local web app.";
 const PAGE_KEYWORDS = "Chzzk Downloader, YouTube Downloader, YouTube Shorts Download, CHZZK VOD Download, Chzzk Clip Download, Naver Chzzk Video Downloader, Chzzk 1080p MP4, YouTube 4K download, Download Chzzk Stream, Naver Video Extractor, Free Video Downloader";
 
+const breadcrumbItems = [
+  { name: "Home", url: "/en" },
+  { name: "Streamer Tools", url: "/en/tools" },
+  { name: "Chzzk & YouTube Downloader" }
+];
+
 const fileHash = "007F51936190318FC32602021D8DE0B1A51471B6C161FD6190DCFA1B009D8099";
 const fileSize = "53.8 MB";
 const appVersion = "v2.0.0";
+const downloadUrl = "https://github.com/DD-LCMK/errorledger-engine/releases/latest/download/Chzzk_Downloader.exe";
+const githubReleasesUrl = "https://github.com/DD-LCMK/errorledger-engine/releases";
+const virusTotalUrl = "https://www.virustotal.com/gui/file/007f51936190318fc32602021d8de0b1a51471b6c161fd6190dcfa1b009d8099";
 
 const softwareSchema = JSON.stringify({
   "@context": "https://schema.org",
@@ -26,7 +36,7 @@ const softwareSchema = JSON.stringify({
   },
   "description": PAGE_DESCRIPTION,
   "softwareVersion": appVersion,
-  "downloadUrl": "https://errorledger.com/downloads/Chzzk_Downloader.exe"
+  "downloadUrl": downloadUrl
 });
 
 const faqSchema = JSON.stringify({
@@ -70,7 +80,7 @@ const faqSchema = JSON.stringify({
       "name": "Windows SmartScreen warns about an 'Unknown Publisher'. Is it safe?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes, it is completely safe. Windows shows this dialog for any software from independent developers that does not carry an expensive corporate code-signing certificate. You can verify its integrity via the official SHA-256 hash."
+        "text": "Yes, it is completely safe. Windows shows this dialog for independent software releases that do not bundle expensive commercial EV code-signing certificates. Our builds are distributed transparently via GitHub Releases with public SHA-256 hashes and VirusTotal scan reports. You can verify the checksum and click [More info] → [Run anyway]."
       }
     },
     {
@@ -115,6 +125,8 @@ const faqSchema = JSON.stringify({
       <section class="chzzk-hero">
         <div class="hero-backdrop"></div>
         <div class="hero-container">
+          <Breadcrumbs items={breadcrumbItems} />
+
           <div class="hero-pill">
             <span class="pulse-dot"></span>
             <span>🎮 Chzzk & YouTube Support • Continuous Session Queue • 100% Free Utility</span>
@@ -134,17 +146,22 @@ const faqSchema = JSON.stringify({
           <div class="hero-download-box">
             <div class="download-primary-row">
               <a 
-                href="/downloads/Chzzk_Downloader.exe" 
-                download="Chzzk_Downloader.exe" 
+                href={downloadUrl} 
                 class="btn-chzzk-download"
                 id="main-download-btn"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 <span class="btn-icon">⚡</span>
                 <span class="btn-text-group">
                   <span class="btn-main-label">Download Chzzk & YouTube Downloader {appVersion}</span>
-                  <span class="btn-sub-label">Windows 64-bit • Standalone Executable (.exe)</span>
+                  <span class="btn-sub-label">Windows 64-bit • Official GitHub Release (.exe)</span>
                 </span>
                 <span class="btn-badge">{fileSize}</span>
+              </a>
+
+              <a href={githubReleasesUrl} target="_blank" rel="noopener noreferrer" class="btn-chzzk-github">
+                <span>📦 GitHub Releases</span>
               </a>
 
               <a href="#how-to-use" class="btn-chzzk-guide">
@@ -161,6 +178,10 @@ const faqSchema = JSON.stringify({
               <div class="spec-chip">
                 <span class="spec-label">Size:</span>
                 <span class="spec-val">{fileSize}</span>
+              </div>
+              <div class="spec-chip">
+                <span class="spec-label">Distribution:</span>
+                <span class="spec-val">GitHub Releases</span>
               </div>
               <div class="spec-chip">
                 <span class="spec-label">OS:</span>
@@ -181,12 +202,12 @@ const faqSchema = JSON.stringify({
           <div class="security-header">
             <div class="security-badge">
               <span class="shield-icon">🛡️</span>
-              <span>100% Verified Safe & Clean Guarantee</span>
+              <span>Official Release Integrity Verification</span>
             </div>
-            <h2>"Only files downloaded directly from our official website (ErrorLedger.com) are 100% authentic and safe."</h2>
+            <h2>"Distributed officially via GitHub Releases. Verify binary integrity with cryptographic SHA-256."</h2>
             <p class="security-lead">
-              Downloading modified or re-uploaded files from third-party blogs, untrusted forums, or Discord servers is risky.<br />
-              The executable provided on ErrorLedger is a clean, non-malicious standalone utility built with your security in mind.
+              Downloading modified or re-uploaded files from third-party mirrors, forums, or Discord is risky.<br />
+              ErrorLedger distributes official builds via GitHub Releases alongside published SHA-256 checksums and multi-engine VirusTotal scan reports.
             </p>
           </div>
 
@@ -194,7 +215,7 @@ const faqSchema = JSON.stringify({
             <div class="sec-item">
               <div class="sec-icon">🔒</div>
               <div class="sec-content">
-                <h3>This is NOT Hacking (Direct Official CDN Stream)</h3>
+                <h3>Native Stream Downloader (Direct Official CDN)</h3>
                 <p>
                   This application simply retrieves the public progressive MP4 media stream URL served by Naver CHZZK's official CDN for standard web playback, and saves it locally. It performs zero exploit techniques, zero privilege escalation, and zero modifications to your operating system.
                 </p>
@@ -217,7 +238,7 @@ const faqSchema = JSON.stringify({
                 <h3>Windows SmartScreen "Unknown Publisher" Notice</h3>
                 <p>
                   Because this is an independent, free open tool without a multi-thousand dollar commercial EV code-signing certificate, Windows Defender SmartScreen may display an <em>"Unknown Publisher / Windows protected your PC"</em> prompt on first run.<br />
-                  This is completely normal: simply click <strong>[More info] → [Run anyway]</strong> to launch the application.
+                  This is standard for independently published software. Verify the SHA-256 hash if desired, then click <strong>[More info] → [Run anyway]</strong>.
                 </p>
               </div>
             </div>
@@ -225,13 +246,21 @@ const faqSchema = JSON.stringify({
             <div class="sec-item">
               <div class="sec-icon">🔑</div>
               <div class="sec-content">
-                <h3>Cryptographic Checksum (SHA-256)</h3>
+                <h3>Cryptographic Verification (SHA-256 & VirusTotal)</h3>
                 <p class="hash-desc">
-                  You can verify the authenticity and integrity of your downloaded binary using Windows PowerShell:
+                  You can verify the authenticity and integrity of your downloaded binary using Windows PowerShell or inspect the VirusTotal report:
                 </p>
                 <div class="hash-box">
                   <code>{fileHash}</code>
                   <button class="btn-copy-hash" id="copy-hash-btn" title="Copy Hash">Copy</button>
+                </div>
+                <div class="security-verify-links">
+                  <a href={virusTotalUrl} target="_blank" rel="noopener noreferrer" class="link-virustotal">
+                    🛡️ View VirusTotal Scan Results ↗
+                  </a>
+                  <a href={githubReleasesUrl} target="_blank" rel="noopener noreferrer" class="link-github-release">
+                    📦 View GitHub Release Notes ↗
+                  </a>
                 </div>
                 <span class="hash-tip">PowerShell verification: <code>Get-FileHash Chzzk_Downloader.exe</code></span>
               </div>
@@ -601,14 +630,15 @@ const faqSchema = JSON.stringify({
           <p>Never lose memorable VODs, highlights, or YouTube gems to sudden deletions.</p>
           <div class="cta-buttons">
             <a 
-              href="/downloads/Chzzk_Downloader.exe" 
-              download="Chzzk_Downloader.exe" 
+              href={downloadUrl} 
+              target="_blank"
+              rel="noopener noreferrer"
               class="btn-cta-download"
             >
               ⚡ Download Chzzk & YouTube Downloader {appVersion} ({fileSize})
             </a>
           </div>
-          <span class="cta-safe-badge">🛡️ 100% Clean Freeware • Windows 10 / 11 64-bit Compatible</span>
+          <span class="cta-safe-badge">🛡️ Official GitHub Releases • Cryptographic SHA-256 • Windows 10 / 11 64-bit</span>
         </div>
       </section>
     </main>
@@ -826,6 +856,7 @@ const faqSchema = JSON.stringify({
     font-weight: 700;
   }
 
+  .btn-chzzk-github,
   .btn-chzzk-guide {
     display: inline-flex;
     align-items: center;
@@ -840,6 +871,7 @@ const faqSchema = JSON.stringify({
     transition: all 0.2s ease;
   }
 
+  .btn-chzzk-github:hover,
   .btn-chzzk-guide:hover {
     background: #1c2640;
     border-color: rgba(255, 255, 255, 0.2);
@@ -1008,6 +1040,47 @@ const faqSchema = JSON.stringify({
     background: #10b981;
     color: #ffffff;
     border-color: #10b981;
+  }
+
+  .security-verify-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 0.6rem 0 0.8rem;
+  }
+
+  .link-virustotal,
+  .link-github-release {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .link-virustotal {
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: #38bdf8;
+  }
+
+  .link-virustotal:hover {
+    background: rgba(56, 189, 248, 0.22);
+    color: #e0f2fe;
+  }
+
+  .link-github-release {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--chzzk-border);
+    color: #cbd5e1;
+  }
+
+  .link-github-release:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
   }
 
   .hash-tip {

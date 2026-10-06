@@ -1,0 +1,650 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { SITE_TITLE } from '../../consts';
+import { getKoUrl, getEnUrl } from '../../i18n';
+
+const PAGE_TITLE = `Free Streamer & Creator Tools Directory | ${SITE_TITLE}`;
+const PAGE_DESCRIPTION = "Explore free, installation-free tools for live streamers: Chzzk & YouTube Downloader, Stream Schedule Studio, Bzzk Ban Radar, Soundboard SFX, and Emote Studio.";
+const PAGE_KEYWORDS = "streamer tools, creator utilities, Chzzk downloader, YouTube downloader, stream schedule maker, soundboard online, animated emote maker, OBS browser source tools, Twitch tools";
+
+const breadcrumbItems = [
+  { name: "Home", url: "/en" },
+  { name: "Streamer Tools" }
+];
+
+const toolsList = [
+  {
+    category: "Download & Video Archive",
+    categoryDesc: "Preserve VODs, stream highlights, and YouTube videos directly to your PC without quality loss.",
+    items: [
+      {
+        id: "chzzk-downloader",
+        title: "Chzzk & YouTube Downloader",
+        desc: "Standalone local utility to download Naver CHZZK VODs, clips, and YouTube videos or Shorts in maximum resolution (up to 4K / 1080p FHD). Zero re-encoding loss with bundled FFmpeg.",
+        badge: "v2.0.0 4K/FHD",
+        badgeType: "hot",
+        icon: "📥",
+        link: "/en/chzzk-downloader",
+        tags: ["Windows 64-bit", "Bundled FFmpeg", "Batch Queue", "Freeware"],
+        statusText: "Official Release"
+      }
+    ]
+  },
+  {
+    category: "Stream Planning & Operations",
+    categoryDesc: "Streamline your broadcast announcements, community updates, and chat safety.",
+    items: [
+      {
+        id: "schedule-studio",
+        title: "Broadcast Schedule Studio",
+        desc: "Create beautiful weekly and monthly streaming schedule graphics with 7 customizable design templates. Export high-res PNG images and formatted Discord/community announcement text.",
+        badge: "HOT STUDIO",
+        badgeType: "popular",
+        icon: "📅",
+        link: "/en/schedule",
+        tags: ["Web-based", "High-res PNG", "Template Export", "Discord Ready"],
+        statusText: "Free Online"
+      },
+      {
+        id: "bzzk-radar",
+        title: "Bzzk Ban & Moderation Radar",
+        desc: "Real-time moderation radar tracking blacklisted trolls and toxic chat participants across CHZZK channels to protect streamer broadcasts.",
+        badge: "LIVE RADAR",
+        badgeType: "live",
+        icon: "🛡️",
+        link: "/en/bzzk",
+        tags: ["Live Tracking", "Channel Radar", "Safety Tools"],
+        statusText: "Operational"
+      }
+    ]
+  },
+  {
+    category: "Live Production & Creator Assets",
+    categoryDesc: "Enhance your live broadcast energy with instant sound effects and custom channel assets.",
+    items: [
+      {
+        id: "soundboard",
+        title: "Keypad Stream Soundboard",
+        desc: "Ultra-fast browser soundboard triggering reaction SFX, meme audio, and stream jingles using number keypad hotkeys with zero latency.",
+        badge: "HOTKEY SFX",
+        badgeType: "new",
+        icon: "🔊",
+        link: "/en/games/soundboard",
+        tags: ["Numpad Hotkeys", "OBS Audio Routing", "Instant Playback"],
+        statusText: "Free Online"
+      },
+      {
+        id: "stream-emoji",
+        title: "Animated Emote Maker",
+        desc: "Frame-by-frame web animation studio to craft animated GIF & WebP channel emotes and subscriber badges for Twitch, YouTube, and CHZZK.",
+        badge: "ANIMATED",
+        badgeType: "popular",
+        icon: "🎬",
+        link: "/en/games/stream-emoji",
+        tags: ["GIF/WebP", "Frame Editor", "Channel Emotes"],
+        statusText: "Free Online"
+      },
+      {
+        id: "stream-doodle",
+        title: "Live Stream Doodle Board",
+        desc: "Real-time animated drawing canvas and neon sketchpad designed for OBS browser source overlays. Draw directly over your stream screen.",
+        badge: "OBS OVERLAY",
+        badgeType: "new",
+        icon: "🎨",
+        link: "/en/games/stream-doodle",
+        tags: ["OBS Browser Source", "Neon Strokes", "Live Drawing"],
+        statusText: "Free Online"
+      }
+    ]
+  }
+];
+
+const itemListSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "ErrorLedger Streamer & Creator Tools",
+  "description": PAGE_DESCRIPTION,
+  "itemListElement": toolsList.flatMap((cat, catIdx) => 
+    cat.items.map((tool, toolIdx) => ({
+      "@type": "ListItem",
+      "position": catIdx * 10 + toolIdx + 1,
+      "name": tool.title,
+      "description": tool.desc,
+      "url": `https://errorledger.com${tool.link}`
+    }))
+  )
+});
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead 
+      title={PAGE_TITLE} 
+      description={PAGE_DESCRIPTION}
+      lang="en"
+      hreflangKo={getKoUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
+      hreflangEn={getEnUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
+      keywords={PAGE_KEYWORDS}
+    />
+    <script type="application/ld+json" set:html={itemListSchema}></script>
+  </head>
+  <body class="tools-page-body">
+    <Header />
+
+    <main class="tools-main">
+      <div class="tools-container">
+        <!-- Breadcrumbs Navigation -->
+        <Breadcrumbs items={breadcrumbItems} />
+
+        <!-- Hero Section -->
+        <header class="tools-hero">
+          <div class="tools-hero-badge">
+            <span class="badge-icon">🛠️</span>
+            <span>STREAMER & CREATOR UTILITIES</span>
+          </div>
+          <h1 class="tools-title">
+            Essential Free Tools for <span class="accent-text">Streamers & Creators</span>
+          </h1>
+          <p class="tools-subtitle">
+            From video preservation and schedule design to live chat moderation radar and hotkey soundboards —<br />
+            practical, zero-cost web utilities ready to supercharge your broadcast workflow.
+          </p>
+
+          <div class="tools-stats-bar">
+            <div class="stat-item">
+              <span class="stat-number">6+</span>
+              <span class="stat-label">Free Utilities</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <span class="stat-number">100%</span>
+              <span class="stat-label">Free Forever</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <span class="stat-number">OBS</span>
+              <span class="stat-label">Ready Integration</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Categories and Tool Cards -->
+        {toolsList.map((group) => (
+          <section class="tools-group-section">
+            <div class="group-header">
+              <h2 class="group-title">{group.category}</h2>
+              <p class="group-desc">{group.categoryDesc}</p>
+            </div>
+
+            <div class="tools-grid">
+              {group.items.map((tool) => (
+                <article class="tool-card" id={tool.id}>
+                  <div class="tool-card-glow"></div>
+                  <div class="tool-card-header">
+                    <div class="tool-icon-wrap">
+                      <span class="tool-icon">{tool.icon}</span>
+                    </div>
+                    <div class="tool-badges">
+                      <span class={`pill-badge ${tool.badgeType}`}>{tool.badge}</span>
+                      <span class="status-indicator">{tool.statusText}</span>
+                    </div>
+                  </div>
+
+                  <h3 class="tool-name">
+                    <a href={tool.link}>{tool.title}</a>
+                  </h3>
+                  <p class="tool-desc">{tool.desc}</p>
+
+                  <div class="tool-tags">
+                    {tool.tags.map((tag) => (
+                      <span class="tag-chip">#{tag}</span>
+                    ))}
+                  </div>
+
+                  <div class="tool-card-footer">
+                    <a href={tool.link} class="btn-open-tool">
+                      <span>Launch Tool</span>
+                      <span class="arrow-icon">→</span>
+                    </a>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        ))}
+
+        <!-- Streamer Workflow Callout -->
+        <section class="obs-callout-card">
+          <div class="callout-content">
+            <span class="callout-pill">OBS STUDIO INTEGRATION</span>
+            <h3>Use with OBS Studio Browser Source</h3>
+            <p>
+              All ErrorLedger utilities and interactive games integrate effortlessly with OBS Studio via <strong>Browser Source</strong>. Just paste the URL into OBS at 1920x1080 resolution for clean overlays, crisp visuals, and direct streamer control.
+            </p>
+          </div>
+          <div class="callout-actions">
+            <a href="/en/guide" class="btn-callout-guide">📖 View Guides</a>
+            <a href="/en/games" class="btn-callout-games">🎮 Explore Games</a>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .tools-page-body {
+    background: #090d16;
+    color: #f1f5f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: inherit;
+    overflow-x: hidden;
+  }
+
+  .tools-main {
+    flex: 1;
+    width: 100%;
+    padding: 1rem 1.5rem 5rem;
+  }
+
+  .tools-container {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  /* Hero Section */
+  .tools-hero {
+    text-align: center;
+    padding: 2.5rem 1rem 3.5rem;
+    position: relative;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 3.5rem;
+  }
+
+  .tools-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(0, 255, 163, 0.1);
+    border: 1px solid rgba(0, 255, 163, 0.3);
+    color: #00ffa3;
+    padding: 0.4rem 1.1rem;
+    border-radius: 9999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  .tools-title {
+    font-size: clamp(2rem, 4.2vw, 3rem);
+    font-weight: 800;
+    line-height: 1.3;
+    color: #ffffff;
+    margin: 0 0 1.25rem;
+    letter-spacing: -0.02em;
+  }
+
+  .accent-text {
+    background: linear-gradient(135deg, #00ffa3 0%, #38bdf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .tools-subtitle {
+    font-size: clamp(1rem, 1.8vw, 1.12rem);
+    line-height: 1.7;
+    color: #94a3b8;
+    max-width: 780px;
+    margin: 0 auto 2.5rem;
+  }
+
+  .tools-stats-bar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #0f1627;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.85rem 2rem;
+    border-radius: 16px;
+    gap: 2rem;
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+  }
+
+  .stat-number {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #00ffa3;
+  }
+
+  .stat-label {
+    font-size: 0.78rem;
+    color: #94a3b8;
+  }
+
+  .stat-divider {
+    width: 1px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  /* Groups & Cards */
+  .tools-group-section {
+    margin-bottom: 4rem;
+  }
+
+  .group-header {
+    margin-bottom: 1.75rem;
+  }
+
+  .group-title {
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .group-desc {
+    font-size: 0.95rem;
+    color: #94a3b8;
+    margin: 0;
+  }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .tool-card {
+    position: relative;
+    background: #0e1526;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 1.85rem;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.25s ease;
+    overflow: hidden;
+  }
+
+  .tool-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0, 255, 163, 0.35);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 255, 163, 0.12);
+  }
+
+  .tool-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+
+  .tool-icon-wrap {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    transition: transform 0.2s ease;
+  }
+
+  .tool-card:hover .tool-icon-wrap {
+    transform: scale(1.08);
+  }
+
+  .tool-badges {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.35rem;
+  }
+
+  .pill-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .pill-badge.hot {
+    background: rgba(255, 75, 75, 0.15);
+    border: 1px solid rgba(255, 75, 75, 0.35);
+    color: #ff6b6b;
+  }
+
+  .pill-badge.popular {
+    background: rgba(0, 255, 163, 0.15);
+    border: 1px solid rgba(0, 255, 163, 0.35);
+    color: #00ffa3;
+  }
+
+  .pill-badge.live {
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #38bdf8;
+  }
+
+  .pill-badge.new {
+    background: rgba(168, 85, 247, 0.15);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    color: #c084fc;
+  }
+
+  .status-indicator {
+    font-size: 0.74rem;
+    color: #64748b;
+  }
+
+  .tool-name {
+    font-size: 1.28rem;
+    font-weight: 700;
+    margin: 0 0 0.65rem;
+    line-height: 1.4;
+  }
+
+  .tool-name a {
+    color: #ffffff;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .tool-name a:hover {
+    color: #00ffa3;
+  }
+
+  .tool-desc {
+    font-size: 0.92rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0 0 1.25rem;
+    flex: 1;
+  }
+
+  .tool-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .tag-chip {
+    font-size: 0.76rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #cbd5e1;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+  }
+
+  .tool-card-footer {
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .btn-open-tool {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #141d33;
+    color: #f1f5f9;
+    padding: 0.75rem 1.15rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.92rem;
+    text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.2s ease;
+  }
+
+  .btn-open-tool:hover {
+    background: linear-gradient(135deg, #00ffa3 0%, #00c760 100%);
+    color: #090d16;
+    border-color: transparent;
+    font-weight: 700;
+    box-shadow: 0 4px 18px rgba(0, 255, 163, 0.3);
+  }
+
+  .arrow-icon {
+    font-size: 1.1rem;
+    transition: transform 0.2s ease;
+  }
+
+  .btn-open-tool:hover .arrow-icon {
+    transform: translateX(4px);
+  }
+
+  /* Callout Card */
+  .obs-callout-card {
+    background: linear-gradient(135deg, #0e1526 0%, #151e36 100%);
+    border: 1px solid rgba(0, 255, 163, 0.25);
+    border-radius: 20px;
+    padding: 2.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    margin-top: 2rem;
+  }
+
+  .callout-content {
+    flex: 1 1 500px;
+  }
+
+  .callout-pill {
+    display: inline-block;
+    background: rgba(0, 255, 163, 0.15);
+    border: 1px solid rgba(0, 255, 163, 0.3);
+    color: #00ffa3;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.65rem;
+    border-radius: 6px;
+    margin-bottom: 0.75rem;
+  }
+
+  .callout-content h3 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 0.65rem;
+  }
+
+  .callout-content p {
+    font-size: 0.95rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .callout-content strong {
+    color: #f1f5f9;
+  }
+
+  .callout-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    flex: 0 0 auto;
+  }
+
+  .btn-callout-guide,
+  .btn-callout-games {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.85rem 1.4rem;
+    border-radius: 12px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .btn-callout-guide {
+    background: #00ffa3;
+    color: #090d16;
+    font-weight: 700;
+  }
+
+  .btn-callout-guide:hover {
+    background: #1effb0;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 255, 163, 0.3);
+  }
+
+  .btn-callout-games {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+  }
+
+  .btn-callout-games:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+  }
+
+  @media (max-width: 768px) {
+    .tools-stats-bar {
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+    }
+    .stat-divider {
+      display: none;
+    }
+    .obs-callout-card {
+      padding: 1.75rem;
+    }
+    .callout-actions {
+      width: 100%;
+    }
+  }
+</style>

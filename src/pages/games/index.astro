@@ -1,0 +1,641 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { SITE_TITLE } from '../../consts';
+import { getKoUrl, getEnUrl } from '../../i18n';
+
+const PAGE_TITLE = `스트리머 인터랙티브 게임 모음 & OBS 웹게임 | ${SITE_TITLE}`;
+const PAGE_DESCRIPTION = "OBS 스튜디오 브라우저 소스로 바로 띄우는 무료 방송용 인터랙티브 웹게임. 3D 물리 구슬 룰렛, 확률 돌림판, 사다리타기, 주류마블, AI 노래 퀴즈를 무설치로 즐기세요.";
+const PAGE_KEYWORDS = "방송용 게임, 스트리머 게임, 구슬 룰렛, 마블 룰렛, 방송 돌림판, 사다리타기, 주루마블, AI 음악 퀴즈, OBS 브라우저 소스 게임, 치지직 방송 게임, 트위치 방송 게임";
+
+const breadcrumbItems = [
+  { name: "홈", url: "/" },
+  { name: "인터랙티브 게임" }
+];
+
+const gamesList = [
+  {
+    category: "🎲 랜덤 추첨 & 익스트림 대결",
+    categoryDesc: "벌칙, 시청자 참여 추첨, 승부 예측을 가장 짜릿하고 공정하게 진행하세요.",
+    items: [
+      {
+        id: "marble-roulette",
+        title: "3D 물리 구슬 룰렛 레이스",
+        desc: "최대 40명의 참가자가 복합 장애물 트랙에서 실시간 3D 물리 충돌로 레이스를 펼치는 에러레저 대표 인터랙티브 게임입니다.",
+        badge: "HOT 3D RACING",
+        badgeType: "hot",
+        icon: "🔮",
+        link: "/games/marble-roulette",
+        tags: ["3D Cannon.js", "최대 40명", "OBS 브라우저 소스", "사운드 효과음"],
+        players: "1 ~ 40명"
+      },
+      {
+        id: "roulette",
+        title: "확률 커스텀 돌림판",
+        desc: "항목별 가중치 확률을 세밀하게 조절할 수 있는 방송용 룰렛. 미션 추첨, 벌칙 뽑기, 시청자 선물 추첨에 최적화되어 있습니다.",
+        badge: "CUSTOM WHEEL",
+        badgeType: "popular",
+        icon: "🎡",
+        link: "/games/roulette",
+        tags: ["확률 가중치", "항목 저장", "승리 축하 연출"],
+        players: "무제한"
+      },
+      {
+        id: "ladder",
+        title: "복불복 사다리타기",
+        desc: "최대 20명까지 지원하는 다인원 사다리타기 게임. 긴장감 넘치는 실시간 선 추적 애니메이션과 공정한 무작위 매칭을 제공합니다.",
+        badge: "MULTIPLAYER",
+        badgeType: "popular",
+        icon: "🪜",
+        link: "/games/ladder",
+        tags: ["최대 20명", "선 추적 애니메이션", "결과 일괄 보기"],
+        players: "2 ~ 20명"
+      }
+    ]
+  },
+  {
+    category: "🎉 스트림 소통 & 파티 퀴즈",
+    categoryDesc: "시청자와 함께 웃고 즐기는 인터랙티브 퀴즈 및 합방용 보드게임입니다.",
+    items: [
+      {
+        id: "drinking-marble",
+        title: "주류마블 파티 보드게임",
+        desc: "합방, 술먹방, 토크 방송에 제격인 클래식 주루마블. 다양한 미션 타일과 황금열쇠 카드로 방송 텐션을 폭발시킵니다.",
+        badge: "PARTY GAME",
+        badgeType: "new",
+        icon: "🌸",
+        link: "/games/drinking-marble",
+        tags: ["합방 필수", "벌칙 타일", "주사위 굴리기"],
+        players: "1 ~ 8명"
+      },
+      {
+        id: "ai-music-quiz",
+        title: "AI 편곡 노래 맞추기 퀴즈",
+        desc: "AI가 재해석한 독특한 커버 음원을 듣고 원곡의 제목을 맞추는 신개념 인터랙티브 음악 퀴즈 게임입니다.",
+        badge: "AI POWERED",
+        badgeType: "new",
+        icon: "🎧",
+        link: "/games/ai-music-quiz",
+        tags: ["AI 편곡 음원", "장르별 팩", "시청자 참여형"],
+        players: "전체 시청자"
+      }
+    ]
+  },
+  {
+    category: "🎨 크리에이티브 & 라이브 비주얼",
+    categoryDesc: "방송 송출 화면을 더욱 다채롭고 생동감 있게 꾸며주는 시각적 인터랙션입니다.",
+    items: [
+      {
+        id: "stream-doodle",
+        title: "실시간 방송 낙서장 (Stream Doodle)",
+        desc: "OBS 화면 위에 실시간으로 움직이는 네온 손글씨와 낙서를 그리고 표시하는 브라우저 소스 연동 캔버스입니다.",
+        badge: "OBS CANVAS",
+        badgeType: "live",
+        icon: "🎨",
+        link: "/games/stream-doodle",
+        tags: ["투명 배경", "네온 스트로크", "실시간 드로잉"],
+        players: "단독/시청자"
+      },
+      {
+        id: "stream-emoji",
+        title: "움직이는 이모티콘 메이커",
+        desc: "채널 구독 이모티콘 및 팬카페용 애니메이션 GIF/WebP를 손쉽게 프레임 단위로 생성하고 내보냅니다.",
+        badge: "EMOTE STUDIO",
+        badgeType: "popular",
+        icon: "🎬",
+        link: "/games/stream-emoji",
+        tags: ["프레임 편집기", "GIF/WebP 내보내기", "채널 에셋"],
+        players: "크리에이터"
+      }
+    ]
+  }
+];
+
+const itemListSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "에러레저 인터랙티브 방송 게임 모음",
+  "description": PAGE_DESCRIPTION,
+  "itemListElement": gamesList.flatMap((cat, catIdx) => 
+    cat.items.map((game, gIdx) => ({
+      "@type": "ListItem",
+      "position": catIdx * 10 + gIdx + 1,
+      "name": game.title,
+      "description": game.desc,
+      "url": `https://errorledger.com${game.link}`
+    }))
+  )
+});
+---
+
+<!doctype html>
+<html lang="ko" class="dark">
+  <head>
+    <BaseHead 
+      title={PAGE_TITLE} 
+      description={PAGE_DESCRIPTION}
+      lang="ko"
+      hreflangKo={getKoUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
+      hreflangEn={getEnUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
+      keywords={PAGE_KEYWORDS}
+    />
+    <script type="application/ld+json" set:html={itemListSchema}></script>
+  </head>
+  <body class="games-page-body">
+    <Header />
+
+    <main class="games-main">
+      <div class="games-container">
+        <!-- Breadcrumbs Navigation -->
+        <Breadcrumbs items={breadcrumbItems} />
+
+        <!-- Hero Section -->
+        <header class="games-hero">
+          <div class="games-hero-badge">
+            <span class="badge-icon">🎮</span>
+            <span>STREAM INTERACTIVE GAMES</span>
+          </div>
+          <h1 class="games-title">
+            생방송 텐션을 올리는 <span class="accent-text">인터랙티브 웹게임</span>
+          </h1>
+          <p class="games-subtitle">
+            OBS 스튜디오 브라우저 소스로 1초 만에 송출 화면에 띄우세요.<br />
+            무설치 3D 물리 구슬 룰렛, 커스텀 돌림판, 사다리타기, AI 노래 퀴즈로 시청자 참여를 폭발시키세요.
+          </p>
+
+          <div class="games-stats-bar">
+            <div class="stat-item">
+              <span class="stat-number">7종</span>
+              <span class="stat-label">무료 인터랙티브 게임</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <span class="stat-number">0원</span>
+              <span class="stat-label">상업적 송출 100% 무료</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <span class="stat-number">OBS</span>
+              <span class="stat-label">브라우저 소스 최적화</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Category Groups -->
+        {gamesList.map((group) => (
+          <section class="games-group-section">
+            <div class="group-header">
+              <h2 class="group-title">{group.category}</h2>
+              <p class="group-desc">{group.categoryDesc}</p>
+            </div>
+
+            <div class="games-grid">
+              {group.items.map((game) => (
+                <article class="game-card" id={game.id}>
+                  <div class="game-card-header">
+                    <div class="game-icon-wrap">
+                      <span class="game-icon">{game.icon}</span>
+                    </div>
+                    <div class="game-badges">
+                      <span class={`pill-badge ${game.badgeType}`}>{game.badge}</span>
+                      <span class="players-badge">👥 {game.players}</span>
+                    </div>
+                  </div>
+
+                  <h3 class="game-name">
+                    <a href={game.link}>{game.title}</a>
+                  </h3>
+                  <p class="game-desc">{game.desc}</p>
+
+                  <div class="game-tags">
+                    {game.tags.map((tag) => (
+                      <span class="tag-chip">#{tag}</span>
+                    ))}
+                  </div>
+
+                  <div class="game-card-footer">
+                    <a href={game.link} class="btn-play-game">
+                      <span>게임 시작하기</span>
+                      <span class="play-arrow">▶</span>
+                    </a>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        ))}
+
+        <!-- OBS Setup Guide Box -->
+        <section class="obs-instruction-card">
+          <div class="instruction-header">
+            <span class="obs-pill">OBS SETUP GUIDE</span>
+            <h3>OBS 스튜디오 브라우저 소스 설정 3단계</h3>
+          </div>
+          <div class="instruction-steps">
+            <div class="step-box">
+              <span class="step-num">1</span>
+              <h4>게임 URL 복사</h4>
+              <p>원하는 게임 페이지의 주소를 브라우저 주소창에서 복사합니다.</p>
+            </div>
+            <div class="step-box">
+              <span class="step-num">2</span>
+              <h4>OBS 브라우저 소스 추가</h4>
+              <p>OBS 소스 목록에서 [+] → [브라우저]를 선택하고 URL을 붙여넣습니다.</p>
+            </div>
+            <div class="step-box">
+              <span class="step-num">3</span>
+              <h4>권장 해상도 적용</h4>
+              <p>너비 1920, 높이 1080으로 설정하면 고화질 화면과 오디오가 연동됩니다.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .games-page-body {
+    background: #090d16;
+    color: #f1f5f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: inherit;
+    overflow-x: hidden;
+  }
+
+  .games-main {
+    flex: 1;
+    width: 100%;
+    padding: 1rem 1.5rem 5rem;
+  }
+
+  .games-container {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  /* Hero Section */
+  .games-hero {
+    text-align: center;
+    padding: 2.5rem 1rem 3.5rem;
+    position: relative;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 3.5rem;
+  }
+
+  .games-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(168, 85, 247, 0.12);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    color: #c084fc;
+    padding: 0.4rem 1.1rem;
+    border-radius: 9999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  .games-title {
+    font-size: clamp(2rem, 4.2vw, 3rem);
+    font-weight: 800;
+    line-height: 1.3;
+    color: #ffffff;
+    margin: 0 0 1.25rem;
+    letter-spacing: -0.02em;
+  }
+
+  .accent-text {
+    background: linear-gradient(135deg, #c084fc 0%, #00ffa3 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .games-subtitle {
+    font-size: clamp(1rem, 1.8vw, 1.12rem);
+    line-height: 1.7;
+    color: #94a3b8;
+    max-width: 780px;
+    margin: 0 auto 2.5rem;
+  }
+
+  .games-stats-bar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #0f1627;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.85rem 2rem;
+    border-radius: 16px;
+    gap: 2rem;
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+  }
+
+  .stat-number {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #c084fc;
+  }
+
+  .stat-label {
+    font-size: 0.78rem;
+    color: #94a3b8;
+  }
+
+  .stat-divider {
+    width: 1px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  /* Groups & Cards */
+  .games-group-section {
+    margin-bottom: 4rem;
+  }
+
+  .group-header {
+    margin-bottom: 1.75rem;
+  }
+
+  .group-title {
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 0.5rem;
+  }
+
+  .group-desc {
+    font-size: 0.95rem;
+    color: #94a3b8;
+    margin: 0;
+  }
+
+  .games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .game-card {
+    position: relative;
+    background: #0e1526;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 1.85rem;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.25s ease;
+    overflow: hidden;
+  }
+
+  .game-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(168, 85, 247, 0.4);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(168, 85, 247, 0.15);
+  }
+
+  .game-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+
+  .game-icon-wrap {
+    width: 54px;
+    height: 54px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    transition: transform 0.2s ease;
+  }
+
+  .game-card:hover .game-icon-wrap {
+    transform: scale(1.1);
+  }
+
+  .game-badges {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.35rem;
+  }
+
+  .pill-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    text-transform: uppercase;
+  }
+
+  .pill-badge.hot {
+    background: rgba(255, 75, 75, 0.18);
+    border: 1px solid rgba(255, 75, 75, 0.4);
+    color: #ff6b6b;
+  }
+
+  .pill-badge.popular {
+    background: rgba(0, 255, 163, 0.15);
+    border: 1px solid rgba(0, 255, 163, 0.35);
+    color: #00ffa3;
+  }
+
+  .pill-badge.new {
+    background: rgba(168, 85, 247, 0.18);
+    border: 1px solid rgba(168, 85, 247, 0.4);
+    color: #c084fc;
+  }
+
+  .pill-badge.live {
+    background: rgba(56, 189, 248, 0.18);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    color: #38bdf8;
+  }
+
+  .players-badge {
+    font-size: 0.76rem;
+    color: #94a3b8;
+  }
+
+  .game-name {
+    font-size: 1.28rem;
+    font-weight: 700;
+    margin: 0 0 0.65rem;
+    line-height: 1.4;
+  }
+
+  .game-name a {
+    color: #ffffff;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .game-name a:hover {
+    color: #c084fc;
+  }
+
+  .game-desc {
+    font-size: 0.92rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0 0 1.25rem;
+    flex: 1;
+  }
+
+  .game-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .tag-chip {
+    font-size: 0.76rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #cbd5e1;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+  }
+
+  .game-card-footer {
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .btn-play-game {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #141d33;
+    color: #f1f5f9;
+    padding: 0.75rem 1.15rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.92rem;
+    text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.2s ease;
+  }
+
+  .btn-play-game:hover {
+    background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+    color: #ffffff;
+    border-color: transparent;
+    font-weight: 700;
+    box-shadow: 0 4px 20px rgba(168, 85, 247, 0.35);
+  }
+
+  .play-arrow {
+    font-size: 0.85rem;
+    transition: transform 0.2s ease;
+  }
+
+  .btn-play-game:hover .play-arrow {
+    transform: translateX(4px);
+  }
+
+  /* OBS Instructions */
+  .obs-instruction-card {
+    background: #0d1322;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 2.25rem;
+    margin-top: 2rem;
+  }
+
+  .instruction-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .obs-pill {
+    display: inline-block;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: #38bdf8;
+    font-size: 0.74rem;
+    font-weight: 700;
+    padding: 0.25rem 0.65rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+  }
+
+  .instruction-header h3 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+  }
+
+  .instruction-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .step-box {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 1.4rem;
+  }
+
+  .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #c084fc;
+    color: #090d16;
+    font-weight: 800;
+    font-size: 0.85rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .step-box h4 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 0.45rem;
+  }
+
+  .step-box p {
+    font-size: 0.88rem;
+    color: #94a3b8;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .games-stats-bar {
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+    }
+    .stat-divider {
+      display: none;
+    }
+  }
+</style>

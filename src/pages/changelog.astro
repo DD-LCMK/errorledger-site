@@ -1,0 +1,495 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { SITE_TITLE } from '../consts';
+import { getKoUrl, getEnUrl } from '../i18n';
+
+const PAGE_TITLE = `체인지로그 & 업데이트 내역 | ${SITE_TITLE}`;
+const PAGE_DESCRIPTION = "에러레저(ErrorLedger)의 제품 릴리즈, 치지직 다운로더 기능 추가, 구슬 룰렛 물리 엔진 개선 등 최신 업데이트 히스토리를 확인하세요.";
+const PAGE_KEYWORDS = "에러레저 체인지로그, 치지직 다운로더 업데이트, 구슬 룰렛 업데이트, 에러레저 패치노트, 방송 도구 릴리즈 노트";
+
+const breadcrumbItems = [
+  { name: "홈", url: "/" },
+  { name: "체인지로그" }
+];
+
+const changelogData = [
+  {
+    version: "v2.0.0",
+    date: "2026-03-28",
+    title: "치지직 & 유튜브 다운로더 v2.0.0 대규모 업데이트",
+    badge: "MAJOR RELEASE",
+    badgeType: "hot",
+    summary: "유튜브 영상 및 쇼츠(Shorts) 지원 확장, 순차 배치 다운로드 대기열 워커 및 GitHub Releases 정식 배포 체계가 구축되었습니다.",
+    changes: [
+      { type: "feat", text: "유튜브(YouTube) 일반 영상, 쇼츠(Shorts), youtu.be 단축 링크 무손실 다운로드 지원 추가" },
+      { type: "feat", text: "여러 영상 URL을 한 번에 처리하는 백그라운드 세션 큐(대기열) 워커 시스템 탑재" },
+      { type: "feat", text: "imageio-ffmpeg 내장 번들링으로 별도 프로그램 설치 없는 완전 자동 4K/FHD 머징 지원" },
+      { type: "security", text: "GitHub Releases 공식 배포 및 SHA-256 무결성 해시, VirusTotal 검사 결과 투명 공개" }
+    ]
+  },
+  {
+    version: "v1.9.5",
+    date: "2026-03-20",
+    title: "3D 구슬 룰렛 오디오 밸런스 & 피직스 피날레 튜닝",
+    badge: "POLISH",
+    badgeType: "popular",
+    summary: "방송 송출 환경을 위해 구슬 충돌 효과음 음량을 50% 하향 조정하고, 트랙 피날레 구간의 물리 엔진을 부드럽게 다듬었습니다.",
+    changes: [
+      { type: "improved", text: "스트리머 마이크 및 BGM 밸런스를 고려하여 구슬 룰렛 모든 효과음 볼륨 기본값 50% 감소" },
+      { type: "improved", text: "피날레 장애물 구간의 튕김 반발 계수(Restitution) 및 카메라 트래킹 완충 보정" },
+      { type: "fix", text: "다인원(30명 이상) 구슬 레이스 시 간헐적인 카메라 흔들림 현상 완화" }
+    ]
+  },
+  {
+    version: "v1.9.0",
+    date: "2026-03-10",
+    title: "정보 구조 개편: /tools 및 /games 허브 신설",
+    badge: "ARCHITECTURE",
+    badgeType: "new",
+    summary: "사용자가 원하는 유틸리티와 게임을 직관적으로 탐색할 수 있도록 카테고리별 디렉토리 허브 페이지를 구축했습니다.",
+    changes: [
+      { type: "feat", text: "방송 유틸리티 디렉토리(/tools) 신설 (다운로더, 일정표, Bzzk, 사운드보드 집결)" },
+      { type: "feat", text: "인터랙티브 웹게임 디렉토리(/games) 신설 및 OBS 브라우저 소스 가이드 통합" },
+      { type: "feat", text: "전역 브레드크럼(Breadcrumb) 네비게이션 및 BreadcrumbList JSON-LD 구조화 데이터 적용" },
+      { type: "improved", text: "사이트 네비게이션 헤더 및 푸터 다국어 카테고리 링크 체계 개선" }
+    ]
+  },
+  {
+    version: "v1.8.0",
+    date: "2026-02-25",
+    title: "주간 방송 편성표 스튜디오 & 사운드보드 핫키 지원",
+    badge: "UPDATE",
+    badgeType: "popular",
+    summary: "스트리머의 주간 일정 공유를 위한 7가지 테마 템플릿과 방송용 키패드 사운드보드가 추가되었습니다.",
+    changes: [
+      { type: "feat", text: "주간 방송 편성표 스튜디오: 7종 디자인 프리셋 및 고화질 PNG 내보내기 지원" },
+      { type: "feat", text: "방송용 키패드 사운드보드: 숫자 키패드 핫키 즉각 재생 및 OBS 가상 오디오 믹싱 대응" },
+      { type: "feat", text: "복불복 사다리타기: 최대 20명 다인원 지원 및 실시간 라인 트레이싱 애니메이션 강화" }
+    ]
+  }
+];
+---
+
+<!doctype html>
+<html lang="ko" class="dark">
+  <head>
+    <BaseHead 
+      title={PAGE_TITLE} 
+      description={PAGE_DESCRIPTION}
+      lang="ko"
+      hreflangKo={getKoUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
+      hreflangEn={getEnUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
+      keywords={PAGE_KEYWORDS}
+    />
+  </head>
+  <body class="changelog-page-body">
+    <Header />
+
+    <main class="changelog-main">
+      <div class="changelog-container">
+        <!-- Breadcrumbs Navigation -->
+        <Breadcrumbs items={breadcrumbItems} />
+
+        <!-- Hero Section -->
+        <header class="changelog-hero">
+          <div class="changelog-hero-badge">
+            <span class="badge-icon">📜</span>
+            <span>ERRORLEDGER RELEASE LOG</span>
+          </div>
+          <h1 class="changelog-title">
+            체인지로그 & <span class="accent-text">업데이트 내역</span>
+          </h1>
+          <p class="changelog-subtitle">
+            에러레저는 사용자의 피드백을 바탕으로 방송 도구와 게임의 성능을 지속적으로 개선하고 있습니다.<br />
+            최신 패치 노트와 신규 기능, 보안 개선 사항을 투명하게 확인하세요.
+          </p>
+        </header>
+
+        <!-- Timeline Container -->
+        <section class="timeline-section">
+          <div class="timeline-list">
+            {changelogData.map((release) => (
+              <article class="timeline-item">
+                <div class="timeline-marker">
+                  <div class="marker-dot"></div>
+                  <div class="marker-line"></div>
+                </div>
+
+                <div class="timeline-card">
+                  <div class="card-header">
+                    <div class="version-badge-group">
+                      <span class="version-tag">{release.version}</span>
+                      <span class={`pill-badge ${release.badgeType}`}>{release.badge}</span>
+                    </div>
+                    <time class="release-date">{release.date}</time>
+                  </div>
+
+                  <h2 class="release-title">{release.title}</h2>
+                  <p class="release-summary">{release.summary}</p>
+
+                  <div class="changes-list">
+                    {release.changes.map((item) => (
+                      <div class="change-entry">
+                        <span class={`type-pill ${item.type}`}>
+                          {item.type === 'feat' && '신규 기능'}
+                          {item.type === 'improved' && '개선'}
+                          {item.type === 'fix' && '수정'}
+                          {item.type === 'security' && '보안/신뢰'}
+                        </span>
+                        <span class="change-text">{item.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <!-- GitHub Releases Callout -->
+        <section class="github-release-banner">
+          <div class="banner-icon">📦</div>
+          <div class="banner-text">
+            <h3>GitHub에서 소스코드 및 바이너리 릴리즈 확인하기</h3>
+            <p>
+              치지직 다운로더의 공식 실행 바이너리와 릴리즈 노트는 공식 GitHub Releases 저장소에서도 직접 확인하실 수 있습니다.
+            </p>
+          </div>
+          <a 
+            href="https://github.com/DD-LCMK/errorledger-engine/releases" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="btn-github-releases"
+          >
+            GitHub Releases 방문 ↗
+          </a>
+        </section>
+      </div>
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .changelog-page-body {
+    background: #090d16;
+    color: #f1f5f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: inherit;
+    overflow-x: hidden;
+  }
+
+  .changelog-main {
+    flex: 1;
+    width: 100%;
+    padding: 1rem 1.5rem 5rem;
+  }
+
+  .changelog-container {
+    max-width: 920px;
+    margin: 0 auto;
+  }
+
+  /* Hero Section */
+  .changelog-hero {
+    text-align: center;
+    padding: 2.5rem 1rem 3rem;
+    position: relative;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 3.5rem;
+  }
+
+  .changelog-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(0, 255, 163, 0.1);
+    border: 1px solid rgba(0, 255, 163, 0.3);
+    color: #00ffa3;
+    padding: 0.4rem 1.1rem;
+    border-radius: 9999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  .changelog-title {
+    font-size: clamp(2rem, 4.2vw, 3rem);
+    font-weight: 800;
+    line-height: 1.3;
+    color: #ffffff;
+    margin: 0 0 1.25rem;
+    letter-spacing: -0.02em;
+  }
+
+  .accent-text {
+    background: linear-gradient(135deg, #00ffa3 0%, #38bdf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .changelog-subtitle {
+    font-size: clamp(1rem, 1.8vw, 1.12rem);
+    line-height: 1.7;
+    color: #94a3b8;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  /* Timeline */
+  .timeline-section {
+    margin-bottom: 4rem;
+  }
+
+  .timeline-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    position: relative;
+  }
+
+  .timeline-item {
+    display: flex;
+    gap: 1.5rem;
+    position: relative;
+  }
+
+  .timeline-marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 24px;
+    flex-shrink: 0;
+    padding-top: 0.5rem;
+  }
+
+  .marker-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #00ffa3;
+    box-shadow: 0 0 12px #00ffa3;
+    z-index: 1;
+  }
+
+  .marker-line {
+    flex: 1;
+    width: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    margin-top: 0.5rem;
+  }
+
+  .timeline-card {
+    flex: 1;
+    background: #0e1526;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 1.85rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+    transition: border-color 0.2s ease;
+  }
+
+  .timeline-card:hover {
+    border-color: rgba(0, 255, 163, 0.3);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .version-badge-group {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .version-tag {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #ffffff;
+    font-family: monospace;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 0.2rem 0.6rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .pill-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    text-transform: uppercase;
+  }
+
+  .pill-badge.hot {
+    background: rgba(255, 75, 75, 0.15);
+    border: 1px solid rgba(255, 75, 75, 0.35);
+    color: #ff6b6b;
+  }
+
+  .pill-badge.popular {
+    background: rgba(0, 255, 163, 0.15);
+    border: 1px solid rgba(0, 255, 163, 0.35);
+    color: #00ffa3;
+  }
+
+  .pill-badge.new {
+    background: rgba(168, 85, 247, 0.15);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    color: #c084fc;
+  }
+
+  .release-date {
+    font-size: 0.85rem;
+    color: #64748b;
+    font-family: monospace;
+  }
+
+  .release-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 0.65rem;
+    line-height: 1.4;
+  }
+
+  .release-summary {
+    font-size: 0.94rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0 0 1.25rem;
+  }
+
+  .changes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    background: #090e1a;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.15rem;
+  }
+
+  .change-entry {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .type-pill {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 5px;
+    white-space: nowrap;
+    line-height: 1.2;
+    margin-top: 0.15rem;
+  }
+
+  .type-pill.feat {
+    background: rgba(0, 255, 163, 0.15);
+    color: #00ffa3;
+    border: 1px solid rgba(0, 255, 163, 0.3);
+  }
+
+  .type-pill.improved {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+  }
+
+  .type-pill.fix {
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+  }
+
+  .type-pill.security {
+    background: rgba(168, 85, 247, 0.15);
+    color: #c084fc;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+  }
+
+  .change-text {
+    color: #cbd5e1;
+  }
+
+  /* GitHub Release Banner */
+  .github-release-banner {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1.75rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .banner-icon {
+    font-size: 2.2rem;
+  }
+
+  .banner-text {
+    flex: 1 1 360px;
+  }
+
+  .banner-text h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 0.35rem;
+  }
+
+  .banner-text p {
+    font-size: 0.88rem;
+    color: #94a3b8;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .btn-github-releases {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    padding: 0.75rem 1.25rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .btn-github-releases:hover {
+    background: #00ffa3;
+    color: #090d16;
+    border-color: #00ffa3;
+  }
+
+  @media (max-width: 640px) {
+    .timeline-marker {
+      display: none;
+    }
+    .timeline-card {
+      padding: 1.25rem;
+    }
+  }
+</style>

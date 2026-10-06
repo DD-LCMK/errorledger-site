@@ -31,7 +31,7 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
       <div class="nav-dropdown" data-dropdown="games">
         <button 
           type="button" 
-          class={`nav-dropdown-btn ${currentPath.includes('/games/') ? 'active' : ''}`}
+          class={`nav-dropdown-btn ${currentPath.includes('/games') ? 'active' : ''}`}
           aria-haspopup="true" 
           aria-expanded="false"
         >
@@ -44,7 +44,7 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
           <div class="dropdown-menu-inner">
             <div class="dropdown-header">
               <span class="dropdown-category-title">🎮 {isEn ? "INTERACTIVE GAMES" : "인기 인터랙티브 게임"}</span>
-              <span class="dropdown-category-badge">{isEn ? "7 Games" : "7종 무료"}</span>
+              <a href={`${prefix}/games`} class="dropdown-hub-link">{isEn ? "View All (7) →" : "전체 게임 보기 →"}</a>
             </div>
             <div class="dropdown-grid-games">
               <a href={`${prefix}/games/marble-roulette`} class={`dropdown-item ${currentPath.includes('/games/marble-roulette') ? 'active' : ''}`}>
@@ -152,7 +152,7 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
       <div class="nav-dropdown" data-dropdown="tools">
         <button 
           type="button" 
-          class={`nav-dropdown-btn ${currentPath.includes('/schedule') || currentPath.includes('/games/soundboard') ? 'active' : ''}`}
+          class={`nav-dropdown-btn ${currentPath.includes('/tools') || currentPath.includes('/schedule') || currentPath.includes('/games/soundboard') ? 'active' : ''}`}
           aria-haspopup="true" 
           aria-expanded="false"
         >
@@ -165,9 +165,19 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
           <div class="dropdown-menu-inner">
             <div class="dropdown-header">
               <span class="dropdown-category-title">🛠️ {isEn ? "STREAM UTILITIES" : "방송 유틸리티"}</span>
-              <span class="dropdown-category-badge">{isEn ? "2 Tools" : "2종 도구"}</span>
+              <a href={`${prefix}/tools`} class="dropdown-hub-link">{isEn ? "View All (6) →" : "전체 도구 보기 →"}</a>
             </div>
             <div class="dropdown-list">
+              <a href={`${prefix}/tools`} class={`dropdown-item ${currentPath === `${prefix}/tools` ? 'active' : ''}`}>
+                <span class="dropdown-item-icon purple-glow">🧰</span>
+                <div class="dropdown-item-content">
+                  <div class="dropdown-item-header">
+                    <span class="dropdown-item-title">{isEn ? "All Creator Tools" : "전체 방송 도구 디렉토리"}</span>
+                    <span class="dropdown-pill new">ALL</span>
+                  </div>
+                  <span class="dropdown-item-desc">{isEn ? "Explore all 6+ utilities" : "다운로더, 일정표, 사운드보드 등 한눈에 보기"}</span>
+                </div>
+              </a>
               <a href={`${prefix}/games/soundboard`} class={`dropdown-item ${currentPath.includes('/games/soundboard') ? 'active' : ''}`}>
                 <span class="dropdown-item-icon green-glow">🔊</span>
                 <div class="dropdown-item-content">
@@ -845,6 +855,20 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
     font-weight: 800;
     color: #94a3b8;
     letter-spacing: 0.04em;
+  }
+
+  .dropdown-hub-link {
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #00ffa3;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .dropdown-hub-link:hover {
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(0, 255, 163, 0.4);
+    transform: translateX(2px);
   }
 
   .dropdown-category-badge {

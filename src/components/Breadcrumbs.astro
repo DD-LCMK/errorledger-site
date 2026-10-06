@@ -1,0 +1,97 @@
+---
+export interface BreadcrumbItem {
+  name: string;
+  url?: string;
+}
+
+export interface Props {
+  items: BreadcrumbItem[];
+}
+
+const { items } = Astro.props;
+
+const siteUrl = (Astro.site || 'https://errorledger.com').toString().replace(/\/$/, '');
+
+const breadcrumbSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": items.map((item, index) => ({
+    "@type": "ListItem",
+    "position": index + 1,
+    "name": item.name,
+    ...(item.url ? { "item": item.url.startsWith('http') ? item.url : `${siteUrl}${item.url}` } : {})
+  }))
+});
+---
+
+<nav class="breadcrumb-nav" aria-label="Breadcrumb">
+  <ol class="breadcrumb-list">
+    {items.map((item, idx) => (
+      <li class={`breadcrumb-item ${idx === items.length - 1 ? 'active' : ''}`}>
+        {idx > 0 && <span class="breadcrumb-separator" aria-hidden="true">/</span>}
+        {item.url && idx < items.length - 1 ? (
+          <a href={item.url} class="breadcrumb-link">{item.name}</a>
+        ) : (
+          <span class="breadcrumb-current" aria-current={idx === items.length - 1 ? 'page' : undefined}>
+            {item.name}
+          </span>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<script type="application/ld+json" set:html={breadcrumbSchema}></script>
+
+<style>
+  .breadcrumb-nav {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin: 1.25rem 0 1.5rem;
+    width: 100%;
+  }
+
+  .breadcrumb-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 0.4rem;
+  }
+
+  .breadcrumb-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .breadcrumb-separator {
+    color: #475569;
+    font-size: 0.75rem;
+    user-select: none;
+  }
+
+  .breadcrumb-link {
+    color: #94a3b8;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .breadcrumb-link:hover {
+    color: #00ffa3;
+    text-decoration: underline;
+  }
+
+  .breadcrumb-current {
+    color: #e2e8f0;
+    font-weight: 600;
+  }
+
+  .breadcrumb-item.active .breadcrumb-current {
+    color: #f1f5f9;
+  }
+</style>

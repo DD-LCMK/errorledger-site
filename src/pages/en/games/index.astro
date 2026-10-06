@@ -1,0 +1,641 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import { SITE_TITLE } from '../../../consts';
+import { getKoUrl, getEnUrl } from '../../../i18n';
+
+const PAGE_TITLE = `Interactive Stream Games & OBS Browser Sources | ${SITE_TITLE}`;
+const PAGE_DESCRIPTION = "Free browser-based interactive games for Twitch, YouTube, and Chzzk streamers: 3D physics marble roulette, custom wheel spinners, ghost leg ladder, party boards, and AI music quiz.";
+const PAGE_KEYWORDS = "stream games, interactive twitch games, marble roulette 3D, wheel spinner, ghost leg match, drinking marble, AI music quiz, OBS browser source games, streamer party games";
+
+const breadcrumbItems = [
+  { name: "Home", url: "/en" },
+  { name: "Interactive Games" }
+];
+
+const gamesList = [
+  {
+    category: "🎲 Random Pick & Elimination Races",
+    categoryDesc: "Engage viewers with nail-biting showdowns, viewer prize drawings, and suspenseful random picks.",
+    items: [
+      {
+        id: "marble-roulette",
+        title: "3D Physics Marble Race",
+        desc: "Up to 40 marbles tumble through a multi-obstacle 3D physics course powered by Cannon.js. ErrorLedger's flagship stream game.",
+        badge: "HOT 3D RACING",
+        badgeType: "hot",
+        icon: "🔮",
+        link: "/en/games/marble-roulette",
+        tags: ["3D Physics", "Up to 40 Marbles", "OBS Ready", "SFX Audio"],
+        players: "1 ~ 40 Players"
+      },
+      {
+        id: "roulette",
+        title: "Custom Wheel Spinner",
+        desc: "Fine-tune slice weight probabilities for viewer lotteries, viewer punishment missions, and live stream decision making.",
+        badge: "CUSTOM WHEEL",
+        badgeType: "popular",
+        icon: "🎡",
+        link: "/en/games/roulette",
+        tags: ["Weighted Odds", "Saved Presets", "Winner Celebration"],
+        players: "Unlimited"
+      },
+      {
+        id: "ladder",
+        title: "Ghost Leg Ladder Match",
+        desc: "Multiplayer Amidakuji ladder game supporting up to 20 contestants with live line-tracing animations and fair random matching.",
+        badge: "MULTIPLAYER",
+        badgeType: "popular",
+        icon: "🪜",
+        link: "/en/games/ladder",
+        tags: ["Up to 20 Players", "Trace Animation", "Instant Results"],
+        players: "2 ~ 20 Players"
+      }
+    ]
+  },
+  {
+    category: "🎉 Stream Interaction & Party Quizzes",
+    categoryDesc: "Interactive party board games and music guessing challenges to entertain your community.",
+    items: [
+      {
+        id: "drinking-marble",
+        title: "Party Marble Board Game",
+        desc: "Classic digital drinking and party board game tailored for collab streams and banter broadcasts. Roll the dice and trigger penalty tiles.",
+        badge: "PARTY GAME",
+        badgeType: "new",
+        icon: "🌸",
+        link: "/en/games/drinking-marble",
+        tags: ["Collab Stream", "Penalty Tiles", "Dice Roller"],
+        players: "1 ~ 8 Players"
+      },
+      {
+        id: "ai-music-quiz",
+        title: "AI Music Cover Quiz",
+        desc: "Listen to genre-bent AI song reinterpretations and challenge your chat to guess the original song title in real time.",
+        badge: "AI POWERED",
+        badgeType: "new",
+        icon: "🎧",
+        link: "/en/games/ai-music-quiz",
+        tags: ["AI Audio Covers", "Genre Packs", "Chat Guessing"],
+        players: "All Viewers"
+      }
+    ]
+  },
+  {
+    category: "🎨 Creative Visuals & Canvas",
+    categoryDesc: "Enrich your broadcast feed with dynamic live graphics and creator assets.",
+    items: [
+      {
+        id: "stream-doodle",
+        title: "Live Stream Doodle Canvas",
+        desc: "Real-time animated drawing tool designed for OBS browser source overlays with transparent background support.",
+        badge: "OBS CANVAS",
+        badgeType: "live",
+        icon: "🎨",
+        link: "/en/games/stream-doodle",
+        tags: ["Transparent Overlay", "Neon Pens", "Live Strokes"],
+        players: "Solo / Chat"
+      },
+      {
+        id: "stream-emoji",
+        title: "Animated Emote Studio",
+        desc: "Design and export animated GIF & WebP channel emotes and badges with an intuitive frame-by-frame web studio.",
+        badge: "EMOTE STUDIO",
+        badgeType: "popular",
+        icon: "🎬",
+        link: "/en/games/stream-emoji",
+        tags: ["Frame Editor", "GIF/WebP Export", "Channel Assets"],
+        players: "Creators"
+      }
+    ]
+  }
+];
+
+const itemListSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "ErrorLedger Interactive Stream Games",
+  "description": PAGE_DESCRIPTION,
+  "itemListElement": gamesList.flatMap((cat, catIdx) => 
+    cat.items.map((game, gIdx) => ({
+      "@type": "ListItem",
+      "position": catIdx * 10 + gIdx + 1,
+      "name": game.title,
+      "description": game.desc,
+      "url": `https://errorledger.com${game.link}`
+    }))
+  )
+});
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead 
+      title={PAGE_TITLE} 
+      description={PAGE_DESCRIPTION}
+      lang="en"
+      hreflangKo={getKoUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
+      hreflangEn={getEnUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
+      keywords={PAGE_KEYWORDS}
+    />
+    <script type="application/ld+json" set:html={itemListSchema}></script>
+  </head>
+  <body class="games-page-body">
+    <Header />
+
+    <main class="games-main">
+      <div class="games-container">
+        <!-- Breadcrumbs Navigation -->
+        <Breadcrumbs items={breadcrumbItems} />
+
+        <!-- Hero Section -->
+        <header class="games-hero">
+          <div class="games-hero-badge">
+            <span class="badge-icon">🎮</span>
+            <span>STREAM INTERACTIVE GAMES</span>
+          </div>
+          <h1 class="games-title">
+            Interactive Web Games for <span class="accent-text">Streamers & Communities</span>
+          </h1>
+          <p class="games-subtitle">
+            Seamlessly add to OBS Studio in seconds as a Browser Source.<br />
+            Level up broadcast engagement with 3D physics marble races, custom wheels, ladder matches, and AI quizzes.
+          </p>
+
+          <div class="games-stats-bar">
+            <div class="stat-item">
+              <span class="stat-number">7+</span>
+              <span class="stat-label">Free Stream Games</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <span class="stat-number">100%</span>
+              <span class="stat-label">Commercial Use Free</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <span class="stat-number">OBS</span>
+              <span class="stat-label">Browser Source Ready</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Category Groups -->
+        {gamesList.map((group) => (
+          <section class="games-group-section">
+            <div class="group-header">
+              <h2 class="group-title">{group.category}</h2>
+              <p class="group-desc">{group.categoryDesc}</p>
+            </div>
+
+            <div class="games-grid">
+              {group.items.map((game) => (
+                <article class="game-card" id={game.id}>
+                  <div class="game-card-header">
+                    <div class="game-icon-wrap">
+                      <span class="game-icon">{game.icon}</span>
+                    </div>
+                    <div class="game-badges">
+                      <span class={`pill-badge ${game.badgeType}`}>{game.badge}</span>
+                      <span class="players-badge">👥 {game.players}</span>
+                    </div>
+                  </div>
+
+                  <h3 class="game-name">
+                    <a href={game.link}>{game.title}</a>
+                  </h3>
+                  <p class="game-desc">{game.desc}</p>
+
+                  <div class="game-tags">
+                    {game.tags.map((tag) => (
+                      <span class="tag-chip">#{tag}</span>
+                    ))}
+                  </div>
+
+                  <div class="game-card-footer">
+                    <a href={game.link} class="btn-play-game">
+                      <span>Launch Game</span>
+                      <span class="play-arrow">▶</span>
+                    </a>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        ))}
+
+        <!-- OBS Setup Guide Box -->
+        <section class="obs-instruction-card">
+          <div class="instruction-header">
+            <span class="obs-pill">OBS SETUP GUIDE</span>
+            <h3>How to add to OBS Studio in 3 simple steps</h3>
+          </div>
+          <div class="instruction-steps">
+            <div class="step-box">
+              <span class="step-num">1</span>
+              <h4>Copy Game URL</h4>
+              <p>Copy the desired game web address from your browser's address bar.</p>
+            </div>
+            <div class="step-box">
+              <span class="step-num">2</span>
+              <h4>Add OBS Browser Source</h4>
+              <p>In OBS Studio Sources list, click [+] → [Browser] and paste the URL.</p>
+            </div>
+            <div class="step-box">
+              <span class="step-num">3</span>
+              <h4>Set 1920x1080 Resolution</h4>
+              <p>Set width to 1920 and height to 1080 for crisp visuals and balanced audio.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .games-page-body {
+    background: #090d16;
+    color: #f1f5f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: inherit;
+    overflow-x: hidden;
+  }
+
+  .games-main {
+    flex: 1;
+    width: 100%;
+    padding: 1rem 1.5rem 5rem;
+  }
+
+  .games-container {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  /* Hero Section */
+  .games-hero {
+    text-align: center;
+    padding: 2.5rem 1rem 3.5rem;
+    position: relative;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 3.5rem;
+  }
+
+  .games-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(168, 85, 247, 0.12);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    color: #c084fc;
+    padding: 0.4rem 1.1rem;
+    border-radius: 9999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  .games-title {
+    font-size: clamp(2rem, 4.2vw, 3rem);
+    font-weight: 800;
+    line-height: 1.3;
+    color: #ffffff;
+    margin: 0 0 1.25rem;
+    letter-spacing: -0.02em;
+  }
+
+  .accent-text {
+    background: linear-gradient(135deg, #c084fc 0%, #00ffa3 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .games-subtitle {
+    font-size: clamp(1rem, 1.8vw, 1.12rem);
+    line-height: 1.7;
+    color: #94a3b8;
+    max-width: 780px;
+    margin: 0 auto 2.5rem;
+  }
+
+  .games-stats-bar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #0f1627;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.85rem 2rem;
+    border-radius: 16px;
+    gap: 2rem;
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+  }
+
+  .stat-number {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #c084fc;
+  }
+
+  .stat-label {
+    font-size: 0.78rem;
+    color: #94a3b8;
+  }
+
+  .stat-divider {
+    width: 1px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  /* Groups & Cards */
+  .games-group-section {
+    margin-bottom: 4rem;
+  }
+
+  .group-header {
+    margin-bottom: 1.75rem;
+  }
+
+  .group-title {
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 0.5rem;
+  }
+
+  .group-desc {
+    font-size: 0.95rem;
+    color: #94a3b8;
+    margin: 0;
+  }
+
+  .games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .game-card {
+    position: relative;
+    background: #0e1526;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 1.85rem;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.25s ease;
+    overflow: hidden;
+  }
+
+  .game-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(168, 85, 247, 0.4);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(168, 85, 247, 0.15);
+  }
+
+  .game-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+
+  .game-icon-wrap {
+    width: 54px;
+    height: 54px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    transition: transform 0.2s ease;
+  }
+
+  .game-card:hover .game-icon-wrap {
+    transform: scale(1.1);
+  }
+
+  .game-badges {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.35rem;
+  }
+
+  .pill-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    text-transform: uppercase;
+  }
+
+  .pill-badge.hot {
+    background: rgba(255, 75, 75, 0.18);
+    border: 1px solid rgba(255, 75, 75, 0.4);
+    color: #ff6b6b;
+  }
+
+  .pill-badge.popular {
+    background: rgba(0, 255, 163, 0.15);
+    border: 1px solid rgba(0, 255, 163, 0.35);
+    color: #00ffa3;
+  }
+
+  .pill-badge.new {
+    background: rgba(168, 85, 247, 0.18);
+    border: 1px solid rgba(168, 85, 247, 0.4);
+    color: #c084fc;
+  }
+
+  .pill-badge.live {
+    background: rgba(56, 189, 248, 0.18);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    color: #38bdf8;
+  }
+
+  .players-badge {
+    font-size: 0.76rem;
+    color: #94a3b8;
+  }
+
+  .game-name {
+    font-size: 1.28rem;
+    font-weight: 700;
+    margin: 0 0 0.65rem;
+    line-height: 1.4;
+  }
+
+  .game-name a {
+    color: #ffffff;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .game-name a:hover {
+    color: #c084fc;
+  }
+
+  .game-desc {
+    font-size: 0.92rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0 0 1.25rem;
+    flex: 1;
+  }
+
+  .game-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .tag-chip {
+    font-size: 0.76rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #cbd5e1;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+  }
+
+  .game-card-footer {
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .btn-play-game {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #141d33;
+    color: #f1f5f9;
+    padding: 0.75rem 1.15rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.92rem;
+    text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.2s ease;
+  }
+
+  .btn-play-game:hover {
+    background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+    color: #ffffff;
+    border-color: transparent;
+    font-weight: 700;
+    box-shadow: 0 4px 20px rgba(168, 85, 247, 0.35);
+  }
+
+  .play-arrow {
+    font-size: 0.85rem;
+    transition: transform 0.2s ease;
+  }
+
+  .btn-play-game:hover .play-arrow {
+    transform: translateX(4px);
+  }
+
+  /* OBS Instructions */
+  .obs-instruction-card {
+    background: #0d1322;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 2.25rem;
+    margin-top: 2rem;
+  }
+
+  .instruction-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .obs-pill {
+    display: inline-block;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: #38bdf8;
+    font-size: 0.74rem;
+    font-weight: 700;
+    padding: 0.25rem 0.65rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+  }
+
+  .instruction-header h3 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+  }
+
+  .instruction-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .step-box {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 1.4rem;
+  }
+
+  .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #c084fc;
+    color: #090d16;
+    font-weight: 800;
+    font-size: 0.85rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .step-box h4 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 0.45rem;
+  }
+
+  .step-box p {
+    font-size: 0.88rem;
+    color: #94a3b8;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .games-stats-bar {
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+    }
+    .stat-divider {
+      display: none;
+    }
+  }
+</style>

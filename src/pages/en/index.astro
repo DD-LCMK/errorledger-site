@@ -142,14 +142,14 @@ const homeFaqSchema = JSON.stringify({
             </p>
 
             <div class="hero-cta-group">
-              <a href="/en/games/marble-roulette" class="hero-btn-primary">
-                <span class="btn-icon">🔮</span>
-                <span class="btn-text">Start Marble Race</span>
+              <a href="/en/tools" class="hero-btn-primary">
+                <span class="btn-icon">🛠️</span>
+                <span class="btn-text">Explore Stream Tools</span>
                 <span class="btn-arrow">→</span>
               </a>
-              <a href="/en/chzzk-downloader" class="hero-btn-secondary">
-                <span class="btn-icon">📥</span>
-                <span class="btn-text">Chzzk Downloader</span>
+              <a href="/en/games" class="hero-btn-secondary">
+                <span class="btn-icon">🎮</span>
+                <span class="btn-text">Interactive Games</span>
               </a>
             </div>
 
@@ -224,7 +224,7 @@ const homeFaqSchema = JSON.stringify({
               </a>
 
               <!-- Card 4: Creator Showcase & Guide -->
-              <a href="/en/chzzk-guide" class="deck-card card-guide">
+              <a href="/en/guide" class="deck-card card-guide">
                 <div class="deck-card-glow"></div>
                 <div class="deck-card-header">
                   <div class="deck-icon-badge guide-icon">🎨</div>
@@ -310,6 +310,14 @@ const homeFaqSchema = JSON.stringify({
               </article>
             );
           })}
+        </div>
+
+        <div class="section-hub-footer">
+          <a href="/en/games" class="btn-hub-cta games-accent">
+            <span class="btn-hub-icon">🎮</span>
+            <span>Explore All 7 Interactive Stream Games</span>
+            <span class="btn-hub-arrow">→</span>
+          </a>
         </div>
       </section>
 
@@ -425,6 +433,14 @@ const homeFaqSchema = JSON.stringify({
               </div>
             </article>
           </div>
+
+          <div class="section-hub-footer">
+            <a href="/en/tools" class="btn-hub-cta tools-accent">
+              <span class="btn-hub-icon">🛠️</span>
+              <span>Explore All 6 Free Streamer Utilities</span>
+              <span class="btn-hub-arrow">→</span>
+            </a>
+          </div>
         </div>
       </section>
 
@@ -435,9 +451,9 @@ const homeFaqSchema = JSON.stringify({
           <div class="mbti-banner-left">
             <div class="mbti-badge">
               <span class="pulse-dot-mbti"></span>
-              <span>🧠 EMPIRICAL 60-ITEM COGNITIVE FUNCTION TEST</span>
+              <span>🧠 MBTI FRAMEWORK 60-ITEM ASSESSMENT</span>
             </div>
-            <h3>Scientific MBTI <span class="gradient-text">(Personality & Cognition)</span></h3>
+            <h3>MBTI Personality Assessment <span class="gradient-text">(Personality & Cognition)</span></h3>
             <p>
               Beyond superficial 4-letter labels. Discover your 4-axis spectrum %, 8-layer Jungian cognitive function stack, career blueprint, love compatibility, and creator persona!
             </p>
@@ -446,6 +462,35 @@ const homeFaqSchema = JSON.stringify({
             <a href="/en/mbti" class="btn-mbti-banner">
               <span>Start Assessment →</span>
             </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Latest Updates / Changelog Section -->
+      <section class="home-changelog-preview">
+        <div class="changelog-preview-card">
+          <div class="preview-header-row">
+            <div class="preview-badge-group">
+              <span class="preview-pill">LATEST RELEASE</span>
+              <h3>ErrorLedger Release Notes</h3>
+            </div>
+            <a href="/en/changelog" class="link-all-changelog">View Full Changelog →</a>
+          </div>
+          <div class="preview-items-grid">
+            <div class="preview-item">
+              <span class="preview-ver hot">v2.0.0</span>
+              <div class="preview-content">
+                <strong>Chzzk & YouTube Downloader Major Update</strong>
+                <p>Lossless YouTube video & Shorts download support, background session batch queue, and official GitHub Releases.</p>
+              </div>
+            </div>
+            <div class="preview-item">
+              <span class="preview-ver">v1.9.5</span>
+              <div class="preview-content">
+                <strong>3D Marble Race Audio Balancing & Physics Polish</strong>
+                <p>Reduced collision SFX volume by 50% for optimal stream mic balance and smoothed track finish gate physics.</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -1781,5 +1826,166 @@ const homeFaqSchema = JSON.stringify({
       width: 100%;
       justify-content: center;
     }
+  }
+
+  /* Section Hub Footer Buttons */
+  .section-hub-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 2.5rem;
+  }
+
+  .btn-hub-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.9rem 1.8rem;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.22s ease;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .btn-hub-cta.games-accent {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(99, 102, 241, 0.1) 100%);
+    border-color: rgba(168, 85, 247, 0.4);
+    color: #e9d5ff;
+  }
+
+  .btn-hub-cta.games-accent:hover {
+    background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+    color: #ffffff;
+    box-shadow: 0 8px 25px rgba(168, 85, 247, 0.35);
+    transform: translateY(-2px);
+  }
+
+  .btn-hub-cta.tools-accent {
+    background: linear-gradient(135deg, rgba(0, 255, 163, 0.12) 0%, rgba(56, 189, 248, 0.08) 100%);
+    border-color: rgba(0, 255, 163, 0.35);
+    color: #d1fae5;
+  }
+
+  .btn-hub-cta.tools-accent:hover {
+    background: linear-gradient(135deg, #00ffa3 0%, #00c760 100%);
+    color: #090d16;
+    box-shadow: 0 8px 25px rgba(0, 255, 163, 0.35);
+    transform: translateY(-2px);
+  }
+
+  .btn-hub-arrow {
+    font-size: 1.1rem;
+    transition: transform 0.2s ease;
+  }
+
+  .btn-hub-cta:hover .btn-hub-arrow {
+    transform: translateX(4px);
+  }
+
+  /* Home Changelog Preview */
+  .home-changelog-preview {
+    max-width: 1200px;
+    margin: 0 auto 3.5rem;
+    padding: 0 1rem;
+  }
+
+  .changelog-preview-card {
+    background: #0d1424;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 1.75rem 2rem;
+  }
+
+  .preview-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .preview-badge-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .preview-pill {
+    background: rgba(0, 255, 163, 0.15);
+    color: #00ffa3;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 255, 163, 0.3);
+  }
+
+  .preview-header-row h3 {
+    font-size: 1.18rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+  }
+
+  .link-all-changelog {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #00ffa3;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .link-all-changelog:hover {
+    color: #ffffff;
+    text-decoration: underline;
+  }
+
+  .preview-items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .preview-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  .preview-ver {
+    font-family: monospace;
+    font-size: 0.78rem;
+    font-weight: 800;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #cbd5e1;
+    white-space: nowrap;
+  }
+
+  .preview-ver.hot {
+    background: rgba(255, 75, 75, 0.15);
+    color: #ff6b6b;
+    border: 1px solid rgba(255, 75, 75, 0.3);
+  }
+
+  .preview-content strong {
+    display: block;
+    font-size: 0.92rem;
+    color: #f1f5f9;
+    margin-bottom: 0.25rem;
+  }
+
+  .preview-content p {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    margin: 0;
+    line-height: 1.45;
   }
 </style>

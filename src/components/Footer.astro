@@ -31,6 +31,7 @@ const currentYear = new Date().getFullYear();
     <div class="footer-links-col">
       <h4>🎮 {t(lang, 'footer.category.games')}</h4>
       <ul>
+        <li><a href={`${prefix}/games`} class="footer-hub-highlight"><strong>{isEn ? '✨ All Games Directory' : '✨ 전체 게임 디렉토리'}</strong></a></li>
         <li><a href={`${prefix}/games/marble-roulette`}>{t(lang, 'footer.tools.marble')}</a></li>
         <li><a href={`${prefix}/games/roulette`}>{t(lang, 'footer.tools.roulette')}</a></li>
         <li><a href={`${prefix}/games/ladder`}>{t(lang, 'footer.tools.ladder')}</a></li>
@@ -54,12 +55,13 @@ const currentYear = new Date().getFullYear();
     <div class="footer-links-col">
       <h4>🛠️ {t(lang, 'footer.category.tools')}</h4>
       <ul>
-        <li><a href={`${prefix}/guide`}>{t(lang, 'footer.tools.guide')}</a></li>
-        <li><a href={`${prefix}/creators`}>{t(lang, 'footer.tools.creators')}</a></li>
-        <li><a href={`${prefix}/games/soundboard`}>{t(lang, 'footer.tools.soundboard')}</a></li>
+        <li><a href={`${prefix}/tools`} class="footer-hub-highlight"><strong>{isEn ? '✨ All Streamer Tools' : '✨ 전체 방송 도구 모음'}</strong></a></li>
+        <li><a href={`${prefix}/chzzk-downloader`}>{t(lang, 'footer.tools.chzzk_downloader')}</a></li>
         <li><a href={`${prefix}/schedule`}>{t(lang, 'footer.tools.schedule')}</a></li>
         <li><a href={`${prefix}/bzzk`}>{t(lang, 'footer.tools.bzzk')}</a></li>
-        <li><a href={`${prefix}/chzzk-downloader`}>{t(lang, 'footer.tools.chzzk_downloader')}</a></li>
+        <li><a href={`${prefix}/games/soundboard`}>{t(lang, 'footer.tools.soundboard')}</a></li>
+        <li><a href={`${prefix}/guide`}>{t(lang, 'footer.tools.guide')}</a></li>
+        <li><a href={`${prefix}/creators`}>{t(lang, 'footer.tools.creators')}</a></li>
       </ul>
     </div>
 
@@ -68,6 +70,7 @@ const currentYear = new Date().getFullYear();
       <h4>ℹ️ {t(lang, 'footer.category.support')}</h4>
       <ul>
         <li><a href={`${prefix}/about`}>{t(lang, 'footer.support.about')}</a></li>
+        <li><a href={`${prefix}/changelog`}>{isEn ? 'Changelog' : '체인지로그'}</a></li>
         <li><a href={`${prefix}/contact`}>{t(lang, 'footer.support.contact')}</a></li>
         <li><a href={`${prefix}/privacy`}>{t(lang, 'footer.support.privacy')}</a></li>
         <li><a href={`${prefix}/terms`}>{t(lang, 'footer.support.terms')}</a></li>
@@ -162,6 +165,10 @@ const currentYear = new Date().getFullYear();
     font-size: 0.8rem;
     transition: color 0.15s ease;
     white-space: nowrap;
+  }
+
+  .footer-links-col a.footer-hub-highlight {
+    color: #00ffa3;
   }
 
   .footer-links-col a:hover {
