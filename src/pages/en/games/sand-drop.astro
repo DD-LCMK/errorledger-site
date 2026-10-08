@@ -1,0 +1,201 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import { getKoUrl, getEnUrl } from '../../../i18n';
+
+const siteBase = Astro.site?.toString() || 'https://errorledger.com';
+const rawPath = Astro.url.pathname.replace(/\/$/, '');
+const koUrl = getKoUrl(siteBase, rawPath);
+const enUrl = getEnUrl(siteBase, rawPath);
+
+const urlParams = Astro.url.searchParams;
+const streamerMode = urlParams.has('stream') || urlParams.has('obs');
+const gameUrl = streamerMode
+  ? '/games/sand-drop?bare=1&stream=true&lang=en'
+  : '/games/sand-drop?bare=1&lang=en';
+
+const webAppSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Sand Drop: Falling Sand Physics Merge Game — ErrorLedger",
+  "alternateName": ["Sand Drop", "모래 드롭", "Sand Physics Drop", "Sand Suika"],
+  "url": enUrl,
+  "description": "Drop physics meets falling sand cellular automata in this merge puzzle. Drop kinetic sand and merge matching sand tiers into higher fruits up to Aurora.",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "All (Web Browser, Chrome, Edge, Safari, Mobile)",
+  "inLanguage": ["en-US", "ko-KR"],
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.98",
+    "bestRating": "5",
+    "ratingCount": "920"
+  }
+});
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead
+      title="Sand Drop — Falling Sand Physics Merge Game | ErrorLedger"
+      description="Play Sand Drop online! Position and drop flowing kinetic sand with a precision top dropper, and watch it crumble into dunes. Merge matching colors into higher tiers without overflowing."
+      lang="en"
+      hreflangKo={koUrl}
+      hreflangEn={enUrl}
+      keywords="Sand Drop, Sand Physics Game, Falling Sand Game, Sand Merge Game, Sand Suika, Kinetic Sand, Browser Physics Game, Streamer Games"
+    />
+    <script type="application/ld+json" set:html={webAppSchema}></script>
+  </head>
+  <body class="en-game-body">
+    <Header />
+
+    <main class="en-game-main">
+      <div class="en-game-frame-wrap">
+        <iframe
+          src={gameUrl}
+          class="en-game-iframe"
+          id="game-iframe"
+          title="Sand Drop — ErrorLedger"
+          allowfullscreen
+          loading="eager"
+          scrolling="no"
+        ></iframe>
+      </div>
+
+      <!-- Unobtrusive Expandable Information Drawer -->
+      {!streamerMode && (
+        <details class="stream-bottom-details">
+          <summary class="details-summary">
+            <span>📖 Detailed Game Guide & Rules</span>
+            <span class="chevron">▼</span>
+          </summary>
+          <div class="details-content">
+            <div class="details-faq-section">
+              <h3>How to Play Sand Drop</h3>
+              <div class="details-faq-grid">
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. How do the controls work?</strong>
+                  <p class="faq-a">Move your mouse or touch horizontally to position the top dropper. Click, tap, or press Space to drop the sand stream straight down into the container.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. How do the sand piles merge?</strong>
+                  <p class="faq-a">When matching sand tiers touch, they flash with a bright gleam and fuse into the next higher tier, evaporating volume to create extra room!</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. What is the Danger Line?</strong>
+                  <p class="faq-a">If the sand pile rises above the dotted red Danger Line at the top, an emergency 10-second timer starts. If you don't trigger a merge to lower the sand level before the timer reaches zero, it's Game Over!</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Can I use this on OBS or live streams?</strong>
+                  <p class="faq-a">Yes! Add '?bare=1' or '?stream=true' to the URL to run in clean transparent streamer mode.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </details>
+      )}
+    </main>
+
+    {!streamerMode && <Footer />}
+  </body>
+</html>
+
+<style>
+  .en-game-body {
+    margin: 0;
+    padding: 0;
+    background: #080c16;
+    color: #f1f2f6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .en-game-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .en-game-frame-wrap {
+    width: 100%;
+    max-width: 1080px;
+    height: calc(100vh - 75px);
+    min-height: 750px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .en-game-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+
+  .stream-bottom-details {
+    width: 100%;
+    max-width: 960px;
+    margin: 1.5rem auto 2.5rem;
+    padding: 0 1rem;
+  }
+
+  .details-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+    color: #e2e8f0;
+  }
+
+  .details-content {
+    padding: 1.5rem 1.25rem;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .details-faq-section h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #ff9f43;
+    font-size: 1.1rem;
+  }
+
+  .details-faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .details-faq-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  .faq-q {
+    display: block;
+    color: #f1f2f6;
+    margin-bottom: 0.35rem;
+    font-size: 0.92rem;
+  }
+
+  .faq-a {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 0.84rem;
+    line-height: 1.5;
+  }
+</style>

@@ -44,9 +44,19 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
           <div class="dropdown-menu-inner">
             <div class="dropdown-header">
               <span class="dropdown-category-title">🎮 {isEn ? "INTERACTIVE GAMES" : "인기 인터랙티브 게임"}</span>
-              <a href={`${prefix}/games`} class="dropdown-hub-link">{isEn ? "View All (7) →" : "전체 게임 보기 →"}</a>
+              <a href={`${prefix}/games`} class="dropdown-hub-link">{isEn ? "View All (8) →" : "전체 게임 보기 →"}</a>
             </div>
             <div class="dropdown-grid-games">
+              <a href={`${prefix}/games/sand-drop`} class={`dropdown-item ${currentPath.includes('/games/sand-drop') || currentPath.includes('/games/sand-suika') ? 'active' : ''}`}>
+                <span class="dropdown-item-icon">🍉</span>
+                <div class="dropdown-item-content">
+                  <div class="dropdown-item-header">
+                    <span class="dropdown-item-title">{t(lang, 'nav.sand_drop')}</span>
+                    <span class="dropdown-pill hot">NEW</span>
+                  </div>
+                  <span class="dropdown-item-desc">{isEn ? "Falling Sand Merge" : "모래 물리 낙하 융합"}</span>
+                </div>
+              </a>
               <a href={`${prefix}/games/marble-roulette`} class={`dropdown-item ${currentPath.includes('/games/marble-roulette') ? 'active' : ''}`}>
                 <span class="dropdown-item-icon">🔮</span>
                 <div class="dropdown-item-content">
@@ -311,6 +321,16 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
       <div class="drawer-section">
         <div class="drawer-section-title">{isEn ? "🎮 GAMES" : "🎮 인기 게임"}</div>
         <div class="drawer-nav-list">
+          <a 
+            href={`${prefix}/games/sand-drop`} 
+            class={`drawer-nav-item ${currentPath.includes('/games/sand-drop') || currentPath.includes('/games/sand-suika') ? 'active' : ''}`}
+          >
+            <span class="drawer-item-icon">🍉</span>
+            <div class="drawer-item-info">
+              <span class="drawer-item-name">{t(lang, 'nav.sand_drop')}</span>
+              <span class="drawer-item-desc">{isEn ? "Falling Sand Merge" : "모래 물리 낙하 융합"}</span>
+            </div>
+          </a>
           <a 
             href={`${prefix}/games/marble-roulette`} 
             class={`drawer-nav-item ${currentPath.includes('/games/marble-roulette') ? 'active' : ''}`}
