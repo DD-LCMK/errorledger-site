@@ -105,7 +105,7 @@ const data = gameEntry?.data || {
 
     <!-- Main Game Canvas Container -->
     <main class="canvas-viewport" id="canvas-viewport">
-      <canvas id="game-canvas" width="540" height="760"></canvas>
+      <canvas id="game-canvas" width="600" height="860"></canvas>
 
       <!-- Drag & Aim Touch Area Overlay -->
       <div id="touch-layer" class="touch-layer" tabindex="0" aria-label="게임 조작 영역"></div>
@@ -341,9 +341,9 @@ const data = gameEntry?.data || {
   .canvas-viewport {
     position: relative;
     width: 100%;
-    max-width: 540px;
-    height: 760px;
-    max-height: 80vh;
+    max-width: 600px;
+    height: 860px;
+    max-height: 85vh;
     border-radius: 20px;
     overflow: hidden;
     background: #020617;
@@ -855,9 +855,9 @@ const data = gameEntry?.data || {
     private touchLayer: HTMLElement;
     private sound: SoundSynth;
 
-    // Viewport Virtual Dimensions
-    private readonly V_WIDTH = 540;
-    private readonly V_HEIGHT = 760;
+    // Viewport Virtual Dimensions (Zoomed out)
+    private readonly V_WIDTH = 600;
+    private readonly V_HEIGHT = 860;
     private readonly PX_PER_METER = 24; // 24 world px = 1 meter
     private readonly GRAVITY = 980;     // px/s^2
 
@@ -872,10 +872,10 @@ const data = gameEntry?.data || {
     // Arrow State
     private arrowState: 'RESTING' | 'AIMING' | 'FLYING' | 'TUMBLING' = 'RESTING';
     private arrowX = 0;
-    private arrowY = 0;
+    private arrowY = 4;
     private arrowVx = 0;
     private arrowVy = 0;
-    private arrowAngle = -Math.PI / 2; // pointing up
+    private arrowAngle = Math.PI / 2; // pointing up
     private arrowAngularVel = 0;
     private stuckPlatform: Platform | null = null;
     private stuckOffsetX = 0;
@@ -891,8 +891,8 @@ const data = gameEntry?.data || {
     private pullPower = 0; // 0 to 1
 
     // Camera & Screen Shake
-    private cameraY = 120;
-    private targetCameraY = 120;
+    private cameraY = 0;
+    private targetCameraY = 0;
     private screenShake = 0;
 
     // Game Metrics & Records
@@ -1006,8 +1006,8 @@ const data = gameEntry?.data || {
         id: 0,
         x: 0,
         y: 0,
-        w: this.V_WIDTH * 1.5,
-        h: 24,
+        w: this.V_WIDTH * 1.6,
+        h: 400,
         type: 'stone'
       };
       this.platforms.push(ground);
@@ -1030,8 +1030,8 @@ const data = gameEntry?.data || {
       this.worstDropMeters = 0;
       this.gameStartTime = Date.now();
 
-      this.cameraY = 120;
-      this.targetCameraY = 120;
+      this.cameraY = 0;
+      this.targetCameraY = 0;
 
       // Generate first batch of platforms up to 1500px (~60m)
       this.generatePlatformsUpTo(1500);
@@ -1220,85 +1220,110 @@ const data = gameEntry?.data || {
       }
 
       // Update Moving Platforms
+      let movingPlatDx = 0;
       for (const plat of this.platforms) {
         if (plat.type === 'moving' && plat.baseX !== undefined && plat.moveRange !== undefined && plat.moveSpeed !== undefined) {
+          const prevX = plat.x;
           const t = (now / 1000) * plat.moveSpeed + (plat.movePhase || 0);
           plat.x = plat.baseX + Math.sin(t) * plat.moveRange;
+          if (plat === this.stuckPlatform) {
+            movingPlatDx = plat.x - prevX;
+          }
         }
       }
 
-      // If Arrow is resting on a moving platform, follow it
-      if (this.arrowState === 'RESTING' && this.stuckPlatform) {
+      // If Arrow is resting OR aiming on a moving platform, follow it
+      if ((this.arrowState === 'RESTING' || this.arrowState === 'AIMING') && this.stuckPlatform) {
         if (this.stuckPlatform.type === 'moving') {
           this.arrowX = this.stuckPlatform.x + this.stuckOffsetX;
+
+          // If actively aiming on moving platform, adjust drag origin so pull vector doesn't jump
+          if (this.isDragging && movingPlatDx !== 0) {
+            const clientScale = this.canvas.clientWidth / this.V_WIDTH;
+            this.dragStartX += movingPlatDx * clientScale;
+            const dx = this.currentPointerX - this.dragStartX;
+            const dy = this.dragStartY - this.currentPointerY;
+            const dist = Math.hypot(dx, dy);
+            const MAX_PULL = 130;
+            this.pullPower = Math.min(dist / MAX_PULL, 1.0);
+            this.pullVectorX = dx;
+            this.pullVectorY = dy;
+          }
         }
       }
 
       // If Arrow is in Flight or Tumbling
       if (this.arrowState === 'FLYING' || this.arrowState === 'TUMBLING') {
-        // Apply Gravity in World Coords (+Y is up, so gravity pulls down)
-        this.arrowVy -= this.GRAVITY * dt;
+        // High-precision sub-stepping (6 steps per frame) to prevent any tunneling
+        const SUB_STEPS = 6;
+        const subDt = dt / SUB_STEPS;
 
-        // Position Step
-        const prevX = this.arrowX;
-        const prevY = this.arrowY;
-        const prevAngle = this.arrowAngle;
+        for (let s = 0; s < SUB_STEPS; s++) {
+          if (this.arrowState !== 'FLYING' && this.arrowState !== 'TUMBLING') break;
 
-        const nextX = prevX + this.arrowVx * dt;
-        const nextY = prevY + this.arrowVy * dt;
+          const prevX = this.arrowX;
+          const prevY = this.arrowY;
+          const prevAngle = this.arrowAngle;
 
-        let nextAngle = prevAngle;
-        if (this.arrowState === 'FLYING') {
-          nextAngle = Math.atan2(this.arrowVy, this.arrowVx);
-        } else {
-          nextAngle = prevAngle + this.arrowAngularVel * dt;
+          // Apply Gravity in World Coords (+Y is up, so gravity pulls down)
+          this.arrowVy -= this.GRAVITY * subDt;
+
+          const nextX = prevX + this.arrowVx * subDt;
+          const nextY = prevY + this.arrowVy * subDt;
+
+          let nextAngle = prevAngle;
+          if (this.arrowState === 'FLYING') {
+            nextAngle = Math.atan2(this.arrowVy, this.arrowVx);
+          } else {
+            nextAngle = prevAngle + this.arrowAngularVel * subDt;
+          }
+
+          // Trail particles (sampled on first sub-step)
+          if (s === 0 && Math.random() < 0.6) {
+            this.particles.push({
+              x: prevX,
+              y: prevY,
+              vx: (Math.random() - 0.5) * 20,
+              vy: (Math.random() - 0.5) * 20,
+              life: 1.0,
+              maxLife: 0.35,
+              color: this.arrowState === 'FLYING' ? '#38bdf8' : '#f87171',
+              size: Math.random() * 3 + 1.5
+            });
+          }
+
+          // Side boundary canyon wall collision
+          const WALL_LIMIT = 265;
+          let clampedNextX = nextX;
+          if (nextX < -WALL_LIMIT) {
+            this.arrowVx = Math.abs(this.arrowVx) * 0.65;
+            clampedNextX = -WALL_LIMIT;
+            this.arrowAngularVel = (Math.random() - 0.5) * 12;
+            this.arrowState = 'TUMBLING';
+            this.sound.playBounce();
+            this.screenShake = 4;
+          } else if (nextX > WALL_LIMIT) {
+            this.arrowVx = -Math.abs(this.arrowVx) * 0.65;
+            clampedNextX = WALL_LIMIT;
+            this.arrowAngularVel = (Math.random() - 0.5) * 12;
+            this.arrowState = 'TUMBLING';
+            this.sound.playBounce();
+            this.screenShake = 4;
+          }
+
+          this.arrowAngle = nextAngle;
+
+          // Sub-step Continuous Collision Detection
+          this.checkCollisions(prevX, prevY, clampedNextX, nextY);
         }
-
-        // Trail particles
-        if (Math.random() < 0.6) {
-          this.particles.push({
-            x: prevX,
-            y: prevY,
-            vx: (Math.random() - 0.5) * 20,
-            vy: (Math.random() - 0.5) * 20,
-            life: 1.0,
-            maxLife: 0.35,
-            color: this.arrowState === 'FLYING' ? '#38bdf8' : '#f87171',
-            size: Math.random() * 3 + 1.5
-          });
-        }
-
-        // Side boundary wall collision (-230 to 230)
-        const WALL_LIMIT = 230;
-        let clampedNextX = nextX;
-        if (nextX < -WALL_LIMIT) {
-          this.arrowVx = Math.abs(this.arrowVx) * 0.65;
-          clampedNextX = -WALL_LIMIT;
-          this.arrowAngularVel = (Math.random() - 0.5) * 12;
-          this.arrowState = 'TUMBLING';
-          this.sound.playBounce();
-          this.screenShake = 4;
-        } else if (nextX > WALL_LIMIT) {
-          this.arrowVx = -Math.abs(this.arrowVx) * 0.65;
-          clampedNextX = WALL_LIMIT;
-          this.arrowAngularVel = (Math.random() - 0.5) * 12;
-          this.arrowState = 'TUMBLING';
-          this.sound.playBounce();
-          this.screenShake = 4;
-        }
-
-        this.arrowAngle = nextAngle;
-
-        // Platform Collisions Check
-        this.checkCollisions(prevX, prevY, clampedNextX, nextY);
       }
 
-      // Camera Smooth Follow
-      this.targetCameraY = Math.max(120, this.arrowY + 160);
-      this.cameraY += (this.targetCameraY - this.cameraY) * Math.min(1.0, dt * 6.5);
+      // Camera Smooth Follow: Arrow positioned ~20% from bottom of viewport
+      this.targetCameraY = Math.max(0, this.arrowY);
+      this.cameraY += (this.targetCameraY - this.cameraY) * Math.min(1.0, dt * 7.0);
 
       // Generate more platforms ahead of camera
-      this.generatePlatformsUpTo(this.cameraY + 900);
+      this.generatePlatformsUpTo(this.cameraY + 1100);
 
       // Update Particles
       for (let i = this.particles.length - 1; i >= 0; i--) {
@@ -1322,6 +1347,62 @@ const data = gameEntry?.data || {
         }
         this.updateHud();
       }
+    }
+
+    private sweepSegmentBox(
+      x0: number, y0: number,
+      x1: number, y1: number,
+      xmin: number, xmax: number,
+      ymin: number, ymax: number
+    ): { hit: boolean; t: number; nx: number; ny: number } {
+      let tmin = 0;
+      let tmax = 1;
+      let nx = 0;
+      let ny = 0;
+
+      const dx = x1 - x0;
+      if (Math.abs(dx) < 1e-7) {
+        if (x0 < xmin || x0 > xmax) return { hit: false, t: 1, nx: 0, ny: 0 };
+      } else {
+        const invDx = 1 / dx;
+        let t1 = (xmin - x0) * invDx;
+        let t2 = (xmax - x0) * invDx;
+        let signX = -1;
+        if (t1 > t2) {
+          const temp = t1; t1 = t2; t2 = temp;
+          signX = 1;
+        }
+        if (t1 > tmin) {
+          tmin = t1;
+          nx = signX;
+          ny = 0;
+        }
+        tmax = Math.min(tmax, t2);
+        if (tmin > tmax) return { hit: false, t: 1, nx: 0, ny: 0 };
+      }
+
+      const dy = y1 - y0;
+      if (Math.abs(dy) < 1e-7) {
+        if (y0 < ymin || y0 > ymax) return { hit: false, t: 1, nx: 0, ny: 0 };
+      } else {
+        const invDy = 1 / dy;
+        let t1 = (ymin - y0) * invDy;
+        let t2 = (ymax - y0) * invDy;
+        let signY = -1;
+        if (t1 > t2) {
+          const temp = t1; t1 = t2; t2 = temp;
+          signY = 1;
+        }
+        if (t1 > tmin) {
+          tmin = t1;
+          nx = 0;
+          ny = signY;
+        }
+        tmax = Math.min(tmax, t2);
+        if (tmin > tmax) return { hit: false, t: 1, nx: 0, ny: 0 };
+      }
+
+      return { hit: true, t: tmin, nx, ny };
     }
 
     private checkCollisions(prevX: number, prevY: number, nextX: number, nextY: number) {
@@ -1355,147 +1436,181 @@ const data = gameEntry?.data || {
           continue;
         }
 
-        // ─── 2. STRICT TOP SURFACE LANDING ───
-        // Only allowed if arrow is strictly falling downwards (vy < 0)
-        // and tip crosses horizontal plane y = platTop
-        if (this.arrowVy < 0 && prevTipY >= platTop - 3 && nextTipY <= platTop + 4) {
-          const dTipY = nextTipY - prevTipY;
-          let crossX = nextTipX;
-          if (Math.abs(dTipY) > 0.001) {
-            const t = (platTop - prevTipY) / dTipY;
-            if (t >= 0 && t <= 1) {
-              crossX = prevTipX + t * (nextTipX - prevTipX);
-            }
-          }
+        // Quick AABB rejection
+        const minX = Math.min(prevX, nextX, prevTipX, nextTipX);
+        const maxX = Math.max(prevX, nextX, prevTipX, nextTipX);
+        const minY = Math.min(prevY, nextY, prevTipY, nextTipY);
+        const maxY = Math.max(prevY, nextY, prevTipY, nextTipY);
 
-          // Safety margin: must definitely land on the TOP surface, NOT on side or corner
-          const TOP_INSET = 6;
-          const isFirmlyOnTop = (crossX >= platLeft + TOP_INSET && crossX <= platRight - TOP_INSET);
-
-          if (isFirmlyOnTop) {
-            // DEFINITE TOP LANDING SUCCESS!
-            this.arrowX = crossX - Math.cos(this.arrowAngle) * ARROW_HALF_LEN;
-            this.arrowY = platTop + 2;
-            this.arrowVx = 0;
-            this.arrowVy = 0;
-            this.arrowState = 'RESTING';
-            this.stuckPlatform = plat;
-            this.stuckOffsetX = this.arrowX - plat.x;
-
-            // Rest angle tilt
-            if (this.arrowAngle < -Math.PI / 2) {
-              this.arrowAngle = -Math.PI * 0.75;
-            } else {
-              this.arrowAngle = -Math.PI * 0.25;
-            }
-
-            this.sound.playStick();
-            this.spawnImpactParticles(this.arrowX, platTop, '#34d399', 14);
-
-            // Summit Victory Check
-            if (plat.type === 'summit' && !this.hasWonDaily) {
-              this.hasWonDaily = true;
-              this.sound.playFanfare();
-              this.showToast('🏆 300m 서밋 정복 성공! 일일 타워를 완등했습니다!', 'success');
-              setTimeout(() => this.openShareModal(), 1200);
-            }
-
-            // Drop Fall penalty check
-            const landedAlt = Math.floor(platTop / this.PX_PER_METER);
-            const dropDiff = this.lastRestMeters - landedAlt;
-            if (dropDiff >= 12) {
-              this.worstDropMeters = Math.max(this.worstDropMeters, dropDiff);
-              this.sound.playFall();
-              this.showToast(`😱 -${dropDiff}m 추락했습니다!`);
-              this.screenShake = 12;
-            }
-
-            this.lastRestMeters = landedAlt;
-            this.updateHud();
-            return;
-          }
-
-          // CORNER LIP CLIP: Near the outer edge -> cannot stick, slide/deflect off!
-          const isLeftEdgeClip = (crossX >= platLeft - 8 && crossX < platLeft + TOP_INSET);
-          const isRightEdgeClip = (crossX > platRight - TOP_INSET && crossX <= platRight + 8);
-
-          if (isLeftEdgeClip) {
-            this.arrowX = platLeft - 4;
-            this.arrowY = platTop;
-            this.arrowVx = -Math.abs(this.arrowVx || 40) * 0.7 - 40;
-            this.arrowVy = this.arrowVy * 0.4 - 20;
-            this.arrowAngularVel = -14;
-            this.arrowState = 'TUMBLING';
-            this.sound.playBounce();
-            this.screenShake = 6;
-            this.spawnImpactParticles(platLeft, platTop, '#f59e0b', 8);
-            this.showToast('⚠️ 발판 모서리 미끄러짐!', 'fail');
-            return;
-          }
-
-          if (isRightEdgeClip) {
-            this.arrowX = platRight + 4;
-            this.arrowY = platTop;
-            this.arrowVx = Math.abs(this.arrowVx || 40) * 0.7 + 40;
-            this.arrowVy = this.arrowVy * 0.4 - 20;
-            this.arrowAngularVel = 14;
-            this.arrowState = 'TUMBLING';
-            this.sound.playBounce();
-            this.screenShake = 6;
-            this.spawnImpactParticles(platRight, platTop, '#f59e0b', 8);
-            this.showToast('⚠️ 발판 모서리 미끄러짐!', 'fail');
-            return;
-          }
+        if (maxX < platLeft - 16 || minX > platRight + 16 ||
+            maxY < platBottom - 16 || minY > platTop + 16) {
+          continue;
         }
 
-        // ─── 3. VERTICAL SIDE COLLISION (WALL OF BLOCK) ───
-        if (nextTipY <= platTop && nextTipY >= platBottom) {
-          // Hits Left Side
-          if (prevTipX <= platLeft + 3 && nextTipX >= platLeft - 3) {
-            this.arrowX = platLeft - 6;
+        // ─── 2. CONTINUOUS SWEPT CCD (TIP & CENTER) ───
+        const hitTip = this.sweepSegmentBox(prevTipX, prevTipY, nextTipX, nextTipY, platLeft, platRight, platBottom, platTop);
+        const hitCenter = this.sweepSegmentBox(prevX, prevY, nextX, nextY, platLeft, platRight, platBottom, platTop);
+
+        let bestHit: { hit: boolean; t: number; nx: number; ny: number; isTip: boolean } | null = null;
+        if (hitTip.hit && (!hitCenter.hit || hitTip.t <= hitCenter.t)) {
+          bestHit = { ...hitTip, isTip: true };
+        } else if (hitCenter.hit) {
+          bestHit = { ...hitCenter, isTip: false };
+        }
+
+        if (bestHit) {
+          // A. HIT TOP SURFACE FROM ABOVE
+          if (bestHit.ny === 1) {
+            const hitX = bestHit.isTip
+              ? (prevTipX + bestHit.t * (nextTipX - prevTipX))
+              : (prevX + bestHit.t * (nextX - prevX));
+            const TOP_INSET = 8;
+            const isFirmlyOnTop = (hitX >= platLeft + TOP_INSET && hitX <= platRight - TOP_INSET);
+
+            if (this.arrowVy < 0 && isFirmlyOnTop && this.arrowState !== 'TUMBLING') {
+              // DEFINITE TOP LANDING SUCCESS!
+              this.arrowX = hitX - Math.cos(this.arrowAngle) * ARROW_HALF_LEN;
+              this.arrowY = platTop + 2;
+              this.arrowVx = 0;
+              this.arrowVy = 0;
+              this.arrowState = 'RESTING';
+              this.stuckPlatform = plat;
+              this.stuckOffsetX = this.arrowX - plat.x;
+
+              // Tilt arrow slightly based on incoming trajectory
+              if (this.arrowAngle < -Math.PI / 2) {
+                this.arrowAngle = -Math.PI * 0.75;
+              } else {
+                this.arrowAngle = -Math.PI * 0.25;
+              }
+
+              this.sound.playStick();
+              this.spawnImpactParticles(this.arrowX, platTop, '#34d399', 14);
+
+              // Summit Victory Check
+              if (plat.type === 'summit' && !this.hasWonDaily) {
+                this.hasWonDaily = true;
+                this.sound.playFanfare();
+                this.showToast('🏆 300m 서밋 정복 성공! 일일 타워를 완등했습니다!', 'success');
+                setTimeout(() => this.openShareModal(), 1200);
+              }
+
+              // Drop Fall penalty check
+              const landedAlt = Math.floor(platTop / this.PX_PER_METER);
+              const dropDiff = this.lastRestMeters - landedAlt;
+              if (dropDiff >= 12) {
+                this.worstDropMeters = Math.max(this.worstDropMeters, dropDiff);
+                this.sound.playFall();
+                this.showToast(`😱 -${dropDiff}m 추락했습니다!`);
+                this.screenShake = 12;
+              }
+
+              this.lastRestMeters = landedAlt;
+              this.updateHud();
+              return;
+            }
+
+            // CORNER LIP CLIP: Near outer edge -> cannot stick, slides/deflects off!
+            if (hitX < plat.x) {
+              this.arrowX = platLeft - 8;
+              this.arrowVx = -Math.abs(this.arrowVx || 45) * 0.7 - 40;
+              this.arrowAngularVel = -14;
+            } else {
+              this.arrowX = platRight + 8;
+              this.arrowVx = Math.abs(this.arrowVx || 45) * 0.7 + 40;
+              this.arrowAngularVel = 14;
+            }
+            this.arrowY = platTop + 2;
+            this.arrowVy = this.arrowVy * 0.4 - 20;
+            this.arrowState = 'TUMBLING';
+            this.sound.playBounce();
+            this.screenShake = 6;
+            this.spawnImpactParticles(this.arrowX, platTop, '#f59e0b', 8);
+            this.showToast('⚠️ 발판 모서리 미끄러짐!', 'fail');
+            return;
+          }
+
+          // B. HIT LEFT WALL FROM LEFT (moving right)
+          if (bestHit.nx === -1) {
+            this.arrowX = platLeft - 8;
             this.arrowY = nextY;
-            this.arrowVx = -Math.abs(this.arrowVx) * 0.65 - 35;
+            this.arrowVx = -Math.abs(this.arrowVx || 40) * 0.7 - 40;
             this.arrowVy = this.arrowVy * 0.5 - 20;
             this.arrowAngularVel = -12;
             this.arrowState = 'TUMBLING';
             this.sound.playBounce();
             this.screenShake = 6;
-            this.spawnImpactParticles(platLeft, nextTipY, '#f59e0b', 8);
+            this.spawnImpactParticles(platLeft, nextY, '#f59e0b', 8);
             return;
           }
 
-          // Hits Right Side
-          if (prevTipX >= platRight - 3 && nextTipX <= platRight + 3) {
-            this.arrowX = platRight + 6;
+          // C. HIT RIGHT WALL FROM RIGHT (moving left)
+          if (bestHit.nx === 1) {
+            this.arrowX = platRight + 8;
             this.arrowY = nextY;
-            this.arrowVx = Math.abs(this.arrowVx) * 0.65 + 35;
+            this.arrowVx = Math.abs(this.arrowVx || 40) * 0.7 + 40;
             this.arrowVy = this.arrowVy * 0.5 - 20;
             this.arrowAngularVel = 12;
             this.arrowState = 'TUMBLING';
             this.sound.playBounce();
             this.screenShake = 6;
-            this.spawnImpactParticles(platRight, nextTipY, '#f59e0b', 8);
+            this.spawnImpactParticles(platRight, nextY, '#f59e0b', 8);
             return;
           }
-        }
 
-        // ─── 4. CEILING / UNDERSIDE RICOCHET ───
-        if (this.arrowVy > 0) {
-          const crossedBottom = (prevTipY <= platBottom + 4 && nextTipY >= platBottom - 4);
-          const withinWidth = (nextTipX >= platLeft && nextTipX <= platRight);
-
-          if (crossedBottom && withinWidth) {
+          // D. HIT BOTTOM UNDERSIDE (Ceiling ricochet)
+          if (bestHit.ny === -1) {
             this.arrowX = nextX;
-            this.arrowY = platBottom - 4;
-            this.arrowVy = -Math.abs(this.arrowVy) * 0.55 - 40;
+            this.arrowY = platBottom - 6;
+            this.arrowVy = -Math.abs(this.arrowVy || 50) * 0.6 - 45;
             this.arrowVx = this.arrowVx * 0.7;
             this.arrowAngularVel = (Math.random() - 0.5) * 16;
             this.arrowState = 'TUMBLING';
             this.sound.playBounce();
             this.screenShake = 8;
-            this.spawnImpactParticles(nextTipX, platBottom, '#f59e0b', 10);
+            this.spawnImpactParticles(nextX, platBottom, '#f59e0b', 10);
             return;
           }
+        }
+
+        // ─── 3. STATIC PENETRATION RECOVERY (OVERLAP RESOLUTION) ───
+        const insideX = (nextX >= platLeft - 2 && nextX <= platRight + 2) || (nextTipX >= platLeft - 2 && nextTipX <= platRight + 2);
+        const insideY = (nextY >= platBottom - 2 && nextY <= platTop + 2) || (nextTipY >= platBottom - 2 && nextTipY <= platTop + 2);
+
+        if (insideX && insideY) {
+          const distL = Math.abs(nextX - platLeft);
+          const distR = Math.abs(nextX - platRight);
+          const distB = Math.abs(nextY - platBottom);
+          const distT = Math.abs(nextY - platTop);
+          const minDist = Math.min(distL, distR, distB, distT);
+
+          if (minDist === distL) {
+            this.arrowX = platLeft - 8;
+            this.arrowVx = -Math.abs(this.arrowVx || 40) * 0.7 - 40;
+          } else if (minDist === distR) {
+            this.arrowX = platRight + 8;
+            this.arrowVx = Math.abs(this.arrowVx || 40) * 0.7 + 40;
+          } else if (minDist === distB) {
+            this.arrowY = platBottom - 6;
+            this.arrowVy = -Math.abs(this.arrowVy || 40) * 0.6 - 40;
+          } else {
+            // Top face
+            if (this.arrowVy < 0 && nextX >= platLeft + 8 && nextX <= platRight - 8 && this.arrowState !== 'TUMBLING') {
+              this.arrowY = platTop + 2;
+              this.arrowVx = 0;
+              this.arrowVy = 0;
+              this.arrowState = 'RESTING';
+              this.stuckPlatform = plat;
+              this.stuckOffsetX = this.arrowX - plat.x;
+              this.sound.playStick();
+              return;
+            }
+            this.arrowY = platTop + 4;
+            this.arrowVy = Math.abs(this.arrowVy || 40) * 0.4 + 20;
+          }
+          this.arrowState = 'TUMBLING';
+          this.sound.playBounce();
+          return;
         }
       }
 
@@ -1573,7 +1688,7 @@ const data = gameEntry?.data || {
       // World to Screen Converter
       // (World X = 0 is center, World Y = 0 is ground)
       const toScreenX = (wx: number) => W / 2 + wx;
-      const toScreenY = (wy: number) => H - (wy - camY + 220);
+      const toScreenY = (wy: number) => Math.round((H * 0.80) - (wy - camY));
 
       // 1. Dynamic Atmosphere Sky
       this.drawSkyBackground(ctx, W, H, camY);
@@ -1817,12 +1932,10 @@ const data = gameEntry?.data || {
     }
 
     private drawSlingshotAim(ctx: CanvasRenderingContext2D, sx: number, sy: number) {
-      // Drag line / bowstring
       const pRatio = this.pullPower;
-      const tensionColor = pRatio < 0.4 ? '#38bdf8' : (pRatio < 0.75 ? '#facc15' : '#ef4444');
+      const tensionColor = pRatio < 0.4 ? '#38bdf8' : (pRatio < 0.75 ? '#facc15' : '#f43f5e');
 
       ctx.save();
-      // Draw Aim Trajectory Arc Prediction Dots
       const dist = Math.hypot(this.pullVectorX, this.pullVectorY);
       if (dist > 10) {
         const normX = this.pullVectorX / dist;
@@ -1834,19 +1947,38 @@ const data = gameEntry?.data || {
         const simVx = normX * speed;
         const simVy = normY * speed;
 
-        // Draw drawn-back bowstring behind the arrow
-        const pullBackX = sx - normX * (pRatio * 28);
-        const pullBackY = sy + normY * (pRatio * 28);
+        // Clean Direction Heading Pointer Line
+        const pointerLen = 28 + pRatio * 32;
+        const headX = sx + normX * pointerLen;
+        const headY = sy - normY * pointerLen;
+
         ctx.strokeStyle = tensionColor;
-        ctx.lineWidth = 2.5;
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
         ctx.beginPath();
-        ctx.moveTo(sx - 14, sy);
-        ctx.lineTo(pullBackX, pullBackY);
-        ctx.lineTo(sx + 14, sy);
+        ctx.moveTo(sx, sy);
+        ctx.lineTo(headX, headY);
         ctx.stroke();
 
+        // Direction Arrowhead at tip
+        const arrowAngle = Math.atan2(-normY, normX);
+        const headSize = 8;
         ctx.fillStyle = tensionColor;
-        // Draw 14 simulated steps (forward arc)
+        ctx.beginPath();
+        ctx.moveTo(headX, headY);
+        ctx.lineTo(
+          headX - headSize * Math.cos(arrowAngle - Math.PI / 6),
+          headY - headSize * Math.sin(arrowAngle - Math.PI / 6)
+        );
+        ctx.lineTo(
+          headX - headSize * Math.cos(arrowAngle + Math.PI / 6),
+          headY - headSize * Math.sin(arrowAngle + Math.PI / 6)
+        );
+        ctx.closePath();
+        ctx.fill();
+
+        // Forward Ballistic Trajectory Arc (14 predicted dots)
+        ctx.fillStyle = tensionColor;
         const stepDt = 0.035;
         let curSimX = this.arrowX;
         let curSimY = this.arrowY;
@@ -1858,7 +1990,7 @@ const data = gameEntry?.data || {
           curSimY += curSimVy * stepDt;
 
           const dotSx = this.V_WIDTH / 2 + curSimX;
-          const dotSy = this.V_HEIGHT - (curSimY - this.cameraY + 220);
+          const dotSy = Math.round((this.V_HEIGHT * 0.80) - (curSimY - this.cameraY));
 
           ctx.globalAlpha = 1.0 - (i / 15);
           ctx.beginPath();
@@ -1867,13 +1999,28 @@ const data = gameEntry?.data || {
         }
       }
 
-      // Draw Slingshot Tension Circle around arrow
-      ctx.globalAlpha = 0.8;
-      ctx.strokeStyle = tensionColor;
-      ctx.lineWidth = 2;
+      // Modern Circular Power Gauge Ring around arrow (No bowstring cords)
+      const gaugeRadius = 26;
+      ctx.globalAlpha = 0.25;
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 3.5;
       ctx.beginPath();
-      ctx.arc(sx, sy, 22 + pRatio * 18, 0, Math.PI * 2);
+      ctx.arc(sx, sy, gaugeRadius, 0, Math.PI * 2);
       ctx.stroke();
+
+      if (pRatio > 0.02) {
+        ctx.globalAlpha = 0.95;
+        ctx.strokeStyle = tensionColor;
+        ctx.lineWidth = 4.5;
+        ctx.lineCap = 'round';
+        ctx.shadowColor = tensionColor;
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        const startAngle = -Math.PI / 2;
+        const endAngle = startAngle + pRatio * Math.PI * 2;
+        ctx.arc(sx, sy, gaugeRadius, startAngle, endAngle);
+        ctx.stroke();
+      }
 
       ctx.restore();
     }
