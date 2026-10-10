@@ -19,15 +19,15 @@ const data = gameEntry?.data || {
     'R 키 또는 재도전 버튼으로 언제든 처음부터 다시 시작'
   ],
   rules: [
-    '화살이 아래로 낙하할 때 블록 "윗면"에 정확히 닿아야만 단단히 꽂히며 다음 발판이 됩니다.',
-    '블록 옆면이나 모서리, 밑면에 닿으면 튕겨져 미끄러져 아래로 끝없이 굴러 떨어집니다.',
+    '화살이 블록의 "윗면"이나 "옆면"에 닿으면 단단히 꽂히며 다음 발판이 됩니다.',
+    '블록 아랫면(천장)에 머리를 부딪히면 튕겨져 아래로 떨어지므로 주의해야 합니다.',
     '고도가 올라갈수록 발판이 좁아지고 움직이는 블록, 천장 방해물 등이 등장합니다.',
     '매일 도전(Daily 300m 완등)과 한계에 도전하는 무한 모드(Endless)를 지원합니다.'
   ],
   faqItems: [
     {
       q: '화살이 블록에 꽂히지 않고 튕겨 나옵니다.',
-      a: '화살은 반드시 포물선 정점을 지나 아래로 낙하할 때 블록 "윗면"에 닿아야 꽂힙니다! 블록 아래를 올려치거나 옆면에 맞으면 튕겨져 추락합니다.'
+      a: '화살은 블록의 윗면이나 옆면에 닿으면 안전하게 꽂힙니다! 다만 블록 아랫면(천장)을 올려치면 강하게 튕겨져 아래로 추락하니 머리 위 장애물을 피해야 합니다.'
     },
     {
       q: 'OBS 방송 화면에 게임만 깔끔하게 띄울 수 있나요?',
@@ -1245,6 +1245,18 @@ const data = gameEntry?.data || {
       const MAX_SPEED = 960;
       const speed = MIN_SPEED + this.pullPower * (MAX_SPEED - MIN_SPEED);
 
+      // When launching from a wall, ensure arrow is freed cleanly to avoid instant self-collision
+      if (this.stuckPlatform) {
+        const plat = this.stuckPlatform;
+        const platLeft = plat.x - plat.w / 2;
+        const platRight = plat.x + plat.w / 2;
+        if (this.arrowX < platLeft) {
+          this.arrowX = Math.min(this.arrowX, platLeft - 18);
+        } else if (this.arrowX > platRight) {
+          this.arrowX = Math.max(this.arrowX, platRight + 18);
+        }
+      }
+
       this.arrowVx = normX * speed;
       this.arrowVy = normY * speed; // in world coords: +vy is up!
       this.arrowAngle = Math.atan2(this.arrowVy, this.arrowVx);
@@ -1485,7 +1497,7 @@ const data = gameEntry?.data || {
             const hitX = bestHit.isTip
               ? (prevTipX + bestHit.t * (nextTipX - prevTipX))
               : (prevX + bestHit.t * (nextX - prevX));
-            const TOP_INSET = 8;
+            const TOP_INSET = 4;
             const isFirmlyOnTop = (hitX >= platLeft + TOP_INSET && hitX <= platRight - TOP_INSET);
 
             // Falling arrows (flying or tumbling after a bounce) stick on the top surface
@@ -1494,54 +1506,30 @@ const data = gameEntry?.data || {
               return;
             }
 
-            // CORNER LIP CLIP: Near outer edge -> cannot stick, slides/deflects off!
-            // Place the whole arrow (incl. tip) just outside the edge
+            // Outer corner lip: sticks to the respective side face right near top
             if (hitX < plat.x) {
-              this.arrowX = platLeft - Math.max(0, Math.cos(this.arrowAngle) * ARROW_HALF_LEN) - 6;
-              this.arrowVx = -Math.abs(this.arrowVx || 45) * 0.7 - 40;
-              this.arrowAngularVel = -14;
+              this.landOnPlatform(plat, platLeft, platTop - 2, 'left');
             } else {
-              this.arrowX = platRight + Math.max(0, -Math.cos(this.arrowAngle) * ARROW_HALF_LEN) + 6;
-              this.arrowVx = Math.abs(this.arrowVx || 45) * 0.7 + 40;
-              this.arrowAngularVel = 14;
+              this.landOnPlatform(plat, platRight, platTop - 2, 'right');
             }
-            this.arrowY = platTop + 2;
-            this.arrowVy = this.arrowVy * 0.4 - 20;
-            this.arrowState = 'TUMBLING';
-            this.sound.playBounce();
-            this.screenShake = 6;
-            this.spawnImpactParticles(this.arrowX, platTop, '#f59e0b', 8);
-            this.showToast('⚠️ 발판 모서리 미끄러짐!', 'fail');
             return;
           }
 
-          // B. HIT LEFT WALL FROM LEFT (moving right)
+          // B. HIT LEFT WALL FROM LEFT (moving right) -> Stick into left face!
           if (bestHit.nx === -1) {
-            const rightExtent = Math.max(0, Math.cos(this.arrowAngle) * ARROW_HALF_LEN);
-            this.arrowX = platLeft - rightExtent - 6;
-            this.arrowY = nextY;
-            this.arrowVx = -Math.abs(this.arrowVx || 40) * 0.7 - 40;
-            this.arrowVy = this.arrowVy * 0.5 - 20;
-            this.arrowAngularVel = -12;
-            this.arrowState = 'TUMBLING';
-            this.sound.playBounce();
-            this.screenShake = 6;
-            this.spawnImpactParticles(platLeft, nextY, '#f59e0b', 8);
+            const hitY = bestHit.isTip
+              ? (prevTipY + bestHit.t * (nextTipY - prevTipY))
+              : (prevY + bestHit.t * (nextY - prevY));
+            this.landOnPlatform(plat, platLeft, hitY, 'left');
             return;
           }
 
-          // C. HIT RIGHT WALL FROM RIGHT (moving left)
+          // C. HIT RIGHT WALL FROM RIGHT (moving left) -> Stick into right face!
           if (bestHit.nx === 1) {
-            const leftExtent = Math.max(0, -Math.cos(this.arrowAngle) * ARROW_HALF_LEN);
-            this.arrowX = platRight + leftExtent + 6;
-            this.arrowY = nextY;
-            this.arrowVx = Math.abs(this.arrowVx || 40) * 0.7 + 40;
-            this.arrowVy = this.arrowVy * 0.5 - 20;
-            this.arrowAngularVel = 12;
-            this.arrowState = 'TUMBLING';
-            this.sound.playBounce();
-            this.screenShake = 6;
-            this.spawnImpactParticles(platRight, nextY, '#f59e0b', 8);
+            const hitY = bestHit.isTip
+              ? (prevTipY + bestHit.t * (nextTipY - prevTipY))
+              : (prevY + bestHit.t * (nextY - prevY));
+            this.landOnPlatform(plat, platRight, hitY, 'right');
             return;
           }
 
@@ -1585,25 +1573,17 @@ const data = gameEntry?.data || {
           // If falling downwards
           if (this.arrowVy <= 0) {
             // Definite top landing
-            if (nextX >= platLeft + 8 && nextX <= platRight - 8) {
+            if (nextX >= platLeft + 4 && nextX <= platRight - 4) {
               this.landOnPlatform(plat, nextX);
               return;
             }
 
-            // Near edge or tumbling: eject to side
+            // Near side: stick to side
             if (nextX < plat.x) {
-              const rightExtent = Math.max(0, Math.cos(this.arrowAngle) * ARROW_HALF_LEN);
-              this.arrowX = platLeft - rightExtent - 6;
-              this.arrowVx = -Math.abs(this.arrowVx || 40) * 0.7 - 40;
+              this.landOnPlatform(plat, platLeft, Math.min(nextY, platTop - 2), 'left');
             } else {
-              const leftExtent = Math.max(0, -Math.cos(this.arrowAngle) * ARROW_HALF_LEN);
-              this.arrowX = platRight + leftExtent + 6;
-              this.arrowVx = Math.abs(this.arrowVx || 40) * 0.7 + 40;
+              this.landOnPlatform(plat, platRight, Math.min(nextY, platTop - 2), 'right');
             }
-            this.arrowY = Math.min(nextY, platTop - 2);
-            this.arrowVy = this.arrowVy * 0.4 - 20;
-            this.arrowState = 'TUMBLING';
-            this.sound.playBounce();
             return;
           }
         }
@@ -1615,8 +1595,8 @@ const data = gameEntry?.data || {
     }
 
     // Single landing path for ground, platforms and overlap recovery.
-    // hitX = where the arrow tip pierces the top surface.
-    private landOnPlatform(plat: Platform, hitX: number) {
+    // hitX = where the arrow tip pierces the top surface or wall X coordinate.
+    private landOnPlatform(plat: Platform, hitX: number, hitY?: number, side?: 'left' | 'right') {
       const ARROW_HALF_LEN = 16;
 
       if (plat.id === 0) {
@@ -1624,6 +1604,33 @@ const data = gameEntry?.data || {
         this.arrowAngle = Math.PI / 2;
         this.arrowX = hitX;
         this.arrowY = 4;
+      } else if (side === 'left') {
+        // Stuck into LEFT vertical face of the platform (arrow faces rightwards into the wall)
+        let stickAngle = 0.08;
+        if (Math.cos(this.arrowAngle) > 0.25) {
+          stickAngle = Math.max(-0.35, Math.min(0.35, this.arrowAngle));
+        }
+        this.arrowAngle = stickAngle;
+        const wallY = hitY !== undefined ? Math.max(plat.y - plat.h + 2, Math.min(plat.y - 2, hitY)) : plat.y - plat.h / 2;
+        const platLeft = plat.x - plat.w / 2;
+        this.arrowX = (platLeft + 3) - Math.cos(this.arrowAngle) * ARROW_HALF_LEN;
+        this.arrowY = wallY - Math.sin(this.arrowAngle) * ARROW_HALF_LEN;
+        this.spawnImpactParticles(platLeft, wallY, '#34d399', 14);
+      } else if (side === 'right') {
+        // Stuck into RIGHT vertical face of the platform (arrow faces leftwards into the wall)
+        let stickAngle = Math.PI - 0.08;
+        if (Math.cos(this.arrowAngle) < -0.25) {
+          let diff = this.arrowAngle - Math.PI;
+          while (diff > Math.PI) diff -= Math.PI * 2;
+          while (diff < -Math.PI) diff += Math.PI * 2;
+          stickAngle = Math.PI + Math.max(-0.35, Math.min(0.35, diff));
+        }
+        this.arrowAngle = stickAngle;
+        const wallY = hitY !== undefined ? Math.max(plat.y - plat.h + 2, Math.min(plat.y - 2, hitY)) : plat.y - plat.h / 2;
+        const platRight = plat.x + plat.w / 2;
+        this.arrowX = (platRight - 3) - Math.cos(this.arrowAngle) * ARROW_HALF_LEN;
+        this.arrowY = wallY - Math.sin(this.arrowAngle) * ARROW_HALF_LEN;
+        this.spawnImpactParticles(platRight, wallY, '#34d399', 14);
       } else {
         // Rest tilted 45° in the travel direction, tip buried at the hit point
         this.arrowAngle = this.arrowVx < 0 ? -Math.PI * 0.75 : -Math.PI * 0.25;
@@ -1649,7 +1656,7 @@ const data = gameEntry?.data || {
       }
 
       // Drop Fall penalty check
-      const landedAlt = Math.max(0, Math.floor(plat.y / this.PX_PER_METER));
+      const landedAlt = Math.max(0, Math.floor((side ? this.arrowY : plat.y) / this.PX_PER_METER));
       const dropDiff = this.lastRestMeters - landedAlt;
       if (dropDiff >= 12) {
         this.worstDropMeters = Math.max(this.worstDropMeters, dropDiff);
