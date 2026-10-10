@@ -1,0 +1,1862 @@
+---
+import GameLayout from '../../layouts/GameLayout.astro';
+import { getEntry } from 'astro:content';
+
+const gameEntry = await getEntry('games', 'arrow-jump');
+const data = gameEntry?.data || {
+  title: '화살 점프 (Arrow Climber)',
+  tagline: '활시위를 당겨 블록을 타고 올라가는 고난도 물리 클라이밍 아케이드',
+  description: '활시위를 당겨 각도와 세기를 조절해 위로 쏘아 올리세요! 블록 윗면에 착지해야만 단단히 꽂히고, 밑면이나 옆면에 부딪히면 튕겨져 아래로 끝없이 추락합니다. 최고 높이(m) 신기록에 도전하세요.',
+  icon: '🏹',
+  category: 'arcade',
+  badge: '🔥 NEW 물리 클라이밍',
+  players: '1인 (고도 기록 경쟁)',
+  playTime: '1분~무제한',
+  controls: [
+    '화면 또는 화살을 잡고 반대 방향으로 드래그하여 각도와 파워 조절 (슬링샷 조작)',
+    '손이나 마우스를 놓으면 시위가 튕기며 화살 발사',
+    '궤적 가이드 점선으로 예상 낙하 지점 조준',
+    'R 키 또는 재도전 버튼으로 언제든 처음부터 다시 시작'
+  ],
+  rules: [
+    '화살이 하강 중(아래로 떨어질 때) 블록 윗면에 닿아야만 단단히 꽂히며 다음 발판이 됩니다.',
+    '블록 밑면(천장)이나 옆면에 맞으면 강하게 튕겨져 아래로 끝없이 굴러 떨어집니다.',
+    '고도가 올라갈수록 발판이 좁아지고 움직이는 블록, 천장 방해물 등이 등장합니다.',
+    '매일 도전(Daily 300m 완등)과 한계에 도전하는 무한 모드(Endless)를 지원합니다.'
+  ],
+  faqItems: [
+    {
+      q: '화살이 블록에 꽂히지 않고 튕겨 나옵니다.',
+      a: '화살은 반드시 포물선 정점을 지나 아래로 낙하할 때 블록 "윗면"에 닿아야 꽂힙니다! 블록 아래를 올려치거나 옆면에 맞으면 튕겨져 추락합니다.'
+    },
+    {
+      q: 'OBS 방송 화면에 게임만 깔끔하게 띄울 수 있나요?',
+      a: "주소 뒤에 '?bare=1' 또는 '?stream=true'를 추가하면 불필요한 UI가 숨겨진 투명 방송 전용 모드로 실행됩니다."
+    },
+    {
+      q: '매일 도전(Daily) 모드는 어떻게 진행되나요?',
+      a: '매일 전 세계 모든 플레이어가 동일한 맵 시드로 경쟁하는 300m 완등 챌린지입니다. 매일 자정에 새로운 타워가 열립니다.'
+    }
+  ]
+};
+---
+
+<GameLayout
+  title={data.title}
+  description={data.description}
+  tagline={data.tagline}
+  icon={data.icon}
+  category={data.category}
+  badge={data.badge}
+  players={data.players}
+  playTime={data.playTime}
+  controls={data.controls}
+  rules={data.rules}
+  faqItems={data.faqItems}
+  layoutMode="full"
+  hideStageHeader={true}
+  hideFooter={false}
+>
+  <div class="arrow-game-root" id="arrow-game-root">
+    <!-- Top HUD Header -->
+    <header class="game-hud-bar">
+      <div class="hud-left">
+        <a href="/games" class="hud-back-btn" title="게임 목록으로">←</a>
+        <div class="hud-brand">
+          <span class="hud-icon">🏹</span>
+          <span class="hud-title">ARROW CLIMBER</span>
+        </div>
+        <div class="hud-mode-pill" id="mode-pill">매일 도전 (300m)</div>
+      </div>
+
+      <div class="hud-metrics">
+        <div class="metric-item highlight">
+          <span class="metric-label">현재 고도</span>
+          <span class="metric-val" id="hud-current-alt">0<small>m</small></span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-label">최고 기록</span>
+          <span class="metric-val" id="hud-best-alt">0<small>m</small></span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-label">발사 횟수</span>
+          <span class="metric-val" id="hud-shots">0</span>
+        </div>
+      </div>
+
+      <div class="hud-actions">
+        <button type="button" class="hud-btn" id="btn-toggle-mode" title="게임 모드 전환 (매일 / 무한)">
+          <span class="btn-icon">🔄</span>
+          <span class="btn-text">모드 변경</span>
+        </button>
+        <button type="button" class="hud-btn" id="btn-restart" title="처음부터 다시 시도 (R)">
+          <span class="btn-icon">↺</span>
+          <span class="btn-text">재도전</span>
+        </button>
+        <button type="button" class="hud-btn" id="btn-sound" title="소리 켜기/끄기">
+          <span class="btn-icon" id="sound-icon">🔊</span>
+        </button>
+        <button type="button" class="hud-btn share-cta" id="btn-share" title="기록 공유하기">
+          <span class="btn-icon">📤</span>
+          <span class="btn-text">공유</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Game Canvas Container -->
+    <main class="canvas-viewport" id="canvas-viewport">
+      <canvas id="game-canvas" width="540" height="760"></canvas>
+
+      <!-- Drag & Aim Touch Area Overlay -->
+      <div id="touch-layer" class="touch-layer" tabindex="0" aria-label="게임 조작 영역"></div>
+
+      <!-- In-Game Dramatic Notification Banner (Falls / Records) -->
+      <div id="game-toast" class="game-toast"></div>
+
+      <!-- Floating Drag Help Tip -->
+      <div id="aim-guide-tip" class="aim-guide-tip">
+        <div class="tip-hand">👆</div>
+        <span>화면을 잡고 <strong>아래로 당겨서</strong> 활을 조준하세요!</span>
+      </div>
+
+      <!-- Altitude Milestone Overlay (Flash) -->
+      <div id="milestone-badge" class="milestone-badge"></div>
+    </main>
+
+    <!-- Share & Result Modal -->
+    <div id="share-modal" class="share-modal" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-badge">🏹 ARROW CLIMBER STATS</div>
+          <button type="button" class="modal-close" id="modal-close">×</button>
+        </div>
+        <h2 class="modal-title" id="modal-title">나의 클라이밍 기록</h2>
+
+        <div class="modal-stats-grid">
+          <div class="stat-box">
+            <span class="stat-label">도달 고도</span>
+            <span class="stat-number highlight" id="stat-alt">0m</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">최고 기록</span>
+            <span class="stat-number" id="stat-best">0m</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">총 슛 횟수</span>
+            <span class="stat-number" id="stat-shots">0회</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">최대 추락 거리</span>
+            <span class="stat-number fall" id="stat-worst-drop">0m</span>
+          </div>
+        </div>
+
+        <div class="share-preview-box">
+          <pre id="share-text-preview" class="share-preview-text"></pre>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-primary-share" id="btn-copy-card">
+            <span id="btn-copy-label">📋 결과 복사하기</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</GameLayout>
+
+<style>
+  :root {
+    --accent-glow: #10b981;
+    --accent-cyan: #06b6d4;
+    --accent-red: #ef4444;
+    --hud-bg: rgba(15, 23, 42, 0.85);
+    --border-glass: rgba(255, 255, 255, 0.12);
+  }
+
+  .arrow-game-root {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: calc(100vh - 120px);
+    background: radial-gradient(circle at 50% 20%, #0f172a 0%, #020617 100%);
+    color: #f8fafc;
+    user-select: none;
+    -webkit-user-select: none;
+    overflow: hidden;
+    position: relative;
+    padding-bottom: 2rem;
+  }
+
+  /* HUD Header */
+  .game-hud-bar {
+    width: 100%;
+    max-width: 680px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: var(--hud-bg);
+    border: 1px solid var(--border-glass);
+    border-radius: 16px;
+    margin: 0.75rem auto 0.5rem;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    z-index: 20;
+    gap: 0.5rem;
+  }
+
+  .hud-left {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .hud-back-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 700;
+    transition: all 0.2s;
+  }
+
+  .hud-back-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+  }
+
+  .hud-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .hud-icon {
+    font-size: 1.25rem;
+  }
+
+  .hud-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    background: linear-gradient(135deg, #f8fafc 0%, #38bdf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hud-mode-pill {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: 9999px;
+    background: rgba(16, 185, 129, 0.18);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+  }
+
+  .hud-metrics {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .metric-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .metric-label {
+    font-size: 0.65rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .metric-val {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #e2e8f0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .metric-val small {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-left: 1px;
+  }
+
+  .metric-item.highlight .metric-val {
+    color: #38bdf8;
+    text-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+  }
+
+  .hud-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .hud-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.45rem 0.65rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-glass);
+    border-radius: 10px;
+    color: #e2e8f0;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .hud-btn:hover {
+    background: rgba(255, 255, 255, 0.16);
+    transform: translateY(-1px);
+  }
+
+  .hud-btn.share-cta {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    border-color: #38bdf8;
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+  }
+
+  .hud-btn.share-cta:hover {
+    box-shadow: 0 6px 20px rgba(2, 132, 199, 0.6);
+  }
+
+  /* Viewport & Canvas */
+  .canvas-viewport {
+    position: relative;
+    width: 100%;
+    max-width: 540px;
+    height: 760px;
+    max-height: 80vh;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #020617;
+    border: 1px solid var(--border-glass);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+    margin: 0 auto;
+    touch-action: none;
+  }
+
+  #game-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    background: transparent;
+  }
+
+  .touch-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    cursor: grab;
+    touch-action: none;
+    outline: none;
+  }
+
+  .touch-layer:active {
+    cursor: grabbing;
+  }
+
+  /* Toast Notification */
+  .game-toast {
+    position: absolute;
+    top: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(-30px);
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    color: #fca5a5;
+    padding: 0.6rem 1.2rem;
+    border-radius: 9999px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 25px rgba(239, 68, 68, 0.35);
+    pointer-events: none;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 30;
+  }
+
+  .game-toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  .game-toast.success {
+    border-color: rgba(16, 185, 129, 0.6);
+    color: #6ee7b7;
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.35);
+  }
+
+  /* Aim Guide Tip */
+  .aim-guide-tip {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid var(--border-glass);
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.82rem;
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    pointer-events: none;
+    z-index: 15;
+    animation: pulseTip 2s infinite ease-in-out;
+    transition: opacity 0.4s;
+  }
+
+  .aim-guide-tip.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  @keyframes pulseTip {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-6px); }
+  }
+
+  /* Milestone Overlay */
+  .milestone-badge {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.6);
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #38bdf8;
+    text-shadow: 0 0 25px rgba(56, 189, 248, 0.8);
+    pointer-events: none;
+    opacity: 0;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 25;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .milestone-badge.pop {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 1;
+  }
+
+  /* Share Modal */
+  .share-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    padding: 1rem;
+  }
+
+  .share-modal.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .modal-card {
+    background: #0f172a;
+    border: 1px solid var(--border-glass);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 440px;
+    padding: 1.5rem;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+    transform: translateY(20px) scale(0.96);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .share-modal.active .modal-card {
+    transform: translateY(0) scale(1);
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .modal-badge {
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+
+  .modal-close:hover {
+    color: #ffffff;
+  }
+
+  .modal-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 1.2rem;
+  }
+
+  .modal-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .stat-box {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-glass);
+    border-radius: 12px;
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin-bottom: 0.2rem;
+  }
+
+  .stat-number {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #f1f5f9;
+  }
+
+  .stat-number.highlight {
+    color: #38bdf8;
+  }
+
+  .stat-number.fall {
+    color: #f87171;
+  }
+
+  .share-preview-box {
+    background: #020617;
+    border: 1px solid var(--border-glass);
+    border-radius: 12px;
+    padding: 0.85rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .share-preview-text {
+    margin: 0;
+    font-family: inherit;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: #cbd5e1;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .modal-footer {
+    display: flex;
+  }
+
+  .btn-primary-share {
+    width: 100%;
+    padding: 0.85rem;
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    border: 1px solid #38bdf8;
+    border-radius: 12px;
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(2, 132, 199, 0.4);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .btn-primary-share:hover {
+    box-shadow: 0 6px 24px rgba(2, 132, 199, 0.6);
+    transform: translateY(-1px);
+  }
+
+  /* Responsive Adjustments */
+  @media (max-width: 640px) {
+    .game-hud-bar {
+      border-radius: 0;
+      margin-top: 0;
+      padding: 0.6rem 0.75rem;
+    }
+    .hud-title, .btn-text {
+      display: none;
+    }
+    .canvas-viewport {
+      border-radius: 0;
+      max-height: 85vh;
+      border-left: none;
+      border-right: none;
+    }
+  }
+</style>
+
+<script>
+  // ─── Sound Synthesizer (Zero-Asset Web Audio API) ─────────────────────────
+  class SoundSynth {
+    private ctx: AudioContext | null = null;
+    public muted: boolean = false;
+
+    constructor() {
+      const stored = localStorage.getItem('arrow_climber_muted');
+      this.muted = stored === 'true';
+    }
+
+    private init() {
+      if (!this.ctx) {
+        const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        if (AudioCtx) this.ctx = new AudioCtx();
+      }
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+    }
+
+    playAimPull(powerRatio: number) {
+      if (this.muted) return;
+      this.init();
+      if (!this.ctx) return;
+      try {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        const startFreq = 180 + powerRatio * 220;
+        osc.frequency.setValueAtTime(startFreq, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(startFreq + 60, this.ctx.currentTime + 0.08);
+
+        gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.08);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.08);
+      } catch {
+        // ignore audio failure
+      }
+    }
+
+    playRelease() {
+      if (this.muted) return;
+      this.init();
+      if (!this.ctx) return;
+      try {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(420, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(120, this.ctx.currentTime + 0.12);
+
+        gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.12);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.12);
+      } catch {
+        // ignore
+      }
+    }
+
+    playStick() {
+      if (this.muted) return;
+      this.init();
+      if (!this.ctx) return;
+      try {
+        // Deep thwack
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(260, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(80, this.ctx.currentTime + 0.15);
+
+        gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.15);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.15);
+      } catch {
+        // ignore
+      }
+    }
+
+    playBounce() {
+      if (this.muted) return;
+      this.init();
+      if (!this.ctx) return;
+      try {
+        // Metallic ricochet clang
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(980, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(440, this.ctx.currentTime + 0.22);
+
+        gain.gain.setValueAtTime(0.18, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.22);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.22);
+      } catch {
+        // ignore
+      }
+    }
+
+    playFall() {
+      if (this.muted) return;
+      this.init();
+      if (!this.ctx) return;
+      try {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(320, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(90, this.ctx.currentTime + 0.35);
+
+        gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.35);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.35);
+      } catch {
+        // ignore
+      }
+    }
+
+    playFanfare() {
+      if (this.muted) return;
+      this.init();
+      if (!this.ctx) return;
+      try {
+        const freqs = [523.25, 659.25, 783.99, 1046.5];
+        freqs.forEach((f, i) => {
+          if (!this.ctx) return;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(f, this.ctx.currentTime + i * 0.08);
+          gain.gain.setValueAtTime(0.1, this.ctx.currentTime + i * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + i * 0.08 + 0.25);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + i * 0.08);
+          osc.stop(this.ctx.currentTime + i * 0.08 + 0.25);
+        });
+      } catch {
+        // ignore
+      }
+    }
+  }
+
+  // ─── Deterministic Seeded PRNG (Mulberry32) ──────────────────────────────
+  class SeededRandom {
+    private a: number;
+    constructor(seed: number) {
+      this.a = seed >>> 0;
+    }
+    next(): number {
+      let t = (this.a += 0x6d2b79f5);
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    }
+    range(min: number, max: number): number {
+      return min + this.next() * (max - min);
+    }
+  }
+
+  function getDailySeed(): number {
+    const d = new Date();
+    const str = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}-arrow-v1`;
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = (hash << 5) - hash + str.charCodeAt(i);
+      hash |= 0;
+    }
+    return Math.abs(hash) || 123456;
+  }
+
+  // ─── Platform & Game Types ───────────────────────────────────────────────
+  interface Platform {
+    id: number;
+    x: number;          // center X in world px (-220 to 220)
+    y: number;          // top Y in world px (0 is ground)
+    w: number;          // width
+    h: number;          // height (thickness ~16px)
+    type: 'wood' | 'stone' | 'moving' | 'overhang' | 'summit';
+    moveRange?: number;
+    moveSpeed?: number;
+    baseX?: number;
+    movePhase?: number;
+  }
+
+  interface Particle {
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    life: number;
+    maxLife: number;
+    color: string;
+    size: number;
+  }
+
+  // ─── Game Engine ─────────────────────────────────────────────────────────
+  class ArrowClimberGame {
+    private canvas: HTMLCanvasElement;
+    private ctx: CanvasRenderingContext2D;
+    private touchLayer: HTMLElement;
+    private sound: SoundSynth;
+
+    // Viewport Virtual Dimensions
+    private readonly V_WIDTH = 540;
+    private readonly V_HEIGHT = 760;
+    private readonly PX_PER_METER = 24; // 24 world px = 1 meter
+    private readonly GRAVITY = 980;     // px/s^2
+
+    // Mode: 'daily' (300m summit) or 'endless'
+    private mode: 'daily' | 'endless' = 'daily';
+    private prng!: SeededRandom;
+
+    // Platforms
+    private platforms: Platform[] = [];
+    private highestGeneratedY = 0;
+
+    // Arrow State
+    private arrowState: 'RESTING' | 'AIMING' | 'FLYING' | 'TUMBLING' = 'RESTING';
+    private arrowX = 0;
+    private arrowY = 0;
+    private arrowVx = 0;
+    private arrowVy = 0;
+    private arrowAngle = -Math.PI / 2; // pointing up
+    private arrowAngularVel = 0;
+    private stuckPlatform: Platform | null = null;
+    private stuckOffsetX = 0;
+
+    // Drag / Slingshot
+    private isDragging = false;
+    private dragStartX = 0;
+    private dragStartY = 0;
+    private currentPointerX = 0;
+    private currentPointerY = 0;
+    private pullVectorX = 0;
+    private pullVectorY = 0;
+    private pullPower = 0; // 0 to 1
+
+    // Camera & Screen Shake
+    private cameraY = 120;
+    private targetCameraY = 120;
+    private screenShake = 0;
+
+    // Game Metrics & Records
+    private currentAltMeters = 0;
+    private maxAltMetersRun = 0;
+    private personalBest = 0;
+    private totalShots = 0;
+    private worstDropMeters = 0;
+    private lastRestMeters = 0;
+    private gameStartTime = Date.now();
+    private hasWonDaily = false;
+
+    // Particles & Trails
+    private particles: Particle[] = [];
+    private arrowTrail: { x: number; y: number; alpha: number }[] = [];
+
+    // Animation Loop
+    private lastTimestamp = 0;
+    private animFrameId = 0;
+
+    constructor() {
+      this.canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
+      this.ctx = this.canvas.getContext('2d')!;
+      this.touchLayer = document.getElementById('touch-layer') as HTMLElement;
+      this.sound = new SoundSynth();
+
+      this.loadRecords();
+      this.initEvents();
+      this.resizeCanvas();
+      this.startNewGame();
+      this.startLoop();
+    }
+
+    private loadRecords() {
+      const savedBest = localStorage.getItem('arrow_climber_best');
+      this.personalBest = savedBest ? parseInt(savedBest, 10) : 0;
+      this.updateHud();
+    }
+
+    private saveRecords() {
+      if (this.maxAltMetersRun > this.personalBest) {
+        this.personalBest = this.maxAltMetersRun;
+        localStorage.setItem('arrow_climber_best', this.personalBest.toString());
+      }
+    }
+
+    private resizeCanvas() {
+      const rect = this.canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      this.canvas.width = rect.width * dpr;
+      this.canvas.height = rect.height * dpr;
+      this.ctx.resetTransform?.();
+      this.ctx.scale(this.canvas.width / this.V_WIDTH, this.canvas.height / this.V_HEIGHT);
+    }
+
+    private initEvents() {
+      window.addEventListener('resize', () => this.resizeCanvas());
+
+      // Touch / Mouse Pointer Handlers on touch layer
+      this.touchLayer.addEventListener('pointerdown', (e) => this.onPointerDown(e));
+      window.addEventListener('pointermove', (e) => this.onPointerMove(e));
+      window.addEventListener('pointerup', (e) => this.onPointerUp(e));
+      window.addEventListener('pointercancel', (e) => this.onPointerUp(e));
+
+      // Key controls
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'r' || e.key === 'R') {
+          this.startNewGame();
+        }
+      });
+
+      // UI Buttons
+      document.getElementById('btn-restart')?.addEventListener('click', () => this.startNewGame());
+      document.getElementById('btn-toggle-mode')?.addEventListener('click', () => this.toggleMode());
+      document.getElementById('btn-sound')?.addEventListener('click', () => this.toggleSound());
+      document.getElementById('btn-share')?.addEventListener('click', () => this.openShareModal());
+      document.getElementById('modal-close')?.addEventListener('click', () => this.closeShareModal());
+      document.getElementById('btn-copy-card')?.addEventListener('click', () => this.copyShareCard());
+    }
+
+    private toggleMode() {
+      this.mode = this.mode === 'daily' ? 'endless' : 'daily';
+      const pill = document.getElementById('mode-pill');
+      if (pill) {
+        pill.textContent = this.mode === 'daily' ? '매일 도전 (300m)' : '무한 등반 (Endless)';
+        pill.style.color = this.mode === 'daily' ? '#34d399' : '#38bdf8';
+        pill.style.borderColor = this.mode === 'daily' ? 'rgba(16, 185, 129, 0.35)' : 'rgba(56, 189, 248, 0.35)';
+      }
+      this.startNewGame();
+      this.showToast(this.mode === 'daily' ? '📅 매일 시드 타워로 변경되었습니다!' : '♾️ 무한 등반 모드로 변경되었습니다!', 'success');
+    }
+
+    private toggleSound() {
+      this.sound.muted = !this.sound.muted;
+      localStorage.setItem('arrow_climber_muted', this.sound.muted.toString());
+      const icon = document.getElementById('sound-icon');
+      if (icon) icon.textContent = this.sound.muted ? '🔇' : '🔊';
+    }
+
+    public startNewGame() {
+      const seed = this.mode === 'daily' ? getDailySeed() : Math.floor(Math.random() * 1000000) + 1;
+      this.prng = new SeededRandom(seed);
+      this.platforms = [];
+      this.particles = [];
+      this.arrowTrail = [];
+      this.highestGeneratedY = 0;
+      this.hasWonDaily = false;
+
+      // Ground Platform at World Y = 0
+      const ground: Platform = {
+        id: 0,
+        x: 0,
+        y: 0,
+        w: this.V_WIDTH * 1.5,
+        h: 24,
+        type: 'stone'
+      };
+      this.platforms.push(ground);
+
+      // Arrow starting position: planted on the ground
+      this.arrowX = 0;
+      this.arrowY = 4;
+      this.arrowVx = 0;
+      this.arrowVy = 0;
+      this.arrowAngle = Math.PI / 2; // upright
+      this.arrowAngularVel = 0;
+      this.arrowState = 'RESTING';
+      this.stuckPlatform = ground;
+      this.stuckOffsetX = 0;
+
+      this.currentAltMeters = 0;
+      this.maxAltMetersRun = 0;
+      this.lastRestMeters = 0;
+      this.totalShots = 0;
+      this.worstDropMeters = 0;
+      this.gameStartTime = Date.now();
+
+      this.cameraY = 120;
+      this.targetCameraY = 120;
+
+      // Generate first batch of platforms up to 1500px (~60m)
+      this.generatePlatformsUpTo(1500);
+
+      this.updateHud();
+      document.getElementById('aim-guide-tip')?.classList.remove('hidden');
+    }
+
+    private generatePlatformsUpTo(targetWorldY: number) {
+      const SUMMIT_ALT_Y = 300 * this.PX_PER_METER; // 300m = 7200px
+
+      while (this.highestGeneratedY < targetWorldY) {
+        const nextAlt = this.highestGeneratedY;
+        const currentMeter = Math.floor(nextAlt / this.PX_PER_METER);
+
+        // Check for Daily Summit
+        if (this.mode === 'daily' && nextAlt >= SUMMIT_ALT_Y) {
+          if (!this.platforms.some(p => p.type === 'summit')) {
+            this.platforms.push({
+              id: this.platforms.length,
+              x: 0,
+              y: SUMMIT_ALT_Y,
+              w: 160,
+              h: 24,
+              type: 'summit'
+            });
+            this.highestGeneratedY = SUMMIT_ALT_Y + 400;
+          }
+          break;
+        }
+
+        // Vertical spacing between platforms: 68px to 96px (~2.8m - 4.0m)
+        const vGap = this.prng.range(68, 96);
+        const newY = (this.highestGeneratedY === 0 ? 76 : this.highestGeneratedY + vGap);
+
+        // Difficulty curves based on altitude
+        let platW = 140;
+        let pType: Platform['type'] = 'wood';
+
+        if (currentMeter < 30) {
+          // Training green zone
+          platW = this.prng.range(130, 170);
+          pType = 'wood';
+        } else if (currentMeter < 80) {
+          // Stone zone
+          platW = this.prng.range(95, 135);
+          pType = 'stone';
+        } else if (currentMeter < 160) {
+          // Overhangs & moving platforms introduce
+          platW = this.prng.range(80, 115);
+          const roll = this.prng.next();
+          pType = roll > 0.65 ? 'moving' : 'stone';
+        } else if (currentMeter < 240) {
+          // Narrow precision ledges
+          platW = this.prng.range(65, 95);
+          const roll = this.prng.next();
+          pType = roll > 0.5 ? 'moving' : (roll > 0.3 ? 'overhang' : 'stone');
+        } else {
+          // Summit cosmic zone: narrow & tricky
+          platW = this.prng.range(50, 75);
+          pType = this.prng.next() > 0.4 ? 'moving' : 'stone';
+        }
+
+        // Horizontal position within canyon (-180 to 180)
+        const platX = this.prng.range(-170, 170);
+
+        const newPlat: Platform = {
+          id: this.platforms.length,
+          x: platX,
+          y: newY,
+          w: platW,
+          h: 16,
+          type: pType
+        };
+
+        if (pType === 'moving') {
+          newPlat.baseX = platX;
+          newPlat.moveRange = this.prng.range(40, 85);
+          newPlat.moveSpeed = this.prng.range(1.2, 2.2);
+          newPlat.movePhase = this.prng.range(0, Math.PI * 2);
+        }
+
+        this.platforms.push(newPlat);
+
+        // Occasional Overhang ceiling hazard
+        if (pType === 'overhang' || (currentMeter > 90 && this.prng.next() < 0.22)) {
+          const ceilingGap = this.prng.range(65, 85);
+          this.platforms.push({
+            id: this.platforms.length,
+            x: platX + this.prng.range(-20, 20),
+            y: newY + ceilingGap,
+            w: platW * 0.9,
+            h: 16,
+            type: 'overhang'
+          });
+        }
+
+        this.highestGeneratedY = newY;
+      }
+    }
+
+    // ─── Input Handling ──────────────────────────────────────────────────
+    private onPointerDown(e: PointerEvent) {
+      if (this.arrowState !== 'RESTING') return;
+
+      const rect = this.canvas.getBoundingClientRect();
+      const clientX = e.clientX - rect.left;
+      const clientY = e.clientY - rect.top;
+
+      this.isDragging = true;
+      this.dragStartX = clientX;
+      this.dragStartY = clientY;
+      this.currentPointerX = clientX;
+      this.currentPointerY = clientY;
+      this.arrowState = 'AIMING';
+
+      document.getElementById('aim-guide-tip')?.classList.add('hidden');
+    }
+
+    private onPointerMove(e: PointerEvent) {
+      if (!this.isDragging || this.arrowState !== 'AIMING') return;
+
+      const rect = this.canvas.getBoundingClientRect();
+      this.currentPointerX = e.clientX - rect.left;
+      this.currentPointerY = e.clientY - rect.top;
+
+      // Inverted Slingshot Pull Vector:
+      // Dragging down-left shoots up-right
+      const dx = this.dragStartX - this.currentPointerX;
+      const dy = this.dragStartY - this.currentPointerY;
+
+      const dist = Math.hypot(dx, dy);
+      const MAX_PULL = 130;
+      this.pullPower = Math.min(dist / MAX_PULL, 1.0);
+
+      this.pullVectorX = dx;
+      this.pullVectorY = dy;
+
+      if (this.pullPower > 0.05) {
+        this.sound.playAimPull(this.pullPower);
+      }
+    }
+
+    private onPointerUp(_e: PointerEvent) {
+      if (!this.isDragging) return;
+      this.isDragging = false;
+
+      if (this.arrowState !== 'AIMING') return;
+
+      // Minimum pull threshold to trigger shot
+      if (this.pullPower < 0.12) {
+        this.arrowState = 'RESTING';
+        return;
+      }
+
+      // Compute Launch Velocity
+      const dist = Math.hypot(this.pullVectorX, this.pullVectorY);
+      const normX = this.pullVectorX / dist;
+      const normY = this.pullVectorY / dist;
+
+      // Speed range: 350 to 980 px/s
+      const MIN_SPEED = 340;
+      const MAX_SPEED = 960;
+      const speed = MIN_SPEED + this.pullPower * (MAX_SPEED - MIN_SPEED);
+
+      this.arrowVx = normX * speed;
+      this.arrowVy = normY * speed; // in world coords: +vy is up!
+      this.arrowAngle = Math.atan2(this.arrowVy, this.arrowVx);
+      this.arrowAngularVel = 0;
+
+      this.arrowState = 'FLYING';
+      this.stuckPlatform = null;
+      this.totalShots++;
+      this.sound.playRelease();
+
+      this.updateHud();
+    }
+
+    // ─── Physics Simulation ──────────────────────────────────────────────
+    private update(dt: number) {
+      const now = Date.now();
+
+      // Screen shake decay
+      if (this.screenShake > 0) {
+        this.screenShake = Math.max(0, this.screenShake - dt * 25);
+      }
+
+      // Update Moving Platforms
+      for (const plat of this.platforms) {
+        if (plat.type === 'moving' && plat.baseX !== undefined && plat.moveRange !== undefined && plat.moveSpeed !== undefined) {
+          const t = (now / 1000) * plat.moveSpeed + (plat.movePhase || 0);
+          plat.x = plat.baseX + Math.sin(t) * plat.moveRange;
+        }
+      }
+
+      // If Arrow is resting on a moving platform, follow it
+      if (this.arrowState === 'RESTING' && this.stuckPlatform) {
+        if (this.stuckPlatform.type === 'moving') {
+          this.arrowX = this.stuckPlatform.x + this.stuckOffsetX;
+        }
+      }
+
+      // If Arrow is in Flight or Tumbling
+      if (this.arrowState === 'FLYING' || this.arrowState === 'TUMBLING') {
+        // Apply Gravity in World Coords (+Y is up, so gravity pulls down)
+        this.arrowVy -= this.GRAVITY * dt;
+
+        // Position Step
+        const nextX = this.arrowX + this.arrowVx * dt;
+        const nextY = this.arrowY + this.arrowVy * dt;
+
+        // Trail particles
+        if (Math.random() < 0.6) {
+          this.particles.push({
+            x: this.arrowX,
+            y: this.arrowY,
+            vx: (Math.random() - 0.5) * 20,
+            vy: (Math.random() - 0.5) * 20,
+            life: 1.0,
+            maxLife: 0.35,
+            color: this.arrowState === 'FLYING' ? '#38bdf8' : '#f87171',
+            size: Math.random() * 3 + 1.5
+          });
+        }
+
+        // Side boundary wall collision (-220 to 220)
+        const WALL_LIMIT = 230;
+        if (nextX < -WALL_LIMIT) {
+          this.arrowVx = Math.abs(this.arrowVx) * 0.65;
+          this.arrowX = -WALL_LIMIT;
+          this.arrowAngularVel = (Math.random() - 0.5) * 12;
+          this.arrowState = 'TUMBLING';
+          this.sound.playBounce();
+          this.screenShake = 4;
+        } else if (nextX > WALL_LIMIT) {
+          this.arrowVx = -Math.abs(this.arrowVx) * 0.65;
+          this.arrowX = WALL_LIMIT;
+          this.arrowAngularVel = (Math.random() - 0.5) * 12;
+          this.arrowState = 'TUMBLING';
+          this.sound.playBounce();
+          this.screenShake = 4;
+        } else {
+          this.arrowX = nextX;
+        }
+
+        // Update angle
+        if (this.arrowState === 'FLYING') {
+          this.arrowAngle = Math.atan2(this.arrowVy, this.arrowVx);
+        } else {
+          this.arrowAngle += this.arrowAngularVel * dt;
+        }
+
+        // Platform Collisions Check
+        this.checkCollisions(nextY);
+
+        this.arrowY = nextY;
+      }
+
+      // Camera Smooth Follow
+      this.targetCameraY = Math.max(120, this.arrowY + 160);
+      this.cameraY += (this.targetCameraY - this.cameraY) * Math.min(1.0, dt * 6.5);
+
+      // Generate more platforms ahead of camera
+      this.generatePlatformsUpTo(this.cameraY + 900);
+
+      // Update Particles
+      for (let i = this.particles.length - 1; i >= 0; i--) {
+        const p = this.particles[i];
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.life -= dt / p.maxLife;
+        if (p.life <= 0) {
+          this.particles.splice(i, 1);
+        }
+      }
+
+      // Track altitude
+      const newAlt = Math.max(0, Math.floor(this.arrowY / this.PX_PER_METER));
+      if (newAlt !== this.currentAltMeters) {
+        this.currentAltMeters = newAlt;
+        if (newAlt > this.maxAltMetersRun) {
+          this.maxAltMetersRun = newAlt;
+          this.checkMilestones(newAlt);
+          this.saveRecords();
+        }
+        this.updateHud();
+      }
+    }
+
+    private checkCollisions(nextY: number) {
+      const ARROW_TIP_DIST = 18;
+      const tipX = this.arrowX + Math.cos(this.arrowAngle) * ARROW_TIP_DIST;
+      const tipY = nextY + Math.sin(this.arrowAngle) * ARROW_TIP_DIST;
+
+      for (const plat of this.platforms) {
+        const platLeft = plat.x - plat.w / 2;
+        const platRight = plat.x + plat.w / 2;
+        const platTop = plat.y;
+        const platBottom = plat.y - plat.h;
+
+        // 1. TOP LANDING CHECK (Must be falling: vy <= 0)
+        if (this.arrowVy <= 10) {
+          // Check if tip crossed the top surface
+          const crossedTop = (this.arrowY >= platTop - 4 && nextY <= platTop + 8);
+          const withinWidth = (tipX >= platLeft - 8 && tipX <= platRight + 8);
+
+          if (crossedTop && withinWidth) {
+            // SUCCESSFUL LANDING!
+            this.arrowY = platTop + 2;
+            this.arrowVx = 0;
+            this.arrowVy = 0;
+            this.arrowState = 'RESTING';
+            this.stuckPlatform = plat;
+            this.stuckOffsetX = this.arrowX - plat.x;
+
+            // Clamp arrow resting angle to look natural
+            if (this.arrowAngle < -Math.PI / 2) {
+              this.arrowAngle = -Math.PI * 0.75;
+            } else {
+              this.arrowAngle = -Math.PI * 0.25;
+            }
+
+            this.sound.playStick();
+            this.spawnImpactParticles(this.arrowX, platTop, '#34d399', 14);
+
+            // Summit Victory Check
+            if (plat.type === 'summit' && !this.hasWonDaily) {
+              this.hasWonDaily = true;
+              this.sound.playFanfare();
+              this.showToast('🏆 300m 서밋 정복 성공! 일일 타워를 완등했습니다!', 'success');
+              setTimeout(() => this.openShareModal(), 1200);
+            }
+
+            // Check if player suffered a drop fall
+            const landedAlt = Math.floor(platTop / this.PX_PER_METER);
+            const dropDiff = this.lastRestMeters - landedAlt;
+            if (dropDiff >= 12) {
+              this.worstDropMeters = Math.max(this.worstDropMeters, dropDiff);
+              this.sound.playFall();
+              this.showToast(`😱 -${dropDiff}m 추락했습니다!`);
+              this.screenShake = 12;
+            }
+
+            this.lastRestMeters = landedAlt;
+            this.updateHud();
+            return;
+          }
+        }
+
+        // 2. CEILING / UNDERSIDE / SIDE RICOCHET (Bouncing penalty)
+        const inVerticalRange = (nextY >= platBottom && nextY <= platTop);
+        const inHorizontalRange = (this.arrowX >= platLeft && this.arrowX <= platRight);
+
+        if (inVerticalRange && inHorizontalRange) {
+          // Ricochet bounce!
+          this.arrowVy = -Math.abs(this.arrowVy) * 0.5;
+          this.arrowVx = this.arrowVx * 0.7 + (Math.random() - 0.5) * 80;
+          this.arrowAngularVel = (Math.random() - 0.5) * 18;
+          this.arrowState = 'TUMBLING';
+
+          this.sound.playBounce();
+          this.screenShake = 8;
+          this.spawnImpactParticles(this.arrowX, this.arrowY, '#f59e0b', 10);
+          return;
+        }
+      }
+    }
+
+    private checkMilestones(alt: number) {
+      if (alt === 50 || alt === 100 || alt === 150 || alt === 200 || alt === 250 || alt === 300) {
+        this.triggerMilestonePop(`${alt}m 돌파! 🔥`);
+        this.sound.playFanfare();
+      }
+    }
+
+    private triggerMilestonePop(text: string) {
+      const badge = document.getElementById('milestone-badge');
+      if (!badge) return;
+      badge.textContent = text;
+      badge.classList.add('pop');
+      setTimeout(() => badge.classList.remove('pop'), 1800);
+    }
+
+    private showToast(msg: string, type: 'fail' | 'success' = 'fail') {
+      const toast = document.getElementById('game-toast');
+      if (!toast) return;
+      toast.textContent = msg;
+      toast.className = `game-toast ${type === 'success' ? 'success' : ''} show`;
+      setTimeout(() => toast.classList.remove('show'), 2800);
+    }
+
+    private spawnImpactParticles(x: number, y: number, color: string, count: number) {
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const spd = Math.random() * 90 + 30;
+        this.particles.push({
+          x,
+          y,
+          vx: Math.cos(angle) * spd,
+          vy: Math.sin(angle) * spd + 30,
+          life: 1.0,
+          maxLife: Math.random() * 0.4 + 0.25,
+          color,
+          size: Math.random() * 3 + 2
+        });
+      }
+    }
+
+    private updateHud() {
+      const curEl = document.getElementById('hud-current-alt');
+      const bestEl = document.getElementById('hud-best-alt');
+      const shotsEl = document.getElementById('hud-shots');
+
+      if (curEl) curEl.innerHTML = `${this.currentAltMeters}<small>m</small>`;
+      if (bestEl) bestEl.innerHTML = `${this.personalBest}<small>m</small>`;
+      if (shotsEl) shotsEl.textContent = this.totalShots.toString();
+    }
+
+    // ─── Rendering ────────────────────────────────────────────────────────
+    private render() {
+      const ctx = this.ctx;
+      const W = this.V_WIDTH;
+      const H = this.V_HEIGHT;
+
+      ctx.clearRect(0, 0, W, H);
+
+      // Camera Offset
+      const camY = this.cameraY;
+      const shakeX = (Math.random() - 0.5) * this.screenShake;
+      const shakeY = (Math.random() - 0.5) * this.screenShake;
+
+      ctx.save();
+      ctx.translate(shakeX, shakeY);
+
+      // World to Screen Converter
+      // (World X = 0 is center, World Y = 0 is ground)
+      const toScreenX = (wx: number) => W / 2 + wx;
+      const toScreenY = (wy: number) => H - (wy - camY + 220);
+
+      // 1. Dynamic Atmosphere Sky
+      this.drawSkyBackground(ctx, W, H, camY);
+
+      // 2. Canyon Walls & Altitude Markers
+      this.drawAltitudeRuler(ctx, W, H, camY, toScreenY);
+
+      // 3. Draw Platforms
+      for (const plat of this.platforms) {
+        const sy = toScreenY(plat.y);
+        // Only draw if within screen view
+        if (sy < -60 || sy > H + 60) continue;
+
+        const sx = toScreenX(plat.x);
+        this.drawPlatform(ctx, plat, sx, sy);
+      }
+
+      // 4. Draw Particles
+      for (const p of this.particles) {
+        const psx = toScreenX(p.x);
+        const psy = toScreenY(p.y);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.life;
+        ctx.beginPath();
+        ctx.arc(psx, psy, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+      }
+
+      // 5. Draw Arrow
+      const arrowScreenX = toScreenX(this.arrowX);
+      const arrowScreenY = toScreenY(this.arrowY);
+      this.drawArrow(ctx, arrowScreenX, arrowScreenY, this.arrowAngle);
+
+      // 6. Draw Slingshot Aim Arc & Guide Line
+      if (this.arrowState === 'AIMING') {
+        this.drawSlingshotAim(ctx, arrowScreenX, arrowScreenY);
+      }
+
+      ctx.restore();
+    }
+
+    private drawSkyBackground(ctx: CanvasRenderingContext2D, W: number, H: number, camY: number) {
+      // Color shifts from twilight ground to deep space summit
+      const altProgress = Math.min(1.0, camY / (300 * this.PX_PER_METER));
+
+      const grad = ctx.createLinearGradient(0, 0, 0, H);
+      if (altProgress < 0.3) {
+        grad.addColorStop(0, '#0f172a');
+        grad.addColorStop(1, '#020617');
+      } else if (altProgress < 0.7) {
+        grad.addColorStop(0, '#1e1b4b');
+        grad.addColorStop(1, '#0f172a');
+      } else {
+        grad.addColorStop(0, '#311042');
+        grad.addColorStop(0.5, '#0c1033');
+        grad.addColorStop(1, '#020617');
+      }
+
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, H);
+
+      // Distant Stars / Stardust
+      if (altProgress > 0.35) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+        for (let i = 0; i < 24; i++) {
+          const starX = (i * 73 + (camY * 0.1)) % W;
+          const starY = (i * 97) % H;
+          ctx.fillRect(starX, starY, 1.5, 1.5);
+        }
+      }
+    }
+
+    private drawAltitudeRuler(ctx: CanvasRenderingContext2D, W: number, H: number, camY: number, toScreenY: (wy: number) => number) {
+      // Canyon side border lines
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(35, 0);
+      ctx.lineTo(35, H);
+      ctx.moveTo(W - 35, 0);
+      ctx.lineTo(W - 35, H);
+      ctx.stroke();
+
+      // Altitude tick marks every 10 meters
+      const startMeter = Math.max(0, Math.floor((camY - 300) / this.PX_PER_METER / 10) * 10);
+      const endMeter = startMeter + 40;
+
+      ctx.fillStyle = 'rgba(148, 163, 184, 0.35)';
+      ctx.font = 'bold 10px monospace';
+      ctx.textAlign = 'right';
+
+      for (let m = startMeter; m <= endMeter; m += 10) {
+        const sy = toScreenY(m * this.PX_PER_METER);
+        if (sy >= 0 && sy <= H) {
+          ctx.fillText(`${m}m`, 30, sy + 3);
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+          ctx.beginPath();
+          ctx.moveTo(35, sy);
+          ctx.lineTo(W - 35, sy);
+          ctx.stroke();
+        }
+      }
+    }
+
+    private drawPlatform(ctx: CanvasRenderingContext2D, plat: Platform, sx: number, sy: number) {
+      const halfW = plat.w / 2;
+      const left = sx - halfW;
+      const top = sy;
+      const h = plat.h;
+
+      ctx.save();
+
+      if (plat.type === 'summit') {
+        // Gleaming Gold Summit
+        ctx.fillStyle = '#fbbf24';
+        ctx.shadowColor = '#f59e0b';
+        ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.roundRect(left, top, plat.w, h, 8);
+        ctx.fill();
+
+        // Flag
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(sx - 2, top - 32, 4, 32);
+        ctx.beginPath();
+        ctx.moveTo(sx + 2, top - 32);
+        ctx.lineTo(sx + 22, top - 24);
+        ctx.lineTo(sx + 2, top - 16);
+        ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🏆 SUMMIT 300m', sx, top - 38);
+      } else if (plat.type === 'moving') {
+        // Glowing Cyan Moving Platform
+        ctx.fillStyle = '#0284c7';
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(left, top, plat.w, h, 6);
+        ctx.fill();
+        ctx.stroke();
+
+        // Neon chevron indicator
+        ctx.fillStyle = '#bae6fd';
+        ctx.fillRect(left + 6, top + 4, plat.w - 12, 3);
+      } else if (plat.type === 'overhang') {
+        // Danger Orange Hazard Ceiling
+        ctx.fillStyle = '#b45309';
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(left, top, plat.w, h, 4);
+        ctx.fill();
+        ctx.stroke();
+
+        // Spikes on underside
+        ctx.fillStyle = '#f59e0b';
+        for (let sp = left + 6; sp <= left + plat.w - 6; sp += 12) {
+          ctx.beginPath();
+          ctx.moveTo(sp - 4, top + h);
+          ctx.lineTo(sp, top + h + 6);
+          ctx.lineTo(sp + 4, top + h);
+          ctx.fill();
+        }
+      } else if (plat.type === 'stone') {
+        // Slate Stone Platform
+        ctx.fillStyle = '#334155';
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.roundRect(left, top, plat.w, h, 4);
+        ctx.fill();
+        ctx.stroke();
+
+        // Top highlight bevel
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(left + 2, top, plat.w - 4, 3);
+      } else {
+        // Wood Platform
+        ctx.fillStyle = '#78350f';
+        ctx.strokeStyle = '#92400e';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.roundRect(left, top, plat.w, h, 4);
+        ctx.fill();
+        ctx.stroke();
+
+        // Lush green top moss
+        ctx.fillStyle = '#10b981';
+        ctx.fillRect(left + 1, top, plat.w - 2, 3);
+      }
+
+      ctx.restore();
+    }
+
+    private drawArrow(ctx: CanvasRenderingContext2D, sx: number, sy: number, angle: number) {
+      ctx.save();
+      ctx.translate(sx, sy);
+      // Invert angle for screen coordinates where Y is down
+      ctx.rotate(-angle);
+
+      // Arrow Shaft (Wood)
+      ctx.strokeStyle = '#fef08a';
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(-16, 0);
+      ctx.lineTo(16, 0);
+      ctx.stroke();
+
+      // Arrow Head (Metal Tip)
+      ctx.fillStyle = '#f8fafc';
+      ctx.beginPath();
+      ctx.moveTo(20, 0);
+      ctx.lineTo(12, -5);
+      ctx.lineTo(14, 0);
+      ctx.lineTo(12, 5);
+      ctx.closePath();
+      ctx.fill();
+
+      // Feathers / Fletching
+      ctx.fillStyle = '#38bdf8';
+      ctx.beginPath();
+      ctx.moveTo(-16, 0);
+      ctx.lineTo(-22, -6);
+      ctx.lineTo(-14, -2);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(-16, 0);
+      ctx.lineTo(-22, 6);
+      ctx.lineTo(-14, 2);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    private drawSlingshotAim(ctx: CanvasRenderingContext2D, sx: number, sy: number) {
+      // Drag line / bowstring
+      const pRatio = this.pullPower;
+      const tensionColor = pRatio < 0.4 ? '#38bdf8' : (pRatio < 0.75 ? '#facc15' : '#ef4444');
+
+      ctx.save();
+      // Draw Aim Trajectory Arc Prediction Dots
+      const dist = Math.hypot(this.pullVectorX, this.pullVectorY);
+      if (dist > 10) {
+        const normX = this.pullVectorX / dist;
+        const normY = this.pullVectorY / dist;
+        const MIN_SPEED = 340;
+        const MAX_SPEED = 960;
+        const speed = MIN_SPEED + pRatio * (MAX_SPEED - MIN_SPEED);
+
+        const simVx = normX * speed;
+        const simVy = normY * speed;
+
+        ctx.fillStyle = tensionColor;
+        // Draw 14 simulated steps (0.35s forward)
+        const stepDt = 0.035;
+        let curSimX = this.arrowX;
+        let curSimY = this.arrowY;
+        let curSimVy = simVy;
+
+        for (let i = 1; i <= 14; i++) {
+          curSimX += simVx * stepDt;
+          curSimVy -= this.GRAVITY * stepDt;
+          curSimY += curSimVy * stepDt;
+
+          const dotSx = this.V_WIDTH / 2 + curSimX;
+          const dotSy = this.V_HEIGHT - (curSimY - this.cameraY + 220);
+
+          ctx.globalAlpha = 1.0 - (i / 15);
+          ctx.beginPath();
+          ctx.arc(dotSx, dotSy, Math.max(1.5, 4.5 - i * 0.25), 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // Draw Slingshot Tension Circle around arrow
+      ctx.globalAlpha = 0.8;
+      ctx.strokeStyle = tensionColor;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(sx, sy, 22 + pRatio * 18, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    // ─── Loop ─────────────────────────────────────────────────────────────
+    private startLoop() {
+      const loop = (timestamp: number) => {
+        if (!this.lastTimestamp) this.lastTimestamp = timestamp;
+        const dt = Math.min(0.05, (timestamp - this.lastTimestamp) / 1000);
+        this.lastTimestamp = timestamp;
+
+        this.update(dt);
+        this.render();
+
+        this.animFrameId = requestAnimationFrame(loop);
+      };
+      this.animFrameId = requestAnimationFrame(loop);
+    }
+
+    // ─── Share Card & Modal ───────────────────────────────────────────────
+    public openShareModal() {
+      const modal = document.getElementById('share-modal');
+      const title = document.getElementById('modal-title');
+      const alt = document.getElementById('stat-alt');
+      const best = document.getElementById('stat-best');
+      const shots = document.getElementById('stat-shots');
+      const drop = document.getElementById('stat-worst-drop');
+      const preview = document.getElementById('share-text-preview');
+
+      if (!modal) return;
+
+      const dateStr = new Date().toISOString().slice(0, 10);
+      const isDaily = this.mode === 'daily';
+      const modeLabel = isDaily ? `매일 도전 #${dateStr}` : '무한 등반 모드';
+
+      if (title) title.textContent = this.hasWonDaily ? '🎉 타워 완등 성공!' : '나의 클라이밍 기록';
+      if (alt) alt.textContent = `${this.currentAltMeters}m`;
+      if (best) best.textContent = `${this.personalBest}m`;
+      if (shots) shots.textContent = `${this.totalShots}회`;
+      if (drop) drop.textContent = `-${this.worstDropMeters}m`;
+
+      const shareText = [
+        `🏹 에러레저 화살 점프 (Arrow Climber)`,
+        `📅 ${modeLabel}`,
+        `🏔️ 도달 고도: ${this.currentAltMeters}m (최고: ${this.personalBest}m)`,
+        `🎯 슛 횟수: ${this.totalShots}회`,
+        `😱 최대 추락: -${this.worstDropMeters}m`,
+        `🔗 https://errorledger.com/games/arrow-jump`
+      ].join('\n');
+
+      if (preview) preview.textContent = shareText;
+
+      modal.classList.add('active');
+      modal.setAttribute('aria-hidden', 'false');
+    }
+
+    public closeShareModal() {
+      const modal = document.getElementById('share-modal');
+      if (modal) {
+        modal.classList.remove('active');
+        modal.setAttribute('aria-hidden', 'true');
+      }
+    }
+
+    public async copyShareCard() {
+      const preview = document.getElementById('share-text-preview');
+      const label = document.getElementById('btn-copy-label');
+      if (!preview) return;
+
+      const text = preview.textContent || '';
+
+      // Use Web Share API if supported on mobile
+      if (navigator.share && /mobile|android|iphone/i.test(navigator.userAgent)) {
+        try {
+          await navigator.share({
+            title: '화살 점프 (Arrow Climber) - ErrorLedger',
+            text: text
+          });
+          return;
+        } catch {
+          // Fall back to clipboard
+        }
+      }
+
+      try {
+        await navigator.clipboard.writeText(text);
+        if (label) label.textContent = '✅ 클립보드에 복사 완료!';
+        setTimeout(() => {
+          if (label) label.textContent = '📋 결과 복사하기';
+        }, 2200);
+      } catch {
+        if (label) label.textContent = '드래그하여 텍스트를 복사하세요!';
+      }
+    }
+  }
+
+  // Auto boot on DOM load
+  document.addEventListener('DOMContentLoaded', () => {
+    new ArrowClimberGame();
+  });
+</script>

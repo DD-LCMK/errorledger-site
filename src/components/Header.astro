@@ -47,6 +47,16 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
               <a href={`${prefix}/games`} class="dropdown-hub-link">{isEn ? "View All (8) →" : "전체 게임 보기 →"}</a>
             </div>
             <div class="dropdown-grid-games">
+              <a href={`${prefix}/games/arrow-jump`} class={`dropdown-item ${currentPath.includes('/games/arrow-jump') ? 'active' : ''}`}>
+                <span class="dropdown-item-icon">🏹</span>
+                <div class="dropdown-item-content">
+                  <div class="dropdown-item-header">
+                    <span class="dropdown-item-title">{t(lang, 'nav.arrow_jump')}</span>
+                    <span class="dropdown-pill hot">NEW</span>
+                  </div>
+                  <span class="dropdown-item-desc">{isEn ? "Physics Jump Climber" : "물리 점프 클라이밍"}</span>
+                </div>
+              </a>
               <a href={`${prefix}/games/sand-drop`} class={`dropdown-item ${currentPath.includes('/games/sand-drop') || currentPath.includes('/games/sand-suika') ? 'active' : ''}`}>
                 <span class="dropdown-item-icon">🍉</span>
                 <div class="dropdown-item-content">
@@ -321,6 +331,16 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
       <div class="drawer-section">
         <div class="drawer-section-title">{isEn ? "🎮 GAMES" : "🎮 인기 게임"}</div>
         <div class="drawer-nav-list">
+          <a 
+            href={`${prefix}/games/arrow-jump`} 
+            class={`drawer-nav-item ${currentPath.includes('/games/arrow-jump') ? 'active' : ''}`}
+          >
+            <span class="drawer-item-icon">🏹</span>
+            <div class="drawer-item-info">
+              <span class="drawer-item-name">{t(lang, 'nav.arrow_jump')}</span>
+              <span class="drawer-item-desc">{isEn ? "Physics Jump Climber" : "물리 점프 클라이밍"}</span>
+            </div>
+          </a>
           <a 
             href={`${prefix}/games/sand-drop`} 
             class={`drawer-nav-item ${currentPath.includes('/games/sand-drop') || currentPath.includes('/games/sand-suika') ? 'active' : ''}`}

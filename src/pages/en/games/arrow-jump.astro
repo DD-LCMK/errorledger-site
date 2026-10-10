@@ -1,0 +1,201 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import { getKoUrl, getEnUrl } from '../../../i18n';
+
+const siteBase = Astro.site?.toString() || 'https://errorledger.com';
+const rawPath = Astro.url.pathname.replace(/\/$/, '');
+const koUrl = getKoUrl(siteBase, rawPath);
+const enUrl = getEnUrl(siteBase, rawPath);
+
+const urlParams = Astro.url.searchParams;
+const streamerMode = urlParams.has('stream') || urlParams.has('obs');
+const gameUrl = streamerMode
+  ? '/games/arrow-jump?bare=1&stream=true&lang=en'
+  : '/games/arrow-jump?bare=1&lang=en';
+
+const webAppSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Arrow Climber: Vertical Physics Jump & Climbing Game — ErrorLedger",
+  "alternateName": ["Arrow Climber", "화살 점프", "Arrow Jump", "Vertical Archery Climber"],
+  "url": enUrl,
+  "description": "Aim, pull, and launch your arrow to climb an endless vertical tower of blocks. Land firmly on tops of platforms—hit the underside or miss, and you'll tumble all the way down! How high can you climb?",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "All (Web Browser, Chrome, Edge, Safari, Mobile)",
+  "inLanguage": ["en-US", "ko-KR"],
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.97",
+    "bestRating": "5",
+    "ratingCount": "840"
+  }
+});
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead
+      title="Arrow Climber — Vertical Physics Climbing Game | ErrorLedger"
+      description="Play Arrow Climber online! Pull back the bowstring and launch your arrow to stick into platforms and climb higher. Beware of underside ricochets that drop you dozens of meters down!"
+      lang="en"
+      hreflangKo={koUrl}
+      hreflangEn={enUrl}
+      keywords="Arrow Climber, Arrow Jump, Vertical Jump Game, Jump King Online, Slingshot Game, Browser Physics Game, Streamer Games"
+    />
+    <script type="application/ld+json" set:html={webAppSchema}></script>
+  </head>
+  <body class="en-game-body">
+    <Header />
+
+    <main class="en-game-main">
+      <div class="en-game-frame-wrap">
+        <iframe
+          src={gameUrl}
+          class="en-game-iframe"
+          id="game-iframe"
+          title="Arrow Climber — ErrorLedger"
+          allowfullscreen
+          loading="eager"
+          scrolling="no"
+        ></iframe>
+      </div>
+
+      <!-- Unobtrusive Expandable Information Drawer -->
+      {!streamerMode && (
+        <details class="stream-bottom-details">
+          <summary class="details-summary">
+            <span>📖 Detailed Game Guide & Rules</span>
+            <span class="chevron">▼</span>
+          </summary>
+          <div class="details-content">
+            <div class="details-faq-section">
+              <h3>How to Play Arrow Climber</h3>
+              <div class="details-faq-grid">
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. How do the slingshot controls work?</strong>
+                  <p class="faq-a">Click or tap anywhere on the screen and drag backwards (down/left to shoot up/right). Release your finger or mouse to release the bowstring and launch the arrow.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Why did my arrow bounce off the platform?</strong>
+                  <p class="faq-a">The arrow only sticks when it is falling downward and hits the top surface of a block! If you hit the underside (ceiling) or side of a platform, it bounces off and tumbles downward.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. What is Daily Mode vs Endless Mode?</strong>
+                  <p class="faq-a">Daily Mode features a shared 300m summit tower seeded by today's date for players worldwide. Endless Mode continues infinitely upward so you can push your personal best altitude record.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Can I use this on OBS Studio during livestreams?</strong>
+                  <p class="faq-a">Yes! Add '?bare=1' or '?stream=true' to the URL to run in transparent, ad-free stream mode with clear high-contrast altitude metrics.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </details>
+      )}
+    </main>
+
+    {!streamerMode && <Footer />}
+  </body>
+</html>
+
+<style>
+  .en-game-body {
+    margin: 0;
+    padding: 0;
+    background: #080c16;
+    color: #f1f2f6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .en-game-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .en-game-frame-wrap {
+    width: 100%;
+    max-width: 1080px;
+    height: calc(100vh - 75px);
+    min-height: 750px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .en-game-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+
+  .stream-bottom-details {
+    width: 100%;
+    max-width: 960px;
+    margin: 1.5rem auto 2.5rem;
+    padding: 0 1rem;
+  }
+
+  .details-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+    color: #e2e8f0;
+  }
+
+  .details-content {
+    padding: 1.5rem 1.25rem;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .details-faq-section h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #38bdf8;
+    font-size: 1.1rem;
+  }
+
+  .details-faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .details-faq-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  .faq-q {
+    display: block;
+    color: #f1f2f6;
+    margin-bottom: 0.35rem;
+    font-size: 0.92rem;
+  }
+
+  .faq-a {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 0.84rem;
+    line-height: 1.5;
+  }
+</style>
