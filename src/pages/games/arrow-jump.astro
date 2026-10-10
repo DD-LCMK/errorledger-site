@@ -1355,6 +1355,11 @@ const data = gameEntry?.data || {
       xmin: number, xmax: number,
       ymin: number, ymax: number
     ): { hit: boolean; t: number; nx: number; ny: number } {
+      // If segment origin is already inside box, let static overlap resolver handle ejection
+      if (x0 >= xmin && x0 <= xmax && y0 >= ymin && y0 <= ymax) {
+        return { hit: false, t: 1, nx: 0, ny: 0 };
+      }
+
       let tmin = 0;
       let tmax = 1;
       let nx = 0;
@@ -1532,7 +1537,8 @@ const data = gameEntry?.data || {
 
           // B. HIT LEFT WALL FROM LEFT (moving right)
           if (bestHit.nx === -1) {
-            this.arrowX = platLeft - 8;
+            const rightExtent = Math.max(0, Math.cos(this.arrowAngle) * ARROW_HALF_LEN);
+            this.arrowX = platLeft - rightExtent - 6;
             this.arrowY = nextY;
             this.arrowVx = -Math.abs(this.arrowVx || 40) * 0.7 - 40;
             this.arrowVy = this.arrowVy * 0.5 - 20;
@@ -1546,7 +1552,8 @@ const data = gameEntry?.data || {
 
           // C. HIT RIGHT WALL FROM RIGHT (moving left)
           if (bestHit.nx === 1) {
-            this.arrowX = platRight + 8;
+            const leftExtent = Math.max(0, -Math.cos(this.arrowAngle) * ARROW_HALF_LEN);
+            this.arrowX = platRight + leftExtent + 6;
             this.arrowY = nextY;
             this.arrowVx = Math.abs(this.arrowVx || 40) * 0.7 + 40;
             this.arrowVy = this.arrowVy * 0.5 - 20;
@@ -1560,11 +1567,13 @@ const data = gameEntry?.data || {
 
           // D. HIT BOTTOM UNDERSIDE (Ceiling ricochet)
           if (bestHit.ny === -1) {
+            // Eject entire arrow (including tip) cleanly below platform
+            const upExtent = Math.max(0, Math.sin(this.arrowAngle) * ARROW_HALF_LEN);
             this.arrowX = nextX;
-            this.arrowY = platBottom - 6;
-            this.arrowVy = -Math.abs(this.arrowVy || 50) * 0.6 - 45;
-            this.arrowVx = this.arrowVx * 0.7;
-            this.arrowAngularVel = (Math.random() - 0.5) * 16;
+            this.arrowY = platBottom - upExtent - 6;
+            this.arrowVy = -Math.abs(this.arrowVy || 60) * 0.65 - 80;
+            this.arrowVx = this.arrowVx * 0.75;
+            this.arrowAngularVel = (this.arrowVx >= 0 ? -1 : 1) * 14;
             this.arrowState = 'TUMBLING';
             this.sound.playBounce();
             this.screenShake = 8;
@@ -1574,28 +1583,29 @@ const data = gameEntry?.data || {
         }
 
         // ─── 3. STATIC PENETRATION RECOVERY (OVERLAP RESOLUTION) ───
-        const insideX = (nextX >= platLeft - 2 && nextX <= platRight + 2) || (nextTipX >= platLeft - 2 && nextTipX <= platRight + 2);
-        const insideY = (nextY >= platBottom - 2 && nextY <= platTop + 2) || (nextTipY >= platBottom - 2 && nextTipY <= platTop + 2);
+        const isPointInside = (px: number, py: number) =>
+          (px >= platLeft - 1 && px <= platRight + 1 && py >= platBottom - 1 && py <= platTop + 1);
 
-        if (insideX && insideY) {
-          const distL = Math.abs(nextX - platLeft);
-          const distR = Math.abs(nextX - platRight);
-          const distB = Math.abs(nextY - platBottom);
-          const distT = Math.abs(nextY - platTop);
-          const minDist = Math.min(distL, distR, distB, distT);
+        const centerIn = isPointInside(nextX, nextY);
+        const tipIn = isPointInside(nextTipX, nextTipY);
 
-          if (minDist === distL) {
-            this.arrowX = platLeft - 8;
-            this.arrowVx = -Math.abs(this.arrowVx || 40) * 0.7 - 40;
-          } else if (minDist === distR) {
-            this.arrowX = platRight + 8;
-            this.arrowVx = Math.abs(this.arrowVx || 40) * 0.7 + 40;
-          } else if (minDist === distB) {
-            this.arrowY = platBottom - 6;
-            this.arrowVy = -Math.abs(this.arrowVy || 40) * 0.6 - 40;
-          } else {
-            // Top face
-            if (this.arrowVy < 0 && nextX >= platLeft + 8 && nextX <= platRight - 8 && this.arrowState !== 'TUMBLING') {
+        if (centerIn || tipIn) {
+          // If moving upwards, definitely ricochet downwards out of underside
+          if (this.arrowVy > 0) {
+            const upExtent = Math.max(0, Math.sin(this.arrowAngle) * ARROW_HALF_LEN);
+            this.arrowX = nextX;
+            this.arrowY = platBottom - upExtent - 6;
+            this.arrowVy = -Math.abs(this.arrowVy || 60) * 0.65 - 80;
+            this.arrowState = 'TUMBLING';
+            this.arrowAngularVel = (this.arrowVx >= 0 ? -1 : 1) * 14;
+            this.sound.playBounce();
+            return;
+          }
+
+          // If falling downwards
+          if (this.arrowVy <= 0) {
+            // Definite top landing
+            if (nextX >= platLeft + 8 && nextX <= platRight - 8 && this.arrowState !== 'TUMBLING') {
               this.arrowY = platTop + 2;
               this.arrowVx = 0;
               this.arrowVy = 0;
@@ -1605,12 +1615,23 @@ const data = gameEntry?.data || {
               this.sound.playStick();
               return;
             }
-            this.arrowY = platTop + 4;
-            this.arrowVy = Math.abs(this.arrowVy || 40) * 0.4 + 20;
+
+            // Near edge or tumbling: eject to side
+            if (nextX < plat.x) {
+              const rightExtent = Math.max(0, Math.cos(this.arrowAngle) * ARROW_HALF_LEN);
+              this.arrowX = platLeft - rightExtent - 6;
+              this.arrowVx = -Math.abs(this.arrowVx || 40) * 0.7 - 40;
+            } else {
+              const leftExtent = Math.max(0, -Math.cos(this.arrowAngle) * ARROW_HALF_LEN);
+              this.arrowX = platRight + leftExtent + 6;
+              this.arrowVx = Math.abs(this.arrowVx || 40) * 0.7 + 40;
+            }
+            this.arrowY = Math.min(nextY, platTop - 2);
+            this.arrowVy = this.arrowVy * 0.4 - 20;
+            this.arrowState = 'TUMBLING';
+            this.sound.playBounce();
+            return;
           }
-          this.arrowState = 'TUMBLING';
-          this.sound.playBounce();
-          return;
         }
       }
 
