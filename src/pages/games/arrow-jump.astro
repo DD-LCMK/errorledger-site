@@ -58,70 +58,96 @@ const data = gameEntry?.data || {
   hideFooter={false}
 >
   <div class="arrow-game-root" id="arrow-game-root">
-    <!-- Top HUD Header -->
-    <header class="game-hud-bar">
-      <div class="hud-left">
-        <a href="/games" class="hud-back-btn" title="게임 목록으로">←</a>
-        <div class="hud-brand">
-          <span class="hud-icon">🏹</span>
-          <span class="hud-title">ARROW CLIMBER</span>
+    <div class="game-stage-layout">
+      <!-- Main Game Canvas Container (Left) -->
+      <main class="canvas-viewport" id="canvas-viewport">
+        <canvas id="game-canvas" width="600" height="860"></canvas>
+
+        <!-- Drag & Aim Touch Area Overlay -->
+        <div id="touch-layer" class="touch-layer" tabindex="0" aria-label="게임 조작 영역"></div>
+
+        <!-- In-Game Dramatic Notification Banner (Falls / Records) -->
+        <div id="game-toast" class="game-toast"></div>
+
+        <!-- Floating Drag Help Tip -->
+        <div id="aim-guide-tip" class="aim-guide-tip">
+          <div class="tip-hand">👆</div>
+          <span>화면을 잡고 날아갈 방향으로 <strong>드래그하여</strong> 각도와 파워를 조준하세요!</span>
         </div>
-        <div class="hud-mode-pill" id="mode-pill">매일 도전 (300m)</div>
-      </div>
 
-      <div class="hud-metrics">
-        <div class="metric-item highlight">
-          <span class="metric-label">현재 고도</span>
-          <span class="metric-val" id="hud-current-alt">0<small>m</small></span>
+        <!-- Altitude Milestone Overlay (Flash) -->
+        <div id="milestone-badge" class="milestone-badge"></div>
+      </main>
+
+      <!-- Right Side Info & Menu Panel -->
+      <aside class="game-hud-panel" id="game-hud-panel" aria-label="게임 정보 및 조작 패널">
+        <div class="panel-header">
+          <a href="/games" class="hud-back-btn" title="게임 목록으로">←</a>
+          <div class="hud-brand">
+            <span class="hud-icon">🏹</span>
+            <span class="hud-title">ARROW CLIMBER</span>
+          </div>
         </div>
-        <div class="metric-item">
-          <span class="metric-label">최고 기록</span>
-          <span class="metric-val" id="hud-best-alt">0<small>m</small></span>
+
+        <div class="panel-mode-row">
+          <span class="hud-mode-pill" id="mode-pill">매일 도전 (300m)</span>
         </div>
-        <div class="metric-item">
-          <span class="metric-label">발사 횟수</span>
-          <span class="metric-val" id="hud-shots">0</span>
+
+        <!-- Hero Altitude Card -->
+        <div class="panel-hero-card">
+          <div class="hero-label-row">
+            <span class="metric-label">현재 고도</span>
+            <span class="hero-indicator-dot"></span>
+          </div>
+          <div class="hero-val-wrap">
+            <span class="metric-val current-alt" id="hud-current-alt">0<small>m</small></span>
+          </div>
         </div>
-      </div>
 
-      <div class="hud-actions">
-        <button type="button" class="hud-btn" id="btn-toggle-mode" title="게임 모드 전환 (매일 / 무한)">
-          <span class="btn-icon">🔄</span>
-          <span class="btn-text">모드 변경</span>
-        </button>
-        <button type="button" class="hud-btn" id="btn-restart" title="처음부터 다시 시도 (R)">
-          <span class="btn-icon">↺</span>
-          <span class="btn-text">재도전</span>
-        </button>
-        <button type="button" class="hud-btn" id="btn-sound" title="소리 켜기/끄기">
-          <span class="btn-icon" id="sound-icon">🔊</span>
-        </button>
-        <button type="button" class="hud-btn share-cta" id="btn-share" title="기록 공유하기">
-          <span class="btn-icon">📤</span>
-          <span class="btn-text">공유</span>
-        </button>
-      </div>
-    </header>
+        <!-- Secondary Metrics Grid -->
+        <div class="panel-sub-grid">
+          <div class="sub-stat-card">
+            <span class="metric-label">최고 기록</span>
+            <span class="metric-val" id="hud-best-alt">0<small>m</small></span>
+          </div>
+          <div class="sub-stat-card">
+            <span class="metric-label">발사 횟수</span>
+            <span class="metric-val" id="hud-shots">0</span>
+          </div>
+        </div>
 
-    <!-- Main Game Canvas Container -->
-    <main class="canvas-viewport" id="canvas-viewport">
-      <canvas id="game-canvas" width="600" height="860"></canvas>
+        <!-- Action Buttons Stack -->
+        <div class="panel-action-stack">
+          <button type="button" class="hud-btn restart-action" id="btn-restart" title="처음부터 다시 시도 (R)">
+            <span class="btn-icon">↺</span>
+            <span class="btn-text">재도전 (R)</span>
+          </button>
+          <button type="button" class="hud-btn mode-action" id="btn-toggle-mode" title="게임 모드 전환 (매일 / 무한)">
+            <span class="btn-icon">🔄</span>
+            <span class="btn-text">모드 변경</span>
+          </button>
+          <div class="panel-sub-actions">
+            <button type="button" class="hud-btn sound-action" id="btn-sound" title="소리 켜기/끄기">
+              <span class="btn-icon" id="sound-icon">🔊</span>
+            </button>
+            <button type="button" class="hud-btn share-cta" id="btn-share" title="기록 공유하기">
+              <span class="btn-icon">📤</span>
+              <span class="btn-text">공유하기</span>
+            </button>
+          </div>
+        </div>
 
-      <!-- Drag & Aim Touch Area Overlay -->
-      <div id="touch-layer" class="touch-layer" tabindex="0" aria-label="게임 조작 영역"></div>
-
-      <!-- In-Game Dramatic Notification Banner (Falls / Records) -->
-      <div id="game-toast" class="game-toast"></div>
-
-      <!-- Floating Drag Help Tip -->
-      <div id="aim-guide-tip" class="aim-guide-tip">
-        <div class="tip-hand">👆</div>
-        <span>화면을 잡고 날아갈 방향으로 <strong>드래그하여</strong> 각도와 파워를 조준하세요!</span>
-      </div>
-
-      <!-- Altitude Milestone Overlay (Flash) -->
-      <div id="milestone-badge" class="milestone-badge"></div>
-    </main>
+        <!-- Helpful Controls Guide -->
+        <div class="panel-guide-card">
+          <div class="guide-title">💡 플레이 안내</div>
+          <ul class="guide-list">
+            <li><span>🎯 조준</span> 화면 드래그 후 릴리즈</li>
+            <li><span>🧗 벽 타기</span> 블록 윗면 & 옆면 착지</li>
+            <li><span>⌨️ 단축키</span> <strong>R</strong> 키로 즉시 재시작</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
 
     <!-- Share & Result Modal -->
     <div id="share-modal" class="share-modal" role="dialog" aria-modal="true" aria-hidden="true">
@@ -176,55 +202,66 @@ const data = gameEntry?.data || {
 
   .arrow-game-root {
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
     width: 100%;
-    min-height: calc(100vh - 120px);
+    min-height: calc(100vh - 80px);
     background: radial-gradient(circle at 50% 20%, #0f172a 0%, #020617 100%);
     color: #f8fafc;
     user-select: none;
     -webkit-user-select: none;
-    overflow: hidden;
+    overflow-x: hidden;
     position: relative;
-    padding-bottom: 2rem;
+    padding: 1.25rem 1rem;
+    box-sizing: border-box;
   }
 
-  /* HUD Header */
-  .game-hud-bar {
-    width: 100%;
-    max-width: 680px;
+  /* Stage Layout Container */
+  .game-stage-layout {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1rem;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 960px;
+  }
+
+  /* Right Side Info & Menu Panel */
+  .game-hud-panel {
+    display: flex;
+    flex-direction: column;
+    width: 280px;
     background: var(--hud-bg);
     border: 1px solid var(--border-glass);
-    border-radius: 16px;
-    margin: 0.75rem auto 0.5rem;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    border-radius: 20px;
+    padding: 1.25rem;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5);
     z-index: 20;
-    gap: 0.5rem;
+    gap: 1.1rem;
+    box-sizing: border-box;
   }
 
-  .hud-left {
+  .panel-header {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.75rem;
   }
 
   .hud-back-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
     background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     color: #94a3b8;
     text-decoration: none;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-weight: 700;
     transition: all 0.2s;
   }
@@ -232,20 +269,22 @@ const data = gameEntry?.data || {
   .hud-back-btn:hover {
     background: rgba(255, 255, 255, 0.18);
     color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateX(-2px);
   }
 
   .hud-brand {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.4rem;
   }
 
   .hud-icon {
-    font-size: 1.25rem;
+    font-size: 1.35rem;
   }
 
   .hud-title {
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     font-weight: 800;
     letter-spacing: 0.05em;
     background: linear-gradient(135deg, #f8fafc 0%, #38bdf8 100%);
@@ -253,105 +292,245 @@ const data = gameEntry?.data || {
     -webkit-text-fill-color: transparent;
   }
 
+  .panel-mode-row {
+    display: flex;
+    align-items: center;
+  }
+
   .hud-mode-pill {
-    font-size: 0.72rem;
+    display: inline-block;
+    font-size: 0.76rem;
     font-weight: 700;
-    padding: 0.2rem 0.55rem;
+    padding: 0.3rem 0.75rem;
     border-radius: 9999px;
     background: rgba(16, 185, 129, 0.18);
     color: #34d399;
     border: 1px solid rgba(16, 185, 129, 0.35);
+    letter-spacing: 0.02em;
   }
 
-  .hud-metrics {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
+  /* Hero Altitude Card */
+  .panel-hero-card {
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.12) 0%, rgba(2, 132, 199, 0.04) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.28);
+    border-radius: 16px;
+    padding: 1.1rem 1.2rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 8px 24px rgba(2, 132, 199, 0.15);
   }
 
-  .metric-item {
+  .hero-label-row {
     display: flex;
-    flex-direction: column;
     align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.3rem;
+  }
+
+  .hero-indicator-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #38bdf8;
+    box-shadow: 0 0 10px #38bdf8;
+    animation: pulseDot 2s infinite ease-in-out;
+  }
+
+  @keyframes pulseDot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.85); }
   }
 
   .metric-label {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     color: #94a3b8;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.06em;
+    font-weight: 700;
   }
 
-  .metric-val {
-    font-size: 1.15rem;
+  .hero-val-wrap {
+    display: flex;
+    align-items: baseline;
+  }
+
+  .metric-val.current-alt {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #38bdf8;
+    text-shadow: 0 0 20px rgba(56, 189, 248, 0.6);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+
+  .metric-val.current-alt small {
+    font-size: 1.25rem;
+    color: #7dd3fc;
+    margin-left: 3px;
+    font-weight: 700;
+  }
+
+  /* Sub Grid Metrics */
+  .panel-sub-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+  }
+
+  .sub-stat-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-glass);
+    border-radius: 12px;
+    padding: 0.75rem 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .sub-stat-card .metric-val {
+    font-size: 1.3rem;
     font-weight: 800;
     color: #e2e8f0;
     font-variant-numeric: tabular-nums;
   }
 
-  .metric-val small {
-    font-size: 0.75rem;
+  .sub-stat-card .metric-val small {
+    font-size: 0.85rem;
     color: #64748b;
-    margin-left: 1px;
+    margin-left: 2px;
   }
 
-  .metric-item.highlight .metric-val {
-    color: #38bdf8;
-    text-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
-  }
-
-  .hud-actions {
+  /* Action Buttons Stack */
+  .panel-action-stack {
     display: flex;
-    align-items: center;
-    gap: 0.4rem;
+    flex-direction: column;
+    gap: 0.55rem;
   }
 
   .hud-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
-    padding: 0.45rem 0.65rem;
-    background: rgba(255, 255, 255, 0.08);
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.65rem 0.85rem;
+    background: rgba(255, 255, 255, 0.07);
     border: 1px solid var(--border-glass);
-    border-radius: 10px;
+    border-radius: 12px;
     color: #e2e8f0;
-    font-size: 0.8rem;
-    font-weight: 600;
+    font-size: 0.88rem;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .hud-btn:hover {
-    background: rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.22);
     transform: translateY(-1px);
   }
 
+  .hud-btn.restart-action {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  }
+
+  .hud-btn.restart-action:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.08) 100%);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+  }
+
+  .panel-sub-actions {
+    display: flex;
+    gap: 0.55rem;
+  }
+
+  .hud-btn.sound-action {
+    width: 48px;
+    flex-shrink: 0;
+    font-size: 1.1rem;
+    padding: 0.65rem 0;
+  }
+
   .hud-btn.share-cta {
+    flex: 1;
     background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
     border-color: #38bdf8;
     color: #ffffff;
-    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+    box-shadow: 0 4px 16px rgba(2, 132, 199, 0.4);
   }
 
   .hud-btn.share-cta:hover {
-    box-shadow: 0 6px 20px rgba(2, 132, 199, 0.6);
+    box-shadow: 0 6px 22px rgba(2, 132, 199, 0.6);
+    background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+  }
+
+  /* Guide / Shortcuts Card */
+  .panel-guide-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 0.85rem 0.95rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .guide-title {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .guide-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .guide-list li {
+    font-size: 0.78rem;
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .guide-list li span {
+    font-weight: 700;
+    color: #38bdf8;
+    font-size: 0.72rem;
+    background: rgba(56, 189, 248, 0.12);
+    padding: 0.15rem 0.4rem;
+    border-radius: 6px;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+  }
+
+  .guide-list strong {
+    color: #ffffff;
   }
 
   /* Viewport & Canvas */
   .canvas-viewport {
     position: relative;
     /* Keep the 600:860 virtual ratio so the canvas is never stretched */
-    width: min(100%, 600px, calc(85vh * 600 / 860));
+    width: min(100%, 600px, calc(86vh * 600 / 860));
     aspect-ratio: 600 / 860;
     height: auto;
-    max-height: 85vh;
+    max-height: 86vh;
     border-radius: 20px;
     overflow: hidden;
     background: #020617;
     border: 1px solid var(--border-glass);
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
-    margin: 0 auto;
     touch-action: none;
+    flex-shrink: 0;
   }
 
   #game-canvas {
@@ -614,20 +793,41 @@ const data = gameEntry?.data || {
   }
 
   /* Responsive Adjustments */
-  @media (max-width: 640px) {
-    .game-hud-bar {
-      border-radius: 0;
-      margin-top: 0;
-      padding: 0.6rem 0.75rem;
+  @media (max-width: 920px) {
+    .arrow-game-root {
+      padding: 0.5rem;
+      min-height: auto;
     }
-    .hud-title, .btn-text {
+
+    .game-stage-layout {
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .canvas-viewport {
+      width: min(100%, 540px, calc(72vh * 600 / 860));
+      max-height: 72vh;
+    }
+
+    .game-hud-panel {
+      width: min(100%, 540px);
+      padding: 1rem;
+      gap: 0.85rem;
+    }
+
+    .panel-guide-card {
       display: none;
     }
+  }
+
+  @media (max-width: 600px) {
     .canvas-viewport {
-      border-radius: 0;
-      max-height: 85vh;
-      border-left: none;
-      border-right: none;
+      border-radius: 12px;
+      max-height: 65vh;
+    }
+    .game-hud-panel {
+      border-radius: 14px;
     }
   }
 </style>
