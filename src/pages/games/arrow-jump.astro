@@ -13,14 +13,14 @@ const data = gameEntry?.data || {
   players: '1인 (고도 기록 경쟁)',
   playTime: '1분~무제한',
   controls: [
-    '화면 또는 화살을 잡고 반대 방향으로 드래그하여 각도와 파워 조절 (슬링샷 조작)',
+    '화면을 잡고 날아갈 방향으로 드래그하여 각도와 파워 조절',
     '손이나 마우스를 놓으면 시위가 튕기며 화살 발사',
     '궤적 가이드 점선으로 예상 낙하 지점 조준',
     'R 키 또는 재도전 버튼으로 언제든 처음부터 다시 시작'
   ],
   rules: [
-    '화살이 하강 중(아래로 떨어질 때) 블록 윗면에 닿아야만 단단히 꽂히며 다음 발판이 됩니다.',
-    '블록 밑면(천장)이나 옆면에 맞으면 강하게 튕겨져 아래로 끝없이 굴러 떨어집니다.',
+    '화살이 아래로 낙하할 때 블록 "윗면"에 정확히 닿아야만 단단히 꽂히며 다음 발판이 됩니다.',
+    '블록 옆면이나 모서리, 밑면에 닿으면 튕겨져 미끄러져 아래로 끝없이 굴러 떨어집니다.',
     '고도가 올라갈수록 발판이 좁아지고 움직이는 블록, 천장 방해물 등이 등장합니다.',
     '매일 도전(Daily 300m 완등)과 한계에 도전하는 무한 모드(Endless)를 지원합니다.'
   ],
@@ -116,7 +116,7 @@ const data = gameEntry?.data || {
       <!-- Floating Drag Help Tip -->
       <div id="aim-guide-tip" class="aim-guide-tip">
         <div class="tip-hand">👆</div>
-        <span>화면을 잡고 <strong>아래로 당겨서</strong> 활을 조준하세요!</span>
+        <span>화면을 잡고 날아갈 방향으로 <strong>드래그하여</strong> 각도와 파워를 조준하세요!</span>
       </div>
 
       <!-- Altitude Milestone Overlay (Flash) -->
@@ -1158,9 +1158,9 @@ const data = gameEntry?.data || {
       this.currentPointerX = e.clientX - rect.left;
       this.currentPointerY = e.clientY - rect.top;
 
-      // Inverted Slingshot Pull Vector:
-      // Dragging down-left shoots up-right
-      const dx = this.dragStartX - this.currentPointerX;
+      // Swapped Direction:
+      // Dragging upwards to right shoots upwards to right!
+      const dx = this.currentPointerX - this.dragStartX;
       const dy = this.dragStartY - this.currentPointerY;
 
       const dist = Math.hypot(dx, dy);
@@ -1240,14 +1240,25 @@ const data = gameEntry?.data || {
         this.arrowVy -= this.GRAVITY * dt;
 
         // Position Step
-        const nextX = this.arrowX + this.arrowVx * dt;
-        const nextY = this.arrowY + this.arrowVy * dt;
+        const prevX = this.arrowX;
+        const prevY = this.arrowY;
+        const prevAngle = this.arrowAngle;
+
+        const nextX = prevX + this.arrowVx * dt;
+        const nextY = prevY + this.arrowVy * dt;
+
+        let nextAngle = prevAngle;
+        if (this.arrowState === 'FLYING') {
+          nextAngle = Math.atan2(this.arrowVy, this.arrowVx);
+        } else {
+          nextAngle = prevAngle + this.arrowAngularVel * dt;
+        }
 
         // Trail particles
         if (Math.random() < 0.6) {
           this.particles.push({
-            x: this.arrowX,
-            y: this.arrowY,
+            x: prevX,
+            y: prevY,
             vx: (Math.random() - 0.5) * 20,
             vy: (Math.random() - 0.5) * 20,
             life: 1.0,
@@ -1257,37 +1268,29 @@ const data = gameEntry?.data || {
           });
         }
 
-        // Side boundary wall collision (-220 to 220)
+        // Side boundary wall collision (-230 to 230)
         const WALL_LIMIT = 230;
+        let clampedNextX = nextX;
         if (nextX < -WALL_LIMIT) {
           this.arrowVx = Math.abs(this.arrowVx) * 0.65;
-          this.arrowX = -WALL_LIMIT;
+          clampedNextX = -WALL_LIMIT;
           this.arrowAngularVel = (Math.random() - 0.5) * 12;
           this.arrowState = 'TUMBLING';
           this.sound.playBounce();
           this.screenShake = 4;
         } else if (nextX > WALL_LIMIT) {
           this.arrowVx = -Math.abs(this.arrowVx) * 0.65;
-          this.arrowX = WALL_LIMIT;
+          clampedNextX = WALL_LIMIT;
           this.arrowAngularVel = (Math.random() - 0.5) * 12;
           this.arrowState = 'TUMBLING';
           this.sound.playBounce();
           this.screenShake = 4;
-        } else {
-          this.arrowX = nextX;
         }
 
-        // Update angle
-        if (this.arrowState === 'FLYING') {
-          this.arrowAngle = Math.atan2(this.arrowVy, this.arrowVx);
-        } else {
-          this.arrowAngle += this.arrowAngularVel * dt;
-        }
+        this.arrowAngle = nextAngle;
 
         // Platform Collisions Check
-        this.checkCollisions(nextY);
-
-        this.arrowY = nextY;
+        this.checkCollisions(prevX, prevY, clampedNextX, nextY);
       }
 
       // Camera Smooth Follow
@@ -1321,10 +1324,12 @@ const data = gameEntry?.data || {
       }
     }
 
-    private checkCollisions(nextY: number) {
-      const ARROW_TIP_DIST = 18;
-      const tipX = this.arrowX + Math.cos(this.arrowAngle) * ARROW_TIP_DIST;
-      const tipY = nextY + Math.sin(this.arrowAngle) * ARROW_TIP_DIST;
+    private checkCollisions(prevX: number, prevY: number, nextX: number, nextY: number) {
+      const ARROW_HALF_LEN = 16;
+      const prevTipX = prevX + Math.cos(this.arrowAngle) * ARROW_HALF_LEN;
+      const prevTipY = prevY + Math.sin(this.arrowAngle) * ARROW_HALF_LEN;
+      const nextTipX = nextX + Math.cos(this.arrowAngle) * ARROW_HALF_LEN;
+      const nextTipY = nextY + Math.sin(this.arrowAngle) * ARROW_HALF_LEN;
 
       for (const plat of this.platforms) {
         const platLeft = plat.x - plat.w / 2;
@@ -1332,14 +1337,44 @@ const data = gameEntry?.data || {
         const platTop = plat.y;
         const platBottom = plat.y - plat.h;
 
-        // 1. TOP LANDING CHECK (Must be falling: vy <= 0)
-        if (this.arrowVy <= 10) {
-          // Check if tip crossed the top surface
-          const crossedTop = (this.arrowY >= platTop - 4 && nextY <= platTop + 8);
-          const withinWidth = (tipX >= platLeft - 8 && tipX <= platRight + 8);
+        // ─── 1. GROUND PLATFORM (at y = 0) ───
+        if (plat.id === 0) {
+          if (nextTipY <= 2 || nextY <= 4) {
+            this.arrowX = nextX;
+            this.arrowY = 4;
+            this.arrowVx = 0;
+            this.arrowVy = 0;
+            this.arrowAngle = Math.PI / 2;
+            this.arrowState = 'RESTING';
+            this.stuckPlatform = plat;
+            this.stuckOffsetX = this.arrowX;
+            this.sound.playStick();
+            this.updateHud();
+            return;
+          }
+          continue;
+        }
 
-          if (crossedTop && withinWidth) {
-            // SUCCESSFUL LANDING!
+        // ─── 2. STRICT TOP SURFACE LANDING ───
+        // Only allowed if arrow is strictly falling downwards (vy < 0)
+        // and tip crosses horizontal plane y = platTop
+        if (this.arrowVy < 0 && prevTipY >= platTop - 3 && nextTipY <= platTop + 4) {
+          const dTipY = nextTipY - prevTipY;
+          let crossX = nextTipX;
+          if (Math.abs(dTipY) > 0.001) {
+            const t = (platTop - prevTipY) / dTipY;
+            if (t >= 0 && t <= 1) {
+              crossX = prevTipX + t * (nextTipX - prevTipX);
+            }
+          }
+
+          // Safety margin: must definitely land on the TOP surface, NOT on side or corner
+          const TOP_INSET = 6;
+          const isFirmlyOnTop = (crossX >= platLeft + TOP_INSET && crossX <= platRight - TOP_INSET);
+
+          if (isFirmlyOnTop) {
+            // DEFINITE TOP LANDING SUCCESS!
+            this.arrowX = crossX - Math.cos(this.arrowAngle) * ARROW_HALF_LEN;
             this.arrowY = platTop + 2;
             this.arrowVx = 0;
             this.arrowVy = 0;
@@ -1347,7 +1382,7 @@ const data = gameEntry?.data || {
             this.stuckPlatform = plat;
             this.stuckOffsetX = this.arrowX - plat.x;
 
-            // Clamp arrow resting angle to look natural
+            // Rest angle tilt
             if (this.arrowAngle < -Math.PI / 2) {
               this.arrowAngle = -Math.PI * 0.75;
             } else {
@@ -1365,7 +1400,7 @@ const data = gameEntry?.data || {
               setTimeout(() => this.openShareModal(), 1200);
             }
 
-            // Check if player suffered a drop fall
+            // Drop Fall penalty check
             const landedAlt = Math.floor(platTop / this.PX_PER_METER);
             const dropDiff = this.lastRestMeters - landedAlt;
             if (dropDiff >= 12) {
@@ -1379,25 +1414,94 @@ const data = gameEntry?.data || {
             this.updateHud();
             return;
           }
+
+          // CORNER LIP CLIP: Near the outer edge -> cannot stick, slide/deflect off!
+          const isLeftEdgeClip = (crossX >= platLeft - 8 && crossX < platLeft + TOP_INSET);
+          const isRightEdgeClip = (crossX > platRight - TOP_INSET && crossX <= platRight + 8);
+
+          if (isLeftEdgeClip) {
+            this.arrowX = platLeft - 4;
+            this.arrowY = platTop;
+            this.arrowVx = -Math.abs(this.arrowVx || 40) * 0.7 - 40;
+            this.arrowVy = this.arrowVy * 0.4 - 20;
+            this.arrowAngularVel = -14;
+            this.arrowState = 'TUMBLING';
+            this.sound.playBounce();
+            this.screenShake = 6;
+            this.spawnImpactParticles(platLeft, platTop, '#f59e0b', 8);
+            this.showToast('⚠️ 발판 모서리 미끄러짐!', 'fail');
+            return;
+          }
+
+          if (isRightEdgeClip) {
+            this.arrowX = platRight + 4;
+            this.arrowY = platTop;
+            this.arrowVx = Math.abs(this.arrowVx || 40) * 0.7 + 40;
+            this.arrowVy = this.arrowVy * 0.4 - 20;
+            this.arrowAngularVel = 14;
+            this.arrowState = 'TUMBLING';
+            this.sound.playBounce();
+            this.screenShake = 6;
+            this.spawnImpactParticles(platRight, platTop, '#f59e0b', 8);
+            this.showToast('⚠️ 발판 모서리 미끄러짐!', 'fail');
+            return;
+          }
         }
 
-        // 2. CEILING / UNDERSIDE / SIDE RICOCHET (Bouncing penalty)
-        const inVerticalRange = (nextY >= platBottom && nextY <= platTop);
-        const inHorizontalRange = (this.arrowX >= platLeft && this.arrowX <= platRight);
+        // ─── 3. VERTICAL SIDE COLLISION (WALL OF BLOCK) ───
+        if (nextTipY <= platTop && nextTipY >= platBottom) {
+          // Hits Left Side
+          if (prevTipX <= platLeft + 3 && nextTipX >= platLeft - 3) {
+            this.arrowX = platLeft - 6;
+            this.arrowY = nextY;
+            this.arrowVx = -Math.abs(this.arrowVx) * 0.65 - 35;
+            this.arrowVy = this.arrowVy * 0.5 - 20;
+            this.arrowAngularVel = -12;
+            this.arrowState = 'TUMBLING';
+            this.sound.playBounce();
+            this.screenShake = 6;
+            this.spawnImpactParticles(platLeft, nextTipY, '#f59e0b', 8);
+            return;
+          }
 
-        if (inVerticalRange && inHorizontalRange) {
-          // Ricochet bounce!
-          this.arrowVy = -Math.abs(this.arrowVy) * 0.5;
-          this.arrowVx = this.arrowVx * 0.7 + (Math.random() - 0.5) * 80;
-          this.arrowAngularVel = (Math.random() - 0.5) * 18;
-          this.arrowState = 'TUMBLING';
+          // Hits Right Side
+          if (prevTipX >= platRight - 3 && nextTipX <= platRight + 3) {
+            this.arrowX = platRight + 6;
+            this.arrowY = nextY;
+            this.arrowVx = Math.abs(this.arrowVx) * 0.65 + 35;
+            this.arrowVy = this.arrowVy * 0.5 - 20;
+            this.arrowAngularVel = 12;
+            this.arrowState = 'TUMBLING';
+            this.sound.playBounce();
+            this.screenShake = 6;
+            this.spawnImpactParticles(platRight, nextTipY, '#f59e0b', 8);
+            return;
+          }
+        }
 
-          this.sound.playBounce();
-          this.screenShake = 8;
-          this.spawnImpactParticles(this.arrowX, this.arrowY, '#f59e0b', 10);
-          return;
+        // ─── 4. CEILING / UNDERSIDE RICOCHET ───
+        if (this.arrowVy > 0) {
+          const crossedBottom = (prevTipY <= platBottom + 4 && nextTipY >= platBottom - 4);
+          const withinWidth = (nextTipX >= platLeft && nextTipX <= platRight);
+
+          if (crossedBottom && withinWidth) {
+            this.arrowX = nextX;
+            this.arrowY = platBottom - 4;
+            this.arrowVy = -Math.abs(this.arrowVy) * 0.55 - 40;
+            this.arrowVx = this.arrowVx * 0.7;
+            this.arrowAngularVel = (Math.random() - 0.5) * 16;
+            this.arrowState = 'TUMBLING';
+            this.sound.playBounce();
+            this.screenShake = 8;
+            this.spawnImpactParticles(nextTipX, platBottom, '#f59e0b', 10);
+            return;
+          }
         }
       }
+
+      // No collision: commit candidate position
+      this.arrowX = nextX;
+      this.arrowY = nextY;
     }
 
     private checkMilestones(alt: number) {
@@ -1730,8 +1834,19 @@ const data = gameEntry?.data || {
         const simVx = normX * speed;
         const simVy = normY * speed;
 
+        // Draw drawn-back bowstring behind the arrow
+        const pullBackX = sx - normX * (pRatio * 28);
+        const pullBackY = sy + normY * (pRatio * 28);
+        ctx.strokeStyle = tensionColor;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(sx - 14, sy);
+        ctx.lineTo(pullBackX, pullBackY);
+        ctx.lineTo(sx + 14, sy);
+        ctx.stroke();
+
         ctx.fillStyle = tensionColor;
-        // Draw 14 simulated steps (0.35s forward)
+        // Draw 14 simulated steps (forward arc)
         const stepDt = 0.035;
         let curSimX = this.arrowX;
         let curSimY = this.arrowY;
