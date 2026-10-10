@@ -21,10 +21,14 @@ const data = gameEntry?.data || {
   rules: [
     '화살이 블록의 "윗면"이나 "옆면"에 닿으면 단단히 꽂히며 다음 발판이 됩니다.',
     '블록 아랫면(천장)에 머리를 부딪히면 튕겨져 아래로 떨어지므로 주의해야 합니다.',
-    '고도가 올라갈수록 발판이 좁아지고 움직이는 블록, 천장 방해물 등이 등장합니다.',
-    '매일 도전(Daily 300m 완등)과 한계에 도전하는 무한 모드(Endless)를 지원합니다.'
+    '매일 도전(Daily 300m): 전 세계 동일 시드로 300m 완등 시간을 겨루는 스피드런 타임어택입니다.',
+    '무한 모드(Endless): 정상 제한 없이 끝없이 올라가는 타워에서 최고 고도(m) 기록에 도전합니다.'
   ],
   faqItems: [
+    {
+      q: '매일 도전(Daily)과 무한 모드(Endless)의 차이점은 무엇인가요?',
+      a: '매일 도전은 전 세계 플레이어가 동일한 시드 타워에서 300m 완등 스피드런 타이머를 측정하여 최단 클리어 시간을 겨루는 경쟁 모드입니다! 무한 모드는 타임어택 대신 끝없이 올라가는 최고 고도(m) 기록을 겨룹니다.'
+    },
     {
       q: '화살이 블록에 꽂히지 않고 튕겨 나옵니다.',
       a: '화살은 블록의 윗면이나 옆면에 닿으면 안전하게 꽂힙니다! 다만 블록 아랫면(천장)을 올려치면 강하게 튕겨져 아래로 추락하니 머리 위 장애물을 피해야 합니다.'
@@ -34,8 +38,8 @@ const data = gameEntry?.data || {
       a: "주소 뒤에 '?bare=1' 또는 '?stream=true'를 추가하면 불필요한 UI가 숨겨진 투명 방송 전용 모드로 실행됩니다."
     },
     {
-      q: '매일 도전(Daily) 모드는 어떻게 진행되나요?',
-      a: '매일 전 세계 모든 플레이어가 동일한 맵 시드로 경쟁하는 300m 완등 챌린지입니다. 매일 자정에 새로운 타워가 열립니다.'
+      q: '매일 도전(Daily) 모드는 언제 갱신되나요?',
+      a: '매일 UTC 자정에 전 세계 동일한 새로운 타워 시드와 기록판이 열립니다.'
     }
   ]
 };
@@ -104,6 +108,21 @@ const data = gameEntry?.data || {
           </div>
         </div>
 
+        <!-- Speedrun Timer Card (Daily Mode Feature) -->
+        <div class="panel-timer-card" id="panel-timer-card">
+          <div class="timer-header">
+            <span class="metric-label" id="timer-label">스피드런 타이머</span>
+            <span class="timer-dot" id="timer-dot"></span>
+          </div>
+          <div class="timer-display">
+            <span class="timer-clock" id="hud-timer">00:00.0</span>
+          </div>
+          <div class="timer-best-info" id="timer-best-row">
+            <span class="timer-best-label" id="timer-best-label">오늘 완등 최고:</span>
+            <span class="timer-best-val" id="hud-daily-best">--:--.-</span>
+          </div>
+        </div>
+
         <!-- Secondary Metrics Grid -->
         <div class="panel-sub-grid">
           <div class="sub-stat-card">
@@ -159,9 +178,13 @@ const data = gameEntry?.data || {
         <h2 class="modal-title" id="modal-title">나의 클라이밍 기록</h2>
 
         <div class="modal-stats-grid">
+          <div class="stat-box full-width" id="modal-stat-time-box">
+            <span class="stat-label" id="modal-time-label">⏱️ 완등 소요 시간</span>
+            <span class="stat-number highlight" id="stat-time">--:--.-</span>
+          </div>
           <div class="stat-box">
             <span class="stat-label">도달 고도</span>
-            <span class="stat-number highlight" id="stat-alt">0m</span>
+            <span class="stat-number" id="stat-alt">0m</span>
           </div>
           <div class="stat-box">
             <span class="stat-label">최고 기록</span>
@@ -366,6 +389,94 @@ const data = gameEntry?.data || {
     color: #7dd3fc;
     margin-left: 3px;
     font-weight: 700;
+  }
+
+  /* Speedrun Timer Card */
+  .panel-timer-card {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(5, 150, 105, 0.04) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.32);
+    border-radius: 14px;
+    padding: 0.85rem 1rem;
+    box-shadow: 0 4px 18px rgba(16, 185, 129, 0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    transition: all 0.3s ease;
+  }
+
+  .panel-timer-card.endless {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: var(--border-glass);
+    box-shadow: none;
+  }
+
+  .timer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .timer-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #34d399;
+    box-shadow: 0 0 8px #34d399;
+  }
+
+  .timer-dot.running {
+    animation: pulseDot 1s infinite ease-in-out;
+  }
+
+  .timer-dot.stopped {
+    background: #f59e0b;
+    box-shadow: 0 0 8px #f59e0b;
+  }
+
+  .timer-display {
+    display: flex;
+    align-items: baseline;
+  }
+
+  .timer-clock {
+    font-size: 1.85rem;
+    font-weight: 900;
+    font-family: monospace, ui-monospace, sans-serif;
+    color: #34d399;
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 16px rgba(52, 211, 153, 0.5);
+    line-height: 1.1;
+  }
+
+  .panel-timer-card.endless .timer-clock {
+    color: #94a3b8;
+    text-shadow: none;
+  }
+
+  .panel-timer-card.endless .timer-dot {
+    background: #64748b;
+    box-shadow: none;
+  }
+
+  .timer-best-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.2rem;
+    padding-top: 0.35rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.73rem;
+  }
+
+  .timer-best-label {
+    color: #94a3b8;
+  }
+
+  .timer-best-val {
+    color: #fcd34d;
+    font-weight: 800;
+    font-family: monospace, ui-monospace, sans-serif;
   }
 
   /* Sub Grid Metrics */
@@ -729,6 +840,12 @@ const data = gameEntry?.data || {
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+
+  .stat-box.full-width {
+    grid-column: span 2;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(5, 150, 105, 0.04) 100%);
+    border-color: rgba(16, 185, 129, 0.35);
   }
 
   .stat-label {
@@ -1116,6 +1233,11 @@ const data = gameEntry?.data || {
     private gameStartTime = Date.now();
     private hasWonDaily = false;
 
+    // Speedrun Timer State (Daily Mode Feature)
+    private firstShotTime = 0;
+    private clearTime = 0;
+    private dailyBestTime = 0; // seconds
+
     // Particles & Trails
     private particles: Particle[] = [];
     private arrowTrail: { x: number; y: number; alpha: number }[] = [];
@@ -1137,12 +1259,28 @@ const data = gameEntry?.data || {
       this.startLoop();
     }
 
+    private getDailyDateKey(): string {
+      const d = new Date();
+      return `${d.getUTCFullYear()}-${(d.getUTCMonth() + 1).toString().padStart(2, '0')}-${d.getUTCDate().toString().padStart(2, '0')}`;
+    }
+
+    private formatTimeString(sec: number): string {
+      if (!sec || sec < 0 || !isFinite(sec)) return '--:--.-';
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      const ms = Math.floor((sec % 1) * 10);
+      return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}.${ms}`;
+    }
+
     private loadRecords() {
       try {
         const savedBest = localStorage.getItem('arrow_climber_best');
         this.personalBest = savedBest ? parseInt(savedBest, 10) : 0;
+        const savedDailyBest = localStorage.getItem(`arrow_daily_best_${this.getDailyDateKey()}`);
+        this.dailyBestTime = savedDailyBest ? parseFloat(savedDailyBest) : 0;
       } catch {
         this.personalBest = 0;
+        this.dailyBestTime = 0;
       }
       this.updateHud();
     }
@@ -1201,7 +1339,7 @@ const data = gameEntry?.data || {
         pill.style.borderColor = this.mode === 'daily' ? 'rgba(16, 185, 129, 0.35)' : 'rgba(56, 189, 248, 0.35)';
       }
       this.startNewGame();
-      this.showToast(this.mode === 'daily' ? '📅 매일 시드 타워로 변경되었습니다!' : '♾️ 무한 등반 모드로 변경되었습니다!', 'success');
+      this.showToast(this.mode === 'daily' ? '⏱️ 매일 스피드런 타임어택으로 변경되었습니다!' : '♾️ 무한 등반 모드로 변경되었습니다!', 'success');
     }
 
     private toggleSound() {
@@ -1223,6 +1361,8 @@ const data = gameEntry?.data || {
       this.arrowTrail = [];
       this.highestGeneratedY = 0;
       this.hasWonDaily = false;
+      this.firstShotTime = 0;
+      this.clearTime = 0;
 
       // Ground Platform at World Y = 0
       const ground: Platform = {
@@ -1260,6 +1400,7 @@ const data = gameEntry?.data || {
       this.generatePlatformsUpTo(1500);
 
       this.updateHud();
+      this.updateTimerHud();
       document.getElementById('aim-guide-tip')?.classList.remove('hidden');
     }
 
@@ -1465,6 +1606,9 @@ const data = gameEntry?.data || {
       this.arrowState = 'FLYING';
       this.stuckPlatform = null;
       this.totalShots++;
+      if (this.firstShotTime === 0) {
+        this.firstShotTime = Date.now();
+      }
       this.sound.playRelease();
 
       this.updateHud();
@@ -1584,6 +1728,9 @@ const data = gameEntry?.data || {
         this.currentAltMeters = newAlt;
         this.updateHud();
       }
+
+      // Live speedrun timer update
+      this.updateTimerHud();
     }
 
     private sweepSegmentBox(
@@ -1850,8 +1997,27 @@ const data = gameEntry?.data || {
       // Summit Victory Check
       if (plat.type === 'summit' && !this.hasWonDaily) {
         this.hasWonDaily = true;
+        this.clearTime = this.firstShotTime > 0 ? (Date.now() - this.firstShotTime) / 1000 : 0.1;
         this.sound.playFanfare();
-        this.showToast('🏆 300m 서밋 정복 성공! 일일 타워를 완등했습니다!', 'success');
+
+        let isNewDailyBest = false;
+        if (this.mode === 'daily') {
+          if (!this.dailyBestTime || this.clearTime < this.dailyBestTime) {
+            this.dailyBestTime = this.clearTime;
+            isNewDailyBest = true;
+            try {
+              localStorage.setItem(`arrow_daily_best_${this.getDailyDateKey()}`, this.dailyBestTime.toString());
+            } catch {
+              // ignore
+            }
+          }
+        }
+
+        const timeStr = this.formatTimeString(this.clearTime);
+        const recordMsg = isNewDailyBest ? ' 🔥 일일 최고 신기록!' : '';
+        this.showToast(`🏆 300m 서밋 완등! ⏱️ ${timeStr}${recordMsg}`, 'success');
+        this.updateHud();
+        this.updateTimerHud();
         setTimeout(() => this.openShareModal(), 1200);
       }
 
@@ -1924,6 +2090,44 @@ const data = gameEntry?.data || {
       if (curEl) curEl.innerHTML = `${this.currentAltMeters}<small>m</small>`;
       if (bestEl) bestEl.innerHTML = `${this.personalBest}<small>m</small>`;
       if (shotsEl) shotsEl.textContent = this.totalShots.toString();
+    }
+
+    private updateTimerHud() {
+      const timerEl = document.getElementById('hud-timer');
+      const dotEl = document.getElementById('timer-dot');
+      const labelEl = document.getElementById('timer-label');
+      const cardEl = document.getElementById('panel-timer-card');
+      const dailyBestEl = document.getElementById('hud-daily-best');
+      const bestLabelEl = document.getElementById('timer-best-label');
+
+      if (this.mode === 'daily') {
+        cardEl?.classList.remove('endless');
+        if (labelEl) labelEl.textContent = '스피드런 타이머';
+        if (bestLabelEl) bestLabelEl.textContent = '오늘 완등 최고:';
+        if (dailyBestEl) dailyBestEl.textContent = this.dailyBestTime > 0 ? this.formatTimeString(this.dailyBestTime) : '--:--.-';
+      } else {
+        cardEl?.classList.add('endless');
+        if (labelEl) labelEl.textContent = '등반 시간';
+        if (bestLabelEl) bestLabelEl.textContent = '모드:';
+        if (dailyBestEl) dailyBestEl.textContent = '무한 등반';
+      }
+
+      if (!timerEl) return;
+
+      let elapsedSec = 0;
+      if (this.clearTime > 0) {
+        elapsedSec = this.clearTime;
+        dotEl?.classList.remove('running');
+        dotEl?.classList.add('stopped');
+      } else if (this.firstShotTime > 0) {
+        elapsedSec = (Date.now() - this.firstShotTime) / 1000;
+        dotEl?.classList.add('running');
+        dotEl?.classList.remove('stopped');
+      } else {
+        dotEl?.classList.remove('running', 'stopped');
+      }
+
+      timerEl.textContent = this.formatTimeString(elapsedSec);
     }
 
     // ─── Rendering ────────────────────────────────────────────────────────
@@ -2301,6 +2505,8 @@ const data = gameEntry?.data || {
     public openShareModal() {
       const modal = document.getElementById('share-modal');
       const title = document.getElementById('modal-title');
+      const timeVal = document.getElementById('stat-time');
+      const timeLabel = document.getElementById('modal-time-label');
       const alt = document.getElementById('stat-alt');
       const best = document.getElementById('stat-best');
       const shots = document.getElementById('stat-shots');
@@ -2309,24 +2515,33 @@ const data = gameEntry?.data || {
 
       if (!modal) return;
 
-      const dateStr = new Date().toISOString().slice(0, 10);
+      const dateStr = this.getDailyDateKey();
       const isDaily = this.mode === 'daily';
-      const modeLabel = isDaily ? `매일 도전 #${dateStr}` : '무한 등반 모드';
+      const modeLabel = isDaily ? `매일 도전 (Daily 300m) #${dateStr}` : '무한 등반 모드 (Endless)';
+
+      const currentElapsed = this.clearTime > 0
+        ? this.clearTime
+        : (this.firstShotTime > 0 ? (Date.now() - this.firstShotTime) / 1000 : 0);
+      const timeStr = this.formatTimeString(currentElapsed);
 
       if (title) title.textContent = this.hasWonDaily ? '🎉 타워 완등 성공!' : '나의 클라이밍 기록';
+      if (timeLabel) timeLabel.textContent = this.hasWonDaily ? '⏱️ 서밋 완등 시간 (기록)' : '⏱️ 등반 경과 시간';
+      if (timeVal) timeVal.textContent = timeStr;
       if (alt) alt.textContent = `${this.maxAltMetersRun}m`;
       if (best) best.textContent = `${this.personalBest}m`;
       if (shots) shots.textContent = `${this.totalShots}회`;
       if (drop) drop.textContent = `-${this.worstDropMeters}m`;
 
+      const bestTimeStr = this.dailyBestTime > 0 ? this.formatTimeString(this.dailyBestTime) : '';
       const shareText = [
         `🏹 에러레저 화살 점프 (Arrow Climber)`,
         `📅 ${modeLabel}`,
-        `🏔️ 도달 고도: ${this.maxAltMetersRun}m (최고: ${this.personalBest}m)`,
+        this.hasWonDaily ? `🏆 300m 완등 성공! ⏱️ ${timeStr}` : `🏔️ 도달 고도: ${this.maxAltMetersRun}m${isDaily ? ' / 300m' : ''} (⏱️ ${timeStr})`,
+        (isDaily && bestTimeStr) ? `🥇 오늘 최고 기록: ${bestTimeStr}` : '',
         `🎯 슛 횟수: ${this.totalShots}회`,
         `😱 최대 추락: -${this.worstDropMeters}m`,
         `🔗 https://errorledger.com/games/arrow-jump`
-      ].join('\n');
+      ].filter(Boolean).join('\n');
 
       if (preview) preview.textContent = shareText;
 
