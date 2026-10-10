@@ -340,9 +340,10 @@ const data = gameEntry?.data || {
   /* Viewport & Canvas */
   .canvas-viewport {
     position: relative;
-    width: 100%;
-    max-width: 600px;
-    height: 860px;
+    /* Keep the 600:860 virtual ratio so the canvas is never stretched */
+    width: min(100%, 600px, calc(85vh * 600 / 860));
+    aspect-ratio: 600 / 860;
+    height: auto;
     max-height: 85vh;
     border-radius: 20px;
     overflow: hidden;
@@ -814,7 +815,8 @@ const data = gameEntry?.data || {
 
   function getDailySeed(): number {
     const d = new Date();
-    const str = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}-arrow-v1`;
+    // UTC date so every player worldwide gets the same daily tower
+    const str = `${d.getUTCFullYear()}-${d.getUTCMonth() + 1}-${d.getUTCDate()}-arrow-v1`;
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       hash = (hash << 5) - hash + str.charCodeAt(i);
@@ -955,7 +957,7 @@ const data = gameEntry?.data || {
       this.touchLayer.addEventListener('pointerdown', (e) => this.onPointerDown(e));
       window.addEventListener('pointermove', (e) => this.onPointerMove(e));
       window.addEventListener('pointerup', (e) => this.onPointerUp(e));
-      window.addEventListener('pointercancel', (e) => this.onPointerUp(e));
+      window.addEventListener('pointercancel', () => this.onPointerCancel());
 
       // Key controls
       window.addEventListener('keydown', (e) => {
@@ -1043,12 +1045,19 @@ const data = gameEntry?.data || {
     private generatePlatformsUpTo(targetWorldY: number) {
       const SUMMIT_ALT_Y = 300 * this.PX_PER_METER; // 300m = 7200px
 
+      const SUMMIT_CLEARANCE = 70; // no regular platform within 70px below the summit
+      const CANYON_HALF = 265;     // matches arrow WALL_LIMIT
+
       while (this.highestGeneratedY < targetWorldY) {
         const nextAlt = this.highestGeneratedY;
         const currentMeter = Math.floor(nextAlt / this.PX_PER_METER);
 
-        // Check for Daily Summit
-        if (this.mode === 'daily' && nextAlt >= SUMMIT_ALT_Y) {
+        // Vertical spacing between platforms: 68px to 96px (~2.8m - 4.0m)
+        const vGap = this.prng.range(68, 96);
+        const newY = (this.highestGeneratedY === 0 ? 76 : this.highestGeneratedY + vGap);
+
+        // Daily Summit: placed instead of any platform that would reach its height
+        if (this.mode === 'daily' && newY > SUMMIT_ALT_Y - SUMMIT_CLEARANCE) {
           if (!this.platforms.some(p => p.type === 'summit')) {
             this.platforms.push({
               id: this.platforms.length,
@@ -1062,10 +1071,6 @@ const data = gameEntry?.data || {
           }
           break;
         }
-
-        // Vertical spacing between platforms: 68px to 96px (~2.8m - 4.0m)
-        const vGap = this.prng.range(68, 96);
-        const newY = (this.highestGeneratedY === 0 ? 76 : this.highestGeneratedY + vGap);
 
         // Difficulty curves based on altitude
         let platW = 140;
@@ -1096,7 +1101,7 @@ const data = gameEntry?.data || {
         }
 
         // Horizontal position within canyon (-180 to 180)
-        const platX = this.prng.range(-170, 170);
+        let platX = this.prng.range(-170, 170);
 
         const newPlat: Platform = {
           id: this.platforms.length,
@@ -1108,13 +1113,20 @@ const data = gameEntry?.data || {
         };
 
         if (pType === 'moving') {
-          newPlat.baseX = platX;
           newPlat.moveRange = this.prng.range(40, 85);
           newPlat.moveSpeed = this.prng.range(1.2, 2.2);
           newPlat.movePhase = this.prng.range(0, Math.PI * 2);
+          // Keep the whole sweep inside the canyon walls
+          const maxBaseX = Math.max(0, CANYON_HALF - platW / 2 - newPlat.moveRange);
+          platX = Math.max(-maxBaseX, Math.min(maxBaseX, platX));
+          newPlat.x = platX;
+          newPlat.baseX = platX;
         }
 
         this.platforms.push(newPlat);
+
+        // Next platform is spaced from the highest block in this row (incl. ceiling)
+        let rowTopY = newY;
 
         // Occasional Overhang ceiling hazard
         if (pType === 'overhang' || (currentMeter > 90 && this.prng.next() < 0.22)) {
@@ -1127,9 +1139,10 @@ const data = gameEntry?.data || {
             h: 16,
             type: 'overhang'
           });
+          rowTopY = newY + ceilingGap;
         }
 
-        this.highestGeneratedY = newY;
+        this.highestGeneratedY = rowTopY;
       }
     }
 
@@ -1146,6 +1159,10 @@ const data = gameEntry?.data || {
       this.dragStartY = clientY;
       this.currentPointerX = clientX;
       this.currentPointerY = clientY;
+      // Clear previous shot so a tap without dragging doesn't refire it
+      this.pullPower = 0;
+      this.pullVectorX = 0;
+      this.pullVectorY = 0;
       this.arrowState = 'AIMING';
 
       document.getElementById('aim-guide-tip')?.classList.add('hidden');
@@ -1173,6 +1190,16 @@ const data = gameEntry?.data || {
       if (this.pullPower > 0.05) {
         this.sound.playAimPull(this.pullPower);
       }
+    }
+
+    // Cancelled touches (system gestures etc.) abort the aim without firing
+    private onPointerCancel() {
+      if (!this.isDragging) return;
+      this.isDragging = false;
+      if (this.arrowState === 'AIMING') this.arrowState = 'RESTING';
+      this.pullPower = 0;
+      this.pullVectorX = 0;
+      this.pullVectorY = 0;
     }
 
     private onPointerUp(_e: PointerEvent) {
@@ -1220,15 +1247,10 @@ const data = gameEntry?.data || {
       }
 
       // Update Moving Platforms
-      let movingPlatDx = 0;
       for (const plat of this.platforms) {
         if (plat.type === 'moving' && plat.baseX !== undefined && plat.moveRange !== undefined && plat.moveSpeed !== undefined) {
-          const prevX = plat.x;
           const t = (now / 1000) * plat.moveSpeed + (plat.movePhase || 0);
           plat.x = plat.baseX + Math.sin(t) * plat.moveRange;
-          if (plat === this.stuckPlatform) {
-            movingPlatDx = plat.x - prevX;
-          }
         }
       }
 
@@ -1236,19 +1258,6 @@ const data = gameEntry?.data || {
       if ((this.arrowState === 'RESTING' || this.arrowState === 'AIMING') && this.stuckPlatform) {
         if (this.stuckPlatform.type === 'moving') {
           this.arrowX = this.stuckPlatform.x + this.stuckOffsetX;
-
-          // If actively aiming on moving platform, adjust drag origin so pull vector doesn't jump
-          if (this.isDragging && movingPlatDx !== 0) {
-            const clientScale = this.canvas.clientWidth / this.V_WIDTH;
-            this.dragStartX += movingPlatDx * clientScale;
-            const dx = this.currentPointerX - this.dragStartX;
-            const dy = this.dragStartY - this.currentPointerY;
-            const dist = Math.hypot(dx, dy);
-            const MAX_PULL = 130;
-            this.pullPower = Math.min(dist / MAX_PULL, 1.0);
-            this.pullVectorX = dx;
-            this.pullVectorY = dy;
-          }
         }
       }
 
@@ -1336,15 +1345,10 @@ const data = gameEntry?.data || {
         }
       }
 
-      // Track altitude
+      // Track live altitude for the HUD (records are updated on landing)
       const newAlt = Math.max(0, Math.floor(this.arrowY / this.PX_PER_METER));
       if (newAlt !== this.currentAltMeters) {
         this.currentAltMeters = newAlt;
-        if (newAlt > this.maxAltMetersRun) {
-          this.maxAltMetersRun = newAlt;
-          this.checkMilestones(newAlt);
-          this.saveRecords();
-        }
         this.updateHud();
       }
     }
@@ -1426,16 +1430,7 @@ const data = gameEntry?.data || {
         // ─── 1. GROUND PLATFORM (at y = 0) ───
         if (plat.id === 0) {
           if (nextTipY <= 2 || nextY <= 4) {
-            this.arrowX = nextX;
-            this.arrowY = 4;
-            this.arrowVx = 0;
-            this.arrowVy = 0;
-            this.arrowAngle = Math.PI / 2;
-            this.arrowState = 'RESTING';
-            this.stuckPlatform = plat;
-            this.stuckOffsetX = this.arrowX;
-            this.sound.playStick();
-            this.updateHud();
+            this.landOnPlatform(plat, nextX);
             return;
           }
           continue;
@@ -1472,56 +1467,20 @@ const data = gameEntry?.data || {
             const TOP_INSET = 8;
             const isFirmlyOnTop = (hitX >= platLeft + TOP_INSET && hitX <= platRight - TOP_INSET);
 
-            if (this.arrowVy < 0 && isFirmlyOnTop && this.arrowState !== 'TUMBLING') {
-              // DEFINITE TOP LANDING SUCCESS!
-              this.arrowX = hitX - Math.cos(this.arrowAngle) * ARROW_HALF_LEN;
-              this.arrowY = platTop + 2;
-              this.arrowVx = 0;
-              this.arrowVy = 0;
-              this.arrowState = 'RESTING';
-              this.stuckPlatform = plat;
-              this.stuckOffsetX = this.arrowX - plat.x;
-
-              // Tilt arrow slightly based on incoming trajectory
-              if (this.arrowAngle < -Math.PI / 2) {
-                this.arrowAngle = -Math.PI * 0.75;
-              } else {
-                this.arrowAngle = -Math.PI * 0.25;
-              }
-
-              this.sound.playStick();
-              this.spawnImpactParticles(this.arrowX, platTop, '#34d399', 14);
-
-              // Summit Victory Check
-              if (plat.type === 'summit' && !this.hasWonDaily) {
-                this.hasWonDaily = true;
-                this.sound.playFanfare();
-                this.showToast('🏆 300m 서밋 정복 성공! 일일 타워를 완등했습니다!', 'success');
-                setTimeout(() => this.openShareModal(), 1200);
-              }
-
-              // Drop Fall penalty check
-              const landedAlt = Math.floor(platTop / this.PX_PER_METER);
-              const dropDiff = this.lastRestMeters - landedAlt;
-              if (dropDiff >= 12) {
-                this.worstDropMeters = Math.max(this.worstDropMeters, dropDiff);
-                this.sound.playFall();
-                this.showToast(`😱 -${dropDiff}m 추락했습니다!`);
-                this.screenShake = 12;
-              }
-
-              this.lastRestMeters = landedAlt;
-              this.updateHud();
+            // Falling arrows (flying or tumbling after a bounce) stick on the top surface
+            if (this.arrowVy < 0 && isFirmlyOnTop) {
+              this.landOnPlatform(plat, hitX);
               return;
             }
 
             // CORNER LIP CLIP: Near outer edge -> cannot stick, slides/deflects off!
+            // Place the whole arrow (incl. tip) just outside the edge
             if (hitX < plat.x) {
-              this.arrowX = platLeft - 8;
+              this.arrowX = platLeft - Math.max(0, Math.cos(this.arrowAngle) * ARROW_HALF_LEN) - 6;
               this.arrowVx = -Math.abs(this.arrowVx || 45) * 0.7 - 40;
               this.arrowAngularVel = -14;
             } else {
-              this.arrowX = platRight + 8;
+              this.arrowX = platRight + Math.max(0, -Math.cos(this.arrowAngle) * ARROW_HALF_LEN) + 6;
               this.arrowVx = Math.abs(this.arrowVx || 45) * 0.7 + 40;
               this.arrowAngularVel = 14;
             }
@@ -1605,14 +1564,8 @@ const data = gameEntry?.data || {
           // If falling downwards
           if (this.arrowVy <= 0) {
             // Definite top landing
-            if (nextX >= platLeft + 8 && nextX <= platRight - 8 && this.arrowState !== 'TUMBLING') {
-              this.arrowY = platTop + 2;
-              this.arrowVx = 0;
-              this.arrowVy = 0;
-              this.arrowState = 'RESTING';
-              this.stuckPlatform = plat;
-              this.stuckOffsetX = this.arrowX - plat.x;
-              this.sound.playStick();
+            if (nextX >= platLeft + 8 && nextX <= platRight - 8) {
+              this.landOnPlatform(plat, nextX);
               return;
             }
 
@@ -1640,11 +1593,66 @@ const data = gameEntry?.data || {
       this.arrowY = nextY;
     }
 
-    private checkMilestones(alt: number) {
-      if (alt === 50 || alt === 100 || alt === 150 || alt === 200 || alt === 250 || alt === 300) {
-        this.triggerMilestonePop(`${alt}m 돌파! 🔥`);
-        this.sound.playFanfare();
+    // Single landing path for ground, platforms and overlap recovery.
+    // hitX = where the arrow tip pierces the top surface.
+    private landOnPlatform(plat: Platform, hitX: number) {
+      const ARROW_HALF_LEN = 16;
+
+      if (plat.id === 0) {
+        // Ground: stand upright
+        this.arrowAngle = Math.PI / 2;
+        this.arrowX = hitX;
+        this.arrowY = 4;
+      } else {
+        // Rest tilted 45° in the travel direction, tip buried at the hit point
+        this.arrowAngle = this.arrowVx < 0 ? -Math.PI * 0.75 : -Math.PI * 0.25;
+        this.arrowX = hitX - Math.cos(this.arrowAngle) * ARROW_HALF_LEN;
+        this.arrowY = plat.y + 2;
+        this.spawnImpactParticles(hitX, plat.y, '#34d399', 14);
       }
+
+      this.arrowVx = 0;
+      this.arrowVy = 0;
+      this.arrowAngularVel = 0;
+      this.arrowState = 'RESTING';
+      this.stuckPlatform = plat;
+      this.stuckOffsetX = this.arrowX - plat.x;
+      this.sound.playStick();
+
+      // Summit Victory Check
+      if (plat.type === 'summit' && !this.hasWonDaily) {
+        this.hasWonDaily = true;
+        this.sound.playFanfare();
+        this.showToast('🏆 300m 서밋 정복 성공! 일일 타워를 완등했습니다!', 'success');
+        setTimeout(() => this.openShareModal(), 1200);
+      }
+
+      // Drop Fall penalty check
+      const landedAlt = Math.max(0, Math.floor(plat.y / this.PX_PER_METER));
+      const dropDiff = this.lastRestMeters - landedAlt;
+      if (dropDiff >= 12) {
+        this.worstDropMeters = Math.max(this.worstDropMeters, dropDiff);
+        this.sound.playFall();
+        this.showToast(`😱 -${dropDiff}m 추락했습니다!`);
+        this.screenShake = 12;
+      }
+      this.lastRestMeters = landedAlt;
+
+      // Records only count heights where the arrow actually landed
+      if (landedAlt > this.maxAltMetersRun) {
+        this.checkMilestones(this.maxAltMetersRun, landedAlt);
+        this.maxAltMetersRun = landedAlt;
+        this.saveRecords();
+      }
+
+      this.updateHud();
+    }
+
+    private checkMilestones(prevAlt: number, newAlt: number) {
+      const crossed = [50, 100, 150, 200, 250, 300].filter(m => m > prevAlt && m <= newAlt);
+      if (crossed.length === 0) return;
+      this.triggerMilestonePop(`${crossed[crossed.length - 1]}m 돌파! 🔥`);
+      this.sound.playFanfare();
     }
 
     private triggerMilestonePop(text: string) {
@@ -2078,7 +2086,7 @@ const data = gameEntry?.data || {
       const modeLabel = isDaily ? `매일 도전 #${dateStr}` : '무한 등반 모드';
 
       if (title) title.textContent = this.hasWonDaily ? '🎉 타워 완등 성공!' : '나의 클라이밍 기록';
-      if (alt) alt.textContent = `${this.currentAltMeters}m`;
+      if (alt) alt.textContent = `${this.maxAltMetersRun}m`;
       if (best) best.textContent = `${this.personalBest}m`;
       if (shots) shots.textContent = `${this.totalShots}회`;
       if (drop) drop.textContent = `-${this.worstDropMeters}m`;
@@ -2086,7 +2094,7 @@ const data = gameEntry?.data || {
       const shareText = [
         `🏹 에러레저 화살 점프 (Arrow Climber)`,
         `📅 ${modeLabel}`,
-        `🏔️ 도달 고도: ${this.currentAltMeters}m (최고: ${this.personalBest}m)`,
+        `🏔️ 도달 고도: ${this.maxAltMetersRun}m (최고: ${this.personalBest}m)`,
         `🎯 슛 횟수: ${this.totalShots}회`,
         `😱 최대 추락: -${this.worstDropMeters}m`,
         `🔗 https://errorledger.com/games/arrow-jump`
