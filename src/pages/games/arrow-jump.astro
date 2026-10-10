@@ -637,10 +637,15 @@ const data = gameEntry?.data || {
   class SoundSynth {
     private ctx: AudioContext | null = null;
     public muted: boolean = false;
+    private lastPullSoundTime: number = 0;
 
     constructor() {
-      const stored = localStorage.getItem('arrow_climber_muted');
-      this.muted = stored === 'true';
+      try {
+        const stored = localStorage.getItem('arrow_climber_muted');
+        this.muted = stored === 'true';
+      } catch {
+        this.muted = false;
+      }
     }
 
     private init() {
@@ -655,6 +660,10 @@ const data = gameEntry?.data || {
 
     playAimPull(powerRatio: number) {
       if (this.muted) return;
+      const now = performance.now();
+      if (now - this.lastPullSoundTime < 65) return; // throttle audio generation to ~15Hz
+      this.lastPullSoundTime = now;
+
       this.init();
       if (!this.ctx) return;
       try {
@@ -929,15 +938,23 @@ const data = gameEntry?.data || {
     }
 
     private loadRecords() {
-      const savedBest = localStorage.getItem('arrow_climber_best');
-      this.personalBest = savedBest ? parseInt(savedBest, 10) : 0;
+      try {
+        const savedBest = localStorage.getItem('arrow_climber_best');
+        this.personalBest = savedBest ? parseInt(savedBest, 10) : 0;
+      } catch {
+        this.personalBest = 0;
+      }
       this.updateHud();
     }
 
     private saveRecords() {
       if (this.maxAltMetersRun > this.personalBest) {
         this.personalBest = this.maxAltMetersRun;
-        localStorage.setItem('arrow_climber_best', this.personalBest.toString());
+        try {
+          localStorage.setItem('arrow_climber_best', this.personalBest.toString());
+        } catch {
+          // ignore
+        }
       }
     }
 
@@ -989,7 +1006,11 @@ const data = gameEntry?.data || {
 
     private toggleSound() {
       this.sound.muted = !this.sound.muted;
-      localStorage.setItem('arrow_climber_muted', this.sound.muted.toString());
+      try {
+        localStorage.setItem('arrow_climber_muted', this.sound.muted.toString());
+      } catch {
+        // ignore
+      }
       const icon = document.getElementById('sound-icon');
       if (icon) icon.textContent = this.sound.muted ? '🔇' : '🔊';
     }
