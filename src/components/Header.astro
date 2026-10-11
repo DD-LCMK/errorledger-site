@@ -44,9 +44,19 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
           <div class="dropdown-menu-inner">
             <div class="dropdown-header">
               <span class="dropdown-category-title">🎮 {isEn ? "INTERACTIVE GAMES" : "인기 인터랙티브 게임"}</span>
-              <a href={`${prefix}/games`} class="dropdown-hub-link">{isEn ? "View All (8) →" : "전체 게임 보기 →"}</a>
+              <a href={`${prefix}/games`} class="dropdown-hub-link">{isEn ? "View All Games →" : "전체 게임 보기 →"}</a>
             </div>
             <div class="dropdown-grid-games">
+              <a href={`${prefix}/games/block-blast`} class={`dropdown-item ${currentPath.includes('/games/block-blast') ? 'active' : ''}`}>
+                <span class="dropdown-item-icon">🧩</span>
+                <div class="dropdown-item-content">
+                  <div class="dropdown-item-header">
+                    <span class="dropdown-item-title">{t(lang, 'nav.block_blast')}</span>
+                    <span class="dropdown-pill hot">HOT</span>
+                  </div>
+                  <span class="dropdown-item-desc">{isEn ? "8x8 Block Blast Puzzle" : "8x8 콤보 블록 퍼즐"}</span>
+                </div>
+              </a>
               <a href={`${prefix}/games/arrow-jump`} class={`dropdown-item ${currentPath.includes('/games/arrow-jump') ? 'active' : ''}`}>
                 <span class="dropdown-item-icon">🏹</span>
                 <div class="dropdown-item-content">
@@ -331,6 +341,16 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
       <div class="drawer-section">
         <div class="drawer-section-title">{isEn ? "🎮 GAMES" : "🎮 인기 게임"}</div>
         <div class="drawer-nav-list">
+          <a 
+            href={`${prefix}/games/block-blast`} 
+            class={`drawer-nav-item ${currentPath.includes('/games/block-blast') ? 'active' : ''}`}
+          >
+            <span class="drawer-item-icon">🧩</span>
+            <div class="drawer-item-info">
+              <span class="drawer-item-name">{t(lang, 'nav.block_blast')}</span>
+              <span class="drawer-item-desc">{isEn ? "8x8 Block Blast Puzzle" : "8x8 콤보 블록 퍼즐"}</span>
+            </div>
+          </a>
           <a 
             href={`${prefix}/games/arrow-jump`} 
             class={`drawer-nav-item ${currentPath.includes('/games/arrow-jump') ? 'active' : ''}`}

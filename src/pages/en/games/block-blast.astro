@@ -1,0 +1,213 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import { getKoUrl, getEnUrl } from '../../../i18n';
+
+const siteBase = Astro.site?.toString() || 'https://errorledger.com';
+const rawPath = Astro.url.pathname.replace(/\/$/, '');
+const koUrl = getKoUrl(siteBase, rawPath);
+const enUrl = getEnUrl(siteBase, rawPath);
+
+const urlParams = Astro.url.searchParams;
+const streamerMode = urlParams.has('stream') || urlParams.has('obs');
+const gameUrl = streamerMode
+  ? '/games/block-blast?bare=1&stream=true&lang=en'
+  : '/games/block-blast?bare=1&lang=en';
+
+const webAppSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Block Blast! — 8x8 Block Puzzle & Combo Game — ErrorLedger",
+  "alternateName": ["Block Blast!", "블록 블라스트", "Block Blast Online", "8x8 Block Puzzle"],
+  "url": enUrl,
+  "description": "Place polyomino blocks on an 8x8 grid to blast full rows and columns. Chain continuous combos to rack up massive scores. No time limit, pure strategic puzzle fun!",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "All (Web Browser, Chrome, Edge, Safari, Mobile)",
+  "inLanguage": ["en-US", "ko-KR"],
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.98",
+    "bestRating": "5",
+    "ratingCount": "1940"
+  }
+});
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead
+      title="Block Blast! — 8x8 Block Puzzle & Combo Game | ErrorLedger"
+      description="Play Block Blast! online for free in your browser. Drag and drop polyomino shapes onto the 8x8 grid to clear rows and columns. Unleash explosive combos and beat your high score!"
+      lang="en"
+      hreflangKo={koUrl}
+      hreflangEn={enUrl}
+      keywords="Block Blast, Block Blast Online, 8x8 Grid Puzzle, Polyomino Game, Block Puzzle Web, Free Puzzle Games, Streamer Games"
+    />
+    <script type="application/ld+json" set:html={webAppSchema}></script>
+  </head>
+  <body class="en-game-body">
+    <Header />
+
+    <main class="en-game-main">
+      <div class="en-game-frame-wrap">
+        <iframe
+          src={gameUrl}
+          class="en-game-iframe"
+          id="game-iframe"
+          title="Block Blast! — ErrorLedger"
+          allow="autoplay"
+        ></iframe>
+      </div>
+
+      <div class="en-seo-content">
+        <h2>How to Play Block Blast!</h2>
+        <p>
+          Block Blast! is a globally celebrated casual brain puzzle played on an 8×8 grid board.
+          Unlike traditional Tetris, blocks do not fall automatically from the top and you cannot rotate them.
+          Take your time to strategize and drag any of the 3 available polyomino shapes onto the board.
+        </p>
+
+        <div class="rules-grid">
+          <div class="rule-card">
+            <span class="rule-icon">📐</span>
+            <h3>8×8 Strategy Grid</h3>
+            <p>Fit non-rotatable polyomino shapes into the 8×8 grid. Keep spaces open for larger 3×3 and 5-bar shapes.</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-icon">💥</span>
+            <h3>Line Blasts</h3>
+            <p>Completely filling any horizontal row or vertical column will trigger an instant explosive blast!</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-icon">🔥</span>
+            <h3>Continuous Combos</h3>
+            <p>Clear at least one line with consecutive block placements to escalate your combo multiplier and skyrocket your score.</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-icon">🎯</span>
+            <h3>3-Piece Rounds</h3>
+            <p>You must place all 3 dealt pieces before receiving a fresh set of 3 blocks. Plan ahead to avoid gridlock.</p>
+          </div>
+        </div>
+
+        <div class="en-actions">
+          <a href="/games/block-blast" class="en-action-btn">🎮 Play Full Screen (Korean)</a>
+          <a href="/en/games" class="en-action-btn secondary">← Back to All Games</a>
+        </div>
+      </div>
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .en-game-body {
+    background-color: #0b0f19;
+    color: #e2e8f0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .en-game-main {
+    flex: 1;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3rem;
+  }
+  .en-game-frame-wrap {
+    width: 100%;
+    height: 840px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.08);
+    background: #060911;
+    margin-bottom: 2.5rem;
+  }
+  .en-game-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  .en-seo-content {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    backdrop-filter: blur(12px);
+  }
+  .en-seo-content h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #f8fafc;
+    margin-bottom: 1rem;
+  }
+  .en-seo-content p {
+    color: #94a3b8;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+  .rules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+    margin: 2rem 0;
+  }
+  .rule-card {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+  .rule-icon {
+    font-size: 1.8rem;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  .rule-card h3 {
+    font-size: 1.1rem;
+    color: #f1f5f9;
+    margin-bottom: 0.5rem;
+  }
+  .rule-card p {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin: 0;
+  }
+  .en-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .en-action-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    background: linear-gradient(135deg, #3b82f6, #6366f1);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+  .en-action-btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.95;
+  }
+  .en-action-btn.secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: #cbd5e1;
+    box-shadow: none;
+  }
+  @media (max-width: 768px) {
+    .en-game-frame-wrap {
+      height: 720px;
+    }
+  }
+</style>
