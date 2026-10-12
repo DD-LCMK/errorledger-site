@@ -9,7 +9,7 @@ const urlParams = Astro.url.searchParams;
 const streamerMode = urlParams.has('stream') || urlParams.has('obs');
 
 const games = await getCollection('games');
-const priorityOrder = ['marble-roulette', 'roulette', 'ladder', 'drinking-marble', 'ai-music-quiz', 'stream-doodle', 'stream-emoji', 'fortune'];
+const priorityOrder = ['block-blast', 'arrow-jump', 'sand-drop', 'marble-roulette', 'roulette', 'ladder', 'drinking-marble', 'ai-music-quiz', 'soundboard', 'stream-doodle', 'stream-emoji', 'fortune'];
 const sortedGames = games.sort((a, b) => {
   const idxA = priorityOrder.indexOf(a.id);
   const idxB = priorityOrder.indexOf(b.id);
@@ -255,6 +255,9 @@ const homeFaqSchema = JSON.stringify({
             const href = game.id === 'fortune' ? '/en/fortune' : `/en/games/${game.id}`;
             const btnText = game.id === 'fortune' ? 'View Fortune →' : 'Launch →';
             const enTitle: Record<string, string> = {
+              'block-blast': 'Block Blast!',
+              'arrow-jump': 'Arrow Climber',
+              'sand-drop': 'Sand Drop',
               'marble-roulette': 'Marble Race Roulette',
               'roulette': 'Random Spin Wheel',
               'ladder': 'Ghost Leg Ladder Game',
@@ -266,6 +269,9 @@ const homeFaqSchema = JSON.stringify({
               'fortune': 'Daily Fortune',
             };
             const enTagline: Record<string, string> = {
+              'block-blast': '8x8 combo line blast block puzzle with endless & 2-min time attack modes',
+              'arrow-jump': 'Slingshot archery physics climber with precision platform landings',
+              'sand-drop': 'Falling kinetic sand cellular automata & merge puzzle up to Aurora tier',
               'marble-roulette': 'Physics-based marble race with live track, pins & spinners',
               'roulette': 'Ratchet-click spin wheel with confetti winner reveal',
               'ladder': 'Real-time animated ghost-leg (Amidakuji) for 2–20 players',
@@ -277,6 +283,9 @@ const homeFaqSchema = JSON.stringify({
               'fortune': 'Daily auto-updated horoscope & zodiac fortune for stream openers',
             };
             const enBadge: Record<string, string> = {
+              'block-blast': '🔥 #1 Puzzle',
+              'arrow-jump': '🏹 Physics Climber',
+              'sand-drop': '🍉 Sand Merge',
               'marble-roulette': 'Marble Race',
               'roulette': 'Featured Tool',
               'ladder': 'Bets & Penalties',
