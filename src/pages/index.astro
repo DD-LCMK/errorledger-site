@@ -10,7 +10,7 @@ const urlParams = Astro.url.searchParams;
 const streamerMode = urlParams.has('stream') || urlParams.has('obs');
 
 const games = await getCollection('games');
-const priorityOrder = ['block-blast', 'arrow-jump', 'sand-drop', 'marble-roulette', 'roulette', 'ladder', 'drinking-marble', 'ai-music-quiz', 'soundboard', 'stream-doodle', 'stream-emoji', 'fortune'];
+const priorityOrder = ['sword-enhance', 'block-blast', 'arrow-jump', 'sand-drop', 'marble-roulette', 'roulette', 'ladder', 'drinking-marble', 'ai-music-quiz', 'soundboard', 'stream-doodle', 'stream-emoji', 'fortune'];
 const sortedGames = games.sort((a, b) => {
   const idxA = priorityOrder.indexOf(a.id);
   const idxB = priorityOrder.indexOf(b.id);
@@ -282,7 +282,7 @@ const homeFaqSchema = JSON.stringify({
         <div class="section-hub-footer">
           <a href="/games" class="btn-hub-cta games-accent">
             <span class="btn-hub-icon">🎮</span>
-            <span>인터랙티브 웹게임 전체 디렉토리 둘러보기 (10종 무료)</span>
+            <span>인터랙티브 웹게임 전체 디렉토리 둘러보기 (11종 무료)</span>
             <span class="btn-hub-arrow">→</span>
           </a>
         </div>

@@ -47,6 +47,16 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
               <a href={`${prefix}/games`} class="dropdown-hub-link">{isEn ? "View All Games →" : "전체 게임 보기 →"}</a>
             </div>
             <div class="dropdown-grid-games">
+              <a href={`${prefix}/games/sword-enhance`} class={`dropdown-item ${currentPath.includes('/games/sword-enhance') ? 'active' : ''}`}>
+                <span class="dropdown-item-icon">🗡️</span>
+                <div class="dropdown-item-content">
+                  <div class="dropdown-item-header">
+                    <span class="dropdown-item-title">{t(lang, 'nav.sword_enhance')}</span>
+                    <span class="dropdown-pill hot">NEW</span>
+                  </div>
+                  <span class="dropdown-item-desc">{isEn ? "+20 Weapon Forging Sim" : "전설의 +20강 무기 강화"}</span>
+                </div>
+              </a>
               <a href={`${prefix}/games/block-blast`} class={`dropdown-item ${currentPath.includes('/games/block-blast') ? 'active' : ''}`}>
                 <span class="dropdown-item-icon">🧩</span>
                 <div class="dropdown-item-content">
@@ -341,6 +351,16 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
       <div class="drawer-section">
         <div class="drawer-section-title">{isEn ? "🎮 GAMES" : "🎮 인기 게임"}</div>
         <div class="drawer-nav-list">
+          <a 
+            href={`${prefix}/games/sword-enhance`}
+            class={`drawer-nav-item ${currentPath.includes('/games/sword-enhance') ? 'active' : ''}`}
+          >
+            <span class="drawer-item-icon">🗡️</span>
+            <div class="drawer-item-info">
+              <span class="drawer-item-name">{t(lang, 'nav.sword_enhance')}</span>
+              <span class="drawer-item-desc">{isEn ? "+20 Weapon Forging Sim" : "전설의 +20강 무기 강화"}</span>
+            </div>
+          </a>
           <a 
             href={`${prefix}/games/block-blast`} 
             class={`drawer-nav-item ${currentPath.includes('/games/block-blast') ? 'active' : ''}`}
