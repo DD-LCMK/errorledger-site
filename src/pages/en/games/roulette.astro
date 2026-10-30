@@ -54,7 +54,7 @@ const webAppSchema = JSON.stringify({
           title="Random Spin Wheel — ErrorLedger"
           allowfullscreen
           loading="eager"
-          scrolling="no"
+          scrolling="yes"
         ></iframe>
       </div>
 
@@ -115,6 +115,26 @@ const webAppSchema = JSON.stringify({
           if (!iframe.src.includes('stream=true')) {
             iframe.src = iframe.src + '&stream=true';
           }
+        } else {
+          const syncHeight = () => {
+            try {
+              const doc = iframe.contentDocument || iframe.contentWindow?.document;
+              if (doc && doc.documentElement) {
+                const h = Math.max(820, doc.documentElement.scrollHeight);
+                const wrap = iframe.parentElement;
+                if (wrap) wrap.style.minHeight = h + 'px';
+              }
+            } catch (e) {}
+          };
+          iframe.addEventListener('load', () => {
+            syncHeight();
+            try {
+              const doc = iframe.contentDocument || iframe.contentWindow?.document;
+              if (doc && doc.body && typeof ResizeObserver !== 'undefined') {
+                new ResizeObserver(syncHeight).observe(doc.body);
+              }
+            } catch (e) {}
+          });
         }
       }
     </script>

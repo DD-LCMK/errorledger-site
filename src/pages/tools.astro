@@ -129,6 +129,7 @@ const itemListSchema = JSON.stringify({
       hreflangKo={getKoUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
       hreflangEn={getEnUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
       keywords={PAGE_KEYWORDS}
+      breadcrumb={breadcrumbItems}
     />
     <script type="application/ld+json" set:html={itemListSchema}></script>
   </head>

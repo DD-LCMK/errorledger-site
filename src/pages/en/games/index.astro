@@ -179,6 +179,7 @@ const itemListSchema = JSON.stringify({
       hreflangKo={getKoUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
       hreflangEn={getEnUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
       keywords={PAGE_KEYWORDS}
+      breadcrumb={breadcrumbItems}
     />
     <script type="application/ld+json" set:html={itemListSchema}></script>
   </head>
@@ -206,7 +207,7 @@ const itemListSchema = JSON.stringify({
 
           <div class="games-stats-bar">
             <div class="stat-item">
-              <span class="stat-number">7+</span>
+              <span class="stat-number">10+</span>
               <span class="stat-label">Free Stream Games</span>
             </div>
             <div class="stat-divider"></div>

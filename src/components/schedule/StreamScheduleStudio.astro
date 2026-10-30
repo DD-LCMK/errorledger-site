@@ -33,6 +33,10 @@ const isEn = lang === 'en';
           <span class="badge-single-page">{isEn ? 'Single-Page View' : '한 페이지 뷰'}</span>
         </div>
         <div class="quick-export-actions">
+          <button type="button" class="btn-action btn-export-png" id="btnExportPng" title={isEn ? 'Download High-Resolution PNG Image' : '워터마크 없는 고화질 PNG 이미지로 저장'}>
+            <span class="btn-icon">🖼️</span>
+            <span id="btnExportPngLabel">{isEn ? 'Export PNG' : 'PNG 이미지 저장'}</span>
+          </button>
           <button type="button" class="btn-action btn-save-json" id="btnSaveJson" title={isEn ? 'Save template file (.json) to your PC' : '내 PC에 템플릿 파일(.json) 저장'}>
             <span class="btn-icon">💾</span>
             <span>{isEn ? 'Save to PC' : '내 PC에 저장'}</span>
@@ -42,10 +46,18 @@ const isEn = lang === 'en';
             <span>{isEn ? 'Load from PC' : 'PC에서 불러오기'}</span>
             <input type="file" id="inputLoadJson" accept=".json,application/json" style="display: none;" />
           </label>
-          <button type="button" class="btn-action btn-copy-text" id="btnCopyText" title={isEn ? 'Copy text for Discord / Community' : '디스코드/팬카페 공유용 텍스트 복사'}>
-            <span class="btn-icon">📋</span>
-            <span>{isEn ? 'Copy Text' : '텍스트 복사'}</span>
-          </button>
+          <div class="copy-text-group">
+            <select id="selectTextFormat" class="select-text-format" aria-label={isEn ? 'Announcement Text Format' : '공지 텍스트 양식 선택'} title={isEn ? 'Choose Community Format' : '복사할 커뮤니티 공지 양식 선택'}>
+              <option value="cafe">{isEn ? '📌 Community / Cafe' : '📌 팬카페·치지직 라운지'}</option>
+              <option value="discord">{isEn ? '💬 Discord Markdown' : '💬 디스코드 마크다운'}</option>
+              <option value="soop">{isEn ? '📺 YouTube / Station' : '📺 SOOP 방송국·유튜브'}</option>
+              <option value="sns">{isEn ? '🐦 X (Twitter) Short' : '🐦 X(트위터) 요약+태그'}</option>
+            </select>
+            <button type="button" class="btn-action btn-copy-text" id="btnCopyText" title={isEn ? 'Copy formatted announcement text' : '선택한 양식으로 방송 공지 텍스트 복사'}>
+              <span class="btn-icon">📋</span>
+              <span id="btnCopyTextLabel">{isEn ? 'Copy Text' : '텍스트 복사'}</span>
+            </button>
+          </div>
           <button type="button" class="btn-action btn-copy-obs" id="btnCopyObsSchedule" title={isEn ? 'Copy OBS Browser Source URL' : 'OBS 브라우저 소스 URL 복사'}>
             <span class="btn-icon">🎥</span>
             <span>{isEn ? 'Copy OBS' : 'OBS 복사'}</span>
@@ -515,6 +527,22 @@ const isEn = lang === 'en';
     transition: all 0.15s ease;
   }
 
+  .btn-export-png {
+    background: linear-gradient(135deg, #00ffa3 0%, #10b981 100%);
+    border: 1px solid rgba(0, 255, 163, 0.5);
+    color: #06130e;
+    box-shadow: 0 2px 10px rgba(0, 255, 163, 0.25);
+  }
+  .btn-export-png:hover {
+    background: linear-gradient(135deg, #34ffc0 0%, #14d394 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0, 255, 163, 0.4);
+  }
+  .btn-export-png:disabled {
+    opacity: 0.7;
+    cursor: wait;
+  }
+
   .btn-save-json, .btn-load-json {
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -525,14 +553,45 @@ const isEn = lang === 'en';
     color: #ffffff;
   }
 
-
-  .btn-copy-text {
-    background: rgba(168, 85, 247, 0.18);
+  .copy-text-group {
+    display: inline-flex;
+    align-items: stretch;
+    background: rgba(168, 85, 247, 0.12);
     border: 1px solid rgba(168, 85, 247, 0.35);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .select-text-format {
+    background: rgba(9, 13, 22, 0.65);
+    color: #e9d5ff;
+    border: none;
+    border-right: 1px solid rgba(168, 85, 247, 0.3);
+    padding: 0 0.45rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    outline: none;
+  }
+  .select-text-format option {
+    background: #0f172a;
+    color: #f8fafc;
+  }
+
+  .copy-text-group .btn-copy-text {
+    border: none;
+    border-radius: 0;
+    background: transparent;
     color: #e9d5ff;
   }
-  .btn-copy-text:hover {
+  .copy-text-group .btn-copy-text:hover {
     background: rgba(168, 85, 247, 0.3);
+  }
+
+  .schedule-card-board.is-exporting-png .bp-ticket-edit-hint,
+  .schedule-card-board.is-exporting-png .btn-month-nav {
+    display: none !important;
   }
 
   .btn-copy-obs {
@@ -2822,6 +2881,164 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
     renderAll();
   });
 
+  // ─── High-Res PNG Export (#scheduleBoard -> 2x PNG) ──────────────────────
+  var btnExportPng = document.getElementById('btnExportPng') as HTMLButtonElement | null;
+  var btnExportPngLabel = document.getElementById('btnExportPngLabel');
+  var selectTextFormat = document.getElementById('selectTextFormat') as HTMLSelectElement | null;
+  var btnCopyTextLabel = document.getElementById('btnCopyTextLabel');
+
+  function loadModernScreenshot(): Promise<any> {
+    if ((window as any).modernScreenshot && (window as any).modernScreenshot.domToPng) {
+      return Promise.resolve((window as any).modernScreenshot);
+    }
+    return new Promise(function (resolve, reject) {
+      var script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/modern-screenshot@4.6.0/dist/index.js';
+      script.onload = function () {
+        if ((window as any).modernScreenshot && (window as any).modernScreenshot.domToPng) {
+          resolve((window as any).modernScreenshot);
+        } else {
+          reject(new Error('modernScreenshot not available'));
+        }
+      };
+      script.onerror = function () {
+        reject(new Error('Failed to load screenshot library'));
+      };
+      document.head.appendChild(script);
+    });
+  }
+
+  function renderFallbackCanvasPng(weekObj: any): string {
+    var canvas = document.createElement('canvas');
+    canvas.width = 1600;
+    canvas.height = 960;
+    var ctx = canvas.getContext('2d')!;
+    var theme = SCHEDULE_THEMES[state.themeId] || SCHEDULE_THEMES['travel-boarding-pass'] || { accent: '#00ffa3' };
+
+    // Background
+    var grad = ctx.createLinearGradient(0, 0, 1600, 960);
+    grad.addColorStop(0, '#0f172a');
+    grad.addColorStop(1, '#1e293b');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 1600, 960);
+
+    // Header
+    ctx.fillStyle = theme.accent || '#00ffa3';
+    ctx.fillRect(60, 50, 1480, 6);
+
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = 'bold 42px Pretendard, sans-serif';
+    ctx.fillText((state.channel.avatarEmoji || '🎮') + ' ' + (state.channel.name || 'Stream Schedule'), 60, 118);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '600 22px Pretendard, sans-serif';
+    ctx.fillText(state.channel.tagline || '', 60, 156);
+
+    ctx.fillStyle = theme.accent || '#00ffa3';
+    ctx.font = 'bold 26px Pretendard, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(state.monthly.year + '.' + state.monthly.month + ' ' + weekObj.label, 1540, 118);
+    ctx.textAlign = 'left';
+
+    // Notice banner
+    var noticeStr = state.channel.noticeWeekly || state.channel.notice || '';
+    if (noticeStr) {
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.07)';
+      ctx.fillRect(60, 185, 1480, 54);
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = 'bold 22px Pretendard, sans-serif';
+      ctx.fillText('📢 ' + noticeStr, 84, 220);
+    }
+
+    // 7 Days Grid
+    var startY = 265;
+    var rowH = 88;
+    weekObj.days.forEach(function (d: any, idx: number) {
+      var y = startY + idx * (rowH + 8);
+      var entry = d.entry || {};
+      var isOff = entry.status === 'off' || entry.title === 'OFFLINE';
+      var badge = STATUS_BADGES[entry.status] || STATUS_BADGES.live;
+      var dayTag = isEn ? d.dayEn : d.dayKo;
+      var timeStr = formatDisplayTime(entry, isEn ? 'en' : 'ko') || entry.time || '20:00';
+      var titleStr = isOff ? 'OFFLINE (휴방)' : (entry.title || (isEn ? 'Live Stream' : '방송 예정'));
+
+      ctx.fillStyle = isOff ? 'rgba(15, 23, 42, 0.7)' : 'rgba(30, 41, 59, 0.92)';
+      ctx.fillRect(60, y, 1480, rowH);
+
+      ctx.fillStyle = isOff ? '#64748b' : (theme.accent || '#00ffa3');
+      ctx.fillRect(60, y, 10, rowH);
+
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = 'bold 26px Pretendard, sans-serif';
+      ctx.fillText(d.dateStr + ' (' + dayTag + ')', 95, y + 54);
+
+      ctx.fillStyle = isOff ? '#94a3b8' : '#38bdf8';
+      ctx.font = 'bold 24px Pretendard, sans-serif';
+      ctx.fillText(badge.icon + ' ' + timeStr, 310, y + 54);
+
+      ctx.fillStyle = isOff ? '#64748b' : '#ffffff';
+      ctx.font = 'bold 28px Pretendard, sans-serif';
+      ctx.fillText(titleStr, 590, y + 52);
+
+      if (!isOff && entry.memo) {
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '500 20px Pretendard, sans-serif';
+        ctx.fillText('• ' + entry.memo, 1080, y + 52);
+      }
+    });
+
+    return canvas.toDataURL('image/png');
+  }
+
+  if (btnExportPng) {
+    btnExportPng.addEventListener('click', function () {
+      if (!board) return;
+      var origText = btnExportPngLabel ? btnExportPngLabel.textContent : (isEn ? 'Export PNG' : 'PNG 이미지 저장');
+      btnExportPng.disabled = true;
+      if (btnExportPngLabel) {
+        btnExportPngLabel.textContent = isEn ? 'Generating PNG...' : '이미지 생성 중...';
+      }
+      board.classList.add('is-exporting-png');
+
+      var weeks = computeMonthWeeks(state.monthly.year, state.monthly.month);
+      var currentWeek = weeks[state.selectedWeekIndex] || weeks[0];
+      var fileSuffix = state.viewMode === 'monthly'
+        ? (state.monthly.year + '_' + state.monthly.month + '_monthly')
+        : (state.monthly.year + '_' + state.monthly.month + '_week' + currentWeek.weekNum);
+      var fileName = 'stream_schedule_' + fileSuffix + '.png';
+
+      loadModernScreenshot()
+        .then(function (ms) {
+          return ms.domToPng(board, {
+            scale: 2,
+            quality: 1
+          });
+        })
+        .catch(function () {
+          return renderFallbackCanvasPng(currentWeek);
+        })
+        .then(function (dataUrl) {
+          var a = document.createElement('a');
+          a.href = dataUrl;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+
+          if (btnExportPngLabel) {
+            btnExportPngLabel.textContent = isEn ? 'Saved PNG! ✓' : 'PNG 저장 완료! ✓';
+          }
+          setTimeout(function () {
+            if (btnExportPngLabel) btnExportPngLabel.textContent = origText;
+            if (btnExportPng) btnExportPng.disabled = false;
+          }, 2200);
+        })
+        .finally(function () {
+          board.classList.remove('is-exporting-png');
+        });
+    });
+  }
+
   // ─── Local JSON Save & Load (.json) ────────────────────────────────────────
   btnSaveJson.addEventListener('click', function () {
     var jsonStr = JSON.stringify(state, null, 2);
@@ -2861,27 +3078,115 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
   });
 
 
-  // ─── Text Copy for Discord / Fan Cafe ──────────────────────────────────────
-  btnCopyText.addEventListener('click', function () {
+  // ─── Multi-Format Text Copy for Fan Cafe / Chzzk / Discord / SOOP / X ──────
+  function buildFormattedScheduleText(formatType: string): string {
     var weeks = computeMonthWeeks(state.monthly.year, state.monthly.month);
     var currentWeek = weeks[state.selectedWeekIndex] || weeks[0];
+    var chName = state.channel.name || (isEn ? 'Streamer' : '스트리머');
+    var weeklyNotice = state.channel.noticeWeekly || state.channel.notice || '';
+    var tagline = state.channel.tagline || '';
+    var defaultDayTitle = isEn ? 'Live Stream' : '방송 예정';
 
-    var text = '📢 [' + state.channel.name + '] ' + state.monthly.year + '.' + state.monthly.month + ' ' + currentWeek.label + '\n\n';
-    currentWeek.days.forEach(function (d) {
-      var entry = d.entry;
+    if (formatType === 'discord') {
+      var md = '## 📢 [' + chName + '] ' + state.monthly.year + '.' + state.monthly.month + ' ' + currentWeek.label + '\n';
+      if (weeklyNotice) {
+        md += '> 💬 **' + weeklyNotice + '**\n';
+      }
+      md += '\n';
+      currentWeek.days.forEach(function (d: any) {
+        var entry = d.entry || {};
+        var badge = STATUS_BADGES[entry.status] || STATUS_BADGES.live;
+        var dayTag = isEn ? d.dayEn : d.dayKo;
+        var isOff = entry.status === 'off' || entry.title === 'OFFLINE';
+        var timeStr = isOff ? (isEn ? 'OFF' : '휴방') : (formatDisplayTime(entry, isEn ? 'en' : 'ko') || entry.time || (isEn ? 'Flexible' : '자율'));
+        var titleStr = isOff ? (isEn ? 'OFFLINE (Rest Day)' : '정규 휴방 (재충전)') : (entry.title || defaultDayTitle);
+        var memoSuffix = (!isOff && entry.memo) ? (' — *' + entry.memo + '*') : '';
+        md += '- **`' + d.dateStr + ' (' + dayTag + ')`** ' + badge.icon + ' `' + timeStr + '` ｜ **' + titleStr + '**' + memoSuffix + '\n';
+      });
+      if (tagline) {
+        md += '\n📺 *' + tagline + '*';
+      }
+      return md;
+    }
+
+    if (formatType === 'soop') {
+      var sp = '━━━━━━━━━━━━━━━━━━━━━━\n';
+      sp += '📅 [' + chName + '] ' + state.monthly.year + '년 ' + state.monthly.month + '월 ' + currentWeek.shortLabel + ' 방송 일정 안내\n';
+      sp += '━━━━━━━━━━━━━━━━━━━━━━\n';
+      if (weeklyNotice) {
+        sp += '📌 ' + weeklyNotice + '\n\n';
+      }
+      currentWeek.days.forEach(function (d: any) {
+        var entry = d.entry || {};
+        var badge = STATUS_BADGES[entry.status] || STATUS_BADGES.live;
+        var dayTag = isEn ? d.dayEn : d.dayKo;
+        var isOff = entry.status === 'off' || entry.title === 'OFFLINE';
+        var timeStr = isOff ? (isEn ? 'OFF' : '휴방') : (formatDisplayTime(entry, isEn ? 'en' : 'ko') || entry.time || (isEn ? 'Flexible' : '자율'));
+        var titleStr = isOff ? (isEn ? 'OFFLINE' : '휴방') : (entry.title || defaultDayTitle);
+        var memoStr = (!isOff && entry.memo) ? (' (' + entry.memo + ')') : '';
+        sp += '[' + d.dateStr + ' ' + dayTag + '] ' + badge.icon + ' ' + timeStr + ' ▶ ' + titleStr + memoStr + '\n';
+      });
+      sp += '━━━━━━━━━━━━━━━━━━━━━━\n';
+      if (tagline) {
+        sp += '✨ ' + tagline;
+      }
+      return sp;
+    }
+
+    if (formatType === 'sns') {
+      var sns = '📅 [' + chName + '] ' + currentWeek.rangeStr + ' 주간 방송 일정\n\n';
+      currentWeek.days.forEach(function (d: any) {
+        var entry = d.entry || {};
+        var dayTag = isEn ? d.dayEn : d.dayKo;
+        var isOff = entry.status === 'off' || entry.title === 'OFFLINE';
+        var timeStr = isOff ? '💤휴방' : ('⏰' + (entry.startTime || entry.time || '20:00'));
+        var titleStr = isOff ? '' : (' ' + (entry.title || defaultDayTitle));
+        sns += dayTag + '(' + d.dateStr + ') ' + timeStr + titleStr + '\n';
+      });
+      sns += '\n#치지직 #방송일정 #스트리머 #' + chName.replace(/\s+/g, '');
+      return sns;
+    }
+
+    // Default: 'cafe' (Naver Fan Cafe / Chzzk Lounge)
+    var text = '┌─────────────────────────────────┐\n';
+    text += '  📢 [' + chName + '] ' + state.monthly.year + '.' + state.monthly.month + ' ' + currentWeek.label + '\n';
+    text += '└─────────────────────────────────┘\n';
+    if (weeklyNotice) {
+      text += '💡 이번 주 공지: ' + weeklyNotice + '\n';
+    }
+    text += '\n';
+    currentWeek.days.forEach(function (d: any) {
+      var entry = d.entry || {};
       var badge = STATUS_BADGES[entry.status] || STATUS_BADGES.live;
       var dayTag = isEn ? d.dayEn : d.dayKo;
-      var timeStr = entry.time || (isEn ? 'Flexible' : '자율');
-      var defaultDayTitle = isEn ? 'Live Stream' : '방송 예정';
-      var titleStr = entry.title || defaultDayTitle;
-      text += '• ' + d.dateStr + ' (' + dayTag + ') : ' + badge.icon + ' ' + timeStr + ' | ' + titleStr + '\n';
+      var isOff = entry.status === 'off' || entry.title === 'OFFLINE';
+      var timeStr = isOff ? (isEn ? 'OFF' : '휴방') : (formatDisplayTime(entry, isEn ? 'en' : 'ko') || entry.time || (isEn ? 'Flexible' : '자율'));
+      var titleStr = isOff ? (isEn ? 'Rest Day (OFFLINE)' : '정규 휴방일') : (entry.title || defaultDayTitle);
+      var memoSuffix = (!isOff && entry.memo) ? (' (' + entry.memo + ')') : '';
+      text += '• ' + d.dateStr + ' (' + dayTag + ') : ' + badge.icon + ' ' + timeStr + ' | ' + titleStr + memoSuffix + '\n';
     });
+    if (tagline) {
+      text += '\n📺 ' + tagline;
+    }
+    text += '\n🔗 편성표 제작: https://errorledger.com/' + (isEn ? 'en/' : '') + 'schedule';
+    return text;
+  }
 
-    text += '\n📺 ' + (state.channel.tagline || 'ErrorLedger') + '\nhttps://errorledger.com/' + (isEn ? 'en/' : '') + 'schedule';
+  btnCopyText.addEventListener('click', function () {
+    var formatType = (selectTextFormat && selectTextFormat.value) ? selectTextFormat.value : 'cafe';
+    var text = buildFormattedScheduleText(formatType);
 
     if (navigator.clipboard) {
       navigator.clipboard.writeText(text).then(function () {
-        alert(isEn ? '📋 Text copied to clipboard for Discord / Community!' : '📋 디스코드 / 팬카페 공유용 텍스트가 복사되었습니다!');
+        if (btnCopyTextLabel) {
+          var prev = btnCopyTextLabel.textContent;
+          btnCopyTextLabel.textContent = isEn ? 'Copied! ✓' : '복사 완료! ✓';
+          setTimeout(function () {
+            if (btnCopyTextLabel) btnCopyTextLabel.textContent = prev;
+          }, 2000);
+        } else {
+          alert(isEn ? '📋 Text copied to clipboard!' : '📋 선택한 양식으로 공지 텍스트가 복사되었습니다!');
+        }
       });
     }
   });

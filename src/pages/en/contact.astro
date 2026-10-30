@@ -46,6 +46,7 @@ const enUrl = getEnUrl(siteBase, rawPath);
                 <select id="feedback-category" required>
                   <option value="💡 Feature Suggestion">💡 Feature / Game Suggestion</option>
                   <option value="🐛 Bug Report">🐛 Bug Report</option>
+                  <option value="🎨 Creator Showcase Artist Application">🎨 Creator Showcase Artist Application</option>
                   <option value="🤝 Partnership">🤝 Stream / Creator Partnership</option>
                   <option value="❓ General Inquiry">❓ General Inquiry</option>
                 </select>
@@ -124,6 +125,14 @@ const enUrl = getEnUrl(siteBase, rawPath);
         var btnSend = document.getElementById('btn-send-mail');
         var btnCopy = document.getElementById('btn-copy-form');
         var toast = document.getElementById('form-toast');
+
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('subject') === 'artist_apply' && categoryEl) {
+          categoryEl.value = '🎨 Creator Showcase Artist Application';
+          if (contentEl && !contentEl.value) {
+            contentEl.value = '1. Chzzk Channel URL: \n2. Creative Specialty (Illustration / Live2D Rigging / Emotes / Overlays): \n3. Typical Art Stream Hours: \n4. Short Bio & Portfolio Link: ';
+          }
+        }
 
         function showToast(msg, isSuccess) {
           if (!toast) return;

@@ -113,6 +113,7 @@ const faqSchema = JSON.stringify({
       hreflangKo={getKoUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
       hreflangEn={getEnUrl((Astro.site || 'https://errorledger.com').toString(), Astro.url.pathname)}
       keywords={PAGE_KEYWORDS}
+      breadcrumb={breadcrumbItems}
     />
     <script type="application/ld+json" set:html={softwareSchema}></script>
     <script type="application/ld+json" set:html={faqSchema}></script>
@@ -166,6 +167,10 @@ const faqSchema = JSON.stringify({
 
               <a href="#how-to-use" class="btn-chzzk-guide">
                 <span>📖 사용법 보기</span>
+              </a>
+
+              <a href="#vod-section-clipper" class="btn-chzzk-guide">
+                <span>✂️ 구간 자르기 도구</span>
               </a>
             </div>
 
@@ -494,6 +499,112 @@ const faqSchema = JSON.stringify({
         </div>
       </section>
 
+      <!-- 5.5 Interactive VOD Section Clipper & Command Builder (NEW QUICK WIN) -->
+      <section class="chzzk-clipper-section" id="vod-section-clipper">
+        <div class="section-title-wrap">
+          <span class="section-pill">VOD SECTION CLIPPER STUDIO</span>
+          <h2>✂️ 다시보기(VOD) 특정 구간 고속 추출 & 무손실 컷편집 생성기</h2>
+          <p>5~10시간짜리 전체 다시보기를 통째로 받지 마세요! 시작 시간과 종료 시간만 입력하면 <strong>원하는 하이라이트 구간만 초고속으로 잘라 받는 명령어</strong>를 즉시 생성합니다.</p>
+        </div>
+
+        <div class="clipper-studio-card">
+          <div class="clipper-mode-tabs" role="tablist">
+            <button type="button" class="clipper-tab active" data-clip-mode="ytdlp" id="tab-mode-ytdlp">
+              <span>🌐 온라인 VOD 특정 구간만 바로 다운로드 (yt-dlp)</span>
+            </button>
+            <button type="button" class="clipper-tab" data-clip-mode="ffmpeg" id="tab-mode-ffmpeg">
+              <span>⚡ 내 PC에 받은 MP4 1초 무손실 컷편집 (FFmpeg)</span>
+            </button>
+          </div>
+
+          <div class="clipper-form-grid">
+            <!-- URL or Local Filename Input -->
+            <div class="clipper-field full-col" id="clipper-source-wrap">
+              <label for="clip-source-input" id="clip-source-label">치지직 다시보기(VOD) 또는 유튜브 영상 링크</label>
+              <input
+                type="text"
+                id="clip-source-input"
+                class="clipper-input"
+                value="https://chzzk.naver.com/video/1234567"
+                placeholder="예: https://chzzk.naver.com/video/1234567 또는 https://www.youtube.com/watch?v=..."
+              />
+            </div>
+
+            <!-- Start Time -->
+            <div class="clipper-field">
+              <label for="clip-start-input">시작 시간 (HH:MM:SS)</label>
+              <input
+                type="text"
+                id="clip-start-input"
+                class="clipper-input time-mono"
+                value="01:12:30"
+                placeholder="01:12:30"
+              />
+            </div>
+
+            <!-- End Time -->
+            <div class="clipper-field">
+              <label for="clip-end-input">종료 시간 (HH:MM:SS)</label>
+              <input
+                type="text"
+                id="clip-end-input"
+                class="clipper-input time-mono"
+                value="01:15:00"
+                placeholder="01:15:00"
+              />
+            </div>
+
+            <!-- Output Format / Filename -->
+            <div class="clipper-field" id="clip-format-col">
+              <label for="clip-format-select">화질 및 저장 포맷</label>
+              <select id="clip-format-select" class="clipper-select">
+                <option value="best_mp4">최고화질 MP4 (4K / 1080p60 원본)</option>
+                <option value="fhd_mp4">1080p FHD MP4 (편집기 호환 최적화)</option>
+                <option value="audio_m4a">오디오만 추출 (.m4a 고음질)</option>
+              </select>
+            </div>
+
+            <!-- Output Filename for FFmpeg mode -->
+            <div class="clipper-field hidden" id="clip-output-col">
+              <label for="clip-output-input">저장할 클립 파일명</label>
+              <input
+                type="text"
+                id="clip-output-input"
+                class="clipper-input"
+                value="highlight_clip.mp4"
+                placeholder="highlight_clip.mp4"
+              />
+            </div>
+          </div>
+
+          <!-- Extra Options Row (for yt-dlp mode) -->
+          <div class="clipper-options-row" id="clip-ytdlp-options">
+            <label class="clip-check-label">
+              <input type="checkbox" id="clip-opt-keyframe" />
+              <span>프레임 단위 정밀 컷 (<code>--force-keyframes-at-cuts</code>)</span>
+            </label>
+            <label class="clip-check-label">
+              <input type="checkbox" id="clip-opt-cookies" />
+              <span>19+ 성인인증/연령제한 VOD 쿠키 연동 (<code>--cookies-from-browser chrome</code>)</span>
+            </label>
+          </div>
+
+          <!-- Output Command Box -->
+          <div class="clipper-output-box">
+            <div class="clipper-output-header">
+              <span class="clipper-duration-badge" id="clip-duration-badge">⏱️ 추출 구간 길이: 2분 30초 (150초)</span>
+              <button type="button" class="btn-copy-clip-cmd" id="btn-copy-clip-cmd">
+                <span>📋 명령어 복사</span>
+              </button>
+            </div>
+            <pre class="clipper-cmd-pre"><code id="clip-cmd-output">yt-dlp --download-sections "*01:12:30-01:15:00" -f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/bv*+ba/b" --merge-output-format mp4 -o "%(title)s_011230_011500.%(ext)s" "https://chzzk.naver.com/video/1234567"</code></pre>
+            <p class="clipper-tip" id="clipper-tip-text">
+              💡 <strong>사용 팁:</strong> 윈도우 탐색기 주소창에 <code>cmd</code> 또는 <code>powershell</code>을 입력해 터미널을 연 뒤 복사한 명령어를 붙여넣으세요. 전체 다시보기를 받지 않고 해당 2분 30초 구간만 즉시 다운로드됩니다.
+            </p>
+          </div>
+        </div>
+      </section>
+
       <!-- 6. Save Location & Settings -->
       <section class="chzzk-settings-section">
         <div class="settings-box">
@@ -667,6 +778,146 @@ const faqSchema = JSON.stringify({
       }
     });
   }
+
+  // Interactive VOD Section Clipper Logic
+  (function () {
+    let currentClipMode = 'ytdlp';
+    const tabYtdlp = document.getElementById('tab-mode-ytdlp');
+    const tabFfmpeg = document.getElementById('tab-mode-ffmpeg');
+    const sourceLabel = document.getElementById('clip-source-label');
+    const sourceInput = document.getElementById('clip-source-input') as HTMLInputElement | null;
+    const startInput = document.getElementById('clip-start-input') as HTMLInputElement | null;
+    const endInput = document.getElementById('clip-end-input') as HTMLInputElement | null;
+    const formatCol = document.getElementById('clip-format-col');
+    const formatSelect = document.getElementById('clip-format-select') as HTMLSelectElement | null;
+    const outputCol = document.getElementById('clip-output-col');
+    const outputInput = document.getElementById('clip-output-input') as HTMLInputElement | null;
+    const ytdlpOptions = document.getElementById('clip-ytdlp-options');
+    const optKeyframe = document.getElementById('clip-opt-keyframe') as HTMLInputElement | null;
+    const optCookies = document.getElementById('clip-opt-cookies') as HTMLInputElement | null;
+    const durationBadge = document.getElementById('clip-duration-badge');
+    const cmdOutput = document.getElementById('clip-cmd-output');
+    const btnCopyCmd = document.getElementById('btn-copy-clip-cmd');
+    const tipText = document.getElementById('clipper-tip-text');
+
+    function parseSeconds(str: string): number | null {
+      const clean = str.trim();
+      if (!clean) return null;
+      const parts = clean.split(':').map(Number);
+      if (parts.some(isNaN)) return null;
+      if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+      if (parts.length === 2) return parts[0] * 60 + parts[1];
+      if (parts.length === 1) return parts[0];
+      return null;
+    }
+
+    function formatDurationKo(sec: number): string {
+      const h = Math.floor(sec / 3600);
+      const m = Math.floor((sec % 3600) / 60);
+      const s = Math.floor(sec % 60);
+      const chunks: string[] = [];
+      if (h > 0) chunks.push(`${h}시간`);
+      if (m > 0) chunks.push(`${m}분`);
+      if (s > 0 || chunks.length === 0) chunks.push(`${s}초`);
+      return `${chunks.join(' ')} (${sec}초)`;
+    }
+
+    function updateClipperCommand() {
+      if (!sourceInput || !startInput || !endInput || !cmdOutput || !durationBadge) return;
+      const src = sourceInput.value.trim() || (currentClipMode === 'ytdlp' ? 'https://chzzk.naver.com/video/1234567' : 'input_vod.mp4');
+      const startStr = startInput.value.trim() || '00:00:00';
+      const endStr = endInput.value.trim() || '00:01:00';
+
+      const sSec = parseSeconds(startStr);
+      const eSec = parseSeconds(endStr);
+      if (sSec !== null && eSec !== null && eSec > sSec) {
+        durationBadge.textContent = `⏱️ 추출 구간 길이: ${formatDurationKo(eSec - sSec)}`;
+        durationBadge.classList.remove('warn');
+      } else {
+        durationBadge.textContent = '⚠️ 종료 시간은 시작 시간보다 뒤여야 합니다 (예: 01:12:30 ~ 01:15:00)';
+        durationBadge.classList.add('warn');
+      }
+
+      const safeTag = `${startStr.replace(/:/g, '')}_${endStr.replace(/:/g, '')}`;
+
+      if (currentClipMode === 'ytdlp') {
+        const fmt = formatSelect ? formatSelect.value : 'best_mp4';
+        let fmtArg = '-f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/bv*+ba/b" --merge-output-format mp4';
+        if (fmt === 'fhd_mp4') {
+          fmtArg = '-f "bv*[height<=1080][ext=mp4]+ba[ext=m4a]/b[height<=1080][ext=mp4]/bv*+ba/b" --merge-output-format mp4';
+        } else if (fmt === 'audio_m4a') {
+          fmtArg = '-f "ba[ext=m4a]/ba" -x --audio-format m4a';
+        }
+        const kfArg = optKeyframe && optKeyframe.checked ? ' --force-keyframes-at-cuts' : '';
+        const cookieArg = optCookies && optCookies.checked ? ' --cookies-from-browser chrome' : '';
+        cmdOutput.textContent = `yt-dlp --download-sections "*${startStr}-${endStr}"${kfArg}${cookieArg} ${fmtArg} -o "%(title)s_${safeTag}.%(ext)s" "${src}"`;
+      } else {
+        const outFile = (outputInput && outputInput.value.trim()) ? outputInput.value.trim() : `clip_${safeTag}.mp4`;
+        cmdOutput.textContent = `ffmpeg -ss ${startStr} -to ${endStr} -i "${src}" -c copy "${outFile}"`;
+      }
+    }
+
+    if (tabYtdlp && tabFfmpeg) {
+      tabYtdlp.addEventListener('click', () => {
+        currentClipMode = 'ytdlp';
+        tabYtdlp.classList.add('active');
+        tabFfmpeg.classList.remove('active');
+        if (sourceLabel) sourceLabel.textContent = '치지직 다시보기(VOD) 또는 유튜브 영상 링크';
+        if (sourceInput && sourceInput.value === 'chzzk_vod.mp4') {
+          sourceInput.value = 'https://chzzk.naver.com/video/1234567';
+        }
+        if (formatCol) formatCol.classList.remove('hidden');
+        if (outputCol) outputCol.classList.add('hidden');
+        if (ytdlpOptions) ytdlpOptions.classList.remove('hidden');
+        if (tipText) {
+          tipText.innerHTML = '💡 <strong>사용 팁:</strong> 전체 5시간 다시보기를 다 받지 않고 지정한 구간만 서버에서 즉시 추출해 다운로드합니다.';
+        }
+        updateClipperCommand();
+      });
+
+      tabFfmpeg.addEventListener('click', () => {
+        currentClipMode = 'ffmpeg';
+        tabFfmpeg.classList.add('active');
+        tabYtdlp.classList.remove('active');
+        if (sourceLabel) sourceLabel.textContent = '내 PC에 저장된 원본 동영상 파일명 (.mp4)';
+        if (sourceInput && sourceInput.value.startsWith('http')) {
+          sourceInput.value = 'chzzk_vod.mp4';
+        }
+        if (formatCol) formatCol.classList.add('hidden');
+        if (outputCol) outputCol.classList.remove('hidden');
+        if (ytdlpOptions) ytdlpOptions.classList.add('hidden');
+        if (tipText) {
+          tipText.innerHTML = '💡 <strong>무손실 1초 컷편집:</strong> <code>-c copy</code> 스트림 복사 방식을 사용하여 재인코딩 화질 저하 없이 1초 만에 하이라이트 구간만 잘라냅니다.';
+        }
+        updateClipperCommand();
+      });
+    }
+
+    [sourceInput, startInput, endInput, formatSelect, outputInput, optKeyframe, optCookies].forEach((el) => {
+      if (el) {
+        el.addEventListener('input', updateClipperCommand);
+        el.addEventListener('change', updateClipperCommand);
+      }
+    });
+
+    if (btnCopyCmd && cmdOutput) {
+      btnCopyCmd.addEventListener('click', async () => {
+        const text = cmdOutput.textContent || '';
+        try {
+          await navigator.clipboard.writeText(text);
+          const prev = btnCopyCmd.innerHTML;
+          btnCopyCmd.innerHTML = '<span>✅ 명령어 복사 완료!</span>';
+          setTimeout(() => {
+            btnCopyCmd.innerHTML = prev;
+          }, 2000);
+        } catch (err) {
+          console.error('Copy failed', err);
+        }
+      });
+    }
+
+    updateClipperCommand();
+  })();
 </script>
 
 <style>
@@ -1403,6 +1654,217 @@ const faqSchema = JSON.stringify({
     font-size: 0.82rem !important;
     color: #64748b !important;
     margin: 0 !important;
+  }
+
+  /* 5.5 Interactive VOD Section Clipper Studio */
+  .chzzk-clipper-section {
+    padding: 2rem 1.5rem 3.5rem;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .clipper-studio-card {
+    background: linear-gradient(180deg, rgba(0, 255, 163, 0.05) 0%, var(--chzzk-card-bg) 100%);
+    border: 1px solid rgba(0, 255, 163, 0.3);
+    border-radius: 18px;
+    padding: 2rem;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+  }
+
+  .clipper-mode-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    background: #060910;
+    padding: 0.4rem;
+    border-radius: 12px;
+    border: 1px solid var(--chzzk-border);
+    margin-bottom: 1.5rem;
+  }
+
+  .clipper-tab {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+  }
+
+  .clipper-tab:hover {
+    color: #f8fafc;
+  }
+
+  .clipper-tab.active {
+    background: rgba(0, 255, 163, 0.15);
+    color: var(--chzzk-green);
+    border: 1px solid rgba(0, 255, 163, 0.35);
+  }
+
+  .clipper-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.2fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .clipper-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .clipper-field.full-col {
+    grid-column: 1 / -1;
+  }
+
+  .clipper-field label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #cbd5e1;
+  }
+
+  .clipper-input,
+  .clipper-select {
+    background: #060910;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 10px;
+    padding: 0.7rem 0.9rem;
+    color: #f8fafc;
+    font-size: 0.92rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .clipper-input.time-mono {
+    font-family: monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--chzzk-green);
+    text-align: center;
+  }
+
+  .clipper-input:focus,
+  .clipper-select:focus {
+    border-color: var(--chzzk-green);
+  }
+
+  .clipper-options-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+    padding: 0.65rem 0.9rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+    border: 1px solid var(--chzzk-border);
+  }
+
+  .clip-check-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.84rem;
+    color: #cbd5e1;
+    cursor: pointer;
+  }
+
+  .clip-check-label code {
+    color: #38bdf8;
+    font-size: 0.78rem;
+  }
+
+  .clipper-output-box {
+    background: #05080f;
+    border: 1px solid rgba(0, 255, 163, 0.25);
+    border-radius: 12px;
+    padding: 1.15rem 1.25rem;
+  }
+
+  .clipper-output-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .clipper-duration-badge {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: var(--chzzk-green);
+    background: rgba(0, 255, 163, 0.1);
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 255, 163, 0.25);
+  }
+
+  .clipper-duration-badge.warn {
+    color: #fda4af;
+    background: rgba(244, 63, 94, 0.12);
+    border-color: rgba(244, 63, 94, 0.3);
+  }
+
+  .btn-copy-clip-cmd {
+    background: var(--chzzk-green);
+    color: #06130e;
+    border: none;
+    border-radius: 8px;
+    padding: 0.45rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.15s;
+  }
+
+  .btn-copy-clip-cmd:hover {
+    background: #34ffc0;
+    transform: translateY(-1px);
+  }
+
+  .clipper-cmd-pre {
+    background: #000000;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.9rem 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 0 0 0.75rem;
+  }
+
+  .clipper-cmd-pre code {
+    color: #38bdf8;
+    font-family: monospace;
+    font-size: 0.88rem;
+    word-break: break-all;
+    white-space: pre-wrap;
+  }
+
+  .clipper-tip {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .clipper-tip code {
+    color: var(--chzzk-green);
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  @media (max-width: 768px) {
+    .clipper-mode-tabs,
+    .clipper-form-grid {
+      grid-template-columns: 1fr;
+    }
   }
 
   /* 6. Settings Box */

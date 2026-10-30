@@ -14,8 +14,80 @@ const CATEGORY_MAP: Record<string, string> = {
   puzzle: 'Puzzle',
   word: 'Word / Brain',
   card: 'Card / Board',
-  strategy: 'Strategy'
+  strategy: 'Strategy',
+  utility: 'Stream Utility',
+  test: 'Personality / Fortune',
+  guide: 'Streamer Guide'
 };
+
+const STANDALONE_TOOLS_EN = [
+  {
+    id: 'chzzk-downloader',
+    href: '/en/chzzk-downloader',
+    icon: '📥',
+    title: 'Chzzk & YouTube Downloader',
+    tagline: 'Lossless 4K/1080p FHD VOD, Clip & Shorts Downloader + Section Clipper',
+    description: 'Download Naver CHZZK VODs/clips and YouTube videos/Shorts directly in original MP4 quality with bundled FFmpeg and generate exact timestamp section-clipping commands.',
+    category: 'utility',
+    badge: '100% Free Local App',
+    keywords: 'chzzk downloader youtube downloader shorts vod clip mp4 ffmpeg yt-dlp section clipper timestamp cut'
+  },
+  {
+    id: 'schedule',
+    href: '/en/schedule',
+    icon: '📅',
+    title: 'Stream Schedule Studio',
+    tagline: 'Weekly & Monthly Broadcast Timetable & High-Res PNG Maker',
+    description: 'Design weekly and monthly stream schedules across 7 broadcast themes. Export crisp PNG images, save templates (.json) locally, and copy Discord/community announcements with one click.',
+    category: 'utility',
+    badge: 'PNG & Text Export',
+    keywords: 'stream schedule studio timetable calendar weekly monthly png export discord template vtuber twitch chzzk'
+  },
+  {
+    id: 'bzzk',
+    href: '/en/bzzk',
+    icon: '🛡️',
+    title: 'Bzzk Stream Protection Radar',
+    tagline: 'Real-Time Cross-Channel Ban & Raid Detection Radar',
+    description: 'Detect malicious chatters, multi-channel ban evaders, and coordinated raid accounts across Chzzk live streams in real time.',
+    category: 'utility',
+    badge: 'Live Radar',
+    keywords: 'bzzk radar ban checker chat protection chzzk blacklist anti-raid'
+  },
+  {
+    id: 'mbti',
+    href: '/en/mbti',
+    icon: '🧠',
+    title: 'Streamer & Viewer MBTI Personality Test',
+    tagline: '3-Minute 16-Type Personality Assessment for Stream Chat',
+    description: 'Interactive 32-question personality test for streamers and viewers to compare compatibility and broadcast styles.',
+    category: 'test',
+    badge: '~3 Mins',
+    keywords: 'mbti personality test 16 types streamer viewer quiz'
+  },
+  {
+    id: 'guide',
+    href: '/en/guide',
+    icon: '📖',
+    title: 'Chzzk Streamer OBS & Growth Guide',
+    tagline: 'Complete OBS Settings, Audio Filters & Multi-Platform OSMU Handbook',
+    description: 'Step-by-step guide covering 1080p60 OBS encoding, microphone filter chains, DMCA safety, and YouTube Shorts/long-form content workflows.',
+    category: 'guide',
+    badge: 'Streamer Bible',
+    keywords: 'chzzk guide obs settings bitrate microphone filter streaming setup tutorial'
+  },
+  {
+    id: 'creators',
+    href: '/en/creators',
+    icon: '🎨',
+    title: 'Chzzk Broadcast Artists Showcase',
+    tagline: 'Curated Directory of Live-Streaming Illustrators, Live2D Riggers & Emote Artists',
+    description: 'Zero-commission showcase supporting verified artists who broadcast their creative work live on Chzzk.',
+    category: 'guide',
+    badge: '0% Fees',
+    keywords: 'creators showcase artists illustrator vtuber live2d rigging emote designer'
+  }
+];
 
 const EN_TITLES: Record<string, string> = {
   'marble-roulette': 'Marble Race Roulette',
@@ -76,6 +148,25 @@ const enUrl = getEnUrl(siteBase, '/search');
       </div>
 
       <div class="games-results-grid" id="results-grid">
+        {STANDALONE_TOOLS_EN.map(tool => (
+          <article 
+            class="search-game-card" 
+            data-title={tool.title.toLowerCase()} 
+            data-cat={`${tool.category} ${CATEGORY_MAP[tool.category] || ''}`.toLowerCase()} 
+            data-desc={`${tool.tagline} ${tool.description} ${tool.keywords}`.toLowerCase()}
+          >
+            <div class="card-icon">{tool.icon}</div>
+            <div class="card-text">
+              <h3><a href={tool.href}>{tool.title}</a></h3>
+              <p class="tagline">{tool.tagline}</p>
+              <p class="desc">{tool.description}</p>
+              <div class="badge-row">
+                <span class="pill">{CATEGORY_MAP[tool.category] || tool.category}</span>
+                <span class="pill">{tool.badge}</span>
+              </div>
+            </div>
+          </article>
+        ))}
         {allGames.map(game => {
           const title = EN_TITLES[game.id] || game.data.title;
           const desc = EN_DESCS[game.id] || game.data.description;

@@ -9,19 +9,6 @@ export interface Props {
 }
 
 const { items } = Astro.props;
-
-const siteUrl = (Astro.site || 'https://errorledger.com').toString().replace(/\/$/, '');
-
-const breadcrumbSchema = JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": items.map((item, index) => ({
-    "@type": "ListItem",
-    "position": index + 1,
-    "name": item.name,
-    ...(item.url ? { "item": item.url.startsWith('http') ? item.url : `${siteUrl}${item.url}` } : {})
-  }))
-});
 ---
 
 <nav class="breadcrumb-nav" aria-label="Breadcrumb">
@@ -40,8 +27,6 @@ const breadcrumbSchema = JSON.stringify({
     ))}
   </ol>
 </nav>
-
-<script type="application/ld+json" set:html={breadcrumbSchema}></script>
 
 <style>
   .breadcrumb-nav {

@@ -227,15 +227,14 @@ const organizationSchema = JSON.stringify({
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
   }
   
-  /* Formats headers, labels, and grid headings to high contrast white (except custom studio preview boards) */
-  html.dark h1:not(.schedule-card-board *), html.dark h2:not(.schedule-card-board *), html.dark h3:not(.schedule-card-board *), html.dark h4:not(.schedule-card-board *), html.dark h5:not(.schedule-card-board *), html.dark h6:not(.schedule-card-board *),
-  html.dark th, html.dark dt, html.dark strong:not(.schedule-card-board *) {
-    color: #f8fafc !important;
+  /* Default dark-mode typography colors using :where() so component-scoped classes win without !important wars */
+  html.dark :where(h1, h2, h3, h4, h5, h6, th, dt, strong):not([class]):not(.schedule-card-board *) {
+    color: #f8fafc;
   }
   
-  /* Sets body text, code explanations, and grid text fields to light grey */
-  html.dark p:not(.schedule-card-board *), html.dark li:not(.schedule-card-board *), html.dark time:not(.schedule-card-board *), html.dark td:not(.schedule-card-board *), html.dark dd:not(.schedule-card-board *), html.dark div:not([style*="color"]):not(.schedule-card-board *) {
-    color: #cbd5e1 !important;
+  html.dark :where(p, li, time, td, dd):not([class]):not(.schedule-card-board *),
+  html.dark .prose :where(p, li, time, td, dd, div):not([style*="color"]):not(.schedule-card-board *) {
+    color: #cbd5e1;
   }
   
   /* Specific styling resets for lists and navigation items */

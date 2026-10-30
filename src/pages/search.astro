@@ -14,8 +14,95 @@ const CATEGORY_MAP: Record<string, string> = {
   puzzle: '퍼즐',
   word: '단어/두뇌',
   card: '카드/보드',
-  strategy: '전략'
+  strategy: '전략',
+  utility: '방송 유틸리티',
+  test: '심리/운세',
+  guide: '스트리머 가이드'
 };
+
+const STANDALONE_TOOLS = [
+  {
+    id: 'chzzk-downloader',
+    href: '/chzzk-downloader',
+    icon: '📥',
+    title: '치지직 & 유튜브 다운로더',
+    tagline: 'VOD·클립 & 유튜브 동영상·쇼츠 무손실 다운로드 + 특정 구간 추출',
+    description: '네이버 치지직 다시보기(VOD)·클립 및 유튜브(4K·1080p FHD·Shorts) 영상을 재인코딩 없이 내 컴퓨터에 바로 저장하고 특정 구간(시작~끝) 추출 명령어를 생성하는 무료 유틸리티입니다.',
+    category: 'utility',
+    badge: '100% 무료 로컬 앱',
+    keywords: '치지직 다운로더 유튜브 다운로더 쇼츠 다시보기 vod 클립 다운로드 추출 구간 자르기 chzzk youtube ffmpeg yt-dlp'
+  },
+  {
+    id: 'schedule',
+    href: '/schedule',
+    icon: '📅',
+    title: '방송 편성표 스튜디오',
+    tagline: '주간·월간 방송 일정표 & 고화질 PNG 메이커',
+    description: '포토샵 없이 7가지 감성 테마로 제작하는 주간·월간 방송 시간표 스튜디오. 고화질 PNG 이미지 저장, 내 PC 템플릿(.json) 보관, 팬카페·치지직 라운지·디스코드 공지 양식 원클릭 복사를 지원합니다.',
+    category: 'utility',
+    badge: 'PNG & 공지 복사',
+    keywords: '방송 편성표 일정표 시간표 주간계획표 캘린더 스케줄러 치지직 편성표 버튜버 시간표 png 저장 팬카페 디스코드 공지'
+  },
+  {
+    id: 'bzzk',
+    href: '/bzzk',
+    icon: '🛡️',
+    title: '검지직 (Bzzk) 실시간 밴 레이더',
+    tagline: '치지직 다중 채널 분탕·어뷰징 감지 레이더',
+    description: '치지직 생방송 중 발생하는 악성 분탕, 다중 채널 영구차단(밴) 이력, 레이드 어뷰징 계정을 실시간으로 교차 분석하여 채팅방을 안전하게 방어합니다.',
+    category: 'utility',
+    badge: '실시간 방어',
+    keywords: '검지직 bzzk 치지직 밴 레이더 블랙리스트 분탕 어뷰징 차단 조회 채팅 관리'
+  },
+  {
+    id: 'mbti',
+    href: '/mbti',
+    icon: '🧠',
+    title: '스트리머 & 시청자 MBTI 성격유형 검사',
+    tagline: '생방송 소통용 3분 정밀 16유형 성격 테스트',
+    description: '스트리머와 시청자가 방송에서 함께 풀고 궁합과 성향을 비교해 볼 수 있는 무료 MBTI 성격유형 검사입니다.',
+    category: 'test',
+    badge: '약 3분 소요',
+    keywords: 'mbti 성격유형 검사 심리테스트 스트리머 궁합 성향 테스트'
+  },
+  {
+    id: 'guide',
+    href: '/guide',
+    icon: '📖',
+    title: '치지직 스트리머 방송 세팅 & 성장 완벽 가이드',
+    tagline: 'OBS 설정, 오디오/마이크 필터, OSMU 유튜브 편집 실전 바이블',
+    description: '치지직 신입 스트리머부터 파트너까지: OBS 1080p 60fps 8000Kbps 세팅, 컴프레서/소음억제 마이크 설정, 저작권 안전 수칙, 쇼츠/롱폼 수익화 전략을 정리한 가이드북입니다.',
+    category: 'guide',
+    badge: '실전 바이블',
+    keywords: '치지직 가이드 obs 설정 비트레이트 마이크 세팅 방송 시작하는법 스트리머 팁 유튜브 쇼츠 편집'
+  },
+  {
+    id: 'creators',
+    href: '/creators',
+    icon: '🎨',
+    title: '치지직 방송 작가 크리에이터 쇼케이스',
+    tagline: '생방송으로 작업 과정을 증명하는 검증된 일러스트·리깅·이모티콘 작가관',
+    description: '중개 수수료 0원! 치지직에서 직접 라이브 방송을 켜고 작업하는 일러스트레이터, Live2D 버튜버 리거, 구독 이모티콘 및 대기화면 디자이너 쇼케이스입니다.',
+    category: 'guide',
+    badge: '수수료 0%',
+    keywords: '크리에이터 쇼케이스 작가 일러스트 버튜버 리깅 live2d 이모티콘 커미션 대기화면 디자인'
+  }
+];
+
+const searchItems = [
+  ...STANDALONE_TOOLS,
+  ...allGames.map(game => ({
+    id: game.id,
+    href: game.id === 'fortune' ? '/fortune' : `/games/${game.id}`,
+    icon: game.data.icon,
+    title: game.data.title,
+    tagline: game.data.tagline,
+    description: game.data.description,
+    category: game.data.category,
+    badge: game.data.playTime,
+    keywords: `${game.id} ${game.data.title} ${game.data.tagline} ${game.data.description}`
+  }))
+];
 
 const siteBase = (Astro.site || 'https://errorledger.com').toString();
 const koUrl = getKoUrl(siteBase, '/search');
@@ -27,7 +114,7 @@ const enUrl = getEnUrl(siteBase, '/search');
   <head>
     <BaseHead 
       title={`방송 도구 및 게임 검색 | ${SITE_TITLE}`} 
-      description="에러레저의 구슬 룰렛, 돌림판, 사다리타기, 오늘의 운세 등 무료 웹게임 및 방송 도구를 검색하세요." 
+      description="에러레저의 치지직 다운로더, 방송 편성표 스튜디오, 검지직, 구슬 룰렛, 돌림판, 사다리타기, MBTI, 오늘의 운세 등 무료 방송 도구와 웹게임을 검색하세요." 
       lang="ko"
       hreflangKo={koUrl}
       hreflangEn={enUrl}
@@ -38,13 +125,13 @@ const enUrl = getEnUrl(siteBase, '/search');
 
     <main class="search-main">
       <div class="search-header">
-        <h1>방송 도구 검색</h1>
-        <p>설치 없이 브라우저에서 바로 실행 가능한 방송용 웹게임과 추첨 도구를 검색해보세요.</p>
+        <h1>방송 도구 & 게임 통합 검색</h1>
+        <p>설치 없이 바로 쓰는 방송 유틸리티(치지직 다운로더·편성표·검지직)와 추첨 웹게임을 검색해보세요.</p>
         <div class="search-input-wrapper">
           <input 
             type="text" 
             id="game-search-input" 
-            placeholder="게임 이름, 카테고리, 키워드로 검색 (예: 룰렛, 사다리, 구슬, 추첨...)" 
+            placeholder="이름, 기능, 키워드로 검색 (예: 치지직 다운로더, 편성표, 룰렛, 사다리, MBTI...)" 
             autocomplete="off" 
             autofocus 
           />
@@ -52,20 +139,28 @@ const enUrl = getEnUrl(siteBase, '/search');
       </div>
 
       <div class="games-results-grid" id="results-grid">
-        {allGames.map(game => (
-          <article class="search-game-card" data-title={game.data.title.toLowerCase()} data-cat={game.data.category.toLowerCase()} data-desc={game.data.description.toLowerCase()}>
-            <div class="card-icon">{game.data.icon}</div>
+        {searchItems.map(item => (
+          <article 
+            class="search-game-card" 
+            data-title={item.title.toLowerCase()} 
+            data-cat={`${item.category} ${CATEGORY_MAP[item.category] || ''}`.toLowerCase()} 
+            data-desc={`${item.tagline} ${item.description} ${item.keywords}`.toLowerCase()}
+          >
+            <div class="card-icon">{item.icon}</div>
             <div class="card-text">
-              <h3><a href={game.id === 'fortune' ? '/fortune' : `/games/${game.id}`}>{game.data.title}</a></h3>
-              <p class="tagline">{game.data.tagline}</p>
-              <p class="desc">{game.data.description}</p>
+              <h3><a href={item.href}>{item.title}</a></h3>
+              <p class="tagline">{item.tagline}</p>
+              <p class="desc">{item.description}</p>
               <div class="badge-row">
-                <span class="pill">{CATEGORY_MAP[game.data.category] || game.data.category}</span>
-                <span class="pill">{game.data.playTime}</span>
+                <span class="pill">{CATEGORY_MAP[item.category] || item.category}</span>
+                <span class="pill">{item.badge}</span>
               </div>
             </div>
           </article>
         ))}
+      </div>
+      <div id="no-results-msg" class="no-results-box hidden">
+        <p>🔍 검색어와 일치하는 방송 도구 또는 게임을 찾지 못했습니다. 다른 키워드(예: <code>치지직</code>, <code>편성표</code>, <code>룰렛</code>, <code>사다리</code>)로 검색해 보세요.</p>
       </div>
     </main>
 
@@ -214,6 +309,16 @@ const enUrl = getEnUrl(siteBase, '/search');
     display: none !important;
   }
 
+  .no-results-box {
+    margin-top: 2rem;
+    padding: 2rem;
+    text-align: center;
+    background: #0f172a;
+    border: 1px dashed rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+    color: #94a3b8;
+  }
+
   @media (max-width: 640px) {
     .search-game-card {
       flex-direction: column;
@@ -228,9 +333,11 @@ const enUrl = getEnUrl(siteBase, '/search');
 <script>
   const searchInput = document.getElementById('game-search-input') as HTMLInputElement;
   const cards = document.querySelectorAll('.search-game-card');
+  const noResultsMsg = document.getElementById('no-results-msg');
 
   function filterCards(query: string) {
     const q = query.toLowerCase().trim();
+    let visibleCount = 0;
     cards.forEach(card => {
       const title = card.getAttribute('data-title') || '';
       const cat = card.getAttribute('data-cat') || '';
@@ -238,10 +345,18 @@ const enUrl = getEnUrl(siteBase, '/search');
       const match = !q || title.includes(q) || cat.includes(q) || desc.includes(q);
       if (match) {
         card.classList.remove('hidden');
+        visibleCount++;
       } else {
         card.classList.add('hidden');
       }
     });
+    if (noResultsMsg) {
+      if (visibleCount === 0) {
+        noResultsMsg.classList.remove('hidden');
+      } else {
+        noResultsMsg.classList.add('hidden');
+      }
+    }
   }
 
   if (searchInput) {

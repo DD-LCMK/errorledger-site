@@ -42,6 +42,7 @@ import { getKoUrl, getEnUrl } from '../i18n';
                 <select id="feedback-category" required>
                   <option value="💡 신규 도구/게임 건의">💡 신규 도구/게임 건의 (Feature Suggestion)</option>
                   <option value="🐛 버그 제보">🐛 버그 제보 (Bug Report)</option>
+                  <option value="🎨 크리에이터 쇼케이스 작가 등록 신청">🎨 크리에이터 쇼케이스 작가 등록 신청 (Creator Showcase)</option>
                   <option value="🤝 방송/채널 제휴">🤝 방송/채널 제휴 (Partnership)</option>
                   <option value="❓ 기타 일반 문의">❓ 기타 일반 문의 (General)</option>
                 </select>
@@ -113,6 +114,15 @@ import { getKoUrl, getEnUrl } from '../i18n';
         var btnSend = document.getElementById('btn-send-mail');
         var btnCopy = document.getElementById('btn-copy-form');
         var toast = document.getElementById('form-toast');
+
+        // Pre-select category if navigated via ?subject=artist_apply from /creators
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('subject') === 'artist_apply' && categoryEl) {
+          categoryEl.value = '🎨 크리에이터 쇼케이스 작가 등록 신청';
+          if (contentEl && !contentEl.value) {
+            contentEl.value = '1. 치지직 채널 주소 (URL): \n2. 주요 작업 분야 (일러스트 / Live2D 리깅 / 이모티콘 / 오버레이 등): \n3. 평소 작업 방송 시간대: \n4. 작가님 한 줄 소개 및 포트폴리오 링크: ';
+          }
+        }
 
         function showToast(msg, isSuccess) {
           if (!toast) return;
