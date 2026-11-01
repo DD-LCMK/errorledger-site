@@ -9,7 +9,7 @@ const urlParams = Astro.url.searchParams;
 const streamerMode = urlParams.has('stream') || urlParams.has('obs');
 
 const games = await getCollection('games');
-const priorityOrder = ['sword-enhance', 'block-blast', 'arrow-jump', 'sand-drop', 'marble-roulette', 'roulette', 'ladder', 'drinking-marble', 'ai-music-quiz', 'soundboard', 'stream-doodle', 'stream-emoji', 'fortune'];
+const priorityOrder = ['reaction-test', 'sword-enhance', 'block-blast', 'arrow-jump', 'sand-drop', 'marble-roulette', 'roulette', 'ladder', 'drinking-marble', 'ai-music-quiz', 'soundboard', 'stream-doodle', 'stream-emoji', 'fortune'];
 const sortedGames = games.sort((a, b) => {
   const idxA = priorityOrder.indexOf(a.id);
   const idxB = priorityOrder.indexOf(b.id);
@@ -255,6 +255,7 @@ const homeFaqSchema = JSON.stringify({
             const href = game.id === 'fortune' ? '/en/fortune' : `/en/games/${game.id}`;
             const btnText = game.id === 'fortune' ? 'View Fortune →' : 'Launch →';
             const enTitle: Record<string, string> = {
+              'reaction-test': 'Streamer Physical Age Test',
               'sword-enhance': 'Legendary +20 Sword Enhancer',
               'block-blast': 'Block Blast!',
               'arrow-jump': 'Arrow Climber',
@@ -270,6 +271,7 @@ const homeFaqSchema = JSON.stringify({
               'fortune': 'Daily Fortune',
             };
             const enTagline: Record<string, string> = {
+              'reaction-test': '3-stage Reaction Speed (ms), 12s Aim Tracking & 5s CPS burst test with Physical Age Receipt',
               'sword-enhance': 'Forge +0 to +20 with 6-slot Inventory, +7 Sword of Greed jackpot & 10-fail stack bonuses',
               'block-blast': '8x8 combo line blast block puzzle with endless & 2-min time attack modes',
               'arrow-jump': 'Slingshot archery physics climber with precision platform landings',
@@ -285,6 +287,7 @@ const homeFaqSchema = JSON.stringify({
               'fortune': 'Daily auto-updated horoscope & zodiac fortune for stream openers',
             };
             const enBadge: Record<string, string> = {
+              'reaction-test': '⚡ Physical Age',
               'sword-enhance': '🗡️ +20 Forging',
               'block-blast': '🔥 #1 Puzzle',
               'arrow-jump': '🏹 Physics Climber',
@@ -327,7 +330,7 @@ const homeFaqSchema = JSON.stringify({
         <div class="section-hub-footer">
           <a href="/en/games" class="btn-hub-cta games-accent">
             <span class="btn-hub-icon">🎮</span>
-            <span>Explore All 11 Interactive Stream Games</span>
+            <span>Explore All 12 Interactive Stream Games</span>
             <span class="btn-hub-arrow">→</span>
           </a>
         </div>
@@ -490,6 +493,13 @@ const homeFaqSchema = JSON.stringify({
           </div>
           <div class="preview-items-grid">
             <div class="preview-item">
+              <span class="preview-ver hot">v2.2.0</span>
+              <div class="preview-content">
+                <strong>New Streamer Mini-Games: ⚡ Physical Age Test & 🗡️ +20 Sword Enhancer</strong>
+                <p>3-stage Reaction Speed, Aim Tracking & CPS Physical Age Medical Receipt + 6-slot Inventory +20 Weapon Forging Simulator.</p>
+              </div>
+            </div>
+            <div class="preview-item">
               <span class="preview-ver hot">v2.0.0</span>
               <div class="preview-content">
                 <strong>Chzzk & YouTube Downloader Major Update</strong>
@@ -519,6 +529,21 @@ const homeFaqSchema = JSON.stringify({
           </div>
 
           <div class="overview-grid">
+            <div class="overview-card">
+              <span class="overview-icon">⚡</span>
+              <h3>Streamer Physical Age & Reflex Test</h3>
+              <p>
+                3-stage gamer physical assessment measuring Visual Reaction Speed (ms), 12-second Aim Tracking accuracy, and 5-second Burst CPS — complete with an official Physical Age Medical Receipt (Age 16–72).
+              </p>
+            </div>
+
+            <div class="overview-card">
+              <span class="overview-icon">🗡️</span>
+              <h3>Legendary +20 Sword Enhancer</h3>
+              <p>
+                Hardcore +0 to +20 weapon forging simulator featuring a 6-slot Weapon Inventory, the +7 Golden Sword of Greed (45,000 G jackpot), per-sword +1%p 10-fail stack bonuses, and Star-Catch timing.
+              </p>
+            </div>
             <div class="overview-card">
               <span class="overview-icon">🔮</span>
               <h3>Marble Race Roulette</h3>

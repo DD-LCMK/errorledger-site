@@ -47,6 +47,16 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
               <a href={`${prefix}/games`} class="dropdown-hub-link">{isEn ? "View All Games →" : "전체 게임 보기 →"}</a>
             </div>
             <div class="dropdown-grid-games">
+              <a href={`${prefix}/games/reaction-test`} class={`dropdown-item ${currentPath.includes('/games/reaction-test') ? 'active' : ''}`}>
+                <span class="dropdown-item-icon">⚡</span>
+                <div class="dropdown-item-content">
+                  <div class="dropdown-item-header">
+                    <span class="dropdown-item-title">{t(lang, 'nav.reaction_test')}</span>
+                    <span class="dropdown-pill hot">NEW</span>
+                  </div>
+                  <span class="dropdown-item-desc">{isEn ? "3-Stage Reflex & Aim Test" : "반응속도·에임·CPS 3종 진단"}</span>
+                </div>
+              </a>
               <a href={`${prefix}/games/sword-enhance`} class={`dropdown-item ${currentPath.includes('/games/sword-enhance') ? 'active' : ''}`}>
                 <span class="dropdown-item-icon">🗡️</span>
                 <div class="dropdown-item-content">
@@ -351,6 +361,16 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
       <div class="drawer-section">
         <div class="drawer-section-title">{isEn ? "🎮 GAMES" : "🎮 인기 게임"}</div>
         <div class="drawer-nav-list">
+          <a 
+            href={`${prefix}/games/reaction-test`}
+            class={`drawer-nav-item ${currentPath.includes('/games/reaction-test') ? 'active' : ''}`}
+          >
+            <span class="drawer-item-icon">⚡</span>
+            <div class="drawer-item-info">
+              <span class="drawer-item-name">{t(lang, 'nav.reaction_test')}</span>
+              <span class="drawer-item-desc">{isEn ? "3-Stage Reflex & Aim Test" : "반응속도·에임·CPS 3종 진단"}</span>
+            </div>
+          </a>
           <a 
             href={`${prefix}/games/sword-enhance`}
             class={`drawer-nav-item ${currentPath.includes('/games/sword-enhance') ? 'active' : ''}`}

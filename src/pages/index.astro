@@ -10,7 +10,7 @@ const urlParams = Astro.url.searchParams;
 const streamerMode = urlParams.has('stream') || urlParams.has('obs');
 
 const games = await getCollection('games');
-const priorityOrder = ['sword-enhance', 'block-blast', 'arrow-jump', 'sand-drop', 'marble-roulette', 'roulette', 'ladder', 'drinking-marble', 'ai-music-quiz', 'soundboard', 'stream-doodle', 'stream-emoji', 'fortune'];
+const priorityOrder = ['reaction-test', 'sword-enhance', 'block-blast', 'arrow-jump', 'sand-drop', 'marble-roulette', 'roulette', 'ladder', 'drinking-marble', 'ai-music-quiz', 'soundboard', 'stream-doodle', 'stream-emoji', 'fortune'];
 const sortedGames = games.sort((a, b) => {
   const idxA = priorityOrder.indexOf(a.id);
   const idxB = priorityOrder.indexOf(b.id);
@@ -282,7 +282,7 @@ const homeFaqSchema = JSON.stringify({
         <div class="section-hub-footer">
           <a href="/games" class="btn-hub-cta games-accent">
             <span class="btn-hub-icon">🎮</span>
-            <span>인터랙티브 웹게임 전체 디렉토리 둘러보기 (11종 무료)</span>
+            <span>인터랙티브 웹게임 전체 디렉토리 둘러보기 (12종 무료)</span>
             <span class="btn-hub-arrow">→</span>
           </a>
         </div>
@@ -447,6 +447,13 @@ const homeFaqSchema = JSON.stringify({
           </div>
           <div class="preview-items-grid">
             <div class="preview-item">
+              <span class="preview-ver hot">v2.2.0</span>
+              <div class="preview-content">
+                <strong>신규 방송용 킬링타임 미니게임 2종 출시 (⚡ 피지컬 나이 & 🗡️ +20강 무기 강화)</strong>
+                <p>반응속도·에임·광클 3종 종합 피지컬 나이 공식 진단서 발급 및 6슬롯 인벤토리·황금검 잭팟 +20강 무기 강화 출시</p>
+              </div>
+            </div>
+            <div class="preview-item">
               <span class="preview-ver hot">v2.0.0</span>
               <div class="preview-content">
                 <strong>치지직 & 유튜브 다운로더 대규모 업데이트</strong>
@@ -476,6 +483,21 @@ const homeFaqSchema = JSON.stringify({
           </div>
 
           <div class="overview-grid">
+            <div class="overview-card">
+              <span class="overview-icon">⚡</span>
+              <h3>스트리머 피지컬 나이 판독기 (Reaction & Aim Test)</h3>
+              <p>
+                시각 순간 반응속도(ms) 3회 평균, 12초 타겟 에임 트래킹(정확도·T/s), 5초 초고속 광클(CPS) 3종 종합 측정! 대한민국 게이머 백분위와 공식 피지컬 나이(16세~72세) 진단서를 발급합니다.
+              </p>
+            </div>
+
+            <div class="overview-card">
+              <span class="overview-icon">🗡️</span>
+              <h3>전설의 +20강 무기 강화 시뮬레이터 (+20 Sword Enhancer)</h3>
+              <p>
+                +0강 나뭇가지부터 +20강 우주파괴 신검까지! 6슬롯 무기 보관함(인벤토리), +7 황금빛 탐욕의 검(45,000 G 잭팟), 무기별 10연속 실패 시 +1%p 영구 숙련 스택으로 극한의 도파민을 선사합니다.
+              </p>
+            </div>
             <div class="overview-card">
               <span class="overview-icon">🔮</span>
               <h3>구슬 레이스 마블 룰렛 (Marble Roulette)</h3>

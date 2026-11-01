@@ -1,0 +1,275 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import { getKoUrl, getEnUrl } from '../../../i18n';
+
+const siteBase = Astro.site?.toString() || 'https://errorledger.com';
+const rawPath = Astro.url.pathname.replace(/\/$/, '');
+const koUrl = getKoUrl(siteBase, rawPath);
+const enUrl = getEnUrl(siteBase, rawPath);
+
+const urlParams = Astro.url.searchParams;
+const streamerMode = urlParams.has('stream') || urlParams.has('obs');
+const gameUrl = streamerMode
+  ? '/games/reaction-test?bare=1&stream=true&lang=en'
+  : '/games/reaction-test?bare=1&lang=en';
+
+const webAppSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Gamer Physical Age & Reaction Test — ErrorLedger",
+  "alternateName": ["Reaction Time Test", "Gamer Age Test", "Aim & CPS Test", "스트리머 피지컬 나이 판독기"],
+  "url": enUrl,
+  "description": "Free 45-second 3-stage gamer reflex benchmark: Visual Reaction Speed (ms), 12s Aim Tracking, and 5s CPS Burst with an official Physical Age Report Card.",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "All (Web Browser, Chrome, Edge, Safari, Mobile)",
+  "inLanguage": ["en-US", "ko-KR"],
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+});
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead
+      title="Gamer Physical Age & Reaction Test — Reflex, Aim & CPS Benchmark | ErrorLedger"
+      description="Test your gamer mechanics in 45 seconds! Measure visual reaction speed (ms), 12-second aim tracking accuracy, and 5-second CPS burst to get your official Gamer Physical Age Report Card."
+      lang="en"
+      hreflangKo={koUrl}
+      hreflangEn={enUrl}
+      keywords="Reaction Time Test, Gamer Physical Age Test, Aim Trainer Online, CPS Test 5 Seconds, Streamer Reflex Test, Esports Mechanics Benchmark"
+    />
+    <script type="application/ld+json" set:html={webAppSchema}></script>
+  </head>
+  <body class="en-game-body">
+    <Header />
+
+    <main class="en-game-main">
+      <div class="en-game-frame-wrap">
+        <iframe
+          src={gameUrl}
+          class="en-game-iframe"
+          id="game-iframe"
+          title="Gamer Physical Age & Reaction Test — ErrorLedger"
+          allowfullscreen
+          loading="eager"
+          scrolling="yes"
+        ></iframe>
+      </div>
+
+      {!streamerMode && (
+        <details class="stream-bottom-details">
+          <summary class="details-summary">
+            <span>📖 Detailed Guide & FAQ</span>
+            <span class="chevron">▼</span>
+          </summary>
+          <div class="details-content">
+            <div class="details-faq-section">
+              <h3>Gamer Physical Age & Reaction Test FAQ</h3>
+              <div class="details-faq-grid">
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. How is Physical Age calculated?</strong>
+                  <p class="faq-a">Your Physical Age (16 to 72) combines your 3-round average reaction speed (ms), 12-second aim tracking hits & accuracy, and 5-second CPS burst rate.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Can I practice a single stage?</strong>
+                  <p class="faq-a">Yes! Use the top mode tabs to switch between the Full 3-Stage Age Test, Reaction Only (ms), Aim Tracking Only (12s), or 5s CPS Burst Only.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Does holding down Spacebar count in CPS?</strong>
+                  <p class="faq-a">No. Automatic keyboard key-repeat events are filtered out—only real finger taps or mouse clicks are counted.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. What is a pro-level reaction time?</strong>
+                  <p class="faq-a">On standard PC monitors, ≤185 ms is Pro/Challenger level (Age 16–19), 186–215 ms is Diamond (Age 20–24), and 216–245 ms is Gold/Average (Age 25–29).</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </details>
+      )}
+    </main>
+
+    {!streamerMode && <Footer />}
+
+    <script>
+      const iframe = document.getElementById('game-iframe') as HTMLIFrameElement;
+      if (iframe) {
+        var sp = new URLSearchParams(window.location.search);
+        if (sp.has('stream') || sp.has('obs')) {
+          var s = document.createElement('style');
+          s.textContent = [
+            '.leaderboard-ad-wrap { display: none !important; }',
+            'footer { display: none !important; }',
+            '.stream-bottom-details { display: none !important; }',
+            '.arcade-header { display: none !important; }',
+            '.en-game-main { padding: 0 !important; margin: 0 !important; max-width: none !important; }',
+            '.en-game-frame-wrap { height: 100vh !important; }',
+            '.en-game-iframe { height: 100vh !important; }'
+          ].join(' ');
+          document.head.appendChild(s);
+
+          if (!iframe.src.includes('stream=true')) {
+            iframe.src = iframe.src + '&stream=true';
+          }
+        } else {
+          const syncHeight = () => {
+            try {
+              const doc = iframe.contentDocument || iframe.contentWindow?.document;
+              if (doc && doc.documentElement) {
+                const h = Math.max(820, doc.documentElement.scrollHeight);
+                const wrap = iframe.parentElement;
+                if (wrap) wrap.style.minHeight = h + 'px';
+              }
+            } catch (e) {}
+          };
+          iframe.addEventListener('load', () => {
+            syncHeight();
+            try {
+              const doc = iframe.contentDocument || iframe.contentWindow?.document;
+              if (doc && doc.body && typeof ResizeObserver !== 'undefined') {
+                new ResizeObserver(syncHeight).observe(doc.body);
+              }
+            } catch (e) {}
+          });
+        }
+      }
+    </script>
+  </body>
+</html>
+
+<style>
+  .en-game-body {
+    background: #090d16;
+    color: #f1f5f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+  }
+
+  .en-game-main {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0.5rem 0.75rem 2rem !important;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+  }
+
+  .en-game-frame-wrap {
+    width: 100%;
+    height: 820px;
+  }
+
+  .en-game-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+    background: transparent;
+  }
+
+  @media (min-width: 1400px) {
+    .en-game-frame-wrap {
+      height: max(800px, calc(100vh - 110px));
+    }
+  }
+
+  .stream-bottom-details {
+    margin-top: 1.5rem;
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.15s ease;
+  }
+
+  .stream-bottom-details[open] {
+    border-color: rgba(168, 85, 247, 0.3);
+  }
+
+  .details-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #94a3b8;
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+    transition: color 0.15s ease;
+  }
+
+  .details-summary:hover {
+    color: #e2e8f0;
+  }
+
+  .details-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .chevron {
+    font-size: 0.65rem;
+    color: #a855f7;
+    transition: transform 0.2s ease;
+  }
+
+  .stream-bottom-details[open] .chevron {
+    transform: rotate(180deg);
+  }
+
+  .details-content {
+    padding: 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    color: #cbd5e1;
+    font-size: 0.85rem;
+    line-height: 1.7;
+  }
+
+  .details-faq-section h3 {
+    font-size: 0.95rem;
+    color: #f8fafc;
+    margin: 0 0 0.75rem;
+  }
+
+  .details-faq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .details-faq-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+  }
+
+  .faq-q {
+    display: block;
+    font-size: 0.82rem;
+    color: #e2e8f0;
+    margin-bottom: 0.35rem;
+  }
+
+  .faq-a {
+    margin: 0;
+    font-size: 0.78rem;
+    color: #94a3b8;
+    line-height: 1.55;
+  }
+
+  @media (max-width: 900px) {
+    .details-faq-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
