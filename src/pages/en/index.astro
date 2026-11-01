@@ -9,7 +9,7 @@ const urlParams = Astro.url.searchParams;
 const streamerMode = urlParams.has('stream') || urlParams.has('obs');
 
 const games = await getCollection('games');
-const priorityOrder = ['reaction-test', 'sword-enhance', 'block-blast', 'arrow-jump', 'sand-drop', 'marble-roulette', 'roulette', 'ladder', 'drinking-marble', 'ai-music-quiz', 'soundboard', 'stream-doodle', 'stream-emoji', 'fortune'];
+const priorityOrder = ['mine-gems', 'reaction-test', 'sword-enhance', 'block-blast', 'arrow-jump', 'sand-drop', 'marble-roulette', 'roulette', 'ladder', 'drinking-marble', 'ai-music-quiz', 'soundboard', 'stream-doodle', 'stream-emoji', 'fortune'];
 const sortedGames = games.sort((a, b) => {
   const idxA = priorityOrder.indexOf(a.id);
   const idxB = priorityOrder.indexOf(b.id);
@@ -255,6 +255,7 @@ const homeFaqSchema = JSON.stringify({
             const href = game.id === 'fortune' ? '/en/fortune' : `/en/games/${game.id}`;
             const btnText = game.id === 'fortune' ? 'View Fortune →' : 'Launch →';
             const enTitle: Record<string, string> = {
+              'mine-gems': 'Mine Gems: Cash Out or Bust',
               'reaction-test': 'Streamer Physical Age Test',
               'sword-enhance': 'Legendary +20 Sword Enhancer',
               'block-blast': 'Block Blast!',
@@ -271,6 +272,7 @@ const homeFaqSchema = JSON.stringify({
               'fortune': 'Daily Fortune',
             };
             const enTagline: Record<string, string> = {
+              'mine-gems': '5x5 coordinate grid (A1–E5) diamond mining game with exponential cash-out multipliers & SHA-256 fairness',
               'reaction-test': '3-stage Reaction Speed (ms), 12s Aim Tracking & 5s CPS burst test with Physical Age Receipt',
               'sword-enhance': 'Forge +0 to +20 with 6-slot Inventory, +7 Sword of Greed jackpot & 10-fail stack bonuses',
               'block-blast': '8x8 combo line blast block puzzle with endless & 2-min time attack modes',
@@ -287,6 +289,7 @@ const homeFaqSchema = JSON.stringify({
               'fortune': 'Daily auto-updated horoscope & zodiac fortune for stream openers',
             };
             const enBadge: Record<string, string> = {
+              'mine-gems': '💎 Cash-Out Game',
               'reaction-test': '⚡ Physical Age',
               'sword-enhance': '🗡️ +20 Forging',
               'block-blast': '🔥 #1 Puzzle',
@@ -330,7 +333,7 @@ const homeFaqSchema = JSON.stringify({
         <div class="section-hub-footer">
           <a href="/en/games" class="btn-hub-cta games-accent">
             <span class="btn-hub-icon">🎮</span>
-            <span>Explore All 12 Interactive Stream Games</span>
+            <span>Explore All 13 Interactive Stream Games</span>
             <span class="btn-hub-arrow">→</span>
           </a>
         </div>

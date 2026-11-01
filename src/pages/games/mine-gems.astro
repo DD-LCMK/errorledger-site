@@ -1,0 +1,1701 @@
+---
+import GameLayout from '../../layouts/GameLayout.astro';
+import { getEntry } from 'astro:content';
+
+const entry = await getEntry('games', 'mine-gems');
+if (!entry) throw new Error('mine-gems entry not found');
+---
+
+<GameLayout entry={entry}>
+  <div class="mg-app" id="mg-app">
+    <!-- Top Stats HUD -->
+    <div class="mg-hud">
+      <div class="mg-stat-card balance-card">
+        <span class="mg-stat-label" data-ko="🪙 보유 포인트" data-en="🪙 BALANCE">🪙 보유 포인트</span>
+        <strong class="mg-stat-val gold" id="mg-balance">5,000 P</strong>
+      </div>
+      <div class="mg-stat-card">
+        <span class="mg-stat-label" data-ko="🏆 최고 익절 배율" data-en="🏆 BEST MULTIPLIER">🏆 최고 익절 배율</span>
+        <strong class="mg-stat-val cyan" id="mg-best-mult">x1.00</strong>
+      </div>
+      <div class="mg-stat-card">
+        <span class="mg-stat-label" data-ko="💰 최대 단일 수익" data-en="💰 MAX PAYOUT">💰 최대 단일 수익</span>
+        <strong class="mg-stat-val emerald" id="mg-best-win">0 P</strong>
+      </div>
+      <div class="mg-stat-card">
+        <span class="mg-stat-label" data-ko="🔥 연속 익절" data-en="🔥 WIN STREAK">🔥 연속 익절</span>
+        <strong class="mg-stat-val amber" id="mg-streak">0연승 (최고 0)</strong>
+      </div>
+      <button type="button" class="mg-reset-btn" id="mg-reset-btn" title="기록 초기화">
+        🔄 <span data-ko="초기화" data-en="Reset">초기화</span>
+      </button>
+    </div>
+
+    <!-- Main 2-Column Layout -->
+    <div class="mg-main-grid">
+      <!-- Left Column: Controls & Telemetry -->
+      <aside class="mg-sidebar">
+        <div class="mg-panel">
+          <div class="mg-panel-header">
+            <span class="mg-panel-title" data-ko="⚙️ 광산 탐사 설정" data-en="⚙️ MINE SETUP">⚙️ 광산 탐사 설정</span>
+            <span class="mg-state-pill" id="mg-state-pill" data-ko="대기 중" data-en="READY">대기 중</span>
+          </div>
+
+          <!-- Mine Count Selector -->
+          <div class="mg-field">
+            <label class="mg-label" data-ko="💣 숨겨진 지뢰(폭탄) 개수 (25칸 중)" data-en="💣 HIDDEN MINES (OUT OF 25 TILES)">💣 숨겨진 지뢰(폭탄) 개수 (25칸 중)</label>
+            <div class="mg-mine-btns" id="mg-mine-btns">
+              <button type="button" class="mg-mine-btn" data-mines="1">
+                <span class="m-count">💣 1개</span>
+                <span class="m-desc" data-ko="안전파 (입문)" data-en="Low Risk">안전파 (입문)</span>
+              </button>
+              <button type="button" class="mg-mine-btn active" data-mines="3">
+                <span class="m-count">💣 3개</span>
+                <span class="m-desc" data-ko="표준 밸런스" data-en="Balanced">표준 밸런스</span>
+              </button>
+              <button type="button" class="mg-mine-btn" data-mines="5">
+                <span class="m-count">💣 5개</span>
+                <span class="m-desc" data-ko="고위험 고수익" data-en="High Stakes">고위험 고수익</span>
+              </button>
+              <button type="button" class="mg-mine-btn beast" data-mines="10">
+                <span class="m-count">🔥 10개</span>
+                <span class="m-desc" data-ko="야수의 심장" data-en="Beast Mode">야수의 심장</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Bet / Stake Amount -->
+          <div class="mg-field">
+            <div class="mg-label-row">
+              <label class="mg-label" for="mg-bet-input" data-ko="🪙 탐사 투자 포인트" data-en="🪙 STAKE POINTS">🪙 탐사 투자 포인트</label>
+              <span class="mg-min-hint" data-ko="최소 100 P" data-en="Min 100 P">최소 100 P</span>
+            </div>
+            <div class="mg-bet-input-wrap">
+              <input type="number" id="mg-bet-input" class="mg-bet-input" value="500" min="100" step="100" />
+              <span class="mg-unit">P</span>
+            </div>
+            <div class="mg-bet-quick">
+              <button type="button" class="mg-q-btn" data-bet="100">100</button>
+              <button type="button" class="mg-q-btn" data-bet="500">500</button>
+              <button type="button" class="mg-q-btn" data-bet="1000">1,000</button>
+              <button type="button" class="mg-q-btn" data-bet="half">1/2</button>
+              <button type="button" class="mg-q-btn" data-bet="double">2X</button>
+              <button type="button" class="mg-q-btn allin" data-bet="max" data-ko="올인" data-en="MAX">올인</button>
+            </div>
+          </div>
+
+          <!-- Live Multiplier & Survival Telemetry -->
+          <div class="mg-telemetry-box">
+            <div class="mg-tele-row main-mult-row">
+              <div class="mg-tele-col">
+                <span class="mg-tele-label" data-ko="현재 누적 배율" data-en="CURRENT MULTIPLIER">현재 누적 배율</span>
+                <strong class="mg-tele-big" id="mg-cur-mult">x1.00</strong>
+              </div>
+              <div class="mg-tele-arrow">➜</div>
+              <div class="mg-tele-col right">
+                <span class="mg-tele-label" data-ko="다음 💎 발견 시" data-en="NEXT GEM MULTIPLIER">다음 💎 발견 시</span>
+                <strong class="mg-tele-next" id="mg-next-mult">x1.13</strong>
+              </div>
+            </div>
+
+            <div class="mg-tele-divider"></div>
+
+            <div class="mg-tele-subrow">
+              <span data-ko="🎯 다음 타일 생존 확률" data-en="🎯 Next Tile Survival Odds">🎯 다음 타일 생존 확률</span>
+              <strong id="mg-survival-rate" class="mg-surv-val">88.0% (22/25)</strong>
+            </div>
+            <div class="mg-risk-bar-bg">
+              <div class="mg-risk-bar-fill" id="mg-risk-bar" style="width: 88%;"></div>
+            </div>
+
+            <div class="mg-tele-subrow" style="margin-top: 0.45rem;">
+              <span data-ko="💎 발굴한 다이아몬드" data-en="💎 Gems Excavated">💎 발굴한 다이아몬드</span>
+              <strong id="mg-gems-found">0 / 22 💎</strong>
+            </div>
+          </div>
+
+          <!-- Primary Action Buttons -->
+          <div class="mg-actions">
+            <button type="button" class="mg-btn-start" id="mg-btn-start">
+              🚀 <span data-ko="보석 탐사 시작 (Space)" data-en="START MINING (Space)">보석 탐사 시작 (Space)</span>
+            </button>
+
+            <button type="button" class="mg-btn-cashout" id="mg-btn-cashout" style="display: none;" disabled>
+              <span class="cashout-top">
+                💰 <span data-ko="지금 익절하기 (Cash Out)" data-en="CASH OUT NOW">지금 익절하기 (Cash Out)</span>
+              </span>
+              <strong class="cashout-amount" id="mg-cashout-val">+500 P (x1.00)</strong>
+            </button>
+
+            <button type="button" class="mg-btn-random" id="mg-btn-random" style="display: none;">
+              🎲 <span data-ko="시청자 운빨! 랜덤 1칸 열기 (R)" data-en="Lucky Random Tile Pick (R)">시청자 운빨! 랜덤 1칸 열기 (R)</span>
+            </button>
+          </div>
+
+          <!-- Bankruptcy Aid -->
+          <div class="mg-aid-box" id="mg-aid-box">
+            <div class="mg-aid-info">
+              <span class="mg-aid-title" data-ko="🚑 파산 구제 지원금" data-en="🚑 Bankruptcy Relief">🚑 파산 구제 지원금</span>
+              <span class="mg-aid-desc" data-ko="잔액 100 P 미만일 때 무료 충전" data-en="Available when balance < 100 P">잔액 100 P 미만일 때 무료 충전</span>
+            </div>
+            <button type="button" class="mg-btn-aid" id="mg-btn-aid" disabled>
+              +1,000 P <span data-ko="지원받기" data-en="Claim">지원받기</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right Column: 5x5 Coordinate Grid & Provably Fair Box -->
+      <section class="mg-arena-col">
+        <div class="mg-board-card" id="mg-board-card">
+          <!-- Live Status Banner -->
+          <div class="mg-status-banner" id="mg-status-banner">
+            <span class="mg-status-icon" id="mg-status-icon">💎</span>
+            <p class="mg-status-text" id="mg-status-text" data-ko="폭탄 개수와 포인트를 설정한 뒤 [🚀 보석 탐사 시작]을 눌러주세요! 채팅창과 좌표(A1~E5)로 소통할 수 있습니다." data-en="Select mines and stake, then click [🚀 START MINING]! Viewers can call out coordinates (A1–E5).">
+              폭탄 개수와 포인트를 설정한 뒤 [🚀 보석 탐사 시작]을 눌러주세요! 채팅창과 좌표(A1~E5)로 소통할 수 있습니다.
+            </p>
+            <button type="button" class="mg-copy-btn" id="mg-copy-btn" style="display: none;">
+              📋 <span data-ko="결과 그리드 복사" data-en="Copy Grid">결과 그리드 복사</span>
+            </button>
+          </div>
+
+          <!-- 5x5 Grid with A-E / 1-5 Coordinates -->
+          <div class="mg-grid-wrapper">
+            <!-- Top Column Headers (1 - 5) -->
+            <div class="mg-col-headers">
+              <div class="mg-corner-spacer"></div>
+              <div class="mg-col-hdr">1</div>
+              <div class="mg-col-hdr">2</div>
+              <div class="mg-col-hdr">3</div>
+              <div class="mg-col-hdr">4</div>
+              <div class="mg-col-hdr">5</div>
+            </div>
+
+            <div class="mg-grid-body">
+              <!-- Left Row Headers (A - E) + 25 Tiles -->
+              <div class="mg-grid" id="mg-grid">
+                <!-- Populated dynamically by JS with A1..E5 -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Rounds Strip -->
+          <div class="mg-history-bar">
+            <span class="mg-hist-label" data-ko="📜 최근 탐사" data-en="📜 RECENT">📜 최근 탐사</span>
+            <div class="mg-hist-list" id="mg-hist-list">
+              <span class="mg-hist-empty" data-ko="아직 탐사 기록이 없습니다." data-en="No rounds played yet.">아직 탐사 기록이 없습니다.</span>
+            </div>
+          </div>
+
+          <!-- Provably Fair SHA-256 Verification Box -->
+          <div class="mg-fair-box">
+            <div class="mg-fair-header">
+              <span class="mg-fair-title">🔒 <span data-ko="SHA-256 사전 시드 고정 (억까·조작 방지 검증)" data-en="Provably Fair SHA-256 Pre-Committed Seed">SHA-256 사전 시드 고정 (억까·조작 방지 검증)</span></span>
+              <span class="mg-fair-badge" id="mg-fair-badge" data-ko="대기 중" data-en="STANDBY">대기 중</span>
+            </div>
+            <div class="mg-fair-row">
+              <span class="mg-fair-key" data-ko="사전 공개 SHA-256 해시:" data-en="Pre-Round SHA-256 Hash:">사전 공개 SHA-256 해시:</span>
+              <code class="mg-fair-code" id="mg-hash-code">라운드 시작 시 폭탄 좌표의 암호화 해시가 이곳에 사전 고정됩니다.</code>
+            </div>
+            <div class="mg-fair-row" id="mg-seed-row" style="display: none;">
+              <span class="mg-fair-key" data-ko="라운드 종료 원본 시드:" data-en="Revealed Raw Seed:">라운드 종료 원본 시드:</span>
+              <code class="mg-fair-code revealed" id="mg-seed-code">-</code>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</GameLayout>
+
+<style is:global>
+  .mg-app {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    color: #f8fafc;
+    user-select: none;
+  }
+
+  /* Top HUD */
+  .mg-hud {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr) auto;
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+
+  .mg-stat-card {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 14px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .mg-stat-card.balance-card {
+    border-color: rgba(250, 204, 21, 0.35);
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+  }
+
+  .mg-stat-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #94a3b8;
+  }
+
+  .mg-stat-val {
+    font-size: 1.25rem;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .mg-stat-val.gold { color: #facc15; }
+  .mg-stat-val.cyan { color: #38bdf8; }
+  .mg-stat-val.emerald { color: #34d399; }
+  .mg-stat-val.amber { color: #fb923c; font-size: 1.08rem; }
+
+  .mg-reset-btn {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    color: #cbd5e1;
+    border-radius: 12px;
+    padding: 0 1rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .mg-reset-btn:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+  }
+
+  /* Main 2-Column Grid */
+  .mg-main-grid {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 1.15rem;
+    align-items: start;
+  }
+
+  .mg-panel {
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 18px;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .mg-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .mg-panel-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #f8fafc;
+  }
+
+  .mg-state-pill {
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.15);
+    color: #cbd5e1;
+  }
+
+  .mg-state-pill.active {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    animation: mgPulse 1.5s infinite;
+  }
+
+  @keyframes mgPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.65; }
+  }
+
+  .mg-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .mg-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .mg-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #cbd5e1;
+  }
+
+  .mg-min-hint {
+    font-size: 0.72rem;
+    color: #64748b;
+    font-weight: 600;
+  }
+
+  /* Mine Selector Buttons */
+  .mg-mine-btns {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .mg-mine-btn {
+    background: rgba(30, 41, 59, 0.75);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 11px;
+    padding: 0.55rem 0.65rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.12rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: #e2e8f0;
+  }
+
+  .mg-mine-btn:hover:not(:disabled) {
+    border-color: rgba(56, 189, 248, 0.5);
+    background: rgba(30, 41, 59, 0.95);
+  }
+
+  .mg-mine-btn.active {
+    background: rgba(14, 165, 233, 0.18);
+    border-color: #38bdf8;
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.2);
+  }
+
+  .mg-mine-btn.beast.active {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #f87171;
+    box-shadow: 0 0 14px rgba(239, 68, 68, 0.25);
+  }
+
+  .mg-mine-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .m-count {
+    font-size: 0.9rem;
+    font-weight: 800;
+  }
+
+  .m-desc {
+    font-size: 0.7rem;
+    color: #94a3b8;
+  }
+
+  /* Bet Input & Quick Buttons */
+  .mg-bet-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .mg-bet-input {
+    width: 100%;
+    background: #090d16;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 10px;
+    padding: 0.6rem 2.2rem 0.6rem 0.85rem;
+    color: #facc15;
+    font-size: 1.05rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    outline: none;
+  }
+
+  .mg-bet-input:focus {
+    border-color: #facc15;
+  }
+
+  .mg-bet-input:disabled {
+    opacity: 0.55;
+  }
+
+  .mg-unit {
+    position: absolute;
+    right: 0.85rem;
+    font-weight: 800;
+    color: #94a3b8;
+    font-size: 0.85rem;
+  }
+
+  .mg-bet-quick {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.35rem;
+  }
+
+  .mg-q-btn {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 7px;
+    padding: 0.38rem 0.2rem;
+    font-size: 0.73rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .mg-q-btn:hover:not(:disabled) {
+    background: rgba(250, 204, 21, 0.15);
+    border-color: rgba(250, 204, 21, 0.45);
+    color: #fde047;
+  }
+
+  .mg-q-btn.allin {
+    color: #fca5a5;
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+
+  .mg-q-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  /* Telemetry Box */
+  .mg-telemetry-box {
+    background: rgba(9, 13, 22, 0.85);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 14px;
+    padding: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .mg-tele-row.main-mult-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .mg-tele-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .mg-tele-col.right {
+    text-align: right;
+  }
+
+  .mg-tele-label {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    font-weight: 700;
+  }
+
+  .mg-tele-big {
+    font-size: 1.55rem;
+    font-weight: 900;
+    color: #38bdf8;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .mg-tele-next {
+    font-size: 1.35rem;
+    font-weight: 900;
+    color: #34d399;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .mg-tele-arrow {
+    color: #64748b;
+    font-size: 1.1rem;
+  }
+
+  .mg-tele-divider {
+    height: 1px;
+    background: rgba(148, 163, 184, 0.12);
+    margin: 0.25rem 0;
+  }
+
+  .mg-tele-subrow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78rem;
+    color: #cbd5e1;
+  }
+
+  .mg-surv-val {
+    color: #34d399;
+    font-weight: 800;
+  }
+
+  .mg-risk-bar-bg {
+    width: 100%;
+    height: 7px;
+    background: rgba(30, 41, 59, 0.9);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .mg-risk-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #38bdf8);
+    border-radius: 999px;
+    transition: width 0.25s ease, background 0.25s ease;
+  }
+
+  /* Primary Action Buttons */
+  .mg-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .mg-btn-start {
+    width: 100%;
+    padding: 0.95rem 1rem;
+    border-radius: 13px;
+    border: none;
+    background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+    color: #ffffff;
+    font-size: 1.02rem;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 8px 22px rgba(14, 165, 233, 0.3);
+    transition: transform 0.14s ease, box-shadow 0.14s ease;
+  }
+
+  .mg-btn-start:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(14, 165, 233, 0.42);
+  }
+
+  .mg-btn-cashout {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border-radius: 13px;
+    border: 2px solid #fde047;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.18rem;
+    cursor: pointer;
+    box-shadow: 0 0 24px rgba(16, 185, 129, 0.4);
+    transition: all 0.15s ease;
+  }
+
+  .mg-btn-cashout:hover:not(:disabled) {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 0 32px rgba(250, 204, 21, 0.55);
+  }
+
+  .mg-btn-cashout:disabled {
+    opacity: 0.45;
+    border-color: rgba(148, 163, 184, 0.3);
+    background: rgba(30, 41, 59, 0.85);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+
+  .cashout-top {
+    font-size: 0.85rem;
+    font-weight: 800;
+  }
+
+  .cashout-amount {
+    font-size: 1.18rem;
+    font-weight: 900;
+    color: #fef08a;
+  }
+
+  .mg-btn-random {
+    width: 100%;
+    padding: 0.65rem 1rem;
+    border-radius: 11px;
+    border: 1px solid rgba(168, 85, 247, 0.45);
+    background: rgba(168, 85, 247, 0.15);
+    color: #e9d5ff;
+    font-size: 0.85rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .mg-btn-random:hover {
+    background: rgba(168, 85, 247, 0.28);
+    border-color: #c084fc;
+  }
+
+  /* Bankruptcy Aid */
+  .mg-aid-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(30, 41, 59, 0.55);
+    border: 1px dashed rgba(148, 163, 184, 0.25);
+    border-radius: 11px;
+    padding: 0.6rem 0.8rem;
+  }
+
+  .mg-aid-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .mg-aid-title {
+    font-size: 0.76rem;
+    font-weight: 800;
+    color: #cbd5e1;
+  }
+
+  .mg-aid-desc {
+    font-size: 0.68rem;
+    color: #64748b;
+  }
+
+  .mg-btn-aid {
+    background: rgba(16, 185, 129, 0.2);
+    border: 1px solid rgba(16, 185, 129, 0.45);
+    color: #6ee7b7;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 0.4rem 0.7rem;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .mg-btn-aid:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  /* Right Column: Board Card */
+  .mg-board-card {
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 18px;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .mg-board-card.shake {
+    animation: mgShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    border-color: rgba(239, 68, 68, 0.65);
+  }
+
+  @keyframes mgShake {
+    10%, 90% { transform: translate3d(-3px, 0, 0); }
+    20%, 80% { transform: translate3d(5px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-7px, 0, 0); }
+    40%, 60% { transform: translate3d(7px, 0, 0); }
+  }
+
+  .mg-status-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 13px;
+    padding: 0.75rem 1rem;
+  }
+
+  .mg-status-banner.win {
+    background: rgba(16, 185, 129, 0.16);
+    border-color: rgba(16, 185, 129, 0.45);
+  }
+
+  .mg-status-banner.boom {
+    background: rgba(239, 68, 68, 0.18);
+    border-color: rgba(239, 68, 68, 0.5);
+  }
+
+  .mg-status-icon {
+    font-size: 1.45rem;
+    flex-shrink: 0;
+  }
+
+  .mg-status-text {
+    margin: 0;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    flex: 1;
+    line-height: 1.45;
+  }
+
+  .mg-copy-btn {
+    background: rgba(56, 189, 248, 0.18);
+    border: 1px solid rgba(56, 189, 248, 0.45);
+    color: #7dd3fc;
+    border-radius: 9px;
+    padding: 0.45rem 0.8rem;
+    font-size: 0.78rem;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .mg-copy-btn:hover {
+    background: rgba(56, 189, 248, 0.3);
+    color: #ffffff;
+  }
+
+  /* 5x5 Coordinate Grid */
+  .mg-grid-wrapper {
+    max-width: 500px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .mg-col-headers {
+    display: grid;
+    grid-template-columns: 28px repeat(5, 1fr);
+    gap: 0.55rem;
+    text-align: center;
+  }
+
+  .mg-col-hdr {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #64748b;
+  }
+
+  .mg-grid {
+    display: grid;
+    grid-template-columns: 28px repeat(5, 1fr);
+    gap: 0.55rem;
+    align-items: center;
+  }
+
+  .mg-row-hdr {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: #64748b;
+    text-align: center;
+  }
+
+  .mg-tile {
+    aspect-ratio: 1 / 1;
+    border-radius: 14px;
+    border: 2px solid rgba(148, 163, 184, 0.18);
+    background: linear-gradient(145deg, #1e293b, #0f172a);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease, background 0.18s ease;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 4px 10px rgba(0, 0, 0, 0.35);
+    padding: 0;
+  }
+
+  .mg-tile:hover:not(:disabled) {
+    transform: translateY(-3px);
+    border-color: #38bdf8;
+    box-shadow: 0 6px 16px rgba(56, 189, 248, 0.28);
+    background: linear-gradient(145deg, #26354d, #162238);
+  }
+
+  .mg-tile:disabled {
+    cursor: default;
+  }
+
+  .mg-tile-coord {
+    position: absolute;
+    top: 5px;
+    left: 7px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: rgba(148, 163, 184, 0.55);
+    font-family: monospace;
+  }
+
+  .mg-tile-icon {
+    font-size: 1.85rem;
+    line-height: 1;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .mg-tile-sub {
+    font-size: 0.68rem;
+    font-weight: 800;
+    margin-top: 3px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Revealed Gem (Player Picked) */
+  .mg-tile.gem {
+    background: radial-gradient(circle at 50% 35%, rgba(16, 185, 129, 0.35), rgba(6, 78, 59, 0.92));
+    border-color: #34d399;
+    box-shadow: 0 0 20px rgba(52, 211, 153, 0.35);
+  }
+
+  .mg-tile.gem .mg-tile-icon {
+    transform: scale(1.1);
+  }
+
+  .mg-tile.gem .mg-tile-sub {
+    color: #fde047;
+  }
+
+  /* Triggered Bomb (Player Hit) */
+  .mg-tile.boom {
+    background: radial-gradient(circle at 50% 40%, rgba(239, 68, 68, 0.55), rgba(127, 29, 29, 0.95));
+    border-color: #f87171;
+    box-shadow: 0 0 25px rgba(239, 68, 68, 0.6);
+  }
+
+  .mg-tile.boom .mg-tile-sub {
+    color: #fecaca;
+  }
+
+  /* Post-Round Unpicked Mines & Gems */
+  .mg-tile.missed-mine {
+    background: rgba(127, 29, 29, 0.32);
+    border-color: rgba(248, 113, 113, 0.4);
+    opacity: 0.85;
+  }
+
+  .mg-tile.missed-gem {
+    background: rgba(15, 23, 42, 0.6);
+    border-color: rgba(148, 163, 184, 0.12);
+    opacity: 0.45;
+  }
+
+  /* History Strip */
+  .mg-history-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: rgba(9, 13, 22, 0.65);
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    border-radius: 11px;
+    padding: 0.55rem 0.85rem;
+    overflow-x: auto;
+  }
+
+  .mg-hist-label {
+    font-size: 0.74rem;
+    font-weight: 800;
+    color: #94a3b8;
+    white-space: nowrap;
+  }
+
+  .mg-hist-list {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: nowrap;
+  }
+
+  .mg-hist-empty {
+    font-size: 0.75rem;
+    color: #64748b;
+  }
+
+  .mg-hist-pill {
+    font-size: 0.73rem;
+    font-weight: 800;
+    padding: 0.22rem 0.55rem;
+    border-radius: 7px;
+    white-space: nowrap;
+  }
+
+  .mg-hist-pill.win {
+    background: rgba(16, 185, 129, 0.16);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    color: #6ee7b7;
+  }
+
+  .mg-hist-pill.loss {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    color: #fca5a5;
+  }
+
+  /* Provably Fair Box */
+  .mg-fair-box {
+    background: rgba(9, 13, 22, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    border-radius: 12px;
+    padding: 0.75rem 0.95rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .mg-fair-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .mg-fair-title {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #94a3b8;
+  }
+
+  .mg-fair-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+    background: rgba(148, 163, 184, 0.15);
+    color: #94a3b8;
+  }
+
+  .mg-fair-badge.locked {
+    background: rgba(56, 189, 248, 0.16);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+  }
+
+  .mg-fair-badge.verified {
+    background: rgba(16, 185, 129, 0.18);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+  }
+
+  .mg-fair-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .mg-fair-key {
+    font-size: 0.68rem;
+    color: #64748b;
+    font-weight: 700;
+  }
+
+  .mg-fair-code {
+    font-family: monospace;
+    font-size: 0.72rem;
+    color: #cbd5e1;
+    background: rgba(15, 23, 42, 0.9);
+    padding: 0.35rem 0.55rem;
+    border-radius: 6px;
+    word-break: break-all;
+    border: 1px solid rgba(148, 163, 184, 0.1);
+  }
+
+  .mg-fair-code.revealed {
+    color: #6ee7b7;
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+
+  @media (max-width: 920px) {
+    .mg-hud {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .mg-main-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script is:inline>
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  const isEn = params.get('lang') === 'en' || window.location.pathname.startsWith('/en');
+
+  function applyLang() {
+    if (!isEn) return;
+    document.querySelectorAll('[data-en]').forEach((el) => {
+      el.textContent = el.getAttribute('data-en');
+    });
+  }
+  applyLang();
+
+  const ROWS = ['A', 'B', 'C', 'D', 'E'];
+  const COLS = ['1', '2', '3', '4', '5'];
+  const TOTAL_TILES = 25;
+  const STORAGE_KEY = 'el_mine_gems_v1';
+
+  // Persistent state
+  let stats = {
+    balance: 5000,
+    bestMult: 1.0,
+    bestWin: 0,
+    curStreak: 0,
+    bestStreak: 0,
+    history: []
+  };
+
+  function loadStats() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        stats = { ...stats, ...parsed };
+      }
+    } catch (_) {}
+  }
+
+  function saveStats() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
+    } catch (_) {}
+  }
+
+  loadStats();
+
+  // Game Round State
+  let roundActive = false;
+  let mineCount = 3;
+  let stake = 500;
+  let mineSet = new Set(); // indices 0..24
+  let revealedSet = new Set(); // indices 0..24 picked by user
+  let boomIndex = -1;
+  let rawSeedString = '';
+  let preHashHex = '';
+  let lastShareText = '';
+
+  // Audio Context
+  let audioCtx = null;
+  function getAudio() {
+    if (!audioCtx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) audioCtx = new AC();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    return audioCtx;
+  }
+
+  function isMuted() {
+    return localStorage.getItem('el_sound_muted') === '1';
+  }
+
+  function playGemSound(stepIndex) {
+    if (isMuted()) return;
+    const ctx = getAudio();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    // Ascending crystalline chime
+    const baseFreq = 420 * Math.pow(1.065, Math.min(stepIndex, 20));
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(baseFreq, now);
+    osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, now + 0.14);
+
+    gain.gain.setValueAtTime(0.18, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.23);
+
+    // Subtle heartbeat thump on higher steps
+    if (stepIndex >= 3) {
+      const beat = ctx.createOscillator();
+      const bGain = ctx.createGain();
+      beat.type = 'sine';
+      beat.frequency.setValueAtTime(75, now);
+      beat.frequency.exponentialRampToValueAtTime(38, now + 0.12);
+      bGain.gain.setValueAtTime(0.15, now);
+      bGain.gain.exponentialRampToValueAtTime(0.001, now + 0.13);
+      beat.connect(bGain);
+      bGain.connect(ctx.destination);
+      beat.start(now);
+      beat.stop(now + 0.14);
+    }
+  }
+
+  function playCashoutSound() {
+    if (isMuted()) return;
+    const ctx = getAudio();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const notes = [523.25, 659.25, 783.99, 1046.5];
+    notes.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, now + idx * 0.065);
+      gain.gain.setValueAtTime(0.18, now + idx * 0.065);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.065 + 0.25);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + idx * 0.065);
+      osc.stop(now + idx * 0.065 + 0.26);
+    });
+  }
+
+  function playBoomSound() {
+    if (isMuted()) return;
+    const ctx = getAudio();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    // Low explosion rumble
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(130, now);
+    osc.frequency.exponentialRampToValueAtTime(28, now + 0.42);
+    gain.gain.setValueAtTime(0.28, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.46);
+  }
+
+  // Combinatorics Multiplier Calculation
+  // True odds with 99% RTP so 1st gem is always a meaningful boost
+  function calcMultiplier(gemsOpened, mines) {
+    if (gemsOpened <= 0) return 1.0;
+    let prob = 1.0;
+    for (let i = 0; i < gemsOpened; i++) {
+      prob *= (TOTAL_TILES - mines - i) / (TOTAL_TILES - i);
+    }
+    const raw = (1.0 / prob) * 0.99;
+    return Math.max(1.01, Math.round(raw * 100) / 100);
+  }
+
+  function idxToCoord(idx) {
+    const r = Math.floor(idx / 5);
+    const c = idx % 5;
+    return ROWS[r] + COLS[c];
+  }
+
+  async function sha256Hex(str) {
+    if (window.crypto && window.crypto.subtle) {
+      const buf = new TextEncoder().encode(str);
+      const hashBuf = await window.crypto.subtle.digest('SHA-256', buf);
+      return Array.from(new Uint8Array(hashBuf))
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('');
+    }
+    // Fallback deterministic hash if subtle crypto unavailable
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return (h >>> 0).toString(16).padStart(8, '0').repeat(8);
+  }
+
+  // DOM Elements
+  const elBalance = document.getElementById('mg-balance');
+  const elBestMult = document.getElementById('mg-best-mult');
+  const elBestWin = document.getElementById('mg-best-win');
+  const elStreak = document.getElementById('mg-streak');
+  const elResetBtn = document.getElementById('mg-reset-btn');
+  const elStatePill = document.getElementById('mg-state-pill');
+  const elMineBtns = document.querySelectorAll('.mg-mine-btn');
+  const elBetInput = document.getElementById('mg-bet-input');
+  const elQuickBtns = document.querySelectorAll('.mg-q-btn');
+  const elCurMult = document.getElementById('mg-cur-mult');
+  const elNextMult = document.getElementById('mg-next-mult');
+  const elSurvivalRate = document.getElementById('mg-survival-rate');
+  const elRiskBar = document.getElementById('mg-risk-bar');
+  const elGemsFound = document.getElementById('mg-gems-found');
+  const elBtnStart = document.getElementById('mg-btn-start');
+  const elBtnCashout = document.getElementById('mg-btn-cashout');
+  const elCashoutVal = document.getElementById('mg-cashout-val');
+  const elBtnRandom = document.getElementById('mg-btn-random');
+  const elBtnAid = document.getElementById('mg-btn-aid');
+  const elBoardCard = document.getElementById('mg-board-card');
+  const elStatusBanner = document.getElementById('mg-status-banner');
+  const elStatusIcon = document.getElementById('mg-status-icon');
+  const elStatusText = document.getElementById('mg-status-text');
+  const elCopyBtn = document.getElementById('mg-copy-btn');
+  const elGrid = document.getElementById('mg-grid');
+  const elHistList = document.getElementById('mg-hist-list');
+  const elFairBadge = document.getElementById('mg-fair-badge');
+  const elHashCode = document.getElementById('mg-hash-code');
+  const elSeedRow = document.getElementById('mg-seed-row');
+  const elSeedCode = document.getElementById('mg-seed-code');
+
+  // Build 5x5 Grid DOM
+  const tileButtons = [];
+  function initGridDOM() {
+    elGrid.innerHTML = '';
+    tileButtons.length = 0;
+    for (let r = 0; r < 5; r++) {
+      const rowHdr = document.createElement('div');
+      rowHdr.className = 'mg-row-hdr';
+      rowHdr.textContent = ROWS[r];
+      elGrid.appendChild(rowHdr);
+
+      for (let c = 0; c < 5; c++) {
+        const idx = r * 5 + c;
+        const coord = ROWS[r] + COLS[c];
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'mg-tile';
+        btn.dataset.idx = String(idx);
+        btn.innerHTML = `
+          <span class="mg-tile-coord">${coord}</span>
+          <span class="mg-tile-icon">❔</span>
+          <span class="mg-tile-sub"></span>
+        `;
+        btn.addEventListener('click', () => onTileClick(idx));
+        elGrid.appendChild(btn);
+        tileButtons.push(btn);
+      }
+    }
+  }
+
+  function updateHUD() {
+    elBalance.textContent = `${stats.balance.toLocaleString()} P`;
+    elBestMult.textContent = `x${stats.bestMult.toFixed(2)}`;
+    elBestWin.textContent = `${stats.bestWin.toLocaleString()} P`;
+    elStreak.textContent = isEn
+      ? `${stats.curStreak} (Best ${stats.bestStreak})`
+      : `${stats.curStreak}연승 (최고 ${stats.bestStreak})`;
+
+    // Bankruptcy aid button state
+    elBtnAid.disabled = roundActive || stats.balance >= 100;
+
+    // History pills
+    if (!stats.history || stats.history.length === 0) {
+      elHistList.innerHTML = `<span class="mg-hist-empty">${isEn ? 'No rounds played yet.' : '아직 탐사 기록이 없습니다.'}</span>`;
+    } else {
+      elHistList.innerHTML = stats.history
+        .slice(0, 8)
+        .map((h) => {
+          if (h.win) {
+            return `<span class="mg-hist-pill win">💰 x${h.mult.toFixed(2)} (+${h.payout.toLocaleString()}P)</span>`;
+          }
+          return `<span class="mg-hist-pill loss">💥 ${h.coord} (-${h.stake.toLocaleString()}P)</span>`;
+        })
+        .join('');
+    }
+  }
+
+  function updateTelemetry() {
+    const k = revealedSet.size;
+    const maxGems = TOTAL_TILES - mineCount;
+    const curM = calcMultiplier(k, mineCount);
+    const nextM = k < maxGems ? calcMultiplier(k + 1, mineCount) : curM;
+
+    elCurMult.textContent = `x${curM.toFixed(2)}`;
+    elNextMult.textContent = k < maxGems ? `x${nextM.toFixed(2)}` : 'MAX';
+
+    const remainingTotal = TOTAL_TILES - k;
+    const remainingSafe = Math.max(0, maxGems - k);
+    const survPct = remainingTotal > 0 ? (remainingSafe / remainingTotal) * 100 : 0;
+
+    elSurvivalRate.textContent = `${survPct.toFixed(1)}% (${remainingSafe}/${remainingTotal})`;
+    elRiskBar.style.width = `${Math.max(0, Math.min(100, survPct))}%`;
+
+    if (survPct >= 70) {
+      elRiskBar.style.background = 'linear-gradient(90deg, #10b981, #38bdf8)';
+      elSurvivalRate.style.color = '#34d399';
+    } else if (survPct >= 45) {
+      elRiskBar.style.background = 'linear-gradient(90deg, #f59e0b, #fbbf24)';
+      elSurvivalRate.style.color = '#fbbf24';
+    } else {
+      elRiskBar.style.background = 'linear-gradient(90deg, #ef4444, #f97316)';
+      elSurvivalRate.style.color = '#f87171';
+    }
+
+    elGemsFound.textContent = `${k} / ${maxGems} 💎`;
+
+    if (roundActive) {
+      const payout = Math.round(stake * curM);
+      elBtnCashout.disabled = k < 1;
+      elCashoutVal.textContent =
+        k < 1
+          ? isEn
+            ? 'Find at least 1 Gem (💎)'
+            : '보석을 1개 이상 발굴하세요'
+          : `+${payout.toLocaleString()} P (x${curM.toFixed(2)})`;
+    }
+  }
+
+  function setControlsDisabled(disabled) {
+    elMineBtns.forEach((b) => (b.disabled = disabled));
+    elBetInput.disabled = disabled;
+    elQuickBtns.forEach((b) => (b.disabled = disabled));
+  }
+
+  async function startRound() {
+    if (roundActive) return;
+
+    let rawBet = parseInt(elBetInput.value, 10);
+    if (isNaN(rawBet) || rawBet < 100) rawBet = 100;
+    if (rawBet > stats.balance) {
+      if (stats.balance < 100) {
+        alert(
+          isEn
+            ? 'Not enough points! Claim the +1,000 P Bankruptcy Relief on the left panel.'
+            : '보유 포인트가 부족합니다! 좌측 하단의 [🚑 무료 파산 구제 지원금 +1,000 P]를 먼저 받아주세요.'
+        );
+        return;
+      }
+      rawBet = stats.balance;
+    }
+    elBetInput.value = String(rawBet);
+    stake = rawBet;
+
+    // Deduct stake upfront
+    stats.balance -= stake;
+    saveStats();
+
+    roundActive = true;
+    revealedSet.clear();
+    mineSet.clear();
+    boomIndex = -1;
+    elCopyBtn.style.display = 'none';
+
+    // Cryptographically fair mine placement
+    const indices = Array.from({ length: TOTAL_TILES }, (_, i) => i);
+    const randArr = new Uint32Array(TOTAL_TILES);
+    if (window.crypto && window.crypto.getRandomValues) {
+      window.crypto.getRandomValues(randArr);
+    } else {
+      for (let i = 0; i < TOTAL_TILES; i++) randArr[i] = Math.floor(Math.random() * 0xffffffff);
+    }
+    for (let i = TOTAL_TILES - 1; i > 0; i--) {
+      const j = randArr[i] % (i + 1);
+      const tmp = indices[i];
+      indices[i] = indices[j];
+      indices[j] = tmp;
+    }
+    for (let m = 0; m < mineCount; m++) {
+      mineSet.add(indices[m]);
+    }
+
+    const sortedMineCoords = Array.from(mineSet)
+      .sort((a, b) => a - b)
+      .map(idxToCoord)
+      .join(',');
+    const nonce = Array.from(randArr.slice(0, 4))
+      .map((n) => (n & 0xffff).toString(16).padStart(4, '0'))
+      .join('');
+    rawSeedString = `MINES(${mineCount}):[${sortedMineCoords}]|NONCE:${nonce}`;
+    preHashHex = await sha256Hex(rawSeedString);
+
+    // Update Provably Fair UI
+    elFairBadge.className = 'mg-fair-badge locked';
+    elFairBadge.textContent = isEn ? '🔒 HASH LOCKED' : '🔒 시드 해시 고정됨';
+    elHashCode.textContent = preHashHex;
+    elSeedRow.style.display = 'none';
+
+    // Reset tiles UI
+    tileButtons.forEach((btn) => {
+      btn.className = 'mg-tile';
+      btn.disabled = false;
+      btn.querySelector('.mg-tile-icon').textContent = '❔';
+      btn.querySelector('.mg-tile-sub').textContent = '';
+    });
+
+    // Toggle action buttons
+    setControlsDisabled(true);
+    elBtnStart.style.display = 'none';
+    elBtnCashout.style.display = 'flex';
+    elBtnRandom.style.display = 'block';
+
+    elStatePill.className = 'mg-state-pill active';
+    elStatePill.textContent = isEn ? 'MINING LIVE' : '탐사 진행 중';
+
+    elStatusBanner.className = 'mg-status-banner';
+    elStatusIcon.textContent = '⛏️';
+    elStatusText.textContent = isEn
+      ? `Exploring with ${stake.toLocaleString()} P (${mineCount} mines hidden). Pick a coordinate (A1–E5)!`
+      : `투자금 ${stake.toLocaleString()} P • 지뢰 ${mineCount}개 매설 완료! 원하는 타일(A1~E5)을 클릭해 보석을 캐세요.`;
+
+    updateHUD();
+    updateTelemetry();
+  }
+
+  function revealFullBoard() {
+    tileButtons.forEach((btn, idx) => {
+      btn.disabled = true;
+      if (revealedSet.has(idx)) return;
+      if (idx === boomIndex) return;
+
+      const iconEl = btn.querySelector('.mg-tile-icon');
+      const subEl = btn.querySelector('.mg-tile-sub');
+      if (mineSet.has(idx)) {
+        btn.className = 'mg-tile missed-mine';
+        iconEl.textContent = '💣';
+        subEl.textContent = isEn ? 'MINE' : '지뢰';
+      } else {
+        btn.className = 'mg-tile missed-gem';
+        iconEl.textContent = '💎';
+        subEl.textContent = '';
+      }
+    });
+  }
+
+  function buildEmojiShareGrid(won, finalMult, payout) {
+    let gridLines = [];
+    for (let r = 0; r < 5; r++) {
+      let rowStr = '';
+      for (let c = 0; c < 5; c++) {
+        const idx = r * 5 + c;
+        if (idx === boomIndex) rowStr += '💥';
+        else if (revealedSet.has(idx)) rowStr += '💎';
+        else if (mineSet.has(idx)) rowStr += '💣';
+        else rowStr += '⬛';
+      }
+      gridLines.push(rowStr);
+    }
+    const header = won
+      ? isEn
+        ? `💰 [Mine Gems] CASHED OUT at x${finalMult.toFixed(2)}! (+${payout.toLocaleString()} P | ${mineCount} Mines)`
+        : `💰 [지뢰 보석 캐기] x${finalMult.toFixed(2)}배 칼익절 성공! (+${payout.toLocaleString()} P | 폭탄 ${mineCount}개)`
+      : isEn
+      ? `💥 [Mine Gems] BOOM at ${idxToCoord(boomIndex)}! Lost ${stake.toLocaleString()} P (${revealedSet.size} Gems | ${mineCount} Mines)`
+      : `💥 [지뢰 보석 캐기] ${idxToCoord(boomIndex)} 지뢰 밟고 폭사! (-${stake.toLocaleString()} P | ${revealedSet.size}연속 보석 | 폭탄 ${mineCount}개)`;
+
+    return `${header}\n${gridLines.join('\n')}\nhttps://errorledger.com/games/mine-gems`;
+  }
+
+  function finishRound(won) {
+    roundActive = false;
+    setControlsDisabled(false);
+    elBtnStart.style.display = 'block';
+    elBtnCashout.style.display = 'none';
+    elBtnRandom.style.display = 'none';
+
+    elStatePill.className = 'mg-state-pill';
+    elStatePill.textContent = isEn ? 'FINISHED' : '탐사 종료';
+
+    // Reveal Provably Fair Seed
+    elFairBadge.className = 'mg-fair-badge verified';
+    elFairBadge.textContent = isEn ? '✓ SHA-256 VERIFIED' : '✓ 무결성 검증 완료';
+    elSeedRow.style.display = 'flex';
+    elSeedCode.textContent = rawSeedString;
+
+    revealFullBoard();
+
+    const k = revealedSet.size;
+    const finalMult = calcMultiplier(k, mineCount);
+    const payout = won ? Math.round(stake * finalMult) : 0;
+
+    if (won) {
+      playCashoutSound();
+      stats.balance += payout;
+      stats.curStreak += 1;
+      if (stats.curStreak > stats.bestStreak) stats.bestStreak = stats.curStreak;
+      if (finalMult > stats.bestMult) stats.bestMult = finalMult;
+      if (payout > stats.bestWin) stats.bestWin = payout;
+
+      stats.history.unshift({
+        win: true,
+        mult: finalMult,
+        payout,
+        stake
+      });
+
+      elStatusBanner.className = 'mg-status-banner win';
+      elStatusIcon.textContent = '🎉';
+      elStatusText.textContent = isEn
+        ? `CASHED OUT! ${k} Gems excavated for x${finalMult.toFixed(2)} → Received +${payout.toLocaleString()} P!`
+        : `익절 대성공! 보석 ${k}개 연속 발굴 (x${finalMult.toFixed(2)}배) → 총 +${payout.toLocaleString()} P 획득!`;
+    } else {
+      playBoomSound();
+      stats.curStreak = 0;
+      const hitCoord = idxToCoord(boomIndex);
+
+      stats.history.unshift({
+        win: false,
+        mult: finalMult,
+        payout: 0,
+        stake,
+        coord: hitCoord
+      });
+
+      elBoardCard.classList.remove('shake');
+      void elBoardCard.offsetWidth;
+      elBoardCard.classList.add('shake');
+
+      elStatusBanner.className = 'mg-status-banner boom';
+      elStatusIcon.textContent = '💥';
+      elStatusText.textContent = isEn
+        ? `BOOM! Hit a mine at [${hitCoord}] after ${k} gems. Stake (${stake.toLocaleString()} P) lost!`
+        : `콰광!! [${hitCoord}] 타일에서 지뢰가 폭발했습니다! (보석 ${k}개 발굴 후 폭사 • -${stake.toLocaleString()} P)`;
+    }
+
+    if (stats.history.length > 12) stats.history.length = 12;
+    saveStats();
+
+    lastShareText = buildEmojiShareGrid(won, finalMult, payout);
+    elCopyBtn.style.display = 'inline-block';
+
+    updateHUD();
+    updateTelemetry();
+  }
+
+  function onTileClick(idx) {
+    if (!roundActive) return;
+    if (revealedSet.has(idx)) return;
+
+    const btn = tileButtons[idx];
+    const iconEl = btn.querySelector('.mg-tile-icon');
+    const subEl = btn.querySelector('.mg-tile-sub');
+
+    if (mineSet.has(idx)) {
+      boomIndex = idx;
+      btn.className = 'mg-tile boom';
+      btn.disabled = true;
+      iconEl.textContent = '💥';
+      subEl.textContent = 'BOOM!';
+      finishRound(false);
+      return;
+    }
+
+    // Found a Gem!
+    revealedSet.add(idx);
+    const k = revealedSet.size;
+    const stepMult = calcMultiplier(k, mineCount);
+
+    playGemSound(k);
+
+    btn.className = 'mg-tile gem';
+    btn.disabled = true;
+    iconEl.textContent = '💎';
+    subEl.textContent = `x${stepMult.toFixed(2)}`;
+
+    const maxGems = TOTAL_TILES - mineCount;
+    if (k >= maxGems) {
+      // Cleared all safe tiles! Auto jackpot cashout
+      finishRound(true);
+      return;
+    }
+
+    const nextMult = calcMultiplier(k + 1, mineCount);
+    const curPayout = Math.round(stake * stepMult);
+    elStatusBanner.className = 'mg-status-banner';
+    elStatusIcon.textContent = '💎';
+    elStatusText.textContent = isEn
+      ? `[${idxToCoord(idx)}] Gem #${k} found! Cash out now for +${curPayout.toLocaleString()} P (x${stepMult.toFixed(2)}) or risk for x${nextMult.toFixed(2)}?`
+      : `[${idxToCoord(idx)}] ${k}연속 보석 발굴 성공! 지금 익절하면 +${curPayout.toLocaleString()} P (x${stepMult.toFixed(2)}), 한 칸 더 열면 x${nextMult.toFixed(2)}배!`;
+
+    updateTelemetry();
+  }
+
+  // Event Listeners
+  elMineBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (roundActive) return;
+      elMineBtns.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      mineCount = parseInt(btn.dataset.mines, 10) || 3;
+      updateTelemetry();
+    });
+  });
+
+  elQuickBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (roundActive) return;
+      const mode = btn.dataset.bet;
+      let cur = parseInt(elBetInput.value, 10) || 500;
+      if (mode === 'half') cur = Math.max(100, Math.floor(cur / 2));
+      else if (mode === 'double') cur = Math.min(Math.max(100, stats.balance), cur * 2);
+      else if (mode === 'max') cur = Math.max(100, stats.balance);
+      else cur = parseInt(mode, 10) || 500;
+      elBetInput.value = String(cur);
+    });
+  });
+
+  elBtnStart.addEventListener('click', () => startRound());
+
+  elBtnCashout.addEventListener('click', () => {
+    if (!roundActive || revealedSet.size < 1) return;
+    finishRound(true);
+  });
+
+  elBtnRandom.addEventListener('click', () => {
+    if (!roundActive) return;
+    const unpicked = [];
+    for (let i = 0; i < TOTAL_TILES; i++) {
+      if (!revealedSet.has(i)) unpicked.push(i);
+    }
+    if (unpicked.length === 0) return;
+    const pick = unpicked[Math.floor(Math.random() * unpicked.length)];
+    onTileClick(pick);
+  });
+
+  elBtnAid.addEventListener('click', () => {
+    if (roundActive || stats.balance >= 100) return;
+    stats.balance += 1000;
+    saveStats();
+    updateHUD();
+  });
+
+  elResetBtn.addEventListener('click', () => {
+    if (roundActive) return;
+    const msg = isEn
+      ? 'Reset points to 5,000 P and clear personal records?'
+      : '보유 포인트를 5,000 P로 초기화하고 최고 기록을 리셋하시겠습니까?';
+    if (!confirm(msg)) return;
+    stats = {
+      balance: 5000,
+      bestMult: 1.0,
+      bestWin: 0,
+      curStreak: 0,
+      bestStreak: 0,
+      history: []
+    };
+    saveStats();
+    updateHUD();
+    updateTelemetry();
+  });
+
+  elCopyBtn.addEventListener('click', () => {
+    if (!lastShareText) return;
+    navigator.clipboard.writeText(lastShareText).then(() => {
+      const orig = elCopyBtn.innerHTML;
+      elCopyBtn.innerHTML = isEn ? '✅ Copied!' : '✅ 복사 완료!';
+      setTimeout(() => {
+        elCopyBtn.innerHTML = orig;
+      }, 1600);
+    });
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+    if (e.code === 'Space') {
+      e.preventDefault();
+      if (!roundActive) startRound();
+      else if (revealedSet.size >= 1) finishRound(true);
+    } else if (e.code === 'KeyR' && roundActive) {
+      e.preventDefault();
+      elBtnRandom.click();
+    }
+  });
+
+  initGridDOM();
+  updateHUD();
+  updateTelemetry();
+})();
+</script>
+

@@ -47,6 +47,16 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
               <a href={`${prefix}/games`} class="dropdown-hub-link">{isEn ? "View All Games →" : "전체 게임 보기 →"}</a>
             </div>
             <div class="dropdown-grid-games">
+              <a href={`${prefix}/games/mine-gems`} class={`dropdown-item ${currentPath.includes('/games/mine-gems') ? 'active' : ''}`}>
+                <span class="dropdown-item-icon">💣</span>
+                <div class="dropdown-item-content">
+                  <div class="dropdown-item-header">
+                    <span class="dropdown-item-title">{t(lang, 'nav.mine_gems')}</span>
+                    <span class="dropdown-pill hot">NEW</span>
+                  </div>
+                  <span class="dropdown-item-desc">{isEn ? "5x5 Diamond Cash-Out Game" : "5×5 익절 vs 손절 보석 캐기"}</span>
+                </div>
+              </a>
               <a href={`${prefix}/games/reaction-test`} class={`dropdown-item ${currentPath.includes('/games/reaction-test') ? 'active' : ''}`}>
                 <span class="dropdown-item-icon">⚡</span>
                 <div class="dropdown-item-content">
@@ -361,6 +371,16 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
       <div class="drawer-section">
         <div class="drawer-section-title">{isEn ? "🎮 GAMES" : "🎮 인기 게임"}</div>
         <div class="drawer-nav-list">
+          <a 
+            href={`${prefix}/games/mine-gems`}
+            class={`drawer-nav-item ${currentPath.includes('/games/mine-gems') ? 'active' : ''}`}
+          >
+            <span class="drawer-item-icon">💣</span>
+            <div class="drawer-item-info">
+              <span class="drawer-item-name">{t(lang, 'nav.mine_gems')}</span>
+              <span class="drawer-item-desc">{isEn ? "5x5 Diamond Cash-Out Game" : "5×5 익절 vs 손절 보석 캐기"}</span>
+            </div>
+          </a>
           <a 
             href={`${prefix}/games/reaction-test`}
             class={`drawer-nav-item ${currentPath.includes('/games/reaction-test') ? 'active' : ''}`}
