@@ -247,7 +247,26 @@ const homeFaqSchema = JSON.stringify({
       <!-- Games Grid -->
       <section class="games-directory-section">
         <div class="section-header">
-          <h2>Stream Tool Lineup</h2>
+          <h2>Interactive Stream Games & Tool Lineup</h2>
+          <p class="section-sub-desc">Filter between queue-waiting arcade mini-games, live giveaway wheels, and interactive stream studios.</p>
+          <div class="game-filter-tabs" id="home-game-filters" role="tablist" aria-label="Game Category Filter">
+            <button type="button" class="filter-tab active" data-filter="all">
+              <span>✨ All</span>
+              <span class="filter-count">{sortedGames.length}</span>
+            </button>
+            <button type="button" class="filter-tab tab-arcade" data-filter="arcade">
+              <span>🔥 Killing-Time Arcade</span>
+              <span class="filter-count">7</span>
+            </button>
+            <button type="button" class="filter-tab tab-draw" data-filter="draw">
+              <span>🎲 Roulette & Draws</span>
+              <span class="filter-count">4</span>
+            </button>
+            <button type="button" class="filter-tab tab-studio" data-filter="studio">
+              <span>🎨 Quiz, Audio & Studio</span>
+              <span class="filter-count">4</span>
+            </button>
+          </div>
         </div>
 
         <div class="games-grid">
@@ -308,11 +327,41 @@ const homeFaqSchema = JSON.stringify({
               'soundboard': '🔊 Stream SFX',
               'fortune': 'Daily Free',
             };
+            const arcadeIds = ['blind-timer', 'mine-gems', 'reaction-test', 'sword-enhance', 'block-blast', 'arrow-jump', 'sand-drop'];
+            const drawIds = ['marble-roulette', 'roulette', 'ladder', 'drinking-marble'];
+            const group = arcadeIds.includes(game.id) ? 'arcade' : drawIds.includes(game.id) ? 'draw' : 'studio';
+            const hotNewIds = ['blind-timer', 'mine-gems', 'reaction-test', 'sword-enhance'];
+            const isHotNew = hotNewIds.includes(game.id);
+            const enTagsMap: Record<string, string[]> = {
+              'blind-timer': ['1.5s Blind Clock', '1ms Precision', 'Collab Leaderboard'],
+              'mine-gems': ['5x5 Grid A1–E5', 'Cash-Out Multiplier', 'SHA-256 Fair'],
+              'reaction-test': ['Reflex · Aim · CPS', 'Physical Age Receipt', 'Practice Modes'],
+              'sword-enhance': ['+20 Forging', '6-Slot Inventory', '+7 Sword of Greed'],
+              'block-blast': ['8x8 Line Blast', 'Endless Combo', '2m Time Attack'],
+              'arrow-jump': ['Slingshot Aim', 'Physics Climber', 'Daily Seed 300m'],
+              'sand-drop': ['Sand Physics', '11 Merge Tiers', 'ASMR Audio'],
+              'marble-roulette': ['3D Physics', 'Up to 40 Marbles', 'Reversal Track'],
+              'roulette': ['Weighted Odds', 'Ratchet SFX', '1-Click Presets'],
+              'ladder': ['2–20 Players', '1:1 Fair Match', 'Neon Trail'],
+              'drinking-marble': ['3D Rolling Dice', 'Custom Penalty Tiles', 'Party Board'],
+              'ai-music-quiz': ['AI Cover Quiz', 'Original Video Reveal', 'Chat Guess'],
+              'soundboard': ['0ms Latency', 'Numpad Shortcuts', 'Custom Audio'],
+              'stream-doodle': ['12 FPS Line Boil', 'Transparent GIF', 'OBS Overlay'],
+              'stream-emoji': ['16-Frame Timeline', 'Onion Skin', 'Emote Sizes'],
+              'fortune': ['12 Zodiac & Stars', 'Midnight Auto-Update', 'Stream Opener']
+            };
+            const cardTags = enTagsMap[game.id] || [];
             return (
-              <article class="game-card">
+              <article class={`game-card theme-${group} ${isHotNew ? 'is-hot-new' : ''}`} data-group={group}>
+                <div class="card-glow-accent"></div>
                 <div class="card-top-row">
-                  <span class="card-icon">{game.data.icon}</span>
-                  <span class="badge-accent">{enBadge[game.id] ?? game.data.badge}</span>
+                  <div class="card-icon-box">
+                    <span class="card-icon">{game.data.icon}</span>
+                  </div>
+                  <div class="card-badges">
+                    {isHotNew && <span class="badge-hot-new">🔥 NEW</span>}
+                    <span class="badge-accent">{enBadge[game.id] ?? game.data.badge}</span>
+                  </div>
                 </div>
 
                 <div class="card-body">
@@ -320,6 +369,11 @@ const homeFaqSchema = JSON.stringify({
                     <a href={href}>{enTitle[game.id] ?? game.data.title}</a>
                   </h3>
                   <p class="card-tagline">{enTagline[game.id] ?? game.data.tagline}</p>
+                  {cardTags.length > 0 && (
+                    <div class="card-tags-row">
+                      {cardTags.map(tag => <span class="card-mini-tag">{tag}</span>)}
+                    </div>
+                  )}
                 </div>
 
                 <div class="card-footer">
@@ -660,6 +714,28 @@ const homeFaqSchema = JSON.stringify({
     </main>
 
     {!streamerMode && <Footer />}
+    <script is:inline>
+      (function () {
+        const tabs = document.querySelectorAll('#home-game-filters .filter-tab');
+        const cards = document.querySelectorAll('.games-grid .game-card');
+        if (!tabs.length || !cards.length) return;
+        tabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            tabs.forEach((t) => t.classList.remove('active'));
+            tab.classList.add('active');
+            const filter = tab.getAttribute('data-filter') || 'all';
+            cards.forEach((card) => {
+              const group = card.getAttribute('data-group');
+              if (filter === 'all' || group === filter) {
+                card.style.display = 'flex';
+              } else {
+                card.style.display = 'none';
+              }
+            });
+          });
+        });
+      })();
+    </script>
   </body>
 </html>
 
@@ -1111,16 +1187,96 @@ const homeFaqSchema = JSON.stringify({
   }
 
   .section-header h2 {
-    font-size: 1.6rem;
+    font-size: 1.9rem;
     font-weight: 900;
     color: #f8fafc;
-    margin: 0;
+    margin: 0.2rem 0 0.45rem;
     letter-spacing: -0.02em;
+  }
+
+  .section-sub-desc {
+    color: #94a3b8;
+    font-size: 0.94rem;
+    margin: 0 auto 1.35rem;
+    max-width: 680px;
+  }
+
+  /* Interactive Category Filter Tabs */
+  .game-filter-tabs {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    padding: 0.4rem;
+    border-radius: 14px;
+    margin-bottom: 0.5rem;
+  }
+
+  .filter-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: transparent;
+    border: 1px solid transparent;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 800;
+    padding: 0.52rem 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.16s ease;
+  }
+
+  .filter-tab:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .filter-tab.active {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(37, 99, 235, 0.25));
+    border-color: rgba(56, 189, 248, 0.5);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(56, 189, 248, 0.2);
+  }
+
+  .filter-tab.tab-arcade.active {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.22), rgba(239, 68, 68, 0.22));
+    border-color: rgba(251, 191, 36, 0.55);
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.22);
+  }
+
+  .filter-tab.tab-draw.active {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.22), rgba(236, 72, 153, 0.22));
+    border-color: rgba(192, 132, 252, 0.55);
+    box-shadow: 0 4px 14px rgba(168, 85, 247, 0.22);
+  }
+
+  .filter-tab.tab-studio.active {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.22), rgba(14, 165, 233, 0.22));
+    border-color: rgba(52, 211, 153, 0.55);
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.22);
+  }
+
+  .filter-count {
+    font-size: 0.72rem;
+    font-weight: 900;
+    padding: 0.1rem 0.42rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #cbd5e1;
+  }
+
+  .filter-tab.active .filter-count {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
   }
 
   .games-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(282px, 1fr));
     gap: 1.25rem;
   }
 
@@ -1137,30 +1293,133 @@ const homeFaqSchema = JSON.stringify({
   }
 
   .game-card {
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 14px;
-    padding: 1.25rem;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(160deg, #111a2e 0%, #0b1120 100%);
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    border-radius: 16px;
+    padding: 1.35rem;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     gap: 0.85rem;
-    transition: all 0.2s ease;
+    transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.22s ease, box-shadow 0.22s ease;
+  }
+
+  .card-glow-accent {
+    position: absolute;
+    top: -45px;
+    right: -45px;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    filter: blur(36px);
+    opacity: 0.18;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .game-card.theme-arcade .card-glow-accent { background: #f59e0b; }
+  .game-card.theme-draw .card-glow-accent { background: #a855f7; }
+  .game-card.theme-studio .card-glow-accent { background: #10b981; }
+
+  .game-card.is-hot-new {
+    border-color: rgba(251, 191, 36, 0.32);
+    box-shadow: 0 6px 22px rgba(245, 158, 11, 0.08);
   }
 
   .game-card:hover {
-    border-color: rgba(168, 85, 247, 0.3);
-    transform: translateY(-3px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+    border-color: rgba(56, 189, 248, 0.5);
+    transform: translateY(-5px);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.48), 0 0 20px rgba(56, 189, 248, 0.14);
+  }
+
+  .game-card.theme-arcade:hover {
+    border-color: rgba(251, 191, 36, 0.55);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.48), 0 0 22px rgba(245, 158, 11, 0.18);
+  }
+
+  .game-card.theme-draw:hover {
+    border-color: rgba(192, 132, 252, 0.55);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.48), 0 0 22px rgba(168, 85, 247, 0.18);
+  }
+
+  .game-card:hover .card-glow-accent {
+    opacity: 0.38;
   }
 
   .card-top-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: relative;
+    z-index: 1;
+  }
+
+  .card-icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .game-card.theme-arcade .card-icon-box {
+    background: rgba(245, 158, 11, 0.12);
+    border-color: rgba(251, 191, 36, 0.28);
+  }
+
+  .game-card.theme-draw .card-icon-box {
+    background: rgba(168, 85, 247, 0.12);
+    border-color: rgba(192, 132, 252, 0.28);
+  }
+
+  .game-card.theme-studio .card-icon-box {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: rgba(52, 211, 153, 0.28);
   }
 
   .card-icon {
-    font-size: 2rem;
+    font-size: 1.75rem;
+    line-height: 1;
+  }
+
+  .card-badges {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .badge-hot-new {
+    font-size: 0.65rem;
+    font-weight: 900;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.22), rgba(245, 158, 11, 0.25));
+    color: #fde047;
+    border: 1px solid rgba(251, 191, 36, 0.45);
+    letter-spacing: 0.03em;
+  }
+
+  .card-tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 0.65rem;
+  }
+
+  .card-mini-tag {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.18rem 0.5rem;
+    border-radius: 6px;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    color: #cbd5e1;
   }
 
   .badge-accent {

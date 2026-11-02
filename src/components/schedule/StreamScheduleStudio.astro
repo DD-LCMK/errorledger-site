@@ -65,37 +65,51 @@ const isEn = lang === 'en';
         </div>
       </div>
 
-      <!-- Row 2: View Mode Switcher, Week Extractor & Theme Picker -->
+      <!-- Row 2: View Mode, Layout Style Switcher, Week Extractor & Theme Picker -->
       <div class="controls-toolbar-row">
-        <!-- View Mode Switcher -->
+        <!-- View Mode & Layout Style Switcher -->
         <div class="toolbar-group">
-          <label class="toolbar-label">{isEn ? 'View Mode' : '보기 모드'}</label>
-          <div class="btn-group-mode">
-            <button type="button" class="btn-mode active" data-mode="weekly" id="btnModeWeekly" title={isEn ? '7-day vertical schedule for selected week' : '선택한 주간의 세로형 7일 일정'}>
-              <span>📅 {isEn ? 'Weekly Timetable' : '주간 편성표 추출'}</span>
+          <label class="toolbar-label">{isEn ? 'View & Layout' : '보기 및 레이아웃'}</label>
+          <div class="btn-group-mode" id="layoutStyleGroup">
+            <button type="button" class="btn-mode active" data-mode="weekly" data-layout="bento" id="btnLayoutBento" title={isEn ? 'Modern 4x2 Bento Card Grid (Recommended)' : '모던 4x2 벤토 카드 그리드 (추천)'}>
+              <span>🎴 {isEn ? 'Bento Grid' : '벤토 카드형'}</span>
+            </button>
+            <button type="button" class="btn-mode" data-mode="weekly" data-layout="timeline" id="btnLayoutTimeline" title={isEn ? 'Streamer Profile + 7-Day Timeline Poster' : '프로필 쇼케이스 + 7일 타임라인 포스터'}>
+              <span>📋 {isEn ? 'Timeline Poster' : '타임라인 포스터'}</span>
+            </button>
+            <button type="button" class="btn-mode" data-mode="weekly" data-layout="ticket" id="btnModeWeekly" title={isEn ? 'Retro Travel Boarding Pass Ticket' : '여행 보딩패스 티켓 스타일'}>
+              <span>🎫 {isEn ? 'Ticket Pass' : '보딩패스 티켓'}</span>
             </button>
             <button type="button" class="btn-mode" data-mode="monthly" id="btnModeMonthly" title={isEn ? 'Full monthly calendar view' : '월간 캘린더 전체 보기'}>
-              <span>🗓️ {isEn ? 'Monthly Calendar' : '월간 전체 캘린더'}</span>
+              <span>🗓️ {isEn ? 'Monthly' : '월간 캘린더'}</span>
             </button>
           </div>
         </div>
 
-        <!-- Week Extractor Buttons (Shown when in Weekly mode) -->
+        <!-- Month & Week Extractor Buttons -->
         <div class="toolbar-group week-extractor-group" id="weekExtractorGroup">
-          <label class="toolbar-label">{isEn ? 'Select Week' : '추출할 주차 선택'}</label>
-          <div class="week-buttons-bar" id="weekButtonsBar">
-            <!-- Dynamically generated week buttons -->
+          <label class="toolbar-label">{isEn ? 'Month & Week' : '연월 및 주차 선택'}</label>
+          <div class="month-week-bar-wrap">
+            <div class="quick-month-stepper">
+              <button type="button" class="btn-month-mini" id="btnQuickPrevMonth" title={isEn ? 'Previous Month' : '이전 달'}>◀</button>
+              <span class="quick-month-label" id="dispQuickMonthLabel">2026.09</span>
+              <button type="button" class="btn-month-mini" id="btnQuickNextMonth" title={isEn ? 'Next Month' : '다음 달'}>▶</button>
+              <button type="button" class="btn-today-jump" id="btnJumpToday" title={isEn ? 'Jump to Current Week' : '오늘이 속한 주로 이동'}>{isEn ? 'Today' : '이번 주'}</button>
+            </div>
+            <div class="week-buttons-bar" id="weekButtonsBar">
+              <!-- Dynamically generated week buttons -->
+            </div>
           </div>
         </div>
 
         <!-- Theme Picker -->
         <div class="toolbar-group theme-group">
-          <label class="toolbar-label">{isEn ? 'Theme' : '테마'}</label>
+          <label class="toolbar-label">{isEn ? 'Color Theme' : '컬러 테마'}</label>
           <div class="theme-picker-compact" id="themePickerRow">
             {Object.values(SCHEDULE_THEMES).map((t) => (
               <button 
                 type="button" 
-                class={`theme-chip ${t.id === 'travel-boarding-pass' ? 'active' : ''}`}
+                class={`theme-chip ${t.id === 'chzzk-neon' ? 'active' : ''}`}
                 data-theme-id={t.id}
                 title={isEn ? t.nameEn : t.nameKo}
                 style={`--theme-accent: ${t.accent};`}
@@ -111,9 +125,9 @@ const isEn = lang === 'en';
         <div class="toolbar-group end-group">
           <label class="toolbar-label">{isEn ? 'Sample Presets' : '샘플 프리셋'}</label>
           <div class="toolbar-btns-row">
-            <button type="button" class="btn-preset-mini" id="btnPresetTravel" title={isEn ? 'Travel boarding pass ticket sample' : '여행 보딩패스 티켓 샘플'}>{isEn ? '✈️ Travel Ticket' : '✈️ 여행티켓'}</button>
-            <button type="button" class="btn-preset-mini" id="btnPresetGamer" title={isEn ? 'Variety game streamer sample' : '종합 게임 스트리머 샘플'}>{isEn ? '🎮 Variety Gamer' : '🎮 종합게임'}</button>
-            <button type="button" class="btn-preset-mini" id="btnPresetVtuber" title={isEn ? 'VTuber / Cozy stream sample' : '버튜버/힐링 샘플'}>{isEn ? '🌸 VTuber' : '🌸 버튜버'}</button>
+            <button type="button" class="btn-preset-mini" id="btnPresetGamer" title={isEn ? 'Variety game streamer sample (Bento Grid)' : '종합 게임 스트리머 샘플 (벤토 그리드)'}>{isEn ? '🎮 Gamer (Bento)' : '🎮 종합게임'}</button>
+            <button type="button" class="btn-preset-mini" id="btnPresetVtuber" title={isEn ? 'VTuber / Cozy stream sample (Timeline Poster)' : '버튜버/힐링 샘플 (타임라인 포스터)'}>{isEn ? '🌸 VTuber (Poster)' : '🌸 버튜버'}</button>
+            <button type="button" class="btn-preset-mini" id="btnPresetTravel" title={isEn ? 'Travel boarding pass ticket sample' : '여행 보딩패스 티켓 샘플'}>{isEn ? '✈️ Ticket' : '✈️ 여행티켓'}</button>
           </div>
         </div>
       </div>
@@ -122,13 +136,18 @@ const isEn = lang === 'en';
       <div class="channel-settings-panel">
         <div class="channel-settings-header">
           <span class="settings-title-icon">⚙️</span>
-          <span class="settings-title-text">{isEn ? 'Streamer Profile & Notice Settings' : '스트리머 프로필 & 공지사항 설정'}</span>
+          <span class="settings-title-text">{isEn ? 'Streamer Profile, Avatar & Notice Settings (Click any day card below to edit schedule)' : '스트리머 프로필 · 아바타 이미지 · 공지사항 설정 (하단 요일 카드를 클릭하면 일정을 수정할 수 있습니다)'}</span>
         </div>
         <div class="channel-inputs-grid">
           <div class="input-field emoji-picker-col">
-            <label>{isEn ? 'Channel Emoji' : '대표 이모지'}</label>
+            <label>{isEn ? 'Avatar (Emoji or Image Upload)' : '프로필 아이콘 (이모지 또는 이미지 업로드)'}</label>
             <div class="emoji-picker-row">
               <input type="text" id="inputAvatarEmoji" class="ctrl-input emoji-input" value="🎮" maxlength="4" />
+              <label class="btn-upload-avatar" title={isEn ? 'Upload custom profile/character image' : '채널 로고 또는 버튜버 캐릭터 이미지 업로드'}>
+                <span>🖼️ {isEn ? 'Image' : '이미지'}</span>
+                <input type="file" id="inputAvatarImage" accept="image/*" style="display: none;" />
+              </label>
+              <button type="button" class="btn-clear-avatar" id="btnClearAvatarImage" style="display: none;" title={isEn ? 'Remove uploaded image' : '업로드한 이미지 삭제'}>✕</button>
               <div class="emoji-samples-row" id="emojiSamplesRow">
                 <button type="button" class="btn-emoji-chip" data-emoji="🎮" title={isEn ? 'Gaming' : '게임'}>🎮</button>
                 <button type="button" class="btn-emoji-chip" data-emoji="🌸" title={isEn ? 'Flower / Cozy' : '꽃/힐링'}>🌸</button>
@@ -164,14 +183,14 @@ const isEn = lang === 'en';
             </select>
           </div>
           <div class="input-field flex-2">
-            <label>🏷️ {isEn ? 'Header Badge Text (Keychain)' : '상단 키체인 배지 문구'}</label>
+            <label>🏷️ {isEn ? 'Accent Badge Text' : '포인트 배지 문구'}</label>
             <input 
               type="text" 
               id="inputKeytagText" 
               class="ctrl-input" 
-              value="SCHEDULE" 
+              value="ON AIR" 
               maxlength="16" 
-              placeholder={isEn ? 'e.g. SCHEDULE, LIVE, ON AIR' : '예: SCHEDULE, 방송중, ON AIR'} 
+              placeholder={isEn ? 'e.g. ON AIR, SCHEDULE, LIVE' : '예: ON AIR, SCHEDULE, 방송중'} 
             />
           </div>
           <div class="input-field flex-3">
@@ -208,15 +227,20 @@ const isEn = lang === 'en';
 
   <!-- Live Schedule Board (Single-Page Fit Container) -->
   <div class="schedule-preview-stage">
-    <div class="schedule-card-board" id="scheduleBoard" data-theme="travel-boarding-pass" data-view="weekly">
+    <div class="schedule-card-board" id="scheduleBoard" data-theme="chzzk-neon" data-view="weekly" data-layout="bento">
+      <!-- Ambient Decorative Glows -->
+      <div class="board-ambient-orb orb-tl" aria-hidden="true"></div>
+      <div class="board-ambient-orb orb-br" aria-hidden="true"></div>
+
       <!-- Board Header -->
-      <div class="board-header">
+      <div class="board-header" id="boardTopHeader">
         <div class="channel-info-col">
           <div class="channel-avatar-box" id="dispAvatar">🎮</div>
           <div class="channel-text-group">
             <div class="channel-title-row">
               <h2 class="channel-name" id="dispChannelName">{isEn ? 'Streamer Arcade' : '스트리머 아케이드'}</h2>
               <span class="platform-badge" id="dispPlatformBadge">{isEn ? 'Twitch' : '치지직'}</span>
+              <span class="header-keytag-pill" id="dispHeaderKeytag">ON AIR</span>
             </div>
             <p class="channel-tagline" id="dispTagline">{isEn ? 'Daily 8 PM Variety Gaming & Community Chat' : '매일 저녁 8시 신작 & 종합 게임 방송!'}</p>
           </div>
@@ -226,7 +250,7 @@ const isEn = lang === 'en';
           <div class="board-range-badge" id="dispScheduleRangeBadge">2026.09 {isEn ? 'Week 3 (09.14 ~ 09.20)' : '3주차 (09.14 ~ 09.20)'}</div>
           <div class="branding-watermark">
             <span class="brand-icon-mini">🔴</span>
-            <span>STREAM ARCADE</span>
+            <span>WEEKLY BROADCAST SCHEDULE</span>
           </div>
         </div>
       </div>
@@ -234,11 +258,32 @@ const isEn = lang === 'en';
       <!-- Optional Notice Banner -->
       <div class="board-notice-banner" id="dispNoticeBanner">
         <span class="notice-icon">📢</span>
-        <span class="notice-text" id="dispNoticeText">{isEn ? 'Saturday: Viewer Community Games & Giveaway Event!' : '이번 주 토요일은 시청자 참여 돌림판 & 사다리타기 벌칙전 진행!'}</span>
+        <span class="notice-text" id="dispNoticeText">{isEn ? 'Saturday: Viewer Community Games & Giveaway Event!' : '이번 주 토요일은 시청자 참여 돌림판 & 치킨 이벤트 진행!'}</span>
       </div>
 
-      <!-- VIEW 1: Travel Boarding Pass / Ticket Schedule (1 + 3 + 3 Single Page) -->
-      <div class="bp-schedule-wrap" id="weeklyWrap">
+      <!-- WEEKLY LAYOUT 1: Modern 4x2 Bento Card Grid (Default) -->
+      <div class="bento-schedule-wrap" id="bentoWeeklyWrap">
+        <div class="bento-grid-container" id="bentoGridContainer">
+          <!-- 7 Day Cards + 1 Weekly Summary Card dynamically rendered -->
+        </div>
+      </div>
+
+      <!-- WEEKLY LAYOUT 2: Streamer Profile Showcase + 7-Day Timeline Poster -->
+      <div class="timeline-schedule-wrap" id="timelineWeeklyWrap" style="display: none;">
+        <div class="timeline-split-container">
+          <!-- Left: Streamer Showcase Poster Column -->
+          <div class="timeline-poster-col" id="timelinePosterCol">
+            <!-- Dynamically populated with Avatar/Portrait, Channel Info, Weekly Notice, and Broadcast Stats -->
+          </div>
+          <!-- Right: 7-Day Horizontal Timeline Stack -->
+          <div class="timeline-days-col" id="timelineDaysCol">
+            <!-- 7 Horizontal Timeline Rows dynamically rendered -->
+          </div>
+        </div>
+      </div>
+
+      <!-- WEEKLY LAYOUT 3: Travel Boarding Pass / Ticket Schedule (1 + 3 + 3 Single Page) -->
+      <div class="bp-schedule-wrap" id="weeklyWrap" style="display: none;">
         <!-- Top Section: Keychain + Flight Board + Monday Ticket -->
         <div class="bp-row-top">
           <!-- Left: Keychain & Flight Board -->
@@ -902,95 +947,229 @@ const isEn = lang === 'en';
     }
   }
 
+  .month-week-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+  }
+
+  .quick-month-stepper {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 7px;
+    padding: 0.15rem 0.3rem;
+  }
+
+  .btn-month-mini {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 0.68rem;
+    padding: 0.15rem 0.3rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .btn-month-mini:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+  }
+
+  .quick-month-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #f8fafc;
+    min-width: 52px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .btn-today-jump {
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #38bdf8;
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 0.15rem 0.45rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .btn-today-jump:hover {
+    background: rgba(56, 189, 248, 0.28);
+    color: #ffffff;
+  }
+
+  .btn-upload-avatar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: rgba(56, 189, 248, 0.14);
+    border: 1px solid rgba(56, 189, 248, 0.38);
+    color: #38bdf8;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 0.32rem 0.55rem;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+  }
+  .btn-upload-avatar:hover {
+    background: rgba(56, 189, 248, 0.26);
+    color: #ffffff;
+  }
+
+  .btn-clear-avatar {
+    background: rgba(244, 63, 94, 0.16);
+    border: 1px solid rgba(244, 63, 94, 0.4);
+    color: #fb7185;
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 0.28rem 0.45rem;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .btn-clear-avatar:hover {
+    background: rgba(244, 63, 94, 0.3);
+    color: #ffffff;
+  }
+
   .schedule-card-board {
     width: 100%;
-    max-width: 820px;
-    background: #cbd5e1;
-    border: 1.5px solid #64748b;
-    border-radius: 14px;
-    padding: 0.5rem 0.75rem 0.45rem;
-    box-shadow: 0 10px 30px rgba(25, 38, 62, 0.26);
+    max-width: 1040px;
+    background: #080c14;
+    border: 1.5px solid rgba(0, 255, 163, 0.35);
+    border-radius: 20px;
+    padding: 1.35rem 1.6rem 1.1rem;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
     position: relative;
     overflow: hidden;
-    transition: max-width 0.25s ease, border-color 0.25s ease;
+    transition: max-width 0.25s ease, border-color 0.25s ease, background 0.3s ease;
+  }
+
+  .schedule-card-board[data-layout="ticket"] {
+    max-width: 880px;
+    padding: 0.85rem 1.05rem 0.75rem;
   }
 
   .schedule-card-board[data-view="monthly"] {
-    max-width: 860px; /* Slightly wider for the 7-col calendar */
+    max-width: 1020px;
   }
 
-  /* Themes — Complete Palette Transformation for Calendar, Tickets, Ribbons & Stubs */
+  .board-ambient-orb {
+    position: absolute;
+    width: 340px;
+    height: 340px;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(80px);
+    opacity: 0.16;
+    z-index: 0;
+    background: var(--b-accent, #00ffa3);
+  }
+  .board-ambient-orb.orb-tl {
+    top: -140px;
+    left: -100px;
+  }
+  .board-ambient-orb.orb-br {
+    bottom: -150px;
+    right: -100px;
+  }
+
+  .board-header,
+  .board-notice-banner,
+  .bento-schedule-wrap,
+  .timeline-schedule-wrap,
+  .bp-schedule-wrap,
+  .monthly-schedule-compact-wrap,
+  .board-footer {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* In Timeline Poster layout, the left poster showcases the profile & notice */
+  .schedule-card-board[data-view="weekly"][data-layout="timeline"] .board-header,
+  .schedule-card-board[data-view="weekly"][data-layout="timeline"] .board-notice-banner {
+    display: none !important;
+  }
+
+  /* Themes — Complete Palette Transformation for Calendar, Tickets, Bento & Timeline */
   .schedule-card-board {
-    --b-board-bg: #cbd5e1;
-    --b-card: #ffffff;
-    --b-accent: #1e40af;
-    --b-border: #64748b;
-    --b-text: #0f172a;
-    --b-sub: #334155;
-    --b-keytag-bg: #334e80;
-    --b-keytag-border: #1e3a8a;
-    --b-keytag-text: #ffffff;
-    --b-keytag-shadow: #93c5fd;
-    --b-ticker-bg: #ffffff;
-    --b-ticker-border: #475569;
-    --b-ticker-label: #1e293b;
-    --b-ticker-text: #0f172a;
-    --b-ribbon-bg: #1e40af;
-    --b-ribbon-fold: #172554;
-    --b-ribbon-text: #ffffff;
-    --b-strip-bg: #ffffff;
-    --b-strip-border: #64748b;
-    --b-stub-bg: #f1f5f9;
-    --b-stub-border: #64748b;
-    --b-stub-text: #1e293b;
-    --b-barcode: #1e293b;
-    --b-ticket-bg: #ffffff;
-    --b-ticket-inner-border: #94a3b8;
-    --b-ticket-title: #0f172a;
-    --b-ticket-memo: #334155;
-    --b-ticket-time: #1e40af;
-    --b-flourish: #64748b;
-    --b-offline-bg: #451a03;
-    --b-offline-border: #290f02;
-    --b-offline-text: #fef08a;
+    --b-board-bg: #080c14;
+    --b-card: rgba(14, 23, 38, 0.92);
+    --b-accent: #00ffa3;
+    --b-border: rgba(0, 255, 163, 0.3);
+    --b-text: #f0fdf4;
+    --b-sub: #86efac;
+    --b-keytag-bg: #0b1e16;
+    --b-keytag-border: #00ffa3;
+    --b-keytag-text: #00ffa3;
+    --b-keytag-shadow: rgba(0, 255, 163, 0.4);
+    --b-ticker-bg: #071610;
+    --b-ticker-border: rgba(0, 255, 163, 0.45);
+    --b-ticker-label: #4ade80;
+    --b-ticker-text: #00ffa3;
+    --b-ribbon-bg: #00ffa3;
+    --b-ribbon-fold: #00b875;
+    --b-ribbon-text: #041c10;
+    --b-strip-bg: #0e1824;
+    --b-strip-border: rgba(0, 255, 163, 0.35);
+    --b-stub-bg: #0a121c;
+    --b-stub-border: rgba(0, 255, 163, 0.3);
+    --b-stub-text: #86efac;
+    --b-barcode: #00ffa3;
+    --b-ticket-bg: #111e2e;
+    --b-ticket-inner-border: rgba(0, 255, 163, 0.25);
+    --b-ticket-title: #ffffff;
+    --b-ticket-memo: #86efac;
+    --b-ticket-time: #00ffa3;
+    --b-flourish: rgba(0, 255, 163, 0.45);
+    --b-offline-bg: #152520;
+    --b-offline-border: #00ffa3;
+    --b-offline-text: #00ffa3;
     transition: background 0.3s ease, border-color 0.3s ease;
   }
 
   .schedule-card-board[data-theme="travel-boarding-pass"] {
-    --b-board-bg: #cbd5e1;
+    --b-board-bg: #f1f5f9;
     --b-card: #ffffff;
-    --b-accent: #1e40af;
-    --b-border: #64748b;
+    --b-accent: #2563eb;
+    --b-border: #cbd5e1;
     --b-text: #0f172a;
-    --b-sub: #334155;
-    --b-keytag-bg: #334e80;
+    --b-sub: #475569;
+    --b-keytag-bg: #1e40af;
     --b-keytag-border: #1e3a8a;
     --b-keytag-text: #ffffff;
     --b-keytag-shadow: #93c5fd;
     --b-ticker-bg: #ffffff;
-    --b-ticker-border: #475569;
+    --b-ticker-border: #94a3b8;
     --b-ticker-label: #1e293b;
     --b-ticker-text: #0f172a;
-    --b-ribbon-bg: #1e40af;
-    --b-ribbon-fold: #172554;
+    --b-ribbon-bg: #2563eb;
+    --b-ribbon-fold: #1d4ed8;
     --b-ribbon-text: #ffffff;
     --b-strip-bg: #ffffff;
-    --b-strip-border: #64748b;
-    --b-stub-bg: #f1f5f9;
-    --b-stub-border: #64748b;
+    --b-strip-border: #94a3b8;
+    --b-stub-bg: #f8fafc;
+    --b-stub-border: #94a3b8;
     --b-stub-text: #1e293b;
     --b-barcode: #1e293b;
     --b-ticket-bg: #ffffff;
-    --b-ticket-inner-border: #94a3b8;
+    --b-ticket-inner-border: #cbd5e1;
     --b-ticket-title: #0f172a;
-    --b-ticket-memo: #334155;
-    --b-ticket-time: #1e40af;
-    --b-flourish: #64748b;
-    --b-offline-bg: #451a03;
-    --b-offline-border: #290f02;
-    --b-offline-text: #fef08a;
-    background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.6) 0%, rgba(203, 213, 225, 0.75) 100%), #cbd5e1;
-    border-color: #64748b;
+    --b-ticket-memo: #475569;
+    --b-ticket-time: #2563eb;
+    --b-flourish: #94a3b8;
+    --b-offline-bg: #f8fafc;
+    --b-offline-border: #94a3b8;
+    --b-offline-text: #475569;
+    background: linear-gradient(145deg, #f8fafc 0%, #e2e8f0 100%);
+    border-color: #94a3b8;
   }
 
   .schedule-card-board[data-theme="chzzk-neon"] {
@@ -1252,67 +1431,91 @@ const isEn = lang === 'en';
     border-color: rgba(0, 240, 255, 0.45);
   }
 
-  /* Compact Board Header */
+  /* Broadcast Board Header */
   .board-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.75rem;
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.7rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid var(--b-border);
   }
 
   .channel-info-col {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.9rem;
   }
 
   .channel-avatar-box {
-    width: 44px;
-    height: 44px;
+    width: 54px;
+    height: 54px;
     background: var(--b-card);
-    border: 1.5px solid var(--b-border);
-    border-radius: 12px;
+    border: 2px solid var(--b-accent);
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.4rem;
+    font-size: 1.7rem;
     flex-shrink: 0;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  }
+
+  .channel-avatar-box img.avatar-custom-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .channel-title-row {
     display: flex;
     align-items: center;
-    gap: 0.45rem;
+    gap: 0.5rem;
+    flex-wrap: wrap;
   }
 
   html.dark .schedule-card-board .channel-name,
   .channel-name {
-    font-size: 1.15rem;
-    font-weight: 800;
+    font-size: 1.35rem;
+    font-weight: 900;
     margin: 0;
+    letter-spacing: -0.02em;
     color: var(--b-text) !important;
   }
 
   html.dark .schedule-card-board .platform-badge,
   .platform-badge {
-    font-size: 0.65rem;
+    font-size: 0.68rem;
     font-weight: 800;
-    padding: 0.15rem 0.4rem;
-    border-radius: 4px;
+    padding: 0.18rem 0.5rem;
+    border-radius: 6px;
     background: var(--b-card) !important;
     color: var(--b-accent) !important;
     border: 1px solid var(--b-border) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .header-keytag-pill {
+    font-size: 0.64rem;
+    font-weight: 900;
+    padding: 0.16rem 0.5rem;
+    border-radius: 999px;
+    background: var(--b-accent);
+    color: var(--b-ribbon-text, #041c10);
+    letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
   html.dark .schedule-card-board .channel-tagline,
   .channel-tagline {
-    font-size: 0.76rem;
+    font-size: 0.82rem;
+    font-weight: 600;
     color: var(--b-sub) !important;
-    margin: 0.1rem 0 0;
+    margin: 0.2rem 0 0;
   }
 
   .board-meta-col {
@@ -1321,21 +1524,27 @@ const isEn = lang === 'en';
 
   html.dark .schedule-card-board .board-range-badge,
   .board-range-badge {
-    font-size: 0.88rem;
+    display: inline-block;
+    font-size: 0.92rem;
     font-weight: 800;
     color: var(--b-accent) !important;
-    margin-bottom: 0.15rem;
+    background: var(--b-card);
+    border: 1px solid var(--b-border);
+    padding: 0.28rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 0.25rem;
   }
 
   html.dark .schedule-card-board .branding-watermark,
   .branding-watermark {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 0.25rem;
-    font-size: 0.65rem;
-    font-weight: 700;
+    justify-content: flex-end;
+    gap: 0.3rem;
+    font-size: 0.66rem;
+    font-weight: 800;
     color: var(--b-sub) !important;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
   }
   .brand-icon-mini { font-size: 0.65rem; }
 
@@ -1344,24 +1553,562 @@ const isEn = lang === 'en';
   .board-notice-banner {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.6rem;
     background: var(--b-card) !important;
     border: 1px solid var(--b-border) !important;
-    padding: 0.4rem 0.85rem;
-    border-radius: 8px;
-    margin-bottom: 0.75rem;
-    font-size: 0.78rem;
-    font-weight: 600;
+    border-left: 4px solid var(--b-accent) !important;
+    padding: 0.55rem 0.95rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    font-size: 0.84rem;
+    font-weight: 700;
     color: var(--b-text) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
   }
   html.dark .schedule-card-board .board-notice-banner .notice-text,
   .board-notice-banner .notice-text {
     color: var(--b-text) !important;
   }
-  .notice-icon { font-size: 0.85rem; }
+  .notice-icon { font-size: 0.95rem; }
 
   /* ─────────────────────────────────────────────────────────────────────────────
-     VIEW 1: TRAVEL BOARDING PASS & VINTAGE TICKET STUDIO (1 + 3 + 3)
+     WEEKLY LAYOUT 1: MODERN 4x2 BENTO CARD GRID (DEFAULT)
+     ───────────────────────────────────────────────────────────────────────────── */
+  .bento-schedule-wrap {
+    width: 100%;
+    user-select: none;
+  }
+
+  .bento-grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.85rem;
+  }
+
+  .bento-day-card {
+    position: relative;
+    background: var(--b-ticket-bg, var(--b-card));
+    border: 1.5px solid var(--b-ticket-inner-border, var(--b-border));
+    border-radius: 16px;
+    padding: 0.95rem 1rem 0.85rem;
+    min-height: 176px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+    overflow: hidden;
+  }
+
+  .bento-day-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3.5px;
+    background: var(--card-status-color, var(--b-accent));
+    opacity: 0.9;
+  }
+
+  .bento-day-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--b-accent);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.34);
+  }
+
+  .bento-day-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .bento-day-left {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+  }
+
+  .bento-day-pill {
+    font-size: 0.76rem;
+    font-weight: 900;
+    padding: 0.18rem 0.5rem;
+    border-radius: 6px;
+    background: var(--b-ribbon-bg);
+    color: var(--b-ribbon-text);
+    letter-spacing: 0.05em;
+  }
+  .bento-day-pill.is-sat {
+    background: #38bdf8;
+    color: #041322;
+  }
+  .bento-day-pill.is-sun {
+    background: #fb7185;
+    color: #26050c;
+  }
+
+  .bento-date-num {
+    font-size: 0.86rem;
+    font-weight: 800;
+    color: var(--b-sub);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bento-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.22rem;
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 0.18rem 0.48rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .bento-card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.3rem;
+    margin: 0.25rem 0 0.65rem;
+  }
+
+  .bento-stream-title {
+    font-size: 1.04rem;
+    font-weight: 800;
+    line-height: 1.32;
+    color: var(--b-ticket-title, var(--b-text));
+    word-break: keep-all;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .bento-stream-memo {
+    font-size: 0.76rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--b-ticket-memo, var(--b-sub));
+    opacity: 0.9;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .bento-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.55rem;
+    border-top: 1px dashed var(--b-ticket-inner-border, var(--b-border));
+  }
+
+  .bento-time-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: var(--b-ticket-time, var(--b-accent));
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bento-edit-icon {
+    font-size: 0.72rem;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    color: var(--b-sub);
+  }
+  .bento-day-card:hover .bento-edit-icon {
+    opacity: 0.85;
+  }
+  .schedule-card-board.is-exporting-png .bento-edit-icon,
+  .schedule-card-board.is-exporting-png .tl-edit-icon,
+  .schedule-card-board.is-exporting-png .bp-ticket-edit-hint {
+    display: none !important;
+  }
+
+  /* Rest Day (OFFLINE) Bento Card */
+  .bento-day-card.is-off-day {
+    background: var(--b-stub-bg, rgba(15, 23, 42, 0.55));
+    border-style: dashed;
+    opacity: 0.85;
+  }
+  .bento-day-card.is-off-day::before {
+    background: #64748b;
+    opacity: 0.5;
+  }
+  .bento-off-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 0.25rem;
+    padding: 0.5rem 0;
+  }
+  .bento-off-moon {
+    font-size: 1.55rem;
+    line-height: 1;
+    margin-bottom: 0.1rem;
+  }
+  .bento-off-title {
+    font-size: 0.92rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    color: var(--b-sub);
+  }
+  .bento-off-sub {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--b-sub);
+    opacity: 0.78;
+  }
+
+  /* 8th Slot: Weekly Summary & Highlight Card */
+  .bento-summary-card {
+    position: relative;
+    background: linear-gradient(155deg, var(--b-card) 0%, var(--b-stub-bg) 100%);
+    border: 1.5px solid var(--b-accent);
+    border-radius: 16px;
+    padding: 0.95rem 1rem 0.85rem;
+    min-height: 176px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+    overflow: hidden;
+  }
+
+  .bento-summary-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+  }
+
+  .bento-summary-tag {
+    font-size: 0.68rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    background: var(--b-accent);
+    color: var(--b-ribbon-text, #041c10);
+    text-transform: uppercase;
+  }
+
+  .bento-summary-range {
+    font-size: 0.74rem;
+    font-weight: 800;
+    color: var(--b-sub);
+  }
+
+  .bento-summary-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.45rem;
+    margin: 0.55rem 0;
+  }
+
+  .bento-stat-box {
+    background: var(--b-ticket-bg);
+    border: 1px solid var(--b-ticket-inner-border);
+    border-radius: 10px;
+    padding: 0.4rem 0.55rem;
+    text-align: center;
+  }
+
+  .bento-stat-num {
+    display: block;
+    font-size: 1.05rem;
+    font-weight: 900;
+    color: var(--b-accent);
+    line-height: 1.2;
+  }
+
+  .bento-stat-label {
+    font-size: 0.66rem;
+    font-weight: 700;
+    color: var(--b-sub);
+  }
+
+  .bento-summary-foot {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--b-text);
+    line-height: 1.35;
+    padding-top: 0.45rem;
+    border-top: 1px solid var(--b-ticket-inner-border);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     WEEKLY LAYOUT 2: STREAMER PROFILE SHOWCASE + 7-DAY TIMELINE POSTER
+     ───────────────────────────────────────────────────────────────────────────── */
+  .timeline-schedule-wrap {
+    width: 100%;
+    user-select: none;
+  }
+
+  .timeline-split-container {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    gap: 1.15rem;
+    align-items: stretch;
+  }
+
+  .timeline-poster-col {
+    background: linear-gradient(165deg, var(--b-ticket-bg) 0%, var(--b-stub-bg) 100%);
+    border: 1.5px solid var(--b-border);
+    border-radius: 18px;
+    padding: 1.25rem 1.15rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.9rem;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+  }
+
+  .poster-top-badges {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+  }
+
+  .poster-platform-pill {
+    font-size: 0.68rem;
+    font-weight: 900;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    background: var(--b-accent);
+    color: var(--b-ribbon-text, #041c10);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .poster-week-pill {
+    font-size: 0.74rem;
+    font-weight: 800;
+    color: var(--b-accent);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .poster-avatar-showcase {
+    width: 100%;
+    height: 185px;
+    border-radius: 14px;
+    background: var(--b-card);
+    border: 2px solid var(--b-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4.4rem;
+    overflow: hidden;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.3);
+    position: relative;
+  }
+
+  .poster-avatar-showcase img.poster-custom-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .poster-channel-title {
+    font-size: 1.35rem;
+    font-weight: 900;
+    color: var(--b-text);
+    margin: 0.1rem 0 0.2rem;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .poster-channel-tagline {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--b-sub);
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  .poster-notice-box {
+    background: var(--b-card);
+    border: 1px solid var(--b-border);
+    border-left: 3.5px solid var(--b-accent);
+    border-radius: 10px;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--b-text);
+    line-height: 1.4;
+  }
+
+  .poster-stats-row {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .poster-stat-chip {
+    flex: 1;
+    background: var(--b-card);
+    border: 1px solid var(--b-ticket-inner-border);
+    border-radius: 9px;
+    padding: 0.4rem 0.5rem;
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--b-sub);
+  }
+  .poster-stat-chip strong {
+    color: var(--b-accent);
+    font-size: 0.86rem;
+    margin-left: 0.2rem;
+  }
+
+  .timeline-days-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.52rem;
+    justify-content: space-between;
+  }
+
+  .timeline-day-row {
+    position: relative;
+    background: var(--b-ticket-bg, var(--b-card));
+    border: 1.5px solid var(--b-ticket-inner-border, var(--b-border));
+    border-radius: 13px;
+    padding: 0.62rem 0.95rem 0.62rem 1.05rem;
+    display: grid;
+    grid-template-columns: 98px 128px 110px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.7rem;
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+    overflow: hidden;
+  }
+
+  .timeline-day-row::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4.5px;
+    background: var(--row-status-color, var(--b-accent));
+  }
+
+  .timeline-day-row:hover {
+    transform: translateX(3px);
+    border-color: var(--b-accent);
+  }
+
+  .timeline-day-row.is-off-day {
+    background: var(--b-stub-bg);
+    border-style: dashed;
+    opacity: 0.82;
+  }
+  .timeline-day-row.is-off-day::before {
+    background: #64748b;
+  }
+
+  .tl-day-col {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .tl-day-pill {
+    font-size: 0.72rem;
+    font-weight: 900;
+    padding: 0.16rem 0.44rem;
+    border-radius: 5px;
+    background: var(--b-ribbon-bg);
+    color: var(--b-ribbon-text);
+    min-width: 38px;
+    text-align: center;
+  }
+  .tl-day-pill.is-sat { background: #38bdf8; color: #041322; }
+  .tl-day-pill.is-sun { background: #fb7185; color: #26050c; }
+
+  .tl-date-text {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: var(--b-sub);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tl-time-col {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: var(--b-ticket-time, var(--b-accent));
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .tl-status-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.22rem;
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .tl-content-col {
+    display: flex;
+    align-items: baseline;
+    gap: 0.55rem;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .tl-stream-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--b-ticket-title, var(--b-text));
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tl-stream-memo {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--b-ticket-memo, var(--b-sub));
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0.88;
+  }
+
+  .tl-edit-icon {
+    font-size: 0.72rem;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+  .timeline-day-row:hover .tl-edit-icon {
+    opacity: 0.85;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     WEEKLY LAYOUT 3: TRAVEL BOARDING PASS & VINTAGE TICKET STUDIO (1 + 3 + 3)
      ───────────────────────────────────────────────────────────────────────────── */
   .bp-schedule-wrap {
     display: flex;
@@ -1946,11 +2693,12 @@ const isEn = lang === 'en';
   .cal-cell-compact {
     background: var(--b-ticket-bg, var(--b-card));
     border: 1px solid var(--b-strip-border, var(--b-border));
-    border-radius: 8px;
-    height: 56px;
-    padding: 0.3rem 0.4rem;
+    border-radius: 10px;
+    min-height: 72px;
+    padding: 0.4rem 0.5rem;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     cursor: pointer;
     transition: all 0.15s ease;
     overflow: hidden;
@@ -1958,7 +2706,8 @@ const isEn = lang === 'en';
 
   .cal-cell-compact:hover {
     border-color: var(--b-accent);
-    transform: translateY(-1.5px);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.24);
   }
 
   .cal-cell-compact.is-empty {
@@ -1967,32 +2716,33 @@ const isEn = lang === 'en';
   }
 
   .cal-cell-num {
-    font-size: 0.74rem;
+    font-size: 0.78rem;
     font-weight: 800;
     color: var(--b-ticket-title, var(--b-text)) !important;
-    margin-bottom: 0.15rem;
+    margin-bottom: 0.2rem;
   }
   .cal-cell-num.col-sun { color: #f43f5e !important; }
   .cal-cell-num.col-sat { color: #38bdf8 !important; }
 
   .cal-cell-pill {
-    font-size: 0.66rem;
+    font-size: 0.68rem;
     font-weight: 700;
-    padding: 0.12rem 0.3rem;
-    border-radius: 4px;
+    padding: 0.16rem 0.38rem;
+    border-radius: 5px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    line-height: 1.2;
+    line-height: 1.25;
   }
 
   /* Board Footer */
   .board-footer {
     text-align: center;
-    margin-top: 0.75rem;
-    padding-top: 0.5rem;
-    border-top: 1px solid var(--b-border, rgba(255, 255, 255, 0.05));
-    font-size: 0.65rem;
+    margin-top: 0.9rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--b-border, rgba(255, 255, 255, 0.08));
+    font-size: 0.68rem;
+    font-weight: 600;
     color: var(--b-sub, #64748b) !important;
   }
 
@@ -2186,20 +2936,16 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
   var isEn = (root && root.getAttribute('data-lang') === 'en');
   var presets = isEn ? SAMPLE_PRESETS_EN : SAMPLE_PRESETS;
 
-  // ─── Unified Default Schedule State ──
-  var DEFAULT_SCHEDULE = JSON.parse(JSON.stringify(presets.travelTicket));
+  // ─── Unified Default Schedule State (Modern Bento Grid + Emerald Neon) ──
+  var DEFAULT_SCHEDULE = JSON.parse(JSON.stringify(presets.varietyGamer));
 
   // ─── State Initialization ──────────────────────────────────────────────────
-  var state = null;
-  var STORAGE_KEY = isEn ? 'streamarcade_unified_schedule_en_v1' : 'streamarcade_unified_schedule_v6';
+  var state: any = null;
+  var STORAGE_KEY = isEn ? 'streamarcade_unified_schedule_en_v2' : 'streamarcade_unified_schedule_v7';
 
   try {
     var saved = localStorage.getItem(STORAGE_KEY);
-    if (!saved && !isEn) {
-      saved = localStorage.getItem('streamarcade_unified_schedule_v5');
-    }
     if (saved) {
-      // Clear out legacy sample containing "봉누도"
       if (saved.indexOf('봉누도') !== -1) {
         state = null;
       } else {
@@ -2211,6 +2957,9 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
   if (!state || !state.monthly || !state.monthly.days) {
     state = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
   }
+  if (!state.layoutStyle) {
+    state.layoutStyle = 'bento';
+  }
 
   function saveState() {
     try {
@@ -2218,12 +2967,20 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
     } catch (e) {}
   }
 
+  function escapeHtml(str: string) {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
   // ─── Week Calculation Helper ───────────────────────────────────────────────
   var monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   var monthShortNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   // Divides any month into standard Monday-Sunday calendar weeks
-  function computeMonthWeeks(year, month) {
+  function computeMonthWeeks(year: number, month: number) {
     var firstDate = new Date(year, month - 1, 1);
     var firstDayOfWeek = firstDate.getDay(); // 0: Sun, 1: Mon, 2: Tue...
     var monOffset = (firstDayOfWeek + 6) % 7; // Distance to Monday
@@ -2293,12 +3050,18 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
   }
 
   // ─── DOM References ────────────────────────────────────────────────────────
-  var board = document.getElementById('scheduleBoard');
-  var weeklyWrap = document.getElementById('weeklyWrap');
-  var monthlyWrap = document.getElementById('monthlyWrap');
-  var calendarCellsContainer = document.getElementById('calendarCellsContainer');
-  var weekButtonsBar = document.getElementById('weekButtonsBar');
-  var weekExtractorGroup = document.getElementById('weekExtractorGroup');
+  var board = document.getElementById('scheduleBoard')!;
+  var bentoWeeklyWrap = document.getElementById('bentoWeeklyWrap')!;
+  var bentoGridContainer = document.getElementById('bentoGridContainer')!;
+  var timelineWeeklyWrap = document.getElementById('timelineWeeklyWrap')!;
+  var timelinePosterCol = document.getElementById('timelinePosterCol')!;
+  var timelineDaysCol = document.getElementById('timelineDaysCol')!;
+  var weeklyWrap = document.getElementById('weeklyWrap')!;
+  var monthlyWrap = document.getElementById('monthlyWrap')!;
+  var calendarCellsContainer = document.getElementById('calendarCellsContainer')!;
+  var weekButtonsBar = document.getElementById('weekButtonsBar')!;
+  var weekExtractorGroup = document.getElementById('weekExtractorGroup')!;
+  var dispQuickMonthLabel = document.getElementById('dispQuickMonthLabel');
 
   // Boarding Pass Elements
   var bpFlightDatesDisplay = document.getElementById('bpFlightDatesDisplay');
@@ -2306,53 +3069,78 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
   var bpMidTicketsGroup = document.getElementById('bpMidTicketsGroup');
   var bpBtmTicketsGroup = document.getElementById('bpBtmTicketsGroup');
 
-  var dispAvatar = document.getElementById('dispAvatar');
-  var dispChannelName = document.getElementById('dispChannelName');
-  var dispPlatformBadge = document.getElementById('dispPlatformBadge');
-  var dispTagline = document.getElementById('dispTagline');
-  var dispScheduleRangeBadge = document.getElementById('dispScheduleRangeBadge');
-  var dispNoticeBanner = document.getElementById('dispNoticeBanner');
-  var dispNoticeText = document.getElementById('dispNoticeText');
-  var dispMonthTitle = document.getElementById('dispMonthTitle');
-  var dispMonthlyGoal = document.getElementById('dispMonthlyGoal');
+  var dispAvatar = document.getElementById('dispAvatar')!;
+  var dispChannelName = document.getElementById('dispChannelName')!;
+  var dispPlatformBadge = document.getElementById('dispPlatformBadge')!;
+  var dispHeaderKeytag = document.getElementById('dispHeaderKeytag');
+  var dispTagline = document.getElementById('dispTagline')!;
+  var dispScheduleRangeBadge = document.getElementById('dispScheduleRangeBadge')!;
+  var dispNoticeBanner = document.getElementById('dispNoticeBanner')!;
+  var dispNoticeText = document.getElementById('dispNoticeText')!;
+  var dispMonthTitle = document.getElementById('dispMonthTitle')!;
+  var dispMonthlyGoal = document.getElementById('dispMonthlyGoal')!;
 
   // Input Controls
-  var inputAvatarEmoji = document.getElementById('inputAvatarEmoji');
+  var inputAvatarEmoji = document.getElementById('inputAvatarEmoji') as HTMLInputElement;
+  var inputAvatarImage = document.getElementById('inputAvatarImage') as HTMLInputElement | null;
+  var btnClearAvatarImage = document.getElementById('btnClearAvatarImage') as HTMLButtonElement | null;
   var emojiSamplesRow = document.getElementById('emojiSamplesRow');
-  var inputChannelName = document.getElementById('inputChannelName');
-  var selectPlatform = document.getElementById('selectPlatform');
-  var inputTagline = document.getElementById('inputTagline');
-  var inputNoticeWeekly = document.getElementById('inputNoticeWeekly');
-  var inputNoticeMonthly = document.getElementById('inputNoticeMonthly');
+  var inputChannelName = document.getElementById('inputChannelName') as HTMLInputElement;
+  var selectPlatform = document.getElementById('selectPlatform') as HTMLSelectElement;
+  var inputTagline = document.getElementById('inputTagline') as HTMLInputElement;
+  var inputNoticeWeekly = document.getElementById('inputNoticeWeekly') as HTMLInputElement;
+  var inputNoticeMonthly = document.getElementById('inputNoticeMonthly') as HTMLInputElement;
 
+  var btnLayoutBento = document.getElementById('btnLayoutBento');
+  var btnLayoutTimeline = document.getElementById('btnLayoutTimeline');
   var btnModeWeekly = document.getElementById('btnModeWeekly');
   var btnModeMonthly = document.getElementById('btnModeMonthly');
-  var themePickerRow = document.getElementById('themePickerRow');
+  var themePickerRow = document.getElementById('themePickerRow')!;
 
-  var btnSaveJson = document.getElementById('btnSaveJson');
+  var btnSaveJson = document.getElementById('btnSaveJson')!;
   var inputLoadJson = document.getElementById('inputLoadJson') as HTMLInputElement;
-  var btnCopyText = document.getElementById('btnCopyText');
+  var btnCopyText = document.getElementById('btnCopyText')!;
   var btnPresetTravel = document.getElementById('btnPresetTravel');
-  var btnPresetGamer = document.getElementById('btnPresetGamer');
-  var btnPresetVtuber = document.getElementById('btnPresetVtuber');
+  var btnPresetGamer = document.getElementById('btnPresetGamer')!;
+  var btnPresetVtuber = document.getElementById('btnPresetVtuber')!;
 
-  var btnPrevMonth = document.getElementById('btnPrevMonth');
-  var btnNextMonth = document.getElementById('btnNextMonth');
+  var btnPrevMonth = document.getElementById('btnPrevMonth')!;
+  var btnNextMonth = document.getElementById('btnNextMonth')!;
+  var btnQuickPrevMonth = document.getElementById('btnQuickPrevMonth');
+  var btnQuickNextMonth = document.getElementById('btnQuickNextMonth');
+  var btnJumpToday = document.getElementById('btnJumpToday');
 
   // Modal DOM
-  var modalOverlay = document.getElementById('editModalOverlay');
-  var modalDayTitle = document.getElementById('modalDayTitle');
-  var modalBadgeGrid = document.getElementById('modalBadgeGrid');
+  var modalOverlay = document.getElementById('editModalOverlay')!;
+  var modalDayTitle = document.getElementById('modalDayTitle')!;
+  var modalBadgeGrid = document.getElementById('modalBadgeGrid')!;
   var modalStartTimeInput = document.getElementById('modalStartTimeInput') as HTMLInputElement;
   var modalEndTimeInput = document.getElementById('modalEndTimeInput') as HTMLInputElement;
   var modalTitleInput = document.getElementById('modalTitleInput') as HTMLInputElement;
   var modalMemoInput = document.getElementById('modalMemoInput') as HTMLInputElement;
-  var btnCloseModal = document.getElementById('btnCloseModal');
-  var btnModalCancel = document.getElementById('btnModalCancel');
-  var btnModalSave = document.getElementById('btnModalSave');
+  var btnCloseModal = document.getElementById('btnCloseModal')!;
+  var btnModalCancel = document.getElementById('btnModalCancel')!;
+  var btnModalSave = document.getElementById('btnModalSave')!;
 
   var currentEditingDayNum = 1;
   var currentSelectedBadgeId = 'live';
+
+  function getActiveKeytagText(): string {
+    var customKeytag = state.keytagText || (state.channel && state.channel.keytagText);
+    var defaultThemeKeytag = (SCHEDULE_THEMES[state.themeId] && SCHEDULE_THEMES[state.themeId].keytagTitle) || 'ON AIR';
+    return (customKeytag !== undefined && String(customKeytag).trim() !== '') ? String(customKeytag).trim() : defaultThemeKeytag;
+  }
+
+  function renderAvatarBox(el: HTMLElement | null) {
+    if (!el) return;
+    if (state.channel && state.channel.avatarImage) {
+      el.innerHTML = '<img class="avatar-custom-img" src="' + state.channel.avatarImage + '" alt="Avatar" />';
+      if (btnClearAvatarImage) btnClearAvatarImage.style.display = 'inline-block';
+    } else {
+      el.textContent = (state.channel && state.channel.avatarEmoji) ? state.channel.avatarEmoji : '🎮';
+      if (btnClearAvatarImage) btnClearAvatarImage.style.display = 'none';
+    }
+  }
 
   // ─── Render Functions ──────────────────────────────────────────────────────
   function renderAll() {
@@ -2361,18 +3149,24 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
       state.selectedWeekIndex = 0;
     }
     var currentWeek = weeks[state.selectedWeekIndex] || weeks[0];
+    var layoutStyle = state.layoutStyle || 'bento';
 
-    // 1. Board Theme & View Attribute
+    // 1. Board Theme, View & Layout Attributes
     board.setAttribute('data-theme', state.themeId);
     board.setAttribute('data-view', state.viewMode);
+    board.setAttribute('data-layout', layoutStyle);
+
+    // Quick Month Label
+    if (dispQuickMonthLabel) {
+      var mPad = state.monthly.month < 10 ? '0' + state.monthly.month : String(state.monthly.month);
+      dispQuickMonthLabel.textContent = state.monthly.year + '.' + mPad;
+    }
 
     // Update keytag title dynamically according to custom text or theme
     updateKeytagDisplay();
     var inputKeytagText = document.getElementById('inputKeytagText') as HTMLInputElement | null;
     if (inputKeytagText && document.activeElement !== inputKeytagText) {
-      var customKeytag = state.keytagText || (state.channel && state.channel.keytagText);
-      var defaultThemeKeytag = (SCHEDULE_THEMES[state.themeId] && SCHEDULE_THEMES[state.themeId].keytagTitle) || 'SCHEDULE';
-      inputKeytagText.value = (customKeytag !== undefined && customKeytag !== '') ? customKeytag : defaultThemeKeytag;
+      inputKeytagText.value = getActiveKeytagText();
     }
 
     // 2. Active Theme Chips
@@ -2385,20 +3179,25 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
       }
     });
 
-    // 3. View Mode Toggle
+    // 3. View Mode & Layout Toggle
+    if (btnLayoutBento) btnLayoutBento.classList.toggle('active', state.viewMode === 'weekly' && layoutStyle === 'bento');
+    if (btnLayoutTimeline) btnLayoutTimeline.classList.toggle('active', state.viewMode === 'weekly' && layoutStyle === 'timeline');
+    if (btnModeWeekly) btnModeWeekly.classList.toggle('active', state.viewMode === 'weekly' && layoutStyle === 'ticket');
+    if (btnModeMonthly) btnModeMonthly.classList.toggle('active', state.viewMode === 'monthly');
+
     if (state.viewMode === 'weekly') {
-      btnModeWeekly.classList.add('active');
-      btnModeMonthly.classList.remove('active');
-      weeklyWrap.style.display = 'block';
+      bentoWeeklyWrap.style.display = (layoutStyle === 'bento') ? 'block' : 'none';
+      timelineWeeklyWrap.style.display = (layoutStyle === 'timeline') ? 'block' : 'none';
+      weeklyWrap.style.display = (layoutStyle === 'ticket') ? 'flex' : 'none';
       monthlyWrap.style.display = 'none';
       weekExtractorGroup.style.display = 'flex';
-      dispScheduleRangeBadge.textContent = state.monthly.year + '.' + (state.monthly.month < 10 ? '0' + state.monthly.month : state.monthly.month) + ' ' + currentWeek.label;
+      dispScheduleRangeBadge.textContent = state.monthly.year + '.' + (state.monthly.month < 10 ? '0' + state.monthly.month : state.monthly.month) + ' · ' + currentWeek.label;
     } else {
-      btnModeWeekly.classList.remove('active');
-      btnModeMonthly.classList.add('active');
+      bentoWeeklyWrap.style.display = 'none';
+      timelineWeeklyWrap.style.display = 'none';
       weeklyWrap.style.display = 'none';
-      monthlyWrap.style.display = 'block';
-      weekExtractorGroup.style.display = 'none';
+      monthlyWrap.style.display = 'flex';
+      weekExtractorGroup.style.display = 'flex';
       dispScheduleRangeBadge.textContent = isEn
         ? (monthShortNames[state.monthly.month - 1] + ' ' + state.monthly.year + ' All Streams')
         : (state.monthly.year + '년 ' + state.monthly.month + '월 전체 방송');
@@ -2408,17 +3207,17 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
     renderWeekButtons(weeks);
 
     // 5. Header Branding Details
-    dispAvatar.textContent = state.channel.avatarEmoji || '🎮';
+    renderAvatarBox(dispAvatar);
     dispChannelName.textContent = state.channel.name || (isEn ? 'Streamer Channel' : '스트리머 채널');
     dispTagline.textContent = state.channel.tagline || '';
 
-    var platformMap = isEn
+    var platformMap: Record<string, string> = isEn
       ? { chzzk: 'CHZZK', soop: 'SOOP', twitch: 'Twitch', youtube: 'YouTube', custom: 'LIVE' }
       : { chzzk: '치지직', soop: 'SOOP', twitch: '트위치', youtube: '유튜브', custom: 'LIVE' };
     dispPlatformBadge.textContent = platformMap[state.channel.platform] || 'LIVE';
 
     // Notice Banner (Weekly vs Monthly)
-    if (state.viewMode === 'weekly') {
+    if (state.viewMode === 'weekly' && layoutStyle !== 'timeline') {
       var weeklyNotice = state.channel.noticeWeekly || state.channel.notice;
       if (weeklyNotice && weeklyNotice.trim() !== '') {
         dispNoticeBanner.style.display = 'flex';
@@ -2435,21 +3234,23 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
     dispMonthlyGoal.textContent = monthlyGoal || (isEn ? '🎯 Let’s make this month great!' : '🎯 이번 달도 파이팅!');
 
     // 6. Sync Input Controls
-    inputAvatarEmoji.value = state.channel.avatarEmoji || '🎮';
-    inputChannelName.value = state.channel.name || '';
+    if (document.activeElement !== inputAvatarEmoji) inputAvatarEmoji.value = state.channel.avatarEmoji || '🎮';
+    if (document.activeElement !== inputChannelName) inputChannelName.value = state.channel.name || '';
     selectPlatform.value = state.channel.platform || (isEn ? 'twitch' : 'chzzk');
-    inputTagline.value = state.channel.tagline || '';
-    inputNoticeWeekly.value = state.channel.noticeWeekly || state.channel.notice || '';
-    inputNoticeMonthly.value = state.channel.noticeMonthly || state.monthly.monthlyGoal || '';
+    if (document.activeElement !== inputTagline) inputTagline.value = state.channel.tagline || '';
+    if (document.activeElement !== inputNoticeWeekly) inputNoticeWeekly.value = state.channel.noticeWeekly || state.channel.notice || '';
+    if (document.activeElement !== inputNoticeMonthly) inputNoticeMonthly.value = state.channel.noticeMonthly || state.monthly.monthlyGoal || '';
 
-    // 7. Render Weekly Compact Day Cards
+    // 7. Render Weekly Views (Bento, Timeline, and Ticket)
+    renderBentoGrid(currentWeek);
+    renderTimelinePoster(currentWeek);
     renderWeeklyDays(currentWeek.days);
 
     // 8. Render Monthly Compact Cells
     renderMonthlyCalendar();
   }
 
-  function renderWeekButtons(weeks) {
+  function renderWeekButtons(weeks: any[]) {
     weekButtonsBar.innerHTML = '';
     weeks.forEach(function (w, idx) {
       var btn = document.createElement('button');
@@ -2468,7 +3269,182 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
     });
   }
 
-  function renderWeeklyDays(weekDays) {
+  // ─── Layout 1: Modern 4x2 Bento Card Grid ──────────────────────────────────
+  function renderBentoGrid(currentWeek: any) {
+    if (!bentoGridContainer) return;
+    bentoGridContainer.innerHTML = '';
+    var weekDays = currentWeek.days || [];
+    var defaultDayTitle = isEn ? 'Live Stream' : '방송 예정';
+    var liveCount = 0;
+    var offCount = 0;
+
+    weekDays.forEach(function (d: any) {
+      var entry = d.entry || { time: '20:00', startTime: '20:00', endTime: '', status: 'live', title: defaultDayTitle, memo: '' };
+      var isOff = (entry.status === 'off' || entry.title === 'OFFLINE');
+      if (isOff) offCount++; else liveCount++;
+
+      var badge = STATUS_BADGES[entry.status] || STATUS_BADGES.live;
+      var badgeLabel = isEn ? badge.labelEn : badge.labelKo;
+      var displayTime = formatDisplayTime(entry, isEn ? 'en' : 'ko') || entry.time || '20:00';
+      var dayPillClass = 'bento-day-pill' + (d.dayEn === 'SAT' ? ' is-sat' : (d.dayEn === 'SUN' ? ' is-sun' : ''));
+      var dayLabelText = isEn ? d.dayEn : (d.dayEn + ' · ' + d.dayKo);
+
+      var card = document.createElement('div');
+      card.className = 'bento-day-card' + (isOff ? ' is-off-day' : '');
+      card.style.setProperty('--card-status-color', badge.color);
+
+      var bodyHtml = '';
+      if (isOff) {
+        var offMemo = entry.memo || (isEn ? 'Scheduled Rest & Recharge' : '정기 휴방 및 컨디션 충전');
+        bodyHtml =
+          '<div class="bento-off-box">' +
+            '<div class="bento-off-moon">🌙</div>' +
+            '<div class="bento-off-title">' + (isEn ? 'DAY OFF · REST' : 'OFFLINE · 정기 휴방') + '</div>' +
+            '<div class="bento-off-sub">' + escapeHtml(offMemo) + '</div>' +
+          '</div>';
+      } else {
+        bodyHtml =
+          '<div class="bento-card-body">' +
+            '<div class="bento-stream-title">' + escapeHtml(entry.title || defaultDayTitle) + '</div>' +
+            (entry.memo ? '<div class="bento-stream-memo">' + escapeHtml(entry.memo) + '</div>' : '') +
+          '</div>';
+      }
+
+      card.innerHTML =
+        '<div class="bento-day-top">' +
+          '<div class="bento-day-left">' +
+            '<span class="' + dayPillClass + '">' + dayLabelText + '</span>' +
+            '<span class="bento-date-num">' + d.dateStr + '</span>' +
+          '</div>' +
+          '<span class="bento-status-badge" style="background:' + badge.bg + '; color:' + badge.color + '; border:1px solid ' + badge.color + '44;">' +
+            badge.icon + ' ' + badgeLabel +
+          '</span>' +
+        '</div>' +
+        bodyHtml +
+        '<div class="bento-card-footer">' +
+          '<span class="bento-time-pill">' + (isOff ? '💤 ' + (isEn ? 'OFFLINE' : '휴방일') : ('🕗 ' + escapeHtml(displayTime))) + '</span>' +
+          '<span class="bento-edit-icon">✏️ ' + (isEn ? 'Edit' : '편집') + '</span>' +
+        '</div>';
+
+      card.addEventListener('click', function () {
+        var dayTitleStr = isEn ? (d.dateStr + ' (' + d.dayEn + ')') : (d.dateStr + ' (' + d.dayKo + '요일)');
+        openEditModal(d.day, dayTitleStr);
+      });
+
+      bentoGridContainer.appendChild(card);
+    });
+
+    // 8th Card: Weekly Highlight & Summary Card
+    var summaryCard = document.createElement('div');
+    summaryCard.className = 'bento-summary-card';
+    var keytagStr = getActiveKeytagText();
+    var footText = state.channel.noticeWeekly || state.channel.notice || state.channel.tagline || (isEn ? 'Click any day card to customize your broadcast schedule!' : '요일 카드를 클릭하여 방송 시간과 제목을 자유롭게 수정하세요!');
+
+    summaryCard.innerHTML =
+      '<div class="bento-summary-top">' +
+        '<span class="bento-summary-tag">' + escapeHtml(keytagStr) + '</span>' +
+        '<span class="bento-summary-range">' + escapeHtml(currentWeek.rangeStr) + '</span>' +
+      '</div>' +
+      '<div class="bento-summary-stats">' +
+        '<div class="bento-stat-box">' +
+          '<span class="bento-stat-num">' + liveCount + (isEn ? ' Days' : '일') + '</span>' +
+          '<span class="bento-stat-label">' + (isEn ? '🔴 Live Streams' : '🔴 이번 주 방송') + '</span>' +
+        '</div>' +
+        '<div class="bento-stat-box">' +
+          '<span class="bento-stat-num">' + offCount + (isEn ? ' Days' : '일') + '</span>' +
+          '<span class="bento-stat-label">' + (isEn ? '🌙 Rest Days' : '🌙 이번 주 휴방') + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="bento-summary-foot">' +
+        escapeHtml(footText) +
+      '</div>';
+
+    bentoGridContainer.appendChild(summaryCard);
+  }
+
+  // ─── Layout 2: Streamer Profile Showcase + 7-Day Timeline Poster ───────────
+  function renderTimelinePoster(currentWeek: any) {
+    if (!timelinePosterCol || !timelineDaysCol) return;
+    var weekDays = currentWeek.days || [];
+    var defaultDayTitle = isEn ? 'Live Stream' : '방송 예정';
+    var liveCount = 0;
+    var offCount = 0;
+
+    weekDays.forEach(function (d: any) {
+      var entry = d.entry || {};
+      if (entry.status === 'off' || entry.title === 'OFFLINE') offCount++; else liveCount++;
+    });
+
+    var platformMap: Record<string, string> = isEn
+      ? { chzzk: 'CHZZK', soop: 'SOOP', twitch: 'Twitch', youtube: 'YouTube', custom: 'LIVE' }
+      : { chzzk: '치지직', soop: 'SOOP', twitch: '트위치', youtube: '유튜브', custom: 'LIVE' };
+    var platText = platformMap[state.channel.platform] || 'LIVE';
+    var avatarHtml = (state.channel && state.channel.avatarImage)
+      ? '<img class="poster-custom-img" src="' + state.channel.avatarImage + '" alt="Avatar" />'
+      : '<span>' + escapeHtml(state.channel.avatarEmoji || '🎮') + '</span>';
+    var noticeText = state.channel.noticeWeekly || state.channel.notice || '';
+
+    timelinePosterCol.innerHTML =
+      '<div>' +
+        '<div class="poster-top-badges">' +
+          '<span class="poster-platform-pill">' + escapeHtml(platText) + ' · ' + escapeHtml(getActiveKeytagText()) + '</span>' +
+          '<span class="poster-week-pill">' + escapeHtml(currentWeek.shortLabel) + '</span>' +
+        '</div>' +
+        '<div class="poster-avatar-showcase" style="margin-top:0.75rem;">' + avatarHtml + '</div>' +
+        '<div style="margin-top:0.85rem;">' +
+          '<h3 class="poster-channel-title">' + escapeHtml(state.channel.name || (isEn ? 'Streamer Channel' : '스트리머 채널')) + '</h3>' +
+          '<p class="poster-channel-tagline">' + escapeHtml(state.channel.tagline || '') + '</p>' +
+        '</div>' +
+      '</div>' +
+      (noticeText ? '<div class="poster-notice-box">' + escapeHtml(noticeText) + '</div>' : '') +
+      '<div class="poster-stats-row">' +
+        '<div class="poster-stat-chip">' + (isEn ? 'LIVE' : '방송') + '<strong>' + liveCount + (isEn ? 'd' : '일') + '</strong></div>' +
+        '<div class="poster-stat-chip">' + (isEn ? 'OFF' : '휴방') + '<strong>' + offCount + (isEn ? 'd' : '일') + '</strong></div>' +
+        '<div class="poster-stat-chip"><strong>' + escapeHtml(currentWeek.rangeStr) + '</strong></div>' +
+      '</div>';
+
+    timelineDaysCol.innerHTML = '';
+    weekDays.forEach(function (d: any) {
+      var entry = d.entry || { time: '20:00', startTime: '20:00', endTime: '', status: 'live', title: defaultDayTitle, memo: '' };
+      var isOff = (entry.status === 'off' || entry.title === 'OFFLINE');
+      var badge = STATUS_BADGES[entry.status] || STATUS_BADGES.live;
+      var badgeLabel = isEn ? badge.labelEn : badge.labelKo;
+      var displayTime = formatDisplayTime(entry, isEn ? 'en' : 'ko') || entry.time || '20:00';
+      var dayPillClass = 'tl-day-pill' + (d.dayEn === 'SAT' ? ' is-sat' : (d.dayEn === 'SUN' ? ' is-sun' : ''));
+
+      var row = document.createElement('div');
+      row.className = 'timeline-day-row' + (isOff ? ' is-off-day' : '');
+      row.style.setProperty('--row-status-color', badge.color);
+
+      var titleText = isOff ? (isEn ? 'OFFLINE (Scheduled Rest Day)' : '정기 휴방일 (OFFLINE)') : (entry.title || defaultDayTitle);
+      var memoText = entry.memo ? ('· ' + entry.memo) : '';
+
+      row.innerHTML =
+        '<div class="tl-day-col">' +
+          '<span class="' + dayPillClass + '">' + d.dayEn + '</span>' +
+          '<span class="tl-date-text">' + d.dateStr + '</span>' +
+        '</div>' +
+        '<div class="tl-time-col">' + (isOff ? '🌙 ' + (isEn ? 'DAY OFF' : '휴방') : ('🕗 ' + escapeHtml(displayTime))) + '</div>' +
+        '<span class="tl-status-chip" style="background:' + badge.bg + '; color:' + badge.color + '; border:1px solid ' + badge.color + '44;">' +
+          badge.icon + ' ' + badgeLabel +
+        '</span>' +
+        '<div class="tl-content-col">' +
+          '<span class="tl-stream-title">' + escapeHtml(titleText) + '</span>' +
+          (memoText ? '<span class="tl-stream-memo">' + escapeHtml(memoText) + '</span>' : '') +
+        '</div>' +
+        '<span class="tl-edit-icon">✏️</span>';
+
+      row.addEventListener('click', function () {
+        var dayTitleStr = isEn ? (d.dateStr + ' (' + d.dayEn + ')') : (d.dateStr + ' (' + d.dayKo + '요일)');
+        openEditModal(d.day, dayTitleStr);
+      });
+
+      timelineDaysCol.appendChild(row);
+    });
+  }
+
+  // ─── Layout 3: Travel Boarding Pass Tickets ────────────────────────────────
+  function renderWeeklyDays(weekDays: any[]) {
     if (bpFlightDatesDisplay && weekDays.length >= 7) {
       bpFlightDatesDisplay.textContent = weekDays[0].dateStr + ' ✈ ' + weekDays[6].dateStr;
     }
@@ -2514,7 +3490,7 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
     }
   }
 
-  function createBoardingPassTicket(d) {
+  function createBoardingPassTicket(d: any) {
     var defaultDayTitle = isEn ? 'Live Stream' : '방송 예정';
     var entry = d.entry || { time: '20:00', startTime: '20:00', endTime: '', status: 'live', title: defaultDayTitle, memo: '' };
     var isOff = (entry.status === 'off' || entry.title === 'OFFLINE');
@@ -2527,7 +3503,6 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
     var innerContentHtml = '';
 
     if (isOff) {
-      // Hanging rustic wooden OFFLINE sign tilted at -4.5° with cords and rivets
       innerContentHtml =
         '<div class="bp-hanging-sign-unit">' +
           '<div class="bp-pin-nail"></div>' +
@@ -2542,12 +3517,11 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
           '</div>' +
         '</div>';
     } else {
-      // Active stream day: Title, Memo/Subtitle, and Time
       innerContentHtml =
         '<div class="bp-ticket-body-content">' +
-          '<div class="bp-ticket-title">' + (entry.title || defaultDayTitle) + '</div>' +
-          '<div class="bp-ticket-memo">' + (entry.memo || '') + '</div>' +
-          '<div class="bp-ticket-time">' + displayTime + '</div>' +
+          '<div class="bp-ticket-title">' + escapeHtml(entry.title || defaultDayTitle) + '</div>' +
+          '<div class="bp-ticket-memo">' + escapeHtml(entry.memo || '') + '</div>' +
+          '<div class="bp-ticket-time">' + escapeHtml(displayTime) + '</div>' +
         '</div>';
     }
 
@@ -2555,7 +3529,7 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
       '<div class="bp-ticket-ribbon-wrap">' +
         '<div class="bp-folded-ribbon">' +
           '<span class="bp-ribbon-fold-l"></span>' +
-          '<span class="bp-ribbon-label">' + d.dayEn + '</span>' +
+          '<span class="bp-ribbon-label">' + d.dayEn + ' · ' + d.dateStr + '</span>' +
           '<span class="bp-ribbon-fold-r"></span>' +
         '</div>' +
       '</div>' +
@@ -2609,7 +3583,7 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
           var offWord = isEn ? 'OFF' : '휴식';
           var timePrefix = (displayTime && displayTime !== offWord) ? displayTime + ' ' : '';
           html += '<div class="cal-cell-pill" style="background: ' + badge.bg + '; color: ' + badge.color + '; border: 1px solid ' + badge.color + '44;">' +
-            badge.icon + ' ' + timePrefix + entry.title +
+            badge.icon + ' ' + escapeHtml(timePrefix + entry.title) +
           '</div>';
         }
         cellEl.innerHTML = html;
@@ -2629,11 +3603,10 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
   }
 
   // ─── Modal Editing Logic ───────────────────────────────────────────────────
-  function openEditModal(dayNum, titleLabel) {
+  function openEditModal(dayNum: number, titleLabel: string) {
     currentEditingDayNum = dayNum;
     modalDayTitle.textContent = isEn ? ('Edit Schedule: ' + titleLabel) : (titleLabel + ' 방송 일정 편집');
 
-    var defaultDayTitle = isEn ? 'Live Stream' : '방송 예정';
     var existing = state.monthly.days[dayNum] || { startTime: '20:00', endTime: '', time: '20:00', status: 'live', title: '', memo: '' };
     currentSelectedBadgeId = existing.status || 'live';
     modalStartTimeInput.value = existing.startTime || existing.time || '20:00';
@@ -2659,9 +3632,9 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
   }
 
   modalBadgeGrid.addEventListener('click', function (e) {
-    var btn = e.target.closest('.badge-opt-btn');
+    var btn = (e.target as HTMLElement).closest('.badge-opt-btn');
     if (!btn) return;
-    currentSelectedBadgeId = btn.getAttribute('data-badge-id');
+    currentSelectedBadgeId = btn.getAttribute('data-badge-id') || 'live';
     updateModalBadgeButtons();
 
     if (currentSelectedBadgeId === 'off') {
@@ -2698,7 +3671,7 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
     var startVal = modalStartTimeInput.value.trim() || '20:00';
     var endVal = modalEndTimeInput.value.trim();
     var defaultDayTitle = isEn ? 'Live Stream' : '방송 예정';
-    var tempEntry = {
+    var tempEntry: any = {
       startTime: startVal,
       endTime: endVal,
       status: currentSelectedBadgeId,
@@ -2713,114 +3686,196 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
     renderAll();
   });
 
-  // ─── Event Handlers ────────────────────────────────────────────────────────
-  btnModeWeekly.addEventListener('click', function () {
-    state.viewMode = 'weekly';
-    saveState();
-    renderAll();
-  });
+  // ─── Event Handlers: View Mode & Layout Style ──────────────────────────────
+  if (btnLayoutBento) {
+    btnLayoutBento.addEventListener('click', function () {
+      state.viewMode = 'weekly';
+      state.layoutStyle = 'bento';
+      saveState();
+      renderAll();
+    });
+  }
 
-  btnModeMonthly.addEventListener('click', function () {
-    state.viewMode = 'monthly';
-    saveState();
-    renderAll();
-  });
+  if (btnLayoutTimeline) {
+    btnLayoutTimeline.addEventListener('click', function () {
+      state.viewMode = 'weekly';
+      state.layoutStyle = 'timeline';
+      saveState();
+      renderAll();
+    });
+  }
+
+  if (btnModeWeekly) {
+    btnModeWeekly.addEventListener('click', function () {
+      state.viewMode = 'weekly';
+      state.layoutStyle = 'ticket';
+      saveState();
+      renderAll();
+    });
+  }
+
+  if (btnModeMonthly) {
+    btnModeMonthly.addEventListener('click', function () {
+      state.viewMode = 'monthly';
+      saveState();
+      renderAll();
+    });
+  }
 
   themePickerRow.addEventListener('click', function (e) {
-    var btn = e.target.closest('.theme-chip');
+    var btn = (e.target as HTMLElement).closest('.theme-chip');
     if (!btn) return;
     state.themeId = btn.getAttribute('data-theme-id');
     saveState();
     renderAll();
   });
 
-  // Month navigation
-  btnPrevMonth.addEventListener('click', function () {
-    state.monthly.month -= 1;
+  // Month navigation (both Calendar header & Quick Toolbar)
+  function stepMonth(delta: number) {
+    state.monthly.month += delta;
     if (state.monthly.month < 1) {
       state.monthly.month = 12;
       state.monthly.year -= 1;
-    }
-    state.selectedWeekIndex = 0;
-    saveState();
-    renderAll();
-  });
-
-  btnNextMonth.addEventListener('click', function () {
-    state.monthly.month += 1;
-    if (state.monthly.month > 12) {
+    } else if (state.monthly.month > 12) {
       state.monthly.month = 1;
       state.monthly.year += 1;
     }
     state.selectedWeekIndex = 0;
     saveState();
     renderAll();
-  });
+  }
 
-  // Representative Emoji Input & Sample Chips
+  btnPrevMonth.addEventListener('click', function () { stepMonth(-1); });
+  btnNextMonth.addEventListener('click', function () { stepMonth(1); });
+  if (btnQuickPrevMonth) btnQuickPrevMonth.addEventListener('click', function () { stepMonth(-1); });
+  if (btnQuickNextMonth) btnQuickNextMonth.addEventListener('click', function () { stepMonth(1); });
+
+  if (btnJumpToday) {
+    btnJumpToday.addEventListener('click', function () {
+      var now = new Date();
+      var y = now.getFullYear();
+      var m = now.getMonth() + 1;
+      var d = now.getDate();
+      state.monthly.year = y;
+      state.monthly.month = m;
+      var weeks = computeMonthWeeks(y, m);
+      var foundIdx = 0;
+      weeks.forEach(function (w: any, idx: number) {
+        w.days.forEach(function (dayObj: any) {
+          if (dayObj.year === y && dayObj.month === m && dayObj.day === d) {
+            foundIdx = idx;
+          }
+        });
+      });
+      state.selectedWeekIndex = foundIdx;
+      saveState();
+      renderAll();
+    });
+  }
+
+  // Representative Emoji Input, Custom Image Upload & Sample Chips
   inputAvatarEmoji.addEventListener('input', function (e) {
-    state.channel.avatarEmoji = e.target.value;
+    state.channel.avatarEmoji = (e.target as HTMLInputElement).value;
+    state.channel.avatarImage = '';
     saveState();
-    dispAvatar.textContent = state.channel.avatarEmoji || '🎮';
+    renderAll();
   });
 
   if (emojiSamplesRow) {
     emojiSamplesRow.addEventListener('click', function (e) {
-      var btn = e.target.closest('.btn-emoji-chip');
+      var btn = (e.target as HTMLElement).closest('.btn-emoji-chip');
       if (!btn) return;
       var emoji = btn.getAttribute('data-emoji');
       if (emoji) {
         state.channel.avatarEmoji = emoji;
+        state.channel.avatarImage = '';
         inputAvatarEmoji.value = emoji;
-        dispAvatar.textContent = emoji;
         saveState();
+        renderAll();
       }
     });
   }
 
+  if (inputAvatarImage) {
+    inputAvatarImage.addEventListener('change', function (e) {
+      var target = e.target as HTMLInputElement;
+      var file = target.files && target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function (ev) {
+        var img = new Image();
+        img.onload = function () {
+          var canvas = document.createElement('canvas');
+          var maxDim = 360;
+          var w = img.width;
+          var h = img.height;
+          if (w > h && w > maxDim) {
+            h = Math.round((h * maxDim) / w);
+            w = maxDim;
+          } else if (h >= w && h > maxDim) {
+            w = Math.round((w * maxDim) / h);
+            h = maxDim;
+          }
+          canvas.width = w;
+          canvas.height = h;
+          var ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, w, h);
+            state.channel.avatarImage = canvas.toDataURL('image/png');
+            saveState();
+            renderAll();
+          }
+        };
+        img.src = String(ev.target && ev.target.result);
+      };
+      reader.readAsDataURL(file);
+      target.value = '';
+    });
+  }
+
+  if (btnClearAvatarImage) {
+    btnClearAvatarImage.addEventListener('click', function () {
+      state.channel.avatarImage = '';
+      saveState();
+      renderAll();
+    });
+  }
+
   inputChannelName.addEventListener('input', function (e) {
-    state.channel.name = e.target.value;
+    state.channel.name = (e.target as HTMLInputElement).value;
     saveState();
-    dispChannelName.textContent = state.channel.name || (isEn ? 'Streamer Channel' : '스트리머 채널');
+    renderAll();
   });
 
   selectPlatform.addEventListener('change', function (e) {
-    state.channel.platform = e.target.value;
+    state.channel.platform = (e.target as HTMLSelectElement).value;
     saveState();
-    var map = isEn
-      ? { chzzk: 'CHZZK', soop: 'SOOP', twitch: 'Twitch', youtube: 'YouTube', custom: 'LIVE' }
-      : { chzzk: '치지직', soop: 'SOOP', twitch: '트위치', youtube: '유튜브', custom: 'LIVE' };
-    dispPlatformBadge.textContent = map[state.channel.platform] || 'LIVE';
+    renderAll();
   });
 
   inputTagline.addEventListener('input', function (e) {
-    state.channel.tagline = e.target.value;
+    state.channel.tagline = (e.target as HTMLInputElement).value;
     saveState();
-    dispTagline.textContent = state.channel.tagline || '';
+    renderAll();
   });
 
   inputNoticeWeekly.addEventListener('input', function (e) {
-    state.channel.noticeWeekly = e.target.value;
-    state.channel.notice = e.target.value;
+    var val = (e.target as HTMLInputElement).value;
+    state.channel.noticeWeekly = val;
+    state.channel.notice = val;
     saveState();
-    if (state.viewMode === 'weekly') {
-      if (e.target.value && e.target.value.trim() !== '') {
-        dispNoticeBanner.style.display = 'flex';
-        dispNoticeText.textContent = e.target.value;
-      } else {
-        dispNoticeBanner.style.display = 'none';
-      }
-    }
+    renderAll();
   });
 
   inputNoticeMonthly.addEventListener('input', function (e) {
-    state.channel.noticeMonthly = e.target.value;
-    state.monthly.monthlyGoal = e.target.value;
+    var val = (e.target as HTMLInputElement).value;
+    state.channel.noticeMonthly = val;
+    state.monthly.monthlyGoal = val;
     saveState();
-    dispMonthlyGoal.textContent = e.target.value || (isEn ? '🎯 Let’s make this month great!' : '🎯 이번 달도 파이팅!');
+    renderAll();
   });
 
-  // Keychain Badge Custom Text Input
+  // Keychain / Accent Badge Custom Text Input
   var inputKeytagTextEl = document.getElementById('inputKeytagText');
   if (inputKeytagTextEl) {
     inputKeytagTextEl.addEventListener('input', function (e) {
@@ -2828,7 +3883,7 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
       state.keytagText = val;
       if (state.channel) state.channel.keytagText = val;
       saveState();
-      updateKeytagDisplay();
+      renderAll();
     });
   }
 
@@ -2845,11 +3900,12 @@ import { STATUS_BADGES, SCHEDULE_THEMES, formatDisplayTime, SAMPLE_PRESETS, SAMP
   }
 
   function updateKeytagDisplay() {
+    var textToShow = getActiveKeytagText();
+    if (dispHeaderKeytag) {
+      dispHeaderKeytag.textContent = textToShow;
+    }
     var bpKeytagTitleEl = document.getElementById('bpKeytagTitle');
     if (!bpKeytagTitleEl) return;
-    var customKeytag = state.keytagText || (state.channel && state.channel.keytagText);
-    var defaultThemeKeytag = (SCHEDULE_THEMES[state.themeId] && SCHEDULE_THEMES[state.themeId].keytagTitle) || 'SCHEDULE';
-    var textToShow = (customKeytag !== undefined && customKeytag.trim() !== '') ? customKeytag.trim() : defaultThemeKeytag;
     bpKeytagTitleEl.textContent = textToShow;
     if (textToShow.length > 12) {
       bpKeytagTitleEl.style.fontSize = '1.02rem';

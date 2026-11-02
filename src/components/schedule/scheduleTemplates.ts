@@ -74,6 +74,7 @@ export interface DayScheduleEntry {
 export interface StreamScheduleData {
   version: 2;
   viewMode: 'weekly' | 'monthly';
+  layoutStyle?: 'bento' | 'timeline' | 'ticket';
   selectedWeekIndex: number; // 0: Week 1, 1: Week 2, 2: Week 3, etc.
   themeId: string;
   keytagText?: string; // Customizable keychain badge text (e.g. "SCHEDULE", "LIVE", "ON AIR")
@@ -81,6 +82,7 @@ export interface StreamScheduleData {
     name: string;
     platform: 'chzzk' | 'soop' | 'twitch' | 'youtube' | 'custom';
     avatarEmoji: string;
+    avatarImage?: string;
     tagline: string;
     notice: string; // Weekly notice (backwards compatibility)
     noticeWeekly?: string;
@@ -111,55 +113,6 @@ export function formatDisplayTime(entry?: DayScheduleEntry, lang: 'ko' | 'en' = 
 }
 
 export const SCHEDULE_THEMES: Record<string, ScheduleTheme> = {
-  'travel-boarding-pass': {
-    id: 'travel-boarding-pass',
-    nameKo: '여행 보딩패스',
-    nameEn: 'Travel Boarding Pass',
-    bg: '#cbd5e1',
-    cardBg: '#ffffff',
-    accent: '#1e40af',
-    accentGlow: 'rgba(30, 64, 175, 0.35)',
-    border: '#475569',
-    textMain: '#0f172a',
-    textSub: '#334155',
-    badgeColor: '#1e40af',
-    badgeBg: 'rgba(30, 64, 175, 0.12)',
-    previewGradient: 'linear-gradient(135deg, #1e3a8a 0%, #f1f5f9 100%)',
-
-    keytagTitle: 'SCHEDULE',
-    keytagBg: '#334e80',
-    keytagBorder: '#1e3a8a',
-    keytagText: '#ffffff',
-    keytagShadow: '#93c5fd',
-
-    tickerBg: '#ffffff',
-    tickerBorder: '#475569',
-    tickerLabel: '#1e293b',
-    tickerText: '#0f172a',
-
-    ribbonBg: '#1e40af',
-    ribbonFold: '#172554',
-    ribbonText: '#ffffff',
-
-    stripBg: '#ffffff',
-    stripBorder: '#64748b',
-
-    stubBg: '#f1f5f9',
-    stubBorder: '#64748b',
-    stubText: '#1e293b',
-    barcodeColor: '#1e293b',
-
-    ticketBg: '#ffffff',
-    ticketInnerBorder: '#94a3b8',
-    ticketTitle: '#0f172a',
-    ticketMemo: '#334155',
-    ticketTime: '#1e40af',
-    flourishColor: '#64748b',
-
-    offlineBg: '#451a03',
-    offlineBorder: '#290f02',
-    offlineText: '#fef08a'
-  },
   'chzzk-neon': {
     id: 'chzzk-neon',
     nameKo: '에메랄드 네온',
@@ -175,7 +128,7 @@ export const SCHEDULE_THEMES: Record<string, ScheduleTheme> = {
     badgeBg: 'rgba(0, 255, 163, 0.15)',
     previewGradient: 'linear-gradient(135deg, #080c14 0%, #00ffa3 100%)',
 
-    keytagTitle: 'NEON LIVE',
+    keytagTitle: 'ON AIR',
     keytagBg: '#0b1e16',
     keytagBorder: '#00ffa3',
     keytagText: '#00ffa3',
@@ -258,55 +211,6 @@ export const SCHEDULE_THEMES: Record<string, ScheduleTheme> = {
     offlineBorder: '#9146ff',
     offlineText: '#faf5ff'
   },
-  'soop-cyan': {
-    id: 'soop-cyan',
-    nameKo: '사이버 오션',
-    nameEn: 'Cyber Ocean',
-    bg: '#06101e',
-    cardBg: 'rgba(10, 26, 51, 0.92)',
-    accent: '#00d2ff',
-    accentGlow: 'rgba(0, 210, 255, 0.35)',
-    border: 'rgba(0, 210, 255, 0.3)',
-    textMain: '#ffffff',
-    textSub: '#bae6fd',
-    badgeColor: '#00d2ff',
-    badgeBg: 'rgba(0, 210, 255, 0.15)',
-    previewGradient: 'linear-gradient(135deg, #06101e 0%, #00d2ff 100%)',
-
-    keytagTitle: 'OCEAN',
-    keytagBg: '#082236',
-    keytagBorder: '#00d2ff',
-    keytagText: '#00d2ff',
-    keytagShadow: 'rgba(0, 210, 255, 0.4)',
-
-    tickerBg: '#061928',
-    tickerBorder: 'rgba(0, 210, 255, 0.45)',
-    tickerLabel: '#38bdf8',
-    tickerText: '#00d2ff',
-
-    ribbonBg: '#00d2ff',
-    ribbonFold: '#0284c7',
-    ribbonText: '#031929',
-
-    stripBg: '#0a1a2e',
-    stripBorder: 'rgba(0, 210, 255, 0.35)',
-
-    stubBg: '#061221',
-    stubBorder: 'rgba(0, 210, 255, 0.3)',
-    stubText: '#7dd3fc',
-    barcodeColor: '#00d2ff',
-
-    ticketBg: '#0d223c',
-    ticketInnerBorder: 'rgba(0, 210, 255, 0.25)',
-    ticketTitle: '#ffffff',
-    ticketMemo: '#bae6fd',
-    ticketTime: '#38bdf8',
-    flourishColor: 'rgba(0, 210, 255, 0.45)',
-
-    offlineBg: '#0c263d',
-    offlineBorder: '#00d2ff',
-    offlineText: '#e0f2fe'
-  },
   'cozy-pastel': {
     id: 'cozy-pastel',
     nameKo: '포근한 파스텔',
@@ -356,54 +260,103 @@ export const SCHEDULE_THEMES: Record<string, ScheduleTheme> = {
     offlineBorder: '#f472b6',
     offlineText: '#fdf2f8'
   },
-  'retro-arcade': {
-    id: 'retro-arcade',
-    nameKo: '80s 레트로',
-    nameEn: '80s Retro',
-    bg: '#130924',
-    cardBg: 'rgba(35, 16, 61, 0.92)',
-    accent: '#ff007f',
-    accentGlow: 'rgba(255, 0, 127, 0.45)',
-    border: 'rgba(255, 230, 0, 0.4)',
+  'soop-cyan': {
+    id: 'soop-cyan',
+    nameKo: '사이버 오션',
+    nameEn: 'Cyber Ocean',
+    bg: '#06101e',
+    cardBg: 'rgba(10, 26, 51, 0.92)',
+    accent: '#00d2ff',
+    accentGlow: 'rgba(0, 210, 255, 0.35)',
+    border: 'rgba(0, 210, 255, 0.3)',
     textMain: '#ffffff',
-    textSub: '#fef08a',
-    badgeColor: '#ffe600',
-    badgeBg: 'rgba(255, 230, 0, 0.2)',
-    previewGradient: 'linear-gradient(135deg, #130924 0%, #ff007f 100%)',
+    textSub: '#bae6fd',
+    badgeColor: '#00d2ff',
+    badgeBg: 'rgba(0, 210, 255, 0.15)',
+    previewGradient: 'linear-gradient(135deg, #06101e 0%, #00d2ff 100%)',
 
-    keytagTitle: 'ARCADE',
-    keytagBg: '#2e0f45',
-    keytagBorder: '#ffe600',
-    keytagText: '#ffe600',
-    keytagShadow: '#ff007f',
+    keytagTitle: 'OCEAN',
+    keytagBg: '#082236',
+    keytagBorder: '#00d2ff',
+    keytagText: '#00d2ff',
+    keytagShadow: 'rgba(0, 210, 255, 0.4)',
 
-    tickerBg: '#210935',
-    tickerBorder: 'rgba(255, 0, 127, 0.5)',
-    tickerLabel: '#ff007f',
-    tickerText: '#ffe600',
+    tickerBg: '#061928',
+    tickerBorder: 'rgba(0, 210, 255, 0.45)',
+    tickerLabel: '#38bdf8',
+    tickerText: '#00d2ff',
 
-    ribbonBg: '#ff007f',
-    ribbonFold: '#be005d',
-    ribbonText: '#ffe600',
+    ribbonBg: '#00d2ff',
+    ribbonFold: '#0284c7',
+    ribbonText: '#031929',
 
-    stripBg: '#1c0d33',
-    stripBorder: 'rgba(255, 0, 127, 0.45)',
+    stripBg: '#0a1a2e',
+    stripBorder: 'rgba(0, 210, 255, 0.35)',
 
-    stubBg: '#140826',
-    stubBorder: 'rgba(255, 230, 0, 0.35)',
-    stubText: '#ffe600',
-    barcodeColor: '#ff007f',
+    stubBg: '#061221',
+    stubBorder: 'rgba(0, 210, 255, 0.3)',
+    stubText: '#7dd3fc',
+    barcodeColor: '#00d2ff',
 
-    ticketBg: '#271247',
-    ticketInnerBorder: 'rgba(255, 230, 0, 0.3)',
+    ticketBg: '#0d223c',
+    ticketInnerBorder: 'rgba(0, 210, 255, 0.25)',
     ticketTitle: '#ffffff',
-    ticketMemo: '#fef08a',
-    ticketTime: '#00f0ff',
-    flourishColor: 'rgba(255, 0, 127, 0.45)',
+    ticketMemo: '#bae6fd',
+    ticketTime: '#38bdf8',
+    flourishColor: 'rgba(0, 210, 255, 0.45)',
 
-    offlineBg: '#351152',
-    offlineBorder: '#ff007f',
-    offlineText: '#ffe600'
+    offlineBg: '#0c263d',
+    offlineBorder: '#00d2ff',
+    offlineText: '#e0f2fe'
+  },
+  'cyberpunk-matrix': {
+    id: 'cyberpunk-matrix',
+    nameKo: '사이버 매트릭스',
+    nameEn: 'Cyber Matrix',
+    bg: '#090a0f',
+    cardBg: 'rgba(20, 20, 30, 0.94)',
+    accent: '#fcee0a',
+    accentGlow: 'rgba(252, 238, 10, 0.4)',
+    border: 'rgba(0, 240, 255, 0.4)',
+    textMain: '#ffffff',
+    textSub: '#00f0ff',
+    badgeColor: '#fcee0a',
+    badgeBg: 'rgba(252, 238, 10, 0.15)',
+    previewGradient: 'linear-gradient(135deg, #090a0f 0%, #fcee0a 100%)',
+
+    keytagTitle: 'CYBER',
+    keytagBg: '#141824',
+    keytagBorder: '#fcee0a',
+    keytagText: '#fcee0a',
+    keytagShadow: '#00f0ff',
+
+    tickerBg: '#0d111c',
+    tickerBorder: 'rgba(0, 240, 255, 0.45)',
+    tickerLabel: '#00f0ff',
+    tickerText: '#fcee0a',
+
+    ribbonBg: '#fcee0a',
+    ribbonFold: '#c8bd04',
+    ribbonText: '#05070c',
+
+    stripBg: '#0f131f',
+    stripBorder: 'rgba(0, 240, 255, 0.4)',
+
+    stubBg: '#090c15',
+    stubBorder: 'rgba(0, 240, 255, 0.3)',
+    stubText: '#00f0ff',
+    barcodeColor: '#fcee0a',
+
+    ticketBg: '#161c2c',
+    ticketInnerBorder: 'rgba(252, 238, 10, 0.28)',
+    ticketTitle: '#ffffff',
+    ticketMemo: '#00f0ff',
+    ticketTime: '#fcee0a',
+    flourishColor: 'rgba(0, 240, 255, 0.45)',
+
+    offlineBg: '#1d2233',
+    offlineBorder: '#fcee0a',
+    offlineText: '#fcee0a'
   },
   'minimal-obsidian': {
     id: 'minimal-obsidian',
@@ -454,54 +407,103 @@ export const SCHEDULE_THEMES: Record<string, ScheduleTheme> = {
     offlineBorder: '#94a3b8',
     offlineText: '#f8fafc'
   },
-  'cyberpunk-matrix': {
-    id: 'cyberpunk-matrix',
-    nameKo: '사이버 매트릭스',
-    nameEn: 'Cyber Matrix',
-    bg: '#090a0f',
-    cardBg: 'rgba(20, 20, 30, 0.94)',
-    accent: '#fcee0a',
-    accentGlow: 'rgba(252, 238, 10, 0.4)',
-    border: 'rgba(0, 240, 255, 0.4)',
+  'retro-arcade': {
+    id: 'retro-arcade',
+    nameKo: '80s 레트로',
+    nameEn: '80s Retro',
+    bg: '#130924',
+    cardBg: 'rgba(35, 16, 61, 0.92)',
+    accent: '#ff007f',
+    accentGlow: 'rgba(255, 0, 127, 0.45)',
+    border: 'rgba(255, 230, 0, 0.4)',
     textMain: '#ffffff',
-    textSub: '#00f0ff',
-    badgeColor: '#fcee0a',
-    badgeBg: 'rgba(252, 238, 10, 0.15)',
-    previewGradient: 'linear-gradient(135deg, #090a0f 0%, #fcee0a 100%)',
+    textSub: '#fef08a',
+    badgeColor: '#ffe600',
+    badgeBg: 'rgba(255, 230, 0, 0.2)',
+    previewGradient: 'linear-gradient(135deg, #130924 0%, #ff007f 100%)',
 
-    keytagTitle: 'CYBER',
-    keytagBg: '#141824',
-    keytagBorder: '#fcee0a',
-    keytagText: '#fcee0a',
-    keytagShadow: '#00f0ff',
+    keytagTitle: 'ARCADE',
+    keytagBg: '#2e0f45',
+    keytagBorder: '#ffe600',
+    keytagText: '#ffe600',
+    keytagShadow: '#ff007f',
 
-    tickerBg: '#0d111c',
-    tickerBorder: 'rgba(0, 240, 255, 0.45)',
-    tickerLabel: '#00f0ff',
-    tickerText: '#fcee0a',
+    tickerBg: '#210935',
+    tickerBorder: 'rgba(255, 0, 127, 0.5)',
+    tickerLabel: '#ff007f',
+    tickerText: '#ffe600',
 
-    ribbonBg: '#fcee0a',
-    ribbonFold: '#c8bd04',
-    ribbonText: '#05070c',
+    ribbonBg: '#ff007f',
+    ribbonFold: '#be005d',
+    ribbonText: '#ffe600',
 
-    stripBg: '#0f131f',
-    stripBorder: 'rgba(0, 240, 255, 0.4)',
+    stripBg: '#1c0d33',
+    stripBorder: 'rgba(255, 0, 127, 0.45)',
 
-    stubBg: '#090c15',
-    stubBorder: 'rgba(0, 240, 255, 0.3)',
-    stubText: '#00f0ff',
-    barcodeColor: '#fcee0a',
+    stubBg: '#140826',
+    stubBorder: 'rgba(255, 230, 0, 0.35)',
+    stubText: '#ffe600',
+    barcodeColor: '#ff007f',
 
-    ticketBg: '#161c2c',
-    ticketInnerBorder: 'rgba(252, 238, 10, 0.28)',
+    ticketBg: '#271247',
+    ticketInnerBorder: 'rgba(255, 230, 0, 0.3)',
     ticketTitle: '#ffffff',
-    ticketMemo: '#00f0ff',
-    ticketTime: '#fcee0a',
-    flourishColor: 'rgba(0, 240, 255, 0.45)',
+    ticketMemo: '#fef08a',
+    ticketTime: '#00f0ff',
+    flourishColor: 'rgba(255, 0, 127, 0.45)',
 
-    offlineBg: '#1d2233',
-    offlineBorder: '#fcee0a',
-    offlineText: '#fcee0a'
+    offlineBg: '#351152',
+    offlineBorder: '#ff007f',
+    offlineText: '#ffe600'
+  },
+  'travel-boarding-pass': {
+    id: 'travel-boarding-pass',
+    nameKo: '클린 데이라이트',
+    nameEn: 'Clean Daylight',
+    bg: '#f1f5f9',
+    cardBg: '#ffffff',
+    accent: '#2563eb',
+    accentGlow: 'rgba(37, 99, 235, 0.25)',
+    border: '#cbd5e1',
+    textMain: '#0f172a',
+    textSub: '#475569',
+    badgeColor: '#2563eb',
+    badgeBg: 'rgba(37, 99, 235, 0.1)',
+    previewGradient: 'linear-gradient(135deg, #2563eb 0%, #f8fafc 100%)',
+
+    keytagTitle: 'SCHEDULE',
+    keytagBg: '#1e40af',
+    keytagBorder: '#1e3a8a',
+    keytagText: '#ffffff',
+    keytagShadow: '#93c5fd',
+
+    tickerBg: '#ffffff',
+    tickerBorder: '#cbd5e1',
+    tickerLabel: '#1e293b',
+    tickerText: '#0f172a',
+
+    ribbonBg: '#2563eb',
+    ribbonFold: '#1d4ed8',
+    ribbonText: '#ffffff',
+
+    stripBg: '#ffffff',
+    stripBorder: '#cbd5e1',
+
+    stubBg: '#f8fafc',
+    stubBorder: '#cbd5e1',
+    stubText: '#1e293b',
+    barcodeColor: '#1e293b',
+
+    ticketBg: '#ffffff',
+    ticketInnerBorder: '#cbd5e1',
+    ticketTitle: '#0f172a',
+    ticketMemo: '#475569',
+    ticketTime: '#2563eb',
+    flourishColor: '#94a3b8',
+
+    offlineBg: '#e2e8f0',
+    offlineBorder: '#94a3b8',
+    offlineText: '#475569'
   }
 };
 
@@ -576,12 +578,13 @@ export const SAMPLE_PRESETS: Record<string, StreamScheduleData> = {
   travelTicket: {
     version: 2,
     viewMode: 'weekly',
+    layoutStyle: 'ticket',
     selectedWeekIndex: 2, // 3주차 (9/14~9/20)
     themeId: 'travel-boarding-pass',
     channel: {
       name: '스트리머 아케이드',
       platform: 'chzzk',
-      avatarEmoji: '🎮',
+      avatarEmoji: '✈️',
       tagline: '매일 저녁 8시 소통 & 종합 게임 방송',
       notice: '📢 이번 주 토요일은 시청자 참여전 & 치킨 이벤트 진행!',
       noticeWeekly: '📢 이번 주 토요일은 시청자 참여전 & 치킨 이벤트 진행!',
@@ -605,6 +608,7 @@ export const SAMPLE_PRESETS: Record<string, StreamScheduleData> = {
   varietyGamer: {
     version: 2,
     viewMode: 'weekly',
+    layoutStyle: 'bento',
     selectedWeekIndex: 2,
     themeId: 'chzzk-neon',
     channel: {
@@ -612,8 +616,8 @@ export const SAMPLE_PRESETS: Record<string, StreamScheduleData> = {
       platform: 'chzzk',
       avatarEmoji: '🎮',
       tagline: '매일 저녁 8시 신작 & 종합 게임 방송!',
-      notice: '📢 이번 주 토요일은 시청자 참여 돌림판 & 사다리타기 벌칙전 진행!',
-      noticeWeekly: '📢 이번 주 토요일은 시청자 참여 돌림판 & 사다리타기 벌칙전 진행!',
+      notice: '📢 이번 주 토요일은 시청자 참여 돌림판 & 치킨 이벤트 진행!',
+      noticeWeekly: '📢 이번 주 토요일은 시청자 참여 돌림판 & 치킨 이벤트 진행!',
       noticeMonthly: '구독자 1만 달성 & 시참 토너먼트 2회 개최'
     },
     monthly: {
@@ -621,42 +625,43 @@ export const SAMPLE_PRESETS: Record<string, StreamScheduleData> = {
       month: 9,
       monthlyGoal: '구독자 1만 달성 & 시참 토너먼트 2회 개최',
       days: {
-        1: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: '9월 첫 방송 & 저챗' },
-        2: { startTime: '20:00', endTime: '24:00', time: '20:00 ~ 24:00', status: 'new', title: '스팀 신작 인디게임' },
-        3: { startTime: '휴식', endTime: '', time: '휴식', status: 'off', title: '정기 휴방' },
-        4: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: '심야 토크 & 사연' },
-        5: { startTime: '21:00', endTime: '24:00', time: '21:00 ~ 24:00', status: 'collab', title: '스트리머 4인 합방' },
-        6: { startTime: '19:00', endTime: '22:00', time: '19:00 ~ 22:00', status: 'viewer', title: '시참 돌림판 대전' },
-        7: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'live', title: '롤 솔랭 랭크게임' },
-        8: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'live', title: '스팀 신작 탐험' },
-        9: { startTime: '20:30', endTime: '23:30', time: '20:30 ~ 23:30', status: 'new', title: '공포게임 켠왕' },
-        10: { startTime: '휴식', endTime: '', time: '휴식', status: 'off', title: '정기 휴방' },
-        11: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: '저챗 & 고민 상담' },
-        12: { startTime: '21:00', endTime: '24:00', time: '21:00 ~ 24:00', status: 'collab', title: '배틀로얄 합방' },
-        13: { startTime: '19:00', endTime: '22:00', time: '19:00 ~ 22:00', status: 'viewer', title: '구슬 레이스 치킨 내기' },
-        14: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: '저챗 / 소통' },
-        15: { startTime: '20:00', endTime: '24:00', time: '20:00 ~ 24:00', status: 'live', title: '스팀 종합 게임' },
-        16: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'irl', title: '야식 & 먹방' },
-        17: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'viewer', title: '시청자 참여 게임' },
-        18: { startTime: '휴식', endTime: '', time: '휴식', status: 'off', title: '정기 휴방' },
-        19: { startTime: '19:00', endTime: '자율', time: '19:00 ~ 자율', status: 'event', title: '주말 특별 방송' },
-        20: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: '주간 결산 & 저챗' },
-        21: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'event', title: '🎉 방송 기념 파티' },
-        22: { startTime: '20:00', endTime: '24:00', time: '20:00 ~ 24:00', status: 'live', title: '종합 게임 켠왕' },
-        23: { startTime: '20:30', endTime: '23:30', time: '20:30 ~ 23:30', status: 'new', title: '신작 RPG 1일차' },
-        24: { startTime: '휴식', endTime: '', time: '휴식', status: 'off', title: '정기 휴방' },
-        25: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: '수다 & 팬아트 감상' },
-        26: { startTime: '21:00', endTime: '24:00', time: '21:00 ~ 24:00', status: 'collab', title: '듀오 팀전 합방' },
-        27: { startTime: '19:00', endTime: '22:00', time: '19:00 ~ 22:00', status: 'viewer', title: '월말 룰렛 토너먼트' },
-        28: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'live', title: 'RPG 최종 엔딩' },
-        29: { startTime: '20:30', endTime: '23:30', time: '20:30 ~ 23:30', status: 'live', title: '9월 결산 어워즈' },
-        30: { startTime: '휴식', endTime: '', time: '휴식', status: 'off', title: '10월 일정 준비 휴방' }
+        1: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: '9월 첫 방송 & 저챗', memo: '9월 방송 계획 발표' },
+        2: { startTime: '20:00', endTime: '24:00', time: '20:00 ~ 24:00', status: 'new', title: '스팀 신작 인디게임', memo: '인기 급상승 신작 탐방' },
+        3: { startTime: '휴식', endTime: '', time: '휴식', status: 'off', title: '정기 휴방', memo: '에너지 재충전 데이' },
+        4: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: '심야 토크 & 사연', memo: '시청자 고민 상담소' },
+        5: { startTime: '21:00', endTime: '24:00', time: '21:00 ~ 24:00', status: 'collab', title: '스트리머 4인 합방', memo: '파티게임 대결 & 벌칙전' },
+        6: { startTime: '19:00', endTime: '22:00', time: '19:00 ~ 22:00', status: 'viewer', title: '시참 돌림판 대전', memo: '누구나 참여 가능!' },
+        7: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'live', title: '롤 솔랭 랭크게임', memo: '다이아 승급전 도전' },
+        8: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'live', title: '스팀 신작 탐험', memo: '로그라이크 덱빌딩' },
+        9: { startTime: '20:30', endTime: '23:30', time: '20:30 ~ 23:30', status: 'new', title: '공포게임 켠왕', memo: '심박수 측정기 연동' },
+        10: { startTime: '휴식', endTime: '', time: '휴식', status: 'off', title: '정기 휴방', memo: '목 컨디션 관리' },
+        11: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: '저챗 & 고민 상담', memo: '익명 사연 라디오' },
+        12: { startTime: '21:00', endTime: '24:00', time: '21:00 ~ 24:00', status: 'collab', title: '배틀로얄 합방', memo: '치킨 내기 스쿼드' },
+        13: { startTime: '19:00', endTime: '22:00', time: '19:00 ~ 22:00', status: 'viewer', title: '구슬 레이스 치킨 내기', memo: '시청자 추첨 이벤트' },
+        14: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: '월요병 타파 저챗 & 소통', memo: '주말 근황 토크 & 클립 감상회' },
+        15: { startTime: '20:00', endTime: '24:00', time: '20:00 ~ 24:00', status: 'new', title: '화제의 스팀 신작 1일차', memo: '액션 RPG 노데스 클리어 도전' },
+        16: { startTime: '21:00', endTime: '24:00', time: '21:00 ~ 24:00', status: 'collab', title: '스트리머 4인 협동 합방', memo: '공포 탈출 게임 마이크 오픈' },
+        17: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'viewer', title: '시청자 참여 커스텀 내전', memo: '구슬 레이스 & 사다리 팀 뽑기' },
+        18: { startTime: '휴식', endTime: '', time: '휴식', status: 'off', title: 'OFFLINE', memo: '정기 휴방일 (컨디션 재충전)' },
+        19: { startTime: '19:00', endTime: '자율', time: '19:00 ~ 자율', status: 'event', title: '주말 올나잇 켠왕 특집', memo: '엔딩 볼 때까지 방종 없음!' },
+        20: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: '일요일 힐링 수다 & 결산', memo: '팬아트 감상 & 다음 주 편성표 예고' },
+        21: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'event', title: '🎉 방송 기념 파티', memo: '기념 굿즈 추첨' },
+        22: { startTime: '20:00', endTime: '24:00', time: '20:00 ~ 24:00', status: 'live', title: '종합 게임 켠왕', memo: '보스 러시 챌린지' },
+        23: { startTime: '20:30', endTime: '23:30', time: '20:30 ~ 23:30', status: 'new', title: '신작 RPG 1일차', memo: '스토리 정주행' },
+        24: { startTime: '휴식', endTime: '', time: '휴식', status: 'off', title: '정기 휴방', memo: '정기 휴식' },
+        25: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: '수다 & 팬아트 감상', memo: '팬카페 탐방' },
+        26: { startTime: '21:00', endTime: '24:00', time: '21:00 ~ 24:00', status: 'collab', title: '듀오 팀전 합방', memo: '라이벌 매치' },
+        27: { startTime: '19:00', endTime: '22:00', time: '19:00 ~ 22:00', status: 'viewer', title: '월말 룰렛 토너먼트', memo: '시청자 경품 이벤트' },
+        28: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'live', title: 'RPG 최종 엔딩', memo: '진엔딩 회수' },
+        29: { startTime: '20:30', endTime: '23:30', time: '20:30 ~ 23:30', status: 'live', title: '9월 결산 어워즈', memo: '이달의 레전드 클립' },
+        30: { startTime: '휴식', endTime: '', time: '휴식', status: 'off', title: '10월 일정 준비 휴방', memo: '10월 기획 준비' }
       }
     }
   },
   vtuberCozy: {
     version: 2,
     viewMode: 'weekly',
+    layoutStyle: 'timeline',
     selectedWeekIndex: 2,
     themeId: 'cozy-pastel',
     channel: {
@@ -664,8 +669,8 @@ export const SAMPLE_PRESETS: Record<string, StreamScheduleData> = {
       platform: 'chzzk',
       avatarEmoji: '🌸',
       tagline: '달콤한 힐링 보이스 버튜버 체리입니다 ✨',
-      notice: '🍓 목요일은 신규 의상 공개 & 심야 노래 방송입니다!',
-      noticeWeekly: '🍓 목요일은 신규 의상 공개 & 심야 노래 방송입니다!',
+      notice: '🍓 목요일은 신규 의상 공개 & 심야 노래방 라이브 방송입니다!',
+      noticeWeekly: '🍓 목요일은 신규 의상 공개 & 심야 노래방 라이브 방송입니다!',
       noticeMonthly: '신규 오리지널 곡 공개 & 팬미팅 기획'
     },
     monthly: {
@@ -686,13 +691,13 @@ export const SAMPLE_PRESETS: Record<string, StreamScheduleData> = {
         11: { startTime: '22:00', endTime: '새벽', time: '22:00 ~ 새벽', status: 'chat', title: '심야 ASMR & 잠방' },
         12: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'collab', title: '릴레이 노래 합방' },
         13: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'viewer', title: '시청자 마작 대전' },
-        14: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: '저챗 / 소통' },
-        15: { startTime: '20:00', endTime: '24:00', time: '20:00 ~ 24:00', status: 'live', title: '스팀 종합 게임' },
-        16: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'irl', title: '야식 & 먹방' },
-        17: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'viewer', title: '시청자 참여 게임' },
-        18: { startTime: '휴식', endTime: '', time: '휴식', status: 'off', title: '정기 휴방' },
-        19: { startTime: '19:00', endTime: '자율', time: '19:00 ~ 자율', status: 'event', title: '주말 특별 방송' },
-        20: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: '주간 결산 & 저챗' },
+        14: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'chat', title: '달콤한 월요일 티타임 수다', memo: '주말 일상 토크 & 마시멜로 읽기' },
+        15: { startTime: '21:00', endTime: '24:00', time: '21:00 ~ 24:00', status: 'live', title: '스타듀밸리 농장 힐링 라이프', memo: '가을 축제 준비 & 온실 꾸미기' },
+        16: { startTime: '휴식', endTime: '', time: '휴식', status: 'off', title: 'OFFLINE', memo: '보컬 레슨 & 신곡 녹음 데이' },
+        17: { startTime: '20:30', endTime: '23:30', time: '20:30 ~ 23:30', status: 'event', title: '✨ 가을 신의상 공개 & 노래방', memo: '신청곡 라이브 15곡 부르기' },
+        18: { startTime: '21:00', endTime: '24:00', time: '21:00 ~ 24:00', status: 'collab', title: '버튜버 4인 마리오파티 합방', memo: '꼴찌 벌칙: 애교 대사 3종 세트' },
+        19: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'viewer', title: '시청자 참여 캐치마인드 & 갈틱폰', memo: '체리 팬아트 그리기 대축제' },
+        20: { startTime: '22:00', endTime: '24:00', time: '22:00 ~ 24:00', status: 'chat', title: '일요일 밤 ASMR & 자장가 라디오', memo: '주간 편성표 결산 & 굿나잇 인사' },
         21: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'viewer', title: '팬아트 감상' },
         22: { startTime: '21:00', endTime: '24:00', time: '21:00 ~ 24:00', status: 'live', title: '마인크래프트 건축' },
         23: { startTime: '21:30', endTime: '23:30', time: '21:30 ~ 23:30', status: 'live', title: '쿠키런 킹덤' },
@@ -712,12 +717,13 @@ export const SAMPLE_PRESETS_EN: Record<string, StreamScheduleData> = {
   travelTicket: {
     version: 2,
     viewMode: 'weekly',
+    layoutStyle: 'ticket',
     selectedWeekIndex: 2, // Week 3 (09.14 ~ 09.20)
     themeId: 'travel-boarding-pass',
     channel: {
       name: 'Streamer Arcade',
       platform: 'twitch',
-      avatarEmoji: '🎮',
+      avatarEmoji: '✈️',
       tagline: 'Daily 8 PM Variety Gaming & Community Chat',
       notice: '📢 Saturday: Viewer Community Games & Giveaway Event!',
       noticeWeekly: '📢 Saturday: Viewer Community Games & Giveaway Event!',
@@ -741,6 +747,7 @@ export const SAMPLE_PRESETS_EN: Record<string, StreamScheduleData> = {
   varietyGamer: {
     version: 2,
     viewMode: 'weekly',
+    layoutStyle: 'bento',
     selectedWeekIndex: 2,
     themeId: 'chzzk-neon',
     channel: {
@@ -748,8 +755,8 @@ export const SAMPLE_PRESETS_EN: Record<string, StreamScheduleData> = {
       platform: 'twitch',
       avatarEmoji: '🎮',
       tagline: 'Daily 8 PM New Releases & Variety Gaming!',
-      notice: '📢 Saturday: Viewer Spin Wheel & Community Games!',
-      noticeWeekly: '📢 Saturday: Viewer Spin Wheel & Community Games!',
+      notice: '📢 Saturday: Viewer Spin Wheel & Community Giveaway!',
+      noticeWeekly: '📢 Saturday: Viewer Spin Wheel & Community Giveaway!',
       noticeMonthly: '10K Followers Goal & 2 Viewer Tournaments'
     },
     monthly: {
@@ -770,13 +777,13 @@ export const SAMPLE_PRESETS_EN: Record<string, StreamScheduleData> = {
         11: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: 'Just Chatting & Advice' },
         12: { startTime: '21:00', endTime: '24:00', time: '21:00 ~ 24:00', status: 'collab', title: 'Battle Royale Squad' },
         13: { startTime: '19:00', endTime: '22:00', time: '19:00 ~ 22:00', status: 'viewer', title: 'Marble Race Giveaway' },
-        14: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: 'Just Chatting & Life' },
-        15: { startTime: '20:00', endTime: '24:00', time: '20:00 ~ 24:00', status: 'live', title: 'Steam Variety Games' },
-        16: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'irl', title: 'Late Night Mukbang' },
-        17: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'viewer', title: 'Community Party Games' },
-        18: { startTime: 'OFF', endTime: '', time: 'OFF', status: 'off', title: 'Scheduled Day Off' },
-        19: { startTime: '19:00', endTime: 'Late', time: '19:00 ~ Late', status: 'event', title: 'Weekend Special Stream' },
-        20: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: 'Weekly Recap & Talk' },
+        14: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: 'Monday Kickoff & Clips Recap', memo: 'Weekend Catch-up & Community Highlights' },
+        15: { startTime: '20:00', endTime: '24:00', time: '20:00 ~ 24:00', status: 'new', title: 'New Release Action RPG Day 1', memo: 'Blind Playthrough & Boss Challenges' },
+        16: { startTime: '21:00', endTime: '24:00', time: '21:00 ~ 24:00', status: 'collab', title: '4-Streamer Co-op Collab Night', memo: 'Proximity Voice Horror Escape' },
+        17: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'viewer', title: 'Viewer Custom Lobbies & Marbles', memo: 'Open Lobby Party Games + Prizes' },
+        18: { startTime: 'OFF', endTime: '', time: 'OFF', status: 'off', title: 'OFFLINE', memo: 'Scheduled Rest & Recharge Day' },
+        19: { startTime: '19:00', endTime: 'Late', time: '19:00 ~ Late', status: 'event', title: 'Weekend Marathon Special', memo: 'No-Sleep Challenge Until Credits Roll!' },
+        20: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: 'Sunday Chill Talk & Fan Art', memo: 'Weekly Wrap-up & Next Week Preview' },
         21: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'event', title: '🎉 Channel Milestone Party' },
         22: { startTime: '20:00', endTime: '24:00', time: '20:00 ~ 24:00', status: 'live', title: 'RPG Boss Rush Day' },
         23: { startTime: '20:30', endTime: '23:30', time: '20:30 ~ 23:30', status: 'new', title: 'New Release RPG Day 1' },
@@ -793,6 +800,7 @@ export const SAMPLE_PRESETS_EN: Record<string, StreamScheduleData> = {
   vtuberCozy: {
     version: 2,
     viewMode: 'weekly',
+    layoutStyle: 'timeline',
     selectedWeekIndex: 2,
     themeId: 'cozy-pastel',
     channel: {
@@ -822,13 +830,13 @@ export const SAMPLE_PRESETS_EN: Record<string, StreamScheduleData> = {
         11: { startTime: '22:00', endTime: 'Late', time: '22:00 ~ Late', status: 'chat', title: 'Midnight ASMR & Sleepy Chat' },
         12: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'collab', title: 'Relay Singing Festival' },
         13: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'viewer', title: 'Community Mahjong Match' },
-        14: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: 'Weekly Kickoff & Chatting' },
-        15: { startTime: '20:00', endTime: '24:00', time: '20:00 ~ 24:00', status: 'live', title: 'Steam Cozy Games' },
-        16: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'irl', title: 'Late Night Snack Talk' },
-        17: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'viewer', title: 'Viewer Community Games' },
-        18: { startTime: 'OFF', endTime: '', time: 'OFF', status: 'off', title: 'Scheduled Day Off' },
-        19: { startTime: '19:00', endTime: 'Late', time: '19:00 ~ Late', status: 'event', title: 'Special Weekend Stream' },
-        20: { startTime: '20:00', endTime: '23:00', time: '20:00 ~ 23:00', status: 'chat', title: 'Weekly Recap & Chat' },
+        14: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'chat', title: 'Sweet Monday Tea Time & Q&A', memo: 'Reading Marshmallows & Cozy Catch-up' },
+        15: { startTime: '21:00', endTime: '24:00', time: '21:00 ~ 24:00', status: 'live', title: 'Stardew Valley Autumn Farm', memo: 'Greenhouse Decorating & Cozy Vibes' },
+        16: { startTime: 'OFF', endTime: '', time: 'OFF', status: 'off', title: 'OFFLINE', memo: 'Vocal Lesson & Studio Recording' },
+        17: { startTime: '20:30', endTime: '23:30', time: '20:30 ~ 23:30', status: 'event', title: '✨ Autumn Outfit Reveal & Karaoke', memo: 'Live Acoustic Singing Request Night' },
+        18: { startTime: '21:00', endTime: '24:00', time: '21:00 ~ 24:00', status: 'collab', title: '4-VTuber Mario Party Collab', memo: 'Loser Penalty: Cute Voice Pack' },
+        19: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'viewer', title: 'Viewer Gartic Phone & Fan Art', memo: 'Community Drawing Party' },
+        20: { startTime: '22:00', endTime: '24:00', time: '22:00 ~ 24:00', status: 'chat', title: 'Sunday Midnight ASMR & Lullaby', memo: 'Weekly Wrap-up & Sweet Dreams' },
         21: { startTime: '21:00', endTime: '23:30', time: '21:00 ~ 23:30', status: 'viewer', title: 'Fan Art Appreciation' },
         22: { startTime: '21:00', endTime: '24:00', time: '21:00 ~ 24:00', status: 'live', title: 'Minecraft Cozy Building' },
         23: { startTime: '21:30', endTime: '23:30', time: '21:30 ~ 23:30', status: 'live', title: 'Mobile Game Cozy Run' },
