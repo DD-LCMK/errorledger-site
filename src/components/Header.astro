@@ -47,6 +47,16 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
               <a href={`${prefix}/games`} class="dropdown-hub-link">{isEn ? "View All Games →" : "전체 게임 보기 →"}</a>
             </div>
             <div class="dropdown-grid-games">
+              <a href={`${prefix}/games/blind-timer`} class={`dropdown-item ${currentPath.includes('/games/blind-timer') ? 'active' : ''}`}>
+                <span class="dropdown-item-icon">⏱️</span>
+                <div class="dropdown-item-content">
+                  <div class="dropdown-item-header">
+                    <span class="dropdown-item-title">{t(lang, 'nav.blind_timer')}</span>
+                    <span class="dropdown-pill hot">NEW</span>
+                  </div>
+                  <span class="dropdown-item-desc">{isEn ? "7.77s Blind Stopwatch Challenge" : "1.5초 후 암전 칼박 챌린지"}</span>
+                </div>
+              </a>
               <a href={`${prefix}/games/mine-gems`} class={`dropdown-item ${currentPath.includes('/games/mine-gems') ? 'active' : ''}`}>
                 <span class="dropdown-item-icon">💣</span>
                 <div class="dropdown-item-content">
@@ -371,6 +381,16 @@ const alternateUrl = getAlternateUrl(currentPath, alternateLang);
       <div class="drawer-section">
         <div class="drawer-section-title">{isEn ? "🎮 GAMES" : "🎮 인기 게임"}</div>
         <div class="drawer-nav-list">
+          <a 
+            href={`${prefix}/games/blind-timer`}
+            class={`drawer-nav-item ${currentPath.includes('/games/blind-timer') ? 'active' : ''}`}
+          >
+            <span class="drawer-item-icon">⏱️</span>
+            <div class="drawer-item-info">
+              <span class="drawer-item-name">{t(lang, 'nav.blind_timer')}</span>
+              <span class="drawer-item-desc">{isEn ? "7.77s Blind Stopwatch Challenge" : "1.5초 후 암전 칼박 챌린지"}</span>
+            </div>
+          </a>
           <a 
             href={`${prefix}/games/mine-gems`}
             class={`drawer-nav-item ${currentPath.includes('/games/mine-gems') ? 'active' : ''}`}

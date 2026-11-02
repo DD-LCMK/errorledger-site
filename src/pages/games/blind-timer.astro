@@ -1,0 +1,1496 @@
+---
+import GameLayout from '../../layouts/GameLayout.astro';
+import { getEntry } from 'astro:content';
+
+const entry = await getEntry('games', 'blind-timer');
+if (!entry) throw new Error('blind-timer entry not found');
+---
+
+<GameLayout entry={entry}>
+  <div class="bt-app" id="bt-app">
+    <!-- Top Personal Best HUD -->
+    <div class="bt-hud">
+      <div class="bt-stat-card best-card">
+        <span class="bt-stat-label" data-ko="👑 최소 오차 신기록" data-en="👑 BEST PRECISION PB">👑 최소 오차 신기록</span>
+        <strong class="bt-stat-val cyan" id="bt-pb-diff">기록 없음</strong>
+      </div>
+      <div class="bt-stat-card">
+        <span class="bt-stat-label" data-ko="🎰 0.00초 잭팟 달성" data-en="🎰 0.00s JACKPOTS">🎰 0.00초 잭팟 달성</span>
+        <strong class="bt-stat-val gold" id="bt-jackpots">0회</strong>
+      </div>
+      <div class="bt-stat-card">
+        <span class="bt-stat-label" data-ko="⚡ 칼박 성공률 (±0.08초)" data-en="⚡ S+ HIT RATE (±0.08s)">⚡ 칼박 성공률 (±0.08초)</span>
+        <strong class="bt-stat-val emerald" id="bt-s-rate">0% (0/0)</strong>
+      </div>
+      <div class="bt-stat-card">
+        <span class="bt-stat-label" data-ko="🔥 연속 칼박 (±0.10초)" data-en="🔥 PRECISION STREAK">🔥 연속 칼박 (±0.10초)</span>
+        <strong class="bt-stat-val amber" id="bt-streak">0연속 (최고 0)</strong>
+      </div>
+      <button type="button" class="bt-reset-btn" id="bt-reset-btn">
+        🔄 <span data-ko="초기화" data-en="Reset">초기화</span>
+      </button>
+    </div>
+
+    <!-- Main 2-Column Layout -->
+    <div class="bt-main-grid">
+      <!-- Left / Center Stopwatch Arena -->
+      <section class="bt-arena-col">
+        <div class="bt-arena-card" id="bt-arena-card">
+          <!-- Confetti Canvas for Jackpot -->
+          <canvas id="bt-confetti-canvas" class="bt-confetti-canvas"></canvas>
+
+          <!-- Target Time Presets + Mode Controls -->
+          <div class="bt-controls-top">
+            <div class="bt-control-group">
+              <span class="bt-ctrl-label" data-ko="🎯 목표 시간 선택" data-en="🎯 TARGET TIME">🎯 목표 시간 선택</span>
+              <div class="bt-preset-row" id="bt-preset-row">
+                <button type="button" class="bt-preset-btn" data-target="3.33">⚡ 3.33s</button>
+                <button type="button" class="bt-preset-btn" data-target="5.00">⏱️ 5.00s</button>
+                <button type="button" class="bt-preset-btn active" data-target="7.77">🎰 7.77s</button>
+                <button type="button" class="bt-preset-btn" data-target="10.00">🔥 10.00s</button>
+                <div class="bt-custom-wrap">
+                  <input type="number" id="bt-custom-target" class="bt-custom-input" min="2" max="30" step="0.01" placeholder="직접 입력" title="2.00 ~ 30.00초 자유 설정" />
+                  <span class="bt-custom-unit">s</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="bt-control-group">
+              <span class="bt-ctrl-label" data-ko="🕶️ 블라인드 난이도" data-en="🕶️ BLIND MODE">🕶️ 블라인드 난이도</span>
+              <div class="bt-mode-row" id="bt-mode-row">
+                <button type="button" class="bt-mode-btn active" data-mode="standard">
+                  🕶️ <span data-ko="표준 (1.5초 후 암전)" data-en="Standard (Blind @ 1.5s)">표준 (1.5초 후 암전)</span>
+                </button>
+                <button type="button" class="bt-mode-btn" data-mode="hardcore">
+                  🌑 <span data-ko="하드코어 (0초 즉시 암전)" data-en="Hardcore (0s Instant Blind)">하드코어 (0초 즉시 암전)</span>
+                </button>
+                <button type="button" class="bt-mode-btn" data-mode="troll">
+                  🌀 <span data-ko="방해 공작 (가짜 숫자 교란)" data-en="Distraction (Fake Numbers)">방해 공작 (가짜 숫자 교란)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Digital Stopwatch Screen -->
+          <div class="bt-screen" id="bt-screen">
+            <div class="bt-screen-top">
+              <span class="bt-target-pill" id="bt-target-pill">🎯 TARGET: 07.77s</span>
+              <span class="bt-status-pill" id="bt-status-pill" data-ko="대기 중 • Space로 시작" data-en="READY • Press Space">대기 중 • Space로 시작</span>
+            </div>
+
+            <div class="bt-digits-wrap" id="bt-digits-wrap">
+              <span class="bt-digits-main" id="bt-digits-main">00.00</span>
+              <span class="bt-digits-ms" id="bt-digits-ms">.0s</span>
+            </div>
+
+            <div class="bt-screen-sub" id="bt-screen-sub" data-ko="시작 후 1.50초 뒤에 시계가 ??.?? 로 가려집니다!" data-en="The clock hides as ??.?? after 1.50 seconds!">
+              시작 후 1.50초 뒤에 시계가 ??.?? 로 가려집니다!
+            </div>
+
+            <!-- Precision Error Bar (-1.00s ~ 0.00s ~ +1.00s) -->
+            <div class="bt-meter-wrap" id="bt-meter-wrap">
+              <div class="bt-meter-labels">
+                <span data-ko="◀ 너무 빠름 (-1.0s)" data-en="◀ EARLY (-1.0s)">◀ 너무 빠름 (-1.0s)</span>
+                <span class="bt-meter-center-lbl">🎯 0.00s (PERFECT)</span>
+                <span data-ko="너무 느림 (+1.0s) ▶" data-en="LATE (+1.0s) ▶">너무 느림 (+1.0s) ▶</span>
+              </div>
+              <div class="bt-meter-track">
+                <div class="bt-meter-zone-s"></div>
+                <div class="bt-meter-zone-jackpot"></div>
+                <div class="bt-meter-pin" id="bt-meter-pin" style="left: 50%; display: none;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Result Grade & Commentary Card -->
+          <div class="bt-result-box" id="bt-result-box" style="display: none;">
+            <div class="bt-res-left">
+              <span class="bt-grade-badge" id="bt-grade-badge">⚡ SSS급</span>
+              <div class="bt-res-texts">
+                <strong class="bt-res-headline" id="bt-res-headline">오차 +0.012초 (+12ms)</strong>
+                <p class="bt-res-comment" id="bt-res-comment">소름 돋는 생체 시계! 프로게이머급 시간 감각입니다.</p>
+              </div>
+            </div>
+            <button type="button" class="bt-copy-res-btn" id="bt-copy-res-btn">
+              📋 <span data-ko="결과 복사" data-en="Copy Result">결과 복사</span>
+            </button>
+          </div>
+
+          <!-- Giant Trigger Button (PointerDown / Spacebar instant response) -->
+          <button type="button" class="bt-trigger-btn ready" id="bt-trigger-btn">
+            <span class="bt-trig-icon" id="bt-trig-icon">⏱️</span>
+            <div class="bt-trig-texts">
+              <strong class="bt-trig-main" id="bt-trig-main" data-ko="카운트 시작하기 (Space / 클릭)" data-en="START STOPWATCH (Space / Click)">카운트 시작하기 (Space / 클릭)</strong>
+              <span class="bt-trig-sub" id="bt-trig-sub" data-ko="누르는 즉시(0ms) 작동합니다" data-en="Triggers instantly on press (0ms)">누르는 즉시(0ms) 작동합니다</span>
+            </div>
+          </button>
+        </div>
+      </section>
+
+      <!-- Right Column: Live Challenger Leaderboard -->
+      <aside class="bt-board-col">
+        <div class="bt-board-card">
+          <div class="bt-board-header">
+            <div>
+              <h3 class="bt-board-title">🏆 <span data-ko="도전자 오차 순위 전광판" data-en="CHALLENGER LEADERBOARD">도전자 오차 순위 전광판</span></h3>
+              <p class="bt-board-desc" data-ko="합방·시참 내기용! 오차가 0.000초에 가까울수록 상위 랭크" data-en="Sorted by closest accuracy to 0.000s error">합방·시참 내기용! 오차가 0.000초에 가까울수록 상위 랭크</p>
+            </div>
+            <div class="bt-board-hdr-btns">
+              <button type="button" class="bt-sm-btn" id="bt-copy-board-btn" title="순위표 복사">
+                📋 <span data-ko="순위 복사" data-en="Copy">순위 복사</span>
+              </button>
+              <button type="button" class="bt-sm-btn danger" id="bt-clear-board-btn" title="순위표 비우기">
+                🗑️
+              </button>
+            </div>
+          </div>
+
+          <!-- Challenger Name Input -->
+          <div class="bt-challenger-bar">
+            <div class="bt-chal-input-wrap">
+              <span class="bt-chal-icon">👤</span>
+              <input type="text" id="bt-chal-name" class="bt-chal-input" value="스트리머 #1" maxlength="18" placeholder="도전자 닉네임 입력" />
+            </div>
+            <label class="bt-auto-inc" title="시도할 때마다 #번호 자동 증가">
+              <input type="checkbox" id="bt-auto-inc-chk" checked />
+              <span data-ko="#번호 자동증가" data-en="Auto #++">#번호 자동증가</span>
+            </label>
+          </div>
+
+          <!-- Leaderboard List -->
+          <div class="bt-rank-list" id="bt-rank-list">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</GameLayout>
+
+<style is:global>
+  .bt-app {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    color: #f8fafc;
+    user-select: none;
+  }
+
+  /* Top HUD */
+  .bt-hud {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr) auto;
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+
+  .bt-stat-card {
+    background: rgba(15, 23, 42, 0.88);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 14px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.22rem;
+  }
+
+  .bt-stat-card.best-card {
+    border-color: rgba(56, 189, 248, 0.35);
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.12), rgba(15, 23, 42, 0.95));
+  }
+
+  .bt-stat-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #94a3b8;
+  }
+
+  .bt-stat-val {
+    font-size: 1.2rem;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bt-stat-val.cyan { color: #38bdf8; }
+  .bt-stat-val.gold { color: #facc15; }
+  .bt-stat-val.emerald { color: #34d399; }
+  .bt-stat-val.amber { color: #fb923c; }
+
+  .bt-reset-btn {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    color: #cbd5e1;
+    border-radius: 12px;
+    padding: 0 1rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .bt-reset-btn:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+  }
+
+  /* Main 2-Column Layout */
+  .bt-main-grid {
+    display: grid;
+    grid-template-columns: 1fr 370px;
+    gap: 1.15rem;
+    align-items: start;
+  }
+
+  .bt-arena-card {
+    position: relative;
+    background: rgba(15, 23, 42, 0.92);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 20px;
+    padding: 1.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    overflow: hidden;
+  }
+
+  .bt-confetti-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .bt-controls-top {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    z-index: 2;
+  }
+
+  .bt-control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .bt-ctrl-label {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #94a3b8;
+  }
+
+  .bt-preset-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr) 125px;
+    gap: 0.45rem;
+  }
+
+  .bt-preset-btn {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 10px;
+    padding: 0.55rem 0.4rem;
+    color: #e2e8f0;
+    font-size: 0.86rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .bt-preset-btn:hover:not(:disabled) {
+    border-color: #38bdf8;
+    color: #ffffff;
+  }
+
+  .bt-preset-btn.active {
+    background: rgba(14, 165, 233, 0.2);
+    border-color: #38bdf8;
+    color: #7dd3fc;
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.22);
+  }
+
+  .bt-preset-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .bt-custom-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .bt-custom-input {
+    width: 100%;
+    background: #090d16;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 10px;
+    padding: 0.52rem 1.6rem 0.52rem 0.6rem;
+    color: #facc15;
+    font-size: 0.85rem;
+    font-weight: 800;
+    outline: none;
+  }
+
+  .bt-custom-input:focus {
+    border-color: #facc15;
+  }
+
+  .bt-custom-unit {
+    position: absolute;
+    right: 0.55rem;
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 800;
+  }
+
+  .bt-mode-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.45rem;
+  }
+
+  .bt-mode-btn {
+    background: rgba(30, 41, 59, 0.75);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 10px;
+    padding: 0.5rem 0.6rem;
+    color: #cbd5e1;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .bt-mode-btn.active {
+    background: rgba(168, 85, 247, 0.18);
+    border-color: #c084fc;
+    color: #f3e8ff;
+  }
+
+  .bt-mode-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  /* Digital Stopwatch Screen */
+  .bt-screen {
+    background: radial-gradient(circle at 50% 35%, #111c33 0%, #070b14 100%);
+    border: 2px solid rgba(56, 189, 248, 0.25);
+    border-radius: 18px;
+    padding: 1.5rem 1.4rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.65rem;
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.65);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .bt-screen.blind-active {
+    border-color: rgba(168, 85, 247, 0.55);
+    box-shadow: inset 0 0 50px rgba(88, 28, 135, 0.35), 0 0 25px rgba(168, 85, 247, 0.2);
+  }
+
+  .bt-screen.jackpot-win {
+    border-color: #facc15;
+    box-shadow: inset 0 0 50px rgba(250, 204, 21, 0.25), 0 0 32px rgba(250, 204, 21, 0.4);
+  }
+
+  .bt-screen-top {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .bt-target-pill {
+    background: rgba(250, 204, 21, 0.16);
+    border: 1px solid rgba(250, 204, 21, 0.4);
+    color: #fde047;
+    font-size: 0.85rem;
+    font-weight: 900;
+    padding: 0.28rem 0.75rem;
+    border-radius: 999px;
+    font-family: monospace;
+  }
+
+  .bt-status-pill {
+    font-size: 0.76rem;
+    font-weight: 800;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.15);
+    color: #cbd5e1;
+  }
+
+  .bt-status-pill.counting {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+  }
+
+  .bt-status-pill.blind {
+    background: rgba(168, 85, 247, 0.25);
+    color: #e9d5ff;
+    border: 1px solid rgba(192, 132, 252, 0.5);
+    animation: btPulse 1s infinite;
+  }
+
+  @keyframes btPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.04); opacity: 0.75; }
+  }
+
+  .bt-digits-wrap {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    margin: 0.4rem 0;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bt-digits-main {
+    font-size: clamp(3.6rem, 7vw, 5.4rem);
+    font-weight: 900;
+    letter-spacing: 0.03em;
+    color: #f8fafc;
+    text-shadow: 0 0 28px rgba(56, 189, 248, 0.45);
+    line-height: 1;
+  }
+
+  .bt-digits-main.blind-mask {
+    color: #c084fc;
+    text-shadow: 0 0 32px rgba(192, 132, 252, 0.65);
+    animation: btPulse 1.1s infinite;
+  }
+
+  .bt-digits-main.troll-mask {
+    color: #fb7185;
+    text-shadow: 0 0 28px rgba(244, 63, 94, 0.6);
+  }
+
+  .bt-digits-ms {
+    font-size: clamp(1.4rem, 2.8vw, 2.1rem);
+    font-weight: 800;
+    color: #64748b;
+    margin-left: 0.2rem;
+  }
+
+  .bt-screen-sub {
+    font-size: 0.83rem;
+    color: #94a3b8;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  /* Precision Error Meter Bar */
+  .bt-meter-wrap {
+    width: 100%;
+    max-width: 520px;
+    margin-top: 0.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.32rem;
+  }
+
+  .bt-meter-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #64748b;
+  }
+
+  .bt-meter-center-lbl {
+    color: #facc15;
+    font-weight: 800;
+  }
+
+  .bt-meter-track {
+    position: relative;
+    height: 12px;
+    background: rgba(30, 41, 59, 0.95);
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    overflow: visible;
+  }
+
+  .bt-meter-zone-s {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 42%;
+    width: 16%;
+    background: rgba(56, 189, 248, 0.25);
+    border-radius: 4px;
+  }
+
+  .bt-meter-zone-jackpot {
+    position: absolute;
+    top: -2px;
+    bottom: -2px;
+    left: 49.2%;
+    width: 1.6%;
+    background: #facc15;
+    box-shadow: 0 0 10px #facc15;
+    border-radius: 2px;
+  }
+
+  .bt-meter-pin {
+    position: absolute;
+    top: -5px;
+    width: 10px;
+    height: 22px;
+    border-radius: 4px;
+    background: #34d399;
+    border: 2px solid #ffffff;
+    transform: translateX(-50%);
+    box-shadow: 0 0 12px rgba(52, 211, 153, 0.8);
+    transition: left 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Result Box */
+  .bt-result-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.85rem;
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    border-radius: 14px;
+    padding: 0.85rem 1.1rem;
+  }
+
+  .bt-res-left {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+
+  .bt-grade-badge {
+    font-size: 1.05rem;
+    font-weight: 900;
+    padding: 0.45rem 0.85rem;
+    border-radius: 11px;
+    white-space: nowrap;
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.45);
+  }
+
+  .bt-res-texts {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .bt-res-headline {
+    font-size: 1rem;
+    font-weight: 900;
+    color: #f8fafc;
+  }
+
+  .bt-res-comment {
+    margin: 0;
+    font-size: 0.82rem;
+    color: #cbd5e1;
+  }
+
+  .bt-copy-res-btn {
+    background: rgba(56, 189, 248, 0.18);
+    border: 1px solid rgba(56, 189, 248, 0.45);
+    color: #7dd3fc;
+    border-radius: 9px;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.8rem;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .bt-copy-res-btn:hover {
+    background: rgba(56, 189, 248, 0.32);
+    color: #ffffff;
+  }
+
+  /* Giant Trigger Button */
+  .bt-trigger-btn {
+    width: 100%;
+    padding: 1.25rem 1.5rem;
+    border-radius: 16px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.9rem;
+    cursor: pointer;
+    transition: transform 0.1s ease, box-shadow 0.15s ease, background 0.15s ease;
+  }
+
+  .bt-trigger-btn.ready {
+    background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+    box-shadow: 0 10px 28px rgba(14, 165, 233, 0.35);
+    color: #ffffff;
+  }
+
+  .bt-trigger-btn.running {
+    background: linear-gradient(135deg, #f43f5e 0%, #dc2626 100%);
+    box-shadow: 0 10px 32px rgba(244, 63, 94, 0.45);
+    color: #ffffff;
+  }
+
+  .bt-trigger-btn:active {
+    transform: scale(0.985);
+  }
+
+  .bt-trig-icon {
+    font-size: 2rem;
+  }
+
+  .bt-trig-texts {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+  }
+
+  .bt-trig-main {
+    font-size: 1.2rem;
+    font-weight: 900;
+  }
+
+  .bt-trig-sub {
+    font-size: 0.78rem;
+    opacity: 0.85;
+    font-weight: 600;
+  }
+
+  /* Right Column: Challenger Leaderboard */
+  .bt-board-card {
+    background: rgba(15, 23, 42, 0.92);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 20px;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+
+  .bt-board-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .bt-board-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 900;
+    color: #f8fafc;
+  }
+
+  .bt-board-desc {
+    margin: 0.2rem 0 0;
+    font-size: 0.73rem;
+    color: #94a3b8;
+  }
+
+  .bt-board-hdr-btns {
+    display: flex;
+    gap: 0.35rem;
+  }
+
+  .bt-sm-btn {
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    color: #cbd5e1;
+    border-radius: 8px;
+    padding: 0.38rem 0.6rem;
+    font-size: 0.74rem;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .bt-sm-btn:hover {
+    border-color: #38bdf8;
+    color: #ffffff;
+  }
+
+  .bt-sm-btn.danger:hover {
+    border-color: #f87171;
+    color: #fca5a5;
+  }
+
+  .bt-challenger-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    background: rgba(9, 13, 22, 0.75);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 11px;
+    padding: 0.5rem 0.7rem;
+  }
+
+  .bt-chal-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex: 1;
+  }
+
+  .bt-chal-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: #facc15;
+    font-size: 0.88rem;
+    font-weight: 800;
+    outline: none;
+  }
+
+  .bt-auto-inc {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #94a3b8;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .bt-rank-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    max-height: 410px;
+    overflow-y: auto;
+  }
+
+  .bt-rank-empty {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: #64748b;
+    font-size: 0.82rem;
+  }
+
+  .bt-rank-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    border-radius: 11px;
+    padding: 0.55rem 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .bt-rank-item.top-1 {
+    background: linear-gradient(90deg, rgba(250, 204, 21, 0.16), rgba(30, 41, 59, 0.75));
+    border-color: rgba(250, 204, 21, 0.45);
+  }
+
+  .bt-rank-left {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-width: 0;
+  }
+
+  .bt-rank-num {
+    font-size: 0.85rem;
+    font-weight: 900;
+    width: 24px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .bt-rank-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .bt-rank-name {
+    font-size: 0.84rem;
+    font-weight: 800;
+    color: #f8fafc;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .bt-rank-meta {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    font-family: monospace;
+  }
+
+  .bt-rank-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    flex-shrink: 0;
+  }
+
+  .bt-rank-diff {
+    font-size: 0.86rem;
+    font-weight: 900;
+    font-family: monospace;
+    color: #38bdf8;
+  }
+
+  .bt-rank-grade {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #cbd5e1;
+  }
+
+  @media (max-width: 960px) {
+    .bt-hud {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .bt-main-grid {
+      grid-template-columns: 1fr;
+    }
+    .bt-preset-row {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .bt-mode-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script is:inline>
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  const isEn = params.get('lang') === 'en' || window.location.pathname.startsWith('/en');
+
+  function applyLang() {
+    if (!isEn) return;
+    document.querySelectorAll('[data-en]').forEach((el) => {
+      el.textContent = el.getAttribute('data-en');
+    });
+    const chalInput = document.getElementById('bt-chal-name');
+    if (chalInput && chalInput.value === '스트리머 #1') {
+      chalInput.value = 'Player #1';
+    }
+  }
+  applyLang();
+
+  const STORAGE_KEY = 'el_blind_timer_v1';
+
+  let stats = {
+    pbDiffMs: null, // smallest absolute ms error
+    pbTarget: 7.77,
+    jackpots: 0,
+    totalRuns: 0,
+    sPlusRuns: 0,
+    curStreak: 0,
+    bestStreak: 0,
+    leaderboard: []
+  };
+
+  function loadStats() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        stats = { ...stats, ...parsed };
+      }
+    } catch (_) {}
+  }
+
+  function saveStats() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
+    } catch (_) {}
+  }
+
+  loadStats();
+
+  // State
+  let targetSec = 7.77;
+  let blindMode = 'standard'; // 'standard' | 'hardcore' | 'troll'
+  let isRunning = false;
+  let startTimePerf = 0;
+  let rafId = 0;
+  let lastTickSec = 0;
+  let lastTrollBeepTime = 0;
+  let lastResultShareText = '';
+
+  // Audio
+  let audioCtx = null;
+  function getAudio() {
+    if (!audioCtx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) audioCtx = new AC();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    return audioCtx;
+  }
+
+  function isMuted() {
+    return localStorage.getItem('el_sound_muted') === '1';
+  }
+
+  function playBeep(freq, dur, vol = 0.14, type = 'sine') {
+    if (isMuted()) return;
+    const ctx = getAudio();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, now);
+    gain.gain.setValueAtTime(vol, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + dur + 0.01);
+  }
+
+  function playJackpotFanfare() {
+    if (isMuted()) return;
+    const ctx = getAudio();
+    if (!ctx) return;
+    const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5];
+    notes.forEach((f, idx) => {
+      setTimeout(() => playBeep(f, 0.24, 0.2, 'triangle'), idx * 70);
+    });
+  }
+
+  // Confetti
+  const canvas = document.getElementById('bt-confetti-canvas');
+  const cctx = canvas ? canvas.getContext('2d') : null;
+  let particles = [];
+
+  function triggerConfetti() {
+    if (!canvas || !cctx) return;
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    particles = [];
+    const colors = ['#facc15', '#38bdf8', '#34d399', '#f43f5e', '#c084fc'];
+    for (let i = 0; i < 70; i++) {
+      particles.push({
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        vx: (Math.random() - 0.5) * 12,
+        vy: (Math.random() - 0.8) * 12,
+        size: 5 + Math.random() * 6,
+        color: colors[i % colors.length],
+        life: 1.0
+      });
+    }
+    requestAnimationFrame(stepConfetti);
+  }
+
+  function stepConfetti() {
+    if (!cctx || particles.length === 0) return;
+    cctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach((p) => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.28;
+      p.life -= 0.018;
+      if (p.life > 0) {
+        cctx.fillStyle = p.color;
+        cctx.globalAlpha = Math.max(0, p.life);
+        cctx.fillRect(p.x, p.y, p.size, p.size);
+      }
+    });
+    cctx.globalAlpha = 1;
+    particles = particles.filter((p) => p.life > 0);
+    if (particles.length > 0) requestAnimationFrame(stepConfetti);
+    else cctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  // DOM Elements
+  const elPbDiff = document.getElementById('bt-pb-diff');
+  const elJackpots = document.getElementById('bt-jackpots');
+  const elSRate = document.getElementById('bt-s-rate');
+  const elStreak = document.getElementById('bt-streak');
+  const elResetBtn = document.getElementById('bt-reset-btn');
+  const elPresetBtns = document.querySelectorAll('.bt-preset-btn');
+  const elCustomInput = document.getElementById('bt-custom-target');
+  const elModeBtns = document.querySelectorAll('.bt-mode-btn');
+  const elScreen = document.getElementById('bt-screen');
+  const elTargetPill = document.getElementById('bt-target-pill');
+  const elStatusPill = document.getElementById('bt-status-pill');
+  const elDigitsMain = document.getElementById('bt-digits-main');
+  const elDigitsMs = document.getElementById('bt-digits-ms');
+  const elScreenSub = document.getElementById('bt-screen-sub');
+  const elMeterPin = document.getElementById('bt-meter-pin');
+  const elResultBox = document.getElementById('bt-result-box');
+  const elGradeBadge = document.getElementById('bt-grade-badge');
+  const elResHeadline = document.getElementById('bt-res-headline');
+  const elResComment = document.getElementById('bt-res-comment');
+  const elCopyResBtn = document.getElementById('bt-copy-res-btn');
+  const elTriggerBtn = document.getElementById('bt-trigger-btn');
+  const elTrigIcon = document.getElementById('bt-trig-icon');
+  const elTrigMain = document.getElementById('bt-trig-main');
+  const elTrigSub = document.getElementById('bt-trig-sub');
+  const elChalName = document.getElementById('bt-chal-name');
+  const elAutoIncChk = document.getElementById('bt-auto-inc-chk');
+  const elRankList = document.getElementById('bt-rank-list');
+  const elCopyBoardBtn = document.getElementById('bt-copy-board-btn');
+  const elClearBoardBtn = document.getElementById('bt-clear-board-btn');
+
+  function formatSecMain(sec) {
+    const whole = Math.floor(sec);
+    const centi = Math.floor((sec - whole) * 100);
+    return `${String(whole).padStart(2, '0')}.${String(centi).padStart(2, '0')}`;
+  }
+
+  function formatSecMsSub(sec) {
+    const msDigit = Math.floor((sec * 1000) % 10);
+    return `.${msDigit}s`;
+  }
+
+  function updateHUD() {
+    if (stats.pbDiffMs === null) {
+      elPbDiff.textContent = isEn ? 'No Record' : '기록 없음';
+    } else {
+      const s = (stats.pbDiffMs / 1000).toFixed(3);
+      elPbDiff.textContent = `±${s}s (${stats.pbDiffMs}ms)`;
+    }
+    elJackpots.textContent = isEn ? `${stats.jackpots}` : `${stats.jackpots}회`;
+    const pct = stats.totalRuns > 0 ? Math.round((stats.sPlusRuns / stats.totalRuns) * 100) : 0;
+    elSRate.textContent = `${pct}% (${stats.sPlusRuns}/${stats.totalRuns})`;
+    elStreak.textContent = isEn
+      ? `${stats.curStreak} (Best ${stats.bestStreak})`
+      : `${stats.curStreak}연속 (최고 ${stats.bestStreak})`;
+
+    renderLeaderboard();
+  }
+
+  function renderLeaderboard() {
+    if (!stats.leaderboard || stats.leaderboard.length === 0) {
+      elRankList.innerHTML = `<div class="bt-rank-empty">${
+        isEn
+          ? 'No attempts yet! Enter a challenger name and stop the clock.'
+          : '아직 도전 기록이 없습니다! 도전자 이름을 입력하고 스톱워치를 멈춰보세요.'
+      }</div>`;
+      return;
+    }
+
+    elRankList.innerHTML = stats.leaderboard
+      .slice(0, 15)
+      .map((item, idx) => {
+        const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}`;
+        const sign = item.diffSec >= 0 ? '+' : '';
+        return `
+          <div class="bt-rank-item ${idx === 0 ? 'top-1' : ''}">
+            <div class="bt-rank-left">
+              <span class="bt-rank-num">${medal}</span>
+              <div class="bt-rank-info">
+                <span class="bt-rank-name">${item.name}</span>
+                <span class="bt-rank-meta">🎯 ${item.target.toFixed(2)}s → ⏱️ ${item.actual.toFixed(3)}s</span>
+              </div>
+            </div>
+            <div class="bt-rank-right">
+              <span class="bt-rank-diff">${sign}${item.diffSec.toFixed(3)}s</span>
+              <span class="bt-rank-grade">${item.grade}</span>
+            </div>
+          </div>
+        `;
+      })
+      .join('');
+  }
+
+  function updateTargetDisplay() {
+    elTargetPill.textContent = `🎯 TARGET: ${formatSecMain(targetSec)}s`;
+    if (!isRunning) {
+      elDigitsMain.textContent = '00.00';
+      elDigitsMs.textContent = '.0s';
+    }
+  }
+
+  function evaluateGrade(absDiffSec, signedDiffSec) {
+    // 0.00s rounded check (< 0.005s = ±4ms)
+    if (absDiffSec < 0.005) {
+      return {
+        grade: '👑 JACKPOT',
+        color: '#facc15',
+        comment: isEn
+          ? 'GODLIKE HUMAN ATOMIC CLOCK!! 0.00s Perfect Jackpot!'
+          : '인간 원자시계 강림!! 0.00초 퍼펙트 잭팟 달성! 오늘 로또 사세요!'
+      };
+    }
+    if (absDiffSec <= 0.03) {
+      return {
+        grade: '⚡ SSS급',
+        color: '#38bdf8',
+        comment: isEn
+          ? 'Superhuman internal clock! Within ±0.03 seconds!'
+          : '초능력 수준의 시간 감각! ±0.03초 이내 초정밀 칼박입니다!'
+      };
+    }
+    if (absDiffSec <= 0.08) {
+      return {
+        grade: '🔥 S급',
+        color: '#34d399',
+        comment: isEn
+          ? 'Pro rhythm sense! Razor-sharp stop within ±0.08s.'
+          : '칼박 장인 인정! 눈 감고도 리듬 게임을 씹어먹을 감각입니다.'
+      };
+    }
+    if (absDiffSec <= 0.2) {
+      return {
+        grade: '✨ A급',
+        color: '#a78bfa',
+        comment: isEn
+          ? 'Solid timing! Very close to the target.'
+          : '준수한 생체 시계! 아깝게 칼박은 놓쳤지만 상위권 감각입니다.'
+      };
+    }
+    if (absDiffSec <= 0.5) {
+      return {
+        grade: '😅 B급',
+        color: '#fb923c',
+        comment:
+          signedDiffSec < 0
+            ? isEn
+              ? 'A bit hasty! Your internal clock is running fast.'
+              : '성격이 조금 급하시군요! 목표보다 손가락이 먼저 나갔습니다.'
+            : isEn
+            ? 'A bit relaxed! Your internal clock is running slow.'
+            : '세월아 네월아~ 머릿속 시계 배터리가 살짝 닳았습니다!'
+      };
+    }
+    return {
+      grade: '🐢 C급',
+      color: '#f87171',
+      comment:
+        signedDiffSec < 0
+          ? isEn
+            ? 'Way too early! Did you panic press?'
+            : '너무 일찍 눌렀습니다! 암전되자마자 당황해서 누르셨나요?'
+          : isEn
+          ? 'Way too late! Did you fall asleep counting?'
+          : '한참 지나서 멈췄습니다! 숫자 세다가 주무신 건 아니죠?'
+    };
+  }
+
+  function setControlsDisabled(disabled) {
+    elPresetBtns.forEach((b) => (b.disabled = disabled));
+    elCustomInput.disabled = disabled;
+    elModeBtns.forEach((b) => (b.disabled = disabled));
+  }
+
+  function startStopwatch() {
+    if (isRunning) return;
+    isRunning = true;
+    startTimePerf = performance.now();
+    lastTickSec = 0;
+    lastTrollBeepTime = 1.5;
+
+    setControlsDisabled(true);
+    elResultBox.style.display = 'none';
+    elMeterPin.style.display = 'none';
+    elScreen.classList.remove('jackpot-win');
+
+    elTriggerBtn.className = 'bt-trigger-btn running';
+    elTrigIcon.textContent = '🛑';
+    elTrigMain.textContent = isEn
+      ? `STOP AT ${targetSec.toFixed(2)}s! (Space / Click)`
+      : `정확히 ${targetSec.toFixed(2)}초에 STOP! (Space / 클릭)`;
+    elTrigSub.textContent = isEn
+      ? 'Count in your head and press!'
+      : '머릿속으로 숫자를 세다가 정확히 눌러주세요!';
+
+    playBeep(660, 0.08, 0.14, 'sine');
+    rafId = requestAnimationFrame(tickLoop);
+  }
+
+  function tickLoop(nowPerf) {
+    if (!isRunning) return;
+    const elapsedSec = (nowPerf - startTimePerf) / 1000;
+
+    // Auto stop safety at 59.99s
+    if (elapsedSec >= 59.99) {
+      stopStopwatch(nowPerf);
+      return;
+    }
+
+    const blindThreshold = blindMode === 'hardcore' ? 0.0 : 1.5;
+
+    if (elapsedSec < blindThreshold) {
+      // Visible phase
+      elScreen.classList.remove('blind-active');
+      elDigitsMain.className = 'bt-digits-main';
+      elDigitsMain.textContent = formatSecMain(elapsedSec);
+      elDigitsMs.textContent = formatSecMsSub(elapsedSec);
+      elStatusPill.className = 'bt-status-pill counting';
+      elStatusPill.textContent = isEn ? '⏱️ COUNTING...' : '⏱️ 카운트 진행 중';
+
+      const wholeSec = Math.floor(elapsedSec);
+      if (wholeSec > lastTickSec) {
+        lastTickSec = wholeSec;
+        playBeep(880, 0.05, 0.1, 'sine');
+      }
+    } else {
+      // Blind or Troll phase
+      elScreen.classList.add('blind-active');
+      elStatusPill.className = 'bt-status-pill blind';
+
+      if (blindMode === 'troll') {
+        elStatusPill.textContent = isEn ? '🌀 FAKE NUMBER DISTRACTION!' : '🌀 방해 공작 교란 중!';
+        elDigitsMain.className = 'bt-digits-main troll-mask';
+        // Flash deceptive numbers every ~110ms
+        if (Math.random() < 0.35) {
+          const fakeWhole = Math.floor(Math.random() * 14);
+          const fakeCenti = Math.floor(Math.random() * 99);
+          elDigitsMain.textContent = `${String(fakeWhole).padStart(2, '0')}.${String(fakeCenti).padStart(2, '0')}`;
+          elDigitsMs.textContent = `.${Math.floor(Math.random() * 9)}s`;
+        }
+        if (elapsedSec - lastTrollBeepTime > 0.28 + Math.random() * 0.45) {
+          lastTrollBeepTime = elapsedSec;
+          playBeep(300 + Math.random() * 700, 0.05, 0.08, 'triangle');
+        }
+      } else {
+        elStatusPill.textContent = isEn ? '🕶️ BLIND MODE ACTIVE' : '🕶️ 암전 진행 중 (감각 집중!)';
+        elDigitsMain.className = 'bt-digits-main blind-mask';
+        elDigitsMain.textContent = '??.??';
+        elDigitsMs.textContent = '.?s';
+      }
+    }
+
+    rafId = requestAnimationFrame(tickLoop);
+  }
+
+  function autoIncrementChallengerName() {
+    if (!elAutoIncChk.checked) return;
+    const val = elChalName.value.trim();
+    const m = val.match(/^(.*?#?)(\d+)$/);
+    if (m) {
+      const nextNum = parseInt(m[2], 10) + 1;
+      elChalName.value = `${m[1]}${nextNum}`;
+    }
+  }
+
+  function stopStopwatch(stopPerf) {
+    if (!isRunning) return;
+    const elapsedSec = (stopPerf - startTimePerf) / 1000;
+    // Ignore accidental bounce within first 180ms
+    if (elapsedSec < 0.18) return;
+
+    isRunning = false;
+    cancelAnimationFrame(rafId);
+    setControlsDisabled(false);
+
+    const actualSec = Math.round(elapsedSec * 1000) / 1000;
+    const signedDiffSec = actualSec - targetSec;
+    const absDiffSec = Math.abs(signedDiffSec);
+    const absDiffMs = Math.round(absDiffSec * 1000);
+
+    // Reveal true digits
+    elScreen.classList.remove('blind-active');
+    elDigitsMain.className = 'bt-digits-main';
+    elDigitsMain.textContent = formatSecMain(actualSec);
+    elDigitsMs.textContent = formatSecMsSub(actualSec);
+
+    const evalRes = evaluateGrade(absDiffSec, signedDiffSec);
+
+    if (absDiffSec < 0.005) {
+      elScreen.classList.add('jackpot-win');
+      playJackpotFanfare();
+      triggerConfetti();
+    } else if (absDiffSec <= 0.08) {
+      playBeep(987.77, 0.18, 0.18, 'triangle');
+    } else {
+      playBeep(240, 0.22, 0.18, 'sawtooth');
+    }
+
+    elStatusPill.className = 'bt-status-pill';
+    elStatusPill.textContent = evalRes.grade;
+
+    // Update Error Pin on Meter (-1.0s to +1.0s mapped to 0%..100%)
+    const clampedDiff = Math.max(-1.0, Math.min(1.0, signedDiffSec));
+    const pinPct = 50 + (clampedDiff / 1.0) * 50;
+    elMeterPin.style.display = 'block';
+    elMeterPin.style.left = `${pinPct}%`;
+    elMeterPin.style.background = evalRes.color;
+
+    // Update Result Card
+    const signStr = signedDiffSec >= 0 ? '+' : '';
+    elResultBox.style.display = 'flex';
+    elGradeBadge.textContent = evalRes.grade;
+    elGradeBadge.style.color = evalRes.color;
+    elGradeBadge.style.borderColor = evalRes.color;
+    elResHeadline.textContent = isEn
+      ? `Target ${targetSec.toFixed(2)}s → Stopped at ${actualSec.toFixed(3)}s (Error: ${signStr}${signedDiffSec.toFixed(3)}s)`
+      : `목표 ${targetSec.toFixed(2)}초 → 기록 ${actualSec.toFixed(3)}초 (오차: ${signStr}${signedDiffSec.toFixed(3)}초 / ${signStr}${Math.round(signedDiffSec * 1000)}ms)`;
+    elResComment.textContent = evalRes.comment;
+
+    // Reset Trigger Button
+    elTriggerBtn.className = 'bt-trigger-btn ready';
+    elTrigIcon.textContent = '⏱️';
+    elTrigMain.textContent = isEn ? 'TRY AGAIN (Space / Click)' : '다시 도전하기 (Space / 클릭)';
+    elTrigSub.textContent = isEn ? 'Triggers instantly on press (0ms)' : '누르는 즉시(0ms) 작동합니다';
+
+    // Update Persistent Stats & Leaderboard
+    stats.totalRuns += 1;
+    if (stats.pbDiffMs === null || absDiffMs < stats.pbDiffMs) {
+      stats.pbDiffMs = absDiffMs;
+      stats.pbTarget = targetSec;
+    }
+    if (absDiffSec < 0.005) {
+      stats.jackpots += 1;
+    }
+    if (absDiffSec <= 0.08) {
+      stats.sPlusRuns += 1;
+    }
+    if (absDiffSec <= 0.1) {
+      stats.curStreak += 1;
+      if (stats.curStreak > stats.bestStreak) stats.bestStreak = stats.curStreak;
+    } else {
+      stats.curStreak = 0;
+    }
+
+    const chalName = (elChalName.value || '').trim() || (isEn ? 'Player' : '스트리머');
+    stats.leaderboard.push({
+      name: chalName,
+      target: targetSec,
+      actual: actualSec,
+      diffSec: signedDiffSec,
+      absDiffSec: absDiffSec,
+      grade: evalRes.grade
+    });
+    stats.leaderboard.sort((a, b) => a.absDiffSec - b.absDiffSec);
+    if (stats.leaderboard.length > 30) stats.leaderboard.length = 30;
+
+    saveStats();
+    updateHUD();
+    autoIncrementChallengerName();
+
+    lastResultShareText = isEn
+      ? `⏱️ [Blind Timer ${targetSec.toFixed(2)}s] ${chalName}: Stopped at ${actualSec.toFixed(3)}s (${signStr}${signedDiffSec.toFixed(3)}s | ${evalRes.grade}) — https://errorledger.com/en/games/blind-timer`
+      : `⏱️ [인간 스톱워치 ${targetSec.toFixed(2)}초 챌린지] ${chalName}: ${actualSec.toFixed(3)}초 기록! (오차 ${signStr}${signedDiffSec.toFixed(3)}초 | ${evalRes.grade}) — https://errorledger.com/games/blind-timer`;
+  }
+
+  // Event Listeners
+  elTriggerBtn.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    if (!isRunning) startStopwatch();
+    else stopStopwatch(performance.now());
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+    if (e.repeat) return;
+    if (e.code === 'Space') {
+      e.preventDefault();
+      if (!isRunning) startStopwatch();
+      else stopStopwatch(performance.now());
+    }
+  });
+
+  elPresetBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (isRunning) return;
+      elPresetBtns.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      elCustomInput.value = '';
+      targetSec = parseFloat(btn.dataset.target) || 7.77;
+      updateTargetDisplay();
+    });
+  });
+
+  elCustomInput.addEventListener('input', () => {
+    if (isRunning) return;
+    const val = parseFloat(elCustomInput.value);
+    if (!isNaN(val) && val >= 2 && val <= 30) {
+      elPresetBtns.forEach((b) => b.classList.remove('active'));
+      targetSec = Math.round(val * 100) / 100;
+      updateTargetDisplay();
+    }
+  });
+
+  elModeBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (isRunning) return;
+      elModeBtns.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      blindMode = btn.dataset.mode || 'standard';
+      if (blindMode === 'standard') {
+        elScreenSub.textContent = isEn
+          ? 'The clock hides as ??.?? after 1.50 seconds!'
+          : '시작 후 1.50초 뒤에 시계가 ??.?? 로 가려집니다!';
+      } else if (blindMode === 'hardcore') {
+        elScreenSub.textContent = isEn
+          ? 'HARDCORE: The clock hides at 0.00s immediately!'
+          : '하드코어: 시작과 동시에 0.00초부터 즉시 ??.?? 로 암전됩니다!';
+      } else {
+        elScreenSub.textContent = isEn
+          ? 'DISTRACTION: Fake numbers & off-beat beeps after 1.50s!'
+          : '방해 공작: 1.50초 뒤부터 가짜 숫자와 엇박자 비프음이 당신을 현혹합니다!';
+      }
+    });
+  });
+
+  elCopyResBtn.addEventListener('click', () => {
+    if (!lastResultShareText) return;
+    navigator.clipboard.writeText(lastResultShareText).then(() => {
+      const orig = elCopyResBtn.innerHTML;
+      elCopyResBtn.innerHTML = isEn ? '✅ Copied!' : '✅ 복사 완료!';
+      setTimeout(() => (elCopyResBtn.innerHTML = orig), 1500);
+    });
+  });
+
+  elCopyBoardBtn.addEventListener('click', () => {
+    if (!stats.leaderboard || stats.leaderboard.length === 0) return;
+    const lines = stats.leaderboard.slice(0, 10).map((item, i) => {
+      const sign = item.diffSec >= 0 ? '+' : '';
+      return `${i + 1}위. ${item.name} — ${item.actual.toFixed(3)}s (목표 ${item.target.toFixed(2)}s | 오차 ${sign}${item.diffSec.toFixed(3)}s | ${item.grade})`;
+    });
+    const text = `🏆 [인간 스톱워치 도전자 순위표]\n${lines.join('\n')}\nhttps://errorledger.com/games/blind-timer`;
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = elCopyBoardBtn.innerHTML;
+      elCopyBoardBtn.innerHTML = isEn ? '✅ Copied!' : '✅ 복사됨!';
+      setTimeout(() => (elCopyBoardBtn.innerHTML = orig), 1500);
+    });
+  });
+
+  elClearBoardBtn.addEventListener('click', () => {
+    if (!stats.leaderboard || stats.leaderboard.length === 0) return;
+    stats.leaderboard = [];
+    saveStats();
+    renderLeaderboard();
+  });
+
+  elResetBtn.addEventListener('click', () => {
+    if (isRunning) return;
+    const msg = isEn ? 'Reset all personal records and leaderboard?' : '모든 개인 신기록과 순위표를 초기화하시겠습니까?';
+    if (!confirm(msg)) return;
+    stats = {
+      pbDiffMs: null,
+      pbTarget: 7.77,
+      jackpots: 0,
+      totalRuns: 0,
+      sPlusRuns: 0,
+      curStreak: 0,
+      bestStreak: 0,
+      leaderboard: []
+    };
+    saveStats();
+    updateHUD();
+  });
+
+  updateHUD();
+  updateTargetDisplay();
+})();
+</script>
+

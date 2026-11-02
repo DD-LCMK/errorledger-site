@@ -1,0 +1,249 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import { getKoUrl, getEnUrl } from '../../../i18n';
+
+const siteBase = Astro.site?.toString() || 'https://errorledger.com';
+const rawPath = Astro.url.pathname.replace(/\/$/, '');
+const koUrl = getKoUrl(siteBase, rawPath);
+const enUrl = getEnUrl(siteBase, rawPath);
+
+const urlParams = Astro.url.searchParams;
+const streamerMode = urlParams.has('stream') || urlParams.has('obs');
+const gameUrl = streamerMode
+  ? '/games/blind-timer?bare=1&stream=true&lang=en'
+  : '/games/blind-timer?bare=1&lang=en';
+
+const webAppSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Human Stopwatch: 7.77s Blind Timer Challenge — ErrorLedger",
+  "alternateName": ["Blind Stopwatch Challenge", "7.77s Timer Game", "인간 스톱워치", "7.77초 블라인드 챌린지"],
+  "url": enUrl,
+  "description": "High-precision 1ms blind stopwatch game where the display hides as ??.?? after 1.5 seconds. Stop at exactly 3.33s, 5.00s, 7.77s, or 10.00s and compete on the live challenger leaderboard!",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "All (Web Browser, Chrome, Edge, Safari, Mobile)",
+  "inLanguage": ["en-US", "ko-KR"],
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+});
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead
+      title="Human Stopwatch: 7.77s Blind Timer Challenge — 1ms Precision Game | ErrorLedger"
+      description="Can you stop the clock at 7.77s with your eyes closed? The timer hides as ??.?? after 1.5 seconds—test your internal clock with 1ms precision and a live challenger leaderboard!"
+      lang="en"
+      hreflangKo={koUrl}
+      hreflangEn={enUrl}
+      keywords="Blind Timer Challenge, 7.77 Seconds Stopwatch Game, Human Stopwatch Game, Internal Clock Test, Streamer Party Challenge, Twitch Collab Game"
+    />
+    <script type="application/ld+json" set:html={webAppSchema}></script>
+  </head>
+  <body class="en-game-body">
+    <Header />
+
+    <main class="en-game-main">
+      <div class="en-game-frame-wrap">
+        <iframe
+          src={gameUrl}
+          class="en-game-iframe"
+          id="game-iframe"
+          title="Human Stopwatch: 7.77s Blind Timer Challenge — ErrorLedger"
+          allowfullscreen
+          loading="eager"
+          scrolling="yes"
+        ></iframe>
+      </div>
+
+      {!streamerMode && (
+        <details class="stream-bottom-details">
+          <summary class="details-summary">
+            <span>📖 Detailed Guide & FAQ</span>
+            <span class="chevron">▼</span>
+          </summary>
+          <div class="details-content">
+            <div class="details-faq-section">
+              <h3>Human Stopwatch: 7.77s Blind Timer FAQ</h3>
+              <div class="details-faq-grid">
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. What triggers the 0.00s PERFECT JACKPOT?</strong>
+                  <p class="faq-a">Stopping within ±0.004 seconds (±4ms) of the target rounds to 0.00s error, triggering the golden confetti explosion and jackpot fanfare!</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. How does the Challenger Leaderboard work for collabs?</strong>
+                  <p class="faq-a">Type each player's or viewer's nickname in the Challenger box on the right. Every attempt is automatically ranked from #1 by smallest millisecond error.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. What are the 3 Blind Modes?</strong>
+                  <p class="faq-a">Standard hides the clock after 1.50s; Hardcore hides it at 0.00s immediately; Distraction Mode flashes fake numbers and off-beat beeps after 1.50s to throw off your counting.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Can I set a custom target time?</strong>
+                  <p class="faq-a">Yes! Besides the 3.33s, 5.00s, 7.77s, and 10.00s presets, you can type any custom target between 2.00 and 30.00 seconds.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </details>
+      )}
+    </main>
+
+    {!streamerMode && <Footer />}
+
+    <script>
+      const iframe = document.getElementById('game-iframe') as HTMLIFrameElement;
+      if (iframe) {
+        var sp = new URLSearchParams(window.location.search);
+        if (sp.has('stream') || sp.has('obs')) {
+          var s = document.createElement('style');
+          s.textContent = [
+            '.leaderboard-ad-wrap { display: none !important; }',
+            'footer { display: none !important; }',
+            '.stream-bottom-details { display: none !important; }',
+            '.arcade-header { display: none !important; }',
+            '.en-game-main { padding: 0 !important; margin: 0 !important; max-width: none !important; }',
+            '.en-game-frame-wrap { height: 100vh !important; }',
+            '.en-game-iframe { height: 100vh !important; }'
+          ].join(' ');
+          document.head.appendChild(s);
+
+          if (!iframe.src.includes('stream=true')) {
+            iframe.src = iframe.src + '&stream=true';
+          }
+        } else {
+          const syncHeight = () => {
+            try {
+              const doc = iframe.contentDocument || iframe.contentWindow?.document;
+              if (doc && doc.documentElement) {
+                const h = Math.max(820, doc.documentElement.scrollHeight);
+                const wrap = iframe.parentElement;
+                if (wrap) wrap.style.minHeight = h + 'px';
+              }
+            } catch (e) {}
+          };
+          iframe.addEventListener('load', () => {
+            syncHeight();
+            try {
+              const doc = iframe.contentDocument || iframe.contentWindow?.document;
+              if (doc && doc.body && typeof ResizeObserver !== 'undefined') {
+                new ResizeObserver(syncHeight).observe(doc.body);
+              }
+            } catch (e) {}
+          });
+        }
+      }
+    </script>
+  </body>
+</html>
+
+<style>
+  .en-game-body {
+    background: #090d16;
+    color: #f1f5f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+  }
+
+  .en-game-main {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0.5rem 0.75rem 2rem !important;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+  }
+
+  .en-game-frame-wrap {
+    width: 100%;
+    height: 820px;
+  }
+
+  .en-game-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+    background: transparent;
+  }
+
+  @media (min-width: 1400px) {
+    .en-game-frame-wrap {
+      height: max(800px, calc(100vh - 110px));
+    }
+  }
+
+  .stream-bottom-details {
+    max-width: 1400px;
+    width: 100%;
+    margin: 2rem auto 0;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .details-summary {
+    padding: 0.9rem 1.4rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #94a3b8;
+    list-style: none;
+    user-select: none;
+  }
+
+  .details-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .details-content {
+    padding: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .details-faq-section h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin: 0 0 1rem;
+  }
+
+  .details-faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .details-faq-card {
+    background: rgba(30, 41, 59, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 1rem;
+  }
+
+  .faq-q {
+    display: block;
+    font-size: 0.9rem;
+    color: #f8fafc;
+    margin-bottom: 0.45rem;
+  }
+
+  .faq-a {
+    font-size: 0.84rem;
+    color: #94a3b8;
+    margin: 0;
+    line-height: 1.55;
+  }
+</style>
+
