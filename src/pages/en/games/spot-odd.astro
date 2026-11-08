@@ -1,0 +1,249 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import { getKoUrl, getEnUrl } from '../../../i18n';
+
+const siteBase = Astro.site?.toString() || 'https://errorledger.com';
+const rawPath = Astro.url.pathname.replace(/\/$/, '');
+const koUrl = getKoUrl(siteBase, rawPath);
+const enUrl = getEnUrl(siteBase, rawPath);
+
+const urlParams = Astro.url.searchParams;
+const streamerMode = urlParams.has('stream') || urlParams.has('obs');
+const gameUrl = streamerMode
+  ? '/games/spot-odd?bare=1&stream=true&lang=en'
+  : '/games/spot-odd?bare=1&lang=en';
+
+const webAppSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Eagle-Eye Test: Spot the Odd Character & Color Vision — ErrorLedger",
+  "alternateName": ["Spot the Odd Game", "Absolute Color Vision Test", "매의 눈 테스트", "틀린 글자 찾기", "절대색감 테스트"],
+  "url": enUrl,
+  "description": "60-second Eagle-Eye visual perception and color vision challenge! Spot the odd lookalike character or subtle color tile on an A1–J10 coordinate grid with your stream chat.",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "All (Web Browser, Chrome, Edge, Safari, Mobile)",
+  "inLanguage": ["en-US", "ko-KR"],
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+});
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead
+      title="Eagle-Eye Test: Spot the Odd Character & Color Vision | ErrorLedger"
+      description="Test your visual acuity and absolute color vision! Find the 1 odd character or subtle color tile across 3x3 to 10x10 coordinate grids (A1–J10) with your stream chat—no API or install required."
+      lang="en"
+      hreflangKo={koUrl}
+      hreflangEn={enUrl}
+      keywords="Spot the Odd Game, Color Vision Test Game, Odd Character Puzzle, Eagle Eye Test, Stream Chat Coordinate Game, Twitch Party Game"
+    />
+    <script type="application/ld+json" set:html={webAppSchema}></script>
+  </head>
+  <body class="en-game-body">
+    <Header />
+
+    <main class="en-game-main">
+      <div class="en-game-frame-wrap">
+        <iframe
+          src={gameUrl}
+          class="en-game-iframe"
+          id="game-iframe"
+          title="Eagle-Eye Test: Spot the Odd Character & Color Vision — ErrorLedger"
+          allowfullscreen
+          loading="eager"
+          scrolling="yes"
+        ></iframe>
+      </div>
+
+      {!streamerMode && (
+        <details class="stream-bottom-details">
+          <summary class="details-summary">
+            <span>📖 Detailed Guide & FAQ</span>
+            <span class="chevron">▼</span>
+          </summary>
+          <div class="details-content">
+            <div class="details-faq-section">
+              <h3>Eagle-Eye Test: Spot the Odd Character & Color Vision FAQ</h3>
+              <div class="details-faq-grid">
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Does this require any live chat API integration?</strong>
+                  <p class="faq-a">No! It runs 100% locally in your browser with zero external APIs. The board displays clear A–J and 1–10 coordinates so viewers can simply call out "C4!" or "G8!" in chat while the streamer clicks or types the coordinate.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. What are the 3 Game Modes?</strong>
+                  <p class="faq-a">Odd Character Mode tests lookalike letters & symbols (e.g., O vs Q, rn vs m); Color Vision Mode tests subtle HSL color lightness/hue differences down to Δ1.4%; Hybrid Mix alternates characters, colors, and emojis every stage.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Can I play without a 60-second timer?</strong>
+                  <p class="faq-a">Yes! Click the [60s Time Attack / ♾️ Endless Zen] toggle in the top bar to switch to Endless Zen Mode with no time limit or wrong-click penalties.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Can I see where the missed tile was when time runs out?</strong>
+                  <p class="faq-a">Yes! When the round ends, click [👁️ Inspect Last Answer on Board] to highlight the exact coordinate (e.g., F7) pulsing in gold on the grid.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </details>
+      )}
+    </main>
+
+    {!streamerMode && <Footer />}
+
+    <script>
+      const iframe = document.getElementById('game-iframe') as HTMLIFrameElement;
+      if (iframe) {
+        var sp = new URLSearchParams(window.location.search);
+        if (sp.has('stream') || sp.has('obs')) {
+          var s = document.createElement('style');
+          s.textContent = [
+            '.leaderboard-ad-wrap { display: none !important; }',
+            'footer { display: none !important; }',
+            '.stream-bottom-details { display: none !important; }',
+            '.arcade-header { display: none !important; }',
+            '.en-game-main { padding: 0 !important; margin: 0 !important; max-width: none !important; }',
+            '.en-game-frame-wrap { height: 100vh !important; }',
+            '.en-game-iframe { height: 100vh !important; }'
+          ].join(' ');
+          document.head.appendChild(s);
+
+          if (!iframe.src.includes('stream=true')) {
+            iframe.src = iframe.src + '&stream=true';
+          }
+        } else {
+          const syncHeight = () => {
+            try {
+              const doc = iframe.contentDocument || iframe.contentWindow?.document;
+              if (doc && doc.documentElement) {
+                const h = Math.max(820, doc.documentElement.scrollHeight);
+                const wrap = iframe.parentElement;
+                if (wrap) wrap.style.minHeight = h + 'px';
+              }
+            } catch (e) {}
+          };
+          iframe.addEventListener('load', () => {
+            syncHeight();
+            try {
+              const doc = iframe.contentDocument || iframe.contentWindow?.document;
+              if (doc && doc.body && typeof ResizeObserver !== 'undefined') {
+                new ResizeObserver(syncHeight).observe(doc.body);
+              }
+            } catch (e) {}
+          });
+        }
+      }
+    </script>
+  </body>
+</html>
+
+<style>
+  .en-game-body {
+    background: #090d16;
+    color: #f1f5f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+  }
+
+  .en-game-main {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0.5rem 0.75rem 2rem !important;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+  }
+
+  .en-game-frame-wrap {
+    width: 100%;
+    height: 820px;
+  }
+
+  .en-game-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+    background: transparent;
+  }
+
+  @media (min-width: 1400px) {
+    .en-game-frame-wrap {
+      height: max(800px, calc(100vh - 110px));
+    }
+  }
+
+  .stream-bottom-details {
+    max-width: 1400px;
+    width: 100%;
+    margin: 2rem auto 0;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .details-summary {
+    padding: 0.9rem 1.4rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #94a3b8;
+    list-style: none;
+    user-select: none;
+  }
+
+  .details-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .details-content {
+    padding: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .details-faq-section h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin: 0 0 1rem;
+  }
+
+  .details-faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .details-faq-card {
+    background: rgba(30, 41, 59, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 1rem;
+  }
+
+  .faq-q {
+    display: block;
+    font-size: 0.9rem;
+    color: #f8fafc;
+    margin-bottom: 0.45rem;
+  }
+
+  .faq-a {
+    font-size: 0.84rem;
+    color: #94a3b8;
+    margin: 0;
+    line-height: 1.55;
+  }
+</style>
+

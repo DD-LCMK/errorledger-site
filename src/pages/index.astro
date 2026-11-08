@@ -10,7 +10,7 @@ const urlParams = Astro.url.searchParams;
 const streamerMode = urlParams.has('stream') || urlParams.has('obs');
 
 const games = await getCollection('games');
-const priorityOrder = ['blind-timer', 'mine-gems', 'reaction-test', 'sword-enhance', 'block-blast', 'arrow-jump', 'sand-drop', 'marble-roulette', 'roulette', 'ladder', 'drinking-marble', 'ai-music-quiz', 'soundboard', 'stream-doodle', 'stream-emoji', 'fortune'];
+const priorityOrder = ['spot-odd', 'blind-timer', 'mine-gems', 'reaction-test', 'sword-enhance', 'block-blast', 'arrow-jump', 'sand-drop', 'marble-roulette', 'roulette', 'ladder', 'drinking-marble', 'ai-music-quiz', 'soundboard', 'stream-doodle', 'stream-emoji', 'fortune'];
 const sortedGames = games.sort((a, b) => {
   const idxA = priorityOrder.indexOf(a.id);
   const idxB = priorityOrder.indexOf(b.id);
@@ -256,7 +256,7 @@ const homeFaqSchema = JSON.stringify({
             </button>
             <button type="button" class="filter-tab tab-arcade" data-filter="arcade">
               <span>🔥 킬링타임 아케이드</span>
-              <span class="filter-count">7</span>
+              <span class="filter-count">8</span>
             </button>
             <button type="button" class="filter-tab tab-draw" data-filter="draw">
               <span>🎲 추첨·벌칙·파티</span>
@@ -273,12 +273,13 @@ const homeFaqSchema = JSON.stringify({
           {sortedGames.map(game => {
             const href = game.id === 'fortune' ? '/fortune' : `/games/${game.id}`;
             const btnText = game.id === 'fortune' ? '운세 보기 →' : '시작하기 →';
-            const arcadeIds = ['blind-timer', 'mine-gems', 'reaction-test', 'sword-enhance', 'block-blast', 'arrow-jump', 'sand-drop'];
+            const arcadeIds = ['spot-odd', 'blind-timer', 'mine-gems', 'reaction-test', 'sword-enhance', 'block-blast', 'arrow-jump', 'sand-drop'];
             const drawIds = ['marble-roulette', 'roulette', 'ladder', 'drinking-marble'];
             const group = arcadeIds.includes(game.id) ? 'arcade' : drawIds.includes(game.id) ? 'draw' : 'studio';
-            const hotNewIds = ['blind-timer', 'mine-gems', 'reaction-test', 'sword-enhance'];
+            const hotNewIds = ['spot-odd', 'blind-timer', 'mine-gems', 'reaction-test', 'sword-enhance'];
             const isHotNew = hotNewIds.includes(game.id);
             const koTagsMap: Record<string, string[]> = {
+              'spot-odd': ['틀린글자·색감', 'A1~J10 좌표훈수', '시력등급 판독'],
               'blind-timer': ['1.5초 후 암전', '1ms 정밀판정', '합방 순위표'],
               'mine-gems': ['5×5 좌표훈수', '익절 배율 심리전', 'SHA-256 공정'],
               'reaction-test': ['반응·에임·CPS', '피지컬 나이 진단서', '종목별 연습'],

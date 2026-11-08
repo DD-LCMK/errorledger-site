@@ -1,0 +1,2089 @@
+---
+import GameLayout from '../../layouts/GameLayout.astro';
+import { getEntry } from 'astro:content';
+
+const entry = await getEntry('games', 'spot-odd');
+if (!entry) throw new Error('spot-odd entry not found');
+const { data } = entry;
+---
+
+<GameLayout
+  entry={entry}
+  title={data.title}
+  description={data.description}
+  tagline={data.tagline}
+  icon={data.icon}
+  category={data.category}
+  badge={data.badge}
+  players={data.players}
+  playTime={data.playTime}
+  controls={data.controls}
+  rules={data.rules}
+  faqItems={data.faqItems}
+>
+  <div class="spot-odd-shell" id="spot-odd-root">
+    <!-- Top Mode & Controls Bar -->
+    <div class="so-topbar">
+      <div class="so-modes" role="tablist" aria-label="Game Mode">
+        <button type="button" class="so-mode-btn active" data-mode="char" id="mode-char">
+          <span class="m-icon">🔤</span>
+          <span class="m-label" data-i18n="modeChar">틀린 글자 찾기</span>
+        </button>
+        <button type="button" class="so-mode-btn" data-mode="color" id="mode-color">
+          <span class="m-icon">🎨</span>
+          <span class="m-label" data-i18n="modeColor">절대색감 찾기</span>
+        </button>
+        <button type="button" class="so-mode-btn" data-mode="mix" id="mode-mix">
+          <span class="m-icon">⚡</span>
+          <span class="m-label" data-i18n="modeMix">하이브리드 믹스</span>
+        </button>
+      </div>
+
+      <div class="so-top-actions">
+        <button type="button" class="so-pill-toggle" id="btn-zen-mode" title="시간 제한 없이 여유롭게 시청자와 찾는 무제한 연습 모드">
+          <span>⏱️</span>
+          <span id="zen-mode-label" data-i18n="timer60s">60초 타임어택</span>
+        </button>
+        <button type="button" class="so-pill-toggle active" id="btn-coord-badge" title="각 타일 모서리에 A1~J10 좌표 표시">
+          <span>📍</span>
+          <span id="coord-badge-label" data-i18n="coordOn">좌표 라벨 ON</span>
+        </button>
+        <button type="button" class="so-pill-toggle active" id="btn-sound-toggle" title="효과음 켜기/끄기">
+          <span id="sound-icon">🔊</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main 2-Column Layout -->
+    <div class="so-main-grid">
+      <!-- Left: Arena -->
+      <section class="so-arena-card">
+        <!-- HUD Metrics -->
+        <div class="so-hud-row">
+          <div class="so-hud-box stage-box">
+            <span class="hud-k" data-i18n="hudStage">STAGE</span>
+            <strong class="hud-v" id="hud-stage">1</strong>
+            <span class="hud-sub" id="hud-grid-dim">3×3 (9칸)</span>
+          </div>
+
+          <div class="so-hud-box timer-box" id="timer-box">
+            <div class="timer-top">
+              <span class="hud-k" data-i18n="hudTime">남은 시간</span>
+              <span class="time-delta" id="time-delta"></span>
+            </div>
+            <strong class="hud-v timer-val" id="hud-time">60.0s</strong>
+            <div class="timer-bar-track">
+              <div class="timer-bar-fill" id="timer-bar-fill" style="width: 100%;"></div>
+            </div>
+          </div>
+
+          <div class="so-hud-box score-box">
+            <span class="hud-k" data-i18n="hudScore">SCORE</span>
+            <strong class="hud-v" id="hud-score">0</strong>
+            <span class="hud-sub combo-pill" id="hud-combo">0 COMBO</span>
+          </div>
+        </div>
+
+        <!-- Stage Clue Banner -->
+        <div class="so-clue-banner" id="clue-banner">
+          <div class="clue-left">
+            <span class="clue-tag" id="clue-type-tag">🔤 글자 판독</span>
+            <span class="clue-text" id="clue-text">대부분의 타일과 혼자 다른 1칸의 좌표를 찾으세요!</span>
+          </div>
+          <div class="clue-right" id="missed-reveal-badge" hidden>
+            <span class="reveal-pill" id="reveal-coord-text">🎯 정답 좌표: A1</span>
+          </div>
+        </div>
+
+        <!-- Coordinate Board Container -->
+        <div class="so-board-outer">
+          <!-- Column Headers (A..J) -->
+          <div class="so-col-headers" id="col-headers"></div>
+
+          <div class="so-board-body">
+            <!-- Row Headers (1..10) -->
+            <div class="so-row-headers" id="row-headers"></div>
+
+            <!-- Interactive Tile Grid -->
+            <div class="so-grid-wrap">
+              <div class="so-grid" id="so-grid" role="grid" aria-label="Spot the Odd Coordinate Grid"></div>
+
+              <!-- Start / Game Over Overlay (Can be dismissed to inspect the board!) -->
+              <div class="so-overlay" id="so-overlay">
+                <div class="overlay-card" id="overlay-card">
+                  <div class="ov-badge" id="ov-badge">🔍 EAGLE EYE TEST</div>
+                  <h2 class="ov-title" id="ov-title">매의 눈 테스트: 틀린 글자 & 절대색감</h2>
+                  <p class="ov-desc" id="ov-desc">
+                    격자 상단(<strong>A~J</strong>)과 좌측(<strong>1~10</strong>) 좌표로 시청자와 함께 혼자 다른 타일 1칸을 찾아내세요!
+                  </p>
+
+                  <!-- Summary Stats shown on Game Over -->
+                  <div class="ov-stats-grid" id="ov-stats-grid" hidden>
+                    <div class="ov-stat">
+                      <span class="ov-s-k" data-i18n="statFinalStage">최종 도달</span>
+                      <strong class="ov-s-v" id="ov-final-stage">STAGE 1</strong>
+                    </div>
+                    <div class="ov-stat">
+                      <span class="ov-s-k" data-i18n="statTier">시력·색감 등급</span>
+                      <strong class="ov-s-v accent" id="ov-final-tier">🦅 매의 눈</strong>
+                    </div>
+                    <div class="ov-stat">
+                      <span class="ov-s-k" data-i18n="statAvgSpeed">평균 탐색 속도</span>
+                      <strong class="ov-s-v" id="ov-final-speed">0.00s</strong>
+                    </div>
+                    <div class="ov-stat">
+                      <span class="ov-s-k" data-i18n="statMissedAnswer">마지막 정답 좌표</span>
+                      <strong class="ov-s-v gold" id="ov-missed-coord">C4</strong>
+                    </div>
+                  </div>
+
+                  <div class="ov-btn-row">
+                    <button type="button" class="so-btn-primary" id="btn-start-game">
+                      <span>🚀</span>
+                      <span id="btn-start-text" data-i18n="btnStart">테스트 시작하기 (Space)</span>
+                    </button>
+                    <button type="button" class="so-btn-secondary" id="btn-peek-board" hidden>
+                      <span>👁️</span>
+                      <span data-i18n="btnPeekBoard">마지막 문제 정답 위치 확인</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Action & Quick Coordinate Input Bar -->
+        <div class="so-bottom-bar">
+          <form class="so-coord-form" id="coord-form" autocomplete="off">
+            <label for="coord-input" class="coord-label">
+              <span>🎯</span>
+              <span data-i18n="coordInputLabel">훈수 좌표 타격:</span>
+            </label>
+            <input
+              type="text"
+              id="coord-input"
+              class="coord-input"
+              placeholder="예: C4, G8"
+              maxlength="4"
+            />
+            <button type="submit" class="coord-submit-btn" id="btn-coord-submit" data-i18n="btnCoordStrike">
+              선택 (Enter)
+            </button>
+          </form>
+
+          <div class="so-utility-btns">
+            <button type="button" class="so-util-btn hint-btn" id="btn-hint" title="정답이 포함된 3×3 영역을 표시합니다 (판당 2회)">
+              <span>💡</span>
+              <span data-i18n="btnHint">영역 힌트</span>
+              <span class="hint-cnt" id="hint-count">2</span>
+            </button>
+            <button type="button" class="so-util-btn giveup-btn" id="btn-reveal-stop" title="현재 스테이지의 정답 좌표를 공개하고 결과를 확인합니다">
+              <span>🏳️</span>
+              <span data-i18n="btnGiveUp">정답 공개</span>
+            </button>
+            <button type="button" class="so-util-btn restart-btn" id="btn-restart" title="처음부터 다시 시작 (단축키 R)">
+              <span>🔄</span>
+              <span data-i18n="btnRestart">재시작</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: Diagnosis Card & Challenger Leaderboard -->
+      <aside class="so-sidebar">
+        <!-- Vision Diagnosis Card -->
+        <div class="so-side-card diagnosis-card">
+          <div class="side-card-head">
+            <span class="side-badge">🦅 VISION REPORT</span>
+            <h3 data-i18n="diagTitle">실시간 매의 눈 판독서</h3>
+          </div>
+
+          <div class="tier-banner" id="diag-tier-banner">
+            <div class="tier-emoji" id="diag-tier-emoji">🔍</div>
+            <div class="tier-info">
+              <span class="tier-rank" id="diag-tier-rank">측정 대기 중</span>
+              <strong class="tier-name" id="diag-tier-name">도전을 시작해 시력 등급을 판독하세요</strong>
+            </div>
+          </div>
+
+          <div class="diag-metrics">
+            <div class="d-metric">
+              <span class="d-k" data-i18n="diagMaxStage">도달 스테이지</span>
+              <strong class="d-v" id="diag-stage">STAGE 1</strong>
+            </div>
+            <div class="d-metric">
+              <span class="d-k" data-i18n="diagAccuracy">클릭 정확도</span>
+              <strong class="d-v" id="diag-acc">100%</strong>
+            </div>
+            <div class="d-metric">
+              <span class="d-k" data-i18n="diagAvgTime">평균 발견 시간</span>
+              <strong class="d-v" id="diag-avg-time">-</strong>
+            </div>
+            <div class="d-metric">
+              <span class="d-k" data-i18n="diagDelta">최소 식별 색차(Δ)</span>
+              <strong class="d-v" id="diag-min-delta">-</strong>
+            </div>
+          </div>
+
+          <button type="button" class="so-share-btn" id="btn-copy-report">
+            <span>📋</span>
+            <span id="copy-report-text" data-i18n="btnCopyReport">방송 채팅창용 판독 결과 복사</span>
+          </button>
+        </div>
+
+        <!-- Challenger Leaderboard -->
+        <div class="so-side-card leaderboard-card">
+          <div class="side-card-head lb-head">
+            <div>
+              <span class="side-badge gold">🏆 HALL OF EAGLE EYES</span>
+              <h3 data-i18n="lbTitle">도전자 순위 전광판</h3>
+            </div>
+            <button type="button" class="lb-clear-btn" id="btn-clear-lb" title="순위 초기화" data-i18n="btnClearLb">초기화</button>
+          </div>
+
+          <div class="challenger-input-row">
+            <label for="challenger-name" class="sr-only">Challenger Name</label>
+            <input
+              type="text"
+              id="challenger-name"
+              class="challenger-input"
+              placeholder="👤 도전자 닉네임 (예: 스트리머, 시청자합동)"
+              maxlength="18"
+              value="스트리머"
+            />
+          </div>
+
+          <ul class="lb-list" id="lb-list">
+            <li class="lb-empty" data-i18n="lbEmpty">아직 등록된 기록이 없습니다. 첫 도전을 시작하세요!</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+</GameLayout>
+
+<script>
+  (function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const isEn = urlParams.get('lang') === 'en' || window.location.pathname.startsWith('/en');
+
+    const I18N = {
+      ko: {
+        modeChar: '틀린 글자 찾기',
+        modeColor: '절대색감 찾기',
+        modeMix: '하이브리드 믹스',
+        timer60s: '60초 타임어택',
+        timerZen: '♾️ 무제한 연습',
+        coordOn: '좌표 라벨 ON',
+        coordOff: '좌표 라벨 OFF',
+        hudStage: 'STAGE',
+        hudTime: '남은 시간',
+        hudScore: 'SCORE',
+        statFinalStage: '최종 도달',
+        statTier: '시력·색감 등급',
+        statAvgSpeed: '평균 탐색 속도',
+        statMissedAnswer: '마지막 정답 좌표',
+        btnStart: '테스트 시작하기 (Space)',
+        btnRetry: '다시 도전하기 (Space)',
+        btnPeekBoard: '👁️ 마지막 정답 타일 보기',
+        coordInputLabel: '좌표 타격:',
+        btnCoordStrike: '선택 (Enter)',
+        btnHint: '영역 힌트',
+        btnGiveUp: '정답 공개',
+        btnRestart: '재시작',
+        diagTitle: '실시간 매의 눈 판독서',
+        diagMaxStage: '도달 스테이지',
+        diagAccuracy: '클릭 정확도',
+        diagAvgTime: '평균 발견 시간',
+        diagDelta: '최소 식별 색차(Δ)',
+        btnCopyReport: '방송 채팅창용 판독 결과 복사',
+        copiedReport: '✅ 클립보드에 결과가 복사되었습니다!',
+        lbTitle: '도전자 순위 전광판',
+        btnClearLb: '초기화',
+        lbEmpty: '아직 등록된 기록이 없습니다. 첫 도전을 시작하세요!',
+        defaultPlayer: '스트리머',
+        playerPlaceholder: '👤 도전자 닉네임 (예: 스트리머, 채팅합동)',
+        coordPlaceholder: '예: C4, G8',
+        tagChar: '🔤 틀린 글자 판독',
+        tagColor: '🎨 절대색감 판독',
+        tagEmoji: '👀 미세 이모지 판독',
+        clueCharTpl: (maj: string, odd: string, hideOdd: boolean) =>
+          hideOdd
+            ? `다수 글자 「${maj}」 속에서 혼자 다른 글자 1칸을 찾으세요!`
+            : `「${maj}」 속에서 숨어있는 「${odd}」 1칸을 찾으세요!`,
+        clueColorTpl: (delta: number) =>
+          `미세 색상 차이(Δ${delta.toFixed(1)}%)가 있는 타일 1칸을 찾으세요!`,
+        revealAnswerTpl: (coord: string, detail: string) =>
+          `🎯 정답 좌표: ${coord} (${detail})`,
+        ovReadyTitle: '매의 눈 테스트: 틀린 글자 & 절대색감',
+        ovReadyDesc: '격자 상단(A~J)과 좌측(1~10) 좌표로 시청자와 함께 혼자 다른 타일 1칸을 찾아내세요!',
+        ovEndBadge: '⏱️ 측정 종료 · 시력 판독 완료',
+        ovEndTitleTpl: (stage: number, tierName: string) => `STAGE ${stage} 달성! [${tierName}]`,
+        ovEndDescTpl: (coord: string, detail: string) =>
+          `마지막 스테이지의 숨겨진 정답은 [${coord}] 타일(${detail})이었습니다!`,
+      },
+      en: {
+        modeChar: 'Odd Character',
+        modeColor: 'Color Vision',
+        modeMix: 'Hybrid Mix',
+        timer60s: '60s Time Attack',
+        timerZen: '♾️ Endless Zen',
+        coordOn: 'Coord Labels ON',
+        coordOff: 'Coord Labels OFF',
+        hudStage: 'STAGE',
+        hudTime: 'TIME LEFT',
+        hudScore: 'SCORE',
+        statFinalStage: 'Final Stage',
+        statTier: 'Vision Grade',
+        statAvgSpeed: 'Avg Find Speed',
+        statMissedAnswer: 'Last Answer Coord',
+        btnStart: 'Start Challenge (Space)',
+        btnRetry: 'Play Again (Space)',
+        btnPeekBoard: '👁️ Inspect Last Answer on Board',
+        coordInputLabel: 'Strike Coord:',
+        btnCoordStrike: 'Pick (Enter)',
+        btnHint: 'Area Hint',
+        btnGiveUp: 'Reveal Answer',
+        btnRestart: 'Restart',
+        diagTitle: 'Live Eagle-Eye Vision Report',
+        diagMaxStage: 'Stage Reached',
+        diagAccuracy: 'Click Accuracy',
+        diagAvgTime: 'Avg Find Speed',
+        diagDelta: 'Smallest Color Δ',
+        btnCopyReport: 'Copy Vision Result for Stream Chat',
+        copiedReport: '✅ Copied Vision Report to Clipboard!',
+        lbTitle: 'Challenger Leaderboard',
+        btnClearLb: 'Clear',
+        lbEmpty: 'No records yet. Start your first challenge!',
+        defaultPlayer: 'Streamer',
+        playerPlaceholder: '👤 Challenger Name (e.g. Streamer, Chat Co-op)',
+        coordPlaceholder: 'e.g. C4, G8',
+        tagChar: '🔤 Odd Character',
+        tagColor: '🎨 Color Vision',
+        tagEmoji: '👀 Emoji Lookalike',
+        clueCharTpl: (maj: string, odd: string, hideOdd: boolean) =>
+          hideOdd
+            ? `Find the 1 odd tile hiding among "${maj}"!`
+            : `Find the single "${odd}" hiding among "${maj}"!`,
+        clueColorTpl: (delta: number) =>
+          `Spot the 1 tile with a subtle color difference (Δ${delta.toFixed(1)}%)!`,
+        revealAnswerTpl: (coord: string, detail: string) =>
+          `🎯 Answer: ${coord} (${detail})`,
+        ovReadyTitle: 'Eagle-Eye Test: Odd Character & Color Vision',
+        ovReadyDesc: 'Use the A–J and 1–10 grid coordinates with your stream chat to spot the single different tile!',
+        ovEndBadge: '⏱️ CHALLENGE COMPLETE · VISION REPORT',
+        ovEndTitleTpl: (stage: number, tierName: string) => `Reached STAGE ${stage}! [${tierName}]`,
+        ovEndDescTpl: (coord: string, detail: string) =>
+          `The hidden odd tile on the final stage was at [${coord}] (${detail})!`,
+      }
+    };
+
+    const L = isEn ? I18N.en : I18N.ko;
+
+    // Apply static translations if English
+    if (isEn) {
+      document.querySelectorAll('[data-i18n]').forEach((el) => {
+        const key = el.getAttribute('data-i18n') as keyof typeof L;
+        if (key && typeof L[key] === 'string') {
+          el.textContent = L[key] as string;
+        }
+      });
+      const chInput = document.getElementById('challenger-name') as HTMLInputElement | null;
+      if (chInput) {
+        chInput.value = L.defaultPlayer;
+        chInput.placeholder = L.playerPlaceholder;
+      }
+      const cInput = document.getElementById('coord-input') as HTMLInputElement | null;
+      if (cInput) cInput.placeholder = L.coordPlaceholder;
+      const ovTitle = document.getElementById('ov-title');
+      const ovDesc = document.getElementById('ov-desc');
+      if (ovTitle) ovTitle.textContent = L.ovReadyTitle;
+      if (ovDesc) ovDesc.textContent = L.ovReadyDesc;
+    }
+
+    // Curated Lookalike Character Pairs
+    const KO_CHAR_PAIRS: [string, string][] = [
+      ['뚀', '또'], ['쓔', '쑤'], ['뱌', '바'], ['머', '며'], ['겨', '거'],
+      ['표', '포'], ['묘', '모'], ['교', '고'], ['효', '호'], ['쵸', '초'],
+      ['퓨', '푸'], ['휴', '후'], ['규', '구'], ['유', '우'], ['샤', '사'],
+      ['달', '딸'], ['별', '벌'], ['곰', '공'], ['강', '감'], ['빛', '빚'],
+      ['눈', '논'], ['돈', '돋'], ['왕', '왐'], ['숲', '숖'], ['귤', '글'],
+      ['닭', '딝'], ['흙', '흚'], ['삶', '샆'], ['값', '갑'], ['깸', '껌'],
+      ['뀰', '귤'], ['퐝', '팡'], ['치지직', '처지직'], ['스트리머', '스토리머'],
+      ['레전드', '래전드'], ['도네이션', '도내이션'], ['아프리카', '아프러카']
+    ];
+
+    const EN_CHAR_PAIRS: [string, string][] = [
+      ['O', 'Q'], ['0', 'O'], ['8', 'B'], ['5', 'S'], ['2', 'Z'],
+      ['6', 'G'], ['1', 'I'], ['I', 'l'], ['E', 'F'], ['C', 'G'],
+      ['M', 'N'], ['W', 'V'], ['U', 'V'], ['P', 'R'], ['K', 'X'],
+      ['rn', 'm'], ['vv', 'w'], ['cl', 'd'], ['b', 'd'], ['p', 'q'],
+      ['u', 'v'], ['n', 'h'], ['i', 'j'], ['c', 'e'], ['a', 'o'],
+      ['STREAM', 'STREAN'], ['TWITCH', 'TWITGH'], ['CHZZK', 'CHZZX'], ['WINNER', 'WIMNER']
+    ];
+
+    const EMOJI_PAIRS: [string, string][] = [
+      ['😀', '😃'], ['😄', '😆'], ['😐', '😑'], ['😮', '😯'],
+      ['🐱', '😺'], ['🐶', '🐕'], ['🌕', '🌖'], ['🍎', '🍅'],
+      ['🔒', '🔓'], ['🕐', '🕚'], ['🍀', '☘️'], ['👀', '👁️'],
+      ['❤️', '♥️'], ['⬆️', '↗️'], ['⭐', '🌟'], ['💎', '💠']
+    ];
+
+    interface TierInfo {
+      minStage: number;
+      code: string;
+      emoji: string;
+      koTitle: string;
+      enTitle: string;
+      color: string;
+    }
+
+    const VISION_TIERS: TierInfo[] = [
+      { minStage: 28, code: 'SSS+', emoji: '🦅', koTitle: '상위 0.01% 초월자 몽골인 매의 눈', enTitle: 'Top 0.01% Transcendent Eagle Eye', color: '#f59e0b' },
+      { minStage: 22, code: 'SSS', emoji: '🦅', koTitle: '상위 0.5% 인간 현미경·절대색감', enTitle: 'Top 0.5% Human Microscope', color: '#10b981' },
+      { minStage: 17, code: 'SS', emoji: '👁️', koTitle: '상위 3% 프로 스나이퍼 동체시력', enTitle: 'Top 3% Pro Sniper Vision', color: '#38bdf8' },
+      { minStage: 12, code: 'S', emoji: '🔍', koTitle: '상위 12% 예리한 명탐정 관찰력', enTitle: 'Top 12% Sharp Detective Eye', color: '#818cf8' },
+      { minStage: 8,  code: 'A', emoji: '✨', koTitle: '건강한 표준 시력 & 색감 보유자', enTitle: 'Healthy Standard Vision', color: '#a855f7' },
+      { minStage: 4,  code: 'B', emoji: '👓', koTitle: '루테인 섭취 권장 (경미한 눈 피로)', enTitle: 'Mild Eye Fatigue (Need Lutein)', color: '#f97316' },
+      { minStage: 0,  code: 'C', emoji: '🕶️', koTitle: '침침한 동태눈 (시청자 훈수 필수)', enTitle: 'Blurry Vision (Needs Chat Help!)', color: '#ef4444' }
+    ];
+
+    function getTier(stage: number): TierInfo {
+      for (const t of VISION_TIERS) {
+        if (stage >= t.minStage) return t;
+      }
+      return VISION_TIERS[VISION_TIERS.length - 1];
+    }
+
+    // Grid dimension schedule by stage (3x3 up to 10x10)
+    function getGridSize(stage: number): number {
+      if (stage <= 1) return 3;
+      if (stage <= 3) return 4;
+      if (stage <= 6) return 5;
+      if (stage <= 10) return 6;
+      if (stage <= 15) return 7;
+      if (stage <= 21) return 8;
+      if (stage <= 27) return 9;
+      return 10;
+    }
+
+    // Color difference delta schedule by stage (22% down to 1.4%)
+    function getColorDelta(stage: number): number {
+      const d = 22 * Math.pow(0.905, stage - 1);
+      return Math.max(1.4, Number(d.toFixed(1)));
+    }
+
+    // Audio Synthesizer
+    let audioCtx: AudioContext | null = null;
+    let soundEnabled = true;
+
+    function ensureAudio() {
+      if (!soundEnabled) return null;
+      if (!audioCtx) {
+        const AC = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        if (AC) audioCtx = new AC();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+      }
+      return audioCtx;
+    }
+
+    function playSfx(type: 'correct' | 'wrong' | 'hint' | 'gameover' | 'start') {
+      const ctx = ensureAudio();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+
+      if (type === 'correct') {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        const baseFreq = Math.min(980, 440 + state.combo * 35);
+        osc.frequency.setValueAtTime(baseFreq, now);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.45, now + 0.11);
+        gain.gain.setValueAtTime(0.16, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.15);
+      } else if (type === 'wrong') {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(170, now);
+        osc.frequency.linearRampToValueAtTime(115, now + 0.22);
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.25);
+      } else if (type === 'hint') {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(620, now);
+        osc.frequency.exponentialRampToValueAtTime(920, now + 0.18);
+        gain.gain.setValueAtTime(0.14, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.21);
+      } else if (type === 'start') {
+        [440, 554.37, 659.25].forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + i * 0.06);
+          gain.gain.setValueAtTime(0.13, now + i * 0.06);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.06 + 0.16);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + i * 0.06);
+          osc.stop(now + i * 0.06 + 0.17);
+        });
+      } else if (type === 'gameover') {
+        [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + i * 0.08);
+          gain.gain.setValueAtTime(0.15, now + i * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.25);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + i * 0.08);
+          osc.stop(now + i * 0.08 + 0.26);
+        });
+      }
+    }
+
+    // Game State
+    type GameMode = 'char' | 'color' | 'mix';
+    const state = {
+      mode: 'char' as GameMode,
+      zenMode: false,
+      showCoordLabels: true,
+      running: false,
+      stage: 1,
+      score: 0,
+      combo: 0,
+      maxCombo: 0,
+      timeLeft: 60.0,
+      hintsLeft: 2,
+      hintUsedThisStage: false,
+      totalClicks: 0,
+      correctClicks: 0,
+      stageStartMs: 0,
+      totalFindMs: 0,
+      minColorDeltaCleared: null as number | null,
+      gridSize: 3,
+      oddIndex: 0,
+      oddCoord: 'A1',
+      currentDetail: '',
+      currentStageSubType: 'char' as 'char' | 'color' | 'emoji',
+      currentColorDelta: 22,
+      timerId: 0 as unknown as number
+    };
+
+    // DOM Elements
+    const elStage = document.getElementById('hud-stage')!;
+    const elGridDim = document.getElementById('hud-grid-dim')!;
+    const elTime = document.getElementById('hud-time')!;
+    const elTimeDelta = document.getElementById('time-delta')!;
+    const elTimerBar = document.getElementById('timer-bar-fill')!;
+    const elScore = document.getElementById('hud-score')!;
+    const elCombo = document.getElementById('hud-combo')!;
+    const elClueTag = document.getElementById('clue-type-tag')!;
+    const elClueText = document.getElementById('clue-text')!;
+    const elMissedBadge = document.getElementById('missed-reveal-badge')!;
+    const elRevealCoordText = document.getElementById('reveal-coord-text')!;
+    const elColHeaders = document.getElementById('col-headers')!;
+    const elRowHeaders = document.getElementById('row-headers')!;
+    const elGrid = document.getElementById('so-grid')!;
+    const elOverlay = document.getElementById('so-overlay')!;
+    const elOvBadge = document.getElementById('ov-badge')!;
+    const elOvTitle = document.getElementById('ov-title')!;
+    const elOvDesc = document.getElementById('ov-desc')!;
+    const elOvStatsGrid = document.getElementById('ov-stats-grid')!;
+    const elOvFinalStage = document.getElementById('ov-final-stage')!;
+    const elOvFinalTier = document.getElementById('ov-final-tier')!;
+    const elOvFinalSpeed = document.getElementById('ov-final-speed')!;
+    const elOvMissedCoord = document.getElementById('ov-missed-coord')!;
+    const btnStartGame = document.getElementById('btn-start-game')!;
+    const btnStartText = document.getElementById('btn-start-text')!;
+    const btnPeekBoard = document.getElementById('btn-peek-board')!;
+    const btnHint = document.getElementById('btn-hint') as HTMLButtonElement;
+    const elHintCount = document.getElementById('hint-count')!;
+    const btnRevealStop = document.getElementById('btn-reveal-stop')!;
+    const btnRestart = document.getElementById('btn-restart')!;
+    const coordForm = document.getElementById('coord-form') as HTMLFormElement;
+    const coordInput = document.getElementById('coord-input') as HTMLInputElement;
+
+    // Diagnosis DOM
+    const elDiagEmoji = document.getElementById('diag-tier-emoji')!;
+    const elDiagRank = document.getElementById('diag-tier-rank')!;
+    const elDiagName = document.getElementById('diag-tier-name')!;
+    const elDiagStage = document.getElementById('diag-stage')!;
+    const elDiagAcc = document.getElementById('diag-acc')!;
+    const elDiagAvgTime = document.getElementById('diag-avg-time')!;
+    const elDiagMinDelta = document.getElementById('diag-min-delta')!;
+    const btnCopyReport = document.getElementById('btn-copy-report')!;
+    const elCopyReportText = document.getElementById('copy-report-text')!;
+
+    // Leaderboard DOM
+    const elChallengerName = document.getElementById('challenger-name') as HTMLInputElement;
+    const elLbList = document.getElementById('lb-list')!;
+    const btnClearLb = document.getElementById('btn-clear-lb')!;
+
+    const COL_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+
+    function indexToCoord(index: number, size: number): string {
+      const r = Math.floor(index / size);
+      const c = index % size;
+      return `${COL_LETTERS[c]}${r + 1}`;
+    }
+
+    function coordToIndex(coordStr: string, size: number): number {
+      const clean = coordStr.trim().toUpperCase();
+      const match = clean.match(/^([A-J])(\d{1,2})$/);
+      if (!match) return -1;
+      const c = COL_LETTERS.indexOf(match[1]);
+      const r = parseInt(match[2], 10) - 1;
+      if (c < 0 || c >= size || r < 0 || r >= size) return -1;
+      return r * size + c;
+    }
+
+    function showTimeFloater(text: string, isPositive: boolean) {
+      elTimeDelta.textContent = text;
+      elTimeDelta.className = `time-delta show ${isPositive ? 'pos' : 'neg'}`;
+      setTimeout(() => {
+        elTimeDelta.className = 'time-delta';
+      }, 650);
+    }
+
+    function updateHud() {
+      const n = state.gridSize;
+      elStage.textContent = String(state.stage);
+      elGridDim.textContent = isEn ? `${n}×${n} (${n * n} tiles)` : `${n}×${n} (${n * n}칸)`;
+      elScore.textContent = state.score.toLocaleString();
+      elCombo.textContent = `${state.combo} COMBO`;
+      elCombo.classList.toggle('hot', state.combo >= 3);
+      elHintCount.textContent = String(state.hintsLeft);
+      btnHint.disabled = !state.running || state.hintsLeft <= 0 || state.hintUsedThisStage;
+
+      if (state.zenMode) {
+        elTime.textContent = '♾️ ZEN';
+        elTimerBar.style.width = '100%';
+        elTimerBar.style.background = 'linear-gradient(90deg, #38bdf8, #818cf8)';
+      } else {
+        const clamped = Math.max(0, state.timeLeft);
+        elTime.textContent = `${clamped.toFixed(1)}s`;
+        const pct = Math.min(100, (clamped / 60) * 100);
+        elTimerBar.style.width = `${pct}%`;
+        if (clamped <= 10) {
+          elTimerBar.style.background = 'linear-gradient(90deg, #ef4444, #f97316)';
+          elTime.classList.add('danger');
+        } else {
+          elTimerBar.style.background = 'linear-gradient(90deg, #10b981, #38bdf8)';
+          elTime.classList.remove('danger');
+        }
+      }
+
+      updateDiagnosisLive();
+    }
+
+    function updateDiagnosisLive() {
+      const clearedStages = Math.max(0, state.stage - 1);
+      const tier = getTier(clearedStages);
+      elDiagEmoji.textContent = tier.emoji;
+      elDiagRank.textContent = `GRADE ${tier.code}`;
+      elDiagRank.style.color = tier.color;
+      elDiagName.textContent = isEn ? tier.enTitle : tier.koTitle;
+      elDiagStage.textContent = `STAGE ${state.stage}`;
+
+      const acc = state.totalClicks > 0
+        ? Math.round((state.correctClicks / state.totalClicks) * 100)
+        : 100;
+      elDiagAcc.textContent = `${acc}%`;
+
+      if (state.correctClicks > 0) {
+        const avgSec = (state.totalFindMs / state.correctClicks / 1000).toFixed(2);
+        elDiagAvgTime.textContent = `${avgSec}s`;
+      } else {
+        elDiagAvgTime.textContent = '-';
+      }
+
+      if (state.minColorDeltaCleared !== null) {
+        elDiagMinDelta.textContent = `Δ${state.minColorDeltaCleared.toFixed(1)}%`;
+      } else {
+        elDiagMinDelta.textContent = '-';
+      }
+    }
+
+    function highlightHeaders(colIdx: number | null, rowIdx: number | null) {
+      const colEls = elColHeaders.querySelectorAll('.col-h');
+      const rowEls = elRowHeaders.querySelectorAll('.row-h');
+      colEls.forEach((el, i) => el.classList.toggle('active', i === colIdx));
+      rowEls.forEach((el, i) => el.classList.toggle('active', i === rowIdx));
+    }
+
+    function buildStage() {
+      const n = getGridSize(state.stage);
+      state.gridSize = n;
+      state.hintUsedThisStage = false;
+      state.stageStartMs = performance.now();
+      elMissedBadge.hidden = true;
+
+      // Render coordinate headers
+      elColHeaders.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
+      elColHeaders.innerHTML = COL_LETTERS.slice(0, n)
+        .map((ch) => `<div class="col-h">${ch}</div>`)
+        .join('');
+
+      elRowHeaders.style.gridTemplateRows = `repeat(${n}, 1fr)`;
+      elRowHeaders.innerHTML = Array.from({ length: n }, (_, i) => `<div class="row-h">${i + 1}</div>`)
+        .join('');
+
+      // Pick odd index
+      const totalTiles = n * n;
+      state.oddIndex = Math.floor(Math.random() * totalTiles);
+      state.oddCoord = indexToCoord(state.oddIndex, n);
+
+      // Decide stage sub-type
+      let subType: 'char' | 'color' | 'emoji' = 'char';
+      if (state.mode === 'color') {
+        subType = 'color';
+      } else if (state.mode === 'char') {
+        subType = state.stage % 5 === 0 ? 'emoji' : 'char';
+      } else {
+        // Hybrid mix
+        const mod = state.stage % 3;
+        subType = mod === 1 ? 'char' : mod === 2 ? 'color' : 'emoji';
+      }
+      state.currentStageSubType = subType;
+
+      elGrid.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
+      elGrid.style.gridTemplateRows = `repeat(${n}, 1fr)`;
+      elGrid.innerHTML = '';
+
+      if (subType === 'color') {
+        const delta = getColorDelta(state.stage);
+        state.currentColorDelta = delta;
+        const baseHue = Math.floor(Math.random() * 360);
+        const baseSat = 62 + Math.floor(Math.random() * 22); // 62..84%
+        const baseLight = 38 + Math.floor(Math.random() * 24); // 38..62%
+        const dir = baseLight > 52 ? -1 : 1;
+        const oddLight = Math.max(12, Math.min(88, baseLight + dir * delta));
+        const oddHue = (baseHue + (delta * 0.45)) % 360;
+
+        const baseCss = `hsl(${baseHue}, ${baseSat}%, ${baseLight}%)`;
+        const oddCss = `hsl(${oddHue.toFixed(1)}, ${baseSat}%, ${oddLight.toFixed(1)}%)`;
+
+        elClueTag.textContent = L.tagColor;
+        elClueText.textContent = L.clueColorTpl(delta);
+        state.currentDetail = `Δ${delta.toFixed(1)}%`;
+
+        for (let i = 0; i < totalTiles; i++) {
+          const coord = indexToCoord(i, n);
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'so-tile color-tile';
+          btn.dataset.index = String(i);
+          btn.dataset.coord = coord;
+          btn.style.backgroundColor = i === state.oddIndex ? oddCss : baseCss;
+
+          const coordSpan = document.createElement('span');
+          coordSpan.className = `tile-coord ${state.showCoordLabels ? '' : 'hidden'}`;
+          coordSpan.textContent = coord;
+          btn.appendChild(coordSpan);
+
+          attachTileEvents(btn, i, n);
+          elGrid.appendChild(btn);
+        }
+      } else {
+        // Character or Emoji lookalike
+        let pool: [string, string][];
+        if (subType === 'emoji') {
+          pool = EMOJI_PAIRS;
+          elClueTag.textContent = L.tagEmoji;
+        } else {
+          elClueTag.textContent = L.tagChar;
+          if (isEn) {
+            pool = EN_CHAR_PAIRS;
+          } else {
+            pool = state.stage % 4 === 0 ? EN_CHAR_PAIRS : KO_CHAR_PAIRS;
+          }
+        }
+
+        const pair = pool[Math.floor(Math.random() * pool.length)];
+        const flip = Math.random() < 0.5;
+        const majChar = flip ? pair[0] : pair[1];
+        const oddChar = flip ? pair[1] : pair[0];
+
+        const hideOddInClue = state.stage >= 8;
+        elClueText.textContent = L.clueCharTpl(majChar, oddChar, hideOddInClue);
+        state.currentDetail = `${majChar} → ${oddChar}`;
+
+        // Font scaling based on grid size and character length
+        const charLen = Math.max(majChar.length, oddChar.length);
+        let fontRem = 1.65;
+        if (n >= 9) fontRem = charLen >= 3 ? 0.78 : 1.05;
+        else if (n >= 7) fontRem = charLen >= 3 ? 0.9 : 1.25;
+        else if (n >= 5) fontRem = charLen >= 3 ? 1.05 : 1.45;
+        else fontRem = charLen >= 3 ? 1.3 : 1.85;
+
+        for (let i = 0; i < totalTiles; i++) {
+          const coord = indexToCoord(i, n);
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'so-tile char-tile';
+          btn.dataset.index = String(i);
+          btn.dataset.coord = coord;
+
+          const coordSpan = document.createElement('span');
+          coordSpan.className = `tile-coord ${state.showCoordLabels ? '' : 'hidden'}`;
+          coordSpan.textContent = coord;
+
+          const charSpan = document.createElement('span');
+          charSpan.className = 'tile-char';
+          charSpan.style.fontSize = `${fontRem}rem`;
+          charSpan.textContent = i === state.oddIndex ? oddChar : majChar;
+
+          btn.appendChild(coordSpan);
+          btn.appendChild(charSpan);
+
+          attachTileEvents(btn, i, n);
+          elGrid.appendChild(btn);
+        }
+      }
+
+      updateHud();
+    }
+
+    function attachTileEvents(btn: HTMLButtonElement, index: number, size: number) {
+      const r = Math.floor(index / size);
+      const c = index % size;
+      btn.addEventListener('mouseenter', () => highlightHeaders(c, r));
+      btn.addEventListener('mouseleave', () => highlightHeaders(null, null));
+      btn.addEventListener('click', () => handleTilePick(index));
+    }
+
+    function handleTilePick(index: number) {
+      if (!state.running) return;
+      const tiles = elGrid.querySelectorAll<HTMLButtonElement>('.so-tile');
+      const targetBtn = tiles[index];
+      if (!targetBtn) return;
+
+      state.totalClicks++;
+
+      if (index === state.oddIndex) {
+        // Correct!
+        state.correctClicks++;
+        const elapsedMs = performance.now() - state.stageStartMs;
+        state.totalFindMs += elapsedMs;
+        state.combo++;
+        if (state.combo > state.maxCombo) state.maxCombo = state.combo;
+
+        if (state.currentStageSubType === 'color') {
+          if (state.minColorDeltaCleared === null || state.currentColorDelta < state.minColorDeltaCleared) {
+            state.minColorDeltaCleared = state.currentColorDelta;
+          }
+        }
+
+        // Points: base + speed bonus + combo bonus
+        const speedBonus = Math.max(10, Math.round((4000 - Math.min(3800, elapsedMs)) / 25));
+        const stagePoints = state.stage * 100 + speedBonus + state.combo * 25;
+        state.score += stagePoints;
+
+        // Time bonus in Time Attack mode
+        if (!state.zenMode) {
+          const timeBonus = elapsedMs < 2200 ? 1.5 : 1.0;
+          state.timeLeft = Math.min(60.0, state.timeLeft + timeBonus);
+          showTimeFloater(`+${timeBonus.toFixed(1)}s`, true);
+        }
+
+        playSfx('correct');
+        targetBtn.classList.add('correct-flash');
+
+        state.stage++;
+        setTimeout(() => {
+          if (state.running) buildStage();
+        }, 120);
+      } else {
+        // Wrong tile!
+        state.combo = 0;
+        playSfx('wrong');
+        targetBtn.classList.remove('wrong-shake');
+        void targetBtn.offsetWidth;
+        targetBtn.classList.add('wrong-shake');
+
+        if (!state.zenMode) {
+          state.timeLeft = Math.max(0, state.timeLeft - 3.0);
+          showTimeFloater('-3.0s', false);
+          updateHud();
+          if (state.timeLeft <= 0) {
+            finishGame();
+          }
+        } else {
+          updateHud();
+        }
+      }
+    }
+
+    function triggerAreaHint() {
+      if (!state.running || state.hintsLeft <= 0 || state.hintUsedThisStage) return;
+      state.hintsLeft--;
+      state.hintUsedThisStage = true;
+      playSfx('hint');
+
+      const n = state.gridSize;
+      const ansR = Math.floor(state.oddIndex / n);
+      const ansC = state.oddIndex % n;
+
+      // Center of 3x3 hint box clamped inside board
+      const centerR = Math.max(1, Math.min(n - 2, ansR));
+      const centerC = Math.max(1, Math.min(n - 2, ansC));
+
+      const tiles = elGrid.querySelectorAll<HTMLButtonElement>('.so-tile');
+      tiles.forEach((tile, idx) => {
+        const r = Math.floor(idx / n);
+        const c = idx % n;
+        if (Math.abs(r - centerR) <= 1 && Math.abs(c - centerC) <= 1) {
+          tile.classList.add('hint-zone');
+        } else {
+          tile.classList.add('hint-dimmed');
+        }
+      });
+
+      updateHud();
+    }
+
+    function revealOddTileOnBoard() {
+      const tiles = elGrid.querySelectorAll<HTMLButtonElement>('.so-tile');
+      tiles.forEach((tile, idx) => {
+        tile.classList.remove('hint-dimmed', 'hint-zone');
+        if (idx === state.oddIndex) {
+          tile.classList.add('answer-revealed');
+        } else {
+          tile.classList.add('non-answer-dim');
+        }
+      });
+      elMissedBadge.hidden = false;
+      elRevealCoordText.textContent = L.revealAnswerTpl(state.oddCoord, state.currentDetail);
+    }
+
+    function startGame() {
+      clearInterval(state.timerId);
+      state.running = true;
+      state.stage = 1;
+      state.score = 0;
+      state.combo = 0;
+      state.maxCombo = 0;
+      state.timeLeft = 60.0;
+      state.hintsLeft = 2;
+      state.totalClicks = 0;
+      state.correctClicks = 0;
+      state.totalFindMs = 0;
+      state.minColorDeltaCleared = null;
+
+      elOverlay.classList.add('hidden');
+      playSfx('start');
+      buildStage();
+
+      if (!state.zenMode) {
+        let lastTick = performance.now();
+        state.timerId = window.setInterval(() => {
+          if (!state.running) return;
+          const now = performance.now();
+          const dt = (now - lastTick) / 1000;
+          lastTick = now;
+          state.timeLeft -= dt;
+          if (state.timeLeft <= 0) {
+            state.timeLeft = 0;
+            updateHud();
+            finishGame();
+          } else {
+            updateHud();
+          }
+        }, 80);
+      }
+    }
+
+    function finishGame() {
+      state.running = false;
+      clearInterval(state.timerId);
+      playSfx('gameover');
+      revealOddTileOnBoard();
+      updateHud();
+
+      const clearedStages = Math.max(0, state.stage - 1);
+      const tier = getTier(clearedStages);
+      const tierTitle = isEn ? tier.enTitle : tier.koTitle;
+      const avgSec = state.correctClicks > 0
+        ? `${(state.totalFindMs / state.correctClicks / 1000).toFixed(2)}s`
+        : '-';
+
+      elOvBadge.textContent = L.ovEndBadge;
+      elOvTitle.textContent = L.ovEndTitleTpl(state.stage, `${tier.emoji} ${tier.code}`);
+      elOvDesc.textContent = L.ovEndDescTpl(state.oddCoord, state.currentDetail);
+
+      elOvStatsGrid.hidden = false;
+      elOvFinalStage.textContent = `STAGE ${state.stage} (${state.score.toLocaleString()} pts)`;
+      elOvFinalTier.textContent = `${tier.emoji} ${tierTitle}`;
+      elOvFinalSpeed.textContent = avgSec;
+      elOvMissedCoord.textContent = `${state.oddCoord} (${state.currentDetail})`;
+
+      btnStartText.textContent = L.btnRetry;
+      btnPeekBoard.hidden = false;
+      elOverlay.classList.remove('hidden');
+
+      saveRecordToLeaderboard(state.stage, state.score, tier);
+    }
+
+    // Leaderboard Storage
+    const LB_KEY = 'el_spot_odd_lb_v1';
+    interface LbEntry {
+      name: string;
+      mode: GameMode;
+      stage: number;
+      score: number;
+      tierCode: string;
+      tierEmoji: string;
+    }
+
+    function loadLb(): LbEntry[] {
+      try {
+        const raw = localStorage.getItem(LB_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveRecordToLeaderboard(stage: number, score: number, tier: TierInfo) {
+      if (score <= 0 && stage <= 1) return;
+      const name = (elChallengerName.value || L.defaultPlayer).trim().slice(0, 18);
+      const list = loadLb();
+      list.push({
+        name,
+        mode: state.mode,
+        stage,
+        score,
+        tierCode: tier.code,
+        tierEmoji: tier.emoji
+      });
+      list.sort((a, b) => b.stage - a.stage || b.score - a.score);
+      const trimmed = list.slice(0, 12);
+      try {
+        localStorage.setItem(LB_KEY, JSON.stringify(trimmed));
+      } catch {}
+      renderLb();
+    }
+
+    function renderLb() {
+      const list = loadLb();
+      if (list.length === 0) {
+        elLbList.innerHTML = `<li class="lb-empty">${L.lbEmpty}</li>`;
+        return;
+      }
+      const modeBadge: Record<GameMode, string> = {
+        char: '🔤',
+        color: '🎨',
+        mix: '⚡'
+      };
+      elLbList.innerHTML = list
+        .map((item, idx) => {
+          const rankMedal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}.`;
+          return `
+            <li class="lb-item ${idx === 0 ? 'top-1' : ''}">
+              <span class="lb-rank">${rankMedal}</span>
+              <span class="lb-name">${escapeHtml(item.name)} <small>${modeBadge[item.mode] || '🔍'}</small></span>
+              <span class="lb-stage">STAGE ${item.stage}</span>
+              <span class="lb-tier">${item.tierEmoji} ${item.tierCode}</span>
+            </li>
+          `;
+        })
+        .join('');
+    }
+
+    function escapeHtml(s: string): string {
+      return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] || c));
+    }
+
+    // Mode Selection
+    document.querySelectorAll<HTMLButtonElement>('.so-mode-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const m = btn.dataset.mode as GameMode;
+        if (!m) return;
+        state.mode = m;
+        document.querySelectorAll('.so-mode-btn').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        startGame();
+      });
+    });
+
+    // Toggle Zen / 60s Mode
+    const btnZenMode = document.getElementById('btn-zen-mode')!;
+    const elZenLabel = document.getElementById('zen-mode-label')!;
+    btnZenMode.addEventListener('click', () => {
+      state.zenMode = !state.zenMode;
+      btnZenMode.classList.toggle('active', state.zenMode);
+      elZenLabel.textContent = state.zenMode ? L.timerZen : L.timer60s;
+      startGame();
+    });
+
+    // Toggle Coordinate Labels on Tiles
+    const btnCoordBadge = document.getElementById('btn-coord-badge')!;
+    const elCoordBadgeLabel = document.getElementById('coord-badge-label')!;
+    btnCoordBadge.addEventListener('click', () => {
+      state.showCoordLabels = !state.showCoordLabels;
+      btnCoordBadge.classList.toggle('active', state.showCoordLabels);
+      elCoordBadgeLabel.textContent = state.showCoordLabels ? L.coordOn : L.coordOff;
+      elGrid.querySelectorAll('.tile-coord').forEach((el) => {
+        el.classList.toggle('hidden', !state.showCoordLabels);
+      });
+    });
+
+    // Sound Toggle
+    const btnSoundToggle = document.getElementById('btn-sound-toggle')!;
+    const elSoundIcon = document.getElementById('sound-icon')!;
+    btnSoundToggle.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      btnSoundToggle.classList.toggle('active', soundEnabled);
+      elSoundIcon.textContent = soundEnabled ? '🔊' : '🔇';
+    });
+
+    // Start, Peek, Hint, GiveUp, Restart
+    btnStartGame.addEventListener('click', () => startGame());
+    btnPeekBoard.addEventListener('click', () => {
+      elOverlay.classList.add('hidden');
+    });
+    btnHint.addEventListener('click', () => triggerAreaHint());
+    btnRevealStop.addEventListener('click', () => {
+      if (state.running) {
+        finishGame();
+        elOverlay.classList.add('hidden');
+      } else {
+        elOverlay.classList.remove('hidden');
+      }
+    });
+    btnRestart.addEventListener('click', () => startGame());
+
+    // Coordinate Input Form ("C4" + Enter)
+    coordForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!state.running) {
+        startGame();
+        return;
+      }
+      const val = coordInput.value.trim();
+      if (!val) return;
+      const idx = coordToIndex(val, state.gridSize);
+      if (idx >= 0) {
+        handleTilePick(idx);
+        coordInput.value = '';
+      } else {
+        coordInput.classList.remove('input-error');
+        void coordInput.offsetWidth;
+        coordInput.classList.add('input-error');
+      }
+    });
+
+    // Keyboard shortcuts (Space to start when overlay visible, R to restart)
+    window.addEventListener('keydown', (e) => {
+      const activeTag = document.activeElement?.tagName.toLowerCase();
+      if (activeTag === 'input' || activeTag === 'textarea') return;
+      if (e.code === 'Space' && !state.running) {
+        e.preventDefault();
+        startGame();
+      } else if (e.key === 'r' || e.key === 'R') {
+        if (state.running) {
+          e.preventDefault();
+          startGame();
+        }
+      } else if (e.key === 'h' || e.key === 'H') {
+        if (state.running) {
+          e.preventDefault();
+          triggerAreaHint();
+        }
+      }
+    });
+
+    // Copy Vision Report
+    btnCopyReport.addEventListener('click', () => {
+      const cleared = Math.max(0, state.stage - 1);
+      const tier = getTier(cleared);
+      const name = (elChallengerName.value || L.defaultPlayer).trim();
+      const acc = state.totalClicks > 0 ? Math.round((state.correctClicks / state.totalClicks) * 100) : 100;
+      const avgSec = state.correctClicks > 0 ? `${(state.totalFindMs / state.correctClicks / 1000).toFixed(2)}s` : '-';
+      const text = isEn
+        ? `🔍 [Eagle-Eye Vision Report] ${name} | STAGE ${state.stage} (${state.score.toLocaleString()} pts) | Grade: ${tier.emoji} ${tier.code} (${tier.enTitle}) | Accuracy: ${acc}% | Avg Find: ${avgSec} — https://errorledger.com/en/games/spot-odd`
+        : `🔍 [매의 눈 시력·색감 판독서] ${name}님 | 도달: STAGE ${state.stage} (${state.score.toLocaleString()}점) | 등급: ${tier.emoji} ${tier.code} (${tier.koTitle}) | 정확도: ${acc}% | 평균 탐색: ${avgSec} — https://errorledger.com/games/spot-odd`;
+      navigator.clipboard?.writeText(text).then(() => {
+        const orig = L.btnCopyReport;
+        elCopyReportText.textContent = L.copiedReport;
+        setTimeout(() => {
+          elCopyReportText.textContent = orig;
+        }, 2000);
+      });
+    });
+
+    btnClearLb.addEventListener('click', () => {
+      localStorage.removeItem(LB_KEY);
+      renderLb();
+    });
+
+    // Initial preview board behind overlay + leaderboard render
+    buildStage();
+    renderLb();
+  })();
+</script>
+
+<style is:global>
+  .spot-odd-shell {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 0.5rem;
+    color: #f8fafc;
+    font-family: 'Pretendard', system-ui, -apple-system, sans-serif;
+  }
+
+  .so-topbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+    background: rgba(15, 23, 42, 0.78);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 14px;
+    padding: 0.6rem 0.85rem;
+  }
+
+  .so-modes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .so-mode-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.5rem 0.95rem;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(30, 41, 59, 0.65);
+    color: #cbd5e1;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.16s ease;
+  }
+
+  .so-mode-btn:hover {
+    border-color: rgba(56, 189, 248, 0.5);
+    color: #f8fafc;
+  }
+
+  .so-mode-btn.active {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.24), rgba(56, 189, 248, 0.24));
+    border-color: #10b981;
+    color: #ffffff;
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.25);
+  }
+
+  .so-top-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .so-pill-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(30, 41, 59, 0.65);
+    color: #94a3b8;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .so-pill-toggle.active {
+    border-color: rgba(56, 189, 248, 0.55);
+    background: rgba(56, 189, 248, 0.14);
+    color: #e0f2fe;
+  }
+
+  .so-main-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 350px;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  @media (max-width: 1080px) {
+    .so-main-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .so-arena-card {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 18px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .so-hud-row {
+    display: grid;
+    grid-template-columns: 150px 1fr 165px;
+    gap: 0.75rem;
+  }
+
+  @media (max-width: 640px) {
+    .so-hud-row {
+      grid-template-columns: 1fr 1fr;
+    }
+    .timer-box {
+      grid-column: span 2;
+    }
+  }
+
+  .so-hud-box {
+    background: rgba(30, 41, 59, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    padding: 0.6rem 0.85rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .hud-k {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #94a3b8;
+    letter-spacing: 0.06em;
+  }
+
+  .hud-v {
+    font-size: 1.55rem;
+    font-weight: 900;
+    color: #f8fafc;
+    line-height: 1.15;
+  }
+
+  .hud-sub {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #38bdf8;
+    margin-top: 0.15rem;
+  }
+
+  .combo-pill.hot {
+    color: #fbbf24;
+  }
+
+  .timer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .timer-val.danger {
+    color: #f87171;
+    animation: pulseDanger 0.55s infinite alternate;
+  }
+
+  @keyframes pulseDanger {
+    from { transform: scale(1); }
+    to { transform: scale(1.04); }
+  }
+
+  .time-delta {
+    font-size: 0.82rem;
+    font-weight: 800;
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .time-delta.show {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+
+  .time-delta.pos { color: #34d399; }
+  .time-delta.neg { color: #f87171; }
+
+  .timer-bar-track {
+    width: 100%;
+    height: 7px;
+    background: rgba(15, 23, 42, 0.8);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 0.35rem;
+  }
+
+  .timer-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.09s linear;
+  }
+
+  /* Clue Banner */
+  .so-clue-banner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.55rem 0.85rem;
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(56, 189, 248, 0.22);
+    border-radius: 11px;
+  }
+
+  .clue-left {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+  }
+
+  .clue-tag {
+    background: rgba(56, 189, 248, 0.16);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.76rem;
+    font-weight: 800;
+  }
+
+  .clue-text {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #e2e8f0;
+  }
+
+  .reveal-pill {
+    background: rgba(245, 158, 11, 0.22);
+    border: 1px solid #f59e0b;
+    color: #fde68a;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 800;
+  }
+
+  /* Coordinate Board */
+  .so-board-outer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .so-col-headers {
+    display: grid;
+    gap: 0.35rem;
+    padding-left: 34px;
+  }
+
+  .col-h {
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 900;
+    color: #94a3b8;
+    background: rgba(30, 41, 59, 0.65);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 6px;
+    padding: 0.22rem 0;
+    transition: all 0.12s ease;
+  }
+
+  .col-h.active {
+    background: rgba(16, 185, 129, 0.24);
+    border-color: #10b981;
+    color: #ffffff;
+  }
+
+  .so-board-body {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 0.35rem;
+  }
+
+  .so-row-headers {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .row-h {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.84rem;
+    font-weight: 900;
+    color: #94a3b8;
+    background: rgba(30, 41, 59, 0.65);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 6px;
+    transition: all 0.12s ease;
+  }
+
+  .row-h.active {
+    background: rgba(16, 185, 129, 0.24);
+    border-color: #10b981;
+    color: #ffffff;
+  }
+
+  .so-grid-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: #0b1120;
+    border: 2px solid rgba(148, 163, 184, 0.2);
+    border-radius: 14px;
+    padding: 0.45rem;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .so-grid {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .so-tile {
+    position: relative;
+    border-radius: 9px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    user-select: none;
+    transition: transform 0.08s ease, border-color 0.12s ease, opacity 0.2s ease;
+    overflow: hidden;
+  }
+
+  .so-tile.char-tile {
+    background: linear-gradient(145deg, #1e293b, #0f172a);
+    color: #f8fafc;
+  }
+
+  .so-tile.char-tile:hover {
+    border-color: #38bdf8;
+    background: linear-gradient(145deg, #26354d, #162238);
+    transform: scale(1.02);
+    z-index: 2;
+  }
+
+  .so-tile.color-tile {
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.18);
+  }
+
+  .so-tile.color-tile:hover {
+    transform: scale(1.03);
+    border-color: #ffffff;
+    z-index: 2;
+  }
+
+  .tile-coord {
+    position: absolute;
+    top: 2px;
+    left: 4px;
+    font-size: 0.62rem;
+    font-weight: 800;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.55);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+    pointer-events: none;
+  }
+
+  .tile-coord.hidden {
+    display: none;
+  }
+
+  .tile-char {
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    pointer-events: none;
+  }
+
+  .so-tile.correct-flash {
+    border: 2px solid #10b981 !important;
+    box-shadow: 0 0 18px rgba(16, 185, 129, 0.8) !important;
+    transform: scale(1.06);
+  }
+
+  .so-tile.wrong-shake {
+    border: 2px solid #ef4444 !important;
+    animation: tileShake 0.28s ease;
+  }
+
+  @keyframes tileShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+
+  .so-tile.hint-dimmed {
+    opacity: 0.22;
+    filter: grayscale(0.6);
+  }
+
+  .so-tile.hint-zone {
+    border-color: #fbbf24;
+    box-shadow: 0 0 10px rgba(251, 191, 36, 0.35);
+  }
+
+  .so-tile.non-answer-dim {
+    opacity: 0.32;
+  }
+
+  .so-tile.answer-revealed {
+    border: 3px solid #fbbf24 !important;
+    box-shadow: 0 0 24px rgba(251, 191, 36, 0.95) !important;
+    transform: scale(1.06);
+    z-index: 5;
+    animation: answerPulse 0.7s infinite alternate;
+  }
+
+  @keyframes answerPulse {
+    from { box-shadow: 0 0 12px rgba(251, 191, 36, 0.7); }
+    to { box-shadow: 0 0 26px rgba(251, 191, 36, 1); }
+  }
+
+  /* Overlay */
+  .so-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(9, 13, 22, 0.86);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+    z-index: 10;
+    transition: opacity 0.2s ease;
+  }
+
+  .so-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .overlay-card {
+    max-width: 460px;
+    width: 100%;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 18px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  }
+
+  .ov-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(16, 185, 129, 0.16);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    color: #34d399;
+    font-size: 0.76rem;
+    font-weight: 800;
+    margin-bottom: 0.65rem;
+  }
+
+  .ov-title {
+    font-size: 1.35rem;
+    font-weight: 900;
+    color: #f8fafc;
+    margin: 0 0 0.5rem;
+  }
+
+  .ov-desc {
+    font-size: 0.88rem;
+    color: #94a3b8;
+    line-height: 1.55;
+    margin: 0 0 1.1rem;
+  }
+
+  .ov-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.55rem;
+    margin-bottom: 1.15rem;
+    text-align: left;
+  }
+
+  .ov-stat {
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 10px;
+    padding: 0.55rem 0.75rem;
+  }
+
+  .ov-s-k {
+    display: block;
+    font-size: 0.72rem;
+    color: #94a3b8;
+    font-weight: 700;
+  }
+
+  .ov-s-v {
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: #f8fafc;
+  }
+
+  .ov-s-v.accent { color: #34d399; }
+  .ov-s-v.gold { color: #fbbf24; }
+
+  .ov-btn-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .so-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.85rem 1.2rem;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #10b981, #0ea5e9);
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
+    transition: transform 0.14s ease;
+  }
+
+  .so-btn-primary:hover {
+    transform: translateY(-2px);
+  }
+
+  .so-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    width: 100%;
+    padding: 0.65rem 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    background: rgba(30, 41, 59, 0.8);
+    color: #e2e8f0;
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* Bottom Bar */
+  .so-bottom-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+    padding-top: 0.3rem;
+  }
+
+  .so-coord-form {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: rgba(30, 41, 59, 0.65);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    padding: 0.35rem 0.6rem;
+    border-radius: 10px;
+  }
+
+  .coord-label {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .coord-input {
+    width: 86px;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-radius: 7px;
+    padding: 0.35rem 0.55rem;
+    color: #f8fafc;
+    font-size: 0.86rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .coord-input.input-error {
+    border-color: #ef4444;
+    animation: tileShake 0.25s ease;
+  }
+
+  .coord-submit-btn {
+    background: rgba(16, 185, 129, 0.22);
+    border: 1px solid #10b981;
+    color: #6ee7b7;
+    border-radius: 7px;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.8rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .so-utility-btns {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+  }
+
+  .so-util-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.48rem 0.8rem;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(30, 41, 59, 0.7);
+    color: #e2e8f0;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .so-util-btn:disabled {
+    opacity: 0.42;
+    cursor: not-allowed;
+  }
+
+  .hint-cnt {
+    background: rgba(251, 191, 36, 0.22);
+    color: #fbbf24;
+    padding: 0.05rem 0.4rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 900;
+  }
+
+  /* Right Sidebar */
+  .so-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+
+  .so-side-card {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 16px;
+    padding: 1rem;
+  }
+
+  .side-card-head h3 {
+    margin: 0.2rem 0 0.75rem;
+    font-size: 1.02rem;
+    font-weight: 800;
+    color: #f8fafc;
+  }
+
+  .side-badge {
+    font-size: 0.7rem;
+    font-weight: 900;
+    color: #38bdf8;
+    letter-spacing: 0.06em;
+  }
+
+  .side-badge.gold {
+    color: #fbbf24;
+  }
+
+  .tier-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .tier-emoji {
+    font-size: 2rem;
+    line-height: 1;
+  }
+
+  .tier-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .tier-rank {
+    font-size: 0.75rem;
+    font-weight: 900;
+    color: #34d399;
+  }
+
+  .tier-name {
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #f1f5f9;
+  }
+
+  .diag-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .d-metric {
+    background: rgba(30, 41, 59, 0.48);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 9px;
+    padding: 0.5rem 0.65rem;
+  }
+
+  .d-k {
+    display: block;
+    font-size: 0.72rem;
+    color: #94a3b8;
+    font-weight: 700;
+  }
+
+  .d-v {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #f8fafc;
+  }
+
+  .so-share-btn {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.65rem;
+    border-radius: 10px;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    background: rgba(56, 189, 248, 0.14);
+    color: #e0f2fe;
+    font-size: 0.84rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .so-share-btn:hover {
+    background: rgba(56, 189, 248, 0.24);
+  }
+
+  .lb-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .lb-clear-btn {
+    background: transparent;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    color: #94a3b8;
+    border-radius: 6px;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.72rem;
+    cursor: pointer;
+  }
+
+  .challenger-input-row {
+    margin-bottom: 0.65rem;
+  }
+
+  .challenger-input {
+    width: 100%;
+    box-sizing: border-box;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 9px;
+    padding: 0.5rem 0.7rem;
+    color: #f8fafc;
+    font-size: 0.84rem;
+    font-weight: 700;
+  }
+
+  .lb-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    max-height: 260px;
+    overflow-y: auto;
+  }
+
+  .lb-empty {
+    font-size: 0.8rem;
+    color: #64748b;
+    text-align: center;
+    padding: 1rem 0.5rem;
+  }
+
+  .lb-item {
+    display: grid;
+    grid-template-columns: 28px 1fr auto auto;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.6rem;
+    background: rgba(30, 41, 59, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    font-size: 0.8rem;
+  }
+
+  .lb-item.top-1 {
+    border-color: rgba(251, 191, 36, 0.45);
+    background: rgba(251, 191, 36, 0.1);
+  }
+
+  .lb-rank { font-weight: 800; }
+  .lb-name { font-weight: 700; color: #f1f5f9; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lb-stage { font-weight: 800; color: #38bdf8; }
+  .lb-tier { font-weight: 800; color: #fbbf24; font-size: 0.75rem; }
+</style>
+
