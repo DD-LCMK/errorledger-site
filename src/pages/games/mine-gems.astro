@@ -4,9 +4,26 @@ import { getEntry } from 'astro:content';
 
 const entry = await getEntry('games', 'mine-gems');
 if (!entry) throw new Error('mine-gems entry not found');
+const data = entry.data;
 ---
 
-<GameLayout entry={entry}>
+<GameLayout
+  entry={entry}
+  title={data.title}
+  description={data.description}
+  tagline={data.tagline}
+  icon={data.icon}
+  category={data.category}
+  badge={data.badge}
+  players={data.players}
+  playTime={data.playTime}
+  controls={data.controls}
+  rules={data.rules}
+  faqItems={data.faqItems}
+  layoutMode="full"
+  hideStageHeader={false}
+  hideFooter={false}
+>
   <div class="mg-app" id="mg-app">
     <!-- Top Stats HUD -->
     <div class="mg-hud">

@@ -5,8 +5,9 @@ import Footer from '../components/Footer.astro';
 import { getLang, getKoUrl, getEnUrl, t } from '../i18n';
 
 interface Props {
-  title: string;
-  description: string;
+  entry?: { data?: Record<string, any> };
+  title?: string;
+  description?: string;
   tagline?: string;
   icon?: string;
   category?: string;
@@ -24,14 +25,15 @@ interface Props {
   hreflangEn?: string;
 }
 
+const entryData = Astro.props.entry?.data || {};
 const {
-  title,
-  description,
-  tagline = '무료 웹게임 & 추첨 도구',
-  icon = '🕹️',
-  controls = [],
-  rules = [],
-  faqItems = [],
+  title = entryData.title || '무료 방송용 웹게임',
+  description = entryData.description || '스트리머와 시청자를 위한 무료 인터랙티브 웹게임 및 방송 도구',
+  tagline = entryData.tagline || '무료 웹게임 & 추첨 도구',
+  icon = entryData.icon || '🕹️',
+  controls = entryData.controls || [],
+  rules = entryData.rules || [],
+  faqItems = entryData.faqItems || [],
   layoutMode = 'full',
   hideStageHeader = false,
   hideFooter = false,
@@ -72,6 +74,10 @@ else if (rawPath.includes('stream-emoji')) enName = 'Stream Emoji — Animated E
 else if (rawPath.includes('arrow-jump')) enName = 'Arrow Climber — Vertical Physics Climbing Game';
 else if (rawPath.includes('block-blast')) enName = 'Block Blast! — 8x8 Puzzle & Combo Game';
 else if (rawPath.includes('sand-drop') || rawPath.includes('sand-suika')) enName = 'Sand Drop — Falling Sand Physics Merge Game';
+else if (rawPath.includes('sword-enhance')) enName = 'Legendary +20 Sword Enhancer — Weapon Forging Simulator';
+else if (rawPath.includes('reaction-test')) enName = 'Gamer Physical Age & Reaction Test — Reflex, Aim & CPS Benchmark';
+else if (rawPath.includes('mine-gems')) enName = 'Mine Gems: Cash Out or Bust — Provably Fair 5x5 Diamond Mining Game';
+else if (rawPath.includes('blind-timer')) enName = 'Human Stopwatch: 7.77s Blind Timer Challenge — 1ms Precision Game';
 
 const webAppSchema = JSON.stringify({
   "@context": "https://schema.org",
