@@ -2,6 +2,7 @@
 import BaseHead from '../../components/BaseHead.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import GameThumb from '../../components/GameThumb.astro';
 import { getCollection } from 'astro:content';
 import { getKoUrl, getEnUrl } from '../../i18n';
 
@@ -9,17 +10,86 @@ const urlParams = Astro.url.searchParams;
 const streamerMode = urlParams.has('stream') || urlParams.has('obs');
 
 const games = await getCollection('games');
-const priorityOrder = ['three-sec-quiz', 'spot-odd', 'blind-timer', 'mine-gems', 'reaction-test', 'sword-enhance', 'block-blast', 'arrow-jump', 'sand-drop', 'marble-roulette', 'roulette', 'ladder', 'drinking-marble', 'ai-music-quiz', 'soundboard', 'stream-doodle', 'stream-emoji', 'fortune'];
+const priorityOrder = [
+  'three-sec-quiz', 'spot-odd', 'blind-timer', 'mine-gems', 'reaction-test',
+  'sword-enhance', 'marble-roulette', 'block-blast', 'arrow-jump', 'sand-drop',
+  'roulette', 'ladder', 'drinking-marble', 'ai-music-quiz', 'soundboard',
+  'stream-doodle', 'stream-emoji', 'fortune'
+];
 const sortedGames = games.sort((a, b) => {
   const idxA = priorityOrder.indexOf(a.id);
   const idxB = priorityOrder.indexOf(b.id);
   return (idxA !== -1 ? idxA : 99) - (idxB !== -1 ? idxB : 99);
 });
+
 const arcadeIds = ['three-sec-quiz', 'spot-odd', 'blind-timer', 'mine-gems', 'reaction-test', 'sword-enhance', 'block-blast', 'arrow-jump', 'sand-drop'];
 const drawIds = ['marble-roulette', 'roulette', 'ladder', 'drinking-marble'];
 const arcadeCount = sortedGames.filter(g => arcadeIds.includes(g.id)).length;
 const drawCount = sortedGames.filter(g => drawIds.includes(g.id)).length;
 const studioCount = sortedGames.length - arcadeCount - drawCount;
+
+const enTitle: Record<string, string> = {
+  'three-sec-quiz': '3-Second Reflex & Word Quiz',
+  'spot-odd': 'Eagle-Eye: Spot the Odd & Color Vision',
+  'blind-timer': 'Human Stopwatch: 7.77s Blind Timer',
+  'mine-gems': 'Mine Gems: Cash Out or Bust',
+  'reaction-test': 'Streamer Physical Age Test',
+  'sword-enhance': 'Legendary +20 Sword Enhancer',
+  'block-blast': 'Block Blast!',
+  'arrow-jump': 'Arrow Climber',
+  'sand-drop': 'Sand Drop',
+  'marble-roulette': 'Marble Race Roulette',
+  'roulette': 'Random Spin Wheel',
+  'ladder': 'Ghost Leg Ladder Game',
+  'drinking-marble': 'Blossom Board (Party Dice)',
+  'stream-doodle': 'Stream Doodle (Animated GIF)',
+  'stream-emoji': 'Stream Emoji (Animated Emotes)',
+  'ai-music-quiz': 'AI Music Quiz (Guess The Song)',
+  'soundboard': 'Broadcast Keypad Soundboard',
+  'fortune': 'Daily Fortune',
+};
+
+const enTagline: Record<string, string> = {
+  'three-sec-quiz': 'Variety-show 3.00s reflex quiz across Idioms, Proverbs, Theme Words & World Capitals.',
+  'spot-odd': 'Spot lookalike characters & subtle color deltas on an A1–J10 coordinate grid with chat.',
+  'blind-timer': '1.5s blind stopwatch challenge (3.33s–10.00s) with 1ms precision & collab leaderboard.',
+  'mine-gems': '5x5 diamond mining game with exponential cash-out multipliers & SHA-256 fairness.',
+  'reaction-test': '3-stage Reaction Speed (ms), 12s Aim Tracking & 5s CPS burst test with Age Receipt.',
+  'sword-enhance': 'Forge +0 to +20 with 6-slot Inventory, +7 Sword of Greed jackpot & fail stacks.',
+  'block-blast': '8x8 combo line blast block puzzle with endless & 2-min time attack modes.',
+  'arrow-jump': 'Slingshot archery physics climber with precision platform landings.',
+  'sand-drop': 'Falling kinetic sand physics & merge puzzle up to the Aurora crown.',
+  'marble-roulette': '3D physics marble race with 7,200px long track, pins & reversal spinners.',
+  'roulette': 'Ratchet-click weighted spin wheel with confetti winner reveal & quick presets.',
+  'ladder': 'Real-time animated ghost-leg (Amidakuji) for 2–20 players.',
+  'drinking-marble': 'Monopoly-style party & penalty board with 3D rolling dice.',
+  'stream-doodle': 'Animated 12 FPS GIF doodle studio with transparent OBS overlay support.',
+  'stream-emoji': 'Create 16-frame animated emotes for Twitch, Discord & YouTube.',
+  'ai-music-quiz': 'Listen to AI rearranged songs and guess the title with side-by-side reveals.',
+  'soundboard': 'Zero-latency broadcast soundboard with 9 numpad shortcuts & custom slots.',
+  'fortune': 'Daily auto-updated zodiac & horoscope fortune for stream openers.',
+};
+
+const enTagsMap: Record<string, string[]> = {
+  'three-sec-quiz': ['3s Reflex', '4-Choice & Host'],
+  'spot-odd': ['Odd Char & Color', 'A1–J10 Grid'],
+  'blind-timer': ['1.5s Blind Clock', '1ms Precision'],
+  'mine-gems': ['5x5 A1–E5', 'SHA-256 Fair'],
+  'reaction-test': ['Reflex · Aim · CPS', 'Age Receipt'],
+  'sword-enhance': ['+20 Forging', '6-Slot Vault'],
+  'block-blast': ['8x8 Line Blast', 'Endless Combo'],
+  'arrow-jump': ['Slingshot Aim', 'Daily 300m'],
+  'sand-drop': ['Sand Physics', '11 Merge Tiers'],
+  'marble-roulette': ['3D Physics', 'Up to 40'],
+  'roulette': ['Weighted Odds', '1-Click Presets'],
+  'ladder': ['2–20 Players', '1:1 Fair Match'],
+  'drinking-marble': ['3D Dice', 'Custom Tiles'],
+  'ai-music-quiz': ['AI Covers', 'Chat Guess'],
+  'soundboard': ['0ms Latency', 'Numpad Keys'],
+  'stream-doodle': ['12 FPS Boil', 'OBS Overlay'],
+  'stream-emoji': ['16 Frames', 'Onion Skin'],
+  'fortune': ['12 Zodiacs', 'Daily Auto']
+};
 
 const siteBase = Astro.site?.toString() || 'https://errorledger.com';
 const rawPath = Astro.url.pathname.replace(/\/$/, '') || '/en';
@@ -40,10 +110,10 @@ const homeFaqSchema = JSON.stringify({
     },
     {
       "@type": "Question",
-      "name": "How do I use fullscreen or focus mode?",
+      "name": "How do I add a game to OBS Studio as a Browser Source?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Click the [⛶ Fullscreen] or [📺 Focus Mode] button in any game to fill your screen cleanly without any browser chrome for a distraction-free experience."
+        "text": "Click the [🎥 Copy OBS URL] button at the top of any game page to get a clean ?stream=true URL without headers or chrome, then add it as a 1920x1080 Browser Source in OBS."
       }
     },
     {
@@ -51,55 +121,31 @@ const homeFaqSchema = JSON.stringify({
       "name": "Is ErrorLedger free? Do I need to sign up?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes — 100% free, forever. No login, no account, no download required. Every tool is ready to use in your browser within seconds."
+        "text": "Yes — 100% free forever. No login, no account, and no download required. Every tool launches instantly in your browser."
       }
     },
     {
       "@type": "Question",
-      "name": "Does it work on Twitch, YouTube Live, and other platforms?",
+      "name": "Does it work on Twitch, YouTube Live, CHZZK, and SOOP?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. ErrorLedger is a standard web app that works in any browser, making it compatible with Twitch, YouTube Live, CHZZK, SOOP (AfreecaTV), Kick, and any other streaming platform."
+        "text": "Yes. All mini-games run 100% locally in any standard browser with zero external API dependencies, ensuring reliable compatibility on every streaming platform."
       }
     },
     {
       "@type": "Question",
-      "name": "Are the results fair? Can results be manipulated?",
+      "name": "Are the giveaway and game results provably fair?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "The Wheel and Ladder games use cryptographically seeded pseudo-random algorithms and mathematical bijective mapping. No one can predict or manipulate the outcome."
+        "text": "Yes. Spin Wheel, Ghost Leg Ladder, and Mine Gems use cryptographically seeded randomness, bijective mapping, and pre-committed SHA-256 seed hashes so outcomes cannot be rigged."
       }
     },
     {
       "@type": "Question",
-      "name": "What is ErrorLedger?",
+      "name": "Are Stream Schedule Studio and Chzzk Downloader also free?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "ErrorLedger provides 100% free, client-side interactive web games, tests (MBTI), and broadcast utility tools (Chzzk Downloader, Stream Schedule Studio, Bzzk Security Radar) for global livestreamers, creators, and viewers."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How does Chzzk Downloader work and is it free?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes, it is completely free with no limits or subscriptions. Paste any Naver CHZZK VOD replay or clip URL to download original 1080p FHD MP4 videos directly from official CDN streams to your PC."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Can I design stream schedules and share them on Discord or Twitter?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes! Stream Schedule Studio offers 7 aesthetic broadcast themes. Export high-res PNG calendar images or copy formatted Discord / X announcements with a single click, and save templates locally."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "What is Bzzk Radar?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Bzzk is a real-time stream protection radar that correlates multi-banned raid accounts across Naver CHZZK channels to help streamers safeguard their chat before raids happen."
+        "text": "Yes — 100% free with zero watermarks or usage caps. Design PNG broadcast schedules, back up JSON templates locally, and download lossless MP4 VODs and clips."
       }
     }
   ]
@@ -110,2195 +156,1539 @@ const homeFaqSchema = JSON.stringify({
 <html lang="en" class="dark">
   <head>
     <BaseHead
-      title="ErrorLedger — Free Marble Roulette, Spin Wheel & Ladder Game for Streamers"
-      description="Free browser-based stream tools for Twitch, YouTube, CHZZK & SOOP streamers. Marble Race Roulette, Random Wheel Picker, Ghost Leg Ladder Game — no install, no login."
+      title="ErrorLedger — Free Streamer Arcade, Marble Roulette & Broadcast Studio"
+      description="Free browser-based arcade games & broadcast utilities for Twitch, YouTube, CHZZK & SOOP streamers. Marble Race Roulette, Spin Wheel, Ladder, Blind Timer, Mine Gems & more — no install, no login."
       lang="en"
       hreflangKo={koUrl}
       hreflangEn={enUrl}
-      keywords="Marble Roulette, Marble Race, ErrorLedger, 에러레저, Error Ledger, Random Wheel Picker, Ghost Leg Ladder, Amidakuji, Streamer Tools, Twitch Tools, YouTube Live Games, Free Stream Overlay, Fullscreen Browser Games"
+      keywords="Marble Roulette, Marble Race, ErrorLedger, Random Wheel Picker, Ghost Leg Ladder, Streamer Tools, Twitch Party Games, YouTube Live Games, OBS Browser Source Games"
     />
     <script type="application/ld+json" set:html={homeFaqSchema}></script>
   </head>
-  <body class="arcade-home-body">
+  <body class="studio-home-body">
     <Header />
 
-    <main class="arcade-home-main">
-      <!-- Hero Section -->
-      <section class="hero-showcase">
-        <div class="hero-ambient-glow glow-left"></div>
-        <div class="hero-ambient-glow glow-right"></div>
-        <div class="hero-cyber-grid"></div>
+    <main class="studio-home-main">
+      <!-- 1. STUDIO CONTROL DECK HERO -->
+      <section class="studio-hero">
+        <div class="hero-top-aura" aria-hidden="true"></div>
+        <div class="hero-dot-matrix" aria-hidden="true"></div>
 
-        <div class="hero-split-container">
-          <!-- Left Column: Value Prop & Actions -->
-          <div class="hero-col-content">
-            <div class="hero-pill">
-              <span class="live-indicator"></span>
-              <span>100% Free for Streaming, YouTube & Monetization</span>
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <div class="status-pill">
+              <span class="status-dot"></span>
+              <span>LIVE STREAM READY · 100% FREE FOR MONETIZATION</span>
             </div>
 
-            <h1 class="hero-headline">
-              Free Stream Tools<br />
-              <span class="gradient-text">for Live Creators</span>
+            <h1 class="hero-title">
+              The Live Arcade Deck<br />
+              <span class="title-accent">Built for Streamers</span>
             </h1>
 
-            <p class="hero-subtext">
-              Launch in 1 second — no install, no login. Marble race roulette, Chzzk downloader, fraud protection radar, and streamer utilities.
+            <p class="hero-lead">
+              Launch in 1 second with zero install, zero login, and zero external API downtime. Interactive stream games, giveaways, and creator utilities for Twitch, YouTube, CHZZK & SOOP.
             </p>
 
-            <div class="hero-cta-group">
-              <a href="/en/tools" class="hero-btn-primary">
-                <span class="btn-icon">🛠️</span>
-                <span class="btn-text">Explore Stream Tools</span>
-                <span class="btn-arrow">→</span>
+            <div class="hero-actions">
+              <a href="#games-arcade" class="btn-primary">
+                <span>🎮 Browse All Games</span>
+                <span class="btn-arrow">↓</span>
               </a>
-              <a href="/en/games" class="hero-btn-secondary">
-                <span class="btn-icon">🎮</span>
-                <span class="btn-text">Interactive Games</span>
+              <a href="/en/tools" class="btn-secondary">
+                <span>🛠️ Creator Utilities</span>
               </a>
             </div>
 
-            <div class="hero-trust-bar">
-              <div class="trust-item">
-                <span class="trust-icon">⚡</span>
-                <span class="trust-text">100% Free Forever</span>
+            <div class="hero-metrics" aria-label="Platform highlights">
+              <div class="metric-cell">
+                <strong class="metric-val">{sortedGames.length}</strong>
+                <span class="metric-lbl">Free Stream Games</span>
               </div>
-              <div class="trust-item">
-                <span class="trust-icon">🔒</span>
-                <span class="trust-text">No Install · No Login</span>
+              <div class="metric-sep"></div>
+              <div class="metric-cell">
+                <strong class="metric-val">6</strong>
+                <span class="metric-lbl">Creator Utilities</span>
               </div>
-              <div class="trust-item">
-                <span class="trust-icon">🎙️</span>
-                <span class="trust-text">Built for Streamers</span>
+              <div class="metric-sep"></div>
+              <div class="metric-cell">
+                <strong class="metric-val">OBS</strong>
+                <span class="metric-lbl">1-Click Source Mode</span>
               </div>
             </div>
           </div>
 
-          <!-- Right Column: 4-Card Flagship Deck -->
-          <div class="hero-col-deck">
-            <div class="hero-deck-grid">
-              <!-- Card 1: Marble Race Roulette -->
-              <a href="/en/games/marble-roulette" class="deck-card card-marble">
-                <div class="deck-card-glow"></div>
-                <div class="deck-card-header">
-                  <div class="deck-icon-badge marble-icon">🔮</div>
-                  <span class="deck-badge badge-hot">🔥 #1 Flagship</span>
-                </div>
-                <div class="deck-card-body">
-                  <h2 class="deck-card-title">Marble Race Roulette</h2>
-                  <p class="deck-card-desc">7,200px long track with physics pins, spinners, and spring bouncers for thrilling live giveaways</p>
-                </div>
-                <div class="deck-card-footer">
-                  <span class="deck-action-text">Start Marble Race</span>
-                  <span class="deck-action-arrow">→</span>
-                </div>
-              </a>
+          <!-- Right: 2x2 Flagship Control Deck -->
+          <div class="flagship-deck">
+            <a href="/en/games/marble-roulette" class="deck-tile accent-emerald">
+              <div class="tile-top">
+                <span class="tile-icon">🔮</span>
+                <span class="tile-tag tag-amber">🔥 #1 FLAGSHIP</span>
+              </div>
+              <div class="tile-body">
+                <h2>Marble Race Roulette</h2>
+                <p>7,200px physics track with pins, spinners & bouncers for live giveaways</p>
+              </div>
+              <div class="tile-foot">
+                <span>Launch Race</span>
+                <span class="arrow">→</span>
+              </div>
+            </a>
 
-              <!-- Card 2: Chzzk & YouTube Downloader -->
-              <a href="/en/chzzk-downloader" class="deck-card card-downloader">
-                <div class="deck-card-glow"></div>
-                <div class="deck-card-header">
-                  <div class="deck-icon-badge downloader-icon">📥</div>
-                  <span class="deck-badge badge-green">⚡ 4K / 1080p & Shorts</span>
-                </div>
-                <div class="deck-card-body">
-                  <h2 class="deck-card-title">Chzzk & YouTube Downloader</h2>
-                  <p class="deck-card-desc">Download Chzzk VODs & clips and YouTube videos & Shorts in original quality with batch queues</p>
-                </div>
-                <div class="deck-card-footer">
-                  <span class="deck-action-text">Download Free</span>
-                  <span class="deck-action-arrow">→</span>
-                </div>
-              </a>
+            <a href="/en/chzzk-downloader" class="deck-tile accent-cyan">
+              <div class="tile-top">
+                <span class="tile-icon">📥</span>
+                <span class="tile-tag tag-emerald">4K / FHD</span>
+              </div>
+              <div class="tile-body">
+                <h2>Chzzk & YT Downloader</h2>
+                <p>Batch download VODs, clips & YouTube Shorts in lossless original MP4</p>
+              </div>
+              <div class="tile-foot">
+                <span>Open Downloader</span>
+                <span class="arrow">→</span>
+              </div>
+            </a>
 
-              <!-- Card 3: Bzzk Radar -->
-              <a href="/en/bzzk" class="deck-card card-radar">
-                <div class="deck-card-glow"></div>
-                <div class="deck-card-header">
-                  <div class="deck-icon-badge radar-icon">🛡️</div>
-                  <span class="deck-badge badge-purple">🛡️ Live Radar</span>
-                </div>
-                <div class="deck-card-body">
-                  <h2 class="deck-card-title">Bzzk Malicious Radar</h2>
-                  <p class="deck-card-desc">Detect griefers, multi-account ban evaders, and suspicious bot accounts before your stream starts</p>
-                </div>
-                <div class="deck-card-footer">
-                  <span class="deck-action-text">Check Radar</span>
-                  <span class="deck-action-arrow">→</span>
-                </div>
-              </a>
+            <a href="/en/bzzk" class="deck-tile accent-rose">
+              <div class="tile-top">
+                <span class="tile-icon">🛡️</span>
+                <span class="tile-tag tag-slate">LIVE RADAR</span>
+              </div>
+              <div class="tile-body">
+                <h2>Bzzk Stream Radar</h2>
+                <p>Detect cross-channel banned griefers & raid accounts before going live</p>
+              </div>
+              <div class="tile-foot">
+                <span>Check Radar</span>
+                <span class="arrow">→</span>
+              </div>
+            </a>
 
-              <!-- Card 4: Creator Showcase & Guide -->
-              <a href="/en/guide" class="deck-card card-guide">
-                <div class="deck-card-glow"></div>
-                <div class="deck-card-header">
-                  <div class="deck-icon-badge guide-icon">🎨</div>
-                  <span class="deck-badge badge-cyan">📖 Guide & Artists</span>
-                </div>
-                <div class="deck-card-body">
-                  <h2 class="deck-card-title">Guide & Creators</h2>
-                  <p class="deck-card-desc">OBS streaming setup guides and curated artists proving their work process live on stream</p>
-                </div>
-                <div class="deck-card-footer">
-                  <span class="deck-action-text">Explore Showcase</span>
-                  <span class="deck-action-arrow">→</span>
-                </div>
-              </a>
-            </div>
+            <a href="/en/guide" class="deck-tile accent-amber">
+              <div class="tile-top">
+                <span class="tile-icon">🎨</span>
+                <span class="tile-tag tag-slate">GUIDE & ARTISTS</span>
+              </div>
+              <div class="tile-body">
+                <h2>OBS Guide & Creators</h2>
+                <p>1080p60 OBS setup handbook and curated live-streaming artists showcase</p>
+              </div>
+              <div class="tile-foot">
+                <span>Explore Guide</span>
+                <span class="arrow">→</span>
+              </div>
+            </a>
           </div>
         </div>
       </section>
 
-      <!-- Games Grid -->
-      <section class="games-directory-section">
-        <div class="section-header">
-          <h2>Interactive Stream Games & Tool Lineup</h2>
-          <p class="section-sub-desc">Filter between queue-waiting arcade mini-games, live giveaway wheels, and interactive stream studios.</p>
-          <div class="game-filter-tabs" id="home-game-filters" role="tablist" aria-label="Game Category Filter">
-            <button type="button" class="filter-tab active" data-filter="all">
-              <span>✨ All</span>
-              <span class="filter-count">{sortedGames.length}</span>
-            </button>
-            <button type="button" class="filter-tab tab-arcade" data-filter="arcade">
-              <span>🔥 Killing-Time Arcade</span>
-              <span class="filter-count">{arcadeCount}</span>
-            </button>
-            <button type="button" class="filter-tab tab-draw" data-filter="draw">
-              <span>🎲 Roulette & Draws</span>
-              <span class="filter-count">{drawCount}</span>
-            </button>
-            <button type="button" class="filter-tab tab-studio" data-filter="studio">
-              <span>🎨 Quiz, Audio & Studio</span>
-              <span class="filter-count">{studioCount}</span>
-            </button>
+      <!-- 2. INTERACTIVE GAMES ARCADE GRID -->
+      <section class="arcade-section" id="games-arcade">
+        <div class="arcade-header">
+          <div class="arcade-title-wrap">
+            <span class="eyebrow">ARCADE & STREAM GAMES</span>
+            <h2>Interactive Stream Game Lineup</h2>
+          </div>
+
+          <div class="arcade-controls">
+            <div class="filter-bar" id="home-game-filters" role="tablist" aria-label="Game Category Filter">
+              <button type="button" class="filter-btn active" data-filter="all">
+                <span>All</span>
+                <span class="f-cnt">{sortedGames.length}</span>
+              </button>
+              <button type="button" class="filter-btn" data-filter="arcade">
+                <span>🔥 Arcade</span>
+                <span class="f-cnt">{arcadeCount}</span>
+              </button>
+              <button type="button" class="filter-btn" data-filter="draw">
+                <span>🎲 Draws & Party</span>
+                <span class="f-cnt">{drawCount}</span>
+              </button>
+              <button type="button" class="filter-btn" data-filter="studio">
+                <span>🎨 Studio & Quiz</span>
+                <span class="f-cnt">{studioCount}</span>
+              </button>
+            </div>
+
+            <label class="quick-filter-box" aria-label="Quick filter games">
+              <span class="qf-icon">🔍</span>
+              <input
+                type="search"
+                id="arcade-quick-search"
+                placeholder="Quick filter (e.g. quiz, roulette, timer)..."
+                autocomplete="off"
+              />
+            </label>
           </div>
         </div>
 
-        <div class="games-grid">
+        <div class="arcade-grid" id="arcade-cards-grid">
           {sortedGames.map(game => {
             const href = game.id === 'fortune' ? '/en/fortune' : `/en/games/${game.id}`;
-            const btnText = game.id === 'fortune' ? 'View Fortune →' : 'Launch →';
-            const enTitle: Record<string, string> = {
-              'three-sec-quiz': '3-Second Reflex & Word Quiz',
-              'spot-odd': 'Eagle-Eye Test: Odd Char & Color Vision',
-              'blind-timer': 'Human Stopwatch: 7.77s Blind Timer',
-              'mine-gems': 'Mine Gems: Cash Out or Bust',
-              'reaction-test': 'Streamer Physical Age Test',
-              'sword-enhance': 'Legendary +20 Sword Enhancer',
-              'block-blast': 'Block Blast!',
-              'arrow-jump': 'Arrow Climber',
-              'sand-drop': 'Sand Drop',
-              'marble-roulette': 'Marble Race Roulette',
-              'roulette': 'Random Spin Wheel',
-              'ladder': 'Ghost Leg Ladder Game',
-              'drinking-marble': 'Blossom Board (Drinking & Penalty)',
-              'stream-doodle': 'Stream Doodle (Animated GIF Studio)',
-              'stream-emoji': 'Stream Emoji (Animated Emotes)',
-              'ai-music-quiz': 'AI Music Quiz (Guess The Song)',
-              'soundboard': 'Broadcast Keypad Soundboard',
-              'fortune': 'Daily Fortune',
-            };
-            const enTagline: Record<string, string> = {
-              'three-sec-quiz': 'Variety-show style 3.00s reflex quiz across Idioms (2+2), Proverbs, Theme Words & World Capitals',
-              'spot-odd': 'Spot lookalike characters & subtle color deltas (down to Δ1.4%) on an A1–J10 coordinate grid with stream chat',
-              'blind-timer': '1.5s blind stopwatch challenge (3.33s / 5.00s / 7.77s / 10.00s) with 1ms precision & live challenger leaderboard',
-              'mine-gems': '5x5 coordinate grid (A1–E5) diamond mining game with exponential cash-out multipliers & SHA-256 fairness',
-              'reaction-test': '3-stage Reaction Speed (ms), 12s Aim Tracking & 5s CPS burst test with Physical Age Receipt',
-              'sword-enhance': 'Forge +0 to +20 with 6-slot Inventory, +7 Sword of Greed jackpot & 10-fail stack bonuses',
-              'block-blast': '8x8 combo line blast block puzzle with endless & 2-min time attack modes',
-              'arrow-jump': 'Slingshot archery physics climber with precision platform landings',
-              'sand-drop': 'Falling kinetic sand cellular automata & merge puzzle up to Aurora tier',
-              'marble-roulette': 'Physics-based marble race with live track, pins & spinners',
-              'roulette': 'Ratchet-click spin wheel with confetti winner reveal',
-              'ladder': 'Real-time animated ghost-leg (Amidakuji) for 2–20 players',
-              'drinking-marble': 'Monopoly-style drinking & penalty board with 3D rolling dice',
-              'stream-doodle': 'Interactive animated GIF doodle studio with 12 FPS line boil and OBS mode',
-              'stream-emoji': 'Create retro 16-frame pixel & animated emotes for Twitch, Discord & YouTube',
-              'ai-music-quiz': 'Listen to AI rearranged songs and guess the original title with side-by-side YouTube reveals',
-              'soundboard': 'Zero-latency broadcast soundboard with 9 numpad shortcuts & custom slots',
-              'fortune': 'Daily auto-updated horoscope & zodiac fortune for stream openers',
-            };
-            const enBadge: Record<string, string> = {
-              'three-sec-quiz': '🗣️ 3-Sec Quiz',
-              'spot-odd': '🔍 Eagle Eye',
-              'blind-timer': '⏱️ 7.77s Challenge',
-              'mine-gems': '💎 Cash-Out Game',
-              'reaction-test': '⚡ Physical Age',
-              'sword-enhance': '🗡️ +20 Forging',
-              'block-blast': '🔥 #1 Puzzle',
-              'arrow-jump': '🏹 Physics Climber',
-              'sand-drop': '🍉 Sand Merge',
-              'marble-roulette': 'Marble Race',
-              'roulette': 'Featured Tool',
-              'ladder': 'Bets & Penalties',
-              'drinking-marble': '🌸 New Game',
-              'stream-doodle': '✨ New Studio',
-              'stream-emoji': '🎬 Emote Maker',
-              'ai-music-quiz': '🎧 New Game',
-              'soundboard': '🔊 Stream SFX',
-              'fortune': 'Daily Free',
-            };
             const group = arcadeIds.includes(game.id) ? 'arcade' : drawIds.includes(game.id) ? 'draw' : 'studio';
-            const hotNewIds = ['three-sec-quiz', 'spot-odd', 'blind-timer', 'mine-gems', 'reaction-test', 'sword-enhance'];
-            const isHotNew = hotNewIds.includes(game.id);
-            const enTagsMap: Record<string, string[]> = {
-              'three-sec-quiz': ['Idiom & Proverb 3s', '4-Choice & Host Mode', 'Custom Studio'],
-              'spot-odd': ['Odd Char & Color', 'A1–J10 Grid', 'Vision Report'],
-              'blind-timer': ['1.5s Blind Clock', '1ms Precision', 'Collab Leaderboard'],
-              'mine-gems': ['5x5 Grid A1–E5', 'Cash-Out Multiplier', 'SHA-256 Fair'],
-              'reaction-test': ['Reflex · Aim · CPS', 'Physical Age Receipt', 'Practice Modes'],
-              'sword-enhance': ['+20 Forging', '6-Slot Inventory', '+7 Sword of Greed'],
-              'block-blast': ['8x8 Line Blast', 'Endless Combo', '2m Time Attack'],
-              'arrow-jump': ['Slingshot Aim', 'Physics Climber', 'Daily Seed 300m'],
-              'sand-drop': ['Sand Physics', '11 Merge Tiers', 'ASMR Audio'],
-              'marble-roulette': ['3D Physics', 'Up to 40 Marbles', 'Reversal Track'],
-              'roulette': ['Weighted Odds', 'Ratchet SFX', '1-Click Presets'],
-              'ladder': ['2–20 Players', '1:1 Fair Match', 'Neon Trail'],
-              'drinking-marble': ['3D Rolling Dice', 'Custom Penalty Tiles', 'Party Board'],
-              'ai-music-quiz': ['AI Cover Quiz', 'Original Video Reveal', 'Chat Guess'],
-              'soundboard': ['0ms Latency', 'Numpad Shortcuts', 'Custom Audio'],
-              'stream-doodle': ['12 FPS Line Boil', 'Transparent GIF', 'OBS Overlay'],
-              'stream-emoji': ['16-Frame Timeline', 'Onion Skin', 'Emote Sizes'],
-              'fortune': ['12 Zodiac & Stars', 'Midnight Auto-Update', 'Stream Opener']
-            };
+            const isNewest = game.id === 'three-sec-quiz' || game.id === 'spot-odd';
+            const isPopular = game.id === 'marble-roulette';
+            const titleText = enTitle[game.id] ?? game.data.title;
+            const taglineText = enTagline[game.id] ?? game.data.tagline;
             const cardTags = enTagsMap[game.id] || [];
+            const searchBlob = `${titleText} ${taglineText} ${cardTags.join(' ')} ${game.id}`.toLowerCase();
+
             return (
-              <article class={`game-card theme-${group} ${isHotNew ? 'is-hot-new' : ''}`} data-group={group}>
-                <div class="card-glow-accent"></div>
-                <div class="card-top-row">
-                  <div class="card-icon-box">
-                    <span class="card-icon">{game.data.icon}</span>
-                  </div>
-                  <div class="card-badges">
-                    {isHotNew && <span class="badge-hot-new">🔥 NEW</span>}
-                    <span class="badge-accent">{enBadge[game.id] ?? game.data.badge}</span>
-                  </div>
+              <a
+                href={href}
+                class={`game-card group-${group}`}
+                data-group={group}
+                data-search={searchBlob}
+              >
+                <div class="card-thumb-wrap">
+                  <GameThumb id={game.id} lang="en" />
+                  {isNewest && <span class="thumb-pill pill-new">NEW</span>}
+                  {isPopular && <span class="thumb-pill pill-hot">HOT #1</span>}
+                  <span class="thumb-play-chip">▶ PLAY</span>
                 </div>
 
-                <div class="card-body">
-                  <h3 class="card-title">
-                    <a href={href}>{enTitle[game.id] ?? game.data.title}</a>
-                  </h3>
-                  <p class="card-tagline">{enTagline[game.id] ?? game.data.tagline}</p>
-                  {cardTags.length > 0 && (
-                    <div class="card-tags-row">
-                      {cardTags.map(tag => <span class="card-mini-tag">{tag}</span>)}
+                <div class="card-content">
+                  <div class="card-head-line">
+                    <h3 class="card-title">{titleText}</h3>
+                  </div>
+                  <p class="card-tagline">{taglineText}</p>
+
+                  <div class="card-meta-foot">
+                    <div class="card-tags">
+                      {cardTags.map(tag => <span class="mini-tag">{tag}</span>)}
                     </div>
-                  )}
+                    <span class="card-time">⏱ {game.data.playTime}</span>
+                  </div>
                 </div>
-
-                <div class="card-footer">
-                  <span class="meta-item">⏱️ {game.data.playTime}</span>
-                  <a href={href} class="btn-play-card">
-                    <span>{btnText}</span>
-                  </a>
-                </div>
-              </article>
+              </a>
             );
           })}
         </div>
 
-        <div class="section-hub-footer">
-          <a href="/en/games" class="btn-hub-cta games-accent">
-            <span class="btn-hub-icon">🎮</span>
-            <span>Explore All 14 Interactive Stream Games</span>
-            <span class="btn-hub-arrow">→</span>
+        <div id="arcade-empty-msg" class="arcade-empty" hidden>
+          No matching games found. Try a different keyword or select the <strong>All</strong> tab.
+        </div>
+
+        <div class="section-cta-row">
+          <a href="/en/games" class="btn-outline-hub">
+            <span>🎮 Explore Full Games Directory ({sortedGames.length} Free Games)</span>
+            <span class="arrow">→</span>
           </a>
         </div>
       </section>
 
-      <!-- Streamer Utilities Showcase Section (HIGH-IMPACT SHOWCASE) -->
-      <section class="utilities-showcase-section" id="stream-utilities">
-        <div class="utilities-showcase-container">
-          <div class="utilities-showcase-header">
-            <div class="util-section-pill">
-              <span class="util-pulse-dot"></span>
-              <span>STREAMER TOOLKIT • 100% FREE</span>
+      <!-- 3. STREAMER UTILITIES STUDIO -->
+      <section class="studio-utils-section" id="stream-utilities">
+        <div class="section-head-center">
+          <span class="eyebrow">CREATOR TOOLKIT · 100% FREE</span>
+          <h2>Essential <span class="title-accent">Broadcast Utilities Studio</span></h2>
+          <p>Zero watermarks, zero paywalls, zero logins — built to cut your stream prep time in half.</p>
+        </div>
+
+        <div class="utils-grid">
+          <a href="/en/chzzk-downloader" class="util-card util-emerald">
+            <div class="util-top">
+              <span class="util-ico">📥</span>
+              <span class="util-badge">4K · 1080p Lossless</span>
             </div>
-            <h2 class="util-section-title">
-              Essential Broadcast <span class="gradient-text-tools">Utility Studio for Streamers</span>
-            </h2>
-            <p class="util-section-desc">
-              From Photoshop-free weekly schedule creation to multi-channel raid defense radar and 1080p lossless video downloader —<br class="hide-mobile" />
-              a dedicated suite of free web utilities engineered to streamline your channel workflow.
-            </p>
+            <h3>Chzzk & YouTube Downloader</h3>
+            <p class="util-desc">Batch-queue VODs, clips & YouTube Shorts into lossless MP4/M4A with bundled FFmpeg.</p>
+            <ul class="util-list">
+              <li>Supports CHZZK VODs, clips & YouTube Shorts</li>
+              <li>Multi-URL sequential background download queue</li>
+              <li>Built-in section clipper timestamp command builder</li>
+            </ul>
+            <span class="util-action">Open Downloader →</span>
+          </a>
+
+          <a href="/en/schedule" class="util-card util-cyan">
+            <div class="util-top">
+              <span class="util-ico">📅</span>
+              <span class="util-badge">PNG · JSON Templates</span>
+            </div>
+            <h3>Stream Schedule Studio</h3>
+            <p class="util-desc">Create crisp weekly & monthly timetables across 7 studio themes without Photoshop.</p>
+            <ul class="util-list">
+              <li>7 broadcast-ready visual themes & custom colors</li>
+              <li>Save & reload local .json templates in seconds</li>
+              <li>One-click Discord & X/Twitter schedule text copy</li>
+            </ul>
+            <span class="util-action">Design Schedule →</span>
+          </a>
+
+          <a href="/en/bzzk" class="util-card util-amber">
+            <div class="util-top">
+              <span class="util-ico">🛡️</span>
+              <span class="util-badge">Cross-Channel Radar</span>
+            </div>
+            <h3>Bzzk Protection Radar</h3>
+            <p class="util-desc">Identify coordinated ban evaders and multi-channel raid accounts in real time.</p>
+            <ul class="util-list">
+              <li>Cross-channel ban correlation & risk signals</li>
+              <li>100% pseudonymized account safety handling</li>
+              <li>Pre-stream safety lookup for moderators</li>
+            </ul>
+            <span class="util-action">Open Live Radar →</span>
+          </a>
+        </div>
+
+        <!-- Compact MBTI Studio Strip -->
+        <a href="/en/mbti" class="mbti-strip">
+          <div class="mbti-strip-left">
+            <span class="mbti-ico">🧠</span>
+            <div>
+              <div class="mbti-title-row">
+                <strong>60-Question Deep MBTI & Cognitive Function Test</strong>
+                <span class="mbti-chip">Chat Content</span>
+              </div>
+              <p>Analyze 4 trait spectra, 8 cognitive functions, stress loops, and streamer-viewer compatibility for free.</p>
+            </div>
           </div>
+          <span class="mbti-go">Start Assessment →</span>
+        </a>
 
-          <div class="utilities-cards-grid">
-            <!-- 1. Chzzk Downloader Card (NEW & HIGHLIGHTED) -->
-            <article class="utility-showcase-card card-chzzk">
-              <div class="util-card-glow chzzk-glow"></div>
-              <div class="util-card-top">
-                <div class="util-card-badge-row">
-                  <span class="util-badge chzzk-badge">⚡ NEW RELEASE</span>
-                  <span class="util-tag">1080p FHD Lossless</span>
-                </div>
-                <div class="util-card-icon-wrap chzzk-icon-wrap">
-                  <span class="util-card-icon">📥</span>
-                </div>
-              </div>
-              <div class="util-card-body">
-                <h3 class="util-card-title">Chzzk & YouTube Downloader</h3>
-                <p class="util-card-tagline">Lossless VOD, Clip & YouTube Video/Shorts Batch Downloader</p>
-                <p class="util-card-desc">
-                  100% free with no subscription or rate limits! Download Naver CHZZK replays and YouTube 4K/FHD streams directly to your PC with bundled FFmpeg and background session queues.
-                </p>
-                <ul class="util-card-features">
-                  <li><span class="check-icon">✓</span> Multi-platform support: Chzzk VODs/Clips & YouTube/Shorts</li>
-                  <li><span class="check-icon">✓</span> Sequential session queue worker & background title resolution</li>
-                  <li><span class="check-icon">✓</span> Bundled FFmpeg: lossless 4K/FHD MP4 & audio (.m4a) extraction</li>
-                  <li><span class="check-icon">✓</span> 100% local, safe & open verification (No spyware)</li>
-                </ul>
-              </div>
-              <div class="util-card-footer">
-                <a href="/en/chzzk-downloader" class="btn-util-card chzzk-btn">
-                  <span>Get Downloader & Guide →</span>
-                </a>
-              </div>
-            </article>
+        <div class="section-cta-row">
+          <a href="/en/tools" class="btn-outline-hub">
+            <span>🛠️ View All Creator Utilities (6 Free Tools)</span>
+            <span class="arrow">→</span>
+          </a>
+        </div>
+      </section>
 
-            <!-- 2. Broadcast Schedule Studio Card -->
-            <article class="utility-showcase-card card-schedule">
-              <div class="util-card-glow schedule-glow"></div>
-              <div class="util-card-top">
-                <div class="util-card-badge-row">
-                  <span class="util-badge schedule-badge">🔥 POPULAR</span>
-                  <span class="util-tag">7 Themes • No PS</span>
-                </div>
-                <div class="util-card-icon-wrap schedule-icon-wrap">
-                  <span class="util-card-icon">📅</span>
-                </div>
-              </div>
-              <div class="util-card-body">
-                <h3 class="util-card-title">Stream Schedule Studio</h3>
-                <p class="util-card-tagline">Photoshop-Free Weekly Timetable Generator</p>
-                <p class="util-card-desc">
-                  Design aesthetic weekly and monthly broadcast schedules in 10 seconds. Features Neon Cyber, Retro Arcade, and Pastel themes with one-click PNG export, Discord Markdown copy, and template saves.
-                </p>
-                <ul class="util-card-features">
-                  <li><span class="check-icon">✓</span> 7 customizable broadcast themes with instant PNG export</li>
-                  <li><span class="check-icon">✓</span> One-click formatted Discord & X (Twitter) notice copy</li>
-                  <li><span class="check-icon">✓</span> Local JSON template save & load (privacy preserved)</li>
-                </ul>
-              </div>
-              <div class="util-card-footer">
-                <a href="/en/schedule" class="btn-util-card schedule-btn">
-                  <span>Create Schedule Now →</span>
-                </a>
-              </div>
-            </article>
-
-            <!-- 3. Bzzk Radar Card -->
-            <article class="utility-showcase-card card-bzzk">
-              <div class="util-card-glow bzzk-glow"></div>
-              <div class="util-card-top">
-                <div class="util-card-badge-row">
-                  <span class="util-badge bzzk-badge">🛡️ LIVE RADAR</span>
-                  <span class="util-tag">Chzzk Stream Guard</span>
-                </div>
-                <div class="util-card-icon-wrap bzzk-icon-wrap">
-                  <span class="util-card-icon">🚨</span>
-                </div>
-              </div>
-              <div class="util-card-body">
-                <h3 class="util-card-title">Bzzk (검지직)</h3>
-                <p class="util-card-tagline">Real-time Cross-Channel Raid Defense Radar</p>
-                <p class="util-card-desc">
-                  Detects serial malicious chatters and bad actors multi-banned across Naver CHZZK channels in real time. Pre-emptively safeguard your chat room and community before raids happen.
-                </p>
-                <ul class="util-card-features">
-                  <li><span class="check-icon">✓</span> Real-time tracking of multi-banned bad accounts</li>
-                  <li><span class="check-icon">✓</span> Cross-channel raid correlation & suspicion scoring</li>
-                  <li><span class="check-icon">✓</span> One-click auto ban list export for chat managers</li>
-                </ul>
-              </div>
-              <div class="util-card-footer">
-                <a href="/en/bzzk" class="btn-util-card bzzk-btn">
-                  <span>Open Security Radar →</span>
-                </a>
-              </div>
-            </article>
+      <!-- 4. LATEST RELEASES STRIP -->
+      <section class="releases-section">
+        <div class="releases-box">
+          <div class="releases-head">
+            <div class="releases-title-group">
+              <span class="rel-dot"></span>
+              <h3>Latest Releases</h3>
+            </div>
+            <a href="/en/changelog" class="rel-all-link">Full Changelog →</a>
           </div>
-
-          <div class="section-hub-footer">
-            <a href="/en/tools" class="btn-hub-cta tools-accent">
-              <span class="btn-hub-icon">🛠️</span>
-              <span>Explore All 6 Free Streamer Utilities</span>
-              <span class="btn-hub-arrow">→</span>
+          <div class="releases-grid">
+            <a href="/en/games/three-sec-quiz" class="rel-item">
+              <span class="rel-ver ver-new">v2.5</span>
+              <div>
+                <strong>🗣️ 3-Second Quiz & 🔍 Eagle-Eye Spot the Odd</strong>
+                <p>Dual-mode variety show 3s reflex quiz + A1–J10 character & color vision challenge</p>
+              </div>
+            </a>
+            <a href="/en/games/blind-timer" class="rel-item">
+              <span class="rel-ver">v2.4</span>
+              <div>
+                <strong>⏱️ 7.77s Blind Timer & 💣 Mine Gems Cash-Out</strong>
+                <p>1ms blind stopwatch precision test + provably fair SHA-256 5x5 diamond mining</p>
+              </div>
+            </a>
+            <a href="/en/games/sword-enhance" class="rel-item">
+              <span class="rel-ver">v2.2</span>
+              <div>
+                <strong>⚡ Physical Age Test & 🗡️ +20 Sword Enhancer</strong>
+                <p>Reflex, Aim & CPS benchmark receipt + 6-slot forging vault & Sword of Greed</p>
+              </div>
             </a>
           </div>
         </div>
       </section>
 
-      <!-- MBTI Personality Test Highlight Banner (Tests) -->
-      <section class="mbti-home-banner">
-        <div class="mbti-banner-card">
-          <div class="mbti-banner-glow"></div>
-          <div class="mbti-banner-left">
-            <div class="mbti-badge">
-              <span class="pulse-dot-mbti"></span>
-              <span>🧠 MBTI FRAMEWORK 60-ITEM ASSESSMENT</span>
-            </div>
-            <h3>MBTI Personality Assessment <span class="gradient-text">(Personality & Cognition)</span></h3>
-            <p>
-              Beyond superficial 4-letter labels. Discover your 4-axis spectrum %, 8-layer Jungian cognitive function stack, career blueprint, love compatibility, and creator persona!
-            </p>
+      <!-- 5. PLATFORM PILLARS & FAQ ACCORDION -->
+      <section class="faq-platform-section">
+        <div class="platform-pillars">
+          <div class="pillar-card">
+            <span>⚡</span>
+            <strong>100% Free & Monetizable</strong>
+            <p>Cleared for live streams, VODs, YouTube ads, and viewer donations forever.</p>
           </div>
-          <div class="mbti-banner-right">
-            <a href="/en/mbti" class="btn-mbti-banner">
-              <span>Start Assessment →</span>
-            </a>
+          <div class="pillar-card">
+            <span>🔒</span>
+            <strong>Zero API · Zero Login</strong>
+            <p>Every game runs locally in your browser—no accounts and no third-party outages.</p>
           </div>
-        </div>
-      </section>
-
-      <!-- Latest Updates / Changelog Section -->
-      <section class="home-changelog-preview">
-        <div class="changelog-preview-card">
-          <div class="preview-header-row">
-            <div class="preview-badge-group">
-              <span class="preview-pill">LATEST RELEASE</span>
-              <h3>ErrorLedger Release Notes</h3>
-            </div>
-            <a href="/en/changelog" class="link-all-changelog">View Full Changelog →</a>
+          <div class="pillar-card">
+            <span>🎥</span>
+            <strong>OBS Ready (?stream=true)</strong>
+            <p>One-click clean Browser Source URL strips headers and footers for crisp overlays.</p>
           </div>
-          <div class="preview-items-grid">
-            <div class="preview-item">
-              <span class="preview-ver hot">v2.2.0</span>
-              <div class="preview-content">
-                <strong>New Streamer Mini-Games: ⚡ Physical Age Test & 🗡️ +20 Sword Enhancer</strong>
-                <p>3-stage Reaction Speed, Aim Tracking & CPS Physical Age Medical Receipt + 6-slot Inventory +20 Weapon Forging Simulator.</p>
-              </div>
-            </div>
-            <div class="preview-item">
-              <span class="preview-ver hot">v2.0.0</span>
-              <div class="preview-content">
-                <strong>Chzzk & YouTube Downloader Major Update</strong>
-                <p>Lossless YouTube video & Shorts download support, background session batch queue, and official GitHub Releases.</p>
-              </div>
-            </div>
-            <div class="preview-item">
-              <span class="preview-ver">v1.9.5</span>
-              <div class="preview-content">
-                <strong>3D Marble Race Audio Balancing & Physics Polish</strong>
-                <p>Reduced collision SFX volume by 50% for optimal stream mic balance and smoothed track finish gate physics.</p>
-              </div>
-            </div>
+          <div class="pillar-card">
+            <span>⚖️</span>
+            <strong>Provably Fair Logic</strong>
+            <p>Cryptographic PRNG, bijective ladders, and SHA-256 hashes guarantee zero rigging.</p>
           </div>
         </div>
-      </section>
 
-      <!-- Platform Overview -->
-      <section class="seo-overview-section">
-        <div class="overview-container">
-          <div class="overview-header">
-            <span class="overview-pill">ERRORLEDGER PLATFORM</span>
-            <h2>Free Interactive Web Games & Random Draw Tools for Streamers</h2>
-            <p class="overview-sub">
-              ErrorLedger is a no-install, no-login platform delivering broadcast-ready interactive games for Twitch, YouTube Live, CHZZK, SOOP (AfreecaTV), and Kick streamers.
-            </p>
+        <div class="faq-wrap">
+          <div class="section-head-center compact">
+            <span class="eyebrow">FREQUENTLY ASKED QUESTIONS</span>
+            <h2>Frequently Asked Questions</h2>
           </div>
 
-          <div class="overview-grid">
-            <div class="overview-card">
-              <span class="overview-icon">⚡</span>
-              <h3>Streamer Physical Age & Reflex Test</h3>
-              <p>
-                3-stage gamer physical assessment measuring Visual Reaction Speed (ms), 12-second Aim Tracking accuracy, and 5-second Burst CPS — complete with an official Physical Age Medical Receipt (Age 16–72).
-              </p>
-            </div>
-
-            <div class="overview-card">
-              <span class="overview-icon">🗡️</span>
-              <h3>Legendary +20 Sword Enhancer</h3>
-              <p>
-                Hardcore +0 to +20 weapon forging simulator featuring a 6-slot Weapon Inventory, the +7 Golden Sword of Greed (45,000 G jackpot), per-sword +1%p 10-fail stack bonuses, and Star-Catch timing.
-              </p>
-            </div>
-            <div class="overview-card">
-              <span class="overview-icon">🔮</span>
-              <h3>Marble Race Roulette</h3>
-              <p>
-                More thrilling than a plain spin wheel — a real-time physics marble race with Galton pin boards, twin windmills, pinball bumpers, vortex bowls, and a giant finale propeller that bats marbles back for dramatic reversals.
-              </p>
-            </div>
-
-            <div class="overview-card">
-              <span class="overview-icon">🎡</span>
-              <h3>Random Spin Wheel (Roulette)</h3>
-              <p>
-                Satisfying ratchet-click audio, winner confetti explosion, automatic removal of picked items, and one-click presets for food, penalties, and giveaways. Built for broadcast.
-              </p>
-            </div>
-
-            <div class="overview-card">
-              <span class="overview-icon">🪜</span>
-              <h3>Ghost Leg Ladder Game (Amidakuji)</h3>
-              <p>
-                Animated neon footstep trail through a real-time Amidakuji ladder for 2–20 players. Fair, one-to-one bijective mapping ensures nobody can predict or rig the result.
-              </p>
-            </div>
-
-            <div class="overview-card">
-              <span class="overview-icon">✨</span>
-              <h3>Daily Fortune & Horoscope</h3>
-              <p>
-                Auto-refreshed at midnight: 12 Eastern zodiac animal fortunes and 12 Western star sign readings, each with lucky numbers, colors, and daily DO/DON'T tips for stream openers.
-              </p>
-            </div>
-
-            <div class="overview-card">
-              <span class="overview-icon">🛡️</span>
-              <h3>Bzzk (Chzzk Stream Security Radar)</h3>
-              <p>
-                Real-time cross-channel intelligence network detecting high-risk malicious actors across Chzzk streams, shielding your chatroom with automatic pre-emptive restrictions.
-              </p>
-            </div>
-
-            <div class="overview-card">
-              <span class="overview-icon">🧠</span>
-              <h3>Scientific MBTI & 8 Cognitive Functions Test</h3>
-              <p>
-                Empirical 60-item instrument with balanced reverse scoring. Dissect your 8 Jungian cognitive functions, stress loops, workplace superpowers, real-time chemistry calculator, and creator streaming persona.
-              </p>
-            </div>
-
-            <div class="overview-card">
-              <span class="overview-icon">📅</span>
-              <h3>Stream Schedule Studio (Broadcast Timetable Maker)</h3>
-              <p>
-                Design polished stream schedules without graphic design software. Features weekly and monthly grid layouts, versatile visual themes (Neon, Retro, Travel Ticket, Pastel), and one-click Discord text formatting and local template saving.
-              </p>
-            </div>
-
-            <div class="overview-card">
-              <span class="overview-icon">🎨</span>
-              <h3>Stream Doodle (Animated GIF & Emote Studio)</h3>
-              <p>
-                Every stroke springs to life with real-time 12 FPS boiling line animation! Tailored canvas presets for Twitch, Discord, and Chzzk emotes, infinite looping GIF and transparent PNG export, and alpha cutout brushes for instant live stream stickers and memes.
-              </p>
-            </div>
-
-            <div class="overview-card">
-              <span class="overview-icon">🎬</span>
-              <h3>Stream Emoji (Multi-Frame Animated Emote Studio)</h3>
-              <p>
-                Create custom frame-by-frame animated emotes for Twitch, Discord, and Chzzk! Features 2–16 frame timeline, onion skinning, 1x live chat scale preview widget, and optimized looping GIF & spritesheet export.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- FAQ -->
-      <section class="home-faq-section">
-        <div class="faq-container">
-          <h2>Frequently Asked Questions</h2>
-          <div class="faq-grid">
-            <div class="faq-box">
-              <h3>Can I use ErrorLedger on stream or in monetized videos?</h3>
-              <p>Yes, 100% permitted and free! You are fully allowed to broadcast our tools live on Twitch, YouTube, CHZZK, SOOP, and upload edited videos with monetization and donations enabled.</p>
-            </div>
-            <div class="faq-box">
-              <h3>How do I use fullscreen or focus mode?</h3>
-              <p>Click the [⛶ Fullscreen] or [📺 Focus Mode] button in the top-right of any game to go borderless for clean, distraction-free play.</p>
-            </div>
-            <div class="faq-box">
-              <h3>Is it free? Do I need to sign up?</h3>
-              <p>100% free, forever. No account, no login, no download. Open the link and it works instantly in any browser.</p>
-            </div>
-            <div class="faq-box">
-              <h3>Does it work on Twitch, YouTube, and CHZZK?</h3>
-              <p>Yes. It runs in any standard web browser, so it works with Twitch, YouTube Live, CHZZK, SOOP, Kick, and any other platform.</p>
-            </div>
-            <div class="faq-box">
-              <h3>Are results fair? Can anyone manipulate them?</h3>
-              <p>The Spin Wheel and Ghost Leg Ladder use cryptographically seeded PRNG with mathematical bijective mapping — fully random and tamper-proof.</p>
-            </div>
-            <div class="faq-box">
-              <h3>What is ErrorLedger?</h3>
-              <p>ErrorLedger provides 100% free, client-side interactive web games, tests (MBTI), and stream utility tools for global livestreamers, creators, and communities.</p>
-            </div>
+          <div class="faq-accordion-grid">
+            <details class="faq-item" open>
+              <summary>Can I use ErrorLedger on stream or in monetized YouTube videos?</summary>
+              <p>Yes, 100% allowed! Every game and broadcast utility on ErrorLedger is completely free for live broadcasting on Twitch, YouTube Live, CHZZK, SOOP, and monetized content creation.</p>
+            </details>
+            <details class="faq-item" open>
+              <summary>How do I add a game to OBS Studio as a Browser Source?</summary>
+              <p>Click the <strong>[🎥 Copy OBS URL]</strong> button on any game page and paste it into an OBS Browser Source (1920×1080 recommended). The <code>?stream=true</code> flag automatically hides site chrome.</p>
+            </details>
+            <details class="faq-item">
+              <summary>Is ErrorLedger free? Do I need an account?</summary>
+              <p>Yes — 100% free forever with no login, no account, and no software installation required.</p>
+            </details>
+            <details class="faq-item">
+              <summary>Does it work on Twitch, YouTube Live, CHZZK & SOOP?</summary>
+              <p>Yes. All games run standalone in modern browsers with no external chat API dependencies, working seamlessly across every platform.</p>
+            </details>
+            <details class="faq-item">
+              <summary>Are the giveaways and game odds fair?</summary>
+              <p>Yes. Wheel Spinner, Ghost Leg Ladder, and Mine Gems use cryptographic PRNG, bijective mapping, and pre-committed SHA-256 seed hashes so outcomes cannot be manipulated.</p>
+            </details>
+            <details class="faq-item">
+              <summary>Are Stream Schedule Studio and Chzzk Downloader free too?</summary>
+              <p>Yes — completely free with no watermarks or limits. Export crisp PNG schedules, save local JSON templates, and download original-quality MP4 videos.</p>
+            </details>
           </div>
         </div>
       </section>
     </main>
 
     {!streamerMode && <Footer />}
+
     <script is:inline>
       (function () {
-        const tabs = document.querySelectorAll('#home-game-filters .filter-tab');
-        const cards = document.querySelectorAll('.games-grid .game-card');
-        if (!tabs.length || !cards.length) return;
+        const tabs = document.querySelectorAll('#home-game-filters .filter-btn');
+        const searchInput = document.getElementById('arcade-quick-search');
+        const cards = document.querySelectorAll('#arcade-cards-grid .game-card');
+        const emptyMsg = document.getElementById('arcade-empty-msg');
+        if (!cards.length) return;
+
+        let activeFilter = 'all';
+
+        function applyFilters() {
+          const q = (searchInput ? searchInput.value : '').trim().toLowerCase();
+          let visibleCount = 0;
+
+          cards.forEach((card) => {
+            const group = card.getAttribute('data-group');
+            const hay = card.getAttribute('data-search') || '';
+            const matchCat = activeFilter === 'all' || group === activeFilter;
+            const matchQuery = !q || hay.includes(q);
+            const show = matchCat && matchQuery;
+            card.style.display = show ? 'flex' : 'none';
+            if (show) visibleCount++;
+          });
+
+          if (emptyMsg) {
+            emptyMsg.hidden = visibleCount > 0;
+          }
+        }
+
         tabs.forEach((tab) => {
           tab.addEventListener('click', () => {
             tabs.forEach((t) => t.classList.remove('active'));
             tab.classList.add('active');
-            const filter = tab.getAttribute('data-filter') || 'all';
-            cards.forEach((card) => {
-              const group = card.getAttribute('data-group');
-              if (filter === 'all' || group === filter) {
-                card.style.display = 'flex';
-              } else {
-                card.style.display = 'none';
-              }
-            });
+            activeFilter = tab.getAttribute('data-filter') || 'all';
+            applyFilters();
           });
         });
+
+        if (searchInput) {
+          searchInput.addEventListener('input', applyFilters);
+        }
       })();
     </script>
   </body>
 </html>
 
 <style>
-  .arcade-home-body {
-    background: #090d16 !important;
+  :global(html.dark body.studio-home-body) {
+    background: #06080d !important;
     color: #f1f5f9 !important;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
   }
 
-  .arcade-home-main {
+  :global(html.dark main.studio-home-main) {
+    background: transparent !important;
     flex: 1;
-    max-width: 1260px;
-    margin: 0 auto;
-    padding: 1.5rem 1.25rem 7rem;
     width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.25rem 5.5rem;
     box-sizing: border-box;
   }
 
-  /* Hero Section */
-  .hero-showcase {
+  /* ─── 1. HERO: STUDIO CONTROL DECK ─── */
+  .studio-hero {
     position: relative;
-    padding: 2.5rem 0.5rem 3.5rem;
-    overflow: hidden;
+    padding: 2.75rem 0 3.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   }
 
-  /* Ambient glowing spheres */
-  .hero-ambient-glow {
+  .hero-top-aura {
     position: absolute;
-    width: 650px;
-    height: 520px;
-    border-radius: 50%;
-    filter: blur(110px);
+    top: -120px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(1000px, 100vw);
+    height: 360px;
+    background: radial-gradient(ellipse at center, rgba(0, 255, 163, 0.11) 0%, rgba(56, 189, 248, 0.04) 45%, transparent 72%);
     pointer-events: none;
     z-index: 0;
-    opacity: 0.65;
   }
 
-  .glow-left {
-    top: -120px;
-    left: -160px;
-    background: radial-gradient(circle, rgba(0, 255, 204, 0.18) 0%, rgba(56, 189, 248, 0.08) 50%, transparent 70%);
-  }
-
-  .glow-right {
-    top: 40px;
-    right: -120px;
-    background: radial-gradient(circle, rgba(168, 85, 247, 0.24) 0%, rgba(236, 72, 153, 0.1) 50%, transparent 70%);
-  }
-
-  .hero-cyber-grid {
+  .hero-dot-matrix {
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+    background-image: radial-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px);
     background-size: 28px 28px;
+    mask-image: radial-gradient(ellipse at 50% 35%, #000 35%, transparent 78%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 35%, #000 35%, transparent 78%);
     pointer-events: none;
     z-index: 0;
-    mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 45%, transparent 80%);
-    -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 45%, transparent 80%);
   }
 
-  .hero-split-container {
+  .hero-grid {
     position: relative;
     z-index: 1;
     display: grid;
-    grid-template-columns: 1fr 1.22fr;
-    gap: 2.75rem;
+    grid-template-columns: 1fr 1.15fr;
+    gap: 2.5rem;
     align-items: center;
-    max-width: 1240px;
-    margin: 0 auto;
-    text-align: left;
   }
 
-  .hero-col-content {
+  .hero-copy {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .live-indicator {
-    width: 8px;
-    height: 8px;
-    background: #00ffcc;
-    border-radius: 50%;
-    box-shadow: 0 0 8px #00ffcc;
-    display: inline-block;
-    animation: livePulse 2s infinite ease-in-out;
-  }
-
-  @keyframes livePulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.85); }
-  }
-
-  .hero-pill {
+  .status-pill {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background: rgba(168, 85, 247, 0.12);
-    border: 1px solid rgba(168, 85, 247, 0.35);
-    color: #e9d5ff;
-    font-size: 0.8rem;
-    font-weight: 700;
-    padding: 0.35rem 0.85rem;
+    padding: 0.32rem 0.8rem;
     border-radius: 999px;
+    background: rgba(0, 255, 163, 0.08);
+    border: 1px solid rgba(0, 255, 163, 0.25);
+    color: #00ffa3;
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
     margin-bottom: 1.25rem;
   }
 
-  .hero-headline {
-    font-size: 2.85rem;
-    font-weight: 900;
-    line-height: 1.18;
-    letter-spacing: -0.03em;
-    color: #ffffff;
-    margin: 0 0 1rem;
-  }
-
-  .gradient-text {
-    background: linear-gradient(135deg, #00ffcc 0%, #38bdf8 50%, #a855f7 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .hero-subtext {
-    font-size: 1.05rem;
-    color: #94a3b8;
-    line-height: 1.65;
-    margin: 0 0 1.75rem;
-    max-width: 540px;
-  }
-
-  .hero-cta-group {
-    display: flex;
-    align-items: center;
-    gap: 0.85rem;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-  }
-
-  .hero-btn-primary {
-    background: linear-gradient(135deg, #a855f7 0%, #38bdf8 100%);
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: 800;
-    font-size: 1.02rem;
-    padding: 0.85rem 1.65rem;
-    border-radius: 12px;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    box-shadow: 0 8px 24px rgba(168, 85, 247, 0.35);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .hero-btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 30px rgba(168, 85, 247, 0.55);
-  }
-
-  .btn-arrow {
-    transition: transform 0.2s ease;
-  }
-
-  .hero-btn-primary:hover .btn-arrow {
-    transform: translateX(3px);
-  }
-
-  .hero-btn-secondary {
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px solid rgba(56, 189, 248, 0.35);
-    color: #38bdf8;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 1.02rem;
-    padding: 0.85rem 1.5rem;
-    border-radius: 12px;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    backdrop-filter: blur(8px);
-    transition: all 0.2s ease;
-  }
-
-  .hero-btn-secondary:hover {
-    background: rgba(56, 189, 248, 0.12);
-    border-color: rgba(56, 189, 248, 0.6);
-    color: #ffffff;
-    transform: translateY(-2px);
-  }
-
-  .hero-trust-bar {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-    flex-wrap: wrap;
-  }
-
-  .trust-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    color: #94a3b8;
-    font-size: 0.82rem;
-    font-weight: 600;
-  }
-
-  .trust-icon {
-    font-size: 0.95rem;
-  }
-
-  /* Right Column: 2x2 Flagship Card Deck */
-  .hero-deck-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.1rem;
-  }
-
-  .deck-card {
-    position: relative;
-    background: rgba(15, 23, 42, 0.72);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    padding: 1.25rem;
-    text-decoration: none;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
-    backdrop-filter: blur(12px);
-    overflow: hidden;
-  }
-
-  .deck-card-glow {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-  }
-
-  .deck-card:hover {
-    transform: translateY(-4px);
-  }
-
-  /* Marble Card */
-  .card-marble:hover {
-    border-color: rgba(168, 85, 247, 0.6);
-    box-shadow: 0 12px 30px rgba(168, 85, 247, 0.25);
-    background: rgba(168, 85, 247, 0.08);
-  }
-
-  /* Downloader Card */
-  .card-downloader:hover {
-    border-color: rgba(0, 255, 204, 0.6);
-    box-shadow: 0 12px 30px rgba(0, 255, 204, 0.2);
-    background: rgba(0, 255, 204, 0.06);
-  }
-
-  /* Radar Card */
-  .card-radar:hover {
-    border-color: rgba(244, 63, 94, 0.6);
-    box-shadow: 0 12px 30px rgba(244, 63, 94, 0.2);
-    background: rgba(244, 63, 94, 0.06);
-  }
-
-  /* Guide Card */
-  .card-guide:hover {
-    border-color: rgba(56, 189, 248, 0.6);
-    box-shadow: 0 12px 30px rgba(56, 189, 248, 0.25);
-    background: rgba(56, 189, 248, 0.06);
-  }
-
-  .deck-card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.85rem;
-  }
-
-  .deck-icon-badge {
-    font-size: 1.5rem;
-    width: 44px;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .marble-icon {
-    background: rgba(168, 85, 247, 0.15);
-    border-color: rgba(168, 85, 247, 0.35);
-  }
-
-  .downloader-icon {
-    background: rgba(0, 255, 204, 0.12);
-    border-color: rgba(0, 255, 204, 0.3);
-  }
-
-  .radar-icon {
-    background: rgba(244, 63, 94, 0.12);
-    border-color: rgba(244, 63, 94, 0.3);
-  }
-
-  .guide-icon {
-    background: rgba(56, 189, 248, 0.15);
-    border-color: rgba(56, 189, 248, 0.35);
-  }
-
-  .deck-badge {
-    font-size: 0.68rem;
-    font-weight: 800;
-    padding: 0.22rem 0.55rem;
-    border-radius: 6px;
-    letter-spacing: -0.01em;
-  }
-
-  .badge-hot {
-    background: linear-gradient(135deg, #ef4444, #f97316);
-    color: #ffffff;
-  }
-
-  .badge-green {
-    background: rgba(0, 255, 204, 0.18);
-    color: #00ffcc;
-    border: 1px solid rgba(0, 255, 204, 0.35);
-  }
-
-  .badge-purple {
-    background: rgba(168, 85, 247, 0.2);
-    color: #d8b4fe;
-    border: 1px solid rgba(168, 85, 247, 0.35);
-  }
-
-  .badge-cyan {
-    background: rgba(56, 189, 248, 0.18);
-    color: #7dd3fc;
-    border: 1px solid rgba(56, 189, 248, 0.35);
-  }
-
-  .deck-card-body {
-    flex: 1;
-    margin-bottom: 0.85rem;
-  }
-
-  .deck-card-title {
-    font-size: 1.15rem;
-    font-weight: 800;
-    color: #f8fafc;
-    margin: 0 0 0.35rem;
-    letter-spacing: -0.02em;
-  }
-
-  .deck-card-desc {
-    font-size: 0.82rem;
-    color: #94a3b8;
-    line-height: 1.5;
-    margin: 0;
-  }
-
-  .deck-card-footer {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: #cbd5e1;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    padding-top: 0.65rem;
-    transition: color 0.2s ease, gap 0.2s ease;
-  }
-
-  .deck-card:hover .deck-card-footer {
-    color: #ffffff;
-    gap: 0.55rem;
-  }
-
-  .deck-action-arrow {
-    transition: transform 0.2s ease;
-  }
-
-  .deck-card:hover .deck-action-arrow {
-    transform: translateX(3px);
-  }
-
-  /* Responsive Breakpoints */
-  @media (max-width: 1040px) {
-    .hero-split-container {
-      grid-template-columns: 1fr;
-      gap: 2.5rem;
-      text-align: center;
-    }
-
-    .hero-col-content {
-      align-items: center;
-    }
-
-    .hero-subtext {
-      margin: 0 auto 1.75rem;
-    }
-
-    .hero-cta-group {
-      justify-content: center;
-    }
-
-    .hero-trust-bar {
-      justify-content: center;
-    }
-  }
-
-  @media (max-width: 640px) {
-    .hero-headline {
-      font-size: 2.1rem;
-    }
-
-    .hero-deck-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .hero-cta-group {
-      flex-direction: column;
-      width: 100%;
-    }
-
-    .hero-btn-primary, .hero-btn-secondary {
-      width: 100%;
-      justify-content: center;
-      box-sizing: border-box;
-    }
-
-    .hero-trust-bar {
-      flex-direction: column;
-      gap: 0.5rem;
-      align-items: center;
-    }
-  }
-
-  .games-directory-section {
-    margin-top: 3.5rem;
-  }
-
-  .section-header {
-    margin-bottom: 1.5rem;
-    text-align: center;
-  }
-
-  .section-header h2 {
-    font-size: 1.9rem;
-    font-weight: 900;
-    color: #f8fafc;
-    margin: 0.2rem 0 0.45rem;
-    letter-spacing: -0.02em;
-  }
-
-  .section-sub-desc {
-    color: #94a3b8;
-    font-size: 0.94rem;
-    margin: 0 auto 1.35rem;
-    max-width: 680px;
-  }
-
-  /* Interactive Category Filter Tabs */
-  .game-filter-tabs {
-    display: inline-flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    background: rgba(15, 23, 42, 0.9);
-    border: 1px solid rgba(148, 163, 184, 0.16);
-    padding: 0.4rem;
-    border-radius: 14px;
-    margin-bottom: 0.5rem;
-  }
-
-  .filter-tab {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    background: transparent;
-    border: 1px solid transparent;
-    color: #94a3b8;
-    font-size: 0.85rem;
-    font-weight: 800;
-    padding: 0.52rem 1rem;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.16s ease;
-  }
-
-  .filter-tab:hover {
-    color: #f8fafc;
-    background: rgba(255, 255, 255, 0.04);
-  }
-
-  .filter-tab.active {
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(37, 99, 235, 0.25));
-    border-color: rgba(56, 189, 248, 0.5);
-    color: #ffffff;
-    box-shadow: 0 4px 14px rgba(56, 189, 248, 0.2);
-  }
-
-  .filter-tab.tab-arcade.active {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.22), rgba(239, 68, 68, 0.22));
-    border-color: rgba(251, 191, 36, 0.55);
-    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.22);
-  }
-
-  .filter-tab.tab-draw.active {
-    background: linear-gradient(135deg, rgba(168, 85, 247, 0.22), rgba(236, 72, 153, 0.22));
-    border-color: rgba(192, 132, 252, 0.55);
-    box-shadow: 0 4px 14px rgba(168, 85, 247, 0.22);
-  }
-
-  .filter-tab.tab-studio.active {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.22), rgba(14, 165, 233, 0.22));
-    border-color: rgba(52, 211, 153, 0.55);
-    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.22);
-  }
-
-  .filter-count {
-    font-size: 0.72rem;
-    font-weight: 900;
-    padding: 0.1rem 0.42rem;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.08);
-    color: #cbd5e1;
-  }
-
-  .filter-tab.active .filter-count {
-    background: rgba(255, 255, 255, 0.2);
-    color: #ffffff;
-  }
-
-  .games-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(282px, 1fr));
-    gap: 1.25rem;
-  }
-
-  @media (max-width: 1080px) {
-    .games-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (max-width: 600px) {
-    .games-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .game-card {
-    position: relative;
-    overflow: hidden;
-    background: linear-gradient(160deg, #111a2e 0%, #0b1120 100%);
-    border: 1px solid rgba(148, 163, 184, 0.14);
-    border-radius: 16px;
-    padding: 1.35rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 0.85rem;
-    transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.22s ease, box-shadow 0.22s ease;
-  }
-
-  .card-glow-accent {
-    position: absolute;
-    top: -45px;
-    right: -45px;
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
-    filter: blur(36px);
-    opacity: 0.18;
-    pointer-events: none;
-    transition: opacity 0.25s ease;
-  }
-
-  .game-card.theme-arcade .card-glow-accent { background: #f59e0b; }
-  .game-card.theme-draw .card-glow-accent { background: #a855f7; }
-  .game-card.theme-studio .card-glow-accent { background: #10b981; }
-
-  .game-card.is-hot-new {
-    border-color: rgba(251, 191, 36, 0.32);
-    box-shadow: 0 6px 22px rgba(245, 158, 11, 0.08);
-  }
-
-  .game-card:hover {
-    border-color: rgba(56, 189, 248, 0.5);
-    transform: translateY(-5px);
-    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.48), 0 0 20px rgba(56, 189, 248, 0.14);
-  }
-
-  .game-card.theme-arcade:hover {
-    border-color: rgba(251, 191, 36, 0.55);
-    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.48), 0 0 22px rgba(245, 158, 11, 0.18);
-  }
-
-  .game-card.theme-draw:hover {
-    border-color: rgba(192, 132, 252, 0.55);
-    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.48), 0 0 22px rgba(168, 85, 247, 0.18);
-  }
-
-  .game-card:hover .card-glow-accent {
-    opacity: 0.38;
-  }
-
-  .card-top-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: relative;
-    z-index: 1;
-  }
-
-  .card-icon-box {
-    width: 48px;
-    height: 48px;
-    border-radius: 13px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(30, 41, 59, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  }
-
-  .game-card.theme-arcade .card-icon-box {
-    background: rgba(245, 158, 11, 0.12);
-    border-color: rgba(251, 191, 36, 0.28);
-  }
-
-  .game-card.theme-draw .card-icon-box {
-    background: rgba(168, 85, 247, 0.12);
-    border-color: rgba(192, 132, 252, 0.28);
-  }
-
-  .game-card.theme-studio .card-icon-box {
-    background: rgba(16, 185, 129, 0.12);
-    border-color: rgba(52, 211, 153, 0.28);
-  }
-
-  .card-icon {
-    font-size: 1.75rem;
-    line-height: 1;
-  }
-
-  .card-badges {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-  }
-
-  .badge-hot-new {
-    font-size: 0.65rem;
-    font-weight: 900;
-    padding: 0.2rem 0.5rem;
-    border-radius: 6px;
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.22), rgba(245, 158, 11, 0.25));
-    color: #fde047;
-    border: 1px solid rgba(251, 191, 36, 0.45);
-    letter-spacing: 0.03em;
-  }
-
-  .card-tags-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-    margin-top: 0.65rem;
-  }
-
-  .card-mini-tag {
-    font-size: 0.68rem;
-    font-weight: 700;
-    padding: 0.18rem 0.5rem;
-    border-radius: 6px;
-    background: rgba(30, 41, 59, 0.8);
-    border: 1px solid rgba(148, 163, 184, 0.15);
-    color: #cbd5e1;
-  }
-
-  .badge-accent {
-    font-size: 0.7rem;
-    font-weight: 700;
-    background: rgba(168, 85, 247, 0.15);
-    color: #c084fc;
-    border: 1px solid rgba(168, 85, 247, 0.25);
-    padding: 0.2rem 0.5rem;
-    border-radius: 999px;
-  }
-
-  .card-title a {
-    font-size: 1.05rem;
-    font-weight: 800;
-    color: #f8fafc;
-    text-decoration: none;
-  }
-
-  .card-title a:hover {
-    color: #a855f7;
-  }
-
-  .card-tagline {
-    font-size: 0.82rem;
-    color: #64748b;
-    line-height: 1.5;
-    margin: 0;
-  }
-
-  .card-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: auto;
-  }
-
-  .meta-item {
-    font-size: 0.76rem;
-    color: #64748b;
-  }
-
-  .btn-play-card {
-    display: inline-flex;
-    align-items: center;
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: #a855f7;
-    text-decoration: none;
-    border: 1px solid rgba(168, 85, 247, 0.3);
-    padding: 0.3rem 0.7rem;
-    border-radius: 7px;
-    background: rgba(168, 85, 247, 0.08);
-    transition: all 0.15s ease;
-  }
-
-  .btn-play-card:hover {
-    background: rgba(168, 85, 247, 0.18);
-    border-color: rgba(168, 85, 247, 0.5);
-    color: #d8b4fe;
-  }
-
-  .seo-overview-section {
-    margin-top: 4rem;
-    padding: 3rem 1.5rem;
-    background: rgba(15, 23, 42, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 16px;
-  }
-
-  .overview-header {
-    text-align: center;
-    margin-bottom: 2.5rem;
-  }
-
-  .overview-pill {
-    display: inline-block;
-    font-size: 0.68rem;
-    font-weight: 800;
-    letter-spacing: 0.1em;
-    color: #38bdf8;
-    background: rgba(56, 189, 248, 0.1);
-    border: 1px solid rgba(56, 189, 248, 0.2);
-    padding: 0.25rem 0.7rem;
-    border-radius: 999px;
-    margin-bottom: 0.75rem;
-  }
-
-  .overview-header h2 {
-    font-size: 1.55rem;
-    font-weight: 900;
-    color: #f8fafc;
-    margin: 0 0 0.75rem;
-    letter-spacing: -0.02em;
-  }
-
-  .overview-sub {
-    font-size: 0.93rem;
-    color: #64748b;
-    max-width: 680px;
-    margin: 0 auto;
-    line-height: 1.65;
-  }
-
-  .overview-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 1.25rem;
-  }
-
-  .overview-card {
-    background: rgba(9, 13, 22, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 12px;
-    padding: 1.25rem;
-  }
-
-  .overview-icon {
-    font-size: 1.8rem;
-    display: block;
-    margin-bottom: 0.65rem;
-  }
-
-  .overview-card h3 {
-    font-size: 0.97rem;
-    font-weight: 800;
-    color: #f1f5f9;
-    margin: 0 0 0.5rem;
-  }
-
-  .overview-card p {
-    font-size: 0.82rem;
-    color: #64748b;
-    line-height: 1.65;
-    margin: 0;
-  }
-
-  .home-faq-section {
-    margin-top: 4rem;
-  }
-
-  .faq-container h2 {
-    font-size: 1.55rem;
-    font-weight: 900;
-    color: #f8fafc;
-    text-align: center;
-    margin-bottom: 1.75rem;
-    letter-spacing: -0.02em;
-  }
-
-  .faq-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1rem;
-  }
-
-  .faq-box {
-    background: rgba(15, 23, 42, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 12px;
-    padding: 1.25rem;
-  }
-
-  .faq-box h3 {
-    font-size: 0.93rem;
-    font-weight: 800;
-    color: #e2e8f0;
-    margin: 0 0 0.5rem;
-  }
-
-  .faq-box p {
-    font-size: 0.83rem;
-    color: #64748b;
-    line-height: 1.65;
-    margin: 0;
-  }
-
-  .faq-box code {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 0.1rem 0.3rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    color: #38bdf8;
-  }
-
-  /* MBTI Home Banner Styles */
-  .mbti-home-banner {
-    margin: 1.5rem 0 2rem;
-  }
-
-  .mbti-banner-card {
-    position: relative;
-    background: linear-gradient(135deg, rgba(20, 24, 45, 0.95) 0%, rgba(45, 20, 60, 0.8) 100%);
-    border: 1px solid rgba(236, 72, 153, 0.35);
-    border-radius: 20px;
-    padding: 28px 36px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-    overflow: hidden;
-    box-shadow: 0 12px 30px -10px rgba(236, 72, 153, 0.25);
-  }
-
-  .mbti-banner-glow {
-    position: absolute;
-    top: -40%;
-    left: 25%;
-    width: 350px;
-    height: 220px;
-    background: radial-gradient(circle, rgba(236, 72, 153, 0.25) 0%, transparent 70%);
-    filter: blur(40px);
-    pointer-events: none;
-  }
-
-  .mbti-banner-left {
-    position: relative;
-    z-index: 1;
-    max-width: 680px;
-  }
-
-  .mbti-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 4px 12px;
-    border-radius: 9999px;
-    background: rgba(236, 72, 153, 0.15);
-    border: 1px solid rgba(236, 72, 153, 0.35);
-    color: #fbcfe8;
-    font-size: 0.8rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-  }
-
-  .pulse-dot-mbti {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: #ec4899;
-    box-shadow: 0 0 10px #ec4899;
-    animation: pulse-mbti 2s infinite;
-  }
-
-  @keyframes pulse-mbti {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.8); }
-  }
-
-  .mbti-banner-left h3 {
-    font-size: 1.6rem;
-    font-weight: 900;
-    color: #f8fafc;
-    margin: 0 0 8px;
-    letter-spacing: -0.02em;
-  }
-
-  .mbti-banner-left p {
-    font-size: 0.95rem;
-    color: #cbd5e1;
-    line-height: 1.55;
-    margin: 0;
-  }
-
-  .mbti-banner-right {
-    position: relative;
-    z-index: 1;
-    flex-shrink: 0;
-  }
-
-  .btn-mbti-banner {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
-    color: #ffffff;
-    font-size: 1rem;
-    font-weight: 700;
-    padding: 13px 26px;
-    border-radius: 12px;
-    text-decoration: none;
-    transition: transform 0.2s, box-shadow 0.2s;
-    box-shadow: 0 6px 18px -4px rgba(236, 72, 153, 0.6);
-  }
-
-  .btn-mbti-banner:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 24px -4px rgba(236, 72, 153, 0.8);
-  }
-
-  @media (max-width: 768px) {
-    .mbti-banner-card {
-      flex-direction: column;
-      text-align: center;
-      padding: 24px 20px;
-    }
-    .btn-mbti-banner {
-      width: 100%;
-      justify-content: center;
-    }
-  }
-
-  /* =========================================================
-     Streamer Utilities Showcase Section (NEW HIGHLIGHTED SUITE)
-     ========================================================= */
-  .utilities-showcase-section {
-    margin: 4.5rem 0 3.5rem;
-    position: relative;
-  }
-
-  .utilities-showcase-container {
-    max-width: 1240px;
-    margin: 0 auto;
-  }
-
-  .utilities-showcase-header {
-    text-align: center;
-    max-width: 820px;
-    margin: 0 auto 2.75rem;
-  }
-
-  .util-section-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.35rem 0.95rem;
-    border-radius: 9999px;
-    background: linear-gradient(135deg, rgba(0, 255, 163, 0.12) 0%, rgba(56, 189, 248, 0.12) 100%);
-    border: 1px solid rgba(0, 255, 163, 0.35);
-    color: #00ffa3;
-    font-size: 0.8rem;
-    font-weight: 700;
-    margin-bottom: 0.85rem;
-    letter-spacing: 0.04em;
-  }
-
-  .util-pulse-dot {
+  .status-dot {
     width: 7px;
     height: 7px;
     border-radius: 50%;
     background: #00ffa3;
     box-shadow: 0 0 8px #00ffa3;
-    animation: pulseUtil 2s infinite;
+    animation: studioPulse 2.2s infinite ease-in-out;
   }
 
-  @keyframes pulseUtil {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(0.85); opacity: 0.5; }
+  @keyframes studioPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.38; transform: scale(0.8); }
   }
 
-  .util-section-title {
-    font-size: clamp(1.8rem, 3.2vw, 2.4rem);
+  .hero-title {
+    font-size: clamp(2.15rem, 3.6vw, 3.05rem);
     font-weight: 900;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
     color: #ffffff;
-    line-height: 1.3;
-    margin: 0 0 0.85rem;
-    letter-spacing: -0.02em;
+    margin: 0 0 1rem;
   }
 
-  .gradient-text-tools {
-    background: linear-gradient(135deg, #00ffa3 0%, #38bdf8 50%, #a855f7 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .util-section-desc {
-    font-size: 1.02rem;
-    color: #94a3b8;
-    line-height: 1.65;
-    margin: 0;
-  }
-
-  .utilities-cards-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.75rem;
-  }
-
-  .utility-showcase-card {
-    position: relative;
-    background: #0d121f;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
-    padding: 2rem 1.75rem;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-  }
-
-  .utility-showcase-card:hover {
-    transform: translateY(-5px);
-  }
-
-  .utility-showcase-card.card-chzzk:hover {
-    border-color: rgba(0, 255, 163, 0.5);
-    box-shadow: 0 15px 35px -5px rgba(0, 255, 163, 0.25);
-  }
-
-  .utility-showcase-card.card-schedule:hover {
-    border-color: rgba(56, 189, 248, 0.5);
-    box-shadow: 0 15px 35px -5px rgba(56, 189, 248, 0.25);
-  }
-
-  .utility-showcase-card.card-bzzk:hover {
-    border-color: rgba(168, 85, 247, 0.5);
-    box-shadow: 0 15px 35px -5px rgba(168, 85, 247, 0.25);
-  }
-
-  .util-card-glow {
-    position: absolute;
-    top: -50px;
-    right: -50px;
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    filter: blur(50px);
-    pointer-events: none;
-    opacity: 0.18;
-    transition: opacity 0.3s;
-  }
-
-  .utility-showcase-card:hover .util-card-glow {
-    opacity: 0.35;
-  }
-
-  .chzzk-glow { background: #00ffa3; }
-  .schedule-glow { background: #38bdf8; }
-  .bzzk-glow { background: #a855f7; }
-
-  .util-card-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1.25rem;
-  }
-
-  .util-card-badge-row {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    flex-wrap: wrap;
-  }
-
-  .util-badge {
-    font-size: 0.72rem;
-    font-weight: 800;
-    padding: 0.2rem 0.55rem;
-    border-radius: 6px;
-    letter-spacing: 0.02em;
-  }
-
-  .chzzk-badge {
-    background: rgba(0, 255, 163, 0.15);
+  .title-accent {
     color: #00ffa3;
-    border: 1px solid rgba(0, 255, 163, 0.35);
   }
 
-  .schedule-badge {
-    background: rgba(56, 189, 248, 0.15);
-    color: #38bdf8;
-    border: 1px solid rgba(56, 189, 248, 0.35);
-  }
-
-  .bzzk-badge {
-    background: rgba(168, 85, 247, 0.15);
-    color: #c084fc;
-    border: 1px solid rgba(168, 85, 247, 0.35);
-  }
-
-  .util-tag {
-    font-size: 0.72rem;
+  .hero-lead {
+    font-size: 1rem;
+    line-height: 1.65;
     color: #94a3b8;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 0.2rem 0.5rem;
-    border-radius: 6px;
-  }
-
-  .util-card-icon-wrap {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.6rem;
-  }
-
-  .chzzk-icon-wrap {
-    background: rgba(0, 255, 163, 0.1);
-    border: 1px solid rgba(0, 255, 163, 0.25);
-  }
-
-  .schedule-icon-wrap {
-    background: rgba(56, 189, 248, 0.1);
-    border: 1px solid rgba(56, 189, 248, 0.25);
-  }
-
-  .bzzk-icon-wrap {
-    background: rgba(168, 85, 247, 0.1);
-    border: 1px solid rgba(168, 85, 247, 0.25);
-  }
-
-  .util-card-body {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .util-card-title {
-    font-size: 1.35rem;
-    font-weight: 800;
-    color: #ffffff;
-    margin: 0 0 0.35rem;
-    letter-spacing: -0.01em;
-  }
-
-  .util-card-tagline {
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: #cbd5e1;
-    margin: 0 0 0.75rem;
-  }
-
-  .util-card-desc {
-    font-size: 0.9rem;
-    color: #94a3b8;
-    line-height: 1.6;
-    margin: 0 0 1.25rem;
-  }
-
-  .util-card-features {
-    list-style: none;
-    padding: 0;
     margin: 0 0 1.75rem;
+    max-width: 500px;
+  }
+
+  .hero-actions {
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .util-card-features li {
-    font-size: 0.84rem;
-    color: #cbd5e1;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    line-height: 1.4;
-  }
-
-  .check-icon {
-    font-weight: 800;
-    font-size: 0.85rem;
-  }
-
-  .card-chzzk .check-icon { color: #00ffa3; }
-  .card-schedule .check-icon { color: #38bdf8; }
-  .card-bzzk .check-icon { color: #c084fc; }
-
-  .util-card-footer {
-    margin-top: auto;
-  }
-
-  .btn-util-card {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    padding: 0.85rem 1.25rem;
-    border-radius: 12px;
-    font-size: 0.95rem;
-    font-weight: 800;
-    text-decoration: none;
-    transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
-  }
-
-  .btn-util-card:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.1);
-  }
-
-  .chzzk-btn {
-    background: linear-gradient(135deg, #00ffa3 0%, #00c760 100%);
-    color: #090d16;
-    box-shadow: 0 6px 20px -4px rgba(0, 255, 163, 0.45);
-  }
-
-  .schedule-btn {
-    background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
-    color: #040813;
-    box-shadow: 0 6px 20px -4px rgba(14, 165, 233, 0.45);
-  }
-
-  .bzzk-btn {
-    background: linear-gradient(135deg, #9333ea 0%, #a855f7 100%);
-    color: #ffffff;
-    box-shadow: 0 6px 20px -4px rgba(168, 85, 247, 0.45);
-  }
-
-  /* Hero Quick Tools Bar */
-  .hero-quick-tools-bar {
-    margin-top: 1.5rem;
-    padding: 0.75rem 1.25rem;
-    background: rgba(13, 18, 31, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 14px;
-    display: inline-flex;
     align-items: center;
     gap: 0.75rem;
     flex-wrap: wrap;
-    justify-content: center;
+    margin-bottom: 1.85rem;
   }
 
-  .quick-tools-label {
-    font-size: 0.84rem;
-    font-weight: 700;
-    color: #94a3b8;
-  }
-
-  .quick-tools-pills {
+  .btn-primary {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    flex-wrap: wrap;
+    padding: 0.85rem 1.55rem;
+    border-radius: 11px;
+    background: #00ffa3;
+    color: #04130d;
+    font-weight: 900;
+    font-size: 0.96rem;
+    text-decoration: none;
+    box-shadow: 0 6px 24px rgba(0, 255, 163, 0.25);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
   }
 
-  .quick-tool-pill {
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    background: #33ffb5;
+    box-shadow: 0 10px 28px rgba(0, 255, 163, 0.38);
+  }
+
+  .btn-secondary {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.35rem 0.75rem;
-    border-radius: 8px;
-    font-size: 0.82rem;
-    font-weight: 700;
-    text-decoration: none;
+    gap: 0.45rem;
+    padding: 0.85rem 1.4rem;
+    border-radius: 11px;
+    background: #0e131e;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     color: #e2e8f0;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
     transition: all 0.18s ease;
   }
 
-  .quick-tool-pill:hover {
-    transform: translateY(-1px);
+  .btn-secondary:hover {
+    border-color: rgba(255, 255, 255, 0.28);
+    background: #141b2a;
     color: #ffffff;
+    transform: translateY(-2px);
   }
 
-  .quick-tool-pill.chzzk:hover {
-    border-color: rgba(0, 255, 163, 0.5);
-    background: rgba(0, 255, 163, 0.1);
-    color: #00ffa3;
-  }
-
-  .quick-tool-pill.schedule:hover {
-    border-color: rgba(56, 189, 248, 0.5);
-    background: rgba(56, 189, 248, 0.1);
-    color: #38bdf8;
-  }
-
-  .quick-tool-pill.bzzk:hover {
-    border-color: rgba(168, 85, 247, 0.5);
-    background: rgba(168, 85, 247, 0.1);
-    color: #c084fc;
-  }
-
-  .pill-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-  }
-
-  .pill-dot.green { background: #00ffa3; box-shadow: 0 0 6px #00ffa3; }
-  .pill-dot.cyan { background: #38bdf8; box-shadow: 0 0 6px #38bdf8; }
-  .pill-dot.purple { background: #a855f7; box-shadow: 0 0 6px #a855f7; }
-
-  .pill-tag.new {
-    font-size: 0.65rem;
-    font-weight: 800;
-    padding: 1px 4px;
-    border-radius: 4px;
-    background: rgba(0, 255, 163, 0.2);
-    color: #00ffa3;
-    border: 1px solid rgba(0, 255, 163, 0.4);
-  }
-
-  @media (max-width: 1040px) {
-    .utilities-cards-grid {
-      grid-template-columns: 1fr;
-      max-width: 580px;
-      margin: 0 auto;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .hero-headline {
-      font-size: 2.2rem;
-    }
-    .featured-main-row {
-      flex-direction: column;
-      text-align: center;
-      gap: 1rem;
-    }
-    .props-grid, .faq-grid {
-      grid-template-columns: 1fr;
-    }
-    .btn-play-hero {
-      width: 100%;
-      justify-content: center;
-    }
-  }
-
-  /* Section Hub Footer Buttons */
-  .section-hub-footer {
-    display: flex;
-    justify-content: center;
-    margin-top: 2.5rem;
-  }
-
-  .btn-hub-cta {
+  .hero-metrics {
     display: inline-flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.9rem 1.8rem;
-    border-radius: 14px;
-    font-size: 0.95rem;
-    font-weight: 700;
-    text-decoration: none;
-    transition: all 0.22s ease;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-  }
-
-  .btn-hub-cta.games-accent {
-    background: linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(99, 102, 241, 0.1) 100%);
-    border-color: rgba(168, 85, 247, 0.4);
-    color: #e9d5ff;
-  }
-
-  .btn-hub-cta.games-accent:hover {
-    background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
-    color: #ffffff;
-    box-shadow: 0 8px 25px rgba(168, 85, 247, 0.35);
-    transform: translateY(-2px);
-  }
-
-  .btn-hub-cta.tools-accent {
-    background: linear-gradient(135deg, rgba(0, 255, 163, 0.12) 0%, rgba(56, 189, 248, 0.08) 100%);
-    border-color: rgba(0, 255, 163, 0.35);
-    color: #d1fae5;
-  }
-
-  .btn-hub-cta.tools-accent:hover {
-    background: linear-gradient(135deg, #00ffa3 0%, #00c760 100%);
-    color: #090d16;
-    box-shadow: 0 8px 25px rgba(0, 255, 163, 0.35);
-    transform: translateY(-2px);
-  }
-
-  .btn-hub-arrow {
-    font-size: 1.1rem;
-    transition: transform 0.2s ease;
-  }
-
-  .btn-hub-cta:hover .btn-hub-arrow {
-    transform: translateX(4px);
-  }
-
-  /* Home Changelog Preview */
-  .home-changelog-preview {
-    max-width: 1200px;
-    margin: 0 auto 3.5rem;
-    padding: 0 1rem;
-  }
-
-  .changelog-preview-card {
-    background: #0d1424;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 18px;
-    padding: 1.75rem 2rem;
-  }
-
-  .preview-header-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1.25rem;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .preview-badge-group {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-
-  .preview-pill {
-    background: rgba(0, 255, 163, 0.15);
-    color: #00ffa3;
-    font-size: 0.72rem;
-    font-weight: 800;
-    padding: 0.2rem 0.55rem;
-    border-radius: 6px;
-    border: 1px solid rgba(0, 255, 163, 0.3);
-  }
-
-  .preview-header-row h3 {
-    font-size: 1.18rem;
-    font-weight: 800;
-    color: #ffffff;
-    margin: 0;
-  }
-
-  .link-all-changelog {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: #00ffa3;
-    text-decoration: none;
-    transition: all 0.15s ease;
-  }
-
-  .link-all-changelog:hover {
-    color: #ffffff;
-    text-decoration: underline;
-  }
-
-  .preview-items-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 1.25rem;
-  }
-
-  .preview-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.85rem;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 1rem;
+    padding: 0.75rem 1.15rem;
+    background: rgba(12, 16, 24, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: 12px;
   }
 
-  .preview-ver {
-    font-family: monospace;
-    font-size: 0.78rem;
+  .metric-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .metric-val {
+    font-size: 1.05rem;
+    font-weight: 900;
+    color: #f8fafc;
+    letter-spacing: -0.02em;
+  }
+
+  .metric-lbl {
+    font-size: 0.72rem;
+    color: #64748b;
+    font-weight: 600;
+  }
+
+  .metric-sep {
+    width: 1px;
+    height: 26px;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  /* Flagship 2x2 Deck */
+  .flagship-deck {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.9rem;
+  }
+
+  .deck-tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.15rem 1.2rem;
+    border-radius: 14px;
+    background: #0c1018;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    text-decoration: none;
+    overflow: hidden;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .deck-tile::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+  }
+
+  .deck-tile.accent-emerald::before { background: #00ffa3; }
+  .deck-tile.accent-cyan::before { background: #38bdf8; }
+  .deck-tile.accent-rose::before { background: #f43f5e; }
+  .deck-tile.accent-amber::before { background: #ffb800; }
+
+  .deck-tile:hover {
+    transform: translateY(-3px);
+    background: #101622;
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .deck-tile:hover::before {
+    opacity: 1;
+  }
+
+  .tile-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+  }
+
+  .tile-icon {
+    font-size: 1.45rem;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .tile-tag {
+    font-size: 0.66rem;
     font-weight: 800;
     padding: 0.2rem 0.5rem;
     border-radius: 6px;
+    letter-spacing: 0.03em;
+  }
+
+  .tag-amber { background: rgba(255, 184, 0, 0.14); color: #fcd34d; border: 1px solid rgba(255, 184, 0, 0.3); }
+  .tag-emerald { background: rgba(0, 255, 163, 0.12); color: #00ffa3; border: 1px solid rgba(0, 255, 163, 0.3); }
+  .tag-slate { background: rgba(255, 255, 255, 0.05); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.1); }
+
+  .tile-body h2 {
+    font-size: 1.06rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 0.3rem;
+    letter-spacing: -0.02em;
+  }
+
+  .tile-body p {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    line-height: 1.5;
+    margin: 0 0 0.85rem;
+  }
+
+  .tile-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    padding-top: 0.65rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .deck-tile:hover .tile-foot {
+    color: #00ffa3;
+  }
+
+  .deck-tile:hover .arrow {
+    transform: translateX(3px);
+  }
+
+  .arrow {
+    transition: transform 0.18s ease;
+  }
+
+  /* ─── 2. GAMES ARCADE SECTION ─── */
+  .arcade-section {
+    padding: 3.25rem 0 2.5rem;
+  }
+
+  .eyebrow {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #00ffa3;
+    margin-bottom: 0.35rem;
+  }
+
+  .arcade-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+    margin-bottom: 1.65rem;
+  }
+
+  .arcade-title-wrap h2 {
+    font-size: clamp(1.65rem, 2.6vw, 2.05rem);
+    font-weight: 900;
+    color: #ffffff;
+    margin: 0;
+    letter-spacing: -0.025em;
+  }
+
+  .arcade-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-bar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.32rem;
+    border-radius: 12px;
+    background: #0c1018;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.48rem 0.9rem;
+    border-radius: 9px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .filter-btn:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .filter-btn.active {
+    background: #00ffa3;
+    color: #04130d;
+    font-weight: 800;
+  }
+
+  .f-cnt {
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 0.08rem 0.4rem;
+    border-radius: 999px;
     background: rgba(255, 255, 255, 0.08);
     color: #cbd5e1;
+  }
+
+  .filter-btn.active .f-cnt {
+    background: rgba(4, 19, 13, 0.18);
+    color: #04130d;
+  }
+
+  .quick-filter-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #0c1018;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 11px;
+    padding: 0.48rem 0.85rem;
+    min-width: 260px;
+    transition: border-color 0.15s ease;
+  }
+
+  .quick-filter-box:focus-within {
+    border-color: rgba(0, 255, 163, 0.55);
+  }
+
+  .qf-icon {
+    font-size: 0.85rem;
+    opacity: 0.7;
+  }
+
+  .quick-filter-box input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #f8fafc;
+    font-size: 0.84rem;
+    width: 100%;
+  }
+
+  .quick-filter-box input::placeholder {
+    color: #64748b;
+  }
+
+  /* Visual Arcade Grid */
+  .arcade-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.15rem;
+  }
+
+  .game-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 0.7rem;
+    border-radius: 16px;
+    background: #0c1018;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  }
+
+  .game-card:hover {
+    transform: translateY(-4px);
+    background: #101622;
+    border-color: rgba(0, 255, 163, 0.45);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.5);
+  }
+
+  .card-thumb-wrap {
+    position: relative;
+    margin-bottom: 0.85rem;
+  }
+
+  .thumb-pill {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 2;
+    font-size: 0.65rem;
+    font-weight: 900;
+    padding: 0.18rem 0.5rem;
+    border-radius: 6px;
+    letter-spacing: 0.04em;
+  }
+
+  .pill-new {
+    background: #00ffa3;
+    color: #04130d;
+  }
+
+  .pill-hot {
+    background: #ffb800;
+    color: #1c1200;
+  }
+
+  .thumb-play-chip {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    z-index: 2;
+    font-size: 0.68rem;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    padding: 0.24rem 0.58rem;
+    border-radius: 7px;
+    background: rgba(6, 8, 13, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #e2e8f0;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: all 0.2s ease;
+  }
+
+  .game-card:hover .thumb-play-chip {
+    opacity: 1;
+    transform: translateY(0);
+    background: #00ffa3;
+    border-color: #00ffa3;
+    color: #04130d;
+  }
+
+  .card-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 0 0.35rem 0.25rem;
+  }
+
+  .card-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 0.32rem;
+    letter-spacing: -0.02em;
+    line-height: 1.35;
+    transition: color 0.15s ease;
+  }
+
+  .game-card:hover .card-title {
+    color: #00ffa3;
+  }
+
+  .card-tagline {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    line-height: 1.5;
+    margin: 0 0 0.85rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-meta-foot {
+    margin-top: auto;
+    padding-top: 0.65rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.32rem;
+  }
+
+  .mini-tag {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    padding: 0.16rem 0.45rem;
+    border-radius: 5px;
+  }
+
+  .card-time {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #64748b;
     white-space: nowrap;
   }
 
-  .preview-ver.hot {
-    background: rgba(255, 75, 75, 0.15);
-    color: #ff6b6b;
-    border: 1px solid rgba(255, 75, 75, 0.3);
-  }
-
-  .preview-content strong {
-    display: block;
+  .arcade-empty {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    border-radius: 14px;
+    background: #0c1018;
+    border: 1px dashed rgba(255, 255, 255, 0.12);
+    color: #94a3b8;
     font-size: 0.92rem;
-    color: #f1f5f9;
-    margin-bottom: 0.25rem;
   }
 
-  .preview-content p {
+  .section-cta-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+
+  .btn-outline-hub {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.78rem 1.45rem;
+    border-radius: 11px;
+    background: #0c1018;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.18s ease;
+  }
+
+  .btn-outline-hub:hover {
+    border-color: #00ffa3;
+    color: #00ffa3;
+    transform: translateY(-2px);
+  }
+
+  /* ─── 3. STREAMER UTILITIES STUDIO ─── */
+  .studio-utils-section {
+    padding: 3.25rem 0 2.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .section-head-center {
+    text-align: center;
+    max-width: 680px;
+    margin: 0 auto 2rem;
+  }
+
+  .section-head-center.compact {
+    margin-bottom: 1.5rem;
+  }
+
+  .section-head-center h2 {
+    font-size: clamp(1.6rem, 2.8vw, 2.15rem);
+    font-weight: 900;
+    color: #ffffff;
+    margin: 0 0 0.55rem;
+    letter-spacing: -0.025em;
+  }
+
+  .section-head-center p {
+    font-size: 0.94rem;
+    color: #94a3b8;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .utils-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.15rem;
+  }
+
+  .util-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    border-radius: 16px;
+    background: #0c1018;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    text-decoration: none;
+    color: inherit;
+    overflow: hidden;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .util-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+  }
+
+  .util-emerald::before { background: #00ffa3; }
+  .util-cyan::before { background: #38bdf8; }
+  .util-amber::before { background: #ffb800; }
+
+  .util-card:hover {
+    transform: translateY(-4px);
+    background: #101622;
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .util-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .util-ico {
+    font-size: 1.65rem;
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .util-badge {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #cbd5e1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    padding: 0.22rem 0.55rem;
+    border-radius: 6px;
+  }
+
+  .util-card h3 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 0.45rem;
+    letter-spacing: -0.02em;
+  }
+
+  .util-desc {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    line-height: 1.55;
+    margin: 0 0 1rem;
+  }
+
+  .util-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.42rem;
+  }
+
+  .util-list li {
+    font-size: 0.8rem;
+    color: #cbd5e1;
+    padding-left: 1rem;
+    position: relative;
+  }
+
+  .util-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #00ffa3;
+    font-weight: 900;
+  }
+
+  .util-action {
+    margin-top: auto;
+    padding-top: 0.85rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 0.86rem;
+    font-weight: 800;
+    color: #f8fafc;
+    transition: color 0.15s ease;
+  }
+
+  .util-card:hover .util-action {
+    color: #00ffa3;
+  }
+
+  /* Compact MBTI Strip */
+  .mbti-strip {
+    margin-top: 1.15rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    padding: 1.15rem 1.45rem;
+    border-radius: 14px;
+    background: linear-gradient(90deg, #0d111a 0%, #14111f 100%);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    text-decoration: none;
+    transition: border-color 0.18s ease, transform 0.18s ease;
+  }
+
+  .mbti-strip:hover {
+    border-color: rgba(0, 255, 163, 0.45);
+    transform: translateY(-2px);
+  }
+
+  .mbti-strip-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .mbti-ico {
+    font-size: 1.75rem;
+    flex-shrink: 0;
+  }
+
+  .mbti-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.2rem;
+  }
+
+  .mbti-title-row strong {
+    font-size: 1rem;
+    color: #f8fafc;
+  }
+
+  .mbti-chip {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #fcd34d;
+    background: rgba(255, 184, 0, 0.12);
+    border: 1px solid rgba(255, 184, 0, 0.3);
+    padding: 0.14rem 0.45rem;
+    border-radius: 5px;
+  }
+
+  .mbti-strip-left p {
     font-size: 0.82rem;
     color: #94a3b8;
     margin: 0;
+  }
+
+  .mbti-go {
+    font-size: 0.86rem;
+    font-weight: 800;
+    color: #00ffa3;
+    white-space: nowrap;
+  }
+
+  /* ─── 4. LATEST RELEASES STRIP ─── */
+  .releases-section {
+    padding: 1.25rem 0 2.5rem;
+  }
+
+  .releases-box {
+    background: #0c1018;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 16px;
+    padding: 1.25rem 1.4rem;
+  }
+
+  .releases-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    gap: 0.75rem;
+  }
+
+  .releases-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+  .rel-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #00ffa3;
+  }
+
+  .releases-head h3 {
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0;
+  }
+
+  .rel-all-link {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-decoration: none;
+  }
+
+  .rel-all-link:hover {
+    color: #00ffa3;
+  }
+
+  .releases-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.85rem;
+  }
+
+  .rel-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    padding: 0.85rem;
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    text-decoration: none;
+    transition: border-color 0.16s ease, background 0.16s ease;
+  }
+
+  .rel-item:hover {
+    border-color: rgba(0, 255, 163, 0.35);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .rel-ver {
+    font-family: monospace;
+    font-size: 0.72rem;
+    font-weight: 900;
+    padding: 0.18rem 0.45rem;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #cbd5e1;
+    flex-shrink: 0;
+  }
+
+  .rel-ver.ver-new {
+    background: rgba(0, 255, 163, 0.14);
+    color: #00ffa3;
+    border: 1px solid rgba(0, 255, 163, 0.3);
+  }
+
+  .rel-item strong {
+    display: block;
+    font-size: 0.84rem;
+    color: #f8fafc;
+    margin-bottom: 0.22rem;
+    line-height: 1.35;
+  }
+
+  .rel-item p {
+    font-size: 0.76rem;
+    color: #94a3b8;
+    margin: 0;
     line-height: 1.45;
+  }
+
+  /* ─── 5. PLATFORM PILLARS & FAQ ACCORDION ─── */
+  .faq-platform-section {
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .platform-pillars {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.9rem;
+    margin-bottom: 2.75rem;
+  }
+
+  .pillar-card {
+    background: #0c1018;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 13px;
+    padding: 1.15rem;
+  }
+
+  .pillar-card span {
+    display: inline-block;
+    font-size: 1.35rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .pillar-card strong {
+    display: block;
+    font-size: 0.92rem;
+    color: #f8fafc;
+    margin-bottom: 0.3rem;
+  }
+
+  .pillar-card p {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .faq-wrap {
+    max-width: 1020px;
+    margin: 0 auto;
+  }
+
+  .faq-accordion-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.85rem;
+  }
+
+  .faq-item {
+    background: #0c1018;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    padding: 1rem 1.15rem;
+  }
+
+  .faq-item summary {
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #f8fafc;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-item summary::after {
+    content: '+';
+    color: #00ffa3;
+    font-size: 1.1rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .faq-item[open] summary::after {
+    content: '−';
+  }
+
+  .faq-item p {
+    margin: 0.65rem 0 0;
+    font-size: 0.83rem;
+    color: #94a3b8;
+    line-height: 1.6;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 1060px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+    }
+    .hero-copy {
+      align-items: center;
+      text-align: center;
+    }
+    .hero-actions {
+      justify-content: center;
+    }
+    .arcade-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .utils-grid,
+    .releases-grid {
+      grid-template-columns: 1fr;
+    }
+    .platform-pillars {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 680px) {
+    .flagship-deck,
+    .arcade-grid,
+    .faq-accordion-grid,
+    .platform-pillars {
+      grid-template-columns: 1fr;
+    }
+    .arcade-controls {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .quick-filter-box {
+      min-width: 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .mbti-strip {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .hero-metrics {
+      width: 100%;
+      justify-content: space-around;
+      box-sizing: border-box;
+    }
   }
 </style>
