@@ -21,6 +21,17 @@ const gamesList = [
     categoryDesc: "정밀 낙하 조작과 2D 모래 입자 물리 시뮬레이션, 무기 강화가 결합된 중독성 넘치는 미니게임입니다.",
     items: [
       {
+        id: "three-sec-quiz",
+        title: "신서유기 스타일 '3초 순발력 & 초성 퀴즈' (3-Sec Quiz)",
+        desc: "\"동문!\" 하면 \"서답!\" 3.00초 안에 사자성어 2+2, 속담 이어말하기, 테마 초성, 세계 수도를 돌파하라! 혼자서도 즐기는 4지선다 스피드 어택(예능 오답 함정 포함)과 합방용 호스트 외치기 모드를 지원합니다.",
+        badge: "HOT NEW",
+        badgeType: "hot",
+        icon: "🗣️",
+        link: "/games/three-sec-quiz",
+        tags: ["사자성어 2+2", "4지선다 스피드", "예능 호스트 판정", "커스텀 문제장"],
+        players: "1인 / 합방·채팅"
+      },
+      {
         id: "spot-odd",
         title: "매의 눈 테스트: 틀린 글자 & 절대색감 찾기 (Spot the Odd)",
         desc: "뚀 속의 또, 처지직, 1.4% 미세 색상 차이! 3×3부터 10×10 좌표 격자(A1~J10)에서 시청자와 함께 혼자 다른 1칸을 찾아내고 공식 매의 눈 시력·색감 판독서를 발급받으세요.",
@@ -207,6 +218,8 @@ const gamesList = [
   }
 ];
 
+const totalGamesCount = gamesList.reduce((sum, cat) => sum + cat.items.length, 0);
+
 const itemListSchema = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "ItemList",
@@ -262,7 +275,7 @@ const itemListSchema = JSON.stringify({
 
           <div class="games-stats-bar">
             <div class="stat-item">
-              <span class="stat-number">10종</span>
+              <span class="stat-number">{totalGamesCount}종</span>
               <span class="stat-label">무료 인터랙티브 게임</span>
             </div>
             <div class="stat-divider"></div>

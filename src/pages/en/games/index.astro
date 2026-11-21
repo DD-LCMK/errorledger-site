@@ -21,6 +21,17 @@ const gamesList = [
     categoryDesc: "Addictive weapon forging, precision drop controls, and 2D falling sand merge puzzles.",
     items: [
       {
+        id: "three-sec-quiz",
+        title: "3-Second Reflex & Word Continuation Quiz (3초 순발력 퀴즈)",
+        desc: "Variety-show style 3.00s reflex quiz! Answer 4-Character Idioms (2+2), Proverbs, Theme Words, and World Capitals before the buzzer—featuring Solo 4-Choice Speed Attack and Show Host Voice Mode.",
+        badge: "HOT NEW",
+        badgeType: "hot",
+        icon: "🗣️",
+        link: "/en/games/three-sec-quiz",
+        tags: ["Idiom 2+2", "4-Choice Speed", "Host Voice Mode", "Custom Studio"],
+        players: "1 Player / Collab"
+      },
+      {
         id: "spot-odd",
         title: "Eagle-Eye Test: Spot the Odd Character & Color Vision (매의 눈 테스트)",
         desc: "Spot the 1 lookalike character or subtle color tile (down to Δ1.4%) across 3x3 to 10x10 coordinate grids (A1–J10) with your stream chat—and get an official Eagle-Eye Vision Grade!",
@@ -207,6 +218,8 @@ const gamesList = [
   }
 ];
 
+const totalGamesCount = gamesList.reduce((sum, cat) => sum + cat.items.length, 0);
+
 const itemListSchema = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "ItemList",
@@ -262,7 +275,7 @@ const itemListSchema = JSON.stringify({
 
           <div class="games-stats-bar">
             <div class="stat-item">
-              <span class="stat-number">10+</span>
+              <span class="stat-number">{totalGamesCount}+</span>
               <span class="stat-label">Free Stream Games</span>
             </div>
             <div class="stat-divider"></div>

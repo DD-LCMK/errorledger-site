@@ -1,0 +1,1899 @@
+---
+import GameLayout from '../../layouts/GameLayout.astro';
+import { getEntry } from 'astro:content';
+
+const entry = await getEntry('games', 'three-sec-quiz');
+if (!entry) throw new Error('three-sec-quiz entry not found');
+const { data } = entry;
+---
+
+<GameLayout
+  entry={entry}
+  title={data.title}
+  description={data.description}
+  tagline={data.tagline}
+  icon={data.icon}
+  category={data.category}
+  badge={data.badge}
+  players={data.players}
+  playTime={data.playTime}
+  controls={data.controls}
+  rules={data.rules}
+  faqItems={data.faqItems}
+>
+  <div class="tsq-shell" id="tsq-root">
+    <!-- Top Bar: Play Mode, Timer Duration & Category Pack -->
+    <div class="tsq-topbar">
+      <div class="tsq-playstyle-group" role="tablist" aria-label="Play Style">
+        <button type="button" class="tsq-style-btn active" data-style="choice" id="style-choice">
+          <span>⚡</span>
+          <span data-i18n="styleChoice">4지선다 스피드 어택 (1~4키)</span>
+        </button>
+        <button type="button" class="tsq-style-btn" data-style="voice" id="style-voice">
+          <span>🎙️</span>
+          <span data-i18n="styleVoice">예능 호스트 외치기 (O/X 판정)</span>
+        </button>
+      </div>
+
+      <div class="tsq-top-right">
+        <div class="tsq-timer-presets" role="group" aria-label="Countdown Seconds">
+          <button type="button" class="tsq-sec-btn" data-sec="2">⚡ 2.0s</button>
+          <button type="button" class="tsq-sec-btn active" data-sec="3">⏱️ 3.0s</button>
+          <button type="button" class="tsq-sec-btn" data-sec="5">🐢 5.0s</button>
+        </div>
+
+        <button type="button" class="tsq-sound-btn active" id="btn-sound-toggle" title="효과음 켜기/끄기">
+          <span id="sound-icon">🔊</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Category Pack Selector Tabs -->
+    <div class="tsq-pack-bar" role="tablist" aria-label="Question Pack">
+      <button type="button" class="tsq-pack-btn active" data-pack="all">
+        <span>🔥</span>
+        <span data-i18n="packAll">전체 랜덤 폭탄</span>
+      </button>
+      <button type="button" class="tsq-pack-btn" data-pack="idiom">
+        <span>📜</span>
+        <span data-i18n="packIdiom">사자성어 이어말하기</span>
+      </button>
+      <button type="button" class="tsq-pack-btn" data-pack="proverb">
+        <span>🐯</span>
+        <span data-i18n="packProverb">속담 이어말하기</span>
+      </button>
+      <button type="button" class="tsq-pack-btn" data-pack="chosung">
+        <span>🔤</span>
+        <span data-i18n="packChosung">테마 초성·단어</span>
+      </button>
+      <button type="button" class="tsq-pack-btn" data-pack="capital">
+        <span>🌍</span>
+        <span data-i18n="packCapital">세계 수도·상식</span>
+      </button>
+    </div>
+
+    <!-- Main 2-Column Grid -->
+    <div class="tsq-main-grid">
+      <!-- Left: TV Variety Show Stage -->
+      <section class="tsq-stage-card" id="stage-card">
+        <!-- HUD Row -->
+        <div class="tsq-hud-row">
+          <div class="tsq-hud-box">
+            <span class="hud-k" data-i18n="hudStreak">연속 정답 스트릭</span>
+            <strong class="hud-v accent" id="hud-streak">0연속 🔥</strong>
+            <span class="hud-sub" id="hud-max-streak">최고 0연속</span>
+          </div>
+
+          <div class="tsq-hud-box timer-hud-box">
+            <div class="timer-top-row">
+              <span class="hud-k" data-i18n="hudTimer">남은 시간 (COUNTDOWN)</span>
+              <span class="lives-hearts" id="hud-lives">❤️❤️❤️</span>
+            </div>
+            <strong class="hud-v timer-digits" id="hud-timer">3.00s</strong>
+            <div class="timer-gauge-track">
+              <div class="timer-gauge-fill" id="timer-gauge-fill" style="width: 100%;"></div>
+            </div>
+          </div>
+
+          <div class="tsq-hud-box">
+            <span class="hud-k" data-i18n="hudScore">SCORE</span>
+            <strong class="hud-v gold" id="hud-score">0</strong>
+            <span class="hud-sub" id="hud-q-count">Q. 1</span>
+          </div>
+        </div>
+
+        <!-- Giant TV Quiz Prompt Monitor -->
+        <div class="tsq-monitor" id="tsq-monitor">
+          <div class="monitor-top-badges">
+            <span class="m-cat-badge" id="q-category-badge">📜 사자성어 이어말하기</span>
+            <span class="m-hint-badge" id="q-subhint">앞 두 글자에 이어질 뒤 두 글자를 고르세요!</span>
+          </div>
+
+          <div class="monitor-prompt-area">
+            <div class="prompt-call" id="q-prompt-text">동 문</div>
+            <div class="prompt-arrow" id="q-prompt-arrow">➔</div>
+            <div class="prompt-answer-slot" id="q-answer-slot">? ?</div>
+          </div>
+
+          <!-- Feedback / Trap Explanation Banner after answering -->
+          <div class="monitor-feedback" id="q-feedback" hidden>
+            <span class="fb-verdict" id="fb-verdict">🔔 딩동댕! 정답입니다!</span>
+            <span class="fb-detail" id="fb-detail">동문서답 (東問西答): 동쪽을 묻는데 서쪽을 대답한다</span>
+          </div>
+
+          <!-- 4-Choice Speed Buttons (Shown in Choice Mode) -->
+          <div class="tsq-choices-grid" id="choices-grid">
+            <button type="button" class="tsq-choice-btn" data-idx="0">
+              <span class="c-num">1</span>
+              <span class="c-text">-</span>
+            </button>
+            <button type="button" class="tsq-choice-btn" data-idx="1">
+              <span class="c-num">2</span>
+              <span class="c-text">-</span>
+            </button>
+            <button type="button" class="tsq-choice-btn" data-idx="2">
+              <span class="c-num">3</span>
+              <span class="c-text">-</span>
+            </button>
+            <button type="button" class="tsq-choice-btn" data-idx="3">
+              <span class="c-num">4</span>
+              <span class="c-text">-</span>
+            </button>
+          </div>
+
+          <!-- Voice Show-Host Judge Controls (Shown in Voice Mode) -->
+          <div class="tsq-voice-controls" id="voice-controls" hidden>
+            <button type="button" class="voice-btn reveal-btn" id="btn-voice-reveal">
+              <span>👀</span>
+              <span data-i18n="btnVoiceReveal">정답 공개 (Space)</span>
+            </button>
+            <button type="button" class="voice-btn pass-btn" id="btn-voice-pass" disabled>
+              <span>⭕</span>
+              <span data-i18n="btnVoicePass">정답 통과! (O / ←)</span>
+            </button>
+            <button type="button" class="voice-btn fail-btn" id="btn-voice-fail" disabled>
+              <span>🚨</span>
+              <span data-i18n="btnVoiceFail">땡! 오답 탈락 (X / →)</span>
+            </button>
+          </div>
+
+          <!-- Start / Game Over Overlay -->
+          <div class="tsq-overlay" id="tsq-overlay">
+            <div class="tsq-ov-card">
+              <div class="ov-badge" id="ov-badge">🗣️ 3-SECOND BRAIN REFLEX SHOW</div>
+              <h2 class="ov-title" id="ov-title">3초 순발력 퀴즈: 사자성어·속담·초성·수도</h2>
+              <p class="ov-desc" id="ov-desc">
+                <strong>"동문!" → "...수학?!" (땡!!)</strong><br />
+                3초 카운트다운 안에 함정 보기를 피해 정답을 맞히거나, 합방·시참 멤버와 마이크로 외치며 연속 정답 신기록에 도전하세요!
+              </p>
+
+              <div class="ov-stats-grid" id="ov-stats-grid" hidden>
+                <div class="ov-stat">
+                  <span class="ov-s-k" data-i18n="statMaxStreak">최고 연속 정답</span>
+                  <strong class="ov-s-v accent" id="ov-final-streak">0연속</strong>
+                </div>
+                <div class="ov-stat">
+                  <span class="ov-s-k" data-i18n="statGrade">순발력 등급</span>
+                  <strong class="ov-s-v gold" id="ov-final-tier">👑 인간 자판기</strong>
+                </div>
+                <div class="ov-stat">
+                  <span class="ov-s-k" data-i18n="statAvgSpeed">평균 대답 속도</span>
+                  <strong class="ov-s-v" id="ov-final-speed">0.00s</strong>
+                </div>
+                <div class="ov-stat">
+                  <span class="ov-s-k" data-i18n="statLastTrap">마지막 뇌정지 문제</span>
+                  <strong class="ov-s-v danger" id="ov-last-missed">-</strong>
+                </div>
+              </div>
+
+              <div class="ov-btn-row">
+                <button type="button" class="tsq-btn-primary" id="btn-start-quiz">
+                  <span>🚀</span>
+                  <span id="btn-start-text" data-i18n="btnStart">퀴즈쇼 시작하기 (Space)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Quick Bar -->
+        <div class="tsq-bottom-bar">
+          <div class="shortcut-tips">
+            <span data-i18n="shortcutGuide">⌨️ 단축키: <strong>1·2·3·4</strong> 보기 선택 | <strong>O / X</strong> 호스트 판정 | <strong>R</strong> 즉시 재시작</span>
+          </div>
+          <button type="button" class="tsq-restart-btn" id="btn-restart-quiz">
+            <span>🔄</span>
+            <span data-i18n="btnRestart">처음부터 재시작 (R)</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Right Sidebar: Brain Reflex Report, Custom Question Maker & Leaderboard -->
+      <aside class="tsq-sidebar">
+        <!-- Reflex Diagnosis Report -->
+        <div class="tsq-side-card">
+          <div class="side-head">
+            <span class="side-badge">🧠 BRAIN REFLEX REPORT</span>
+            <h3 data-i18n="diagTitle">실시간 순발력 판독서</h3>
+          </div>
+
+          <div class="tier-box">
+            <span class="tier-icon" id="diag-emoji">🗣️</span>
+            <div class="tier-meta">
+              <span class="tier-code" id="diag-code">READY</span>
+              <strong class="tier-title" id="diag-title">퀴즈를 시작해 뇌 순발력을 측정하세요</strong>
+            </div>
+          </div>
+
+          <div class="diag-grid">
+            <div class="d-cell">
+              <span data-i18n="diagCleared">통과 문제 수</span>
+              <strong id="diag-cleared">0문제</strong>
+            </div>
+            <div class="d-cell">
+              <span data-i18n="diagBestStreak">최고 스트릭</span>
+              <strong id="diag-streak">0연속</strong>
+            </div>
+            <div class="d-cell">
+              <span data-i18n="diagAvgReaction">평균 반응 시간</span>
+              <strong id="diag-avg-sec">-</strong>
+            </div>
+            <div class="d-cell">
+              <span data-i18n="diagAccuracy">정답률</span>
+              <strong id="diag-acc">100%</strong>
+            </div>
+          </div>
+
+          <button type="button" class="tsq-copy-btn" id="btn-copy-report">
+            <span>📋</span>
+            <span id="copy-report-text" data-i18n="btnCopyReport">방송 채팅창용 순발력 진단서 복사</span>
+          </button>
+        </div>
+
+        <!-- Custom Question Adder -->
+        <div class="tsq-side-card custom-q-card">
+          <div class="side-head">
+            <span class="side-badge emerald">✏️ CUSTOM STUDIO</span>
+            <h3 data-i18n="customTitle">내 방송 커스텀 문제 추가</h3>
+          </div>
+          <form class="custom-q-form" id="custom-q-form" autocomplete="off">
+            <input
+              type="text"
+              id="custom-prompt"
+              class="cq-input"
+              placeholder="제시어 (예: 치지직의 대표 색깔은?)"
+              maxlength="40"
+              required
+            />
+            <input
+              type="text"
+              id="custom-answer"
+              class="cq-input"
+              placeholder="정답 (예: 초록색)"
+              maxlength="24"
+              required
+            />
+            <input
+              type="text"
+              id="custom-trap"
+              class="cq-input"
+              placeholder="함정 오답 쉼표 구분 (예: 보라색, 파란색, 노란색)"
+              maxlength="50"
+            />
+            <button type="submit" class="cq-add-btn" id="btn-add-custom" data-i18n="btnAddCustom">
+              ➕ 문제 풀에 즉시 추가 (<span id="custom-cnt">0</span>개 등록됨)
+            </button>
+          </form>
+        </div>
+
+        <!-- Challenger Leaderboard -->
+        <div class="tsq-side-card">
+          <div class="side-head lb-head">
+            <div>
+              <span class="side-badge gold">🏆 HALL OF FAME</span>
+              <h3 data-i18n="lbTitle">도전자 순위 전광판</h3>
+            </div>
+            <button type="button" class="lb-clear-btn" id="btn-clear-lb" data-i18n="btnClearLb">초기화</button>
+          </div>
+
+          <div class="challenger-row">
+            <input
+              type="text"
+              id="challenger-name"
+              class="challenger-input"
+              placeholder="👤 도전자 닉네임 (예: 스트리머, 멤버A)"
+              maxlength="18"
+              value="스트리머"
+            />
+          </div>
+
+          <ul class="lb-list" id="lb-list">
+            <li class="lb-empty" data-i18n="lbEmpty">아직 등록된 기록이 없습니다. 첫 도전을 시작하세요!</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+</GameLayout>
+
+<script>
+  (function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const isEn = urlParams.get('lang') === 'en' || window.location.pathname.startsWith('/en');
+
+    const I18N = {
+      ko: {
+        styleChoice: '4지선다 스피드 어택 (1~4키)',
+        styleVoice: '예능 호스트 외치기 (O/X 판정)',
+        packAll: '전체 랜덤 폭탄',
+        packIdiom: '사자성어 이어말하기',
+        packProverb: '속담 이어말하기',
+        packChosung: '테마 초성·단어',
+        packCapital: '세계 수도·상식',
+        hudStreak: '연속 정답 스트릭',
+        hudTimer: '남은 시간 (COUNTDOWN)',
+        hudScore: 'SCORE',
+        btnVoiceReveal: '정답 공개 (Space)',
+        btnVoicePass: '정답 통과! (O / ←)',
+        btnVoiceFail: '땡! 오답 탈락 (X / →)',
+        statMaxStreak: '최고 연속 정답',
+        statGrade: '순발력 등급',
+        statAvgSpeed: '평균 대답 속도',
+        statLastTrap: '마지막 뇌정지 문제',
+        btnStart: '퀴즈쇼 시작하기 (Space)',
+        btnRetry: '다시 도전하기 (Space)',
+        shortcutGuide: '⌨️ 단축키: 1·2·3·4 보기 선택 | O / X 호스트 판정 | R 즉시 재시작',
+        btnRestart: '처음부터 재시작 (R)',
+        diagTitle: '실시간 순발력 판독서',
+        diagCleared: '통과 문제 수',
+        diagBestStreak: '최고 스트릭',
+        diagAvgReaction: '평균 반응 시간',
+        diagAccuracy: '정답률',
+        btnCopyReport: '방송 채팅창용 순발력 진단서 복사',
+        copiedReport: '✅ 클립보드에 진단서가 복사되었습니다!',
+        customTitle: '내 방송 커스텀 문제 추가',
+        btnAddCustom: '➕ 문제 풀에 즉시 추가',
+        lbTitle: '도전자 순위 전광판',
+        btnClearLb: '초기화',
+        lbEmpty: '아직 등록된 기록이 없습니다. 첫 도전을 시작하세요!',
+        defaultPlayer: '스트리머',
+        verdictCorrect: '🔔 딩동댕! 칼같이 맞혔습니다!',
+        verdictWrong: '🚨 땡!! 함정에 걸렸습니다!',
+        verdictTimeout: '⏰ 시간 초과 땡!! (3초 뇌정지!)',
+      },
+      en: {
+        styleChoice: '4-Choice Speed Attack (Keys 1–4)',
+        styleVoice: 'Show Host Voice Mode (O/X Judge)',
+        packAll: 'All-in-One Mix',
+        packIdiom: 'Idiom Relay',
+        packProverb: 'Proverb Relay',
+        packChosung: 'Word & Category Clues',
+        packCapital: 'World Capitals & Trivia',
+        hudStreak: 'CURRENT STREAK',
+        hudTimer: 'COUNTDOWN TIMER',
+        hudScore: 'SCORE',
+        btnVoiceReveal: 'Reveal Answer (Space)',
+        btnVoicePass: 'Correct! Pass (O / ←)',
+        btnVoiceFail: 'Buzzer! Wrong (X / →)',
+        statMaxStreak: 'Best Streak',
+        statGrade: 'Reflex Grade',
+        statAvgSpeed: 'Avg Answer Speed',
+        statLastTrap: 'Last Brain-Glitch Q',
+        btnStart: 'Start 3-Sec Quiz Show (Space)',
+        btnRetry: 'Play Again (Space)',
+        shortcutGuide: '⌨️ Shortcuts: 1·2·3·4 Pick Choice | O / X Host Judge | R Restart',
+        btnRestart: 'Restart (R)',
+        diagTitle: 'Live Brain Reflex Report',
+        diagCleared: 'Questions Cleared',
+        diagBestStreak: 'Best Streak',
+        diagAvgReaction: 'Avg Answer Time',
+        diagAccuracy: 'Accuracy',
+        btnCopyReport: 'Copy Reflex Report for Stream Chat',
+        copiedReport: '✅ Copied Reflex Report to Clipboard!',
+        customTitle: 'Add Custom Stream Questions',
+        btnAddCustom: '➕ Add to Question Pool',
+        lbTitle: 'Challenger Leaderboard',
+        btnClearLb: 'Clear',
+        lbEmpty: 'No records yet. Start your first challenge!',
+        defaultPlayer: 'Streamer',
+        verdictCorrect: '🔔 DING-DONG-DAENG! Correct!',
+        verdictWrong: '🚨 BUZZER!! You fell for the trap!',
+        verdictTimeout: '⏰ TIME UP BUZZER!! (3-Second Brain Freeze!)',
+      }
+    };
+
+    const L = isEn ? I18N.en : I18N.ko;
+
+    if (isEn) {
+      document.querySelectorAll('[data-i18n]').forEach((el) => {
+        const key = el.getAttribute('data-i18n') as keyof typeof L;
+        if (key && typeof L[key] === 'string') {
+          el.textContent = L[key] as string;
+        }
+      });
+      const chInput = document.getElementById('challenger-name') as HTMLInputElement | null;
+      if (chInput) chInput.value = L.defaultPlayer;
+    }
+
+    // Question Data Model
+    type PackId = 'idiom' | 'proverb' | 'chosung' | 'capital' | 'custom';
+    interface QuizItem {
+      pack: PackId;
+      catLabel: string;
+      hint: string;
+      prompt: string;
+      answer: string;
+      traps: string[];
+      note: string;
+    }
+
+    const KO_QUESTIONS: QuizItem[] = [
+      // 1. 사자성어 이어말하기 (Idiom Relay)
+      { pack: 'idiom', catLabel: '📜 사자성어 2+2', hint: '앞 두 글자에 이어질 뒤 두 글자를 완성하세요!', prompt: '동 문', answer: '서답', traps: ['수학', '시장', '출구'], note: '동문서답: 동쪽을 묻는데 서쪽을 대답함 (레전드 오답: 동문수학!)' },
+      { pack: 'idiom', catLabel: '📜 사자성어 2+2', hint: '앞 두 글자에 이어질 뒤 두 글자를 완성하세요!', prompt: '우 유', answer: '부단', traps: ['배달', '급식', '빛깔'], note: '우유부단: 어물거리며 결단성이 없음 (레전드 오답: 우유배달!)' },
+      { pack: 'idiom', catLabel: '📜 사자성어 2+2', hint: '앞 두 글자에 이어질 뒤 두 글자를 완성하세요!', prompt: '유 비', answer: '무환', traps: ['관우', '장비', '통신'], note: '유비무환: 미리 준비가 되어 있으면 우환이 없음 (함정: 유비관우!)' },
+      { pack: 'idiom', catLabel: '📜 사자성어 2+2', hint: '앞 두 글자에 이어질 뒤 두 글자를 완성하세요!', prompt: '대 기', answer: '만성', traps: ['오염', '번호', '권역'], note: '대기만성: 큰 그릇은 늦게 이루어진다 (함정: 대기오염!)' },
+      { pack: 'idiom', catLabel: '📜 사자성어 2+2', hint: '앞 두 글자에 이어질 뒤 두 글자를 완성하세요!', prompt: '일 석', answer: '이조', traps: ['삼조', '백조', '사조'], note: '일석이조: 돌 하나로 새 두 마리를 잡는다' },
+      { pack: 'idiom', catLabel: '📜 사자성어 2+2', hint: '앞 두 글자에 이어질 뒤 두 글자를 완성하세요!', prompt: '고 진', answer: '감래', traps: ['요리', '행진', '전진'], note: '고진감래: 쓴 것이 다하면 단 것이 온다' },
+      { pack: 'idiom', catLabel: '📜 사자성어 2+2', hint: '앞 두 글자에 이어질 뒤 두 글자를 완성하세요!', prompt: '금 상', answer: '첨화', traps: ['수상', '은상', '인상'], note: '금상첨화: 비단 위에 꽃을 더한다' },
+      { pack: 'idiom', catLabel: '📜 사자성어 2+2', hint: '앞 두 글자에 이어질 뒤 두 글자를 완성하세요!', prompt: '설 상', answer: '가상', traps: ['현실', '하강', '인상'], note: '설상가상: 눈 위에 서리가 덮친다' },
+      { pack: 'idiom', catLabel: '📜 사자성어 2+2', hint: '앞 두 글자에 이어질 뒤 두 글자를 완성하세요!', prompt: '주 객', answer: '전도', traps: ['만석', '입장', '도주'], note: '주객전도: 주인과 손님의 위치가 뒤바뀜' },
+      { pack: 'idiom', catLabel: '📜 사자성어 2+2', hint: '앞 두 글자에 이어질 뒤 두 글자를 완성하세요!', prompt: '천 고', answer: '마비', traps: ['전신', '신고', '장고'], note: '천고마비: 하늘이 높고 말이 살찐다' },
+      { pack: 'idiom', catLabel: '📜 사자성어 2+2', hint: '앞 두 글자에 이어질 뒤 두 글자를 완성하세요!', prompt: '어 부', answer: '지리', traps: ['바다', '선장', '초밥'], note: '어부지리: 두 사람 싸움에 제3자가 이득을 봄' },
+      { pack: 'idiom', catLabel: '📜 사자성어 2+2', hint: '앞 두 글자에 이어질 뒤 두 글자를 완성하세요!', prompt: '오 비', answer: '이락', traps: ['맥주', '락교', '방위'], note: '오비이락: 까마귀 날자 배 떨어진다' },
+      { pack: 'idiom', catLabel: '📜 사자성어 2+2', hint: '앞 두 글자에 이어질 뒤 두 글자를 완성하세요!', prompt: '적 반', answer: '하장', traps: ['무장', '도주', '반장'], note: '적반하장: 도둑이 도리어 매를 든다' },
+      { pack: 'idiom', catLabel: '📜 사자성어 2+2', hint: '앞 두 글자에 이어질 뒤 두 글자를 완성하세요!', prompt: '청 출', answer: '어람', traps: ['강물', '바다', '하늘'], note: '청출어람: 제자가 스승보다 더 나음' },
+      { pack: 'idiom', catLabel: '📜 사자성어 2+2', hint: '앞 두 글자에 이어질 뒤 두 글자를 완성하세요!', prompt: '화 룡', answer: '점정', traps: ['승천', '폭발', '절정'], note: '화룡점정: 용을 그리고 마지막에 눈동자를 찍음' },
+      { pack: 'idiom', catLabel: '📜 사자성어 2+2', hint: '앞 두 글자에 이어질 뒤 두 글자를 완성하세요!', prompt: '아 전', answer: '인수', traps: ['합병', '전투', '궁전'], note: '아전인수: 자기 논에만 물을 끌어넣는다' },
+      { pack: 'idiom', catLabel: '📜 사자성어 2+2', hint: '앞 두 글자에 이어질 뒤 두 글자를 완성하세요!', prompt: '죽 마', answer: '고우', traps: ['한우', '부인', '목마'], note: '죽마고우: 대나무 말을 타며 자란 어릴 적 친구' },
+      { pack: 'idiom', catLabel: '📜 사자성어 2+2', hint: '앞 두 글자에 이어질 뒤 두 글자를 완성하세요!', prompt: '박 장', answer: '대소', traps: ['박수', '교대', '중소'], note: '박장대소: 손뼉을 치며 크게 웃는다' },
+      { pack: 'idiom', catLabel: '📜 사자성어 2+2', hint: '앞 두 글자에 이어질 뒤 두 글자를 완성하세요!', prompt: '새 옹', answer: '지마', traps: ['항아리', '할배', '백마'], note: '새옹지마: 인생의 길흉화복은 예측할 수 없음' },
+      { pack: 'idiom', catLabel: '📜 사자성어 2+2', hint: '앞 두 글자에 이어질 뒤 두 글자를 완성하세요!', prompt: '사 면', answer: '초가', traps: ['바다', '초원', '한가'], note: '사면초가: 사방이 적에게 둘러싸여 고립됨' },
+
+      // 2. 속담 이어말하기 (Proverbs)
+      { pack: 'proverb', catLabel: '🐯 속담 이어말하기', hint: '속담의 뒷부분을 바르게 완성하세요!', prompt: '가는 말이 고와야...', answer: '오는 말이 곱다', traps: ['가는 정이 있다', '사람이 보인다', '목소리가 크다'], note: '가는 말이 고와야 오는 말이 곱다' },
+      { pack: 'proverb', catLabel: '🐯 속담 이어말하기', hint: '속담의 뒷부분을 바르게 완성하세요!', prompt: '낮말은 새가 듣고...', answer: '밤말은 쥐가 듣는다', traps: ['밤말은 개가 듣는다', '밤말은 벽이 듣는다', '아침말은 닭이 듣는다'], note: '낮말은 새가 듣고 밤말은 쥐가 듣는다' },
+      { pack: 'proverb', catLabel: '🐯 속담 이어말하기', hint: '속담의 뒷부분을 바르게 완성하세요!', prompt: '사공이 많으면...', answer: '배가 산으로 간다', traps: ['배가 빨리 간다', '바다로 간다', '노가 부러진다'], note: '사공이 많으면 배가 산으로 간다' },
+      { pack: 'proverb', catLabel: '🐯 속담 이어말하기', hint: '속담의 뒷부분을 바르게 완성하세요!', prompt: '호랑이도 제 말 하면...', answer: '온다', traps: ['도망간다', '으르렁댄다', '재채기한다'], note: '호랑이도 제 말 하면 온다' },
+      { pack: 'proverb', catLabel: '🐯 속담 이어말하기', hint: '속담의 뒷부분을 바르게 완성하세요!', prompt: '바늘 도둑이...', answer: '소 도둑 된다', traps: ['실 도둑 된다', '금 도둑 된다', '감옥에 간다'], note: '바늘 도둑이 소 도둑 된다' },
+      { pack: 'proverb', catLabel: '🐯 속담 이어말하기', hint: '속담의 뒷부분을 바르게 완성하세요!', prompt: '소 잃고...', answer: '외양간 고친다', traps: ['돼지 키운다', '마구간 부순다', '눈물 흘린다'], note: '소 잃고 외양간 고친다' },
+      { pack: 'proverb', catLabel: '🐯 속담 이어말하기', hint: '속담의 뒷부분을 바르게 완성하세요!', prompt: '원숭이도 나무에서...', answer: '떨어진다', traps: ['바나나 먹는다', '미끄러진다', '잠을 잔다'], note: '원숭이도 나무에서 떨어진다' },
+      { pack: 'proverb', catLabel: '🐯 속담 이어말하기', hint: '속담의 뒷부분을 바르게 완성하세요!', prompt: '등잔 밑이...', answer: '어둡다', traps: ['가장 밝다', '뜨겁다', '기름진 법이다'], note: '등잔 밑이 어둡다 (함정: 가장 밝다!)' },
+      { pack: 'proverb', catLabel: '🐯 속담 이어말하기', hint: '속담의 뒷부분을 바르게 완성하세요!', prompt: '벼는 익을수록...', answer: '고개를 숙인다', traps: ['노랗게 변한다', '밥맛이 좋다', '하늘로 솟는다'], note: '벼는 익을수록 고개를 숙인다' },
+      { pack: 'proverb', catLabel: '🐯 속담 이어말하기', hint: '속담의 뒷부분을 바르게 완성하세요!', prompt: '콩 심은 데 콩 나고...', answer: '팥 심은 데 팥 난다', traps: ['무 심은 데 무 난다', '쌀 심은 데 쌀 난다', '꽃 심은 데 꽃 난다'], note: '콩 심은 데 콩 나고 팥 심은 데 팥 난다' },
+      { pack: 'proverb', catLabel: '🐯 속담 이어말하기', hint: '속담의 뒷부분을 바르게 완성하세요!', prompt: '고래 싸움에...', answer: '새우 등 터진다', traps: ['상어 등 터진다', '오징어 다리 터진다', '바다가 갈라진다'], note: '고래 싸움에 새우 등 터진다' },
+      { pack: 'proverb', catLabel: '🐯 속담 이어말하기', hint: '속담의 뒷부분을 바르게 완성하세요!', prompt: '빈 수레가...', answer: '요란하다', traps: ['가볍다', '빨리 달린다', '굴러간다'], note: '빈 수레가 요란하다' },
+
+      // 3. 테마 초성·단어 퀴즈 (Chosung)
+      { pack: 'chosung', catLabel: '🔤 테마 초성 [야식/배달]', hint: '초성과 테마에 딱 맞는 단어를 고르세요!', prompt: 'ㅇ ㄴ ㅊ ㅋ', answer: '양념치킨', traps: ['어니언칩', '유니콘카', '오징어칼'], note: '[야식/배달] ㅇㄴㅊㅋ = 양념치킨' },
+      { pack: 'chosung', catLabel: '🔤 테마 초성 [분식/간식]', hint: '초성과 테마에 딱 맞는 단어를 고르세요!', prompt: 'ㅂ ㅇ ㅃ', answer: '붕어빵', traps: ['방울빵', '부엉이발', '볶음밥'], note: '[겨울 간식] ㅂㅇㅃ = 붕어빵' },
+      { pack: 'chosung', catLabel: '🔤 테마 초성 [과일]', hint: '초성과 테마에 딱 맞는 단어를 고르세요!', prompt: 'ㅅ ㅇ ㅁ ㅅ ㅋ', answer: '샤인머스캣', traps: ['수박맛스콘', '사과맛스틱', '생크림머핀'], note: '[과일] ㅅㅇㅁㅅㅋ = 샤인머스캣' },
+      { pack: 'chosung', catLabel: '🔤 테마 초성 [동물]', hint: '초성과 테마에 딱 맞는 단어를 고르세요!', prompt: 'ㅂ ㄱ ㄱ', answer: '북극곰', traps: ['불고기감', '바닷가재', '방구석곰'], note: '[동물] ㅂㄱㄱ = 북극곰' },
+      { pack: 'chosung', catLabel: '🔤 테마 초성 [인기 게임]', hint: '초성과 테마에 딱 맞는 단어를 고르세요!', prompt: 'ㅁ ㅇ ㄴ ㅋ ㄹ ㅍ ㅌ', answer: '마인크래프트', traps: ['메이플스토리', '몬스터헌터', '마리오카트'], note: '[게임] ㅁㅇㄴㅋㄹㅍㅌ = 마인크래프트' },
+      { pack: 'chosung', catLabel: '🔤 테마 초성 [중식 요리]', hint: '초성과 테마에 딱 맞는 단어를 고르세요!', prompt: 'ㅌ ㅅ ㅇ', answer: '탕수육', traps: ['통삼겹', '탄산음료', '토마토즙'], note: '[중식 요리] ㅌㅅㅇ = 탕수육' },
+      { pack: 'chosung', catLabel: '🔤 테마 초성 [카페 음료]', hint: '초성과 테마에 딱 맞는 단어를 고르세요!', prompt: 'ㅇ ㅇ ㅅ ㅇ ㅁ ㄹ ㅋ ㄴ', answer: '아이스아메리카노', traps: ['아이스초코라떼', '에스프레소마키아토', '아포가토스무디'], note: '[카페 음료] 얼죽아 필수! 아이스아메리카노' },
+      { pack: 'chosung', catLabel: '🔤 테마 초성 [전자기기]', hint: '초성과 테마에 딱 맞는 단어를 고르세요!', prompt: 'ㅂ ㄹ ㅌ ㅅ ㅇ ㅇ ㅍ', answer: '블루투스이어폰', traps: ['보조배터리충전', '기계식게이밍키보드', '스마트워치스트랩'], note: '[전자기기] ㅂㄹㅌㅅㅇㅇㅍ = 블루투스이어폰' },
+
+      // 4. 세계 수도 & 상식 (World Capitals & Trivia — Famous Traps!)
+      { pack: 'capital', catLabel: '🌍 세계 수도 함정 주의!', hint: '최대 도시가 아닌 진짜 수도를 고르세요!', prompt: '호주(오스트레일리아)의 수도는?', answer: '캔버라', traps: ['시드니', '멜버른', '브리즈번'], note: '호주의 수도는 시드니가 아니라 [캔버라]입니다!' },
+      { pack: 'capital', catLabel: '🌍 세계 수도 함정 주의!', hint: '최대 도시가 아닌 진짜 수도를 고르세요!', prompt: '캐나다의 수도는?', answer: '오타와', traps: ['토론토', '밴쿠버', '몬트리올'], note: '캐나다의 수도는 토론토/밴쿠버가 아니라 [오타와]입니다!' },
+      { pack: 'capital', catLabel: '🌍 세계 수도 함정 주의!', hint: '최대 도시가 아닌 진짜 수도를 고르세요!', prompt: '미국의 수도는?', answer: '워싱턴 D.C.', traps: ['뉴욕', '로스앤젤레스', '시카고'], note: '미국의 수도는 뉴욕이 아니라 [워싱턴 D.C.]입니다!' },
+      { pack: 'capital', catLabel: '🌍 세계 수도 함정 주의!', hint: '최대 도시가 아닌 진짜 수도를 고르세요!', prompt: '브라질의 수도는?', answer: '브라질리아', traps: ['리우데자네이루', '상파울루', '부카레스트'], note: '브라질의 수도는 리우가 아니라 [브라질리아]입니다!' },
+      { pack: 'capital', catLabel: '🌍 세계 수도 함정 주의!', hint: '최대 도시가 아닌 진짜 수도를 고르세요!', prompt: '튀르키예(터키)의 수도는?', answer: '앙카라', traps: ['이스탄불', '카파도키아', '안탈리아'], note: '튀르키예의 수도는 이스탄불이 아니라 [앙카라]입니다!' },
+      { pack: 'capital', catLabel: '🌍 세계 수도 함정 주의!', hint: '최대 도시가 아닌 진짜 수도를 고르세요!', prompt: '스위스의 사실상 수도(연방도시)는?', answer: '베른', traps: ['취리히', '제네바', '인터라켄'], note: '스위스의 연방 수도는 취리히/제네바가 아니라 [베른]입니다!' },
+      { pack: 'capital', catLabel: '🌍 세계 수도 함정 주의!', hint: '최대 도시가 아닌 진짜 수도를 고르세요!', prompt: '베트남의 수도는?', answer: '하노이', traps: ['호찌민', '다낭', '나트랑'], note: '베트남의 수도는 호찌민이 아니라 [하노이]입니다!' },
+      { pack: 'capital', catLabel: '🌍 세계 수도 함정 주의!', hint: '최대 도시가 아닌 진짜 수도를 고르세요!', prompt: '인도의 수도는?', answer: '뉴델리', traps: ['뭄바이', '콜카타', '방갈로르'], note: '인도의 수도는 뭄바이가 아니라 [뉴델리]입니다!' },
+      { pack: 'capital', catLabel: '🌍 순발력 상식 함정!', hint: '3초 안에 낚이지 않고 정답을 고르세요!', prompt: '물(H2O)이 어는점(1기압)은 몇 도?', answer: '0°C', traps: ['100°C', '-10°C', '36.5°C'], note: '물이 끓는점은 100°C, 어는점은 [0°C]입니다!' },
+      { pack: 'capital', catLabel: '🌍 순발력 상식 함정!', hint: '3초 안에 낚이지 않고 정답을 고르세요!', prompt: '태양계에서 가장 큰 행성은?', answer: '목성', traps: ['토성', '태양', '지구'], note: '태양은 항성이며, 가장 큰 행성은 [목성]입니다!' },
+      { pack: 'capital', catLabel: '🌍 순발력 상식 함정!', hint: '3초 안에 낚이지 않고 정답을 고르세요!', prompt: '거북선이 활약한 해전 장군은?', answer: '이순신', traps: ['강감찬', '을지문덕', '장보고'], note: '거북선과 한산도 대첩의 주인공은 [이순신] 장군입니다!' },
+      { pack: 'capital', catLabel: '🌍 순발력 상식 함정!', hint: '3초 안에 낚이지 않고 정답을 고르세요!', prompt: '1년 중 31일까지 있는 달은 총 몇 개?', answer: '7개', traps: ['6개', '5개', '8개'], note: '1, 3, 5, 7, 8, 10, 12월로 총 [7개]입니다!' }
+    ];
+
+    const EN_QUESTIONS: QuizItem[] = [
+      { pack: 'idiom', catLabel: '📜 Phrase Relay', hint: 'Complete the famous English compound phrase!', prompt: 'Peanut Butter & ...', answer: 'Jelly', traps: ['Cheese', 'Mustard', 'Steak'], note: 'Peanut Butter & Jelly!' },
+      { pack: 'idiom', catLabel: '📜 Phrase Relay', hint: 'Complete the famous English compound phrase!', prompt: 'Rock, Paper, ...', answer: 'Scissors', traps: ['Hammer', 'Stone', 'Laser'], note: 'Rock, Paper, Scissors!' },
+      { pack: 'idiom', catLabel: '📜 Phrase Relay', hint: 'Complete the famous English compound phrase!', prompt: 'Hide and ...', answer: 'Seek', traps: ['Run', 'Sleep', 'Jump'], note: 'Hide and Seek!' },
+      { pack: 'idiom', catLabel: '📜 Phrase Relay', hint: 'Complete the famous English compound phrase!', prompt: 'Supply and ...', answer: 'Demand', traps: ['Refund', 'Market', 'Discount'], note: 'Supply and Demand!' },
+      { pack: 'proverb', catLabel: '🐯 Proverb Relay', hint: 'Complete the second half of the proverb!', prompt: 'Actions speak louder than...', answer: 'Words', traps: ['Megaphones', 'Thoughts', 'Promises'], note: 'Actions speak louder than words!' },
+      { pack: 'proverb', catLabel: '🐯 Proverb Relay', hint: 'Complete the second half of the proverb!', prompt: 'Better late than...', answer: 'Never', traps: ['Early', 'Tomorrow', 'Always'], note: 'Better late than never!' },
+      { pack: 'proverb', catLabel: '🐯 Proverb Relay', hint: 'Complete the second half of the proverb!', prompt: 'Don’t judge a book by its...', answer: 'Cover', traps: ['Title', 'Author', 'Price'], note: 'Don’t judge a book by its cover!' },
+      { pack: 'chosung', catLabel: '🔤 Word Clue [Fast Food]', hint: 'Pick the word matching the initials & category!', prompt: 'F . F . (Crispy Potato)', answer: 'French Fries', traps: ['Fried Fish', 'Fruit Flan', 'Fresh Fig'], note: 'F.F. = French Fries!' },
+      { pack: 'chosung', catLabel: '🔤 Word Clue [Streaming]', hint: 'Pick the word matching the initials & category!', prompt: 'B . R . B .', answer: 'Be Right Back', traps: ['Big Red Button', 'Best Raid Boss', 'Bad RNG Buff'], note: 'BRB = Be Right Back!' },
+      { pack: 'capital', catLabel: '🌍 Capital City Trap!', hint: 'Do NOT pick the largest city by mistake!', prompt: 'Capital of Australia?', answer: 'Canberra', traps: ['Sydney', 'Melbourne', 'Brisbane'], note: 'The capital of Australia is Canberra, not Sydney!' },
+      { pack: 'capital', catLabel: '🌍 Capital City Trap!', hint: 'Do NOT pick the largest city by mistake!', prompt: 'Capital of Canada?', answer: 'Ottawa', traps: ['Toronto', 'Vancouver', 'Montreal'], note: 'The capital of Canada is Ottawa, not Toronto!' },
+      { pack: 'capital', catLabel: '🌍 Capital City Trap!', hint: 'Do NOT pick the largest city by mistake!', prompt: 'Capital of Brazil?', answer: 'Brasília', traps: ['Rio de Janeiro', 'São Paulo', 'Salvador'], note: 'The capital of Brazil is Brasília, not Rio!' },
+      { pack: 'capital', catLabel: '🌍 Capital City Trap!', hint: 'Do NOT pick the largest city by mistake!', prompt: 'Capital of Turkey?', answer: 'Ankara', traps: ['Istanbul', 'Antalya', 'Izmir'], note: 'The capital of Turkey is Ankara, not Istanbul!' },
+      { pack: 'capital', catLabel: '🌍 Capital City Trap!', hint: 'Do NOT pick the largest city by mistake!', prompt: 'Capital of Switzerland?', answer: 'Bern', traps: ['Zurich', 'Geneva', 'Basel'], note: 'The federal city of Switzerland is Bern, not Zurich!' }
+    ];
+
+    interface ReflexTier {
+      minStreak: number;
+      code: string;
+      emoji: string;
+      koTitle: string;
+      enTitle: string;
+    }
+
+    const REFLEX_TIERS: ReflexTier[] = [
+      { minStreak: 20, code: 'SSS+', emoji: '👑', koTitle: '나영석 PD도 무릎 꿇은 인간 자판기', enTitle: 'Legendary Variety Show God' },
+      { minStreak: 14, code: 'SSS',  emoji: '⚡', koTitle: '상위 0.5% 빛의 시냅스 순발력', enTitle: 'Top 0.5% Lightning Synapse' },
+      { minStreak: 10, code: 'SS',   emoji: '🔥', koTitle: '예능 에이스 메인 MC급 반사신경', enTitle: 'Main MC Ace Reflex' },
+      { minStreak: 6,  code: 'S',    emoji: '🗣️', koTitle: '든든한 1인분 순발력 보유자', enTitle: 'Solid Quick Thinker' },
+      { minStreak: 3,  code: 'A',    emoji: '😅', koTitle: '카운트다운 소리에 심장 떨리는 일반인', enTitle: 'Slightly Nervous Under Pressure' },
+      { minStreak: 0,  code: 'C',    emoji: '🫠', koTitle: '"동문... 수학?!" 3초 뇌정지 엔딩', enTitle: '3-Second Brain Freeze Victim' }
+    ];
+
+    function getTier(maxStreak: number): ReflexTier {
+      for (const t of REFLEX_TIERS) {
+        if (maxStreak >= t.minStreak) return t;
+      }
+      return REFLEX_TIERS[REFLEX_TIERS.length - 1];
+    }
+
+    // Web Audio Synthesizer (Ticking Clock + DingDongDaeng Xylophone + Buzzer)
+    let audioCtx: AudioContext | null = null;
+    let soundEnabled = true;
+
+    function ensureAudio() {
+      if (!soundEnabled) return null;
+      if (!audioCtx) {
+        const AC = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        if (AC) audioCtx = new AC();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+      }
+      return audioCtx;
+    }
+
+    function playSfx(type: 'tick' | 'correct' | 'wrong' | 'reveal' | 'start') {
+      const ctx = ensureAudio();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+
+      if (type === 'tick') {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(820, now);
+        osc.frequency.exponentialRampToValueAtTime(420, now + 0.04);
+        gain.gain.setValueAtTime(0.11, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.05);
+      } else if (type === 'correct') {
+        // Ding-Dong-Daeng! (C5 - E5 - G5 - C6)
+        [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + i * 0.055);
+          gain.gain.setValueAtTime(0.16, now + i * 0.055);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.055 + 0.22);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + i * 0.055);
+          osc.stop(now + i * 0.055 + 0.23);
+        });
+      } else if (type === 'wrong') {
+        // Variety Show "TTAENG!!" Buzzer
+        [145, 138].forEach((freq) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(freq, now);
+          osc.frequency.linearRampToValueAtTime(freq * 0.82, now + 0.34);
+          gain.gain.setValueAtTime(0.16, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.36);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.37);
+        });
+      } else if (type === 'reveal') {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, now);
+        osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
+        gain.gain.setValueAtTime(0.14, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.15);
+      } else if (type === 'start') {
+        [440, 554.37, 659.25].forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + i * 0.06);
+          gain.gain.setValueAtTime(0.14, now + i * 0.06);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.06 + 0.16);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + i * 0.06);
+          osc.stop(now + i * 0.06 + 0.17);
+        });
+      }
+    }
+
+    // Custom Questions Persistence
+    const CUSTOM_KEY = 'el_tsq_custom_v1';
+    function loadCustomQuestions(): QuizItem[] {
+      try {
+        const raw = localStorage.getItem(CUSTOM_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    let customQuestions = loadCustomQuestions();
+
+    // State
+    type PlayStyle = 'choice' | 'voice';
+    const state = {
+      style: 'choice' as PlayStyle,
+      pack: 'all' as 'all' | PackId,
+      limitSec: 3.0,
+      running: false,
+      awaitingJudge: false,
+      deck: [] as QuizItem[],
+      currentQ: null as QuizItem | null,
+      currentChoices: [] as string[],
+      correctChoiceIdx: 0,
+      qIndex: 0,
+      lives: 3,
+      streak: 0,
+      maxStreak: 0,
+      score: 0,
+      totalAsked: 0,
+      totalCorrect: 0,
+      totalAnswerMs: 0,
+      qStartMs: 0,
+      timeLeft: 3.0,
+      lastTickInt: 3,
+      lastMissedSummary: '-',
+      timerId: 0 as unknown as number
+    };
+
+    // DOM Elements
+    const elHudStreak = document.getElementById('hud-streak')!;
+    const elHudMaxStreak = document.getElementById('hud-max-streak')!;
+    const elHudLives = document.getElementById('hud-lives')!;
+    const elHudTimer = document.getElementById('hud-timer')!;
+    const elTimerFill = document.getElementById('timer-gauge-fill')!;
+    const elHudScore = document.getElementById('hud-score')!;
+    const elHudQCount = document.getElementById('hud-q-count')!;
+
+    const elMonitor = document.getElementById('tsq-monitor')!;
+    const elCatBadge = document.getElementById('q-category-badge')!;
+    const elSubHint = document.getElementById('q-subhint')!;
+    const elPromptText = document.getElementById('q-prompt-text')!;
+    const elAnswerSlot = document.getElementById('q-answer-slot')!;
+    const elFeedback = document.getElementById('q-feedback')!;
+    const elFbVerdict = document.getElementById('fb-verdict')!;
+    const elFbDetail = document.getElementById('fb-detail')!;
+
+    const elChoicesGrid = document.getElementById('choices-grid')!;
+    const elVoiceControls = document.getElementById('voice-controls')!;
+    const btnVoiceReveal = document.getElementById('btn-voice-reveal') as HTMLButtonElement;
+    const btnVoicePass = document.getElementById('btn-voice-pass') as HTMLButtonElement;
+    const btnVoiceFail = document.getElementById('btn-voice-fail') as HTMLButtonElement;
+
+    const elOverlay = document.getElementById('tsq-overlay')!;
+    const elOvTitle = document.getElementById('ov-title')!;
+    const elOvDesc = document.getElementById('ov-desc')!;
+    const elOvStatsGrid = document.getElementById('ov-stats-grid')!;
+    const elOvFinalStreak = document.getElementById('ov-final-streak')!;
+    const elOvFinalTier = document.getElementById('ov-final-tier')!;
+    const elOvFinalSpeed = document.getElementById('ov-final-speed')!;
+    const elOvLastMissed = document.getElementById('ov-last-missed')!;
+    const btnStartQuiz = document.getElementById('btn-start-quiz')!;
+    const btnStartText = document.getElementById('btn-start-text')!;
+    const btnRestartQuiz = document.getElementById('btn-restart-quiz')!;
+
+    // Sidebar DOM
+    const elDiagEmoji = document.getElementById('diag-emoji')!;
+    const elDiagCode = document.getElementById('diag-code')!;
+    const elDiagTitle = document.getElementById('diag-title')!;
+    const elDiagCleared = document.getElementById('diag-cleared')!;
+    const elDiagStreak = document.getElementById('diag-streak')!;
+    const elDiagAvgSec = document.getElementById('diag-avg-sec')!;
+    const elDiagAcc = document.getElementById('diag-acc')!;
+    const btnCopyReport = document.getElementById('btn-copy-report')!;
+    const elCopyReportText = document.getElementById('copy-report-text')!;
+
+    const customForm = document.getElementById('custom-q-form') as HTMLFormElement;
+    const inputCustomPrompt = document.getElementById('custom-prompt') as HTMLInputElement;
+    const inputCustomAnswer = document.getElementById('custom-answer') as HTMLInputElement;
+    const inputCustomTrap = document.getElementById('custom-trap') as HTMLInputElement;
+    const elCustomCnt = document.getElementById('custom-cnt')!;
+
+    const elChallengerName = document.getElementById('challenger-name') as HTMLInputElement;
+    const elLbList = document.getElementById('lb-list')!;
+    const btnClearLb = document.getElementById('btn-clear-lb')!;
+
+    function shuffle<T>(arr: T[]): T[] {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function buildDeck() {
+      const basePool = isEn ? EN_QUESTIONS : KO_QUESTIONS;
+      const combined = [...customQuestions, ...basePool];
+      const filtered = state.pack === 'all'
+        ? combined
+        : combined.filter((q) => q.pack === state.pack || q.pack === 'custom');
+      state.deck = shuffle(filtered.length > 0 ? filtered : combined);
+      state.qIndex = 0;
+    }
+
+    function updateHud() {
+      elHudStreak.textContent = isEn ? `${state.streak} 🔥` : `${state.streak}연속 🔥`;
+      elHudMaxStreak.textContent = isEn ? `Best ${state.maxStreak}` : `최고 ${state.maxStreak}연속`;
+      elHudLives.textContent = '❤️'.repeat(Math.max(0, state.lives)) + '🖤'.repeat(Math.max(0, 3 - state.lives));
+      elHudScore.textContent = state.score.toLocaleString();
+      elHudQCount.textContent = `Q. ${state.totalAsked + 1}`;
+
+      const clamped = Math.max(0, state.timeLeft);
+      elHudTimer.textContent = `${clamped.toFixed(2)}s`;
+      const pct = Math.min(100, (clamped / state.limitSec) * 100);
+      elTimerFill.style.width = `${pct}%`;
+
+      if (clamped <= 1.0) {
+        elTimerFill.style.background = 'linear-gradient(90deg, #ef4444, #f97316)';
+        elHudTimer.classList.add('danger');
+      } else {
+        elTimerFill.style.background = 'linear-gradient(90deg, #10b981, #38bdf8)';
+        elHudTimer.classList.remove('danger');
+      }
+
+      // Update live diagnosis
+      const tier = getTier(state.maxStreak);
+      elDiagEmoji.textContent = tier.emoji;
+      elDiagCode.textContent = `GRADE ${tier.code}`;
+      elDiagTitle.textContent = isEn ? tier.enTitle : tier.koTitle;
+      elDiagCleared.textContent = isEn ? `${state.totalCorrect}` : `${state.totalCorrect}문제`;
+      elDiagStreak.textContent = isEn ? `${state.maxStreak} Streak` : `${state.maxStreak}연속`;
+      elDiagAvgSec.textContent = state.totalCorrect > 0
+        ? `${(state.totalAnswerMs / state.totalCorrect / 1000).toFixed(2)}s`
+        : '-';
+      const acc = state.totalAsked > 0 ? Math.round((state.totalCorrect / state.totalAsked) * 100) : 100;
+      elDiagAcc.textContent = `${acc}%`;
+    }
+
+    function nextQuestion() {
+      clearInterval(state.timerId);
+      if (state.qIndex >= state.deck.length) {
+        buildDeck();
+      }
+      const q = state.deck[state.qIndex++];
+      state.currentQ = q;
+      state.awaitingJudge = false;
+      state.timeLeft = state.limitSec;
+      state.lastTickInt = Math.ceil(state.limitSec);
+      state.qStartMs = performance.now();
+
+      elMonitor.classList.remove('correct-glow', 'wrong-shake');
+      elFeedback.hidden = true;
+      elCatBadge.textContent = q.catLabel;
+      elSubHint.textContent = q.hint;
+      elPromptText.textContent = q.prompt;
+      elAnswerSlot.textContent = '???';
+      elAnswerSlot.className = 'prompt-answer-slot';
+
+      if (state.style === 'choice') {
+        elChoicesGrid.hidden = false;
+        elVoiceControls.hidden = true;
+
+        const allOpts = shuffle([q.answer, ...q.traps.slice(0, 3)]);
+        state.currentChoices = allOpts;
+        state.correctChoiceIdx = allOpts.indexOf(q.answer);
+
+        const btns = elChoicesGrid.querySelectorAll<HTMLButtonElement>('.tsq-choice-btn');
+        btns.forEach((btn, idx) => {
+          btn.disabled = false;
+          btn.className = 'tsq-choice-btn';
+          const txtEl = btn.querySelector('.c-text')!;
+          txtEl.textContent = allOpts[idx] || '-';
+        });
+      } else {
+        elChoicesGrid.hidden = true;
+        elVoiceControls.hidden = false;
+        btnVoiceReveal.disabled = false;
+        btnVoicePass.disabled = true;
+        btnVoiceFail.disabled = true;
+      }
+
+      updateHud();
+      playSfx('tick');
+
+      let lastNow = performance.now();
+      state.timerId = window.setInterval(() => {
+        if (!state.running || state.awaitingJudge) return;
+        const now = performance.now();
+        const dt = (now - lastNow) / 1000;
+        lastNow = now;
+        state.timeLeft -= dt;
+
+        const curCeil = Math.ceil(state.timeLeft);
+        if (curCeil < state.lastTickInt && curCeil > 0) {
+          state.lastTickInt = curCeil;
+          playSfx('tick');
+        }
+
+        if (state.timeLeft <= 0) {
+          state.timeLeft = 0;
+          updateHud();
+          handleTimeout();
+        } else {
+          updateHud();
+        }
+      }, 40);
+    }
+
+    function handleChoicePick(choiceIdx: number) {
+      if (!state.running || state.awaitingJudge || state.style !== 'choice' || !state.currentQ) return;
+      clearInterval(state.timerId);
+      state.awaitingJudge = true;
+      state.totalAsked++;
+
+      const q = state.currentQ;
+      const elapsedMs = performance.now() - state.qStartMs;
+      const btns = elChoicesGrid.querySelectorAll<HTMLButtonElement>('.tsq-choice-btn');
+      btns.forEach((b) => (b.disabled = true));
+
+      elAnswerSlot.textContent = q.answer;
+
+      if (choiceIdx === state.correctChoiceIdx) {
+        // Correct!
+        state.totalCorrect++;
+        state.totalAnswerMs += elapsedMs;
+        state.streak++;
+        if (state.streak > state.maxStreak) state.maxStreak = state.streak;
+
+        const speedBonus = Math.max(20, Math.round((state.limitSec * 1000 - elapsedMs) / 15));
+        state.score += 200 + state.streak * 50 + speedBonus;
+
+        btns[choiceIdx]?.classList.add('choice-correct');
+        elAnswerSlot.classList.add('revealed-ok');
+        elMonitor.classList.add('correct-glow');
+        elFeedback.hidden = false;
+        elFbVerdict.textContent = L.verdictCorrect;
+        elFbVerdict.className = 'fb-verdict ok';
+        elFbDetail.textContent = q.note;
+        playSfx('correct');
+        updateHud();
+
+        setTimeout(() => {
+          if (state.running) nextQuestion();
+        }, 950);
+      } else {
+        // Wrong Trap Picked!
+        state.streak = 0;
+        state.lives--;
+        state.lastMissedSummary = `${q.prompt} → ${q.answer}`;
+
+        btns[choiceIdx]?.classList.add('choice-wrong');
+        btns[state.correctChoiceIdx]?.classList.add('choice-correct');
+        elAnswerSlot.classList.add('revealed-fail');
+        elMonitor.classList.add('wrong-shake');
+        elFeedback.hidden = false;
+        elFbVerdict.textContent = L.verdictWrong;
+        elFbVerdict.className = 'fb-verdict fail';
+        elFbDetail.textContent = q.note;
+        playSfx('wrong');
+        updateHud();
+
+        setTimeout(() => {
+          if (!state.running) return;
+          if (state.lives <= 0) finishQuizShow();
+          else nextQuestion();
+        }, 1500);
+      }
+    }
+
+    function handleTimeout() {
+      if (!state.currentQ) return;
+      clearInterval(state.timerId);
+      state.awaitingJudge = true;
+      const q = state.currentQ;
+
+      if (state.style === 'choice') {
+        state.totalAsked++;
+        state.streak = 0;
+        state.lives--;
+        state.lastMissedSummary = `${q.prompt} → ${q.answer}`;
+
+        const btns = elChoicesGrid.querySelectorAll<HTMLButtonElement>('.tsq-choice-btn');
+        btns.forEach((b) => (b.disabled = true));
+        btns[state.correctChoiceIdx]?.classList.add('choice-correct');
+
+        elAnswerSlot.textContent = q.answer;
+        elAnswerSlot.classList.add('revealed-fail');
+        elMonitor.classList.add('wrong-shake');
+        elFeedback.hidden = false;
+        elFbVerdict.textContent = L.verdictTimeout;
+        elFbVerdict.className = 'fb-verdict fail';
+        elFbDetail.textContent = q.note;
+        playSfx('wrong');
+        updateHud();
+
+        setTimeout(() => {
+          if (!state.running) return;
+          if (state.lives <= 0) finishQuizShow();
+          else nextQuestion();
+        }, 1550);
+      } else {
+        // In Voice Host mode, timeout reveals the answer and lets the host judge O or X
+        revealVoiceAnswer();
+      }
+    }
+
+    function revealVoiceAnswer() {
+      if (!state.currentQ) return;
+      clearInterval(state.timerId);
+      state.awaitingJudge = true;
+      const q = state.currentQ;
+
+      elAnswerSlot.textContent = q.answer;
+      elAnswerSlot.classList.add('revealed-ok');
+      elFeedback.hidden = false;
+      elFbVerdict.textContent = isEn ? `👀 Answer: ${q.answer}` : `👀 정답 공개: [ ${q.answer} ]`;
+      elFbVerdict.className = 'fb-verdict ok';
+      elFbDetail.textContent = `${q.note} (함정 주의: ${q.traps.join(', ')})`;
+
+      btnVoiceReveal.disabled = true;
+      btnVoicePass.disabled = false;
+      btnVoiceFail.disabled = false;
+      playSfx('reveal');
+    }
+
+    function judgeVoiceResult(passed: boolean) {
+      if (!state.running || state.style !== 'voice' || !state.currentQ) return;
+      if (!state.awaitingJudge) {
+        revealVoiceAnswer();
+      }
+      state.totalAsked++;
+      const q = state.currentQ;
+
+      if (passed) {
+        state.totalCorrect++;
+        state.totalAnswerMs += 1800;
+        state.streak++;
+        if (state.streak > state.maxStreak) state.maxStreak = state.streak;
+        state.score += 250 + state.streak * 60;
+        playSfx('correct');
+        updateHud();
+        nextQuestion();
+      } else {
+        state.streak = 0;
+        state.lives--;
+        state.lastMissedSummary = `${q.prompt} → ${q.answer}`;
+        playSfx('wrong');
+        updateHud();
+        if (state.lives <= 0) {
+          finishQuizShow();
+        } else {
+          nextQuestion();
+        }
+      }
+    }
+
+    function startQuizShow() {
+      clearInterval(state.timerId);
+      state.running = true;
+      state.lives = 3;
+      state.streak = 0;
+      state.maxStreak = 0;
+      state.score = 0;
+      state.totalAsked = 0;
+      state.totalCorrect = 0;
+      state.totalAnswerMs = 0;
+      state.lastMissedSummary = '-';
+
+      buildDeck();
+      elOverlay.classList.add('hidden');
+      playSfx('start');
+      nextQuestion();
+    }
+
+    function finishQuizShow() {
+      state.running = false;
+      clearInterval(state.timerId);
+      const tier = getTier(state.maxStreak);
+      const tierTitle = isEn ? tier.enTitle : tier.koTitle;
+      const avgSec = state.totalCorrect > 0
+        ? `${(state.totalAnswerMs / state.totalCorrect / 1000).toFixed(2)}s`
+        : '-';
+
+      elOvTitle.textContent = isEn
+        ? `Best Streak: ${state.maxStreak}! [${tier.emoji} ${tier.code}]`
+        : `최고 ${state.maxStreak}연속 정답! [${tier.emoji} ${tier.code}]`;
+      elOvDesc.textContent = isEn ? tier.enTitle : tier.koTitle;
+
+      elOvStatsGrid.hidden = false;
+      elOvFinalStreak.textContent = isEn ? `${state.maxStreak} Streak (${state.score.toLocaleString()} pts)` : `${state.maxStreak}연속 (${state.score.toLocaleString()}점)`;
+      elOvFinalTier.textContent = `${tier.emoji} ${tierTitle}`;
+      elOvFinalSpeed.textContent = avgSec;
+      elOvLastMissed.textContent = state.lastMissedSummary;
+
+      btnStartText.textContent = L.btnRetry;
+      elOverlay.classList.remove('hidden');
+
+      saveRecordToLeaderboard(state.maxStreak, state.score, tier);
+    }
+
+    // Leaderboard Persistence
+    const LB_KEY = 'el_three_sec_quiz_lb_v1';
+    interface LbEntry {
+      name: string;
+      maxStreak: number;
+      score: number;
+      tierEmoji: string;
+      tierCode: string;
+    }
+
+    function loadLb(): LbEntry[] {
+      try {
+        const raw = localStorage.getItem(LB_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveRecordToLeaderboard(maxStreak: number, score: number, tier: ReflexTier) {
+      if (score <= 0 && maxStreak <= 0) return;
+      const name = (elChallengerName.value || L.defaultPlayer).trim().slice(0, 18);
+      const list = loadLb();
+      list.push({
+        name,
+        maxStreak,
+        score,
+        tierEmoji: tier.emoji,
+        tierCode: tier.code
+      });
+      list.sort((a, b) => b.maxStreak - a.maxStreak || b.score - a.score);
+      try {
+        localStorage.setItem(LB_KEY, JSON.stringify(list.slice(0, 12)));
+      } catch {}
+      renderLb();
+    }
+
+    function renderLb() {
+      const list = loadLb();
+      if (list.length === 0) {
+        elLbList.innerHTML = `<li class="lb-empty">${L.lbEmpty}</li>`;
+        return;
+      }
+      elLbList.innerHTML = list
+        .map((item, idx) => {
+          const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}.`;
+          return `
+            <li class="lb-item ${idx === 0 ? 'top-1' : ''}">
+              <span class="lb-rank">${medal}</span>
+              <span class="lb-name">${escapeHtml(item.name)}</span>
+              <span class="lb-stage">${isEn ? `${item.maxStreak} Streak` : `${item.maxStreak}연속`}</span>
+              <span class="lb-tier">${item.tierEmoji} ${item.tierCode}</span>
+            </li>
+          `;
+        })
+        .join('');
+    }
+
+    function escapeHtml(s: string): string {
+      return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] || c));
+    }
+
+    // Event Listeners
+    document.querySelectorAll<HTMLButtonElement>('.tsq-style-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const st = btn.dataset.style as PlayStyle;
+        if (!st) return;
+        state.style = st;
+        document.querySelectorAll('.tsq-style-btn').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        startQuizShow();
+      });
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('.tsq-sec-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const sec = parseFloat(btn.dataset.sec || '3');
+        state.limitSec = sec;
+        document.querySelectorAll('.tsq-sec-btn').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        startQuizShow();
+      });
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('.tsq-pack-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const pk = btn.dataset.pack as 'all' | PackId;
+        if (!pk) return;
+        state.pack = pk;
+        document.querySelectorAll('.tsq-pack-btn').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        startQuizShow();
+      });
+    });
+
+    const btnSoundToggle = document.getElementById('btn-sound-toggle')!;
+    const elSoundIcon = document.getElementById('sound-icon')!;
+    btnSoundToggle.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      btnSoundToggle.classList.toggle('active', soundEnabled);
+      elSoundIcon.textContent = soundEnabled ? '🔊' : '🔇';
+    });
+
+    elChoicesGrid.querySelectorAll<HTMLButtonElement>('.tsq-choice-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.dataset.idx || '0', 10);
+        handleChoicePick(idx);
+      });
+    });
+
+    btnVoiceReveal.addEventListener('click', () => revealVoiceAnswer());
+    btnVoicePass.addEventListener('click', () => judgeVoiceResult(true));
+    btnVoiceFail.addEventListener('click', () => judgeVoiceResult(false));
+
+    btnStartQuiz.addEventListener('click', () => startQuizShow());
+    btnRestartQuiz.addEventListener('click', () => startQuizShow());
+
+    window.addEventListener('keydown', (e) => {
+      const tag = document.activeElement?.tagName.toLowerCase();
+      if (tag === 'input' || tag === 'textarea') return;
+
+      if (e.code === 'Space') {
+        e.preventDefault();
+        if (!state.running) {
+          startQuizShow();
+        } else if (state.style === 'voice' && !state.awaitingJudge) {
+          revealVoiceAnswer();
+        }
+      } else if (state.running && state.style === 'choice' && !state.awaitingJudge) {
+        if (e.key === '1') handleChoicePick(0);
+        else if (e.key === '2') handleChoicePick(1);
+        else if (e.key === '3') handleChoicePick(2);
+        else if (e.key === '4') handleChoicePick(3);
+      } else if (state.running && state.style === 'voice') {
+        if (e.key === 'o' || e.key === 'O' || e.key === 'ArrowLeft') {
+          e.preventDefault();
+          judgeVoiceResult(true);
+        } else if (e.key === 'x' || e.key === 'X' || e.key === 'ArrowRight') {
+          e.preventDefault();
+          judgeVoiceResult(false);
+        }
+      } else if (e.key === 'r' || e.key === 'R') {
+        e.preventDefault();
+        startQuizShow();
+      }
+    });
+
+    // Custom Question Form
+    function updateCustomCountUI() {
+      if (elCustomCnt) elCustomCnt.textContent = String(customQuestions.length);
+    }
+
+    customForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const prompt = inputCustomPrompt.value.trim();
+      const answer = inputCustomAnswer.value.trim();
+      const rawTraps = inputCustomTrap.value
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+      if (!prompt || !answer) return;
+
+      const traps = rawTraps.length >= 3
+        ? rawTraps.slice(0, 3)
+        : [...rawTraps, '모르겠음!', '패스!', '선생님!'].slice(0, 3);
+
+      const newQ: QuizItem = {
+        pack: 'custom',
+        catLabel: '✏️ 방송 커스텀 문제',
+        hint: '스트리머가 직접 출제한 커스텀 순발력 문제!',
+        prompt,
+        answer,
+        traps,
+        note: `커스텀 정답: ${prompt} → ${answer}`
+      };
+
+      customQuestions.unshift(newQ);
+      try {
+        localStorage.setItem(CUSTOM_KEY, JSON.stringify(customQuestions.slice(0, 50)));
+      } catch {}
+
+      inputCustomPrompt.value = '';
+      inputCustomAnswer.value = '';
+      inputCustomTrap.value = '';
+      updateCustomCountUI();
+      buildDeck();
+    });
+
+    btnCopyReport.addEventListener('click', () => {
+      const tier = getTier(state.maxStreak);
+      const name = (elChallengerName.value || L.defaultPlayer).trim();
+      const acc = state.totalAsked > 0 ? Math.round((state.totalCorrect / state.totalAsked) * 100) : 100;
+      const avgSec = state.totalCorrect > 0
+        ? `${(state.totalAnswerMs / state.totalCorrect / 1000).toFixed(2)}s`
+        : '-';
+      const text = isEn
+        ? `🗣️ [3-Second Quiz Reflex Report] ${name} | Best Streak: ${state.maxStreak} (${state.score.toLocaleString()} pts) | Grade: ${tier.emoji} ${tier.code} (${tier.enTitle}) | Avg Speed: ${avgSec} | Accuracy: ${acc}% — https://errorledger.com/en/games/three-sec-quiz`
+        : `🗣️ [3초 순발력 퀴즈 판독서] ${name}님 | 최고 연속정답: ${state.maxStreak}연속 (${state.score.toLocaleString()}점) | 등급: ${tier.emoji} ${tier.code} (${tier.koTitle}) | 평균 반응: ${avgSec} | 정답률: ${acc}% — https://errorledger.com/games/three-sec-quiz`;
+      navigator.clipboard?.writeText(text).then(() => {
+        const orig = L.btnCopyReport;
+        elCopyReportText.textContent = L.copiedReport;
+        setTimeout(() => {
+          elCopyReportText.textContent = orig;
+        }, 2000);
+      });
+    });
+
+    btnClearLb.addEventListener('click', () => {
+      localStorage.removeItem(LB_KEY);
+      renderLb();
+    });
+
+    updateCustomCountUI();
+    buildDeck();
+    updateHud();
+    renderLb();
+  })();
+</script>
+
+<style is:global>
+  .tsq-shell {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 0.5rem;
+    color: #f8fafc;
+    font-family: 'Pretendard', system-ui, -apple-system, sans-serif;
+  }
+
+  .tsq-topbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.65rem;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 14px;
+    padding: 0.55rem 0.85rem;
+  }
+
+  .tsq-playstyle-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .tsq-style-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.95rem;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(30, 41, 59, 0.7);
+    color: #cbd5e1;
+    font-size: 0.86rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .tsq-style-btn.active {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.28), rgba(239, 68, 68, 0.25));
+    border-color: #f59e0b;
+    color: #ffffff;
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.25);
+  }
+
+  .tsq-top-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .tsq-timer-presets {
+    display: flex;
+    gap: 0.3rem;
+    background: rgba(30, 41, 59, 0.7);
+    padding: 0.25rem;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+  }
+
+  .tsq-sec-btn {
+    padding: 0.35rem 0.65rem;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 0.78rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .tsq-sec-btn.active {
+    background: rgba(56, 189, 248, 0.22);
+    color: #38bdf8;
+  }
+
+  .tsq-sound-btn {
+    padding: 0.42rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(30, 41, 59, 0.7);
+    color: #f8fafc;
+    cursor: pointer;
+  }
+
+  /* Pack Bar */
+  .tsq-pack-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .tsq-pack-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.48rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(15, 23, 42, 0.75);
+    color: #94a3b8;
+    font-size: 0.82rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.14s ease;
+  }
+
+  .tsq-pack-btn.active {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.18);
+    color: #6ee7b7;
+  }
+
+  .tsq-main-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 350px;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  @media (max-width: 1080px) {
+    .tsq-main-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .tsq-stage-card {
+    background: rgba(15, 23, 42, 0.88);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 18px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .tsq-hud-row {
+    display: grid;
+    grid-template-columns: 165px 1fr 165px;
+    gap: 0.75rem;
+  }
+
+  @media (max-width: 680px) {
+    .tsq-hud-row {
+      grid-template-columns: 1fr 1fr;
+    }
+    .timer-hud-box {
+      grid-column: span 2;
+    }
+  }
+
+  .tsq-hud-box {
+    background: rgba(30, 41, 59, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    padding: 0.6rem 0.85rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .hud-k { font-size: 0.72rem; font-weight: 800; color: #94a3b8; }
+  .hud-v { font-size: 1.55rem; font-weight: 900; color: #f8fafc; line-height: 1.15; }
+  .hud-v.accent { color: #34d399; }
+  .hud-v.gold { color: #fbbf24; }
+  .hud-sub { font-size: 0.76rem; font-weight: 700; color: #38bdf8; margin-top: 0.15rem; }
+
+  .timer-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .lives-hearts { font-size: 0.95rem; letter-spacing: 0.08em; }
+  .timer-digits.danger { color: #f87171; }
+
+  .timer-gauge-track {
+    height: 8px;
+    background: rgba(15, 23, 42, 0.85);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 0.35rem;
+  }
+
+  .timer-gauge-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.05s linear;
+  }
+
+  /* TV Monitor Arena */
+  .tsq-monitor {
+    position: relative;
+    min-height: 430px;
+    background: radial-gradient(circle at 50% 30%, #1e293b 0%, #090d16 100%);
+    border: 2px solid rgba(148, 163, 184, 0.22);
+    border-radius: 18px;
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.1rem;
+    overflow: hidden;
+  }
+
+  .tsq-monitor.correct-glow {
+    border-color: #10b981;
+    box-shadow: 0 0 28px rgba(16, 185, 129, 0.35);
+  }
+
+  .tsq-monitor.wrong-shake {
+    border-color: #ef4444;
+    animation: monitorShake 0.32s ease;
+  }
+
+  @keyframes monitorShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-7px); }
+    75% { transform: translateX(7px); }
+  }
+
+  .monitor-top-badges {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .m-cat-badge {
+    background: rgba(245, 158, 11, 0.18);
+    border: 1px solid rgba(245, 158, 11, 0.45);
+    color: #fbbf24;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 900;
+  }
+
+  .m-hint-badge {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #94a3b8;
+  }
+
+  .monitor-prompt-area {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1.4rem 0.75rem;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    text-align: center;
+  }
+
+  .prompt-call {
+    font-size: clamp(1.8rem, 4vw, 2.85rem);
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+    text-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+  }
+
+  .prompt-arrow {
+    font-size: 1.8rem;
+    color: #38bdf8;
+    font-weight: 900;
+  }
+
+  .prompt-answer-slot {
+    font-size: clamp(1.6rem, 3.6vw, 2.5rem);
+    font-weight: 900;
+    padding: 0.35rem 1.1rem;
+    border-radius: 12px;
+    background: rgba(56, 189, 248, 0.14);
+    border: 2px dashed rgba(56, 189, 248, 0.45);
+    color: #38bdf8;
+  }
+
+  .prompt-answer-slot.revealed-ok {
+    border-style: solid;
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.22);
+    color: #6ee7b7;
+  }
+
+  .prompt-answer-slot.revealed-fail {
+    border-style: solid;
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.22);
+    color: #fca5a5;
+  }
+
+  .monitor-feedback {
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 12px;
+    padding: 0.7rem 1rem;
+    text-align: center;
+  }
+
+  .fb-verdict {
+    display: block;
+    font-size: 1rem;
+    font-weight: 900;
+    margin-bottom: 0.2rem;
+  }
+
+  .fb-verdict.ok { color: #34d399; }
+  .fb-verdict.fail { color: #f87171; }
+  .fb-detail { font-size: 0.85rem; color: #cbd5e1; font-weight: 700; }
+
+  /* 4-Choice Grid */
+  .tsq-choices-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.7rem;
+  }
+
+  @media (max-width: 560px) {
+    .tsq-choices-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .tsq-choice-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.95rem 1.15rem;
+    border-radius: 14px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: rgba(30, 41, 59, 0.85);
+    color: #f8fafc;
+    font-size: 1.08rem;
+    font-weight: 800;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.12s ease;
+  }
+
+  .tsq-choice-btn:hover:not(:disabled) {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.18);
+    transform: translateY(-2px);
+  }
+
+  .c-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.85);
+    color: #38bdf8;
+    font-size: 0.85rem;
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+
+  .tsq-choice-btn.choice-correct {
+    border: 2px solid #10b981 !important;
+    background: rgba(16, 185, 129, 0.28) !important;
+    color: #ffffff !important;
+  }
+
+  .tsq-choice-btn.choice-wrong {
+    border: 2px solid #ef4444 !important;
+    background: rgba(239, 68, 68, 0.28) !important;
+    color: #fecaca !important;
+  }
+
+  /* Voice Controls */
+  .tsq-voice-controls {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.65rem;
+  }
+
+  .voice-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.95rem;
+    border-radius: 13px;
+    font-size: 0.95rem;
+    font-weight: 900;
+    cursor: pointer;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+  }
+
+  .voice-btn:disabled { opacity: 0.38; cursor: not-allowed; }
+  .reveal-btn { background: rgba(56, 189, 248, 0.2); border-color: #38bdf8; color: #e0f2fe; }
+  .pass-btn { background: rgba(16, 185, 129, 0.22); border-color: #10b981; color: #6ee7b7; }
+  .fail-btn { background: rgba(239, 68, 68, 0.22); border-color: #ef4444; color: #fca5a5; }
+
+  /* Overlay */
+  .tsq-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(9, 13, 22, 0.88);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+    z-index: 10;
+  }
+
+  .tsq-overlay.hidden { opacity: 0; pointer-events: none; }
+
+  .tsq-ov-card {
+    max-width: 470px;
+    width: 100%;
+    background: rgba(15, 23, 42, 0.96);
+    border: 1px solid rgba(245, 158, 11, 0.38);
+    border-radius: 18px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+  }
+
+  .ov-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(245, 158, 11, 0.18);
+    border: 1px solid rgba(245, 158, 11, 0.45);
+    color: #fbbf24;
+    font-size: 0.75rem;
+    font-weight: 800;
+    margin-bottom: 0.6rem;
+  }
+
+  .ov-title { font-size: 1.32rem; font-weight: 900; color: #f8fafc; margin: 0 0 0.5rem; }
+  .ov-desc { font-size: 0.86rem; color: #94a3b8; line-height: 1.55; margin: 0 0 1.1rem; }
+
+  .ov-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.55rem;
+    margin-bottom: 1.1rem;
+    text-align: left;
+  }
+
+  .ov-stat {
+    background: rgba(30, 41, 59, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 10px;
+    padding: 0.55rem 0.75rem;
+  }
+
+  .ov-s-k { display: block; font-size: 0.72rem; color: #94a3b8; font-weight: 700; }
+  .ov-s-v { font-size: 0.88rem; font-weight: 800; color: #f8fafc; }
+  .ov-s-v.accent { color: #34d399; }
+  .ov-s-v.gold { color: #fbbf24; }
+  .ov-s-v.danger { color: #f87171; }
+
+  .tsq-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.85rem 1.2rem;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .tsq-bottom-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: #94a3b8;
+  }
+
+  .tsq-restart-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 9px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: rgba(30, 41, 59, 0.75);
+    color: #e2e8f0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* Sidebar */
+  .tsq-sidebar { display: flex; flex-direction: column; gap: 0.85rem; }
+  .tsq-side-card {
+    background: rgba(15, 23, 42, 0.88);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 16px;
+    padding: 0.95rem;
+  }
+
+  .side-head h3 { margin: 0.2rem 0 0.65rem; font-size: 0.98rem; font-weight: 800; }
+  .side-badge { font-size: 0.68rem; font-weight: 900; color: #38bdf8; letter-spacing: 0.06em; }
+  .side-badge.emerald { color: #34d399; }
+  .side-badge.gold { color: #fbbf24; }
+
+  .tier-box {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    background: rgba(30, 41, 59, 0.7);
+    border-radius: 11px;
+    padding: 0.65rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .tier-icon { font-size: 1.85rem; }
+  .tier-meta { display: flex; flex-direction: column; }
+  .tier-code { font-size: 0.72rem; font-weight: 900; color: #fbbf24; }
+  .tier-title { font-size: 0.84rem; font-weight: 800; color: #f8fafc; }
+
+  .diag-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.45rem;
+    margin-bottom: 0.7rem;
+  }
+
+  .d-cell {
+    background: rgba(30, 41, 59, 0.48);
+    border-radius: 8px;
+    padding: 0.45rem 0.6rem;
+  }
+
+  .d-cell span { display: block; font-size: 0.7rem; color: #94a3b8; font-weight: 700; }
+  .d-cell strong { font-size: 0.9rem; font-weight: 800; color: #f8fafc; }
+
+  .tsq-copy-btn {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.6rem;
+    border-radius: 9px;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    background: rgba(56, 189, 248, 0.14);
+    color: #e0f2fe;
+    font-size: 0.8rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .custom-q-form { display: flex; flex-direction: column; gap: 0.45rem; }
+  .cq-input {
+    width: 100%;
+    box-sizing: border-box;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 8px;
+    padding: 0.45rem 0.65rem;
+    color: #f8fafc;
+    font-size: 0.8rem;
+  }
+
+  .cq-add-btn {
+    padding: 0.55rem;
+    border-radius: 8px;
+    border: 1px solid #10b981;
+    background: rgba(16, 185, 129, 0.18);
+    color: #6ee7b7;
+    font-size: 0.8rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .lb-head { display: flex; justify-content: space-between; align-items: flex-start; }
+  .lb-clear-btn {
+    background: transparent;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    color: #94a3b8;
+    border-radius: 6px;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.72rem;
+    cursor: pointer;
+  }
+
+  .challenger-row { margin-bottom: 0.55rem; }
+  .challenger-input {
+    width: 100%;
+    box-sizing: border-box;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 8px;
+    padding: 0.45rem 0.65rem;
+    color: #f8fafc;
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  .lb-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.38rem;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+
+  .lb-empty { font-size: 0.78rem; color: #64748b; text-align: center; padding: 0.85rem 0.4rem; }
+  .lb-item {
+    display: grid;
+    grid-template-columns: 26px 1fr auto auto;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.42rem 0.55rem;
+    background: rgba(30, 41, 59, 0.55);
+    border-radius: 8px;
+    font-size: 0.78rem;
+  }
+  .lb-item.top-1 { border: 1px solid rgba(251, 191, 36, 0.45); background: rgba(251, 191, 36, 0.1); }
+  .lb-rank { font-weight: 800; }
+  .lb-name { font-weight: 700; color: #f1f5f9; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lb-stage { font-weight: 800; color: #38bdf8; }
+  .lb-tier { font-weight: 800; color: #fbbf24; font-size: 0.74rem; }
+</style>
+

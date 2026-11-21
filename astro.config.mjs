@@ -20,6 +20,11 @@ export default defineConfig({
 		mdx(), 
 		sitemap({
 			// Remove ignored priority and changefreq, and avoid build-time lastmod per Google guidelines
+			filter: (page) =>
+				!page.endsWith('/games/fortune') &&
+				!page.endsWith('/games/fortune/') &&
+				!page.endsWith('/games/sand-suika') &&
+				!page.endsWith('/games/sand-suika/'),
 		})
 	],
 	fonts: [

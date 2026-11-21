@@ -20,6 +20,7 @@ interface Props {
 	// hreflang: if omitted, auto-derived from current URL
 	hreflangKo?: string;
 	hreflangEn?: string;
+	noindex?: boolean;
 }
 
 // Strip `.html` and trailing slashes so canonical URLs are always clean
@@ -36,6 +37,7 @@ const {
 	keywords = SITE_KEYWORDS,
 	hreflangKo,
 	hreflangEn,
+	noindex = false,
 } = Astro.props;
 
 const canonicalURL = new URL(rawPath || '/', siteBase);
@@ -156,7 +158,7 @@ const organizationSchema = JSON.stringify({
 <meta name="author" content={SITE_AUTHOR} />
 <meta name="application-name" content="에러레저 (ErrorLedger)" />
 <meta name="theme-color" content="#0f172a" />
-<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"} />
 
 <!-- Search Engine Site Verification -->
 <meta name="naver-site-verification" content="faa7834e63377e9375bea25b5d64170cdc7f8ce2" />

@@ -1093,6 +1093,10 @@ const data = entry.data;
     renderLeaderboard();
   }
 
+  function escapeHtml(s: string): string {
+    return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] || c));
+  }
+
   function renderLeaderboard() {
     if (!stats.leaderboard || stats.leaderboard.length === 0) {
       elRankList.innerHTML = `<div class="bt-rank-empty">${
@@ -1113,13 +1117,13 @@ const data = entry.data;
             <div class="bt-rank-left">
               <span class="bt-rank-num">${medal}</span>
               <div class="bt-rank-info">
-                <span class="bt-rank-name">${item.name}</span>
+                <span class="bt-rank-name">${escapeHtml(item.name)}</span>
                 <span class="bt-rank-meta">🎯 ${item.target.toFixed(2)}s → ⏱️ ${item.actual.toFixed(3)}s</span>
               </div>
             </div>
             <div class="bt-rank-right">
               <span class="bt-rank-diff">${sign}${item.diffSec.toFixed(3)}s</span>
-              <span class="bt-rank-grade">${item.grade}</span>
+              <span class="bt-rank-grade">${escapeHtml(item.grade)}</span>
             </div>
           </div>
         `;

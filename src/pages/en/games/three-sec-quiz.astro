@@ -1,0 +1,249 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import { getKoUrl, getEnUrl } from '../../../i18n';
+
+const siteBase = Astro.site?.toString() || 'https://errorledger.com';
+const rawPath = Astro.url.pathname.replace(/\/$/, '');
+const koUrl = getKoUrl(siteBase, rawPath);
+const enUrl = getEnUrl(siteBase, rawPath);
+
+const urlParams = Astro.url.searchParams;
+const streamerMode = urlParams.has('stream') || urlParams.has('obs');
+const gameUrl = streamerMode
+  ? '/games/three-sec-quiz?bare=1&stream=true&lang=en'
+  : '/games/three-sec-quiz?bare=1&lang=en';
+
+const webAppSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "3-Second Reflex & Word Continuation Quiz — ErrorLedger",
+  "alternateName": ["3-Second Variety Show Quiz", "신서유기 3초 퀴즈", "사자성어 이어말하기", "초성 퀴즈 게임"],
+  "url": enUrl,
+  "description": "Variety-show style 3-second reflex & word continuation quiz! Play Solo 4-Choice Speed Attack or Show Host Voice Mode across 4-Character Idioms, Proverbs, Theme Words, and World Capitals.",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "All (Web Browser, Chrome, Edge, Safari, Mobile)",
+  "inLanguage": ["en-US", "ko-KR"],
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+});
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead
+      title="3-Second Reflex & Word Continuation Quiz | ErrorLedger"
+      description="Test your split-second brain reflexes! Answer 4-Character Idioms (2+2), Proverbs, Theme Words, and World Capitals within 3.00 seconds—featuring Solo 4-Choice Speed Attack and Show Host Voice Mode."
+      lang="en"
+      hreflangKo={koUrl}
+      hreflangEn={enUrl}
+      keywords="3 Second Quiz, Variety Show Quiz Game, Korean Idiom 2+2 Quiz, Chosung Initial Consonant Quiz, Stream Party Game, Twitch Collab Quiz"
+    />
+    <script type="application/ld+json" set:html={webAppSchema}></script>
+  </head>
+  <body class="en-game-body">
+    <Header />
+
+    <main class="en-game-main">
+      <div class="en-game-frame-wrap">
+        <iframe
+          src={gameUrl}
+          class="en-game-iframe"
+          id="game-iframe"
+          title="3-Second Reflex & Word Continuation Quiz — ErrorLedger"
+          allowfullscreen
+          loading="eager"
+          scrolling="yes"
+        ></iframe>
+      </div>
+
+      {!streamerMode && (
+        <details class="stream-bottom-details">
+          <summary class="details-summary">
+            <span>📖 Detailed Guide & FAQ</span>
+            <span class="chevron">▼</span>
+          </summary>
+          <div class="details-content">
+            <div class="details-faq-section">
+              <h3>3-Second Reflex & Word Continuation Quiz FAQ</h3>
+              <div class="details-faq-grid">
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Can I play solo without a quiz host?</strong>
+                  <p class="faq-a">Yes! Select [⚡ 4-Choice Speed Attack] to play solo or with stream chat. 4 choices—including famous variety-show trap answers—appear during the 3-second countdown, and you can answer with keys 1–4 or mouse clicks.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. How does Show Host Voice Mode work for collabs?</strong>
+                  <p class="faq-a">In [🎙️ Show Host Voice Mode], the answer stays hidden while the 3.00s timer ticks down so the contestant can shout out loud. Press Space to reveal the answer, then press O (Pass) or X (Buzzer Fail) to judge!</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Can I add my own custom stream questions?</strong>
+                  <p class="faq-a">Yes! Click [✏️ Custom Question Studio] at the top to add your own inside-joke prompts and answers. They are saved in your browser and mixed directly into the quiz deck.</p>
+                </div>
+                <div class="details-faq-card">
+                  <strong class="faq-q">Q. Does it require any external API or server connection?</strong>
+                  <p class="faq-a">No! All 80+ curated questions, custom studio packs, and Web Audio sound effects (ticking clock, xylophone Ding-Dong-Daeng, and Buzzer) run 100% locally in your browser.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </details>
+      )}
+    </main>
+
+    {!streamerMode && <Footer />}
+
+    <script>
+      const iframe = document.getElementById('game-iframe') as HTMLIFrameElement;
+      if (iframe) {
+        var sp = new URLSearchParams(window.location.search);
+        if (sp.has('stream') || sp.has('obs')) {
+          var s = document.createElement('style');
+          s.textContent = [
+            '.leaderboard-ad-wrap { display: none !important; }',
+            'footer { display: none !important; }',
+            '.stream-bottom-details { display: none !important; }',
+            '.arcade-header { display: none !important; }',
+            '.en-game-main { padding: 0 !important; margin: 0 !important; max-width: none !important; }',
+            '.en-game-frame-wrap { height: 100vh !important; }',
+            '.en-game-iframe { height: 100vh !important; }'
+          ].join(' ');
+          document.head.appendChild(s);
+
+          if (!iframe.src.includes('stream=true')) {
+            iframe.src = iframe.src + '&stream=true';
+          }
+        } else {
+          const syncHeight = () => {
+            try {
+              const doc = iframe.contentDocument || iframe.contentWindow?.document;
+              if (doc && doc.documentElement) {
+                const h = Math.max(820, doc.documentElement.scrollHeight);
+                const wrap = iframe.parentElement;
+                if (wrap) wrap.style.minHeight = h + 'px';
+              }
+            } catch (e) {}
+          };
+          iframe.addEventListener('load', () => {
+            syncHeight();
+            try {
+              const doc = iframe.contentDocument || iframe.contentWindow?.document;
+              if (doc && doc.body && typeof ResizeObserver !== 'undefined') {
+                new ResizeObserver(syncHeight).observe(doc.body);
+              }
+            } catch (e) {}
+          });
+        }
+      }
+    </script>
+  </body>
+</html>
+
+<style>
+  .en-game-body {
+    background: #090d16;
+    color: #f1f5f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+  }
+
+  .en-game-main {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0.5rem 0.75rem 2rem !important;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+  }
+
+  .en-game-frame-wrap {
+    width: 100%;
+    height: 820px;
+  }
+
+  .en-game-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+    background: transparent;
+  }
+
+  @media (min-width: 1400px) {
+    .en-game-frame-wrap {
+      height: max(800px, calc(100vh - 110px));
+    }
+  }
+
+  .stream-bottom-details {
+    max-width: 1400px;
+    width: 100%;
+    margin: 2rem auto 0;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .details-summary {
+    padding: 0.9rem 1.4rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #94a3b8;
+    list-style: none;
+    user-select: none;
+  }
+
+  .details-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .details-content {
+    padding: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .details-faq-section h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin: 0 0 1rem;
+  }
+
+  .details-faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .details-faq-card {
+    background: rgba(30, 41, 59, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 1rem;
+  }
+
+  .faq-q {
+    display: block;
+    font-size: 0.9rem;
+    color: #f8fafc;
+    margin-bottom: 0.45rem;
+  }
+
+  .faq-a {
+    font-size: 0.84rem;
+    color: #94a3b8;
+    margin: 0;
+    line-height: 1.55;
+  }
+</style>
+

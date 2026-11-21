@@ -11,10 +11,10 @@ export function getLang(url: URL): Locale {
  * Used by the language switcher in the header.
  */
 export function getAlternateUrl(currentPath: string, targetLang: Locale): string {
-  const clean = currentPath.replace(/\/$/, '') || '/';
+  const clean = currentPath.replace(/\.html$/, '').replace(/\/$/, '') || '/';
   if (targetLang === 'en') {
-    // ko → en: prepend /en
-    if (clean === '/') return '/en';
+    // ko → en: prepend /en (404 has no /en/404 page, route to /en)
+    if (clean === '/' || clean === '/404') return '/en';
     return '/en' + clean;
   } else {
     // en → ko: strip /en prefix
@@ -37,6 +37,7 @@ const ui = {
     'nav.mine_gems': '지뢰 보석 캐기',
     'nav.blind_timer': '인간 스톱워치 (7.77초)',
     'nav.spot_odd': '매의 눈 (틀린글자·색감)',
+    'nav.three_sec_quiz': '3초 순발력 퀴즈',
     'nav.block_blast': '블록 블라스트',
     'nav.arrow_jump': '화살 점프',
     'nav.sand_drop': '모래 드롭',
@@ -86,6 +87,7 @@ const ui = {
     'footer.tools.mine_gems': '💣 지뢰 보석 캐기',
     'footer.tools.blind_timer': '⏱️ 인간 스톱워치 (7.77초)',
     'footer.tools.spot_odd': '🔍 매의 눈 (틀린글자·색감)',
+    'footer.tools.three_sec_quiz': '🗣️ 3초 순발력 퀴즈',
     'footer.tools.block_blast': '🧩 블록 블라스트',
     'footer.tools.arrow_jump': '🏹 화살 점프',
     'footer.tools.sand_drop': '🍉 모래 드롭',
@@ -119,6 +121,7 @@ const ui = {
     'nav.mine_gems': 'Mine Gems: Cash Out',
     'nav.blind_timer': '7.77s Blind Timer',
     'nav.spot_odd': 'Spot the Odd (Eagle Eye)',
+    'nav.three_sec_quiz': '3-Second Quiz',
     'nav.block_blast': 'Block Blast!',
     'nav.arrow_jump': 'Arrow Climber',
     'nav.sand_drop': 'Sand Drop',
@@ -168,6 +171,7 @@ const ui = {
     'footer.tools.mine_gems': '💣 Mine Gems: Cash Out',
     'footer.tools.blind_timer': '⏱️ 7.77s Blind Timer',
     'footer.tools.spot_odd': '🔍 Spot the Odd (Eagle Eye)',
+    'footer.tools.three_sec_quiz': '🗣️ 3-Second Quiz',
     'footer.tools.block_blast': '🧩 Block Blast!',
     'footer.tools.arrow_jump': '🏹 Arrow Climber',
     'footer.tools.sand_drop': '🍉 Sand Drop',
@@ -208,8 +212,8 @@ export function getKoUrl(siteBase: string, currentPath: string): string {
 
 /** Return the canonical English URL for this page (adds /en prefix). */
 export function getEnUrl(siteBase: string, currentPath: string): string {
-  const clean = currentPath.replace(/\/$/, '') || '/';
+  const clean = currentPath.replace(/\.html$/, '').replace(/\/$/, '') || '/';
   const koPath = clean.startsWith('/en') ? (clean.replace(/^\/en/, '') || '/') : clean;
-  const enPath = koPath === '/' ? '/en' : '/en' + koPath;
+  const enPath = koPath === '/' || koPath === '/404' ? '/en' : '/en' + koPath;
   return new URL(enPath, siteBase).href;
 }
