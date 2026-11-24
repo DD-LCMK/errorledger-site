@@ -17,6 +17,44 @@ const breadcrumbItems = [
 
 const changelogData = [
   {
+    version: "v2.6.0",
+    date: "2026-11-24",
+    title: "Bzzk '48h Live Chzzk Moderation Radar' & Studio Deck Homepage Redesign",
+    badge: "MAJOR RELEASE",
+    badgeType: "hot",
+    summary: "Launched the 100% anonymous live 48-hour Chzzk chat weather & moderation analytics dashboard alongside a full Obsidian Studio Deck homepage redesign with 18 custom SVG game covers.",
+    changes: [
+      { type: "feat", text: "Added 48h Live Chzzk Moderation Radar to /bzzk: live Chat Weather, 7 KPI cards with 24h trends, moderation action donut, timeout severity & pardon rate, blinded message pattern risk multipliers, interactive 48h surge timeline, sortable category/segment benchmarks & cross-channel troll funnel" },
+      { type: "feat", text: "Added Live 48h Moderation Radar Telemetry Deck (weather, 4 KPIs, mini sparkline & AI vs Mod split) at the top of both / and /en homepages" },
+      { type: "improved", text: "Redesigned KO/EN homepages with Obsidian Broadcast Studio Deck theme, 18 bespoke inline SVG game cover cards, full-card clickability, and instant live search filtering" }
+    ]
+  },
+  {
+    version: "v2.5.0",
+    date: "2026-11-08",
+    title: "2 New Standalone Games: '3-Second Reflex Quiz' & 'Eagle-Eye Spot the Odd'",
+    badge: "NEW GAMES",
+    badgeType: "hot",
+    summary: "Launched two 100% browser-local stream party games with zero external API dependencies: a variety-show 3.00s reflex quiz and an A1–J10 visual acuity & color vision test.",
+    changes: [
+      { type: "feat", text: "Launched 3-Second Reflex & Word Quiz (/en/games/three-sec-quiz): Solo 4-Choice Speed Attack & Show Host Voice Mode, 5 built-in packs + custom localStorage question studio" },
+      { type: "feat", text: "Launched Eagle-Eye Test (/en/games/spot-odd): Odd Character, Color Vision (down to Δ1.4%), and Hybrid modes with A1–J10 chat coordinates & Vision Report card" },
+      { type: "fix", text: "Validated BreadcrumbList JSON-LD across all pages, filtered redirect stubs from sitemap, and added noindex to 404.html" }
+    ]
+  },
+  {
+    version: "v2.4.0",
+    date: "2026-10-30",
+    title: "2 New Mini-Games: '7.77s Blind Timer' & 'Mine Gems: Cash Out or Bust'",
+    badge: "NEW GAMES",
+    badgeType: "hot",
+    summary: "Launched a 1ms blind stopwatch precision challenge and a Provably Fair SHA-256 5x5 diamond mining risk/reward game.",
+    changes: [
+      { type: "feat", text: "Launched Human Stopwatch: 7.77s Blind Timer (/en/games/blind-timer) with 1.5s display blackout, 1ms precision grading & collab challenger leaderboard" },
+      { type: "feat", text: "Launched Mine Gems (/en/games/mine-gems) with 5x5 A1–E5 grid, 1/3/5/10-mine difficulty modes, exponential cash-out multipliers & SHA-256 seed hash verification" }
+    ]
+  },
+  {
     version: "v2.2.0",
     date: "2026-04-04",
     title: "New Reflex & Aim Diagnostic: 'Streamer Physical Age Test' Released",

@@ -185,7 +185,7 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
 
     <main class="game-main-container">
       <!-- Sleek Minimal Stage Header Bar -->
-      {!hideStageHeader && (
+      {!hideStageHeader ? (
         <div class="game-top-bar">
           <div class="game-bar-title">
             <span class="game-bar-icon">{icon}</span>
@@ -200,6 +200,8 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
             </button>
           </div>
         </div>
+      ) : (
+        <h1 class="sr-only-heading">{title}</h1>
       )}
 
       <!-- Game Arena (Full width for suite tools, Split for arcade puzzles) -->
@@ -286,6 +288,18 @@ const faqSchema = faqItems && faqItems.length > 0 ? JSON.stringify({
         .game-main-container {
           padding: 0.25rem 0.35rem 1.5rem !important;
         }
+      }
+
+      .sr-only-heading {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
       }
 
       /* Slim Minimal Stage Header Bar */

@@ -9,9 +9,9 @@ import { getKoUrl, getEnUrl } from '../i18n';
 const urlParams = Astro.url.searchParams;
 const streamerMode = urlParams.has('stream') || urlParams.has('obs');
 
-const PAGE_TITLE = `검지직 (Bzzk) - 치지직 실시간 악성 유저 탐지 & 방송 보호 레이더 | ${SITE_TITLE}`;
-const PAGE_DESCRIPTION = "네이버 치지직(CHZZK) 다중 채널에서 동시다발적으로 제재된 악성 분탕 계정을 실시간으로 분석하고 방송을 안전하게 보호하는 검지직(Bzzk) 실시간 레이더.";
-const PAGE_KEYWORDS = "검지직, Bzzk, 치지직 분탕, 치지직 악성 유저, 치지직 밴 목록, 치지직 블랙리스트, 치지직 밴 현황, 스트리머 방송 보호, 치지직 실시간 레이더, 채팅창 분탕 방어";
+const PAGE_TITLE = `검지직 (Bzzk) - 최근 48시간 치지직 제재 레이더 & 실시간 방송 보호 | ${SITE_TITLE}`;
+const PAGE_DESCRIPTION = "최근 48시간 치지직 채팅 기상도, 클린봇·매니저 제재 통계, 카테고리·시간대별 제재 강도 및 다중 채널 악성 분탕 계정을 실시간 분석하는 검지직(Bzzk) 레이더.";
+const PAGE_KEYWORDS = "검지직, Bzzk, 치지직 제재 레이더, 치지직 채팅 기상도, 치지직 클린봇 통계, 치지직 분탕, 치지직 악성 유저, 치지직 밴 목록, 치지직 블랙리스트, 치지직 밴 현황, 스트리머 방송 보호, 채팅창 분탕 방어";
 
 const webAppSchema = JSON.stringify({
   "@context": "https://schema.org",
