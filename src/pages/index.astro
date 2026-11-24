@@ -3,6 +3,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import GameThumb from '../components/GameThumb.astro';
+import HomeRadarPreview from '../components/HomeRadarPreview.astro';
 import { SITE_TITLE, SITE_TAGLINE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
 import { getKoUrl, getEnUrl } from '../i18n';
@@ -122,18 +123,8 @@ const homeFaqSchema = JSON.stringify({
     <Header />
 
     <main class="studio-home-main">
-      <!-- 0. LIVE 48H CHZZK MODERATION RADAR TICKER BAR -->
-      <a href="/bzzk#moderation-radar-48h" class="live-radar-ticker" id="home-bzzk-ticker">
-        <div class="ticker-left">
-          <span class="ticker-new-pill">NEW</span>
-          <span class="ticker-title">🛡️ 최근 48시간 치지직 제재 레이더</span>
-          <span class="ticker-weather weather-normal" id="home-ticker-weather">⛅ 채팅 기상도: 확인 중</span>
-        </div>
-        <div class="ticker-right">
-          <span class="ticker-stats" id="home-ticker-stats">실시간 48시간 익명 집계 스냅샷 불러오는 중...</span>
-          <span class="ticker-cta">레이더 보기 →</span>
-        </div>
-      </a>
+      <!-- 0. LIVE 48H CHZZK MODERATION RADAR TELEMETRY DECK -->
+      <HomeRadarPreview lang="ko" />
 
       <!-- 1. STUDIO CONTROL DECK HERO -->
       <section class="studio-hero">
@@ -560,38 +551,6 @@ const homeFaqSchema = JSON.stringify({
         if (searchInput) {
           searchInput.addEventListener('input', applyFilters);
         }
-
-        // Live client-side 48h Bzzk Radar ticker (no build-time fetch)
-        const weatherEl = document.getElementById('home-ticker-weather');
-        const statsEl = document.getElementById('home-ticker-stats');
-        if (weatherEl && statsEl) {
-          fetch('https://gist.githubusercontent.com/DD-LCMK/d329b23c0b99dc33e412512ee34bbf04/raw/bzzk_48h_stats.json?t=' + Date.now(), { cache: 'no-store' })
-            .then(function (r) { return r.ok ? r.json() : null; })
-            .then(function (d) {
-              if (!d || typeof d !== 'object') return;
-              const w = d.weather_status || {};
-              const m = d.meta || {};
-              const s = d.summary_48h || {};
-              const icons = { calm: '☀️', normal: '⛅', elevated: '🌧️', surge: '⛈️' };
-              const lvl = w.level || 'normal';
-              weatherEl.className = 'ticker-weather weather-' + lvl;
-              weatherEl.textContent = (icons[lvl] || '⛅') + ' 채팅 기상도: ' + (w.label_kr || '보통');
-              const hrs = Number(m.hours_collected) || 0;
-              if (hrs === 0) {
-                statsEl.textContent = '초기 48시간 데이터 수집 워밍업 중 · 100% 익명 실시간 집계';
-              } else {
-                const chats = Number(s.total_chats) || 0;
-                const chatTxt = chats >= 10000 ? (chats / 10000).toFixed(1) + '만' : chats.toLocaleString('ko-KR');
-                statsEl.textContent =
-                  '최근 ' + hrs + 'h · 방송 최대 ' + (Number(m.monitored_streams_peak) || 0) +
-                  '개 · 채팅 ' + chatTxt + '건 · 1만당 제재 ' + (Number(s.mod_per_10k_chats) || 0).toFixed(1) + '건';
-              }
-            })
-            .catch(function () {
-              weatherEl.textContent = '📡 실시간 48h 제재 레이더';
-              statsEl.textContent = '치지직 채팅 기상도 · 카테고리별 제재율 · 다중 채널 트롤 통계 보기';
-            });
-        }
       })();
     </script>
   </body>
@@ -615,79 +574,6 @@ const homeFaqSchema = JSON.stringify({
     margin: 0 auto;
     padding: 0 1.25rem 5.5rem;
     box-sizing: border-box;
-  }
-
-  /* ─── 0. LIVE 48H BZZK RADAR TICKER ─── */
-  .live-radar-ticker {
-    margin-top: 1.15rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.85rem;
-    flex-wrap: wrap;
-    padding: 0.65rem 1.05rem;
-    border-radius: 12px;
-    background: linear-gradient(90deg, rgba(16, 22, 36, 0.95) 0%, rgba(18, 17, 34, 0.95) 100%);
-    border: 1px solid rgba(99, 102, 241, 0.32);
-    text-decoration: none;
-    color: #e2e8f0;
-    transition: border-color 0.18s ease, transform 0.18s ease, background 0.18s ease;
-  }
-
-  .live-radar-ticker:hover {
-    border-color: rgba(0, 255, 163, 0.5);
-    transform: translateY(-1px);
-  }
-
-  .ticker-left,
-  .ticker-right {
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-    flex-wrap: wrap;
-  }
-
-  .ticker-new-pill {
-    font-size: 0.66rem;
-    font-weight: 900;
-    padding: 0.16rem 0.45rem;
-    border-radius: 5px;
-    background: #00ffa3;
-    color: #04130d;
-    letter-spacing: 0.04em;
-  }
-
-  .ticker-title {
-    font-size: 0.86rem;
-    font-weight: 800;
-    color: #f8fafc;
-  }
-
-  .ticker-weather {
-    font-size: 0.76rem;
-    font-weight: 700;
-    padding: 0.18rem 0.6rem;
-    border-radius: 999px;
-    border: 1px solid rgba(56, 189, 248, 0.35);
-    background: rgba(56, 189, 248, 0.12);
-    color: #7dd3fc;
-  }
-
-  .ticker-weather.weather-calm { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: #34d399; }
-  .ticker-weather.weather-elevated { background: rgba(245, 158, 11, 0.16); border-color: rgba(245, 158, 11, 0.4); color: #fcd34d; }
-  .ticker-weather.weather-surge { background: rgba(239, 68, 68, 0.18); border-color: rgba(239, 68, 68, 0.45); color: #fca5a5; }
-
-  .ticker-stats {
-    font-size: 0.78rem;
-    color: #94a3b8;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  }
-
-  .ticker-cta {
-    font-size: 0.8rem;
-    font-weight: 800;
-    color: #00ffa3;
-    white-space: nowrap;
   }
 
   /* ─── 1. HERO: STUDIO CONTROL DECK ─── */

@@ -1,0 +1,738 @@
+---
+interface Props {
+  lang?: 'ko' | 'en';
+}
+
+const { lang = 'ko' } = Astro.props;
+const isEn = lang === 'en';
+const radarHref = '/bzzk#moderation-radar-48h';
+---
+
+<section
+  class="home-radar-deck"
+  id="home-bzzk-radar-deck"
+  data-lang={lang}
+  aria-label={isEn ? 'Live 48h Chzzk Moderation Radar Summary' : '최근 48시간 치지직 제재 레이더 요약'}
+>
+  <div class="hrd-glow" aria-hidden="true"></div>
+
+  <!-- Top Bar -->
+  <div class="hrd-top">
+    <div class="hrd-title-row">
+      <span class="hrd-new-pill">LIVE 48H</span>
+      <h2 class="hrd-heading">
+        {isEn ? '🛡️ Live 48h Chzzk Moderation Radar' : '🛡️ 최근 48시간 치지직 제재 레이더'}
+      </h2>
+      <span class="hrd-weather weather-normal" id="hrd-weather-badge">
+        <span id="hrd-weather-icon">⛅</span>
+        <span id="hrd-weather-text">{isEn ? 'Chat Weather: Loading...' : '채팅 기상도: 확인 중'}</span>
+        <span class="hrd-weather-ratio" id="hrd-weather-ratio"></span>
+      </span>
+      <span class="hrd-window-pill" id="hrd-window-pill">{isEn ? '48h Window' : '집계 확인 중'}</span>
+    </div>
+
+    <div class="hrd-actions">
+      <span class="hrd-updated" id="hrd-updated"></span>
+      <a href={radarHref} class="hrd-cta-btn">
+        <span>{isEn ? 'Full 48h Dashboard' : '상세 48h 레이더 보기'}</span>
+        <span class="hrd-arrow">→</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Body: 4 KPI Cards + Mini Sparkline & Highlights -->
+  <div class="hrd-body">
+    <div class="hrd-kpi-row">
+      <div class="hrd-kpi k-emerald">
+        <div class="hk-top">
+          <span class="hk-lbl">{isEn ? 'Monitored Streams' : '모니터링 방송'}</span>
+        </div>
+        <strong class="hk-val" id="hrd-k-streams">—</strong>
+        <span class="hk-sub" id="hrd-k-streams-sub">{isEn ? '100% anonymous aggregation' : '100% 익명 실시간 집계'}</span>
+      </div>
+
+      <div class="hrd-kpi k-sky">
+        <div class="hk-top">
+          <span class="hk-lbl">{isEn ? 'Chats Analyzed' : '분석된 채팅 수'}</span>
+          <span class="hk-delta" id="hrd-d-chats" hidden></span>
+        </div>
+        <strong class="hk-val" id="hrd-k-chats">—</strong>
+        <span class="hk-sub" id="hrd-k-chats-sub">{isEn ? 'Clean chat rate —' : '정상 채팅 비율 —'}</span>
+      </div>
+
+      <div class="hrd-kpi k-amber">
+        <div class="hk-top">
+          <span class="hk-lbl">{isEn ? 'Mods / 10K Chats' : '1만 채팅당 제재'}</span>
+          <span class="hk-delta" id="hrd-d-mod10k" hidden></span>
+        </div>
+        <strong class="hk-val" id="hrd-k-mod10k">—</strong>
+        <span class="hk-sub" id="hrd-k-mod10k-sub">{isEn ? 'Total mod actions —' : '총 제재 건수 —'}</span>
+      </div>
+
+      <div class="hrd-kpi k-rose">
+        <div class="hk-top">
+          <span class="hk-lbl">{isEn ? 'Auto-Detected Trolls' : '자동 탐지 다중 트롤'}</span>
+          <span class="hk-delta" id="hrd-d-trolls" hidden></span>
+        </div>
+        <strong class="hk-val" id="hrd-k-trolls">—</strong>
+        <span class="hk-sub" id="hrd-k-trolls-sub">{isEn ? 'Zero perm-ban streams —' : '영구차단 0건 방송 —'}</span>
+      </div>
+    </div>
+
+    <!-- Right: Mini 48h Sparkline + AI vs Mod Split + Live Insight -->
+    <a href={radarHref} class="hrd-visual-box" title={isEn ? 'Open full 48h analytics' : '48시간 상세 그래프 보기'}>
+      <div class="hrd-vis-head">
+        <span class="hv-label">{isEn ? '48H MODERATION TREND' : '48시간 제재 추이 (1만당)'}</span>
+        <span class="hv-ai-split" id="hrd-ai-split">{isEn ? 'AI vs Mod —' : 'AI vs 매니저 —'}</span>
+      </div>
+      <div class="hrd-sparkline" id="hrd-sparkline">
+        <div class="spark-warmup-state">
+          <span class="spark-pulse-dot"></span>
+          <span>{isEn ? 'Loading hourly trend...' : '시간별 추이 불러오는 중...'}</span>
+        </div>
+      </div>
+      <div class="hrd-ai-bar" aria-hidden="true">
+        <span class="ab-ai" id="hrd-bar-ai" style="width: 50%"></span>
+        <span class="ab-human" id="hrd-bar-human" style="width: 50%"></span>
+      </div>
+      <div class="hrd-insight-line" id="hrd-insight-line">
+        {isEn
+          ? '📡 Anonymous live stream moderation analytics updated hourly'
+          : '📡 개별 유저·스트리머 특정 없는 100% 익명 매시간 자동 집계'}
+      </div>
+    </a>
+  </div>
+</section>
+
+<script>
+  (() => {
+    const deck = document.getElementById('home-bzzk-radar-deck');
+    if (!deck) return;
+
+    const isEn = deck.dataset.lang === 'en';
+    const GIST_URL =
+      'https://gist.githubusercontent.com/DD-LCMK/d329b23c0b99dc33e412512ee34bbf04/raw/bzzk_48h_stats.json';
+
+    const elWeatherBadge = document.getElementById('hrd-weather-badge')!;
+    const elWeatherIcon = document.getElementById('hrd-weather-icon')!;
+    const elWeatherText = document.getElementById('hrd-weather-text')!;
+    const elWeatherRatio = document.getElementById('hrd-weather-ratio')!;
+    const elWindowPill = document.getElementById('hrd-window-pill')!;
+    const elUpdated = document.getElementById('hrd-updated')!;
+
+    const elKStreams = document.getElementById('hrd-k-streams')!;
+    const elKStreamsSub = document.getElementById('hrd-k-streams-sub')!;
+    const elKChats = document.getElementById('hrd-k-chats')!;
+    const elKChatsSub = document.getElementById('hrd-k-chats-sub')!;
+    const elKMod10k = document.getElementById('hrd-k-mod10k')!;
+    const elKMod10kSub = document.getElementById('hrd-k-mod10k-sub')!;
+    const elKTrolls = document.getElementById('hrd-k-trolls')!;
+    const elKTrollsSub = document.getElementById('hrd-k-trolls-sub')!;
+
+    const elDChats = document.getElementById('hrd-d-chats')!;
+    const elDMod10k = document.getElementById('hrd-d-mod10k')!;
+    const elDTrolls = document.getElementById('hrd-d-trolls')!;
+
+    const elAiSplit = document.getElementById('hrd-ai-split')!;
+    const elBarAi = document.getElementById('hrd-bar-ai')!;
+    const elBarHuman = document.getElementById('hrd-bar-human')!;
+    const elSparkline = document.getElementById('hrd-sparkline')!;
+    const elInsight = document.getElementById('hrd-insight-line')!;
+
+    function num(v: unknown, fb = 0): number {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : fb;
+    }
+
+    function fmtCompact(v: unknown): string {
+      const n = num(v);
+      if (isEn) {
+        if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(2)}M`;
+        if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+        return Math.round(n).toLocaleString('en-US');
+      }
+      if (n >= 100_000_000) return `${(n / 100_000_000).toFixed(2)}억`;
+      if (n >= 10_000) return `${(n / 10_000).toFixed(1)}만`;
+      return Math.round(n).toLocaleString('ko-KR');
+    }
+
+    function fmtKstShort(iso: unknown): string {
+      if (!iso) return '';
+      const m = /^\d{4}-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(String(iso));
+      if (!m) return '';
+      return isEn ? `Updated ${m[1]}/${m[2]} ${m[3]}:${m[4]} KST` : `${m[1]}.${m[2]} ${m[3]}:${m[4]} KST 갱신`;
+    }
+
+    function setDelta(el: HTMLElement, val: unknown, ready: boolean, invert: boolean) {
+      if (!ready || val === null || val === undefined || !Number.isFinite(Number(val))) {
+        el.hidden = true;
+        return;
+      }
+      const n = Number(val);
+      const sign = n > 0 ? '+' : '';
+      const arrow = n > 0 ? '▲' : n < 0 ? '▼' : '•';
+      let cls = 'd-flat';
+      if (Math.abs(n) >= 0.5) {
+        const up = n > 0;
+        cls = invert ? (up ? 'd-warn' : 'd-good') : (up ? 'd-good' : 'd-flat');
+      }
+      el.className = `hk-delta ${cls}`;
+      el.textContent = `${arrow}${sign}${n.toFixed(1)}%`;
+      el.hidden = false;
+    }
+
+    const WEATHER_MAP: Record<string, { icon: string; en: string; ko: string }> = {
+      calm: { icon: '☀️', en: 'Calm', ko: '쾌청' },
+      normal: { icon: '⛅', en: 'Normal', ko: '보통' },
+      elevated: { icon: '🌧️', en: 'Elevated', ko: '주의' },
+      surge: { icon: '⛈️', en: 'Surge', ko: '경보' },
+    };
+
+    const PAT_KO: Record<string, string> = {
+      url: '링크·URL',
+      flood: '도배·반복',
+      long_text: '장문·복붙',
+      short_text: '단문',
+      normal: '일반',
+    };
+
+    const PAT_EN: Record<string, string> = {
+      url: 'URLs',
+      flood: 'Spam/Flood',
+      long_text: 'Long Text',
+      short_text: 'Short Text',
+      normal: 'Normal',
+    };
+
+    function renderDeck(d: any) {
+      const meta = d.meta || {};
+      const w = d.weather_status || {};
+      const sum = d.summary_48h || {};
+      const tr = d.trends_24h || {};
+      const ready = Boolean(tr.ready);
+      const delta = tr.delta_pct || {};
+      const hl = d.highlights || {};
+      const series = Array.isArray(d.hourly_series) ? d.hourly_series : [];
+
+      const hrs = num(meta.hours_collected);
+      const winH = num(meta.window_hours, 48);
+      const hasData = hrs > 0 || num(sum.total_chats) > 0;
+
+      // Weather badge
+      const lvl = String(w.level || 'normal');
+      const wm = WEATHER_MAP[lvl] || WEATHER_MAP.normal;
+      elWeatherBadge.className = `hrd-weather weather-${lvl}`;
+      elWeatherIcon.textContent = wm.icon;
+      elWeatherText.textContent = isEn
+        ? `Chat Weather: ${wm.en}`
+        : `채팅 기상도: ${w.label_kr || wm.ko}`;
+      if (hasData && num(w.baseline_mod_per_10k) > 0) {
+        const surgeCnt = num(w.surge_hours_count);
+        elWeatherRatio.textContent = isEn
+          ? `${num(w.ratio, 1).toFixed(2)}x avg${surgeCnt > 0 ? ` · ${surgeCnt}h surge` : ''}`
+          : `평균 대비 ${num(w.ratio, 1).toFixed(2)}x${surgeCnt > 0 ? ` · 급증 ${surgeCnt}h` : ''}`;
+      } else {
+        elWeatherRatio.textContent = isEn ? 'Warming up' : '기준선 수집 중';
+      }
+
+      elWindowPill.textContent =
+        hrs === 0
+          ? isEn
+            ? `Collecting (0/${winH}h)`
+            : `초기 수집 중 (0/${winH}h)`
+          : isEn
+            ? `Last ${hrs}h`
+            : `최근 ${hrs}시간 누적`;
+
+      elUpdated.textContent = fmtKstShort(meta.updated_at_kst);
+
+      // 4 KPI Cards
+      if (hasData) {
+        elKStreams.textContent = isEn
+          ? `${Math.round(num(meta.monitored_streams_peak)).toLocaleString()} peak`
+          : `최대 ${Math.round(num(meta.monitored_streams_peak)).toLocaleString('ko-KR')}개`;
+        elKStreamsSub.textContent = isEn
+          ? `Avg ${num(meta.monitored_streams_avg).toFixed(1)} live streams/hr`
+          : `시간당 평균 ${num(meta.monitored_streams_avg).toFixed(1)}개 동시 감시`;
+
+        elKChats.textContent = isEn ? fmtCompact(sum.total_chats) : `${fmtCompact(sum.total_chats)}건`;
+        elKChatsSub.textContent = isEn
+          ? `Clean chat rate ${num(sum.clean_chat_rate_pct, 100).toFixed(2)}%`
+          : `정상 채팅 비율 ${num(sum.clean_chat_rate_pct, 100).toFixed(2)}%`;
+
+        elKMod10k.textContent = isEn
+          ? `${num(sum.mod_per_10k_chats).toFixed(1)}`
+          : `${num(sum.mod_per_10k_chats).toFixed(1)}건`;
+        elKMod10kSub.textContent = isEn
+          ? `${fmtCompact(sum.total_mod_actions)} total actions`
+          : `총 제재 ${fmtCompact(sum.total_mod_actions)}건 · 유저 ${fmtCompact(sum.unique_moderated_users)}명`;
+
+        elKTrolls.textContent = isEn
+          ? `${Math.round(num(sum.auto_bans_triggered)).toLocaleString()}`
+          : `${Math.round(num(sum.auto_bans_triggered)).toLocaleString('ko-KR')}명`;
+        const zeroPermPct = num(d.stream_calmness_48h?.zero_perm_ban_streams?.pct);
+        elKTrollsSub.textContent = isEn
+          ? `${zeroPermPct.toFixed(1)}% streams w/ 0 perm-bans`
+          : `영구차단 0건 방송 ${zeroPermPct.toFixed(1)}%`;
+
+        setDelta(elDChats, delta.total_chats, ready, false);
+        setDelta(elDMod10k, delta.mod_per_10k_chats, ready, true);
+        setDelta(elDTrolls, delta.auto_bans_triggered, ready, true);
+
+        const aiPct = num(sum.ai_cleanbot_pct);
+        const hmPct = num(sum.human_mod_pct);
+        elAiSplit.textContent = isEn
+          ? `AI ${aiPct.toFixed(0)}% · Mod ${hmPct.toFixed(0)}%`
+          : `AI ${aiPct.toFixed(0)}% · 매니저 ${hmPct.toFixed(0)}%`;
+        elBarAi.style.width = `${Math.min(100, aiPct)}%`;
+        elBarHuman.style.width = `${Math.min(100, hmPct)}%`;
+      } else {
+        elKStreams.textContent = isEn ? 'Warm-up' : '수집 대기';
+        elKStreamsSub.textContent = isEn ? 'First hourly snapshot pending' : '첫 1시간 스냅샷 집계 대기 중';
+        elKChats.textContent = '—';
+        elKChatsSub.textContent = isEn ? 'Updates automatically every hour' : '매시간 자동 누적 갱신';
+        elKMod10k.textContent = '—';
+        elKMod10kSub.textContent = isEn ? 'Baseline calculating' : '48시간 기준선 산출 대기';
+        elKTrolls.textContent = '—';
+        elKTrollsSub.textContent = isEn ? 'Cross-channel radar active' : '다중 채널 교차 감시 가동 중';
+        elAiSplit.textContent = isEn ? 'AI vs Mod: Warm-up' : 'AI vs 매니저: 집계 대기';
+      }
+
+      // Mini 48h SVG Sparkline
+      if (series.length > 0) {
+        const W = 280;
+        const H = 48;
+        const baseline = num(w.baseline_mod_per_10k);
+        const vals = series.map((pt: any) => num(pt.mod_per_10k_chats));
+        const maxV = Math.max(1, ...vals, baseline * 1.15);
+        const slot = W / series.length;
+        const bw = Math.max(2, Math.min(8, slot * 0.7));
+
+        const bars = series
+          .map((pt: any, i: number) => {
+            const v = num(pt.mod_per_10k_chats);
+            const bh = Math.max(2, (v / maxV) * (H - 6));
+            const x = i * slot + (slot - bw) / 2;
+            const y = H - bh;
+            const col = pt.is_surge ? '#ef4444' : '#00ffa3';
+            return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="1.5" fill="${col}" opacity="${pt.is_surge ? '0.95' : '0.78'}" />`;
+          })
+          .join('');
+
+        const baseLine =
+          baseline > 0
+            ? `<line x1="0" y1="${(H - (baseline / maxV) * (H - 6)).toFixed(1)}" x2="${W}" y2="${(H - (baseline / maxV) * (H - 6)).toFixed(1)}" stroke="#ffb800" stroke-width="1" stroke-dasharray="3 3" opacity="0.75" />`
+            : '';
+
+        elSparkline.innerHTML = `<svg viewBox="0 0 ${W} ${H}" class="hrd-spark-svg" preserveAspectRatio="none">${bars}${baseLine}</svg>`;
+      } else {
+        elSparkline.innerHTML = `
+          <div class="spark-warmup-state">
+            <span class="spark-pulse-dot"></span>
+            <span>${isEn ? 'Collecting first 1h snapshot — trend chart activates soon' : '첫 1시간 스냅샷 수집 중 · 누적 즉시 48h 그래프 활성화'}</span>
+          </div>
+        `;
+      }
+
+      // Highlight insight line
+      const parts: string[] = [];
+      if (hl.highest_intensity_category != null) {
+        const cName =
+          typeof hl.highest_intensity_category === 'object'
+            ? hl.highest_intensity_category.name
+            : String(hl.highest_intensity_category);
+        const label = cName === 'Other' ? (isEn ? 'Other' : '기타') : cName;
+        parts.push(isEn ? `🔥 Top Category: ${label}` : `🔥 제재율 1위: ${label}`);
+      }
+      if (hl.riskiest_chat_pattern != null) {
+        const pKey =
+          typeof hl.riskiest_chat_pattern === 'object'
+            ? hl.riskiest_chat_pattern.pattern || hl.riskiest_chat_pattern.key || hl.riskiest_chat_pattern.name
+            : String(hl.riskiest_chat_pattern);
+        const mult =
+          (typeof hl.riskiest_chat_pattern === 'object' ? hl.riskiest_chat_pattern.risk_vs_normal : null) ??
+          d.troll_insights?.blinded_message_patterns?.[String(pKey)]?.risk_vs_normal;
+        const pName = (isEn ? PAT_EN[String(pKey)] : PAT_KO[String(pKey)]) || String(pKey);
+        if (mult && num(mult) > 0) {
+          parts.push(isEn ? `⚠️ ${pName} ${num(mult).toFixed(1)}x risk` : `⚠️ ${pName} 일반 대비 ${num(mult).toFixed(1)}배 위험`);
+        }
+      }
+
+      if (parts.length > 0) {
+        elInsight.textContent = parts.join(' · ');
+      } else {
+        elInsight.textContent = isEn
+          ? '🔒 100% anonymous live aggregation — click to view full 48h breakdown & category benchmarks'
+          : '🔒 개별 유저·스트리머 특정 없는 100% 익명 집계 — 클릭해 카테고리·시간대별 상세 분석 보기';
+      }
+    }
+
+    async function fetchPreview() {
+      try {
+        const res = await fetch(`${GIST_URL}?t=${Date.now()}`, {
+          cache: 'no-store',
+          headers: { Accept: 'application/json' },
+        });
+        if (!res.ok) return;
+        const json = await res.json();
+        if (json && typeof json === 'object') renderDeck(json);
+      } catch {
+        // Keep clean fallback text silently
+      }
+    }
+
+    fetchPreview();
+    window.setInterval(() => {
+      if (document.visibilityState === 'visible') fetchPreview();
+    }, 10 * 60 * 1000);
+  })();
+</script>
+
+<style>
+  .home-radar-deck {
+    position: relative;
+    margin-top: 1.25rem;
+    padding: 1.05rem 1.2rem;
+    border-radius: 16px;
+    background: linear-gradient(150deg, #0d1220 0%, #090d16 55%, #0e101c 100%);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+  }
+
+  .hrd-glow {
+    position: absolute;
+    top: -60px;
+    left: 18%;
+    width: 360px;
+    height: 150px;
+    background: radial-gradient(ellipse at center, rgba(0, 255, 163, 0.12), rgba(99, 102, 241, 0.08) 50%, transparent 75%);
+    pointer-events: none;
+  }
+
+  /* Top Command Strip */
+  .hrd-top {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .hrd-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .hrd-new-pill {
+    font-size: 0.66rem;
+    font-weight: 900;
+    padding: 0.18rem 0.5rem;
+    border-radius: 5px;
+    background: #00ffa3;
+    color: #04130d;
+    letter-spacing: 0.05em;
+  }
+
+  .hrd-heading {
+    font-size: 1rem;
+    font-weight: 900;
+    color: #f8fafc;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .hrd-weather {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.76rem;
+    font-weight: 800;
+    padding: 0.22rem 0.65rem;
+    border-radius: 999px;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    background: rgba(56, 189, 248, 0.12);
+    color: #7dd3fc;
+  }
+
+  .hrd-weather.weather-calm { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: #34d399; }
+  .hrd-weather.weather-elevated { background: rgba(245, 158, 11, 0.16); border-color: rgba(245, 158, 11, 0.42); color: #fcd34d; }
+  .hrd-weather.weather-surge { background: rgba(239, 68, 68, 0.18); border-color: rgba(239, 68, 68, 0.48); color: #fca5a5; }
+
+  .hrd-weather-ratio {
+    font-size: 0.7rem;
+    opacity: 0.88;
+    padding-left: 0.4rem;
+    border-left: 1px solid currentColor;
+  }
+
+  .hrd-weather-ratio:empty {
+    display: none;
+  }
+
+  .hrd-window-pill {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.18rem 0.55rem;
+    border-radius: 6px;
+  }
+
+  .hrd-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .hrd-updated {
+    font-size: 0.74rem;
+    color: #64748b;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+
+  .hrd-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: 9px;
+    background: rgba(0, 255, 163, 0.12);
+    border: 1px solid rgba(0, 255, 163, 0.4);
+    color: #00ffa3;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-decoration: none;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+  }
+
+  .hrd-cta-btn:hover {
+    background: #00ffa3;
+    color: #04130d;
+    transform: translateY(-1px);
+  }
+
+  .hrd-arrow {
+    transition: transform 0.18s ease;
+  }
+
+  .hrd-cta-btn:hover .hrd-arrow {
+    transform: translateX(3px);
+  }
+
+  /* Body Bento Grid */
+  .hrd-body {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1.55fr 1fr;
+    gap: 0.85rem;
+    align-items: stretch;
+  }
+
+  .hrd-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.65rem;
+  }
+
+  .hrd-kpi {
+    position: relative;
+    background: rgba(11, 14, 24, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 11px;
+    padding: 0.75rem 0.85rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.25rem;
+    overflow: hidden;
+  }
+
+  .hrd-kpi::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+  }
+
+  .hrd-kpi.k-emerald::before { background: #00ffa3; }
+  .hrd-kpi.k-sky::before { background: #38bdf8; }
+  .hrd-kpi.k-amber::before { background: #ffb800; }
+  .hrd-kpi.k-rose::before { background: #f43f5e; }
+
+  .hk-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+  }
+
+  .hk-lbl {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #94a3b8;
+  }
+
+  .hk-val {
+    font-size: 1.22rem;
+    font-weight: 900;
+    color: #f8fafc;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .hk-sub {
+    font-size: 0.7rem;
+    color: #64748b;
+    line-height: 1.35;
+  }
+
+  .hk-delta {
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-family: monospace;
+  }
+
+  .hk-delta.d-good { background: rgba(16, 185, 129, 0.18); color: #34d399; }
+  .hk-delta.d-warn { background: rgba(239, 68, 68, 0.18); color: #fca5a5; }
+  .hk-delta.d-flat { background: rgba(148, 163, 184, 0.16); color: #cbd5e1; }
+
+  /* Right Visual Sparkline Card */
+  .hrd-visual-box {
+    background: rgba(11, 14, 24, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 11px;
+    padding: 0.75rem 0.9rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.45rem;
+    text-decoration: none;
+    transition: border-color 0.18s ease, background 0.18s ease;
+  }
+
+  .hrd-visual-box:hover {
+    border-color: rgba(0, 255, 163, 0.4);
+    background: rgba(15, 20, 34, 0.95);
+  }
+
+  .hrd-vis-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .hv-label {
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: #818cf8;
+  }
+
+  .hv-ai-split {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    font-family: monospace;
+  }
+
+  .hrd-sparkline {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  :global(.hrd-spark-svg) {
+    width: 100%;
+    height: 48px;
+    display: block;
+  }
+
+  :global(.spark-warmup-state) {
+    width: 100%;
+    height: 44px;
+    border-radius: 8px;
+    border: 1px dashed rgba(99, 102, 241, 0.35);
+    background: rgba(99, 102, 241, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.74rem;
+    color: #a5b4fc;
+    font-weight: 600;
+    padding: 0 0.6rem;
+    text-align: center;
+  }
+
+  :global(.spark-pulse-dot) {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #00ffa3;
+    box-shadow: 0 0 8px #00ffa3;
+    flex-shrink: 0;
+    animation: hrdPulse 1.8s infinite ease-in-out;
+  }
+
+  @keyframes hrdPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.35; transform: scale(0.75); }
+  }
+
+  .hrd-ai-bar {
+    display: flex;
+    height: 5px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: #1a2033;
+    gap: 2px;
+  }
+
+  .ab-ai { background: #818cf8; transition: width 0.4s ease; }
+  .ab-human { background: #38bdf8; transition: width 0.4s ease; }
+
+  .hrd-insight-line {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  @media (max-width: 1060px) {
+    .hrd-body {
+      grid-template-columns: 1fr;
+    }
+    .hrd-kpi-row {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .hrd-kpi-row {
+      grid-template-columns: 1fr;
+    }
+    .hrd-top {
+      align-items: flex-start;
+    }
+  }
+</style>
