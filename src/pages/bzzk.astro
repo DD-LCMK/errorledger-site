@@ -2,6 +2,7 @@
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import BzzkModerationRadar from '../components/BzzkModerationRadar.astro';
 import { SITE_TITLE } from '../consts';
 import { getKoUrl, getEnUrl } from '../i18n';
 
@@ -78,6 +79,9 @@ const webAppSchema = JSON.stringify({
           </div>
         </div>
       </section>
+
+      <!-- 48h Live Moderation Radar Analytics Section -->
+      <BzzkModerationRadar />
 
       <!-- Live Embed Section -->
       <section class="bzzk-embed-section">
@@ -345,7 +349,7 @@ const webAppSchema = JSON.stringify({
 
       /* Embed Section */
       .bzzk-embed-section {
-        margin-top: 40px;
+        margin-top: 60px;
       }
 
       .section-header {

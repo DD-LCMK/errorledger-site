@@ -1,0 +1,2585 @@
+---
+// Client-side live-updating 48-hour Chzzk Moderation Radar analytics section.
+// Fetches public GitHub Gist JSON purely in the browser (never at build time).
+---
+
+<section class="bzzk-radar-section" id="moderation-radar-48h" aria-labelledby="radar-48h-heading">
+  <!-- Section Header Strip -->
+  <div class="radar-top-header">
+    <div class="radar-title-cluster">
+      <div class="radar-badge-row">
+        <span class="radar-tag-pill">
+          <span class="radar-dot"></span>
+          48H ANALYTICS
+        </span>
+        <span class="radar-weather-badge weather-normal" id="radar-weather-badge">
+          <span class="weather-icon" id="radar-weather-icon">⛅</span>
+          <span class="weather-label" id="radar-weather-label">기상도 확인 중...</span>
+          <span class="weather-ratio" id="radar-weather-ratio"></span>
+        </span>
+        <span class="radar-collection-badge" id="radar-collection-badge">집계 확인 중</span>
+      </div>
+      <h2 id="radar-48h-heading">최근 48시간 치지직 제재 레이더</h2>
+    </div>
+
+    <div class="radar-meta-actions">
+      <span class="radar-updated-time" id="radar-updated-time">업데이트 확인 중...</span>
+      <span class="radar-auto-badge">⏱️ 매시간 자동 갱신</span>
+    </div>
+  </div>
+
+  <!-- Privacy Notice Bar -->
+  <div class="radar-privacy-bar">
+    <span class="privacy-ico">🔒</span>
+    <span>
+      <strong>익명 집계 안내:</strong> 모든 통계는 개별 스트리머나 유저를 특정하지 않는 <strong>100% 익명 집계 데이터</strong>입니다. 매시간 자동 갱신되는 공개 스냅샷을 브라우저에서 직접 불러옵니다.
+    </span>
+  </div>
+
+  <!-- Loading State -->
+  <div class="radar-loading-state" id="radar-loading-state">
+    <div class="skeleton-kpi-grid">
+      <div class="skel-card"></div>
+      <div class="skel-card"></div>
+      <div class="skel-card"></div>
+      <div class="skel-card"></div>
+    </div>
+    <div class="skel-panel"></div>
+  </div>
+
+  <!-- Error State -->
+  <div class="radar-error-state" id="radar-error-state" hidden>
+    <div class="state-icon">⚠️</div>
+    <h3>48시간 제재 통계를 불러오지 못했습니다</h3>
+    <p id="radar-error-msg">네트워크 연결 상태를 확인하거나 잠시 후 다시 시도해 주세요.</p>
+    <button type="button" class="radar-retry-btn" id="radar-retry-btn">🔄 다시 불러오기</button>
+  </div>
+
+  <!-- Main Dashboard Container -->
+  <div class="radar-dashboard" id="radar-dashboard" hidden>
+    <!-- Warm-up Banner (shown when hours_collected === 0 or < 48) -->
+    <div class="radar-warmup-banner" id="radar-warmup-banner" hidden>
+      <div class="warmup-icon">📡</div>
+      <div class="warmup-body">
+        <strong id="radar-warmup-title">초기 48시간 데이터 수집 워밍업 중입니다</strong>
+        <p id="radar-warmup-desc">
+          현재 첫 시간대 스냅샷을 집계하고 있습니다. 1시간 단위 데이터가 누적되면 채팅 기상도, 48시간 추이 그래프, 카테고리·규모별 제재 비교가 자동으로 채워집니다.
+        </p>
+      </div>
+    </div>
+
+    <!-- 1. Top KPI Grid -->
+    <div class="radar-kpi-grid" id="radar-kpi-grid"></div>
+
+    <!-- 2. Auto-Generated 48h Highlights Strip -->
+    <div class="radar-highlights-strip" id="radar-highlights-strip" hidden></div>
+
+    <!-- 3. Moderation Type, Timeout Severity & Message Pattern Risk -->
+    <div class="radar-three-col">
+      <!-- 3A: Action Breakdown Donut -->
+      <div class="radar-panel">
+        <div class="panel-head">
+          <div>
+            <span class="panel-kicker">MODERATION BREAKDOWN</span>
+            <h3>제재 유형 구성</h3>
+          </div>
+          <span class="panel-pill" id="radar-permban-pill">영구차단 0건</span>
+        </div>
+        <div class="donut-layout" id="radar-action-breakdown"></div>
+      </div>
+
+      <!-- 3B: Timeout Insights -->
+      <div class="radar-panel">
+        <div class="panel-head">
+          <div>
+            <span class="panel-kicker">TIMEOUT SEVERITY</span>
+            <h3>임시제한(채금) 심층 분석</h3>
+          </div>
+          <span class="panel-pill" id="radar-timeout-avg-pill">평균 —</span>
+        </div>
+        <div class="timeout-body" id="radar-timeout-insights"></div>
+      </div>
+
+      <!-- 3C: Blinded Message Patterns -->
+      <div class="radar-panel">
+        <div class="panel-head">
+          <div>
+            <span class="panel-kicker">MESSAGE PATTERN RISK</span>
+            <h3>블라인드 메시지 패턴 & 위험 배수</h3>
+          </div>
+          <span class="panel-pill" id="radar-pattern-total-pill">분류 0건</span>
+        </div>
+        <div class="pattern-body" id="radar-pattern-insights"></div>
+      </div>
+    </div>
+
+    <!-- 4. 48-Hour Timeline & Time-of-Day Section -->
+    <div class="radar-panel radar-timeline-panel">
+      <div class="panel-head wrap-head">
+        <div>
+          <span class="panel-kicker">48-HOUR TIMELINE</span>
+          <h3>48시간 시간별 제재 추이 & 급증 구간</h3>
+        </div>
+        <div class="timeline-controls">
+          <div class="seg-toggle" id="radar-chart-mode" role="tablist" aria-label="차트 지표 전환">
+            <button type="button" class="seg-btn active" data-mode="intensity">1만 채팅당 제재 수</button>
+            <button type="button" class="seg-btn" data-mode="stacked">유형별 제재 건수</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-legend-row" id="radar-timeline-legend"></div>
+
+      <div class="timeline-chart-wrap" id="radar-timeline-chart"></div>
+      <div class="chart-tooltip" id="radar-chart-tooltip" hidden></div>
+
+      <!-- Time-of-Day Zones + 24h KST Strip -->
+      <div class="time-of-day-grid">
+        <div class="tod-zones-block">
+          <div class="sub-block-head">
+            <h4>시간대 권역 비교 (KST)</h4>
+            <span class="sub-hint">주간 · 프라임 · 새벽반</span>
+          </div>
+          <div class="tod-zones-cards" id="radar-timezone-cards"></div>
+        </div>
+
+        <div class="tod-24h-block">
+          <div class="sub-block-head">
+            <h4>24시간 KST 시간대별 제재 강도</h4>
+            <span class="sub-hint">00시 ~ 23시 (1만 채팅당)</span>
+          </div>
+          <div class="tod-24h-heatmap" id="radar-hour24-heatmap"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Category & Segment Comparisons -->
+    <div class="radar-panel">
+      <div class="panel-head wrap-head">
+        <div>
+          <span class="panel-kicker">CATEGORY & SEGMENT BENCHMARK</span>
+          <h3>카테고리 · 방송 규모 · 연령 · 경과시간별 비교</h3>
+        </div>
+        <div class="seg-toggle" id="radar-segment-tabs" role="tablist" aria-label="비교 기준 선택">
+          <button type="button" class="seg-btn active" data-tab="category">카테고리별</button>
+          <button type="button" class="seg-btn" data-tab="viewer">방송 규모</button>
+          <button type="button" class="seg-btn" data-tab="age">연령 등급</button>
+          <button type="button" class="seg-btn" data-tab="uptime">방송 경과시간</button>
+        </div>
+      </div>
+
+      <!-- Sort controls (shown for category tab) -->
+      <div class="cat-sort-bar" id="radar-cat-sort-bar">
+        <span class="sort-label">정렬 기준:</span>
+        <div class="sort-pills" id="radar-cat-sort-pills">
+          <button type="button" class="sort-pill active" data-sort="mod_per_10k_chats">1만 채팅당 제재 수</button>
+          <button type="button" class="sort-pill" data-sort="total_chats">채팅 수</button>
+          <button type="button" class="sort-pill" data-sort="cleanbot_pct">클린봇 %</button>
+          <button type="button" class="sort-pill" data-sort="perm_ban_pct">영구차단 %</button>
+        </div>
+      </div>
+
+      <div class="segment-table-wrap" id="radar-segment-content"></div>
+    </div>
+
+    <!-- 6. Stream Calmness & Cross-Stream Troll Funnel -->
+    <div class="radar-two-col">
+      <!-- 6A: Stream Calmness -->
+      <div class="radar-panel">
+        <div class="panel-head">
+          <div>
+            <span class="panel-kicker">STREAM CALMNESS (48H)</span>
+            <h3>전체 방송 평온도 분포</h3>
+          </div>
+          <span class="panel-pill" id="radar-observed-streams-pill">관측 방송 0개</span>
+        </div>
+        <div id="radar-stream-calmness"></div>
+      </div>
+
+      <!-- 6B: Cross-Stream Troll Funnel & Auto-Ban Tiers -->
+      <div class="radar-panel">
+        <div class="panel-head">
+          <div>
+            <span class="panel-kicker">CROSS-CHANNEL TROLL FUNNEL</span>
+            <h3>다중 채널 제재 퍼널 & 자동 차단 티어</h3>
+          </div>
+          <span class="panel-pill" id="radar-troll-share-pill">트롤 비중 0%</span>
+        </div>
+        <div id="radar-troll-funnel"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (() => {
+    const GIST_URL =
+      'https://gist.githubusercontent.com/DD-LCMK/d329b23c0b99dc33e412512ee34bbf04/raw/bzzk_48h_stats.json';
+
+    const elLoading = document.getElementById('radar-loading-state')!;
+    const elError = document.getElementById('radar-error-state')!;
+    const elErrorMsg = document.getElementById('radar-error-msg')!;
+    const elDashboard = document.getElementById('radar-dashboard')!;
+    const elWarmup = document.getElementById('radar-warmup-banner')!;
+    const elWarmupTitle = document.getElementById('radar-warmup-title')!;
+    const elWarmupDesc = document.getElementById('radar-warmup-desc')!;
+
+    const elWeatherBadge = document.getElementById('radar-weather-badge')!;
+    const elWeatherIcon = document.getElementById('radar-weather-icon')!;
+    const elWeatherLabel = document.getElementById('radar-weather-label')!;
+    const elWeatherRatio = document.getElementById('radar-weather-ratio')!;
+    const elCollectionBadge = document.getElementById('radar-collection-badge')!;
+    const elUpdatedTime = document.getElementById('radar-updated-time')!;
+    const elRetryBtn = document.getElementById('radar-retry-btn') as HTMLButtonElement;
+
+    const elKpiGrid = document.getElementById('radar-kpi-grid')!;
+    const elHighlights = document.getElementById('radar-highlights-strip')!;
+    const elActionBreakdown = document.getElementById('radar-action-breakdown')!;
+    const elPermbanPill = document.getElementById('radar-permban-pill')!;
+    const elTimeoutInsights = document.getElementById('radar-timeout-insights')!;
+    const elTimeoutAvgPill = document.getElementById('radar-timeout-avg-pill')!;
+    const elPatternInsights = document.getElementById('radar-pattern-insights')!;
+    const elPatternTotalPill = document.getElementById('radar-pattern-total-pill')!;
+
+    const elTimelineLegend = document.getElementById('radar-timeline-legend')!;
+    const elTimelineChart = document.getElementById('radar-timeline-chart')!;
+    const elTooltip = document.getElementById('radar-chart-tooltip')!;
+    const elTimezoneCards = document.getElementById('radar-timezone-cards')!;
+    const elHour24Heatmap = document.getElementById('radar-hour24-heatmap')!;
+
+    const elCatSortBar = document.getElementById('radar-cat-sort-bar')!;
+    const elSegmentContent = document.getElementById('radar-segment-content')!;
+    const elStreamCalmness = document.getElementById('radar-stream-calmness')!;
+    const elObservedStreamsPill = document.getElementById('radar-observed-streams-pill')!;
+    const elTrollFunnel = document.getElementById('radar-troll-funnel')!;
+    const elTrollSharePill = document.getElementById('radar-troll-share-pill')!;
+
+    let currentData: any = null;
+    let chartMode: 'intensity' | 'stacked' = 'intensity';
+    let segmentTab: 'category' | 'viewer' | 'age' | 'uptime' = 'category';
+    let catSortKey: 'mod_per_10k_chats' | 'total_chats' | 'cleanbot_pct' | 'perm_ban_pct' = 'mod_per_10k_chats';
+    let showAllCategories = false;
+
+    // ─── Formatting & Safety Helpers ──────────────────────────────────────────
+    function escapeHtml(val: unknown): string {
+      return String(val ?? '').replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+      }[c] || c));
+    }
+
+    function num(v: unknown, fallback = 0): number {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : fallback;
+    }
+
+    function fmtInt(v: unknown): string {
+      return Math.round(num(v)).toLocaleString('ko-KR');
+    }
+
+    function fmtCompactKo(v: unknown): string {
+      const n = num(v);
+      if (n >= 100_000_000) return `${(n / 100_000_000).toFixed(2)}억`;
+      if (n >= 10_000) return `${(n / 10_000).toFixed(1)}만`;
+      return Math.round(n).toLocaleString('ko-KR');
+    }
+
+    function fmtDec(v: unknown, digits = 1): string {
+      return num(v).toFixed(digits);
+    }
+
+    function fmtDuration(sec: unknown): string {
+      const s = Math.round(num(sec));
+      if (s <= 0) return '—';
+      if (s < 60) return `${s}초`;
+      const m = Math.floor(s / 60);
+      const rem = s % 60;
+      if (m < 60) return rem > 0 ? `${m}분 ${rem}초` : `${m}분`;
+      const h = Math.floor(m / 60);
+      const rm = m % 60;
+      return rm > 0 ? `${h}시간 ${rm}분` : `${h}시간`;
+    }
+
+    function fmtKstTimestamp(iso: string | null | undefined): string {
+      if (!iso) return '업데이트 정보 없음';
+      const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(String(iso));
+      if (m) return `${m[1]}.${m[2]}.${m[3]} ${m[4]}:${m[5]} KST`;
+      return String(iso);
+    }
+
+    function fmtShortHour(iso: string | undefined, hourKst: number | undefined): string {
+      if (iso) {
+        const m = /^\d{4}-(\d{2})-(\d{2})T(\d{2})/.exec(String(iso));
+        if (m) return `${Number(m[1])}/${Number(m[2])} ${m[3]}시`;
+      }
+      if (hourKst != null) return `${String(hourKst).padStart(2, '0')}시`;
+      return '—';
+    }
+
+    function renderTrendBadge(delta: number | null | undefined, ready: boolean, invertColor = false): string {
+      if (!ready || delta === null || delta === undefined || !Number.isFinite(Number(delta))) {
+        return '';
+      }
+      const val = Number(delta);
+      const sign = val > 0 ? '+' : '';
+      const arrow = val > 0 ? '▲' : val < 0 ? '▼' : '•';
+      let cls = 'trend-flat';
+      if (Math.abs(val) >= 0.5) {
+        const isUp = val > 0;
+        cls = invertColor ? (isUp ? 'trend-warn' : 'trend-good') : (isUp ? 'trend-up' : 'trend-down');
+      }
+      return `<span class="kpi-trend ${cls}" title="직전 24시간 대비 변화율">24h ${arrow} ${sign}${val.toFixed(1)}%</span>`;
+    }
+
+    const SEGMENT_LABELS: Record<string, string> = {
+      'Other': '기타',
+      'Small (2-50)': '소규모 (2~50명)',
+      'Mid (51-300)': '중규모 (51~300명)',
+      'Large (301-1000)': '대규모 (301~1,000명)',
+      'Huge (1001+)': '초대형 (1,001명+)',
+      'General': '일반 방송',
+      'Adult_19+': '연령제한 (19금)',
+      '0-30m': '초반 (0~30분)',
+      '30m-2h': '본방송 (30분~2시간)',
+      '2h-5h': '장기 (2~5시간)',
+      '5h+': '마라톤 (5시간+)',
+    };
+
+    const PATTERN_LABELS: Record<string, { label: string; icon: string; color: string }> = {
+      url: { label: '링크·URL', icon: '🔗', color: '#f43f5e' },
+      flood: { label: '도배·반복', icon: '🔁', color: '#f59e0b' },
+      long_text: { label: '장문·복붙', icon: '📜', color: '#a855f7' },
+      short_text: { label: '단문', icon: '💬', color: '#38bdf8' },
+      normal: { label: '일반 채팅', icon: '🗨️', color: '#64748b' },
+    };
+
+    const WEATHER_META: Record<string, { icon: string; cls: string; desc: string }> = {
+      calm: { icon: '☀️', cls: 'weather-calm', desc: '평소보다 쾌청' },
+      normal: { icon: '⛅', cls: 'weather-normal', desc: '평소 수준' },
+      elevated: { icon: '🌧️', cls: 'weather-elevated', desc: '제재 주의' },
+      surge: { icon: '⛈️', cls: 'weather-surge', desc: '제재 급증 경보' },
+    };
+
+    function mapLabel(name: string): string {
+      return SEGMENT_LABELS[name] || name;
+    }
+
+    function normalizeSegmentRows(raw: any): any[] {
+      if (Array.isArray(raw)) return raw;
+      if (raw && typeof raw === 'object') {
+        return Object.entries(raw).map(([k, v]: [string, any]) => ({
+          name: v?.name || k,
+          ...(v || {}),
+        }));
+      }
+      return [];
+    }
+
+    // ─── Render Functions ─────────────────────────────────────────────────────
+    function renderHeader(data: any) {
+      const meta = data.meta || {};
+      const weather = data.weather_status || {};
+      const hoursCollected = num(meta.hours_collected, 0);
+      const windowHours = num(meta.window_hours, 48);
+
+      const level = String(weather.level || 'normal');
+      const wInfo = WEATHER_META[level] || WEATHER_META.normal;
+      const labelKr = weather.label_kr || '보통';
+      const ratio = num(weather.ratio, 1);
+
+      elWeatherBadge.className = `radar-weather-badge ${wInfo.cls}`;
+      elWeatherIcon.textContent = wInfo.icon;
+      elWeatherLabel.textContent = `채팅 기상도: ${labelKr}`;
+      if (hoursCollected > 0 && num(weather.baseline_mod_per_10k) > 0) {
+        const surgeSuffix = num(weather.surge_hours_count) > 0 ? ` · 급증 ${fmtInt(weather.surge_hours_count)}h` : '';
+        elWeatherRatio.textContent = `48h 평균 대비 ${ratio.toFixed(2)}x${surgeSuffix}`;
+      } else {
+        elWeatherRatio.textContent = '기준선 수집 중';
+      }
+
+      if (hoursCollected === 0) {
+        elCollectionBadge.textContent = `초기 수집 대기 (0/${windowHours}시간)`;
+      } else if (hoursCollected < windowHours) {
+        elCollectionBadge.textContent = `최근 ${hoursCollected}시간 누적 (${windowHours}시간 목표)`;
+      } else {
+        elCollectionBadge.textContent = `최근 ${hoursCollected}시간 누적`;
+      }
+
+      elUpdatedTime.textContent = `최종 업데이트: ${fmtKstTimestamp(meta.updated_at_kst)}`;
+
+      // Warm-up banner logic
+      if (hoursCollected === 0) {
+        elWarmup.hidden = false;
+        elWarmupTitle.textContent = '📡 초기 48시간 제재 데이터 수집 워밍업 중입니다';
+        elWarmupDesc.textContent =
+          '첫 번째 1시간 단위 집계 스냅샷을 생성하고 있습니다. 데이터가 수집되면 48시간 추이, 채팅 기상도, 카테고리·방송 규모별 비교가 자동으로 활성화됩니다.';
+      } else if (hoursCollected < 24) {
+        elWarmup.hidden = false;
+        elWarmupTitle.textContent = `📡 최근 ${hoursCollected}시간 데이터 누적 중 (48시간 창 확장 진행 중)`;
+        elWarmupDesc.textContent =
+          '아직 48시간 전체 창이 채워지기 전이라 일부 24시간 증감률(Trend)은 24시간 이상 누적 시 자동으로 표시됩니다.';
+      } else {
+        elWarmup.hidden = true;
+      }
+    }
+
+    function renderKpis(data: any) {
+      const meta = data.meta || {};
+      const sum = data.summary_48h || {};
+      const trends = data.trends_24h || {};
+      const ready = Boolean(trends.ready);
+      const delta = trends.delta_pct || {};
+      const hasData = num(meta.hours_collected) > 0 || num(sum.total_chats) > 0;
+
+      const aiPct = num(sum.ai_cleanbot_pct);
+      const humanPct = num(sum.human_mod_pct);
+
+      const cards = [
+        {
+          label: '모니터링 방송',
+          value: hasData ? `${fmtInt(meta.monitored_streams_peak)}개` : '—',
+          sub: hasData ? `시간당 평균 ${fmtDec(meta.monitored_streams_avg, 1)}개 동시 관측` : '집계 대기 중',
+          trend: '',
+          accent: 'kpi-indigo',
+        },
+        {
+          label: '분석된 채팅 수',
+          value: hasData ? fmtCompactKo(sum.total_chats) : '—',
+          sub: hasData
+            ? `시간별 유저 합 ${fmtCompactKo(sum.unique_chatters_hourly_sum)} · 인당 ${fmtDec(sum.avg_chats_per_chatter, 1)}건`
+            : '집계 대기 중',
+          trend: renderTrendBadge(delta.total_chats, ready, false),
+          accent: 'kpi-sky',
+        },
+        {
+          label: '정상 채팅 비율',
+          value: hasData ? `${fmtDec(sum.clean_chat_rate_pct, 2)}%` : '—',
+          sub: hasData ? `총 제재 ${fmtInt(sum.total_mod_actions)}건 발생` : '집계 대기 중',
+          trend: renderTrendBadge(delta.total_mod_actions, ready, true),
+          accent: 'kpi-emerald',
+        },
+        {
+          label: '1만 채팅당 제재 수',
+          value: hasData ? `${fmtDec(sum.mod_per_10k_chats, 1)}건` : '—',
+          sub: hasData ? `제재 대상 유저 ${fmtInt(sum.unique_moderated_users)}명` : '집계 대기 중',
+          trend: renderTrendBadge(delta.mod_per_10k_chats, ready, true),
+          accent: 'kpi-amber',
+        },
+        {
+          label: 'AI(클린봇) vs 매니저',
+          value: hasData ? `${fmtDec(aiPct, 1)}% : ${fmtDec(humanPct, 1)}%` : '—',
+          sub: hasData
+            ? `<div class="mini-split-bar"><span class="sb-ai" style="width:${Math.min(100, aiPct)}%"></span><span class="sb-human" style="width:${Math.min(100, humanPct)}%"></span></div>`
+            : '집계 대기 중',
+          trend: renderTrendBadge(delta.cleanbot_pct, ready, false),
+          accent: 'kpi-purple',
+          rawSub: hasData,
+        },
+        {
+          label: '자동 탐지 다중 트롤',
+          value: hasData ? `${fmtInt(sum.auto_bans_triggered)}명` : '—',
+          sub: hasData
+            ? `알려진 트롤 제재 비중 ${fmtDec(sum.known_troll_share_pct, 1)}% (${fmtInt(sum.known_troll_actions)}건)`
+            : '집계 대기 중',
+          trend: renderTrendBadge(delta.auto_bans_triggered, ready, true),
+          accent: 'kpi-rose',
+        },
+        {
+          label: '채팅 모드 변경',
+          value: hasData ? `${fmtInt(sum.chat_mode_changes)}회` : '—',
+          sub: hasData ? `임시제한 조기해제 ${fmtInt(sum.timeout_early_releases)}건` : '집계 대기 중',
+          trend: '',
+          accent: 'kpi-slate',
+        },
+      ];
+
+      elKpiGrid.innerHTML = cards
+        .map(
+          (c) => `
+          <div class="kpi-card ${c.accent}">
+            <div class="kpi-top">
+              <span class="kpi-label">${escapeHtml(c.label)}</span>
+              ${c.trend}
+            </div>
+            <div class="kpi-value">${escapeHtml(c.value)}</div>
+            <div class="kpi-sub">${c.rawSub ? c.sub : escapeHtml(c.sub)}</div>
+          </div>
+        `
+        )
+        .join('');
+    }
+
+    function renderHighlights(data: any) {
+      const h = data.highlights || {};
+      const hoursCollected = num(data.meta?.hours_collected);
+      if (hoursCollected === 0) {
+        elHighlights.hidden = true;
+        return;
+      }
+
+      const chips: { icon: string; title: string; detail: string }[] = [];
+
+      // Peak / Calmest KST hour
+      if (h.peak_mod_hour_kst != null) {
+        const peakH = typeof h.peak_mod_hour_kst === 'object' ? h.peak_mod_hour_kst.hour_kst : h.peak_mod_hour_kst;
+        const peakVal = typeof h.peak_mod_hour_kst === 'object' ? h.peak_mod_hour_kst.mod_per_10k_chats : null;
+        const calmH =
+          h.calmest_mod_hour_kst != null
+            ? typeof h.calmest_mod_hour_kst === 'object'
+              ? h.calmest_mod_hour_kst.hour_kst
+              : h.calmest_mod_hour_kst
+            : null;
+        let detail = `가장 치열한 시간 ${String(peakH).padStart(2, '0')}시`;
+        if (peakVal != null) detail += ` (${fmtDec(peakVal, 1)}건/1만)`;
+        if (calmH != null) detail += ` · 가장 평온 ${String(calmH).padStart(2, '0')}시`;
+        chips.push({ icon: '🕒', title: '시간대 피크', detail });
+      }
+
+      // Highest intensity category
+      if (h.highest_intensity_category != null) {
+        const rawName =
+          typeof h.highest_intensity_category === 'object'
+            ? h.highest_intensity_category.name
+            : h.highest_intensity_category;
+        const rate =
+          typeof h.highest_intensity_category === 'object'
+            ? h.highest_intensity_category.mod_per_10k_chats
+            : null;
+        const catName = mapLabel(String(rawName));
+        chips.push({
+          icon: '🔥',
+          title: '제재율 최고 카테고리',
+          detail: rate != null ? `${catName} (1만 채팅당 ${fmtDec(rate, 1)}건)` : catName,
+        });
+      }
+
+      // Riskiest chat pattern
+      if (h.riskiest_chat_pattern != null) {
+        const key =
+          typeof h.riskiest_chat_pattern === 'object'
+            ? h.riskiest_chat_pattern.pattern || h.riskiest_chat_pattern.key || h.riskiest_chat_pattern.name
+            : String(h.riskiest_chat_pattern);
+        const pMeta = PATTERN_LABELS[String(key)];
+        const patObj = data.troll_insights?.blinded_message_patterns?.[String(key)];
+        const mult =
+          (typeof h.riskiest_chat_pattern === 'object' ? h.riskiest_chat_pattern.risk_vs_normal : null) ??
+          patObj?.risk_vs_normal;
+        const label = pMeta ? pMeta.label : String(key);
+        chips.push({
+          icon: '⚠️',
+          title: '최고 위험 채팅 패턴',
+          detail: mult && num(mult) > 0 ? `${label} — 일반 채팅 대비 ${fmtDec(mult, 1)}배` : label,
+        });
+      }
+
+      // Zero perm-ban streams
+      if (num(data.stream_calmness_48h?.total_observed_streams) > 0) {
+        chips.push({
+          icon: '🕊️',
+          title: '영구차단 0건 방송',
+          detail: `전체 관측 방송의 ${fmtDec(h.zero_perm_ban_streams_pct, 1)}%가 영구차단 없이 평온 유지`,
+        });
+      }
+
+      // Timeout pardon rate
+      if (num(data.timeout_insights?.total) > 0) {
+        chips.push({
+          icon: '🔓',
+          title: '임시제한 사면율',
+          detail: `조기 해제 ${fmtDec(h.timeout_pardon_rate_pct, 1)}% · 재범 비율 ${fmtDec(h.repeat_timeout_pct, 1)}%`,
+        });
+      }
+
+      if (chips.length === 0) {
+        elHighlights.hidden = true;
+        return;
+      }
+
+      elHighlights.hidden = false;
+      elHighlights.innerHTML = chips
+        .slice(0, 4)
+        .map(
+          (ch) => `
+          <div class="highlight-chip">
+            <span class="hl-ico">${ch.icon}</span>
+            <div class="hl-text">
+              <span class="hl-title">${escapeHtml(ch.title)}</span>
+              <strong class="hl-detail">${escapeHtml(ch.detail)}</strong>
+            </div>
+          </div>
+        `
+        )
+        .join('');
+    }
+
+    function renderActionBreakdown(data: any) {
+      const ab = data.action_breakdown || {};
+      const trends = data.trends_24h || {};
+      const permTotal = ab.perm_bans_total || { count: 0, pct: 0 };
+      const permDelta = renderTrendBadge(trends.delta_pct?.perm_bans_total, Boolean(trends.ready), true);
+      elPermbanPill.innerHTML = `영구차단 ${fmtInt(permTotal.count)}건 (${fmtDec(permTotal.pct, 1)}%) ${permDelta}`;
+
+      const items = [
+        { key: 'cleanbot_blinds', label: '클린봇 블라인드', color: '#818cf8', data: ab.cleanbot_blinds },
+        { key: 'manual_single_blinds', label: '단기 블라인드 (매니저)', color: '#38bdf8', data: ab.manual_single_blinds },
+        { key: 'timeouts', label: '임시제한 (채팅금지)', color: '#f59e0b', data: ab.timeouts },
+        { key: 'perm_bans_explicit', label: '영구차단 (명시적)', color: '#ef4444', data: ab.perm_bans_explicit },
+        { key: 'perm_bans_inferred', label: '다중 블라인드 추정 영차', color: '#ec4899', data: ab.perm_bans_inferred },
+      ];
+
+      const totalCount = items.reduce((acc, it) => acc + num(it.data?.count), 0);
+      const r = 46;
+      const circ = 2 * Math.PI * r;
+      let offset = 0;
+
+      const slices =
+        totalCount > 0
+          ? items
+              .map((it) => {
+                const cnt = num(it.data?.count);
+                const frac = cnt / totalCount;
+                const dash = frac * circ;
+                const seg = `<circle cx="60" cy="60" r="${r}" fill="none" stroke="${it.color}" stroke-width="14" stroke-dasharray="${dash.toFixed(2)} ${(circ - dash).toFixed(2)}" stroke-dashoffset="${(-offset).toFixed(2)}" transform="rotate(-90 60 60)" />`;
+                offset += dash;
+                return seg;
+              })
+              .join('')
+          : `<circle cx="60" cy="60" r="${r}" fill="none" stroke="#1e293b" stroke-width="14" />`;
+
+      elActionBreakdown.innerHTML = `
+        <div class="donut-wrap">
+          <svg viewBox="0 0 120 120" class="donut-svg" aria-label="제재 유형 비율 차트">
+            ${slices}
+            <text x="60" y="56" text-anchor="middle" fill="#94a3b8" font-size="9" font-weight="700">총 제재</text>
+            <text x="60" y="72" text-anchor="middle" fill="#f8fafc" font-size="14" font-weight="800" font-family="monospace">${totalCount > 0 ? fmtCompactKo(totalCount) : '0'}</text>
+          </svg>
+        </div>
+        <div class="donut-legend">
+          ${items
+            .map((it) => {
+              const cnt = num(it.data?.count);
+              const pct = num(it.data?.pct);
+              return `
+                <div class="legend-row">
+                  <div class="legend-meta">
+                    <span class="leg-dot" style="background:${it.color}"></span>
+                    <span class="leg-name">${escapeHtml(it.label)}</span>
+                    <span class="leg-val">${fmtInt(cnt)}건 <small>(${fmtDec(pct, 1)}%)</small></span>
+                  </div>
+                  <div class="leg-bar-track">
+                    <div class="leg-bar-fill" style="width:${Math.min(100, pct)}%; background:${it.color}"></div>
+                  </div>
+                </div>
+              `;
+            })
+            .join('')}
+        </div>
+      `;
+    }
+
+    function renderTimeoutInsights(data: any) {
+      const ti = data.timeout_insights || {};
+      const total = num(ti.total);
+      elTimeoutAvgPill.textContent = total > 0 ? `평균 ${fmtDuration(ti.avg_duration_seconds)}` : '평균 —';
+
+      const buckets = ti.duration_buckets || {};
+      const sBucket = buckets.short_le_60s || { count: 0, pct: 0 };
+      const mBucket = buckets.medium_61_to_600s || { count: 0, pct: 0 };
+      const lBucket = buckets.long_gt_600s || { count: 0, pct: 0 };
+
+      const repeat = ti.offense_repeat || {};
+      const firstW = repeat.first_warning || { count: 0, pct: 0 };
+      const repO = repeat.repeat_offender || { count: 0, pct: 0 };
+
+      elTimeoutInsights.innerHTML = `
+        <div class="timeout-mini-grid">
+          <div class="tmini-box">
+            <span class="tmini-lbl">총 임시제한</span>
+            <strong>${total > 0 ? `${fmtInt(total)}건` : '—'}</strong>
+          </div>
+          <div class="tmini-box">
+            <span class="tmini-lbl">사면율 (조기해제)</span>
+            <strong class="c-emerald">${total > 0 ? `${fmtDec(ti.pardon_rate_pct, 1)}%` : '—'}</strong>
+            <small>${total > 0 ? `${fmtInt(ti.early_releases)}건 해제` : '대기 중'}</small>
+          </div>
+          <div class="tmini-box">
+            <span class="tmini-lbl">영구차단 전환율</span>
+            <strong class="c-rose">${total > 0 ? `${fmtDec(ti.escalated_to_perm_ban_pct, 1)}%` : '—'}</strong>
+            <small>${total > 0 ? `${fmtInt(ti.escalated_to_perm_ban_users)}명 전환` : '대기 중'}</small>
+          </div>
+        </div>
+
+        <div class="dist-block">
+          <div class="dist-head">
+            <span>임시제한 기간 분포</span>
+            <small>1분 이하 · 1~10분 · 10분 초과</small>
+          </div>
+          <div class="stacked-bar">
+            <span style="width:${num(sBucket.pct)}%; background:#38bdf8" title="1분 이하: ${fmtDec(sBucket.pct, 1)}%"></span>
+            <span style="width:${num(mBucket.pct)}%; background:#f59e0b" title="1~10분: ${fmtDec(mBucket.pct, 1)}%"></span>
+            <span style="width:${num(lBucket.pct)}%; background:#ef4444" title="10분 초과: ${fmtDec(lBucket.pct, 1)}%"></span>
+          </div>
+          <div class="dist-legend-inline">
+            <span><i style="background:#38bdf8"></i>1분 이하 <b>${fmtDec(sBucket.pct, 1)}%</b></span>
+            <span><i style="background:#f59e0b"></i>1~10분 <b>${fmtDec(mBucket.pct, 1)}%</b></span>
+            <span><i style="background:#ef4444"></i>10분 초과 <b>${fmtDec(lBucket.pct, 1)}%</b></span>
+          </div>
+        </div>
+
+        <div class="dist-block">
+          <div class="dist-head">
+            <span>첫 경고 vs 재범 비율</span>
+            <small>${total > 0 ? `${fmtInt(firstW.count)} vs ${fmtInt(repO.count)}` : '—'}</small>
+          </div>
+          <div class="stacked-bar">
+            <span style="width:${num(firstW.pct)}%; background:#10b981"></span>
+            <span style="width:${num(repO.pct)}%; background:#ec4899"></span>
+          </div>
+          <div class="dist-legend-inline">
+            <span><i style="background:#10b981"></i>첫 경고 <b>${fmtDec(firstW.pct, 1)}%</b></span>
+            <span><i style="background:#ec4899"></i>재범 <b>${fmtDec(repO.pct, 1)}%</b></span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPatternInsights(data: any) {
+      const mp = data.troll_insights?.blinded_message_patterns || {};
+      const totalMatched = num(mp.total_matched);
+      elPatternTotalPill.textContent = `매칭 ${fmtInt(totalMatched)}건`;
+
+      const keys: Array<'url' | 'flood' | 'long_text' | 'short_text' | 'normal'> = [
+        'url',
+        'flood',
+        'long_text',
+        'short_text',
+        'normal',
+      ];
+
+      elPatternInsights.innerHTML = keys
+        .map((k) => {
+          const meta = PATTERN_LABELS[k];
+          const row = mp[k] || { count: 0, pct: 0, all_chat_pct: 0, risk_vs_normal: 0 };
+          const risk = num(row.risk_vs_normal);
+          const riskCls = risk >= 3 ? 'risk-high' : risk >= 1.5 ? 'risk-med' : 'risk-base';
+          const riskLabel =
+            k === 'normal'
+              ? '기준 (1.0배)'
+              : totalMatched > 0 && risk > 0
+                ? `${fmtDec(risk, 1)}배 위험`
+                : '—';
+          return `
+            <div class="pattern-row">
+              <div class="pattern-top">
+                <span class="pat-name">${meta.icon} ${escapeHtml(meta.label)}</span>
+                <div class="pat-right">
+                  <span class="pat-pct">${fmtDec(row.pct, 1)}%</span>
+                  <span class="risk-badge ${riskCls}">${riskLabel}</span>
+                </div>
+              </div>
+              <div class="leg-bar-track">
+                <div class="leg-bar-fill" style="width:${Math.min(100, num(row.pct))}%; background:${meta.color}"></div>
+              </div>
+              <div class="pattern-foot">
+                <span>블라인드 ${fmtInt(row.count)}건</span>
+                <span>전체 채팅 비중 ${fmtDec(row.all_chat_pct, 1)}%</span>
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    function renderTimeline(data: any) {
+      const series = Array.isArray(data.hourly_series) ? data.hourly_series : [];
+      const baseline = num(data.weather_status?.baseline_mod_per_10k);
+
+      if (chartMode === 'intensity') {
+        elTimelineLegend.innerHTML = `
+          <span><i style="background:#818cf8"></i>일반 시간대 (1만 채팅당 제재 수)</span>
+          <span><i style="background:#ef4444"></i>⚡ 급증 구간 (Surge)</span>
+          <span><i class="dash-i"></i>48h 평균 기준선 (${fmtDec(baseline, 1)}건)</span>
+        `;
+      } else {
+        elTimelineLegend.innerHTML = `
+          <span><i style="background:#818cf8"></i>클린봇</span>
+          <span><i style="background:#38bdf8"></i>단기 블라인드</span>
+          <span><i style="background:#f59e0b"></i>임시제한</span>
+          <span><i style="background:#ef4444"></i>영구차단</span>
+        `;
+      }
+
+      if (series.length === 0) {
+        elTimelineChart.innerHTML = `
+          <div class="empty-chart-box">
+            <span class="empty-ico">📊</span>
+            <strong>아직 표시할 시간별 시계열 데이터가 없습니다</strong>
+            <p>1시간 단위 스냅샷이 누적되면 최근 48시간 제재 추이와 급증 구간이 인터랙티브 차트로 표시됩니다.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const W = 960;
+      const H = 220;
+      const padL = 44;
+      const padR = 14;
+      const padT = 18;
+      const padB = 30;
+      const plotW = W - padL - padR;
+      const plotH = H - padT - padB;
+
+      const values = series.map((pt: any) =>
+        chartMode === 'intensity'
+          ? num(pt.mod_per_10k_chats)
+          : num(pt.cleanbot_blinds) +
+            num(pt.manual_single_blinds) +
+            num(pt.timeouts) +
+            num(pt.perm_bans_explicit) +
+            num(pt.perm_bans_inferred)
+      );
+      const maxVal = Math.max(1, ...values, chartMode === 'intensity' ? baseline * 1.15 : 0);
+
+      // Horizontal grid lines (4 steps)
+      const yTicks = [0, 0.33, 0.66, 1].map((f) => {
+        const y = padT + plotH * (1 - f);
+        const val = maxVal * f;
+        return `
+          <line x1="${padL}" y1="${y.toFixed(1)}" x2="${W - padR}" y2="${y.toFixed(1)}" stroke="rgba(148,163,184,0.12)" stroke-width="1" />
+          <text x="${padL - 8}" y="${(y + 3.5).toFixed(1)}" text-anchor="end" fill="#64748b" font-size="10" font-family="monospace">${chartMode === 'intensity' ? val.toFixed(0) : fmtCompactKo(val)}</text>
+        `;
+      });
+
+      const slotW = plotW / Math.max(1, series.length);
+      const barW = Math.max(4, Math.min(18, slotW * 0.68));
+      const labelStep = Math.max(1, Math.ceil(series.length / 8));
+
+      const barsHtml = series
+        .map((pt: any, idx: number) => {
+          const cx = padL + idx * slotW + slotW / 2;
+          const x = cx - barW / 2;
+          const isSurge = Boolean(pt.is_surge);
+          let barSvg = '';
+
+          if (chartMode === 'intensity') {
+            const v = num(pt.mod_per_10k_chats);
+            const h = (v / maxVal) * plotH;
+            const y = padT + plotH - h;
+            const fill = isSurge ? '#ef4444' : '#818cf8';
+            barSvg = `
+              <rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(1.5, h).toFixed(1)}" rx="2.5" fill="${fill}" opacity="${isSurge ? '0.95' : '0.85'}" />
+              ${isSurge ? `<circle cx="${cx.toFixed(1)}" cy="${Math.max(8, y - 6).toFixed(1)}" r="3" fill="#fbbf24" />` : ''}
+            `;
+          } else {
+            const segs = [
+              { val: num(pt.cleanbot_blinds), color: '#818cf8' },
+              { val: num(pt.manual_single_blinds), color: '#38bdf8' },
+              { val: num(pt.timeouts), color: '#f59e0b' },
+              { val: num(pt.perm_bans_explicit) + num(pt.perm_bans_inferred), color: '#ef4444' },
+            ];
+            let curY = padT + plotH;
+            barSvg = segs
+              .map((s) => {
+                if (s.val <= 0) return '';
+                const h = (s.val / maxVal) * plotH;
+                curY -= h;
+                return `<rect x="${x.toFixed(1)}" y="${curY.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(1, h).toFixed(1)}" fill="${s.color}" />`;
+              })
+              .join('');
+          }
+
+          const xLabel =
+            idx % labelStep === 0 || idx === series.length - 1
+              ? `<text x="${cx.toFixed(1)}" y="${H - 8}" text-anchor="middle" fill="#64748b" font-size="10" font-family="monospace">${escapeHtml(fmtShortHour(pt.hour_kst_iso, pt.hour_kst))}</text>`
+              : '';
+
+          return `
+            <g class="timeline-bar-group" data-idx="${idx}">
+              ${isSurge ? `<rect x="${(cx - slotW / 2).toFixed(1)}" y="${padT}" width="${slotW.toFixed(1)}" height="${plotH}" fill="rgba(239,68,68,0.08)" />` : ''}
+              ${barSvg}
+              <rect x="${(cx - slotW / 2).toFixed(1)}" y="${padT}" width="${slotW.toFixed(1)}" height="${plotH}" fill="transparent" class="bar-hit" />
+              ${xLabel}
+            </g>
+          `;
+        })
+        .join('');
+
+      let baselineLine = '';
+      if (chartMode === 'intensity' && baseline > 0) {
+        const by = padT + plotH - (baseline / maxVal) * plotH;
+        baselineLine = `<line x1="${padL}" y1="${by.toFixed(1)}" x2="${W - padR}" y2="${by.toFixed(1)}" stroke="#fbbf24" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.8" />`;
+      }
+
+      elTimelineChart.innerHTML = `
+        <svg viewBox="0 0 ${W} ${H}" class="timeline-svg" role="img" aria-label="48시간 시간별 제재 추이 차트">
+          ${yTicks.join('')}
+          ${barsHtml}
+          ${baselineLine}
+        </svg>
+      `;
+
+      // Bind interactive hover tooltips
+      const groups = elTimelineChart.querySelectorAll<SVGGElement>('.timeline-bar-group');
+      groups.forEach((g) => {
+        const idx = Number(g.dataset.idx);
+        const pt = series[idx];
+        if (!pt) return;
+
+        const showTip = (ev: MouseEvent) => {
+          const permCount = num(pt.perm_bans_explicit) + num(pt.perm_bans_inferred);
+          elTooltip.innerHTML = `
+            <div class="tt-head">
+              <strong>${escapeHtml(fmtShortHour(pt.hour_kst_iso, pt.hour_kst))} ${pt.day_of_week ? `(${escapeHtml(pt.day_of_week)})` : ''}</strong>
+              ${pt.is_surge ? `<span class="tt-surge">⚡ 급증 ${fmtDec(pt.surge_ratio, 2)}x</span>` : ''}
+            </div>
+            <div class="tt-grid">
+              <span>1만당 제재</span><b>${fmtDec(pt.mod_per_10k_chats, 1)}건</b>
+              <span>총 채팅 / 방송</span><b>${fmtCompactKo(pt.total_chats)} / ${fmtDec(pt.monitored_streams_avg, 0)}개</b>
+              <span>클린봇 / 단기</span><b>${fmtInt(pt.cleanbot_blinds)} / ${fmtInt(pt.manual_single_blinds)}</b>
+              <span>임시제한 / 영차</span><b>${fmtInt(pt.timeouts)} / ${fmtInt(permCount)}</b>
+              <span>알려진 트롤 제재</span><b>${fmtInt(pt.known_troll_actions)}건</b>
+            </div>
+          `;
+          elTooltip.hidden = false;
+          const panelRect = elTimelineChart.closest('.radar-timeline-panel')!.getBoundingClientRect();
+          const relX = ev.clientX - panelRect.left;
+          const relY = ev.clientY - panelRect.top;
+          const leftPos = Math.min(panelRect.width - 230, Math.max(12, relX + 14));
+          const topPos = Math.max(12, relY - 125);
+          elTooltip.style.left = `${leftPos}px`;
+          elTooltip.style.top = `${topPos}px`;
+        };
+
+        g.addEventListener('mouseenter', showTip);
+        g.addEventListener('mousemove', showTip);
+        g.addEventListener('mouseleave', () => {
+          elTooltip.hidden = true;
+        });
+      });
+    }
+
+    function renderTimeOfDay(data: any) {
+      const zones = Array.isArray(data.by_time_zone_kst) ? data.by_time_zone_kst : [];
+      const maxZoneRate = Math.max(1, ...zones.map((z: any) => num(z.mod_per_10k_chats)));
+      const zoneIcons: Record<string, string> = {
+        daytime_06_18: '🌤️',
+        prime_18_02: '🔥',
+        late_night_02_06: '🌙',
+      };
+
+      elTimezoneCards.innerHTML = zones
+        .map((z: any) => {
+          const sampled = num(z.hours_sampled);
+          const rate = num(z.mod_per_10k_chats);
+          const barW = sampled > 0 ? Math.min(100, (rate / maxZoneRate) * 100) : 0;
+          return `
+            <div class="tod-zone-card">
+              <div class="tz-top">
+                <span class="tz-label">${zoneIcons[z.zone] || '⏱️'} ${escapeHtml(z.label_kr || z.zone)}</span>
+                <strong class="tz-rate">${sampled > 0 ? `${fmtDec(rate, 1)}건` : '—'}</strong>
+              </div>
+              <div class="leg-bar-track"><div class="leg-bar-fill" style="width:${barW}%; background:linear-gradient(90deg,#6366f1,#38bdf8)"></div></div>
+              <div class="tz-meta">
+                <span>채팅 ${sampled > 0 ? fmtCompactKo(z.total_chats) : '—'}</span>
+                <span>AI ${sampled > 0 ? `${fmtDec(z.cleanbot_pct, 0)}%` : '—'}</span>
+                <span>영차 ${sampled > 0 ? `${fmtDec(z.perm_ban_pct, 1)}%` : '—'}</span>
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+
+      // 24-hour KST heatmap/bars
+      const hoursRaw = Array.isArray(data.by_hour_kst) ? data.by_hour_kst : [];
+      const hourMap = new Map<number, any>();
+      hoursRaw.forEach((h: any) => hourMap.set(num(h.hour_kst), h));
+      const maxHRate = Math.max(1, ...hoursRaw.map((h: any) => num(h.mod_per_10k_chats)));
+
+      const cells: string[] = [];
+      for (let hr = 0; hr < 24; hr++) {
+        const row = hourMap.get(hr);
+        const sampled = row ? num(row.hours_sampled) : 0;
+        const rate = row ? num(row.mod_per_10k_chats) : 0;
+        const pct = sampled > 0 ? Math.max(12, Math.round((rate / maxHRate) * 100)) : 8;
+        const intensity = sampled > 0 ? rate / maxHRate : 0;
+        const col =
+          sampled === 0
+            ? '#1e293b'
+            : intensity >= 0.8
+              ? '#ef4444'
+              : intensity >= 0.55
+                ? '#f59e0b'
+                : intensity >= 0.3
+                  ? '#818cf8'
+                  : '#38bdf8';
+        const tip =
+          sampled > 0
+            ? `${String(hr).padStart(2, '0')}시 KST · 1만당 ${fmtDec(rate, 1)}건 · 채팅 ${fmtCompactKo(row.total_chats)} · AI ${fmtDec(row.cleanbot_pct, 0)}%`
+            : `${String(hr).padStart(2, '0')}시 KST · 수집 대기`;
+
+        cells.push(`
+          <div class="h24-col" title="${escapeHtml(tip)}">
+            <div class="h24-bar-slot">
+              <div class="h24-bar" style="height:${pct}%; background:${col}"></div>
+            </div>
+            <span class="h24-lbl">${hr % 3 === 0 ? String(hr).padStart(2, '0') : ''}</span>
+          </div>
+        `);
+      }
+      elHour24Heatmap.innerHTML = cells.join('');
+    }
+
+    function renderSegments(data: any) {
+      elCatSortBar.hidden = segmentTab !== 'category';
+
+      let rows: any[] = [];
+      if (segmentTab === 'category') {
+        rows = Array.isArray(data.by_category_48h) ? [...data.by_category_48h] : [];
+        rows.sort((a, b) => num(b[catSortKey]) - num(a[catSortKey]));
+      } else if (segmentTab === 'viewer') {
+        rows = normalizeSegmentRows(data.by_segment_48h?.viewer_brackets);
+      } else if (segmentTab === 'age') {
+        rows = normalizeSegmentRows(data.by_segment_48h?.age_rating);
+      } else if (segmentTab === 'uptime') {
+        rows = normalizeSegmentRows(data.by_segment_48h?.stream_uptime);
+      }
+
+      const hasAnyActivity = rows.some((r) => num(r.total_chats) > 0 || num(r.active_streams) > 0);
+      if (rows.length === 0) {
+        elSegmentContent.innerHTML = `
+          <div class="empty-inline-msg">
+            아직 집계된 ${segmentTab === 'category' ? '카테고리' : '세그먼트'} 데이터가 없습니다. 시간별 데이터가 수집되면 자동으로 비교 표가 표시됩니다.
+          </div>
+        `;
+        return;
+      }
+
+      const limit = segmentTab === 'category' && !showAllCategories ? 10 : rows.length;
+      const visible = rows.slice(0, limit);
+      const metricKey = segmentTab === 'category' ? catSortKey : 'mod_per_10k_chats';
+      const maxMetric = Math.max(1, ...visible.map((r) => num(r[metricKey])));
+
+      const tableRows = visible
+        .map((r) => {
+          const val = num(r[metricKey]);
+          const barW = hasAnyActivity ? Math.min(100, (val / maxMetric) * 100) : 0;
+          const displayName = mapLabel(String(r.name || '기타'));
+          const aiPct = num(r.cleanbot_pct);
+          const humanPct = num(r.human_mod_pct);
+          return `
+            <tr>
+              <td class="col-name">
+                <div class="seg-name-wrap">
+                  <strong>${escapeHtml(displayName)}</strong>
+                  <div class="seg-inline-bar"><span style="width:${barW}%"></span></div>
+                </div>
+              </td>
+              <td class="num-col">${fmtInt(r.active_streams)}개</td>
+              <td class="num-col">${fmtCompactKo(r.total_chats)}</td>
+              <td class="num-col highlight-col">${fmtDec(r.mod_per_10k_chats, 1)}건</td>
+              <td class="num-col">${fmtDec(aiPct, 0)}% / ${fmtDec(humanPct, 0)}%</td>
+              <td class="num-col c-rose-text">${fmtDec(r.perm_ban_pct, 1)}%</td>
+              <td class="num-col">${fmtDec(r.known_troll_share_pct, 1)}%</td>
+            </tr>
+          `;
+        })
+        .join('');
+
+      const expandBtn =
+        segmentTab === 'category' && rows.length > 10
+          ? `<div class="expand-row-wrap"><button type="button" class="expand-cat-btn" id="radar-expand-cat-btn">${
+              showAllCategories ? '상위 10개만 보기 ▲' : `전체 ${rows.length}개 카테고리 펼치기 ▼`
+            }</button></div>`
+          : '';
+
+      elSegmentContent.innerHTML = `
+        <div class="seg-table-scroll">
+          <table class="radar-table">
+            <thead>
+              <tr>
+                <th>구분</th>
+                <th class="num-col">관측 방송</th>
+                <th class="num-col">채팅 수</th>
+                <th class="num-col">1만당 제재</th>
+                <th class="num-col">AI / 매니저</th>
+                <th class="num-col">영구차단 %</th>
+                <th class="num-col">트롤 비중</th>
+              </tr>
+            </thead>
+            <tbody>${tableRows}</tbody>
+          </table>
+        </div>
+        ${expandBtn}
+      `;
+
+      const expBtn = document.getElementById('radar-expand-cat-btn');
+      if (expBtn) {
+        expBtn.addEventListener('click', () => {
+          showAllCategories = !showAllCategories;
+          renderSegments(currentData);
+        });
+      }
+    }
+
+    function renderCalmness(data: any) {
+      const sc = data.stream_calmness_48h || {};
+      const totalStreams = num(sc.total_observed_streams);
+      elObservedStreamsPill.textContent = `관측 방송 ${fmtInt(totalStreams)}개`;
+
+      const zeroPerm = sc.zero_perm_ban_streams || { count: 0, pct: 0 };
+      const tiers = [
+        { label: '무풍지대 (0건)', data: sc.zero_mod_streams, color: '#10b981', icon: '🌿' },
+        { label: '평온 (1~5건)', data: sc.quiet_1_to_5, color: '#38bdf8', icon: '🌤️' },
+        { label: '일반 (6~20건)', data: sc.active_6_to_20, color: '#f59e0b', icon: '⚡' },
+        { label: '격전지 (21건+)', data: sc.stormy_21_plus, color: '#ef4444', icon: '🔥' },
+      ];
+
+      elStreamCalmness.innerHTML = `
+        <div class="calm-hero-callout">
+          <div class="calm-hero-left">
+            <span class="calm-hero-kicker">영구차단 0건 방송 비율</span>
+            <strong class="calm-hero-pct">${totalStreams > 0 ? `${fmtDec(zeroPerm.pct, 1)}%` : '—'}</strong>
+          </div>
+          <p class="calm-hero-desc">
+            ${
+              totalStreams > 0
+                ? `최근 48시간 관측된 ${fmtInt(totalStreams)}개 방송 중 <strong>${fmtInt(zeroPerm.count)}개 방송</strong>이 영구차단 없이 평온하게 진행되었습니다.`
+                : '관측 방송 데이터가 누적되면 영구차단 0건 방송 비율과 평온도 분포가 표시됩니다.'
+            }
+          </p>
+        </div>
+
+        <div class="stacked-bar tall-bar">
+          ${tiers
+            .map(
+              (t) =>
+                `<span style="width:${num(t.data?.pct)}%; background:${t.color}" title="${escapeHtml(t.label)}: ${fmtDec(t.data?.pct, 1)}%"></span>`
+            )
+            .join('')}
+        </div>
+
+        <div class="calm-grid">
+          ${tiers
+            .map(
+              (t) => `
+              <div class="calm-tile">
+                <div class="calm-tile-head">
+                  <span>${t.icon} ${escapeHtml(t.label)}</span>
+                  <i class="leg-dot" style="background:${t.color}"></i>
+                </div>
+                <strong class="calm-tile-pct">${totalStreams > 0 ? `${fmtDec(t.data?.pct, 1)}%` : '—'}</strong>
+                <span class="calm-tile-cnt">${fmtInt(t.data?.count)}개 방송</span>
+              </div>
+            `
+            )
+            .join('')}
+        </div>
+      `;
+    }
+
+    function renderTrollFunnel(data: any) {
+      const ti = data.troll_insights || {};
+      const funnel = ti.multi_channel_funnel || {};
+      const tiers = ti.auto_ban_tiers || {};
+      const sharePct = num(data.summary_48h?.known_troll_share_pct);
+      elTrollSharePill.textContent = `트롤 비중 ${fmtDec(sharePct, 1)}%`;
+
+      const steps = [
+        { label: '1개 채널 제재', data: funnel['1_channel'], color: '#64748b' },
+        { label: '2개 채널 교차 제재', data: funnel['2_channels'], color: '#38bdf8' },
+        { label: '3~4개 채널 교차 제재', data: funnel['3_to_4_channels'], color: '#f59e0b' },
+        { label: '5개 이상 채널 상습 트롤', data: funnel['5_plus_channels'], color: '#ef4444' },
+      ];
+
+      const maxUsers = Math.max(1, ...steps.map((s) => num(s.data?.users)));
+
+      const tierList = [
+        { code: 'T1', name: '지속 누적', val: tiers.tier1_persistent },
+        { code: 'T2', name: '일일 급증', val: tiers.tier2_daily },
+        { code: 'T3', name: '단기 폭주', val: tiers.tier3_velocity },
+        { code: 'T4', name: '복합 패턴', val: tiers.tier4_hybrid },
+        { code: 'T5', name: '임시제한 다발', val: tiers.tier5_timeout },
+        { code: 'T6', name: '블라인드 다발', val: tiers.tier6_blind },
+      ];
+
+      elTrollFunnel.innerHTML = `
+        <div class="funnel-list">
+          ${steps
+            .map((s) => {
+              const users = num(s.data?.users);
+              const pct = num(s.data?.pct);
+              const barW = users > 0 ? Math.max(6, (users / maxUsers) * 100) : 0;
+              return `
+                <div class="funnel-row">
+                  <div class="funnel-meta">
+                    <span class="fn-label">${escapeHtml(s.label)}</span>
+                    <span class="fn-val"><strong>${fmtInt(users)}명</strong> <small>(${fmtDec(pct, 1)}%)</small></span>
+                  </div>
+                  <div class="leg-bar-track">
+                    <div class="leg-bar-fill" style="width:${barW}%; background:${s.color}"></div>
+                  </div>
+                </div>
+              `;
+            })
+            .join('')}
+        </div>
+
+        <div class="tiers-divider">자동 차단 룰 티어별 탐지 건수</div>
+        <div class="tier-pills-grid">
+          ${tierList
+            .map(
+              (t) => `
+              <div class="tier-pill-box">
+                <span class="tp-code">${t.code}</span>
+                <span class="tp-name">${escapeHtml(t.name)}</span>
+                <strong class="tp-val">${fmtInt(t.val)}</strong>
+              </div>
+            `
+            )
+            .join('')}
+        </div>
+      `;
+    }
+
+    function renderAll(data: any) {
+      currentData = data;
+      renderHeader(data);
+      renderKpis(data);
+      renderHighlights(data);
+      renderActionBreakdown(data);
+      renderTimeoutInsights(data);
+      renderPatternInsights(data);
+      renderTimeline(data);
+      renderTimeOfDay(data);
+      renderSegments(data);
+      renderCalmness(data);
+      renderTrollFunnel(data);
+
+      elLoading.hidden = true;
+      elError.hidden = true;
+      elDashboard.hidden = false;
+    }
+
+    async function loadStats() {
+      elError.hidden = true;
+      if (!currentData) {
+        elLoading.hidden = false;
+        elDashboard.hidden = true;
+      }
+
+      try {
+        const res = await fetch(`${GIST_URL}?t=${Date.now()}`, {
+          cache: 'no-store',
+          headers: { Accept: 'application/json' },
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        if (!json || typeof json !== 'object') throw new Error('Invalid JSON payload');
+        renderAll(json);
+      } catch (err: any) {
+        if (!currentData) {
+          elLoading.hidden = true;
+          elDashboard.hidden = true;
+          elError.hidden = false;
+          elErrorMsg.textContent = `데이터를 가져오는 중 오류가 발생했습니다 (${err?.message || 'Network Error'}).`;
+        }
+      }
+    }
+
+    // ─── Event Bindings ───────────────────────────────────────────────────────
+    document.querySelectorAll<HTMLButtonElement>('#radar-chart-mode .seg-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const m = btn.dataset.mode as 'intensity' | 'stacked';
+        if (!m || m === chartMode) return;
+        chartMode = m;
+        document.querySelectorAll('#radar-chart-mode .seg-btn').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (currentData) renderTimeline(currentData);
+      });
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('#radar-segment-tabs .seg-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const t = btn.dataset.tab as 'category' | 'viewer' | 'age' | 'uptime';
+        if (!t || t === segmentTab) return;
+        segmentTab = t;
+        showAllCategories = false;
+        document.querySelectorAll('#radar-segment-tabs .seg-btn').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (currentData) renderSegments(currentData);
+      });
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('#radar-cat-sort-pills .sort-pill').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const s = btn.dataset.sort as typeof catSortKey;
+        if (!s || s === catSortKey) return;
+        catSortKey = s;
+        document.querySelectorAll('#radar-cat-sort-pills .sort-pill').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (currentData) renderSegments(currentData);
+      });
+    });
+
+    elRetryBtn.addEventListener('click', loadStats);
+
+    // Initial client-side fetch + quiet 10-minute auto-refresh when tab is visible
+    loadStats();
+    window.setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        loadStats();
+      }
+    }, 10 * 60 * 1000);
+  })();
+</script>
+
+<style>
+  .bzzk-radar-section {
+    margin-top: 32px;
+  }
+
+  /* Header Strip */
+  .radar-top-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .radar-title-cluster h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 8px 0 0;
+    letter-spacing: -0.02em;
+  }
+
+  .radar-badge-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .radar-tag-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: rgba(99, 102, 241, 0.16);
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    color: #a5b4fc;
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+
+  .radar-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #38bdf8;
+    box-shadow: 0 0 8px #38bdf8;
+  }
+
+  .radar-weather-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .radar-weather-badge.weather-calm {
+    background: rgba(16, 185, 129, 0.14);
+    border-color: rgba(16, 185, 129, 0.35);
+    color: #34d399;
+  }
+
+  .radar-weather-badge.weather-normal {
+    background: rgba(56, 189, 248, 0.13);
+    border-color: rgba(56, 189, 248, 0.32);
+    color: #7dd3fc;
+  }
+
+  .radar-weather-badge.weather-elevated {
+    background: rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.4);
+    color: #fcd34d;
+  }
+
+  .radar-weather-badge.weather-surge {
+    background: rgba(239, 68, 68, 0.18);
+    border-color: rgba(239, 68, 68, 0.45);
+    color: #fca5a5;
+  }
+
+  .weather-ratio {
+    font-size: 0.74rem;
+    opacity: 0.88;
+    padding-left: 6px;
+    border-left: 1px solid currentColor;
+  }
+
+  .radar-collection-badge {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #cbd5e1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+
+  .radar-meta-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .radar-updated-time {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    font-family: monospace;
+  }
+
+  .radar-auto-badge {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 5px 11px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* Privacy Bar */
+  .radar-privacy-bar {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: rgba(30, 41, 59, 0.45);
+    border: 1px solid rgba(99, 102, 241, 0.22);
+    border-radius: 12px;
+    padding: 11px 16px;
+    margin-bottom: 18px;
+    font-size: 0.88rem;
+    color: #cbd5e1;
+    line-height: 1.5;
+  }
+
+  .privacy-ico {
+    flex-shrink: 0;
+  }
+
+  /* Loading & Error & Warmup States */
+  .skeleton-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .skel-card {
+    height: 102px;
+    border-radius: 14px;
+    background: linear-gradient(90deg, #111420 25%, #192036 50%, #111420 75%);
+    background-size: 200% 100%;
+    animation: skelPulse 1.5s infinite;
+    border: 1px solid #1e2438;
+  }
+
+  .skel-panel {
+    height: 240px;
+    border-radius: 16px;
+    background: linear-gradient(90deg, #111420 25%, #192036 50%, #111420 75%);
+    background-size: 200% 100%;
+    animation: skelPulse 1.5s infinite;
+    border: 1px solid #1e2438;
+  }
+
+  @keyframes skelPulse {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .radar-error-state {
+    text-align: center;
+    padding: 40px 20px;
+    border-radius: 16px;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+
+  .state-icon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+  }
+
+  .radar-error-state h3 {
+    margin: 0 0 8px;
+    color: #fca5a5;
+  }
+
+  .radar-error-state p {
+    margin: 0 0 18px;
+    color: #cbd5e1;
+    font-size: 0.92rem;
+  }
+
+  .radar-retry-btn {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .radar-warmup-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(99, 102, 241, 0.12));
+    border: 1px solid rgba(56, 189, 248, 0.32);
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin-bottom: 18px;
+  }
+
+  .warmup-icon {
+    font-size: 1.35rem;
+    flex-shrink: 0;
+  }
+
+  .warmup-body strong {
+    display: block;
+    color: #e0f2fe;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+  }
+
+  .warmup-body p {
+    margin: 0;
+    font-size: 0.86rem;
+    color: #cbd5e1;
+    line-height: 1.5;
+  }
+
+  /* Dashboard Layout */
+  .radar-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* KPI Grid */
+  .radar-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 12px;
+  }
+
+  :global(.kpi-card) {
+    background: #111420;
+    border: 1px solid #232a42;
+    border-radius: 14px;
+    padding: 15px 16px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  :global(.kpi-card::before) {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+  }
+
+  :global(.kpi-indigo::before) { background: #6366f1; }
+  :global(.kpi-sky::before) { background: #38bdf8; }
+  :global(.kpi-emerald::before) { background: #10b981; }
+  :global(.kpi-amber::before) { background: #f59e0b; }
+  :global(.kpi-purple::before) { background: #a855f7; }
+  :global(.kpi-rose::before) { background: #f43f5e; }
+  :global(.kpi-slate::before) { background: #64748b; }
+
+  :global(.kpi-top) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  :global(.kpi-label) {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #94a3b8;
+  }
+
+  :global(.kpi-value) {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: #f8fafc;
+    letter-spacing: -0.02em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+
+  :global(.kpi-sub) {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    line-height: 1.4;
+  }
+
+  :global(.kpi-trend) {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 5px;
+    white-space: nowrap;
+  }
+
+  :global(.trend-good),
+  :global(.trend-up) {
+    background: rgba(16, 185, 129, 0.16);
+    color: #34d399;
+  }
+
+  :global(.trend-warn) {
+    background: rgba(239, 68, 68, 0.16);
+    color: #fca5a5;
+  }
+
+  :global(.trend-down),
+  :global(.trend-flat) {
+    background: rgba(148, 163, 184, 0.15);
+    color: #cbd5e1;
+  }
+
+  :global(.mini-split-bar) {
+    display: flex;
+    height: 7px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: #1e2438;
+    margin-top: 4px;
+  }
+
+  :global(.sb-ai) { background: #818cf8; }
+  :global(.sb-human) { background: #38bdf8; }
+
+  /* Highlights Strip */
+  .radar-highlights-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 10px;
+  }
+
+  :global(.highlight-chip) {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(22, 27, 46, 0.75);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: 12px;
+    padding: 11px 14px;
+  }
+
+  :global(.hl-ico) {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  :global(.hl-text) {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  :global(.hl-title) {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    font-weight: 700;
+  }
+
+  :global(.hl-detail) {
+    font-size: 0.85rem;
+    color: #f1f5f9;
+    font-weight: 700;
+  }
+
+  /* Panels */
+  .radar-three-col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .radar-two-col {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .radar-panel {
+    background: #111420;
+    border: 1px solid #232a42;
+    border-radius: 16px;
+    padding: 20px;
+    position: relative;
+  }
+
+  .panel-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .wrap-head {
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .panel-kicker {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: #818cf8;
+    margin-bottom: 3px;
+  }
+
+  .panel-head h3 {
+    margin: 0;
+    font-size: 1.08rem;
+    font-weight: 800;
+    color: #f8fafc;
+  }
+
+  .panel-pill {
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    padding: 4px 9px;
+    border-radius: 7px;
+    white-space: nowrap;
+  }
+
+  /* Donut & Legend */
+  :global(.donut-layout) {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  :global(.donut-wrap) {
+    display: flex;
+    justify-content: center;
+  }
+
+  :global(.donut-svg) {
+    width: 126px;
+    height: 126px;
+  }
+
+  :global(.donut-legend),
+  :global(.pattern-body),
+  :global(.funnel-list) {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  :global(.legend-row),
+  :global(.pattern-row),
+  :global(.funnel-row) {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  :global(.legend-meta),
+  :global(.pattern-top),
+  :global(.funnel-meta) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 0.82rem;
+  }
+
+  :global(.leg-dot) {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  :global(.leg-name) {
+    color: #cbd5e1;
+    flex: 1;
+    margin-left: 4px;
+  }
+
+  :global(.leg-val) {
+    color: #f8fafc;
+    font-weight: 700;
+    font-family: monospace;
+  }
+
+  :global(.leg-val small) {
+    color: #94a3b8;
+    font-weight: 500;
+  }
+
+  :global(.leg-bar-track) {
+    height: 6px;
+    border-radius: 999px;
+    background: #1a2033;
+    overflow: hidden;
+  }
+
+  :global(.leg-bar-fill) {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.4s ease;
+  }
+
+  /* Timeout Insights */
+  :global(.timeout-body) {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  :global(.timeout-mini-grid) {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  :global(.tmini-box) {
+    background: #0d101a;
+    border: 1px solid #1e2438;
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  :global(.tmini-lbl) {
+    font-size: 0.72rem;
+    color: #94a3b8;
+  }
+
+  :global(.tmini-box strong) {
+    font-size: 1.05rem;
+    color: #f8fafc;
+    font-family: monospace;
+  }
+
+  :global(.tmini-box small) {
+    font-size: 0.7rem;
+    color: #64748b;
+  }
+
+  :global(.c-emerald) { color: #34d399 !important; }
+  :global(.c-rose) { color: #f87171 !important; }
+  :global(.c-rose-text) { color: #fca5a5; }
+
+  :global(.dist-block) {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  :global(.dist-head) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: #cbd5e1;
+    font-weight: 600;
+  }
+
+  :global(.dist-head small) {
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  :global(.stacked-bar) {
+    display: flex;
+    height: 10px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: #1a2033;
+    gap: 2px;
+  }
+
+  :global(.stacked-bar.tall-bar) {
+    height: 14px;
+    margin-bottom: 14px;
+  }
+
+  :global(.dist-legend-inline) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 0.75rem;
+    color: #94a3b8;
+  }
+
+  :global(.dist-legend-inline i) {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    margin-right: 4px;
+  }
+
+  :global(.dist-legend-inline b) {
+    color: #e2e8f0;
+    margin-left: 2px;
+  }
+
+  /* Message Patterns */
+  :global(.pat-name) {
+    color: #e2e8f0;
+    font-weight: 600;
+  }
+
+  :global(.pat-right) {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  :global(.pat-pct) {
+    font-family: monospace;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+
+  :global(.risk-badge) {
+    font-size: 0.69rem;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 5px;
+  }
+
+  :global(.risk-high) {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+  }
+
+  :global(.risk-med) {
+    background: rgba(245, 158, 11, 0.18);
+    color: #fcd34d;
+    border: 1px solid rgba(245, 158, 11, 0.35);
+  }
+
+  :global(.risk-base) {
+    background: rgba(148, 163, 184, 0.12);
+    color: #94a3b8;
+  }
+
+  :global(.pattern-foot) {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: #64748b;
+  }
+
+  /* Segment Toggle Controls */
+  .seg-toggle {
+    display: inline-flex;
+    background: #0d101a;
+    border: 1px solid #232a42;
+    border-radius: 9px;
+    padding: 3px;
+    gap: 3px;
+    flex-wrap: wrap;
+  }
+
+  .seg-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .seg-btn:hover {
+    color: #f1f5f9;
+  }
+
+  .seg-btn.active {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #ffffff;
+  }
+
+  /* Timeline Chart */
+  .timeline-legend-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    font-size: 0.78rem;
+    color: #94a3b8;
+    margin-bottom: 10px;
+  }
+
+  :global(.timeline-legend-row i) {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    margin-right: 5px;
+    vertical-align: middle;
+  }
+
+  :global(.timeline-legend-row i.dash-i) {
+    width: 14px;
+    height: 0;
+    border-top: 2px dashed #fbbf24;
+    border-radius: 0;
+  }
+
+  .timeline-chart-wrap {
+    background: #0d101a;
+    border: 1px solid #1e2438;
+    border-radius: 12px;
+    padding: 12px;
+    overflow-x: auto;
+  }
+
+  :global(.timeline-svg) {
+    width: 100%;
+    min-width: 580px;
+    height: auto;
+    display: block;
+  }
+
+  :global(.bar-hit) {
+    cursor: pointer;
+  }
+
+  :global(.empty-chart-box) {
+    text-align: center;
+    padding: 34px 16px;
+    color: #94a3b8;
+  }
+
+  :global(.empty-ico) {
+    font-size: 1.75rem;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  :global(.empty-chart-box strong) {
+    color: #e2e8f0;
+    font-size: 0.95rem;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  :global(.empty-chart-box p) {
+    margin: 0;
+    font-size: 0.84rem;
+  }
+
+  /* Floating Tooltip */
+  .chart-tooltip {
+    position: absolute;
+    z-index: 20;
+    pointer-events: none;
+    background: rgba(11, 13, 20, 0.96);
+    border: 1px solid rgba(99, 102, 241, 0.45);
+    border-radius: 10px;
+    padding: 10px 12px;
+    width: 220px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.65);
+    font-size: 0.76rem;
+  }
+
+  :global(.tt-head) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    color: #f8fafc;
+  }
+
+  :global(.tt-surge) {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #fca5a5;
+    background: rgba(239, 68, 68, 0.2);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+
+  :global(.tt-grid) {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 8px;
+    color: #94a3b8;
+  }
+
+  :global(.tt-grid b) {
+    color: #f1f5f9;
+    font-family: monospace;
+    text-align: right;
+  }
+
+  /* Time-of-Day Subgrid */
+  .time-of-day-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.25fr;
+    gap: 16px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #1e2438;
+  }
+
+  .sub-block-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+  }
+
+  .sub-block-head h4 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #e2e8f0;
+  }
+
+  .sub-hint {
+    font-size: 0.74rem;
+    color: #64748b;
+  }
+
+  .tod-zones-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  :global(.tod-zone-card) {
+    background: #0d101a;
+    border: 1px solid #1e2438;
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  :global(.tz-top) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.82rem;
+  }
+
+  :global(.tz-label) {
+    color: #e2e8f0;
+    font-weight: 700;
+  }
+
+  :global(.tz-rate) {
+    color: #7dd3fc;
+    font-family: monospace;
+  }
+
+  :global(.tz-meta) {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: #64748b;
+  }
+
+  .tod-24h-heatmap {
+    background: #0d101a;
+    border: 1px solid #1e2438;
+    border-radius: 10px;
+    padding: 12px 10px 8px;
+    display: grid;
+    grid-template-columns: repeat(24, 1fr);
+    gap: 4px;
+    height: 158px;
+    box-sizing: border-box;
+  }
+
+  :global(.h24-col) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    cursor: default;
+  }
+
+  :global(.h24-bar-slot) {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  :global(.h24-bar) {
+    width: 100%;
+    border-radius: 3px 3px 1px 1px;
+    transition: height 0.3s ease;
+  }
+
+  :global(.h24-lbl) {
+    font-size: 0.65rem;
+    color: #64748b;
+    font-family: monospace;
+    margin-top: 5px;
+    height: 12px;
+  }
+
+  /* Category / Segment Table */
+  .cat-sort-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+
+  .sort-label {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    font-weight: 600;
+  }
+
+  .sort-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .sort-pill {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    color: #94a3b8;
+    font-size: 0.76rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .sort-pill:hover {
+    color: #e2e8f0;
+  }
+
+  .sort-pill.active {
+    background: rgba(56, 189, 248, 0.16);
+    border-color: rgba(56, 189, 248, 0.4);
+    color: #7dd3fc;
+  }
+
+  :global(.seg-table-scroll) {
+    overflow-x: auto;
+  }
+
+  :global(.radar-table) {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 640px;
+  }
+
+  :global(.radar-table th) {
+    text-align: left;
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: #93c5fd;
+    background: #161c2e;
+    padding: 10px 12px;
+    border-bottom: 1px solid #283252;
+    white-space: nowrap;
+  }
+
+  :global(.radar-table td) {
+    padding: 10px 12px;
+    font-size: 0.84rem;
+    color: #e2e8f0;
+    border-bottom: 1px solid #1a2033;
+  }
+
+  :global(.radar-table tbody tr:hover td) {
+    background: #161b2c;
+  }
+
+  :global(.num-col) {
+    text-align: right !important;
+    font-family: monospace;
+    white-space: nowrap;
+  }
+
+  :global(.highlight-col) {
+    color: #fcd34d !important;
+    font-weight: 800;
+  }
+
+  :global(.seg-name-wrap) {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 160px;
+  }
+
+  :global(.seg-name-wrap strong) {
+    color: #f8fafc;
+    font-size: 0.86rem;
+  }
+
+  :global(.seg-inline-bar) {
+    height: 4px;
+    background: #1e2438;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  :global(.seg-inline-bar span) {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, #6366f1, #38bdf8);
+    border-radius: 999px;
+  }
+
+  :global(.expand-row-wrap) {
+    text-align: center;
+    margin-top: 12px;
+  }
+
+  :global(.expand-cat-btn) {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 7px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  :global(.expand-cat-btn:hover) {
+    border-color: rgba(99, 102, 241, 0.5);
+    color: #fff;
+  }
+
+  :global(.empty-inline-msg) {
+    text-align: center;
+    padding: 28px 16px;
+    background: #0d101a;
+    border: 1px dashed #232a42;
+    border-radius: 12px;
+    color: #94a3b8;
+    font-size: 0.88rem;
+  }
+
+  /* Stream Calmness */
+  :global(.calm-hero-callout) {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(14, 165, 233, 0.08));
+    border: 1px solid rgba(16, 185, 129, 0.28);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+
+  :global(.calm-hero-left) {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+
+  :global(.calm-hero-kicker) {
+    font-size: 0.72rem;
+    color: #6ee7b7;
+    font-weight: 700;
+  }
+
+  :global(.calm-hero-pct) {
+    font-size: 1.7rem;
+    font-weight: 900;
+    color: #34d399;
+    font-family: monospace;
+    line-height: 1.1;
+  }
+
+  :global(.calm-hero-desc) {
+    margin: 0;
+    font-size: 0.83rem;
+    color: #cbd5e1;
+    line-height: 1.5;
+  }
+
+  :global(.calm-grid) {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  :global(.calm-tile) {
+    background: #0d101a;
+    border: 1px solid #1e2438;
+    border-radius: 10px;
+    padding: 11px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  :global(.calm-tile-head) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78rem;
+    color: #cbd5e1;
+  }
+
+  :global(.calm-tile-pct) {
+    font-size: 1.2rem;
+    color: #f8fafc;
+    font-family: monospace;
+  }
+
+  :global(.calm-tile-cnt) {
+    font-size: 0.74rem;
+    color: #64748b;
+  }
+
+  /* Troll Funnel & Tiers */
+  :global(.fn-label) {
+    color: #cbd5e1;
+    font-weight: 600;
+  }
+
+  :global(.fn-val strong) {
+    color: #f8fafc;
+    font-family: monospace;
+  }
+
+  :global(.fn-val small) {
+    color: #94a3b8;
+  }
+
+  :global(.tiers-divider) {
+    margin: 16px 0 10px;
+    padding-top: 14px;
+    border-top: 1px solid #1e2438;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #94a3b8;
+  }
+
+  :global(.tier-pills-grid) {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  :global(.tier-pill-box) {
+    background: #0d101a;
+    border: 1px solid #1e2438;
+    border-radius: 9px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.76rem;
+  }
+
+  :global(.tp-code) {
+    font-family: monospace;
+    font-weight: 800;
+    font-size: 0.7rem;
+    color: #a5b4fc;
+    background: rgba(99, 102, 241, 0.16);
+    padding: 2px 5px;
+    border-radius: 4px;
+  }
+
+  :global(.tp-name) {
+    color: #cbd5e1;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  :global(.tp-val) {
+    color: #f8fafc;
+    font-family: monospace;
+  }
+
+  /* Responsive */
+  @media (max-width: 1080px) {
+    .radar-three-col {
+      grid-template-columns: 1fr;
+    }
+    .radar-two-col,
+    .time-of-day-grid {
+      grid-template-columns: 1fr;
+    }
+    .skeleton-kpi-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 680px) {
+    .radar-top-header {
+      align-items: flex-start;
+    }
+    :global(.timeout-mini-grid) {
+      grid-template-columns: 1fr;
+    }
+    :global(.tier-pills-grid) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    :global(.calm-hero-callout) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+  }
+</style>
