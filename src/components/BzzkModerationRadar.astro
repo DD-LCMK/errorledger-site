@@ -319,7 +319,12 @@
       return '—';
     }
 
-    function renderTrendBadge(delta: number | null | undefined, ready: boolean, invertColor = false): string {
+    function renderTrendBadge(
+      delta: number | null | undefined,
+      ready: boolean,
+      invertColor = false,
+      comparisonMode?: string
+    ): string {
       if (!ready || delta === null || delta === undefined || !Number.isFinite(Number(delta))) {
         return '';
       }
@@ -331,8 +336,22 @@
         const isUp = val > 0;
         cls = invertColor ? (isUp ? 'trend-warn' : 'trend-good') : (isUp ? 'trend-up' : 'trend-down');
       }
-      return `<span class="kpi-trend ${cls}" title="직전 24시간 대비 변화율">24h ${arrow} ${sign}${val.toFixed(1)}%</span>`;
+      const tip =
+        comparisonMode === 'hourly_avg'
+          ? '직전 구간 시간당 평균 대비 변화율'
+          : '직전 24시간 대비 변화율';
+      return `<span class="kpi-trend ${cls}" title="${tip}">24h ${arrow} ${sign}${val.toFixed(1)}%</span>`;
     }
+
+    const DOW_KR: Record<string, string> = {
+      Mon: '월',
+      Tue: '화',
+      Wed: '수',
+      Thu: '목',
+      Fri: '금',
+      Sat: '토',
+      Sun: '일',
+    };
 
     const SEGMENT_LABELS: Record<string, string> = {
       'Other': '기타',
@@ -383,6 +402,7 @@
       const meta = data.meta || {};
       const weather = data.weather_status || {};
       const hoursCollected = num(meta.hours_collected, 0);
+      const completedHours = meta.completed_hours != null ? num(meta.completed_hours, hoursCollected) : hoursCollected;
       const windowHours = num(meta.window_hours, 48);
 
       const level = String(weather.level || 'normal');
@@ -402,6 +422,8 @@
 
       if (hoursCollected === 0) {
         elCollectionBadge.textContent = `초기 수집 대기 (0/${windowHours}시간)`;
+      } else if (completedHours < hoursCollected) {
+        elCollectionBadge.textContent = `완료 ${completedHours}시간 + 실시간 집계 중`;
       } else if (hoursCollected < windowHours) {
         elCollectionBadge.textContent = `최근 ${hoursCollected}시간 누적 (${windowHours}시간 목표)`;
       } else {
@@ -416,7 +438,7 @@
         elWarmupTitle.textContent = '📡 초기 48시간 제재 데이터 수집 워밍업 중입니다';
         elWarmupDesc.textContent =
           '첫 번째 1시간 단위 집계 스냅샷을 생성하고 있습니다. 데이터가 수집되면 48시간 추이, 채팅 기상도, 카테고리·방송 규모별 비교가 자동으로 활성화됩니다.';
-      } else if (hoursCollected < 24) {
+      } else if (completedHours < 24 && !Boolean(data.trends_24h?.ready)) {
         elWarmup.hidden = false;
         elWarmupTitle.textContent = `📡 최근 ${hoursCollected}시간 데이터 누적 중 (48시간 창 확장 진행 중)`;
         elWarmupDesc.textContent =
@@ -431,17 +453,26 @@
       const sum = data.summary_48h || {};
       const trends = data.trends_24h || {};
       const ready = Boolean(trends.ready);
+      const compMode = String(trends.comparison_mode || '');
       const delta = trends.delta_pct || {};
       const hasData = num(meta.hours_collected) > 0 || num(sum.total_chats) > 0;
 
       const aiPct = num(sum.ai_cleanbot_pct);
       const humanPct = num(sum.human_mod_pct);
 
+      const funnel = data.troll_insights?.multi_channel_funnel || {};
+      const multiUsers =
+        num(funnel['2_channels']?.users) +
+        num(funnel['3_to_4_channels']?.users) +
+        num(funnel['5_plus_channels']?.users);
+      const multiPct = num(data.highlights?.multi_channel_offender_pct);
+      const autoBans = num(sum.auto_bans_triggered);
+
       const cards = [
         {
           label: '모니터링 방송',
-          value: hasData ? `${fmtInt(meta.monitored_streams_peak)}개` : '—',
-          sub: hasData ? `시간당 평균 ${fmtDec(meta.monitored_streams_avg, 1)}개 동시 관측` : '집계 대기 중',
+          value: hasData ? `최대 ${fmtInt(meta.monitored_streams_peak)}개` : '—',
+          sub: hasData ? `시간당 평균 ${fmtInt(meta.monitored_streams_avg)}개 동시 관측` : '집계 대기 중',
           trend: '',
           accent: 'kpi-indigo',
         },
@@ -449,23 +480,23 @@
           label: '분석된 채팅 수',
           value: hasData ? fmtCompactKo(sum.total_chats) : '—',
           sub: hasData
-            ? `시간별 유저 합 ${fmtCompactKo(sum.unique_chatters_hourly_sum)} · 인당 ${fmtDec(sum.avg_chats_per_chatter, 1)}건`
+            ? `유저 합 ${fmtCompactKo(sum.unique_chatters_hourly_sum)} · 인당 ${fmtDec(sum.avg_chats_per_chatter, 1)}건`
             : '집계 대기 중',
-          trend: renderTrendBadge(delta.total_chats, ready, false),
+          trend: renderTrendBadge(delta.total_chats, ready, false, compMode),
           accent: 'kpi-sky',
         },
         {
           label: '정상 채팅 비율',
           value: hasData ? `${fmtDec(sum.clean_chat_rate_pct, 2)}%` : '—',
           sub: hasData ? `총 제재 ${fmtInt(sum.total_mod_actions)}건 발생` : '집계 대기 중',
-          trend: renderTrendBadge(delta.total_mod_actions, ready, true),
+          trend: renderTrendBadge(delta.total_mod_actions, ready, true, compMode),
           accent: 'kpi-emerald',
         },
         {
           label: '1만 채팅당 제재 수',
           value: hasData ? `${fmtDec(sum.mod_per_10k_chats, 1)}건` : '—',
           sub: hasData ? `제재 대상 유저 ${fmtInt(sum.unique_moderated_users)}명` : '집계 대기 중',
-          trend: renderTrendBadge(delta.mod_per_10k_chats, ready, true),
+          trend: renderTrendBadge(delta.mod_per_10k_chats, ready, true, compMode),
           accent: 'kpi-amber',
         },
         {
@@ -474,19 +505,29 @@
           sub: hasData
             ? `<div class="mini-split-bar"><span class="sb-ai" style="width:${Math.min(100, aiPct)}%"></span><span class="sb-human" style="width:${Math.min(100, humanPct)}%"></span></div>`
             : '집계 대기 중',
-          trend: renderTrendBadge(delta.cleanbot_pct, ready, false),
+          trend: renderTrendBadge(delta.cleanbot_pct, ready, false, compMode),
           accent: 'kpi-purple',
           rawSub: hasData,
         },
-        {
-          label: '자동 탐지 다중 트롤',
-          value: hasData ? `${fmtInt(sum.auto_bans_triggered)}명` : '—',
-          sub: hasData
-            ? `알려진 트롤 제재 비중 ${fmtDec(sum.known_troll_share_pct, 1)}% (${fmtInt(sum.known_troll_actions)}건)`
-            : '집계 대기 중',
-          trend: renderTrendBadge(delta.auto_bans_triggered, ready, true),
-          accent: 'kpi-rose',
-        },
+        autoBans > 0
+          ? {
+              label: '자동 탐지 다중 트롤',
+              value: hasData ? `${fmtInt(autoBans)}명` : '—',
+              sub: hasData
+                ? `2+채널 제재 ${fmtInt(multiUsers)}명 (${fmtDec(multiPct, 1)}%) · 트롤 활동 ${fmtInt(sum.known_troll_actions)}건`
+                : '집계 대기 중',
+              trend: renderTrendBadge(delta.auto_bans_triggered, ready, true, compMode),
+              accent: 'kpi-rose',
+            }
+          : {
+              label: '다중 채널 제재 유저',
+              value: hasData ? `${fmtInt(multiUsers)}명` : '—',
+              sub: hasData
+                ? `제재 유저의 ${fmtDec(multiPct, 1)}% · 기존 트롤 제재 ${fmtInt(sum.known_troll_actions)}건`
+                : '집계 대기 중',
+              trend: renderTrendBadge(delta.auto_bans_triggered, ready, true, compMode),
+              accent: 'kpi-rose',
+            },
         {
           label: '채팅 모드 변경',
           value: hasData ? `${fmtInt(sum.chat_mode_changes)}회` : '—',
@@ -532,10 +573,17 @@
               ? h.calmest_mod_hour_kst.hour_kst
               : h.calmest_mod_hour_kst
             : null;
-        let detail = `가장 치열한 시간 ${String(peakH).padStart(2, '0')}시`;
-        if (peakVal != null) detail += ` (${fmtDec(peakVal, 1)}건/1만)`;
-        if (calmH != null) detail += ` · 가장 평온 ${String(calmH).padStart(2, '0')}시`;
-        chips.push({ icon: '🕒', title: '시간대 피크', detail });
+        const calmVal =
+          h.calmest_mod_hour_kst != null && typeof h.calmest_mod_hour_kst === 'object'
+            ? h.calmest_mod_hour_kst.mod_per_10k_chats
+            : null;
+        let detail = `피크 ${String(peakH).padStart(2, '0')}시`;
+        if (peakVal != null) detail += ` (${fmtDec(peakVal, 1)}건)`;
+        if (calmH != null) {
+          detail += ` · 최저 ${String(calmH).padStart(2, '0')}시`;
+          if (calmVal != null) detail += ` (${fmtDec(calmVal, 1)}건)`;
+        }
+        chips.push({ icon: '🕒', title: '시간대 제재 강도 (1만당)', detail });
       }
 
       // Highest intensity category
@@ -551,12 +599,30 @@
         const catName = mapLabel(String(rawName));
         chips.push({
           icon: '🔥',
-          title: '제재율 최고 카테고리',
-          detail: rate != null ? `${catName} (1만 채팅당 ${fmtDec(rate, 1)}건)` : catName,
+          title: '제재 강도 1위 카테고리',
+          detail: rate != null ? `${catName} (1만당 ${fmtDec(rate, 1)}건)` : catName,
         });
       }
 
-      // Riskiest chat pattern
+      // Most perm-ban heavy category
+      if (h.most_permban_heavy_category != null) {
+        const rawName =
+          typeof h.most_permban_heavy_category === 'object'
+            ? h.most_permban_heavy_category.name
+            : h.most_permban_heavy_category;
+        const pbPct =
+          typeof h.most_permban_heavy_category === 'object'
+            ? h.most_permban_heavy_category.perm_ban_pct
+            : null;
+        const catName = mapLabel(String(rawName));
+        chips.push({
+          icon: '🚫',
+          title: '영구차단 비중 1위',
+          detail: pbPct != null ? `${catName} (제재 중 ${fmtDec(pbPct, 2)}%)` : catName,
+        });
+      }
+
+      // Riskiest chat pattern OR Multi-channel offender ratio
       if (h.riskiest_chat_pattern != null) {
         const key =
           typeof h.riskiest_chat_pattern === 'object'
@@ -571,7 +637,13 @@
         chips.push({
           icon: '⚠️',
           title: '최고 위험 채팅 패턴',
-          detail: mult && num(mult) > 0 ? `${label} — 일반 채팅 대비 ${fmtDec(mult, 1)}배` : label,
+          detail: mult && num(mult) > 0 ? `${label} — 일반 대비 ${fmtDec(mult, 1)}배` : label,
+        });
+      } else if (num(h.multi_channel_offender_pct) > 0) {
+        chips.push({
+          icon: '🕸️',
+          title: '다중 채널 중복 제재율',
+          detail: `제재 유저의 ${fmtDec(h.multi_channel_offender_pct, 1)}%가 2개 이상 채널에서 적발`,
         });
       }
 
@@ -579,17 +651,8 @@
       if (num(data.stream_calmness_48h?.total_observed_streams) > 0) {
         chips.push({
           icon: '🕊️',
-          title: '영구차단 0건 방송',
-          detail: `전체 관측 방송의 ${fmtDec(h.zero_perm_ban_streams_pct, 1)}%가 영구차단 없이 평온 유지`,
-        });
-      }
-
-      // Timeout pardon rate
-      if (num(data.timeout_insights?.total) > 0) {
-        chips.push({
-          icon: '🔓',
-          title: '임시제한 사면율',
-          detail: `조기 해제 ${fmtDec(h.timeout_pardon_rate_pct, 1)}% · 재범 비율 ${fmtDec(h.repeat_timeout_pct, 1)}%`,
+          title: '영구차단 0건 평온 방송',
+          detail: `전체 관측 방송의 ${fmtDec(h.zero_perm_ban_streams_pct, 1)}%가 영구차단 0건`,
         });
       }
 
@@ -600,7 +663,7 @@
 
       elHighlights.hidden = false;
       elHighlights.innerHTML = chips
-        .slice(0, 4)
+        .slice(0, 5)
         .map(
           (ch) => `
           <div class="highlight-chip">
@@ -619,15 +682,20 @@
       const ab = data.action_breakdown || {};
       const trends = data.trends_24h || {};
       const permTotal = ab.perm_bans_total || { count: 0, pct: 0 };
-      const permDelta = renderTrendBadge(trends.delta_pct?.perm_bans_total, Boolean(trends.ready), true);
-      elPermbanPill.innerHTML = `영구차단 ${fmtInt(permTotal.count)}건 (${fmtDec(permTotal.pct, 1)}%) ${permDelta}`;
+      const permDelta = renderTrendBadge(
+        trends.delta_pct?.perm_bans_total,
+        Boolean(trends.ready),
+        true,
+        String(trends.comparison_mode || '')
+      );
+      elPermbanPill.innerHTML = `영구차단 ${fmtInt(permTotal.count)}건 (${fmtDec(permTotal.pct, 2)}%) ${permDelta}`;
 
       const items = [
         { key: 'cleanbot_blinds', label: '클린봇 블라인드', color: '#818cf8', data: ab.cleanbot_blinds },
         { key: 'manual_single_blinds', label: '단기 블라인드 (매니저)', color: '#38bdf8', data: ab.manual_single_blinds },
         { key: 'timeouts', label: '임시제한 (채팅금지)', color: '#f59e0b', data: ab.timeouts },
-        { key: 'perm_bans_explicit', label: '영구차단 (명시적)', color: '#ef4444', data: ab.perm_bans_explicit },
-        { key: 'perm_bans_inferred', label: '다중 블라인드 추정 영차', color: '#ec4899', data: ab.perm_bans_inferred },
+        { key: 'perm_bans_inferred', label: '영구차단 (다중 블라인드 추정)', color: '#ec4899', data: ab.perm_bans_inferred },
+        { key: 'perm_bans_explicit', label: '영구차단 (명시 패킷)', color: '#ef4444', data: ab.perm_bans_explicit },
       ];
 
       const totalCount = items.reduce((acc, it) => acc + num(it.data?.count), 0);
@@ -683,6 +751,7 @@
     function renderTimeoutInsights(data: any) {
       const ti = data.timeout_insights || {};
       const total = num(ti.total);
+      const uniqueUsers = num(ti.unique_timed_out_users);
       elTimeoutAvgPill.textContent = total > 0 ? `평균 ${fmtDuration(ti.avg_duration_seconds)}` : '평균 —';
 
       const buckets = ti.duration_buckets || {};
@@ -699,6 +768,7 @@
           <div class="tmini-box">
             <span class="tmini-lbl">총 임시제한</span>
             <strong>${total > 0 ? `${fmtInt(total)}건` : '—'}</strong>
+            <small>${uniqueUsers > 0 ? `대상 유저 ${fmtInt(uniqueUsers)}명` : total > 0 ? '누적 건수' : '대기 중'}</small>
           </div>
           <div class="tmini-box">
             <span class="tmini-lbl">사면율 (조기해제)</span>
@@ -707,7 +777,7 @@
           </div>
           <div class="tmini-box">
             <span class="tmini-lbl">영구차단 전환율</span>
-            <strong class="c-rose">${total > 0 ? `${fmtDec(ti.escalated_to_perm_ban_pct, 1)}%` : '—'}</strong>
+            <strong class="c-rose">${total > 0 ? `${fmtDec(ti.escalated_to_perm_ban_pct, 2)}%` : '—'}</strong>
             <small>${total > 0 ? `${fmtInt(ti.escalated_to_perm_ban_users)}명 전환` : '대기 중'}</small>
           </div>
         </div>
@@ -749,7 +819,15 @@
     function renderPatternInsights(data: any) {
       const mp = data.troll_insights?.blinded_message_patterns || {};
       const totalMatched = num(mp.total_matched);
-      elPatternTotalPill.textContent = `매칭 ${fmtInt(totalMatched)}건`;
+      const totalClassified = num(mp.total_chats_classified);
+      const fallbackToAllChats = totalMatched === 0 && totalClassified > 0;
+
+      elPatternTotalPill.textContent =
+        totalMatched > 0
+          ? `수동 블라인드 매칭 ${fmtInt(totalMatched)}건`
+          : totalClassified > 0
+            ? `전체 분류 ${fmtCompactKo(totalClassified)}건`
+            : '분류 0건';
 
       const keys: Array<'url' | 'flood' | 'long_text' | 'short_text' | 'normal'> = [
         'url',
@@ -759,49 +837,78 @@
         'normal',
       ];
 
-      elPatternInsights.innerHTML = keys
-        .map((k) => {
-          const meta = PATTERN_LABELS[k];
-          const row = mp[k] || { count: 0, pct: 0, all_chat_pct: 0, risk_vs_normal: 0 };
-          const risk = num(row.risk_vs_normal);
-          const riskCls = risk >= 3 ? 'risk-high' : risk >= 1.5 ? 'risk-med' : 'risk-base';
-          const riskLabel =
-            k === 'normal'
-              ? '기준 (1.0배)'
-              : totalMatched > 0 && risk > 0
-                ? `${fmtDec(risk, 1)}배 위험`
-                : '—';
-          return `
-            <div class="pattern-row">
-              <div class="pattern-top">
-                <span class="pat-name">${meta.icon} ${escapeHtml(meta.label)}</span>
-                <div class="pat-right">
-                  <span class="pat-pct">${fmtDec(row.pct, 1)}%</span>
-                  <span class="risk-badge ${riskCls}">${riskLabel}</span>
+      const scopeBanner = fallbackToAllChats
+        ? `<div class="pattern-scope-note">수동 블라인드 원문 매칭 누적 대기 중 · 현재 전체 채팅 패턴 분포 표시</div>`
+        : mp.scope === 'human_moderated_blinds'
+          ? `<div class="pattern-scope-note">매니저 수동 블라인드 원문 기준 위험 배수</div>`
+          : '';
+
+      elPatternInsights.innerHTML =
+        scopeBanner +
+        keys
+          .map((k) => {
+            const meta = PATTERN_LABELS[k];
+            const row = mp[k] || { count: 0, pct: 0, all_chat_count: 0, all_chat_pct: 0, risk_vs_normal: 0 };
+            if (fallbackToAllChats) {
+              const chatPct = num(row.all_chat_pct);
+              return `
+                <div class="pattern-row">
+                  <div class="pattern-top">
+                    <span class="pat-name">${meta.icon} ${escapeHtml(meta.label)}</span>
+                    <div class="pat-right">
+                      <span class="pat-pct">${fmtDec(chatPct, 2)}%</span>
+                      <span class="risk-badge risk-base">${fmtCompactKo(row.all_chat_count)}건</span>
+                    </div>
+                  </div>
+                  <div class="leg-bar-track">
+                    <div class="leg-bar-fill" style="width:${Math.min(100, chatPct)}%; background:${meta.color}"></div>
+                  </div>
+                </div>
+              `;
+            }
+
+            const risk = num(row.risk_vs_normal);
+            const riskCls = risk >= 3 ? 'risk-high' : risk >= 1.5 ? 'risk-med' : 'risk-base';
+            const riskLabel =
+              k === 'normal'
+                ? '기준 (1.0배)'
+                : totalMatched > 0 && risk > 0
+                  ? `${fmtDec(risk, 1)}배 위험`
+                  : '—';
+            return `
+              <div class="pattern-row">
+                <div class="pattern-top">
+                  <span class="pat-name">${meta.icon} ${escapeHtml(meta.label)}</span>
+                  <div class="pat-right">
+                    <span class="pat-pct">${fmtDec(row.pct, 1)}%</span>
+                    <span class="risk-badge ${riskCls}">${riskLabel}</span>
+                  </div>
+                </div>
+                <div class="leg-bar-track">
+                  <div class="leg-bar-fill" style="width:${Math.min(100, num(row.pct))}%; background:${meta.color}"></div>
+                </div>
+                <div class="pattern-foot">
+                  <span>블라인드 ${fmtInt(row.count)}건</span>
+                  <span>전체 채팅 비중 ${fmtDec(row.all_chat_pct, 2)}%</span>
                 </div>
               </div>
-              <div class="leg-bar-track">
-                <div class="leg-bar-fill" style="width:${Math.min(100, num(row.pct))}%; background:${meta.color}"></div>
-              </div>
-              <div class="pattern-foot">
-                <span>블라인드 ${fmtInt(row.count)}건</span>
-                <span>전체 채팅 비중 ${fmtDec(row.all_chat_pct, 1)}%</span>
-              </div>
-            </div>
-          `;
-        })
-        .join('');
+            `;
+          })
+          .join('');
     }
 
     function renderTimeline(data: any) {
       const series = Array.isArray(data.hourly_series) ? data.hourly_series : [];
       const baseline = num(data.weather_status?.baseline_mod_per_10k);
+      const hasPartial = series.some((pt: any) => Boolean(pt.is_partial));
+      const partialLeg = hasPartial ? `<span><i class="partial-i"></i>집계 진행 중 (현재 시간)</span>` : '';
 
       if (chartMode === 'intensity') {
         elTimelineLegend.innerHTML = `
           <span><i style="background:#818cf8"></i>일반 시간대 (1만 채팅당 제재 수)</span>
           <span><i style="background:#ef4444"></i>⚡ 급증 구간 (Surge)</span>
           <span><i class="dash-i"></i>48h 평균 기준선 (${fmtDec(baseline, 1)}건)</span>
+          ${partialLeg}
         `;
       } else {
         elTimelineLegend.innerHTML = `
@@ -809,6 +916,7 @@
           <span><i style="background:#38bdf8"></i>단기 블라인드</span>
           <span><i style="background:#f59e0b"></i>임시제한</span>
           <span><i style="background:#ef4444"></i>영구차단</span>
+          ${partialLeg}
         `;
       }
 
@@ -862,6 +970,7 @@
           const cx = padL + idx * slotW + slotW / 2;
           const x = cx - barW / 2;
           const isSurge = Boolean(pt.is_surge);
+          const isPartial = Boolean(pt.is_partial);
           let barSvg = '';
 
           if (chartMode === 'intensity') {
@@ -869,8 +978,11 @@
             const h = (v / maxVal) * plotH;
             const y = padT + plotH - h;
             const fill = isSurge ? '#ef4444' : '#818cf8';
+            const partialAttrs = isPartial
+              ? `stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="3 2" opacity="0.45"`
+              : `opacity="${isSurge ? '0.95' : '0.85'}"`;
             barSvg = `
-              <rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(1.5, h).toFixed(1)}" rx="2.5" fill="${fill}" opacity="${isSurge ? '0.95' : '0.85'}" />
+              <rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(1.5, h).toFixed(1)}" rx="2.5" fill="${fill}" ${partialAttrs} />
               ${isSurge ? `<circle cx="${cx.toFixed(1)}" cy="${Math.max(8, y - 6).toFixed(1)}" r="3" fill="#fbbf24" />` : ''}
             `;
           } else {
@@ -886,7 +998,7 @@
                 if (s.val <= 0) return '';
                 const h = (s.val / maxVal) * plotH;
                 curY -= h;
-                return `<rect x="${x.toFixed(1)}" y="${curY.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(1, h).toFixed(1)}" fill="${s.color}" />`;
+                return `<rect x="${x.toFixed(1)}" y="${curY.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(1, h).toFixed(1)}" fill="${s.color}" opacity="${isPartial ? '0.45' : '0.92'}" />`;
               })
               .join('');
           }
@@ -930,17 +1042,24 @@
 
         const showTip = (ev: MouseEvent) => {
           const permCount = num(pt.perm_bans_explicit) + num(pt.perm_bans_inferred);
+          const dowLabel = pt.day_of_week ? `${DOW_KR[pt.day_of_week] || pt.day_of_week}요일` : '';
           elTooltip.innerHTML = `
             <div class="tt-head">
-              <strong>${escapeHtml(fmtShortHour(pt.hour_kst_iso, pt.hour_kst))} ${pt.day_of_week ? `(${escapeHtml(pt.day_of_week)})` : ''}</strong>
-              ${pt.is_surge ? `<span class="tt-surge">⚡ 급증 ${fmtDec(pt.surge_ratio, 2)}x</span>` : ''}
+              <strong>${escapeHtml(fmtShortHour(pt.hour_kst_iso, pt.hour_kst))} ${dowLabel ? `(${escapeHtml(dowLabel)})` : ''}</strong>
+              ${
+                pt.is_partial
+                  ? `<span class="tt-partial">⏳ 집계 중</span>`
+                  : pt.is_surge
+                    ? `<span class="tt-surge">⚡ 급증 ${fmtDec(pt.surge_ratio, 2)}x</span>`
+                    : ''
+              }
             </div>
             <div class="tt-grid">
               <span>1만당 제재</span><b>${fmtDec(pt.mod_per_10k_chats, 1)}건</b>
-              <span>총 채팅 / 방송</span><b>${fmtCompactKo(pt.total_chats)} / ${fmtDec(pt.monitored_streams_avg, 0)}개</b>
+              <span>총 채팅 / 방송</span><b>${fmtCompactKo(pt.total_chats)} / ${fmtInt(pt.monitored_streams_avg)}개</b>
               <span>클린봇 / 단기</span><b>${fmtInt(pt.cleanbot_blinds)} / ${fmtInt(pt.manual_single_blinds)}</b>
               <span>임시제한 / 영차</span><b>${fmtInt(pt.timeouts)} / ${fmtInt(permCount)}</b>
-              <span>알려진 트롤 제재</span><b>${fmtInt(pt.known_troll_actions)}건</b>
+              <span>모드변경 / 트롤</span><b>${fmtInt(pt.chat_mode_changes)}회 / ${fmtInt(pt.known_troll_actions)}건</b>
             </div>
           `;
           elTooltip.hidden = false;
@@ -1067,13 +1186,17 @@
           const val = num(r[metricKey]);
           const barW = hasAnyActivity ? Math.min(100, (val / maxMetric) * 100) : 0;
           const displayName = mapLabel(String(r.name || '기타'));
+          const catBadge =
+            segmentTab === 'category' && r.category_type
+              ? `<span class="cat-type-chip">${r.category_type === 'GAME' ? '게임' : '토크·기타'}</span>`
+              : '';
           const aiPct = num(r.cleanbot_pct);
           const humanPct = num(r.human_mod_pct);
           return `
             <tr>
               <td class="col-name">
                 <div class="seg-name-wrap">
-                  <strong>${escapeHtml(displayName)}</strong>
+                  <div class="seg-title-line"><strong>${escapeHtml(displayName)}</strong>${catBadge}</div>
                   <div class="seg-inline-bar"><span style="width:${barW}%"></span></div>
                 </div>
               </td>
@@ -1081,8 +1204,8 @@
               <td class="num-col">${fmtCompactKo(r.total_chats)}</td>
               <td class="num-col highlight-col">${fmtDec(r.mod_per_10k_chats, 1)}건</td>
               <td class="num-col">${fmtDec(aiPct, 0)}% / ${fmtDec(humanPct, 0)}%</td>
-              <td class="num-col c-rose-text">${fmtDec(r.perm_ban_pct, 1)}%</td>
-              <td class="num-col">${fmtDec(r.known_troll_share_pct, 1)}%</td>
+              <td class="num-col c-rose-text">${fmtDec(r.perm_ban_pct, 2)}%</td>
+              <td class="num-col">${fmtDec(r.known_troll_share_pct, 2)}%</td>
             </tr>
           `;
         })
@@ -1182,10 +1305,11 @@
 
     function renderTrollFunnel(data: any) {
       const ti = data.troll_insights || {};
+      const sum = data.summary_48h || {};
       const funnel = ti.multi_channel_funnel || {};
       const tiers = ti.auto_ban_tiers || {};
-      const sharePct = num(data.summary_48h?.known_troll_share_pct);
-      elTrollSharePill.textContent = `트롤 비중 ${fmtDec(sharePct, 1)}%`;
+      const sharePct = num(sum.known_troll_share_pct);
+      elTrollSharePill.textContent = `트롤 비중 ${fmtDec(sharePct, 2)}% (${fmtInt(sum.known_troll_actions)}건)`;
 
       const steps = [
         { label: '1개 채널 제재', data: funnel['1_channel'], color: '#64748b' },
@@ -1227,7 +1351,10 @@
             .join('')}
         </div>
 
-        <div class="tiers-divider">자동 차단 룰 티어별 탐지 건수</div>
+        <div class="tiers-divider">
+          <span>자동 차단 룰 티어별 탐지 건수</span>
+          <small>기존 트롤 채팅 ${fmtInt(sum.known_troll_chats)}건 감시됨</small>
+        </div>
         <div class="tier-pills-grid">
           ${tierList
             .map(
@@ -1964,6 +2091,16 @@
     margin-left: 2px;
   }
 
+  :global(.pattern-scope-note) {
+    font-size: 0.74rem;
+    color: #93c5fd;
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 7px;
+    padding: 6px 10px;
+    margin-bottom: 4px;
+  }
+
   /* Message Patterns */
   :global(.pat-name) {
     color: #e2e8f0;
@@ -2071,6 +2208,12 @@
     border-radius: 0;
   }
 
+  :global(.timeline-legend-row i.partial-i) {
+    background: rgba(129, 140, 248, 0.35);
+    border: 1px dashed #38bdf8;
+    box-sizing: border-box;
+  }
+
   .timeline-chart-wrap {
     background: #0d101a;
     border: 1px solid #1e2438;
@@ -2144,6 +2287,15 @@
     font-weight: 800;
     color: #fca5a5;
     background: rgba(239, 68, 68, 0.2);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+
+  :global(.tt-partial) {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #7dd3fc;
+    background: rgba(56, 189, 248, 0.16);
     padding: 1px 5px;
     border-radius: 4px;
   }
@@ -2364,6 +2516,22 @@
     min-width: 160px;
   }
 
+  :global(.seg-title-line) {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  :global(.cat-type-chip) {
+    font-size: 0.66rem;
+    font-weight: 700;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+
   :global(.seg-name-wrap strong) {
     color: #f8fafc;
     font-size: 0.86rem;
@@ -2510,6 +2678,17 @@
     font-size: 0.78rem;
     font-weight: 700;
     color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  :global(.tiers-divider small) {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #64748b;
   }
 
   :global(.tier-pills-grid) {
