@@ -45,7 +45,7 @@ const radarHref = '/bzzk#moderation-radar-48h';
     <div class="hrd-kpi-row">
       <div class="hrd-kpi k-emerald">
         <div class="hk-top">
-          <span class="hk-lbl">{isEn ? 'Monitored Streams' : '모니터링 방송'}</span>
+          <span class="hk-lbl">{isEn ? 'Observed Streams' : '누적 관측 방송'}</span>
         </div>
         <strong class="hk-val" id="hrd-k-streams">—</strong>
         <span class="hk-sub" id="hrd-k-streams-sub">{isEn ? '100% anonymous aggregation' : '100% 익명 실시간 집계'}</span>
@@ -53,7 +53,7 @@ const radarHref = '/bzzk#moderation-radar-48h';
 
       <div class="hrd-kpi k-sky">
         <div class="hk-top">
-          <span class="hk-lbl">{isEn ? 'Chats Analyzed' : '분석된 채팅 수'}</span>
+          <span class="hk-lbl">{isEn ? '48h Total Chats' : '48시간 총 채팅'}</span>
           <span class="hk-delta" id="hrd-d-chats" hidden></span>
         </div>
         <strong class="hk-val" id="hrd-k-chats">—</strong>
@@ -71,18 +71,18 @@ const radarHref = '/bzzk#moderation-radar-48h';
 
       <div class="hrd-kpi k-rose">
         <div class="hk-top">
-          <span class="hk-lbl" id="hrd-k-trolls-lbl">{isEn ? 'Cross-Channel Mods' : '다중 채널 제재 유저'}</span>
+          <span class="hk-lbl" id="hrd-k-trolls-lbl">{isEn ? 'Multi-Channel Mods' : '다채널 상습 유저'}</span>
           <span class="hk-delta" id="hrd-d-trolls" hidden></span>
         </div>
         <strong class="hk-val" id="hrd-k-trolls">—</strong>
-        <span class="hk-sub" id="hrd-k-trolls-sub">{isEn ? 'Zero perm-ban streams —' : '영구차단 0건 방송 —'}</span>
+        <span class="hk-sub" id="hrd-k-trolls-sub">{isEn ? 'Zero perm-ban streams —' : '무강퇴 청정 방송 —'}</span>
       </div>
     </div>
 
     <!-- Right: Mini 48h Sparkline + AI vs Mod Split + Live Insight -->
     <a href={radarHref} class="hrd-visual-box" title={isEn ? 'Open full 48h analytics' : '48시간 상세 그래프 보기'}>
       <div class="hrd-vis-head">
-        <span class="hv-label">{isEn ? '48H MODERATION TREND' : '48시간 제재 추이 (1만당)'}</span>
+        <span class="hv-label">{isEn ? '48H COMPLETED TREND' : '48시간 제재 추이 (정각 완료)'}</span>
         <span class="hv-ai-split" id="hrd-ai-split">{isEn ? 'AI vs Mod —' : 'AI vs 매니저 —'}</span>
       </div>
       <div class="hrd-sparkline" id="hrd-sparkline">
@@ -97,8 +97,8 @@ const radarHref = '/bzzk#moderation-radar-48h';
       </div>
       <div class="hrd-insight-line" id="hrd-insight-line">
         {isEn
-          ? '📡 Anonymous live stream moderation analytics updated hourly'
-          : '📡 개별 유저·스트리머 특정 없는 100% 익명 매시간 자동 집계'}
+          ? '📡 Anonymous live stream moderation analytics updated hourly at :01 KST'
+          : '📡 매시 01분 정각 갱신 · 개인 식별자 없는 100% 익명 집계'}
       </div>
     </a>
   </div>
@@ -157,11 +157,18 @@ const radarHref = '/bzzk#moderation-radar-48h';
       return Math.round(n).toLocaleString('ko-KR');
     }
 
-    function fmtKstShort(iso: unknown): string {
+    function fmtKstShort(iso: unknown, liveHr: any): string {
       if (!iso) return '';
       const m = /^\d{4}-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(String(iso));
       if (!m) return '';
-      return isEn ? `Updated ${m[1]}/${m[2]} ${m[3]}:${m[4]} KST` : `${m[1]}.${m[2]} ${m[3]}:${m[4]} KST 갱신`;
+      const base = isEn ? `Updated ${m[1]}/${m[2]} ${m[3]}:${m[4]} KST` : `${m[1]}.${m[2]} ${m[3]}:${m[4]} KST 갱신`;
+      if (liveHr && typeof liveHr === 'object' && liveHr.elapsed_minutes != null) {
+        const hrNum = liveHr.hour_kst != null ? String(liveHr.hour_kst).padStart(2, '0') : '';
+        return isEn
+          ? `${base} · Live ${hrNum}h (${Math.round(num(liveHr.elapsed_minutes))}m)`
+          : `${base} · 실시간 ${hrNum}시 (${Math.round(num(liveHr.elapsed_minutes))}분)`;
+      }
+      return base;
     }
 
     function setDelta(el: HTMLElement, val: unknown, ready: boolean, invert: boolean) {
@@ -213,10 +220,10 @@ const radarHref = '/bzzk#moderation-radar-48h';
       const ready = Boolean(tr.ready);
       const delta = tr.delta_pct || {};
       const hl = d.highlights || {};
-      const series = Array.isArray(d.hourly_series) ? d.hourly_series : [];
+      const rawSeries = Array.isArray(d.hourly_series) ? d.hourly_series : [];
+      const series = meta.completed_hours_only ? rawSeries : rawSeries.filter((pt: any) => !pt.is_partial);
 
       const hrs = num(meta.hours_collected);
-      const compHrs = meta.completed_hours != null ? num(meta.completed_hours, hrs) : hrs;
       const winH = num(meta.window_hours, 48);
       const hasData = hrs > 0 || num(sum.total_chats) > 0;
 
@@ -242,29 +249,35 @@ const radarHref = '/bzzk#moderation-radar-48h';
           ? isEn
             ? `Collecting (0/${winH}h)`
             : `초기 수집 중 (0/${winH}h)`
-          : compHrs < hrs
-            ? isEn
-              ? `${compHrs}h + live`
-              : `완료 ${compHrs}h + 집계 중`
-            : isEn
-              ? `Last ${hrs}h`
-              : `최근 ${hrs}시간 누적`;
+          : isEn
+            ? `${hrs}h Completed`
+            : `정각 완료 ${hrs}시간`;
 
-      elUpdated.textContent = fmtKstShort(meta.updated_at_kst);
+      elUpdated.textContent = fmtKstShort(meta.updated_at_kst, meta.live_current_hour);
 
       // 4 KPI Cards
       if (hasData) {
-        elKStreams.textContent = isEn
-          ? `${Math.round(num(meta.monitored_streams_peak)).toLocaleString()} peak`
-          : `최대 ${Math.round(num(meta.monitored_streams_peak)).toLocaleString('ko-KR')}개`;
-        elKStreamsSub.textContent = isEn
-          ? `Avg ${num(meta.monitored_streams_avg).toFixed(1)} live streams/hr`
-          : `시간당 평균 ${num(meta.monitored_streams_avg).toFixed(1)}개 동시 감시`;
+        const uniqueStreams = num(sum.unique_observed_streams) || num(d.stream_calmness_48h?.total_observed_streams);
+        if (uniqueStreams > 0) {
+          elKStreams.textContent = isEn
+            ? `${Math.round(uniqueStreams).toLocaleString('en-US')}`
+            : `${Math.round(uniqueStreams).toLocaleString('ko-KR')}개`;
+          elKStreamsSub.textContent = isEn
+            ? `Peak ${Math.round(num(meta.monitored_streams_peak)).toLocaleString('en-US')} · Avg ${Math.round(num(meta.monitored_streams_avg)).toLocaleString('en-US')}/hr`
+            : `피크 동시 ${Math.round(num(meta.monitored_streams_peak)).toLocaleString('ko-KR')}개 · 평균 ${Math.round(num(meta.monitored_streams_avg)).toLocaleString('ko-KR')}개`;
+        } else {
+          elKStreams.textContent = isEn
+            ? `${Math.round(num(meta.monitored_streams_peak)).toLocaleString('en-US')} peak`
+            : `최대 ${Math.round(num(meta.monitored_streams_peak)).toLocaleString('ko-KR')}개`;
+          elKStreamsSub.textContent = isEn
+            ? `Avg ${Math.round(num(meta.monitored_streams_avg)).toLocaleString('en-US')} live streams/hr`
+            : `시간당 평균 ${Math.round(num(meta.monitored_streams_avg)).toLocaleString('ko-KR')}개 동시 감시`;
+        }
 
         elKChats.textContent = isEn ? fmtCompact(sum.total_chats) : `${fmtCompact(sum.total_chats)}건`;
         elKChatsSub.textContent = isEn
           ? `Clean chat rate ${num(sum.clean_chat_rate_pct, 100).toFixed(2)}%`
-          : `정상 채팅 비율 ${num(sum.clean_chat_rate_pct, 100).toFixed(2)}%`;
+          : `클린 채팅 비율 ${num(sum.clean_chat_rate_pct, 100).toFixed(2)}%`;
 
         elKMod10k.textContent = isEn
           ? `${num(sum.mod_per_10k_chats).toFixed(1)}`
@@ -273,42 +286,35 @@ const radarHref = '/bzzk#moderation-radar-48h';
           ? `${fmtCompact(sum.total_mod_actions)} total actions`
           : `총 제재 ${fmtCompact(sum.total_mod_actions)}건 · 유저 ${fmtCompact(sum.unique_moderated_users)}명`;
 
-        const autoBans = num(sum.auto_bans_triggered);
         const funnel = d.troll_insights?.multi_channel_funnel || {};
         const multiUsers =
-          num(funnel['2_channels']?.users) +
-          num(funnel['3_to_4_channels']?.users) +
-          num(funnel['5_plus_channels']?.users);
-        const multiPct = num(hl.multi_channel_offender_pct);
+          sum.multi_channel_offenders != null
+            ? num(sum.multi_channel_offenders)
+            : num(funnel['2_channels']?.users) +
+              num(funnel['3_to_4_channels']?.users) +
+              num(funnel['5_plus_channels']?.users);
+        const multiPct = num(sum.multi_channel_offender_pct ?? hl.multi_channel_offender_pct);
+        const heavy5Plus =
+          sum.heavy_raiders_5plus != null ? num(sum.heavy_raiders_5plus) : num(funnel['5_plus_channels']?.users);
         const zeroPermPct = num(d.stream_calmness_48h?.zero_perm_ban_streams?.pct);
 
-        if (autoBans > 0) {
-          elKTrollsLbl.textContent = isEn ? 'Auto-Detected Trolls' : '자동 탐지 다중 트롤';
-          elKTrolls.textContent = isEn
-            ? `${Math.round(autoBans).toLocaleString()}`
-            : `${Math.round(autoBans).toLocaleString('ko-KR')}명`;
-          elKTrollsSub.textContent = isEn
-            ? `${multiPct.toFixed(1)}% multi-ch · ${zeroPermPct.toFixed(1)}% 0-ban streams`
-            : `2+채널 ${multiPct.toFixed(1)}% · 무영차 방송 ${zeroPermPct.toFixed(1)}%`;
-        } else {
-          elKTrollsLbl.textContent = isEn ? 'Cross-Channel Mods' : '다중 채널 제재 유저';
-          elKTrolls.textContent = isEn
-            ? `${Math.round(multiUsers).toLocaleString()} (${multiPct.toFixed(1)}%)`
-            : `${Math.round(multiUsers).toLocaleString('ko-KR')}명 (${multiPct.toFixed(1)}%)`;
-          elKTrollsSub.textContent = isEn
-            ? `${zeroPermPct.toFixed(1)}% streams w/ 0 perm-bans`
-            : `영구차단 0건 방송 ${zeroPermPct.toFixed(1)}%`;
-        }
+        elKTrollsLbl.textContent = isEn ? 'Multi-Channel Mods' : '다채널 상습 유저';
+        elKTrolls.textContent = isEn
+          ? `${Math.round(multiUsers).toLocaleString('en-US')} (${multiPct.toFixed(1)}%)`
+          : `${Math.round(multiUsers).toLocaleString('ko-KR')}명 (${multiPct.toFixed(1)}%)`;
+        elKTrollsSub.textContent = isEn
+          ? `5+ ch raiders: ${Math.round(heavy5Plus).toLocaleString('en-US')} · ${zeroPermPct.toFixed(1)}% 0-ban streams`
+          : `5개+ 분탕 ${Math.round(heavy5Plus).toLocaleString('ko-KR')}명 · 무강퇴 방송 ${zeroPermPct.toFixed(1)}%`;
 
         setDelta(elDChats, delta.total_chats, ready, false);
         setDelta(elDMod10k, delta.mod_per_10k_chats, ready, true);
-        setDelta(elDTrolls, delta.auto_bans_triggered, ready, true);
+        setDelta(elDTrolls, delta.known_troll_actions ?? delta.perm_bans, ready, true);
 
         const aiPct = num(sum.ai_cleanbot_pct);
         const hmPct = num(sum.human_mod_pct);
         elAiSplit.textContent = isEn
-          ? `AI ${aiPct.toFixed(0)}% · Mod ${hmPct.toFixed(0)}%`
-          : `AI ${aiPct.toFixed(0)}% · 매니저 ${hmPct.toFixed(0)}%`;
+          ? `AI ${aiPct.toFixed(1)}% · Mod ${hmPct.toFixed(1)}%`
+          : `AI ${aiPct.toFixed(1)}% · 수동 ${hmPct.toFixed(1)}%`;
         elBarAi.style.width = `${Math.min(100, aiPct)}%`;
         elBarHuman.style.width = `${Math.min(100, hmPct)}%`;
       } else {
@@ -323,7 +329,7 @@ const radarHref = '/bzzk#moderation-radar-48h';
         elAiSplit.textContent = isEn ? 'AI vs Mod: Warm-up' : 'AI vs 매니저: 집계 대기';
       }
 
-      // Mini 48h SVG Sparkline
+      // Mini 48h SVG Sparkline (strictly completed 48h buckets)
       if (series.length > 0) {
         const W = 280;
         const H = 48;
@@ -340,7 +346,7 @@ const radarHref = '/bzzk#moderation-radar-48h';
             const x = i * slot + (slot - bw) / 2;
             const y = H - bh;
             const col = pt.is_surge ? '#ef4444' : '#00ffa3';
-            const op = pt.is_partial ? '0.36' : pt.is_surge ? '0.95' : '0.78';
+            const op = pt.is_surge ? '0.95' : '0.78';
             return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="1.5" fill="${col}" opacity="${op}" />`;
           })
           .join('');
@@ -386,7 +392,7 @@ const radarHref = '/bzzk#moderation-radar-48h';
             : null;
         const label = pbName === 'Other' ? (isEn ? 'Other' : '기타') : pbName;
         const pctTxt = pbPct != null ? ` (${num(pbPct).toFixed(2)}%)` : '';
-        parts.push(isEn ? `🚫 Top Perm-Ban: ${label}${pctTxt}` : `🚫 영차 비중 1위: ${label}${pctTxt}`);
+        parts.push(isEn ? `🚫 Top Perm-Ban: ${label}${pctTxt}` : `🚫 강퇴 비중 1위: ${label}${pctTxt}`);
       }
       if (hl.riskiest_chat_pattern != null) {
         const pKey =
@@ -398,13 +404,13 @@ const radarHref = '/bzzk#moderation-radar-48h';
           d.troll_insights?.blinded_message_patterns?.[String(pKey)]?.risk_vs_normal;
         const pName = (isEn ? PAT_EN[String(pKey)] : PAT_KO[String(pKey)]) || String(pKey);
         if (mult && num(mult) > 0) {
-          parts.push(isEn ? `⚠️ ${pName} ${num(mult).toFixed(1)}x risk` : `⚠️ ${pName} 일반 대비 ${num(mult).toFixed(1)}배 위험`);
+          parts.push(isEn ? `⚠️ ${pName} ${num(mult).toFixed(1)}x risk` : `⚠️ ${pName} ${num(mult).toFixed(1)}배 위험`);
         }
       } else if (hl.peak_mod_hour_kst != null) {
         const pkH =
           typeof hl.peak_mod_hour_kst === 'object' ? hl.peak_mod_hour_kst.hour_kst : hl.peak_mod_hour_kst;
         parts.push(
-          isEn ? `🕒 Peak: ${String(pkH).padStart(2, '0')}:00 KST` : `🕒 피크 시간: ${String(pkH).padStart(2, '0')}시`
+          isEn ? `🕒 Peak: ${String(pkH).padStart(2, '0')}:00 KST` : `🕒 피크: ${String(pkH).padStart(2, '0')}시`
         );
       }
 
@@ -413,7 +419,7 @@ const radarHref = '/bzzk#moderation-radar-48h';
       } else {
         elInsight.textContent = isEn
           ? '🔒 100% anonymous live aggregation — click to view full 48h breakdown & category benchmarks'
-          : '🔒 개별 유저·스트리머 특정 없는 100% 익명 집계 — 클릭해 카테고리·시간대별 상세 분석 보기';
+          : '🔒 개인 식별자 없는 100% 익명 집계 — 클릭해 대분류·세부 카테고리 분석 보기';
       }
     }
 
@@ -434,7 +440,7 @@ const radarHref = '/bzzk#moderation-radar-48h';
     fetchPreview();
     window.setInterval(() => {
       if (document.visibilityState === 'visible') fetchPreview();
-    }, 10 * 60 * 1000);
+    }, 5 * 60 * 1000);
   })();
 </script>
 
@@ -545,7 +551,7 @@ const radarHref = '/bzzk#moderation-radar-48h';
   }
 
   .hrd-updated {
-    font-size: 0.74rem;
+    font-size: 0.73rem;
     color: #64748b;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   }
@@ -637,7 +643,7 @@ const radarHref = '/bzzk#moderation-radar-48h';
   }
 
   .hk-val {
-    font-size: 1.22rem;
+    font-size: 1.2rem;
     font-weight: 900;
     color: #f8fafc;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;

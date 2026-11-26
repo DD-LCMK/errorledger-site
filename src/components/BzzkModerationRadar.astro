@@ -1,30 +1,33 @@
 ---
-// Client-side live-updating 48-hour Chzzk Moderation Radar analytics section.
+// Client-side live-updating 48-hour Chzzk Moderation Radar analytics section (schema_version: 3).
 // Fetches public GitHub Gist JSON purely in the browser (never at build time).
 ---
 
 <section class="bzzk-radar-section" id="moderation-radar-48h" aria-labelledby="radar-48h-heading">
-  <!-- Section Header Strip -->
+  <!-- 1. Section Header & Weather Banner -->
   <div class="radar-top-header">
     <div class="radar-title-cluster">
       <div class="radar-badge-row">
         <span class="radar-tag-pill">
           <span class="radar-dot"></span>
-          48H ANALYTICS
+          48H ANALYTICS · V3
         </span>
         <span class="radar-weather-badge weather-normal" id="radar-weather-badge">
           <span class="weather-icon" id="radar-weather-icon">⛅</span>
           <span class="weather-label" id="radar-weather-label">기상도 확인 중...</span>
           <span class="weather-ratio" id="radar-weather-ratio"></span>
         </span>
-        <span class="radar-collection-badge" id="radar-collection-badge">집계 확인 중</span>
+        <span class="radar-collection-badge" id="radar-collection-badge">집계 구간 확인 중</span>
       </div>
       <h2 id="radar-48h-heading">최근 48시간 치지직 제재 레이더</h2>
     </div>
 
     <div class="radar-meta-actions">
-      <span class="radar-updated-time" id="radar-updated-time">업데이트 확인 중...</span>
-      <span class="radar-auto-badge">⏱️ 매시간 자동 갱신</span>
+      <div class="radar-meta-line">
+        <span class="radar-updated-time" id="radar-updated-time">업데이트 확인 중...</span>
+        <span class="radar-auto-badge">⏱️ 매시 01분 정각 자동 갱신</span>
+      </div>
+      <div class="radar-live-hour-pill" id="radar-live-hour-pill" hidden></div>
     </div>
   </div>
 
@@ -32,13 +35,14 @@
   <div class="radar-privacy-bar">
     <span class="privacy-ico">🔒</span>
     <span>
-      <strong>익명 집계 안내:</strong> 모든 통계는 개별 스트리머나 유저를 특정하지 않는 <strong>100% 익명 집계 데이터</strong>입니다. 매시간 자동 갱신되는 공개 스냅샷을 브라우저에서 직접 불러옵니다.
+      <strong>Zero-PII 익명 집계 안내:</strong> 모든 통계는 단방향 솔트 해시 기반으로 개별 스트리머·시청자 식별자 및 채팅 원문을 일체 저장하지 않는 <strong>100% 익명 집계 데이터</strong>입니다.
     </span>
   </div>
 
   <!-- Loading State -->
   <div class="radar-loading-state" id="radar-loading-state">
     <div class="skeleton-kpi-grid">
+      <div class="skel-card"></div>
       <div class="skel-card"></div>
       <div class="skel-card"></div>
       <div class="skel-card"></div>
@@ -57,73 +61,35 @@
 
   <!-- Main Dashboard Container -->
   <div class="radar-dashboard" id="radar-dashboard" hidden>
-    <!-- Warm-up Banner (shown when hours_collected === 0 or < 48) -->
+    <!-- Warm-up Banner (shown when hours_collected < 48) -->
     <div class="radar-warmup-banner" id="radar-warmup-banner" hidden>
       <div class="warmup-icon">📡</div>
       <div class="warmup-body">
         <strong id="radar-warmup-title">초기 48시간 데이터 수집 워밍업 중입니다</strong>
         <p id="radar-warmup-desc">
-          현재 첫 시간대 스냅샷을 집계하고 있습니다. 1시간 단위 데이터가 누적되면 채팅 기상도, 48시간 추이 그래프, 카테고리·규모별 제재 비교가 자동으로 채워집니다.
+          완료된 60분 단위 스냅샷을 누적하고 있습니다. 데이터가 축적되면 48시간 시계열 추이와 24시간 비교 지표가 자동으로 활성화됩니다.
         </p>
       </div>
     </div>
 
-    <!-- 1. Top KPI Grid -->
+    <!-- 2. Executive KPI Cards (5 Cards) -->
     <div class="radar-kpi-grid" id="radar-kpi-grid"></div>
 
-    <!-- 2. Auto-Generated 48h Highlights Strip -->
+    <!-- Auto-Generated 48h Highlights Strip -->
     <div class="radar-highlights-strip" id="radar-highlights-strip" hidden></div>
 
-    <!-- 3. Moderation Type, Timeout Severity & Message Pattern Risk -->
-    <div class="radar-three-col">
-      <!-- 3A: Action Breakdown Donut -->
-      <div class="radar-panel">
-        <div class="panel-head">
-          <div>
-            <span class="panel-kicker">MODERATION BREAKDOWN</span>
-            <h3>제재 유형 구성</h3>
-          </div>
-          <span class="panel-pill" id="radar-permban-pill">영구차단 0건</span>
-        </div>
-        <div class="donut-layout" id="radar-action-breakdown"></div>
-      </div>
-
-      <!-- 3B: Timeout Insights -->
-      <div class="radar-panel">
-        <div class="panel-head">
-          <div>
-            <span class="panel-kicker">TIMEOUT SEVERITY</span>
-            <h3>임시제한(채금) 심층 분석</h3>
-          </div>
-          <span class="panel-pill" id="radar-timeout-avg-pill">평균 —</span>
-        </div>
-        <div class="timeout-body" id="radar-timeout-insights"></div>
-      </div>
-
-      <!-- 3C: Blinded Message Patterns -->
-      <div class="radar-panel">
-        <div class="panel-head">
-          <div>
-            <span class="panel-kicker">MESSAGE PATTERN RISK</span>
-            <h3>블라인드 메시지 패턴 & 위험 배수</h3>
-          </div>
-          <span class="panel-pill" id="radar-pattern-total-pill">분류 0건</span>
-        </div>
-        <div class="pattern-body" id="radar-pattern-insights"></div>
-      </div>
-    </div>
-
-    <!-- 4. 48-Hour Timeline & Time-of-Day Section -->
+    <!-- 3. 48-Hour Completed Timeline & KST Time-of-Day Profile -->
     <div class="radar-panel radar-timeline-panel">
       <div class="panel-head wrap-head">
         <div>
-          <span class="panel-kicker">48-HOUR TIMELINE</span>
-          <h3>48시간 시간별 제재 추이 & 급증 구간</h3>
+          <span class="panel-kicker">48-HOUR COMPLETED TIMELINE</span>
+          <h3>48시간 시간별 추이 & 급증 구간 (정각 완료 기준)</h3>
         </div>
         <div class="timeline-controls">
           <div class="seg-toggle" id="radar-chart-mode" role="tablist" aria-label="차트 지표 전환">
-            <button type="button" class="seg-btn active" data-mode="intensity">1만 채팅당 제재 수</button>
-            <button type="button" class="seg-btn" data-mode="stacked">유형별 제재 건수</button>
+            <button type="button" class="seg-btn active" data-mode="dual">1만당 제재 + 채팅량</button>
+            <button type="button" class="seg-btn" data-mode="stacked">4종 제재 건수</button>
+            <button type="button" class="seg-btn" data-mode="chats">시간당 총 채팅</button>
           </div>
         </div>
       </div>
@@ -133,7 +99,7 @@
       <div class="timeline-chart-wrap" id="radar-timeline-chart"></div>
       <div class="chart-tooltip" id="radar-chart-tooltip" hidden></div>
 
-      <!-- Time-of-Day Zones + 24h KST Strip -->
+      <!-- Time-of-Day Zones + 24h KST Profile -->
       <div class="time-of-day-grid">
         <div class="tod-zones-block">
           <div class="sub-block-head">
@@ -145,69 +111,137 @@
 
         <div class="tod-24h-block">
           <div class="sub-block-head">
-            <h4>24시간 KST 시간대별 제재 강도</h4>
-            <span class="sub-hint">00시 ~ 23시 (1만 채팅당)</span>
+            <h4>24시간 KST 시간대별 제재 프로필</h4>
+            <span class="sub-hint">00시 ~ 23시 (채팅 1만 건당)</span>
           </div>
           <div class="tod-24h-heatmap" id="radar-hour24-heatmap"></div>
         </div>
       </div>
     </div>
 
-    <!-- 5. Category & Segment Comparisons -->
+    <!-- 4. Action Breakdown, Timeout Insights & Stream Calmness -->
+    <div class="radar-three-col">
+      <!-- 4A: 4-Part Action Breakdown -->
+      <div class="radar-panel">
+        <div class="panel-head">
+          <div>
+            <span class="panel-kicker">4-PART ACTION TAXONOMY</span>
+            <h3>제재 유형 구성 (합계 100%)</h3>
+          </div>
+          <span class="panel-pill" id="radar-permban-pill">영구차단 0건</span>
+        </div>
+        <div class="donut-layout" id="radar-action-breakdown"></div>
+      </div>
+
+      <!-- 4B: Timeout Insights -->
+      <div class="radar-panel">
+        <div class="panel-head">
+          <div>
+            <span class="panel-kicker">TIMEOUT SEVERITY</span>
+            <h3>임시제한(채금) 심층 분석</h3>
+          </div>
+          <span class="panel-pill" id="radar-timeout-avg-pill">평균 —</span>
+        </div>
+        <div class="timeout-body" id="radar-timeout-insights"></div>
+      </div>
+
+      <!-- 4C: Stream Calmness -->
+      <div class="radar-panel">
+        <div class="panel-head">
+          <div>
+            <span class="panel-kicker">STREAM CALMNESS (48H)</span>
+            <h3>전체 방송 평온도 & 무강퇴 비율</h3>
+          </div>
+          <span class="panel-pill" id="radar-observed-streams-pill">관측 방송 0개</span>
+        </div>
+        <div id="radar-stream-calmness"></div>
+      </div>
+    </div>
+
+    <!-- 5. Troll Funnel & Human-Blinded Message Risk -->
+    <div class="radar-two-col">
+      <!-- 5A: Cross-Stream Troll Funnel -->
+      <div class="radar-panel">
+        <div class="panel-head">
+          <div>
+            <span class="panel-kicker">CROSS-CHANNEL TROLL FUNNEL</span>
+            <h3>다중 채널 제재 퍼널 & 상습 분탕 분포</h3>
+          </div>
+          <span class="panel-pill" id="radar-troll-share-pill">다채널 0명</span>
+        </div>
+        <div id="radar-troll-funnel"></div>
+      </div>
+
+      <!-- 5B: Human-Moderated Blind Pattern Risk -->
+      <div class="radar-panel">
+        <div class="panel-head">
+          <div>
+            <span class="panel-kicker">HUMAN-BLINDED MESSAGE RISK</span>
+            <h3>수동 블라인드 메시지 패턴 & 위험 배수</h3>
+          </div>
+          <span class="panel-pill" id="radar-pattern-total-pill">매칭 표본 0건</span>
+        </div>
+        <div class="pattern-body" id="radar-pattern-insights"></div>
+      </div>
+    </div>
+
+    <!-- 6. Two-Tier Category & Segment Explorer -->
     <div class="radar-panel">
       <div class="panel-head wrap-head">
         <div>
-          <span class="panel-kicker">CATEGORY & SEGMENT BENCHMARK</span>
-          <h3>카테고리 · 방송 규모 · 연령 · 경과시간별 비교</h3>
+          <span class="panel-kicker">TWO-TIER CATEGORY & SEGMENT EXPLORER</span>
+          <h3>대분류 장르(100%) · 세부 Top 30 카테고리 · 방송 세그먼트 분석</h3>
         </div>
-        <div class="seg-toggle" id="radar-segment-tabs" role="tablist" aria-label="비교 기준 선택">
-          <button type="button" class="seg-btn active" data-tab="category">카테고리별</button>
-          <button type="button" class="seg-btn" data-tab="viewer">방송 규모</button>
-          <button type="button" class="seg-btn" data-tab="age">연령 등급</button>
-          <button type="button" class="seg-btn" data-tab="uptime">방송 경과시간</button>
+        <div class="seg-toggle" id="radar-segment-tabs" role="tablist" aria-label="분석 차원 선택">
+          <button type="button" class="seg-btn active" data-tab="category">세부 카테고리 (Top 30)</button>
+          <button type="button" class="seg-btn" data-tab="viewer">시청자 규모별</button>
+          <button type="button" class="seg-btn" data-tab="age">일반 vs 19금</button>
+          <button type="button" class="seg-btn" data-tab="uptime">방송 경과 시간별</button>
         </div>
       </div>
 
-      <!-- Sort controls (shown for category tab) -->
-      <div class="cat-sort-bar" id="radar-cat-sort-bar">
-        <span class="sort-label">정렬 기준:</span>
-        <div class="sort-pills" id="radar-cat-sort-pills">
-          <button type="button" class="sort-pill active" data-sort="mod_per_10k_chats">1만 채팅당 제재 수</button>
-          <button type="button" class="sort-pill" data-sort="total_chats">채팅 수</button>
-          <button type="button" class="sort-pill" data-sort="cleanbot_pct">클린봇 %</button>
-          <button type="button" class="sort-pill" data-sort="perm_ban_pct">영구차단 %</button>
+      <!-- Tier 1: Macro Genre Overview (100% of Chzzk) -->
+      <div class="macro-genre-section" id="radar-macro-genres"></div>
+
+      <!-- Tier 2 Controls: Genre Filter + Sort Toggles (shown for category tab) -->
+      <div class="cat-controls-wrap" id="radar-cat-controls">
+        <div class="cat-filter-bar">
+          <span class="sort-label">장르 필터:</span>
+          <div class="sort-pills" id="radar-cat-genre-pills">
+            <button type="button" class="sort-pill active" data-genre="ALL">전체</button>
+            <button type="button" class="sort-pill" data-genre="GAME">게임</button>
+            <button type="button" class="sort-pill" data-genre="ETC">토크·음악·일상</button>
+            <button type="button" class="sort-pill" data-genre="ENTERTAINMENT">같이보기·미디어</button>
+            <button type="button" class="sort-pill" data-genre="SPORTS">스포츠</button>
+            <button type="button" class="sort-pill" data-genre="FOLDED">기타·미설정</button>
+          </div>
+        </div>
+
+        <div class="cat-sort-bar">
+          <span class="sort-label">정렬 기준:</span>
+          <div class="sort-pills" id="radar-cat-sort-pills">
+            <button type="button" class="sort-pill active" data-sort="total_chats">총 채팅 수</button>
+            <button type="button" class="sort-pill" data-sort="mod_per_10k_chats">1만 채팅당 제재</button>
+            <button type="button" class="sort-pill" data-sort="perm_ban_pct">영구차단 %</button>
+            <button type="button" class="sort-pill" data-sort="cleanbot_pct">클린봇 %</button>
+          </div>
         </div>
       </div>
 
       <div class="segment-table-wrap" id="radar-segment-content"></div>
     </div>
 
-    <!-- 6. Stream Calmness & Cross-Stream Troll Funnel -->
-    <div class="radar-two-col">
-      <!-- 6A: Stream Calmness -->
-      <div class="radar-panel">
-        <div class="panel-head">
-          <div>
-            <span class="panel-kicker">STREAM CALMNESS (48H)</span>
-            <h3>전체 방송 평온도 분포</h3>
-          </div>
-          <span class="panel-pill" id="radar-observed-streams-pill">관측 방송 0개</span>
+    <!-- 7. Methodology & Zero-PII Footer -->
+    <details class="radar-methodology-box" id="radar-methodology-box">
+      <summary class="methodology-summary">
+        <div class="meth-sum-left">
+          <span class="meth-badge">METHODOLOGY & ZERO-PII</span>
+          <strong>집계 기준 · 4종 제재 분류 체계 · 개인정보 비식별화 원칙 안내</strong>
         </div>
-        <div id="radar-stream-calmness"></div>
-      </div>
-
-      <!-- 6B: Cross-Stream Troll Funnel & Auto-Ban Tiers -->
-      <div class="radar-panel">
-        <div class="panel-head">
-          <div>
-            <span class="panel-kicker">CROSS-CHANNEL TROLL FUNNEL</span>
-            <h3>다중 채널 제재 퍼널 & 자동 차단 티어</h3>
-          </div>
-          <span class="panel-pill" id="radar-troll-share-pill">트롤 비중 0%</span>
-        </div>
-        <div id="radar-troll-funnel"></div>
-      </div>
-    </div>
+        <span class="meth-toggle-hint">자세히 보기 ▾</span>
+      </summary>
+      <div class="methodology-content" id="radar-methodology-content"></div>
+    </details>
   </div>
 </section>
 
@@ -230,6 +264,7 @@
     const elWeatherRatio = document.getElementById('radar-weather-ratio')!;
     const elCollectionBadge = document.getElementById('radar-collection-badge')!;
     const elUpdatedTime = document.getElementById('radar-updated-time')!;
+    const elLiveHourPill = document.getElementById('radar-live-hour-pill')!;
     const elRetryBtn = document.getElementById('radar-retry-btn') as HTMLButtonElement;
 
     const elKpiGrid = document.getElementById('radar-kpi-grid')!;
@@ -247,17 +282,20 @@
     const elTimezoneCards = document.getElementById('radar-timezone-cards')!;
     const elHour24Heatmap = document.getElementById('radar-hour24-heatmap')!;
 
-    const elCatSortBar = document.getElementById('radar-cat-sort-bar')!;
+    const elMacroGenres = document.getElementById('radar-macro-genres')!;
+    const elCatControls = document.getElementById('radar-cat-controls')!;
     const elSegmentContent = document.getElementById('radar-segment-content')!;
     const elStreamCalmness = document.getElementById('radar-stream-calmness')!;
     const elObservedStreamsPill = document.getElementById('radar-observed-streams-pill')!;
     const elTrollFunnel = document.getElementById('radar-troll-funnel')!;
     const elTrollSharePill = document.getElementById('radar-troll-share-pill')!;
+    const elMethodologyContent = document.getElementById('radar-methodology-content')!;
 
     let currentData: any = null;
-    let chartMode: 'intensity' | 'stacked' = 'intensity';
+    let chartMode: 'dual' | 'stacked' | 'chats' = 'dual';
     let segmentTab: 'category' | 'viewer' | 'age' | 'uptime' = 'category';
-    let catSortKey: 'mod_per_10k_chats' | 'total_chats' | 'cleanbot_pct' | 'perm_ban_pct' = 'mod_per_10k_chats';
+    let catGenreFilter: 'ALL' | 'GAME' | 'ETC' | 'ENTERTAINMENT' | 'SPORTS' | 'FOLDED' = 'ALL';
+    let catSortKey: 'total_chats' | 'mod_per_10k_chats' | 'perm_ban_pct' | 'cleanbot_pct' = 'total_chats';
     let showAllCategories = false;
 
     // ─── Formatting & Safety Helpers ──────────────────────────────────────────
@@ -310,6 +348,15 @@
       return String(iso);
     }
 
+    function fmtWindowRange(startIso: string | undefined, endIso: string | undefined, hrs: number): string {
+      const s = startIso ? /^\d{4}-(\d{2})-(\d{2})T(\d{2})/.exec(String(startIso)) : null;
+      const e = endIso ? /^\d{4}-(\d{2})-(\d{2})T(\d{2})/.exec(String(endIso)) : null;
+      if (s && e) {
+        return `${Number(s[1])}.${Number(s[2])} ${s[3]}:00 ~ ${Number(e[1])}.${Number(e[2])} ${e[3]}:59 KST (${hrs}h 완료)`;
+      }
+      return hrs > 0 ? `최근 ${hrs}시간 정각 완료 기준` : '집계 대기 중';
+    }
+
     function fmtShortHour(iso: string | undefined, hourKst: number | undefined): string {
       if (iso) {
         const m = /^\d{4}-(\d{2})-(\d{2})T(\d{2})/.exec(String(iso));
@@ -317,6 +364,18 @@
       }
       if (hourKst != null) return `${String(hourKst).padStart(2, '0')}시`;
       return '—';
+    }
+
+    function getPermBans(row: any): number {
+      if (!row) return 0;
+      if (row.perm_bans != null) return num(row.perm_bans);
+      return num(row.perm_bans_explicit) + num(row.perm_bans_inferred);
+    }
+
+    function getManualBlinds(row: any): number {
+      if (!row) return 0;
+      if (row.manual_blinds != null) return num(row.manual_blinds);
+      return num(row.manual_single_blinds);
     }
 
     function renderTrendBadge(
@@ -337,9 +396,11 @@
         cls = invertColor ? (isUp ? 'trend-warn' : 'trend-good') : (isUp ? 'trend-up' : 'trend-down');
       }
       const tip =
-        comparisonMode === 'hourly_avg'
-          ? '직전 구간 시간당 평균 대비 변화율'
-          : '직전 24시간 대비 변화율';
+        comparisonMode === 'exact_24h'
+          ? '직전 완료 24시간 대비 정확 증감률 (24h vs 24h)'
+          : comparisonMode === 'hourly_avg'
+            ? '직전 구간 시간당 평균 대비 변화율'
+            : '직전 24시간 대비 변화율';
       return `<span class="kpi-trend ${cls}" title="${tip}">24h ${arrow} ${sign}${val.toFixed(1)}%</span>`;
     }
 
@@ -353,13 +414,13 @@
       Sun: '일',
     };
 
-    const SEGMENT_LABELS: Record<string, string> = {
-      'Other': '기타',
+    const SEGMENT_FALLBACK_LABELS: Record<string, string> = {
+      Other: '기타',
       'Small (2-50)': '소규모 (2~50명)',
       'Mid (51-300)': '중규모 (51~300명)',
       'Large (301-1000)': '대규모 (301~1,000명)',
       'Huge (1001+)': '초대형 (1,001명+)',
-      'General': '일반 방송',
+      General: '일반 방송',
       'Adult_19+': '연령제한 (19금)',
       '0-30m': '초반 (0~30분)',
       '30m-2h': '본방송 (30분~2시간)',
@@ -367,23 +428,34 @@
       '5h+': '마라톤 (5시간+)',
     };
 
-    const PATTERN_LABELS: Record<string, { label: string; icon: string; color: string }> = {
-      url: { label: '링크·URL', icon: '🔗', color: '#f43f5e' },
-      flood: { label: '도배·반복', icon: '🔁', color: '#f59e0b' },
-      long_text: { label: '장문·복붙', icon: '📜', color: '#a855f7' },
-      short_text: { label: '단문', icon: '💬', color: '#38bdf8' },
-      normal: { label: '일반 채팅', icon: '🗨️', color: '#64748b' },
+    const PATTERN_META: Record<string, { fallbackLabel: string; icon: string; color: string }> = {
+      url: { fallbackLabel: '링크·URL 포함', icon: '🔗', color: '#f43f5e' },
+      flood: { fallbackLabel: '도배·반복 문자', icon: '🔁', color: '#f59e0b' },
+      long_text: { fallbackLabel: '장문·복붙 (100자+)', icon: '📜', color: '#a855f7' },
+      short_text: { fallbackLabel: '초단문·리액션 (5자 미만)', icon: '💬', color: '#38bdf8' },
+      normal: { fallbackLabel: '일반 대화 (5~100자)', icon: '🗨️', color: '#64748b' },
     };
 
-    const WEATHER_META: Record<string, { icon: string; cls: string; desc: string }> = {
-      calm: { icon: '☀️', cls: 'weather-calm', desc: '평소보다 쾌청' },
-      normal: { icon: '⛅', cls: 'weather-normal', desc: '평소 수준' },
-      elevated: { icon: '🌧️', cls: 'weather-elevated', desc: '제재 주의' },
-      surge: { icon: '⛈️', cls: 'weather-surge', desc: '제재 급증 경보' },
+    const MACRO_GENRE_STYLE: Record<string, { icon: string; color: string }> = {
+      GAME: { icon: '🎮', color: '#818cf8' },
+      ETC: { icon: '🎙️', color: '#38bdf8' },
+      ENTERTAINMENT: { icon: '🎬', color: '#c084fc' },
+      SPORTS: { icon: '⚽', color: '#10b981' },
+      UNCATEGORIZED: { icon: '📂', color: '#64748b' },
     };
 
-    function mapLabel(name: string): string {
-      return SEGMENT_LABELS[name] || name;
+    const WEATHER_META: Record<string, { icon: string; cls: string }> = {
+      calm: { icon: '☀️', cls: 'weather-calm' },
+      normal: { icon: '⛅', cls: 'weather-normal' },
+      elevated: { icon: '🌧️', cls: 'weather-elevated' },
+      surge: { icon: '⛈️', cls: 'weather-surge' },
+    };
+
+    function rowLabel(row: any): string {
+      if (!row) return '기타';
+      if (row.label_kr) return String(row.label_kr);
+      const raw = String(row.name || '기타');
+      return SEGMENT_FALLBACK_LABELS[raw] || raw;
     }
 
     function normalizeSegmentRows(raw: any): any[] {
@@ -397,57 +469,69 @@
       return [];
     }
 
-    // ─── Render Functions ─────────────────────────────────────────────────────
+    // ─── 1. Header & Weather Banner ───────────────────────────────────────────
     function renderHeader(data: any) {
       const meta = data.meta || {};
       const weather = data.weather_status || {};
       const hoursCollected = num(meta.hours_collected, 0);
-      const completedHours = meta.completed_hours != null ? num(meta.completed_hours, hoursCollected) : hoursCollected;
       const windowHours = num(meta.window_hours, 48);
 
       const level = String(weather.level || 'normal');
       const wInfo = WEATHER_META[level] || WEATHER_META.normal;
       const labelKr = weather.label_kr || '보통';
+      const recentRate = num(weather.recent_mod_per_10k);
+      const baseRate = num(weather.baseline_mod_per_10k);
       const ratio = num(weather.ratio, 1);
 
       elWeatherBadge.className = `radar-weather-badge ${wInfo.cls}`;
       elWeatherIcon.textContent = wInfo.icon;
       elWeatherLabel.textContent = `채팅 기상도: ${labelKr}`;
-      if (hoursCollected > 0 && num(weather.baseline_mod_per_10k) > 0) {
+      if (hoursCollected > 0 && baseRate > 0) {
         const surgeSuffix = num(weather.surge_hours_count) > 0 ? ` · 급증 ${fmtInt(weather.surge_hours_count)}h` : '';
-        elWeatherRatio.textContent = `48h 평균 대비 ${ratio.toFixed(2)}x${surgeSuffix}`;
+        elWeatherRatio.textContent = `최근 ${recentRate.toFixed(1)} vs 평균 ${baseRate.toFixed(1)} (${ratio.toFixed(2)}x${surgeSuffix})`;
       } else {
         elWeatherRatio.textContent = '기준선 수집 중';
       }
 
       if (hoursCollected === 0) {
         elCollectionBadge.textContent = `초기 수집 대기 (0/${windowHours}시간)`;
-      } else if (completedHours < hoursCollected) {
-        elCollectionBadge.textContent = `완료 ${completedHours}시간 + 실시간 집계 중`;
-      } else if (hoursCollected < windowHours) {
-        elCollectionBadge.textContent = `최근 ${hoursCollected}시간 누적 (${windowHours}시간 목표)`;
       } else {
-        elCollectionBadge.textContent = `최근 ${hoursCollected}시간 누적`;
+        elCollectionBadge.textContent = fmtWindowRange(meta.window_start_kst, meta.window_end_kst, hoursCollected);
       }
 
-      elUpdatedTime.textContent = `최종 업데이트: ${fmtKstTimestamp(meta.updated_at_kst)}`;
+      elUpdatedTime.textContent = `최종 갱신: ${fmtKstTimestamp(meta.updated_at_kst)}`;
+
+      // Optional live_current_hour pill (never appended to the 48h completed chart)
+      const liveHr = meta.live_current_hour;
+      if (liveHr && typeof liveHr === 'object') {
+        const hrNum = liveHr.hour_kst != null ? String(liveHr.hour_kst).padStart(2, '0') : fmtShortHour(liveHr.hour_kst_iso, undefined);
+        const elapsed = num(liveHr.elapsed_minutes);
+        elLiveHourPill.innerHTML = `
+          <span class="live-hr-dot"></span>
+          <span>실시간 ${escapeHtml(hrNum)}시 진행 중 (${fmtInt(elapsed)}분 경과) · 동시 ${fmtInt(liveHr.monitored_streams_peak)}방 · 채팅 ${fmtCompactKo(liveHr.total_chats)} · 1만당 <strong>${fmtDec(liveHr.mod_per_10k_chats, 1)}건</strong></span>
+        `;
+        elLiveHourPill.hidden = false;
+      } else {
+        elLiveHourPill.hidden = true;
+      }
 
       // Warm-up banner logic
       if (hoursCollected === 0) {
         elWarmup.hidden = false;
         elWarmupTitle.textContent = '📡 초기 48시간 제재 데이터 수집 워밍업 중입니다';
         elWarmupDesc.textContent =
-          '첫 번째 1시간 단위 집계 스냅샷을 생성하고 있습니다. 데이터가 수집되면 48시간 추이, 채팅 기상도, 카테고리·방송 규모별 비교가 자동으로 활성화됩니다.';
-      } else if (completedHours < 24 && !Boolean(data.trends_24h?.ready)) {
+          '첫 번째 60분 완료 스냅샷을 집계하고 있습니다. 정각 스냅샷이 생성되면 48시간 추이, 채팅 기상도, 카테고리 비교가 자동으로 활성화됩니다.';
+      } else if (hoursCollected < 24 && !Boolean(data.trends_24h?.ready)) {
         elWarmup.hidden = false;
-        elWarmupTitle.textContent = `📡 최근 ${hoursCollected}시간 데이터 누적 중 (48시간 창 확장 진행 중)`;
+        elWarmupTitle.textContent = `📡 최근 ${hoursCollected}시간 정각 버킷 누적 중 (48시간 창 확장 중)`;
         elWarmupDesc.textContent =
-          '아직 48시간 전체 창이 채워지기 전이라 일부 24시간 증감률(Trend)은 24시간 이상 누적 시 자동으로 표시됩니다.';
+          '정확한 24h vs 24h 비교 지표는 최소 24시간 이상의 완료 버킷이 누적되면 자동으로 표시됩니다.';
       } else {
         elWarmup.hidden = true;
       }
     }
 
+    // ─── 2. Executive KPI Cards & Highlights ──────────────────────────────────
     function renderKpis(data: any) {
       const meta = data.meta || {};
       const sum = data.summary_48h || {};
@@ -460,80 +544,74 @@
       const aiPct = num(sum.ai_cleanbot_pct);
       const humanPct = num(sum.human_mod_pct);
 
-      const funnel = data.troll_insights?.multi_channel_funnel || {};
-      const multiUsers =
-        num(funnel['2_channels']?.users) +
-        num(funnel['3_to_4_channels']?.users) +
-        num(funnel['5_plus_channels']?.users);
-      const multiPct = num(data.highlights?.multi_channel_offender_pct);
-      const autoBans = num(sum.auto_bans_triggered);
+      const observedStreams = num(sum.unique_observed_streams) || num(data.stream_calmness_48h?.total_observed_streams);
+      const multiOffenders =
+        sum.multi_channel_offenders != null
+          ? num(sum.multi_channel_offenders)
+          : num(data.troll_insights?.multi_channel_funnel?.['2_channels']?.users) +
+            num(data.troll_insights?.multi_channel_funnel?.['3_to_4_channels']?.users) +
+            num(data.troll_insights?.multi_channel_funnel?.['5_plus_channels']?.users);
+      const multiPct = num(sum.multi_channel_offender_pct ?? data.highlights?.multi_channel_offender_pct);
+      const heavy5Plus =
+        sum.heavy_raiders_5plus != null
+          ? num(sum.heavy_raiders_5plus)
+          : num(data.troll_insights?.multi_channel_funnel?.['5_plus_channels']?.users);
+
+      const mod10kDeltaTxt =
+        ready && delta.total_mod_actions != null
+          ? `총 제재 24h ${num(delta.total_mod_actions) > 0 ? '+' : ''}${fmtDec(delta.total_mod_actions, 1)}%`
+          : `대상 유저 ${fmtInt(sum.unique_moderated_users)}명`;
 
       const cards = [
         {
-          label: '모니터링 방송',
-          value: hasData ? `최대 ${fmtInt(meta.monitored_streams_peak)}개` : '—',
-          sub: hasData ? `시간당 평균 ${fmtInt(meta.monitored_streams_avg)}개 동시 관측` : '집계 대기 중',
+          label: '누적 관측 방송 (48h)',
+          value: hasData ? `${fmtInt(observedStreams)}개` : '—',
+          sub: hasData
+            ? `피크 동시 ${fmtInt(meta.monitored_streams_peak)}개 · 평균 ${fmtInt(meta.monitored_streams_avg)}개`
+            : '집계 대기 중',
           trend: '',
           accent: 'kpi-indigo',
+          rawSub: false,
         },
         {
-          label: '분석된 채팅 수',
-          value: hasData ? fmtCompactKo(sum.total_chats) : '—',
+          label: '48시간 총 채팅',
+          value: hasData ? `${fmtCompactKo(sum.total_chats)}건` : '—',
           sub: hasData
-            ? `유저 합 ${fmtCompactKo(sum.unique_chatters_hourly_sum)} · 인당 ${fmtDec(sum.avg_chats_per_chatter, 1)}건`
+            ? `클린 채팅 ${fmtDec(sum.clean_chat_rate_pct, 2)}% · 인당 ${fmtDec(sum.avg_chats_per_chatter, 1)}건`
             : '집계 대기 중',
           trend: renderTrendBadge(delta.total_chats, ready, false, compMode),
           accent: 'kpi-sky',
+          rawSub: false,
         },
         {
-          label: '정상 채팅 비율',
-          value: hasData ? `${fmtDec(sum.clean_chat_rate_pct, 2)}%` : '—',
-          sub: hasData ? `총 제재 ${fmtInt(sum.total_mod_actions)}건 발생` : '집계 대기 중',
-          trend: renderTrendBadge(delta.total_mod_actions, ready, true, compMode),
-          accent: 'kpi-emerald',
-        },
-        {
-          label: '1만 채팅당 제재 수',
-          value: hasData ? `${fmtDec(sum.mod_per_10k_chats, 1)}건` : '—',
-          sub: hasData ? `제재 대상 유저 ${fmtInt(sum.unique_moderated_users)}명` : '집계 대기 중',
+          label: '총 제재 건수',
+          value: hasData ? `${fmtInt(sum.total_mod_actions)}건` : '—',
+          sub: hasData
+            ? `채팅 1만 건당 ${fmtDec(sum.mod_per_10k_chats, 2)}건 · ${mod10kDeltaTxt}`
+            : '집계 대기 중',
           trend: renderTrendBadge(delta.mod_per_10k_chats, ready, true, compMode),
           accent: 'kpi-amber',
+          rawSub: false,
         },
         {
-          label: 'AI(클린봇) vs 매니저',
+          label: 'AI 클린봇 vs 사람 개입',
           value: hasData ? `${fmtDec(aiPct, 1)}% : ${fmtDec(humanPct, 1)}%` : '—',
           sub: hasData
-            ? `<div class="mini-split-bar"><span class="sb-ai" style="width:${Math.min(100, aiPct)}%"></span><span class="sb-human" style="width:${Math.min(100, humanPct)}%"></span></div>`
+            ? `<div class="mini-split-bar"><span class="sb-ai" style="width:${Math.min(100, aiPct)}%"></span><span class="sb-human" style="width:${Math.min(100, humanPct)}%"></span></div><span class="kpi-sub-caption">모드 변경 ${fmtInt(sum.chat_mode_changes)}회 · 조기해제 ${fmtInt(sum.timeout_early_releases)}건</span>`
             : '집계 대기 중',
           trend: renderTrendBadge(delta.cleanbot_pct, ready, false, compMode),
           accent: 'kpi-purple',
           rawSub: hasData,
         },
-        autoBans > 0
-          ? {
-              label: '자동 탐지 다중 트롤',
-              value: hasData ? `${fmtInt(autoBans)}명` : '—',
-              sub: hasData
-                ? `2+채널 제재 ${fmtInt(multiUsers)}명 (${fmtDec(multiPct, 1)}%) · 트롤 활동 ${fmtInt(sum.known_troll_actions)}건`
-                : '집계 대기 중',
-              trend: renderTrendBadge(delta.auto_bans_triggered, ready, true, compMode),
-              accent: 'kpi-rose',
-            }
-          : {
-              label: '다중 채널 제재 유저',
-              value: hasData ? `${fmtInt(multiUsers)}명` : '—',
-              sub: hasData
-                ? `제재 유저의 ${fmtDec(multiPct, 1)}% · 기존 트롤 제재 ${fmtInt(sum.known_troll_actions)}건`
-                : '집계 대기 중',
-              trend: renderTrendBadge(delta.auto_bans_triggered, ready, true, compMode),
-              accent: 'kpi-rose',
-            },
         {
-          label: '채팅 모드 변경',
-          value: hasData ? `${fmtInt(sum.chat_mode_changes)}회` : '—',
-          sub: hasData ? `임시제한 조기해제 ${fmtInt(sum.timeout_early_releases)}건` : '집계 대기 중',
-          trend: '',
-          accent: 'kpi-slate',
+          label: '다채널 상습 제재 유저',
+          value: hasData ? `${fmtInt(multiOffenders)}명` : '—',
+          sub: hasData
+            ? `전체의 ${fmtDec(multiPct, 1)}% · 5개+ 상습 분탕 ${fmtInt(heavy5Plus)}명`
+            : '집계 대기 중',
+          trend: renderTrendBadge(delta.known_troll_actions, ready, true, compMode),
+          accent: 'kpi-rose',
+          rawSub: false,
         },
       ];
 
@@ -563,7 +641,6 @@
 
       const chips: { icon: string; title: string; detail: string }[] = [];
 
-      // Peak / Calmest KST hour
       if (h.peak_mod_hour_kst != null) {
         const peakH = typeof h.peak_mod_hour_kst === 'object' ? h.peak_mod_hour_kst.hour_kst : h.peak_mod_hour_kst;
         const peakVal = typeof h.peak_mod_hour_kst === 'object' ? h.peak_mod_hour_kst.mod_per_10k_chats : null;
@@ -586,7 +663,6 @@
         chips.push({ icon: '🕒', title: '시간대 제재 강도 (1만당)', detail });
       }
 
-      // Highest intensity category
       if (h.highest_intensity_category != null) {
         const rawName =
           typeof h.highest_intensity_category === 'object'
@@ -596,7 +672,7 @@
           typeof h.highest_intensity_category === 'object'
             ? h.highest_intensity_category.mod_per_10k_chats
             : null;
-        const catName = mapLabel(String(rawName));
+        const catName = SEGMENT_FALLBACK_LABELS[String(rawName)] || String(rawName);
         chips.push({
           icon: '🔥',
           title: '제재 강도 1위 카테고리',
@@ -604,7 +680,6 @@
         });
       }
 
-      // Most perm-ban heavy category
       if (h.most_permban_heavy_category != null) {
         const rawName =
           typeof h.most_permban_heavy_category === 'object'
@@ -614,7 +689,7 @@
           typeof h.most_permban_heavy_category === 'object'
             ? h.most_permban_heavy_category.perm_ban_pct
             : null;
-        const catName = mapLabel(String(rawName));
+        const catName = SEGMENT_FALLBACK_LABELS[String(rawName)] || String(rawName);
         chips.push({
           icon: '🚫',
           title: '영구차단 비중 1위',
@@ -622,37 +697,34 @@
         });
       }
 
-      // Riskiest chat pattern OR Multi-channel offender ratio
       if (h.riskiest_chat_pattern != null) {
         const key =
           typeof h.riskiest_chat_pattern === 'object'
             ? h.riskiest_chat_pattern.pattern || h.riskiest_chat_pattern.key || h.riskiest_chat_pattern.name
             : String(h.riskiest_chat_pattern);
-        const pMeta = PATTERN_LABELS[String(key)];
         const patObj = data.troll_insights?.blinded_message_patterns?.[String(key)];
         const mult =
           (typeof h.riskiest_chat_pattern === 'object' ? h.riskiest_chat_pattern.risk_vs_normal : null) ??
           patObj?.risk_vs_normal;
-        const label = pMeta ? pMeta.label : String(key);
+        const label = patObj?.label_kr || PATTERN_META[String(key)]?.fallbackLabel || String(key);
         chips.push({
           icon: '⚠️',
-          title: '최고 위험 채팅 패턴',
-          detail: mult && num(mult) > 0 ? `${label} — 일반 대비 ${fmtDec(mult, 1)}배` : label,
+          title: '최고 위험 메시지 패턴',
+          detail: mult && num(mult) > 0 ? `${label} — 일반 대비 ${fmtDec(mult, 2)}배` : label,
         });
-      } else if (num(h.multi_channel_offender_pct) > 0) {
+      } else if (num(h.repeat_timeout_pct) > 0) {
         chips.push({
-          icon: '🕸️',
-          title: '다중 채널 중복 제재율',
-          detail: `제재 유저의 ${fmtDec(h.multi_channel_offender_pct, 1)}%가 2개 이상 채널에서 적발`,
+          icon: '🔁',
+          title: '48h 채금 재범 · 사면율',
+          detail: `재범 ${fmtDec(h.repeat_timeout_pct, 1)}% · 조기해제 사면 ${fmtDec(h.timeout_pardon_rate_pct, 1)}%`,
         });
       }
 
-      // Zero perm-ban streams
       if (num(data.stream_calmness_48h?.total_observed_streams) > 0) {
         chips.push({
           icon: '🕊️',
-          title: '영구차단 0건 평온 방송',
-          detail: `전체 관측 방송의 ${fmtDec(h.zero_perm_ban_streams_pct, 1)}%가 영구차단 0건`,
+          title: '無강퇴 청정 방송 비율',
+          detail: `전체 관측 방송의 ${fmtDec(h.zero_perm_ban_streams_pct, 2)}%가 영구차단 0건`,
         });
       }
 
@@ -678,245 +750,33 @@
         .join('');
     }
 
-    function renderActionBreakdown(data: any) {
-      const ab = data.action_breakdown || {};
-      const trends = data.trends_24h || {};
-      const permTotal = ab.perm_bans_total || { count: 0, pct: 0 };
-      const permDelta = renderTrendBadge(
-        trends.delta_pct?.perm_bans_total,
-        Boolean(trends.ready),
-        true,
-        String(trends.comparison_mode || '')
-      );
-      elPermbanPill.innerHTML = `영구차단 ${fmtInt(permTotal.count)}건 (${fmtDec(permTotal.pct, 2)}%) ${permDelta}`;
-
-      const items = [
-        { key: 'cleanbot_blinds', label: '클린봇 블라인드', color: '#818cf8', data: ab.cleanbot_blinds },
-        { key: 'manual_single_blinds', label: '단기 블라인드 (매니저)', color: '#38bdf8', data: ab.manual_single_blinds },
-        { key: 'timeouts', label: '임시제한 (채팅금지)', color: '#f59e0b', data: ab.timeouts },
-        { key: 'perm_bans_inferred', label: '영구차단 (다중 블라인드 추정)', color: '#ec4899', data: ab.perm_bans_inferred },
-        { key: 'perm_bans_explicit', label: '영구차단 (명시 패킷)', color: '#ef4444', data: ab.perm_bans_explicit },
-      ];
-
-      const totalCount = items.reduce((acc, it) => acc + num(it.data?.count), 0);
-      const r = 46;
-      const circ = 2 * Math.PI * r;
-      let offset = 0;
-
-      const slices =
-        totalCount > 0
-          ? items
-              .map((it) => {
-                const cnt = num(it.data?.count);
-                const frac = cnt / totalCount;
-                const dash = frac * circ;
-                const seg = `<circle cx="60" cy="60" r="${r}" fill="none" stroke="${it.color}" stroke-width="14" stroke-dasharray="${dash.toFixed(2)} ${(circ - dash).toFixed(2)}" stroke-dashoffset="${(-offset).toFixed(2)}" transform="rotate(-90 60 60)" />`;
-                offset += dash;
-                return seg;
-              })
-              .join('')
-          : `<circle cx="60" cy="60" r="${r}" fill="none" stroke="#1e293b" stroke-width="14" />`;
-
-      elActionBreakdown.innerHTML = `
-        <div class="donut-wrap">
-          <svg viewBox="0 0 120 120" class="donut-svg" aria-label="제재 유형 비율 차트">
-            ${slices}
-            <text x="60" y="56" text-anchor="middle" fill="#94a3b8" font-size="9" font-weight="700">총 제재</text>
-            <text x="60" y="72" text-anchor="middle" fill="#f8fafc" font-size="14" font-weight="800" font-family="monospace">${totalCount > 0 ? fmtCompactKo(totalCount) : '0'}</text>
-          </svg>
-        </div>
-        <div class="donut-legend">
-          ${items
-            .map((it) => {
-              const cnt = num(it.data?.count);
-              const pct = num(it.data?.pct);
-              return `
-                <div class="legend-row">
-                  <div class="legend-meta">
-                    <span class="leg-dot" style="background:${it.color}"></span>
-                    <span class="leg-name">${escapeHtml(it.label)}</span>
-                    <span class="leg-val">${fmtInt(cnt)}건 <small>(${fmtDec(pct, 1)}%)</small></span>
-                  </div>
-                  <div class="leg-bar-track">
-                    <div class="leg-bar-fill" style="width:${Math.min(100, pct)}%; background:${it.color}"></div>
-                  </div>
-                </div>
-              `;
-            })
-            .join('')}
-        </div>
-      `;
-    }
-
-    function renderTimeoutInsights(data: any) {
-      const ti = data.timeout_insights || {};
-      const total = num(ti.total);
-      const uniqueUsers = num(ti.unique_timed_out_users);
-      elTimeoutAvgPill.textContent = total > 0 ? `평균 ${fmtDuration(ti.avg_duration_seconds)}` : '평균 —';
-
-      const buckets = ti.duration_buckets || {};
-      const sBucket = buckets.short_le_60s || { count: 0, pct: 0 };
-      const mBucket = buckets.medium_61_to_600s || { count: 0, pct: 0 };
-      const lBucket = buckets.long_gt_600s || { count: 0, pct: 0 };
-
-      const repeat = ti.offense_repeat || {};
-      const firstW = repeat.first_warning || { count: 0, pct: 0 };
-      const repO = repeat.repeat_offender || { count: 0, pct: 0 };
-
-      elTimeoutInsights.innerHTML = `
-        <div class="timeout-mini-grid">
-          <div class="tmini-box">
-            <span class="tmini-lbl">총 임시제한</span>
-            <strong>${total > 0 ? `${fmtInt(total)}건` : '—'}</strong>
-            <small>${uniqueUsers > 0 ? `대상 유저 ${fmtInt(uniqueUsers)}명` : total > 0 ? '누적 건수' : '대기 중'}</small>
-          </div>
-          <div class="tmini-box">
-            <span class="tmini-lbl">사면율 (조기해제)</span>
-            <strong class="c-emerald">${total > 0 ? `${fmtDec(ti.pardon_rate_pct, 1)}%` : '—'}</strong>
-            <small>${total > 0 ? `${fmtInt(ti.early_releases)}건 해제` : '대기 중'}</small>
-          </div>
-          <div class="tmini-box">
-            <span class="tmini-lbl">영구차단 전환율</span>
-            <strong class="c-rose">${total > 0 ? `${fmtDec(ti.escalated_to_perm_ban_pct, 2)}%` : '—'}</strong>
-            <small>${total > 0 ? `${fmtInt(ti.escalated_to_perm_ban_users)}명 전환` : '대기 중'}</small>
-          </div>
-        </div>
-
-        <div class="dist-block">
-          <div class="dist-head">
-            <span>임시제한 기간 분포</span>
-            <small>1분 이하 · 1~10분 · 10분 초과</small>
-          </div>
-          <div class="stacked-bar">
-            <span style="width:${num(sBucket.pct)}%; background:#38bdf8" title="1분 이하: ${fmtDec(sBucket.pct, 1)}%"></span>
-            <span style="width:${num(mBucket.pct)}%; background:#f59e0b" title="1~10분: ${fmtDec(mBucket.pct, 1)}%"></span>
-            <span style="width:${num(lBucket.pct)}%; background:#ef4444" title="10분 초과: ${fmtDec(lBucket.pct, 1)}%"></span>
-          </div>
-          <div class="dist-legend-inline">
-            <span><i style="background:#38bdf8"></i>1분 이하 <b>${fmtDec(sBucket.pct, 1)}%</b></span>
-            <span><i style="background:#f59e0b"></i>1~10분 <b>${fmtDec(mBucket.pct, 1)}%</b></span>
-            <span><i style="background:#ef4444"></i>10분 초과 <b>${fmtDec(lBucket.pct, 1)}%</b></span>
-          </div>
-        </div>
-
-        <div class="dist-block">
-          <div class="dist-head">
-            <span>첫 경고 vs 재범 비율</span>
-            <small>${total > 0 ? `${fmtInt(firstW.count)} vs ${fmtInt(repO.count)}` : '—'}</small>
-          </div>
-          <div class="stacked-bar">
-            <span style="width:${num(firstW.pct)}%; background:#10b981"></span>
-            <span style="width:${num(repO.pct)}%; background:#ec4899"></span>
-          </div>
-          <div class="dist-legend-inline">
-            <span><i style="background:#10b981"></i>첫 경고 <b>${fmtDec(firstW.pct, 1)}%</b></span>
-            <span><i style="background:#ec4899"></i>재범 <b>${fmtDec(repO.pct, 1)}%</b></span>
-          </div>
-        </div>
-      `;
-    }
-
-    function renderPatternInsights(data: any) {
-      const mp = data.troll_insights?.blinded_message_patterns || {};
-      const totalMatched = num(mp.total_matched);
-      const totalClassified = num(mp.total_chats_classified);
-      const fallbackToAllChats = totalMatched === 0 && totalClassified > 0;
-
-      elPatternTotalPill.textContent =
-        totalMatched > 0
-          ? `수동 블라인드 매칭 ${fmtInt(totalMatched)}건`
-          : totalClassified > 0
-            ? `전체 분류 ${fmtCompactKo(totalClassified)}건`
-            : '분류 0건';
-
-      const keys: Array<'url' | 'flood' | 'long_text' | 'short_text' | 'normal'> = [
-        'url',
-        'flood',
-        'long_text',
-        'short_text',
-        'normal',
-      ];
-
-      const scopeBanner = fallbackToAllChats
-        ? `<div class="pattern-scope-note">수동 블라인드 원문 매칭 누적 대기 중 · 현재 전체 채팅 패턴 분포 표시</div>`
-        : mp.scope === 'human_moderated_blinds'
-          ? `<div class="pattern-scope-note">매니저 수동 블라인드 원문 기준 위험 배수</div>`
-          : '';
-
-      elPatternInsights.innerHTML =
-        scopeBanner +
-        keys
-          .map((k) => {
-            const meta = PATTERN_LABELS[k];
-            const row = mp[k] || { count: 0, pct: 0, all_chat_count: 0, all_chat_pct: 0, risk_vs_normal: 0 };
-            if (fallbackToAllChats) {
-              const chatPct = num(row.all_chat_pct);
-              return `
-                <div class="pattern-row">
-                  <div class="pattern-top">
-                    <span class="pat-name">${meta.icon} ${escapeHtml(meta.label)}</span>
-                    <div class="pat-right">
-                      <span class="pat-pct">${fmtDec(chatPct, 2)}%</span>
-                      <span class="risk-badge risk-base">${fmtCompactKo(row.all_chat_count)}건</span>
-                    </div>
-                  </div>
-                  <div class="leg-bar-track">
-                    <div class="leg-bar-fill" style="width:${Math.min(100, chatPct)}%; background:${meta.color}"></div>
-                  </div>
-                </div>
-              `;
-            }
-
-            const risk = num(row.risk_vs_normal);
-            const riskCls = risk >= 3 ? 'risk-high' : risk >= 1.5 ? 'risk-med' : 'risk-base';
-            const riskLabel =
-              k === 'normal'
-                ? '기준 (1.0배)'
-                : totalMatched > 0 && risk > 0
-                  ? `${fmtDec(risk, 1)}배 위험`
-                  : '—';
-            return `
-              <div class="pattern-row">
-                <div class="pattern-top">
-                  <span class="pat-name">${meta.icon} ${escapeHtml(meta.label)}</span>
-                  <div class="pat-right">
-                    <span class="pat-pct">${fmtDec(row.pct, 1)}%</span>
-                    <span class="risk-badge ${riskCls}">${riskLabel}</span>
-                  </div>
-                </div>
-                <div class="leg-bar-track">
-                  <div class="leg-bar-fill" style="width:${Math.min(100, num(row.pct))}%; background:${meta.color}"></div>
-                </div>
-                <div class="pattern-foot">
-                  <span>블라인드 ${fmtInt(row.count)}건</span>
-                  <span>전체 채팅 비중 ${fmtDec(row.all_chat_pct, 2)}%</span>
-                </div>
-              </div>
-            `;
-          })
-          .join('');
-    }
-
+    // ─── 3. 48-Hour Timeline & Time-of-Day Profile ────────────────────────────
     function renderTimeline(data: any) {
-      const series = Array.isArray(data.hourly_series) ? data.hourly_series : [];
+      // Strictly completed 48h buckets only
+      const rawSeries = Array.isArray(data.hourly_series) ? data.hourly_series : [];
+      const series = data.meta?.completed_hours_only
+        ? rawSeries
+        : rawSeries.filter((pt: any) => !pt.is_partial);
       const baseline = num(data.weather_status?.baseline_mod_per_10k);
-      const hasPartial = series.some((pt: any) => Boolean(pt.is_partial));
-      const partialLeg = hasPartial ? `<span><i class="partial-i"></i>집계 진행 중 (현재 시간)</span>` : '';
 
-      if (chartMode === 'intensity') {
+      if (chartMode === 'dual') {
         elTimelineLegend.innerHTML = `
-          <span><i style="background:#818cf8"></i>일반 시간대 (1만 채팅당 제재 수)</span>
+          <span><i style="background:#818cf8"></i>1만 채팅당 제재 수 (좌측 축)</span>
           <span><i style="background:#ef4444"></i>⚡ 급증 구간 (Surge)</span>
+          <span><i class="line-i"></i>시간당 총 채팅량 추이 (우측 축)</span>
           <span><i class="dash-i"></i>48h 평균 기준선 (${fmtDec(baseline, 1)}건)</span>
-          ${partialLeg}
+        `;
+      } else if (chartMode === 'stacked') {
+        elTimelineLegend.innerHTML = `
+          <span><i style="background:#818cf8"></i>클린봇 자동 블라인드</span>
+          <span><i style="background:#38bdf8"></i>매니저 수동 블라인드</span>
+          <span><i style="background:#f59e0b"></i>임시제한 (채금)</span>
+          <span><i style="background:#ef4444"></i>영구차단 (강퇴)</span>
         `;
       } else {
         elTimelineLegend.innerHTML = `
-          <span><i style="background:#818cf8"></i>클린봇</span>
-          <span><i style="background:#38bdf8"></i>단기 블라인드</span>
-          <span><i style="background:#f59e0b"></i>임시제한</span>
-          <span><i style="background:#ef4444"></i>영구차단</span>
-          ${partialLeg}
+          <span><i style="background:#38bdf8"></i>시간당 총 채팅량 (완료 60분 기준)</span>
+          <span><i style="background:#ef4444"></i>⚡ 제재 급증 동반 시간대</span>
         `;
       }
 
@@ -924,73 +784,85 @@
         elTimelineChart.innerHTML = `
           <div class="empty-chart-box">
             <span class="empty-ico">📊</span>
-            <strong>아직 표시할 시간별 시계열 데이터가 없습니다</strong>
-            <p>1시간 단위 스냅샷이 누적되면 최근 48시간 제재 추이와 급증 구간이 인터랙티브 차트로 표시됩니다.</p>
+            <strong>아직 표시할 정각 완료 시계열 데이터가 없습니다</strong>
+            <p>60분 완료 스냅샷이 누적되면 최근 48시간 추이와 급증 구간이 인터랙티브 차트로 표시됩니다.</p>
           </div>
         `;
         return;
       }
 
       const W = 960;
-      const H = 220;
-      const padL = 44;
-      const padR = 14;
+      const H = 228;
+      const padL = 46;
+      const padR = chartMode === 'dual' ? 50 : 16;
       const padT = 18;
       const padB = 30;
       const plotW = W - padL - padR;
       const plotH = H - padT - padB;
 
-      const values = series.map((pt: any) =>
-        chartMode === 'intensity'
-          ? num(pt.mod_per_10k_chats)
-          : num(pt.cleanbot_blinds) +
-            num(pt.manual_single_blinds) +
-            num(pt.timeouts) +
-            num(pt.perm_bans_explicit) +
-            num(pt.perm_bans_inferred)
-      );
-      const maxVal = Math.max(1, ...values, chartMode === 'intensity' ? baseline * 1.15 : 0);
+      const primaryValues = series.map((pt: any) => {
+        if (chartMode === 'dual') return num(pt.mod_per_10k_chats);
+        if (chartMode === 'chats') return num(pt.total_chats);
+        return num(pt.cleanbot_blinds) + getManualBlinds(pt) + num(pt.timeouts) + getPermBans(pt);
+      });
+      const maxVal = Math.max(1, ...primaryValues, chartMode === 'dual' ? baseline * 1.15 : 0);
 
-      // Horizontal grid lines (4 steps)
+      const chatValues = series.map((pt: any) => num(pt.total_chats));
+      const maxChatVal = Math.max(1, ...chatValues);
+
+      // Left Y-axis & grid lines
       const yTicks = [0, 0.33, 0.66, 1].map((f) => {
         const y = padT + plotH * (1 - f);
         const val = maxVal * f;
+        const rightLabel =
+          chartMode === 'dual'
+            ? `<text x="${W - padR + 6}" y="${(y + 3.5).toFixed(1)}" text-anchor="start" fill="#38bdf8" opacity="0.8" font-size="9.5" font-family="monospace">${fmtCompactKo(maxChatVal * f)}</text>`
+            : '';
         return `
           <line x1="${padL}" y1="${y.toFixed(1)}" x2="${W - padR}" y2="${y.toFixed(1)}" stroke="rgba(148,163,184,0.12)" stroke-width="1" />
-          <text x="${padL - 8}" y="${(y + 3.5).toFixed(1)}" text-anchor="end" fill="#64748b" font-size="10" font-family="monospace">${chartMode === 'intensity' ? val.toFixed(0) : fmtCompactKo(val)}</text>
+          <text x="${padL - 8}" y="${(y + 3.5).toFixed(1)}" text-anchor="end" fill="#64748b" font-size="10" font-family="monospace">${chartMode === 'dual' ? val.toFixed(0) : fmtCompactKo(val)}</text>
+          ${rightLabel}
         `;
       });
 
       const slotW = plotW / Math.max(1, series.length);
-      const barW = Math.max(4, Math.min(18, slotW * 0.68));
+      const barW = Math.max(4, Math.min(16, slotW * 0.66));
       const labelStep = Math.max(1, Math.ceil(series.length / 8));
+
+      const chatPoints: string[] = [];
 
       const barsHtml = series
         .map((pt: any, idx: number) => {
           const cx = padL + idx * slotW + slotW / 2;
           const x = cx - barW / 2;
           const isSurge = Boolean(pt.is_surge);
-          const isPartial = Boolean(pt.is_partial);
           let barSvg = '';
 
-          if (chartMode === 'intensity') {
+          if (chartMode === 'dual') {
             const v = num(pt.mod_per_10k_chats);
             const h = (v / maxVal) * plotH;
             const y = padT + plotH - h;
             const fill = isSurge ? '#ef4444' : '#818cf8';
-            const partialAttrs = isPartial
-              ? `stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="3 2" opacity="0.45"`
-              : `opacity="${isSurge ? '0.95' : '0.85'}"`;
             barSvg = `
-              <rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(1.5, h).toFixed(1)}" rx="2.5" fill="${fill}" ${partialAttrs} />
+              <rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(1.5, h).toFixed(1)}" rx="2.5" fill="${fill}" opacity="${isSurge ? '0.94' : '0.78'}" />
               ${isSurge ? `<circle cx="${cx.toFixed(1)}" cy="${Math.max(8, y - 6).toFixed(1)}" r="3" fill="#fbbf24" />` : ''}
+            `;
+            const cyChat = padT + plotH - (num(pt.total_chats) / maxChatVal) * plotH;
+            chatPoints.push(`${cx.toFixed(1)},${cyChat.toFixed(1)}`);
+          } else if (chartMode === 'chats') {
+            const v = num(pt.total_chats);
+            const h = (v / maxVal) * plotH;
+            const y = padT + plotH - h;
+            const fill = isSurge ? '#f43f5e' : '#38bdf8';
+            barSvg = `
+              <rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(1.5, h).toFixed(1)}" rx="2.5" fill="${fill}" opacity="0.86" />
             `;
           } else {
             const segs = [
               { val: num(pt.cleanbot_blinds), color: '#818cf8' },
-              { val: num(pt.manual_single_blinds), color: '#38bdf8' },
+              { val: getManualBlinds(pt), color: '#38bdf8' },
               { val: num(pt.timeouts), color: '#f59e0b' },
-              { val: num(pt.perm_bans_explicit) + num(pt.perm_bans_inferred), color: '#ef4444' },
+              { val: getPermBans(pt), color: '#ef4444' },
             ];
             let curY = padT + plotH;
             barSvg = segs
@@ -998,7 +870,7 @@
                 if (s.val <= 0) return '';
                 const h = (s.val / maxVal) * plotH;
                 curY -= h;
-                return `<rect x="${x.toFixed(1)}" y="${curY.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(1, h).toFixed(1)}" fill="${s.color}" opacity="${isPartial ? '0.45' : '0.92'}" />`;
+                return `<rect x="${x.toFixed(1)}" y="${curY.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(1, h).toFixed(1)}" fill="${s.color}" opacity="0.92" />`;
               })
               .join('');
           }
@@ -1019,16 +891,24 @@
         })
         .join('');
 
+      let overlayChatLine = '';
+      if (chartMode === 'dual' && chatPoints.length > 1) {
+        overlayChatLine = `
+          <polyline points="${chatPoints.join(' ')}" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" pointer-events="none" opacity="0.92" />
+        `;
+      }
+
       let baselineLine = '';
-      if (chartMode === 'intensity' && baseline > 0) {
+      if (chartMode === 'dual' && baseline > 0) {
         const by = padT + plotH - (baseline / maxVal) * plotH;
-        baselineLine = `<line x1="${padL}" y1="${by.toFixed(1)}" x2="${W - padR}" y2="${by.toFixed(1)}" stroke="#fbbf24" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.8" />`;
+        baselineLine = `<line x1="${padL}" y1="${by.toFixed(1)}" x2="${W - padR}" y2="${by.toFixed(1)}" stroke="#fbbf24" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.82" pointer-events="none" />`;
       }
 
       elTimelineChart.innerHTML = `
-        <svg viewBox="0 0 ${W} ${H}" class="timeline-svg" role="img" aria-label="48시간 시간별 제재 추이 차트">
+        <svg viewBox="0 0 ${W} ${H}" class="timeline-svg" role="img" aria-label="48시간 시간별 제재 및 채팅 추이 차트">
           ${yTicks.join('')}
           ${barsHtml}
+          ${overlayChatLine}
           ${baselineLine}
         </svg>
       `;
@@ -1041,33 +921,28 @@
         if (!pt) return;
 
         const showTip = (ev: MouseEvent) => {
-          const permCount = num(pt.perm_bans_explicit) + num(pt.perm_bans_inferred);
+          const permCount = getPermBans(pt);
+          const manualCount = getManualBlinds(pt);
           const dowLabel = pt.day_of_week ? `${DOW_KR[pt.day_of_week] || pt.day_of_week}요일` : '';
           elTooltip.innerHTML = `
             <div class="tt-head">
               <strong>${escapeHtml(fmtShortHour(pt.hour_kst_iso, pt.hour_kst))} ${dowLabel ? `(${escapeHtml(dowLabel)})` : ''}</strong>
-              ${
-                pt.is_partial
-                  ? `<span class="tt-partial">⏳ 집계 중</span>`
-                  : pt.is_surge
-                    ? `<span class="tt-surge">⚡ 급증 ${fmtDec(pt.surge_ratio, 2)}x</span>`
-                    : ''
-              }
+              ${pt.is_surge ? `<span class="tt-surge">⚡ 급증 ${fmtDec(pt.surge_ratio, 2)}x</span>` : ''}
             </div>
             <div class="tt-grid">
-              <span>1만당 제재</span><b>${fmtDec(pt.mod_per_10k_chats, 1)}건</b>
-              <span>총 채팅 / 방송</span><b>${fmtCompactKo(pt.total_chats)} / ${fmtInt(pt.monitored_streams_avg)}개</b>
-              <span>클린봇 / 단기</span><b>${fmtInt(pt.cleanbot_blinds)} / ${fmtInt(pt.manual_single_blinds)}</b>
-              <span>임시제한 / 영차</span><b>${fmtInt(pt.timeouts)} / ${fmtInt(permCount)}</b>
-              <span>모드변경 / 트롤</span><b>${fmtInt(pt.chat_mode_changes)}회 / ${fmtInt(pt.known_troll_actions)}건</b>
+              <span>1만당 제재 (총계)</span><b>${fmtDec(pt.mod_per_10k_chats, 1)}건 (${fmtInt(pt.total_mod_actions)})</b>
+              <span>총 채팅 / 유저</span><b>${fmtCompactKo(pt.total_chats)} / ${fmtCompactKo(pt.unique_chatters)}명</b>
+              <span>동시 방송 (평균/피크)</span><b>${fmtInt(pt.monitored_streams_avg)} / ${fmtInt(pt.monitored_streams_peak)}개</b>
+              <span>클린봇 / 수동 블라인드</span><b>${fmtInt(pt.cleanbot_blinds)} / ${fmtInt(manualCount)}</b>
+              <span>임시제한 / 영구차단</span><b>${fmtInt(pt.timeouts)} / ${fmtInt(permCount)}</b>
             </div>
           `;
           elTooltip.hidden = false;
           const panelRect = elTimelineChart.closest('.radar-timeline-panel')!.getBoundingClientRect();
           const relX = ev.clientX - panelRect.left;
           const relY = ev.clientY - panelRect.top;
-          const leftPos = Math.min(panelRect.width - 230, Math.max(12, relX + 14));
-          const topPos = Math.max(12, relY - 125);
+          const leftPos = Math.min(panelRect.width - 252, Math.max(12, relX + 14));
+          const topPos = Math.max(12, relY - 135);
           elTooltip.style.left = `${leftPos}px`;
           elTooltip.style.top = `${topPos}px`;
         };
@@ -1098,20 +973,20 @@
             <div class="tod-zone-card">
               <div class="tz-top">
                 <span class="tz-label">${zoneIcons[z.zone] || '⏱️'} ${escapeHtml(z.label_kr || z.zone)}</span>
-                <strong class="tz-rate">${sampled > 0 ? `${fmtDec(rate, 1)}건` : '—'}</strong>
+                <strong class="tz-rate">${sampled > 0 ? `1만당 ${fmtDec(rate, 1)}건` : '—'}</strong>
               </div>
               <div class="leg-bar-track"><div class="leg-bar-fill" style="width:${barW}%; background:linear-gradient(90deg,#6366f1,#38bdf8)"></div></div>
               <div class="tz-meta">
                 <span>채팅 ${sampled > 0 ? fmtCompactKo(z.total_chats) : '—'}</span>
-                <span>AI ${sampled > 0 ? `${fmtDec(z.cleanbot_pct, 0)}%` : '—'}</span>
-                <span>영차 ${sampled > 0 ? `${fmtDec(z.perm_ban_pct, 1)}%` : '—'}</span>
+                <span>제재 ${sampled > 0 ? fmtCompactKo(z.total_mod_actions) : '—'}</span>
+                <span>클린봇 ${sampled > 0 ? `${fmtDec(z.cleanbot_pct, 1)}%` : '—'}</span>
+                <span>강퇴 ${sampled > 0 ? `${fmtDec(z.perm_ban_pct, 2)}%` : '—'}</span>
               </div>
             </div>
           `;
         })
         .join('');
 
-      // 24-hour KST heatmap/bars
       const hoursRaw = Array.isArray(data.by_hour_kst) ? data.by_hour_kst : [];
       const hourMap = new Map<number, any>();
       hoursRaw.forEach((h: any) => hourMap.set(num(h.hour_kst), h));
@@ -1127,16 +1002,16 @@
         const col =
           sampled === 0
             ? '#1e293b'
-            : intensity >= 0.8
+            : intensity >= 0.82
               ? '#ef4444'
-              : intensity >= 0.55
+              : intensity >= 0.62
                 ? '#f59e0b'
-                : intensity >= 0.3
+                : intensity >= 0.38
                   ? '#818cf8'
                   : '#38bdf8';
         const tip =
           sampled > 0
-            ? `${String(hr).padStart(2, '0')}시 KST · 1만당 ${fmtDec(rate, 1)}건 · 채팅 ${fmtCompactKo(row.total_chats)} · AI ${fmtDec(row.cleanbot_pct, 0)}%`
+            ? `${String(hr).padStart(2, '0')}시 KST · 1만당 ${fmtDec(rate, 1)}건 · 채팅 ${fmtCompactKo(row.total_chats)} · 클린봇 ${fmtDec(row.cleanbot_pct, 1)}% · 강퇴 ${fmtDec(row.perm_ban_pct, 2)}%`
             : `${String(hr).padStart(2, '0')}시 KST · 수집 대기`;
 
         cells.push(`
@@ -1151,100 +1026,166 @@
       elHour24Heatmap.innerHTML = cells.join('');
     }
 
-    function renderSegments(data: any) {
-      elCatSortBar.hidden = segmentTab !== 'category';
+    // ─── 4. Action Breakdown, Timeout Insights & Stream Calmness ──────────────
+    function renderActionBreakdown(data: any) {
+      const ab = data.action_breakdown || {};
+      const trends = data.trends_24h || {};
+      const permObj = ab.perm_bans || ab.perm_bans_total || { count: 0, pct: 0 };
+      const permDeltaVal = trends.delta_pct?.perm_bans ?? trends.delta_pct?.perm_bans_total;
+      const permDelta = renderTrendBadge(
+        permDeltaVal,
+        Boolean(trends.ready),
+        true,
+        String(trends.comparison_mode || '')
+      );
+      elPermbanPill.innerHTML = `영구차단 ${fmtInt(permObj.count)}건 (${fmtDec(permObj.pct, 2)}%) ${permDelta}`;
 
-      let rows: any[] = [];
-      if (segmentTab === 'category') {
-        rows = Array.isArray(data.by_category_48h) ? [...data.by_category_48h] : [];
-        rows.sort((a, b) => num(b[catSortKey]) - num(a[catSortKey]));
-      } else if (segmentTab === 'viewer') {
-        rows = normalizeSegmentRows(data.by_segment_48h?.viewer_brackets);
-      } else if (segmentTab === 'age') {
-        rows = normalizeSegmentRows(data.by_segment_48h?.age_rating);
-      } else if (segmentTab === 'uptime') {
-        rows = normalizeSegmentRows(data.by_segment_48h?.stream_uptime);
-      }
+      const manualObj = ab.manual_blinds || ab.manual_single_blinds || { count: 0, pct: 0 };
 
-      const hasAnyActivity = rows.some((r) => num(r.total_chats) > 0 || num(r.active_streams) > 0);
-      if (rows.length === 0) {
-        elSegmentContent.innerHTML = `
-          <div class="empty-inline-msg">
-            아직 집계된 ${segmentTab === 'category' ? '카테고리' : '세그먼트'} 데이터가 없습니다. 시간별 데이터가 수집되면 자동으로 비교 표가 표시됩니다.
-          </div>
-        `;
-        return;
-      }
+      const items = [
+        {
+          key: 'cleanbot_blinds',
+          label: ab.cleanbot_blinds?.label_kr || '클린봇 자동 블라인드',
+          color: '#818cf8',
+          data: ab.cleanbot_blinds,
+        },
+        {
+          key: 'manual_blinds',
+          label: manualObj?.label_kr || '매니저 수동 블라인드',
+          color: '#38bdf8',
+          data: manualObj,
+        },
+        {
+          key: 'timeouts',
+          label: ab.timeouts?.label_kr || '임시제한 (채팅 금지)',
+          color: '#f59e0b',
+          data: ab.timeouts,
+        },
+        {
+          key: 'perm_bans',
+          label: permObj?.label_kr || '영구차단 (강퇴)',
+          color: '#ef4444',
+          data: permObj,
+        },
+      ];
 
-      const limit = segmentTab === 'category' && !showAllCategories ? 10 : rows.length;
-      const visible = rows.slice(0, limit);
-      const metricKey = segmentTab === 'category' ? catSortKey : 'mod_per_10k_chats';
-      const maxMetric = Math.max(1, ...visible.map((r) => num(r[metricKey])));
+      const totalCount = items.reduce((acc, it) => acc + num(it.data?.count), 0);
+      const r = 46;
+      const circ = 2 * Math.PI * r;
+      let offset = 0;
 
-      const tableRows = visible
-        .map((r) => {
-          const val = num(r[metricKey]);
-          const barW = hasAnyActivity ? Math.min(100, (val / maxMetric) * 100) : 0;
-          const displayName = mapLabel(String(r.name || '기타'));
-          const catBadge =
-            segmentTab === 'category' && r.category_type
-              ? `<span class="cat-type-chip">${r.category_type === 'GAME' ? '게임' : '토크·기타'}</span>`
-              : '';
-          const aiPct = num(r.cleanbot_pct);
-          const humanPct = num(r.human_mod_pct);
-          return `
-            <tr>
-              <td class="col-name">
-                <div class="seg-name-wrap">
-                  <div class="seg-title-line"><strong>${escapeHtml(displayName)}</strong>${catBadge}</div>
-                  <div class="seg-inline-bar"><span style="width:${barW}%"></span></div>
-                </div>
-              </td>
-              <td class="num-col">${fmtInt(r.active_streams)}개</td>
-              <td class="num-col">${fmtCompactKo(r.total_chats)}</td>
-              <td class="num-col highlight-col">${fmtDec(r.mod_per_10k_chats, 1)}건</td>
-              <td class="num-col">${fmtDec(aiPct, 0)}% / ${fmtDec(humanPct, 0)}%</td>
-              <td class="num-col c-rose-text">${fmtDec(r.perm_ban_pct, 2)}%</td>
-              <td class="num-col">${fmtDec(r.known_troll_share_pct, 2)}%</td>
-            </tr>
-          `;
-        })
-        .join('');
+      const slices =
+        totalCount > 0
+          ? items
+              .map((it) => {
+                const cnt = num(it.data?.count);
+                const frac = cnt / totalCount;
+                const dash = frac * circ;
+                const seg = `<circle cx="60" cy="60" r="${r}" fill="none" stroke="${it.color}" stroke-width="14" stroke-dasharray="${dash.toFixed(2)} ${(circ - dash).toFixed(2)}" stroke-dashoffset="${(-offset).toFixed(2)}" transform="rotate(-90 60 60)" />`;
+                offset += dash;
+                return seg;
+              })
+              .join('')
+          : `<circle cx="60" cy="60" r="${r}" fill="none" stroke="#1e293b" stroke-width="14" />`;
 
-      const expandBtn =
-        segmentTab === 'category' && rows.length > 10
-          ? `<div class="expand-row-wrap"><button type="button" class="expand-cat-btn" id="radar-expand-cat-btn">${
-              showAllCategories ? '상위 10개만 보기 ▲' : `전체 ${rows.length}개 카테고리 펼치기 ▼`
-            }</button></div>`
-          : '';
-
-      elSegmentContent.innerHTML = `
-        <div class="seg-table-scroll">
-          <table class="radar-table">
-            <thead>
-              <tr>
-                <th>구분</th>
-                <th class="num-col">관측 방송</th>
-                <th class="num-col">채팅 수</th>
-                <th class="num-col">1만당 제재</th>
-                <th class="num-col">AI / 매니저</th>
-                <th class="num-col">영구차단 %</th>
-                <th class="num-col">트롤 비중</th>
-              </tr>
-            </thead>
-            <tbody>${tableRows}</tbody>
-          </table>
+      elActionBreakdown.innerHTML = `
+        <div class="donut-wrap">
+          <svg viewBox="0 0 120 120" class="donut-svg" aria-label="4종 제재 유형 비율 도넛 차트">
+            ${slices}
+            <text x="60" y="55" text-anchor="middle" fill="#94a3b8" font-size="8.5" font-weight="700">총 제재 건수</text>
+            <text x="60" y="71" text-anchor="middle" fill="#f8fafc" font-size="13.5" font-weight="800" font-family="monospace">${totalCount > 0 ? fmtCompactKo(totalCount) : '0'}</text>
+          </svg>
         </div>
-        ${expandBtn}
+        <div class="donut-legend">
+          ${items
+            .map((it) => {
+              const cnt = num(it.data?.count);
+              const pct = num(it.data?.pct);
+              const pctStr = pct > 0 && pct < 1 ? fmtDec(pct, 2) : fmtDec(pct, 1);
+              return `
+                <div class="legend-row">
+                  <div class="legend-meta">
+                    <span class="leg-dot" style="background:${it.color}"></span>
+                    <span class="leg-name">${escapeHtml(it.label)}</span>
+                    <span class="leg-val">${fmtInt(cnt)}건 <small>(${pctStr}%)</small></span>
+                  </div>
+                  <div class="leg-bar-track">
+                    <div class="leg-bar-fill" style="width:${Math.min(100, Math.max(pct > 0 ? 1.5 : 0, pct))}%; background:${it.color}"></div>
+                  </div>
+                </div>
+              `;
+            })
+            .join('')}
+        </div>
       `;
+    }
 
-      const expBtn = document.getElementById('radar-expand-cat-btn');
-      if (expBtn) {
-        expBtn.addEventListener('click', () => {
-          showAllCategories = !showAllCategories;
-          renderSegments(currentData);
-        });
-      }
+    function renderTimeoutInsights(data: any) {
+      const ti = data.timeout_insights || {};
+      const total = num(ti.total);
+      const uniqueUsers = num(ti.unique_timed_out_users);
+      elTimeoutAvgPill.textContent = total > 0 ? `평균 ${fmtDuration(ti.avg_duration_seconds)}` : '평균 —';
+
+      const buckets = ti.duration_buckets || {};
+      const sBucket = buckets.short_le_60s || { label_kr: '단기 (1분 이하)', count: 0, pct: 0 };
+      const mBucket = buckets.medium_61_to_600s || { label_kr: '중기 (1~10분)', count: 0, pct: 0 };
+      const lBucket = buckets.long_gt_600s || { label_kr: '장기 (10분 초과)', count: 0, pct: 0 };
+
+      const repeat = ti.offense_repeat || {};
+      const firstW = repeat.first_warning || { label_kr: '첫 경고 (초범)', count: 0, pct: 0 };
+      const repO = repeat.repeat_offender || { label_kr: '반복 제재 (48h 재범)', count: 0, pct: 0 };
+
+      elTimeoutInsights.innerHTML = `
+        <div class="timeout-mini-grid">
+          <div class="tmini-box">
+            <span class="tmini-lbl">총 임시제한</span>
+            <strong>${total > 0 ? `${fmtInt(total)}건` : '—'}</strong>
+            <small>${uniqueUsers > 0 ? `대상 유저 ${fmtInt(uniqueUsers)}명` : '대기 중'}</small>
+          </div>
+          <div class="tmini-box">
+            <span class="tmini-lbl">조기해제 사면율</span>
+            <strong class="c-emerald">${total > 0 ? `${fmtDec(ti.pardon_rate_pct, 1)}%` : '—'}</strong>
+            <small>${total > 0 ? `${fmtInt(ti.early_releases)}건 사면` : '대기 중'}</small>
+          </div>
+          <div class="tmini-box">
+            <span class="tmini-lbl">강퇴 전환율</span>
+            <strong class="c-rose">${total > 0 ? `${fmtDec(ti.escalated_to_perm_ban_pct, 2)}%` : '—'}</strong>
+            <small>${total > 0 ? `${fmtInt(ti.escalated_to_perm_ban_users)}명 영구차단` : '대기 중'}</small>
+          </div>
+        </div>
+
+        <div class="dist-block">
+          <div class="dist-head">
+            <span>임시제한 기간 분포</span>
+            <small>평균 ${fmtDuration(ti.avg_duration_seconds)}</small>
+          </div>
+          <div class="stacked-bar">
+            <span style="width:${num(sBucket.pct)}%; background:#38bdf8" title="${escapeHtml(sBucket.label_kr || '단기')}: ${fmtDec(sBucket.pct, 1)}%"></span>
+            <span style="width:${num(mBucket.pct)}%; background:#f59e0b" title="${escapeHtml(mBucket.label_kr || '중기')}: ${fmtDec(mBucket.pct, 1)}%"></span>
+            <span style="width:${num(lBucket.pct)}%; background:#ef4444" title="${escapeHtml(lBucket.label_kr || '장기')}: ${fmtDec(lBucket.pct, 1)}%"></span>
+          </div>
+          <div class="dist-legend-inline">
+            <span><i style="background:#38bdf8"></i>${escapeHtml(sBucket.label_kr || '1분 이하')} <b>${fmtDec(sBucket.pct, 1)}%</b></span>
+            <span><i style="background:#f59e0b"></i>${escapeHtml(mBucket.label_kr || '1~10분')} <b>${fmtDec(mBucket.pct, 1)}%</b></span>
+            <span><i style="background:#ef4444"></i>${escapeHtml(lBucket.label_kr || '10분 초과')} <b>${fmtDec(lBucket.pct, 1)}%</b></span>
+          </div>
+        </div>
+
+        <div class="dist-block">
+          <div class="dist-head">
+            <span>초범 vs 48시간 재범 비율</span>
+            <small>${total > 0 ? `${fmtInt(firstW.count)}건 vs ${fmtInt(repO.count)}건` : '—'}</small>
+          </div>
+          <div class="stacked-bar">
+            <span style="width:${num(firstW.pct)}%; background:#10b981"></span>
+            <span style="width:${num(repO.pct)}%; background:#ec4899"></span>
+          </div>
+          <div class="dist-legend-inline">
+            <span><i style="background:#10b981"></i>${escapeHtml(firstW.label_kr || '첫 경고')} <b>${fmtDec(firstW.pct, 1)}%</b></span>
+            <span><i style="background:#ec4899"></i>${escapeHtml(repO.label_kr || '48h 재범')} <b>${fmtDec(repO.pct, 1)}%</b></span>
+          </div>
+        </div>
+      `;
     }
 
     function renderCalmness(data: any) {
@@ -1254,23 +1195,23 @@
 
       const zeroPerm = sc.zero_perm_ban_streams || { count: 0, pct: 0 };
       const tiers = [
-        { label: '무풍지대 (0건)', data: sc.zero_mod_streams, color: '#10b981', icon: '🌿' },
-        { label: '평온 (1~5건)', data: sc.quiet_1_to_5, color: '#38bdf8', icon: '🌤️' },
-        { label: '일반 (6~20건)', data: sc.active_6_to_20, color: '#f59e0b', icon: '⚡' },
-        { label: '격전지 (21건+)', data: sc.stormy_21_plus, color: '#ef4444', icon: '🔥' },
+        { label: sc.zero_mod_streams?.label_kr || '무풍지대 (0건)', data: sc.zero_mod_streams, color: '#10b981', icon: '🌿' },
+        { label: sc.quiet_1_to_5?.label_kr || '평온 (1~5건)', data: sc.quiet_1_to_5, color: '#38bdf8', icon: '🌤️' },
+        { label: sc.active_6_to_20?.label_kr || '일반 (6~20건)', data: sc.active_6_to_20, color: '#f59e0b', icon: '⚡' },
+        { label: sc.stormy_21_plus?.label_kr || '격전지 (21건+)', data: sc.stormy_21_plus, color: '#ef4444', icon: '🔥' },
       ];
 
       elStreamCalmness.innerHTML = `
         <div class="calm-hero-callout">
           <div class="calm-hero-left">
-            <span class="calm-hero-kicker">영구차단 0건 방송 비율</span>
-            <strong class="calm-hero-pct">${totalStreams > 0 ? `${fmtDec(zeroPerm.pct, 1)}%` : '—'}</strong>
+            <span class="calm-hero-kicker">無강퇴 청정 방송 비율</span>
+            <strong class="calm-hero-pct">${totalStreams > 0 ? `${fmtDec(zeroPerm.pct, 2)}%` : '—'}</strong>
           </div>
           <p class="calm-hero-desc">
             ${
               totalStreams > 0
-                ? `최근 48시간 관측된 ${fmtInt(totalStreams)}개 방송 중 <strong>${fmtInt(zeroPerm.count)}개 방송</strong>이 영구차단 없이 평온하게 진행되었습니다.`
-                : '관측 방송 데이터가 누적되면 영구차단 0건 방송 비율과 평온도 분포가 표시됩니다.'
+                ? `관측된 ${fmtInt(totalStreams)}개 방송 중 <strong>${fmtInt(zeroPerm.count)}개 방송</strong>이 영구차단(강퇴) 0건으로 진행되었습니다.`
+                : '관측 방송 데이터가 누적되면 무강퇴 청정 방송 비율과 평온도 분포가 표시됩니다.'
             }
           </p>
         </div>
@@ -1303,44 +1244,54 @@
       `;
     }
 
+    // ─── 5. Troll Funnel & Human-Blinded Message Risk ─────────────────────────
     function renderTrollFunnel(data: any) {
       const ti = data.troll_insights || {};
       const sum = data.summary_48h || {};
       const funnel = ti.multi_channel_funnel || {};
       const tiers = ti.auto_ban_tiers || {};
-      const sharePct = num(sum.known_troll_share_pct);
-      elTrollSharePill.textContent = `트롤 비중 ${fmtDec(sharePct, 2)}% (${fmtInt(sum.known_troll_actions)}건)`;
+
+      const multiUsers =
+        sum.multi_channel_offenders != null
+          ? num(sum.multi_channel_offenders)
+          : num(funnel['2_channels']?.users) +
+            num(funnel['3_to_4_channels']?.users) +
+            num(funnel['5_plus_channels']?.users);
+      const multiPct = num(sum.multi_channel_offender_pct ?? data.highlights?.multi_channel_offender_pct);
+      elTrollSharePill.textContent = `다채널 ${fmtInt(multiUsers)}명 (${fmtDec(multiPct, 1)}%)`;
 
       const steps = [
-        { label: '1개 채널 제재', data: funnel['1_channel'], color: '#64748b' },
-        { label: '2개 채널 교차 제재', data: funnel['2_channels'], color: '#38bdf8' },
-        { label: '3~4개 채널 교차 제재', data: funnel['3_to_4_channels'], color: '#f59e0b' },
-        { label: '5개 이상 채널 상습 트롤', data: funnel['5_plus_channels'], color: '#ef4444' },
+        { key: '1_channel', fallback: '1개 채널 (단발성)', data: funnel['1_channel'], color: '#64748b' },
+        { key: '2_channels', fallback: '2개 채널', data: funnel['2_channels'], color: '#38bdf8' },
+        { key: '3_to_4_channels', fallback: '3~4개 채널', data: funnel['3_to_4_channels'], color: '#f59e0b' },
+        { key: '5_plus_channels', fallback: '5개 이상 채널 (상습 분탕)', data: funnel['5_plus_channels'], color: '#ef4444' },
       ];
 
       const maxUsers = Math.max(1, ...steps.map((s) => num(s.data?.users)));
 
       const tierList = [
-        { code: 'T1', name: '지속 누적', val: tiers.tier1_persistent },
-        { code: 'T2', name: '일일 급증', val: tiers.tier2_daily },
-        { code: 'T3', name: '단기 폭주', val: tiers.tier3_velocity },
-        { code: 'T4', name: '복합 패턴', val: tiers.tier4_hybrid },
-        { code: 'T5', name: '임시제한 다발', val: tiers.tier5_timeout },
-        { code: 'T6', name: '블라인드 다발', val: tiers.tier6_blind },
+        { code: 'T1', name: '지속 누적', val: num(tiers.tier1_persistent) },
+        { code: 'T2', name: '일일 급증', val: num(tiers.tier2_daily) },
+        { code: 'T3', name: '단기 폭주', val: num(tiers.tier3_velocity) },
+        { code: 'T4', name: '복합 패턴', val: num(tiers.tier4_hybrid) },
+        { code: 'T5', name: '채금 다발', val: num(tiers.tier5_timeout) },
+        { code: 'T6', name: '블라인드 다발', val: num(tiers.tier6_blind) },
       ];
+      const totalTierHits = tierList.reduce((acc, t) => acc + t.val, 0);
 
       elTrollFunnel.innerHTML = `
         <div class="funnel-list">
           ${steps
             .map((s) => {
+              const label = s.data?.label_kr || s.fallback;
               const users = num(s.data?.users);
               const pct = num(s.data?.pct);
-              const barW = users > 0 ? Math.max(6, (users / maxUsers) * 100) : 0;
+              const barW = users > 0 ? Math.max(4, (users / maxUsers) * 100) : 0;
               return `
                 <div class="funnel-row">
                   <div class="funnel-meta">
-                    <span class="fn-label">${escapeHtml(s.label)}</span>
-                    <span class="fn-val"><strong>${fmtInt(users)}명</strong> <small>(${fmtDec(pct, 1)}%)</small></span>
+                    <span class="fn-label">${escapeHtml(label)}</span>
+                    <span class="fn-val"><strong>${fmtInt(users)}명</strong> <small>(${fmtDec(pct, 2)}%)</small></span>
                   </div>
                   <div class="leg-bar-track">
                     <div class="leg-bar-fill" style="width:${barW}%; background:${s.color}"></div>
@@ -1351,22 +1302,441 @@
             .join('')}
         </div>
 
-        <div class="tiers-divider">
-          <span>자동 차단 룰 티어별 탐지 건수</span>
-          <small>기존 트롤 채팅 ${fmtInt(sum.known_troll_chats)}건 감시됨</small>
+        <div class="troll-summary-strip">
+          <div class="tss-item">
+            <span class="tss-lbl">다중 채널 제재 (2개+)</span>
+            <strong>${fmtInt(multiUsers)}명 <small>(${fmtDec(multiPct, 2)}%)</small></strong>
+          </div>
+          <div class="tss-item">
+            <span class="tss-lbl">기등록 트롤 감시 활동</span>
+            <strong>제재 ${fmtInt(sum.known_troll_actions)}건 <small>(채팅 ${fmtInt(sum.known_troll_chats)}건 · ${fmtDec(sum.known_troll_share_pct, 2)}%)</small></strong>
+          </div>
         </div>
-        <div class="tier-pills-grid">
-          ${tierList
-            .map(
-              (t) => `
-              <div class="tier-pill-box">
-                <span class="tp-code">${t.code}</span>
-                <span class="tp-name">${escapeHtml(t.name)}</span>
-                <strong class="tp-val">${fmtInt(t.val)}</strong>
+
+        ${
+          totalTierHits > 0
+            ? `
+          <div class="tiers-divider">
+            <span>자동 차단 룰 티어별 신규 탐지</span>
+            <small>총 ${fmtInt(totalTierHits)}건</small>
+          </div>
+          <div class="tier-pills-grid">
+            ${tierList
+              .map(
+                (t) => `
+                <div class="tier-pill-box">
+                  <span class="tp-code">${t.code}</span>
+                  <span class="tp-name">${escapeHtml(t.name)}</span>
+                  <strong class="tp-val">${fmtInt(t.val)}</strong>
+                </div>
+              `
+              )
+              .join('')}
+          </div>
+        `
+            : ''
+        }
+      `;
+    }
+
+    function renderPatternInsights(data: any) {
+      const mp = data.troll_insights?.blinded_message_patterns || {};
+      const totalMatched = num(mp.total_matched);
+      const totalClassified = num(mp.total_chats_classified);
+      const hoursCovered = mp.hours_covered != null ? num(mp.hours_covered) : null;
+      const fallbackToAllChats = totalMatched === 0 && totalClassified > 0;
+
+      elPatternTotalPill.textContent =
+        totalMatched > 0
+          ? `매칭 표본 ${fmtInt(totalMatched)}건`
+          : totalClassified > 0
+            ? `분류 채팅 ${fmtCompactKo(totalClassified)}건`
+            : '표본 0건';
+
+      const keys: Array<'url' | 'flood' | 'long_text' | 'short_text' | 'normal'> = [
+        'url',
+        'flood',
+        'long_text',
+        'short_text',
+        'normal',
+      ];
+
+      let scopeBanner = '';
+      if (fallbackToAllChats) {
+        scopeBanner = `<div class="pattern-scope-note">수동 블라인드 원문 매칭 표본 누적 중 · 현재 전체 분류 채팅(${fmtCompactKo(totalClassified)}건) 패턴 분포 표시</div>`;
+      } else if (totalMatched > 0) {
+        const hrsTxt = hoursCovered != null && hoursCovered > 0 ? `최근 ${fmtInt(hoursCovered)}시간 기준 ` : '';
+        scopeBanner = `<div class="pattern-scope-note">${hrsTxt}매니저 수동 블라인드 매칭 표본 <strong>${fmtInt(totalMatched)}건</strong> (비교 모수 ${fmtCompactKo(totalClassified)}건)</div>`;
+      }
+
+      const maxBlindRate = Math.max(
+        0.1,
+        ...keys.map((k) => num(mp[k]?.blind_per_10k_chats))
+      );
+
+      elPatternInsights.innerHTML =
+        scopeBanner +
+        keys
+          .map((k) => {
+            const meta = PATTERN_META[k];
+            const row = mp[k] || {};
+            const label = row.label_kr || meta.fallbackLabel;
+
+            if (fallbackToAllChats) {
+              const chatPct = num(row.all_chat_pct);
+              return `
+                <div class="pattern-row">
+                  <div class="pattern-top">
+                    <span class="pat-name">${meta.icon} ${escapeHtml(label)}</span>
+                    <div class="pat-right">
+                      <span class="pat-pct">${fmtDec(chatPct, 2)}%</span>
+                      <span class="risk-badge risk-base">${fmtCompactKo(row.all_chat_count)}건</span>
+                    </div>
+                  </div>
+                  <div class="leg-bar-track">
+                    <div class="leg-bar-fill" style="width:${Math.min(100, chatPct)}%; background:${meta.color}"></div>
+                  </div>
+                </div>
+              `;
+            }
+
+            const risk = num(row.risk_vs_normal);
+            const blindPer10k = num(row.blind_per_10k_chats);
+            const barW =
+              blindPer10k > 0
+                ? Math.min(100, Math.max(4, (blindPer10k / maxBlindRate) * 100))
+                : Math.min(100, num(row.pct));
+            const riskCls = risk >= 2.5 ? 'risk-high' : risk >= 1.3 ? 'risk-med' : 'risk-base';
+            const riskLabel =
+              k === 'normal'
+                ? '기준 (1.00배)'
+                : totalMatched > 0 && risk > 0
+                  ? `${fmtDec(risk, 2)}배 위험`
+                  : '—';
+
+            return `
+              <div class="pattern-row">
+                <div class="pattern-top">
+                  <span class="pat-name">${meta.icon} ${escapeHtml(label)}</span>
+                  <div class="pat-right">
+                    <span class="pat-pct">1만당 ${fmtDec(blindPer10k, 2)}건</span>
+                    <span class="risk-badge ${riskCls}">${riskLabel}</span>
+                  </div>
+                </div>
+                <div class="leg-bar-track">
+                  <div class="leg-bar-fill" style="width:${barW}%; background:${meta.color}"></div>
+                </div>
+                <div class="pattern-foot">
+                  <span>매칭 ${fmtInt(row.count)}건 (블라인드 중 ${fmtDec(row.pct, 1)}%)</span>
+                  <span>전체 채팅 중 ${fmtDec(row.all_chat_pct, 2)}%</span>
+                </div>
               </div>
-            `
-            )
-            .join('')}
+            `;
+          })
+          .join('');
+    }
+
+    // ─── 6. Two-Tier Category & Segment Explorer ──────────────────────────────
+    function syncGenrePillUI() {
+      document.querySelectorAll<HTMLButtonElement>('#radar-cat-genre-pills .sort-pill').forEach((b) => {
+        b.classList.toggle('active', b.dataset.genre === catGenreFilter);
+      });
+    }
+
+    function renderMacroGenres(data: any) {
+      const groups = Array.isArray(data.by_category_group_48h) ? data.by_category_group_48h : [];
+      if (groups.length === 0) {
+        elMacroGenres.hidden = true;
+        return;
+      }
+      elMacroGenres.hidden = false;
+
+      const shareSegs = groups
+        .map((g: any) => {
+          const gKey = String(g.group_key || 'ETC');
+          const st = MACRO_GENRE_STYLE[gKey] || MACRO_GENRE_STYLE.ETC;
+          const pct = num(g.share_of_total_chats_pct);
+          return `<span style="width:${Math.max(pct > 0 ? 0.6 : 0, pct)}%; background:${st.color}" title="${escapeHtml(g.group_label_kr || g.name)}: 채팅 점유율 ${fmtDec(pct, 2)}%"></span>`;
+        })
+        .join('');
+
+      const cardsHtml = groups
+        .map((g: any) => {
+          const gKey = String(g.group_key || 'ETC');
+          const st = MACRO_GENRE_STYLE[gKey] || MACRO_GENRE_STYLE.ETC;
+          const filterTarget = gKey === 'UNCATEGORIZED' ? 'FOLDED' : gKey;
+          const isSelected = segmentTab === 'category' && catGenreFilter === filterTarget;
+          return `
+            <button type="button" class="macro-genre-card ${isSelected ? 'is-selected' : ''}" data-macro-genre="${escapeHtml(filterTarget)}">
+              <div class="mg-top">
+                <span class="mg-title">${st.icon} ${escapeHtml(g.group_label_kr || g.name)}</span>
+                <span class="mg-share" style="color:${st.color}">${fmtDec(g.share_of_total_chats_pct, 2)}%</span>
+              </div>
+              <div class="mg-main-stat">
+                <strong>1만당 ${fmtDec(g.mod_per_10k_chats, 1)}건</strong>
+                <small>${fmtInt(g.active_streams)}개 방송</small>
+              </div>
+              <div class="mg-sub-row">
+                <span>채팅 ${fmtCompactKo(g.total_chats)}</span>
+                <span>AI ${fmtDec(g.cleanbot_pct, 0)}% · 강퇴 ${fmtDec(g.perm_ban_pct, 2)}%</span>
+              </div>
+            </button>
+          `;
+        })
+        .join('');
+
+      elMacroGenres.innerHTML = `
+        <div class="macro-head-row">
+          <span class="macro-lbl">치지직 전체 대분류 장르 점유율 (100%)</span>
+          <span class="macro-hint">카드를 클릭하면 아래 세부 카테고리 표가 해당 장르로 필터링됩니다</span>
+        </div>
+        <div class="stacked-bar macro-share-bar">${shareSegs}</div>
+        <div class="macro-cards-grid">${cardsHtml}</div>
+      `;
+
+      elMacroGenres.querySelectorAll<HTMLButtonElement>('.macro-genre-card').forEach((card) => {
+        card.addEventListener('click', () => {
+          const target = card.dataset.macroGenre as typeof catGenreFilter;
+          if (!target) return;
+          if (segmentTab !== 'category') {
+            segmentTab = 'category';
+            document.querySelectorAll('#radar-segment-tabs .seg-btn').forEach((b) => {
+              b.classList.toggle('active', (b as HTMLElement).dataset.tab === 'category');
+            });
+          }
+          catGenreFilter = catGenreFilter === target ? 'ALL' : target;
+          showAllCategories = false;
+          syncGenrePillUI();
+          renderMacroGenres(currentData);
+          renderSegments(currentData);
+        });
+      });
+    }
+
+    function renderTableRow(r: any, maxMetric: number, metricKey: string, isSummaryRow = false): string {
+      const val = num(r[metricKey]);
+      const barW = maxMetric > 0 ? Math.min(100, (val / maxMetric) * 100) : 0;
+      const displayName = rowLabel(r);
+
+      const chips: string[] = [];
+      if (segmentTab === 'category' && r.group_label_kr && !isSummaryRow) {
+        chips.push(`<span class="cat-type-chip">${escapeHtml(r.group_label_kr)}</span>`);
+      }
+      if (num(r.distinct_categories_folded) > 0) {
+        chips.push(`<span class="cat-folded-chip">외 ${fmtInt(r.distinct_categories_folded)}개 소규모 합산</span>`);
+      } else if (isSummaryRow && r.group_key === 'UNCATEGORIZED') {
+        chips.push(`<span class="cat-folded-chip">미지정 방송 합산</span>`);
+      }
+
+      const chatShare = r.share_of_total_chats_pct != null ? `<small class="cell-sub">(${fmtDec(r.share_of_total_chats_pct, 2)}%)</small>` : '';
+      const aiPct = num(r.cleanbot_pct);
+      const humanPct = num(r.human_mod_pct);
+      const permCnt = getPermBans(r);
+
+      return `
+        <tr class="${isSummaryRow ? 'folded-summary-row' : ''}">
+          <td class="col-name">
+            <div class="seg-name-wrap">
+              <div class="seg-title-line"><strong>${escapeHtml(displayName)}</strong>${chips.join('')}</div>
+              <div class="seg-inline-bar"><span style="width:${barW}%"></span></div>
+            </div>
+          </td>
+          <td class="num-col">${fmtInt(r.active_streams)}개</td>
+          <td class="num-col">${fmtCompactKo(r.total_chats)} ${chatShare}</td>
+          <td class="num-col highlight-col">${fmtDec(r.mod_per_10k_chats, 1)}건</td>
+          <td class="num-col">${fmtDec(aiPct, 0)}% / ${fmtDec(humanPct, 0)}%</td>
+          <td class="num-col">${fmtInt(r.timeouts)}건</td>
+          <td class="num-col c-rose-text">${fmtInt(permCnt)}건 <small class="cell-sub">(${fmtDec(r.perm_ban_pct, 2)}%)</small></td>
+        </tr>
+      `;
+    }
+
+    function renderSegments(data: any) {
+      elCatControls.hidden = segmentTab !== 'category';
+
+      if (segmentTab === 'category') {
+        const allCatRows = Array.isArray(data.by_category_48h) ? data.by_category_48h : [];
+        const namedRows = allCatRows.filter(
+          (r: any) => r.group_key !== 'OTHER_NAMED' && r.group_key !== 'UNCATEGORIZED'
+        );
+        const foldedRows = allCatRows.filter(
+          (r: any) => r.group_key === 'OTHER_NAMED' || r.group_key === 'UNCATEGORIZED'
+        );
+
+        let filteredNamed: any[] = [];
+        let footerSummaries: any[] = [];
+        let macroFallbackNotice = '';
+
+        if (catGenreFilter === 'ALL') {
+          filteredNamed = [...namedRows];
+          footerSummaries = foldedRows;
+        } else if (catGenreFilter === 'FOLDED') {
+          filteredNamed = [];
+          footerSummaries = foldedRows;
+        } else {
+          filteredNamed = namedRows.filter((r: any) => r.group_key === catGenreFilter);
+          if (filteredNamed.length === 0) {
+            const macroMatch = (Array.isArray(data.by_category_group_48h) ? data.by_category_group_48h : []).find(
+              (g: any) => g.group_key === catGenreFilter
+            );
+            if (macroMatch) {
+              footerSummaries = [macroMatch];
+              macroFallbackNotice = `현재 채팅 상위 30개 개별 카테고리 내 '${macroMatch.group_label_kr || macroMatch.name}' 항목이 없어 소규모 카테고리에 합산되어 있으며, 아래는 해당 장르 전체 합산 통계입니다.`;
+            }
+          }
+        }
+
+        filteredNamed.sort((a, b) => num(b[catSortKey]) - num(a[catSortKey]));
+
+        if (filteredNamed.length === 0 && footerSummaries.length === 0) {
+          elSegmentContent.innerHTML = `
+            <div class="empty-inline-msg">아직 집계된 카테고리 데이터가 없습니다.</div>
+          `;
+          return;
+        }
+
+        const limit = !showAllCategories ? 12 : filteredNamed.length;
+        const visibleNamed = filteredNamed.slice(0, limit);
+        const combinedForMax = [...visibleNamed, ...footerSummaries];
+        const maxMetric = Math.max(1, ...combinedForMax.map((r) => num(r[catSortKey])));
+
+        const rowsHtml =
+          visibleNamed.map((r) => renderTableRow(r, maxMetric, catSortKey, false)).join('') +
+          footerSummaries.map((r) => renderTableRow(r, maxMetric, catSortKey, true)).join('');
+
+        const expandBtn =
+          filteredNamed.length > 12
+            ? `<div class="expand-row-wrap"><button type="button" class="expand-cat-btn" id="radar-expand-cat-btn">${
+                showAllCategories ? '상위 12개만 접기 ▲' : `상위 ${filteredNamed.length}개 개별 카테고리 모두 펼치기 ▼`
+              }</button></div>`
+            : '';
+
+        elSegmentContent.innerHTML = `
+          ${macroFallbackNotice ? `<div class="macro-fallback-banner">ℹ️ ${escapeHtml(macroFallbackNotice)}</div>` : ''}
+          <div class="seg-table-scroll">
+            <table class="radar-table">
+              <thead>
+                <tr>
+                  <th>카테고리</th>
+                  <th class="num-col">관측 방송</th>
+                  <th class="num-col">총 채팅 (점유율)</th>
+                  <th class="num-col">1만당 제재</th>
+                  <th class="num-col">클린봇 / 수동</th>
+                  <th class="num-col">임시제한</th>
+                  <th class="num-col">영구차단 (비중)</th>
+                </tr>
+              </thead>
+              <tbody>${rowsHtml}</tbody>
+            </table>
+          </div>
+          ${expandBtn}
+        `;
+
+        const expBtn = document.getElementById('radar-expand-cat-btn');
+        if (expBtn) {
+          expBtn.addEventListener('click', () => {
+            showAllCategories = !showAllCategories;
+            renderSegments(currentData);
+          });
+        }
+        return;
+      }
+
+      // Segment tabs: viewer / age / uptime
+      let segRows: any[] = [];
+      if (segmentTab === 'viewer') {
+        segRows = normalizeSegmentRows(data.by_segment_48h?.viewer_brackets);
+      } else if (segmentTab === 'age') {
+        segRows = normalizeSegmentRows(data.by_segment_48h?.age_rating);
+      } else if (segmentTab === 'uptime') {
+        segRows = normalizeSegmentRows(data.by_segment_48h?.stream_uptime);
+      }
+
+      if (segRows.length === 0) {
+        elSegmentContent.innerHTML = `<div class="empty-inline-msg">아직 집계된 세그먼트 비교 데이터가 없습니다.</div>`;
+        return;
+      }
+
+      const maxMetric = Math.max(1, ...segRows.map((r) => num(r.mod_per_10k_chats)));
+      const rowsHtml = segRows.map((r) => renderTableRow(r, maxMetric, 'mod_per_10k_chats', false)).join('');
+
+      elSegmentContent.innerHTML = `
+        <div class="seg-table-scroll">
+          <table class="radar-table">
+            <thead>
+              <tr>
+                <th>세그먼트 구분</th>
+                <th class="num-col">관측 방송</th>
+                <th class="num-col">총 채팅 (점유율)</th>
+                <th class="num-col">1만당 제재</th>
+                <th class="num-col">클린봇 / 수동</th>
+                <th class="num-col">임시제한</th>
+                <th class="num-col">영구차단 (비중)</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    // ─── 7. Methodology & Zero-PII Footer ─────────────────────────────────────
+    function renderMethodology(data: any) {
+      const meth = data.meta?.methodology || {};
+      const taxonomy = Array.isArray(meth.action_taxonomy) && meth.action_taxonomy.length > 0
+        ? meth.action_taxonomy
+        : [
+            { key: 'cleanbot_blinds', label_kr: '클린봇 자동 블라인드', desc_kr: '네이버 AI 클린봇 자동 필터링 (CBOTBLIND)' },
+            { key: 'manual_blinds', label_kr: '매니저 수동 블라인드', desc_kr: '스트리머·매니저의 단일/소량 메시지 가리기 (HIDDEN/BLIND)' },
+            { key: 'timeouts', label_kr: '임시제한 (채팅 금지)', desc_kr: '일정 시간 채팅 제한 조치 (TEMPORARY_RESTRICT)' },
+            { key: 'perm_bans', label_kr: '영구차단 (강퇴)', desc_kr: '채널 영구차단 (임시제한 없는 10초 내 4건+ 일괄 블라인드 강퇴 시그니처 및 명시 차단 통합)' },
+          ];
+
+      const taxColors: Record<string, string> = {
+        cleanbot_blinds: '#818cf8',
+        manual_blinds: '#38bdf8',
+        timeouts: '#f59e0b',
+        perm_bans: '#ef4444',
+      };
+
+      elMethodologyContent.innerHTML = `
+        <div class="meth-grid">
+          <div class="meth-col">
+            <h4>4종 표준 제재 분류 체계 (합계 100%)</h4>
+            <div class="meth-tax-list">
+              ${taxonomy
+                .map(
+                  (t: any) => `
+                  <div class="meth-tax-item">
+                    <span class="leg-dot" style="background:${taxColors[t.key] || '#818cf8'}"></span>
+                    <div>
+                      <strong>${escapeHtml(t.label_kr)}</strong>
+                      <p>${escapeHtml(t.desc_kr)}</p>
+                    </div>
+                  </div>
+                `
+                )
+                .join('')}
+            </div>
+          </div>
+
+          <div class="meth-col">
+            <h4>시간창 정책 & 개인정보 비식별화 (Zero-PII)</h4>
+            <ul class="meth-policy-list">
+              <li>
+                <strong>정각 완료 48시간 슬라이딩 윈도우:</strong>
+                매시 01분 정각(KST)에 직전 완료된 60분 단위 버킷만 최대 48시간 시계열에 반영하여 부분 집계 왜곡을 배제합니다. 진행 중인 현재 시간대는 상단 실시간 상태 배지로만 별도 표기됩니다.
+              </li>
+              <li>
+                <strong>단방향 솔트 해시 익명화:</strong>
+                스트리머 채널 ID, 시청자 고유 식별자, 닉네임 및 채팅 원문 텍스트는 디스크나 스냅샷에 일체 저장되지 않으며 단방향 솔트(Salt) SHA-256 해시 절삭값으로만 교차 빈도를 집계합니다.
+              </li>
+              <li>
+                <strong>소규모 방송 프라이버시 보호 (k-익명성):</strong>
+                최소 3개 이상의 독립 방송이 활성화된 카테고리만 개별 표기하며, 미만 소규모 카테고리는 ‘기타 카테고리’로 자동 병합됩니다.
+              </li>
+            </ul>
+          </div>
         </div>
       `;
     }
@@ -1376,14 +1746,16 @@
       renderHeader(data);
       renderKpis(data);
       renderHighlights(data);
-      renderActionBreakdown(data);
-      renderTimeoutInsights(data);
-      renderPatternInsights(data);
       renderTimeline(data);
       renderTimeOfDay(data);
-      renderSegments(data);
+      renderActionBreakdown(data);
+      renderTimeoutInsights(data);
       renderCalmness(data);
       renderTrollFunnel(data);
+      renderPatternInsights(data);
+      renderMacroGenres(data);
+      renderSegments(data);
+      renderMethodology(data);
 
       elLoading.hidden = true;
       elError.hidden = true;
@@ -1419,7 +1791,7 @@
     // ─── Event Bindings ───────────────────────────────────────────────────────
     document.querySelectorAll<HTMLButtonElement>('#radar-chart-mode .seg-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
-        const m = btn.dataset.mode as 'intensity' | 'stacked';
+        const m = btn.dataset.mode as typeof chartMode;
         if (!m || m === chartMode) return;
         chartMode = m;
         document.querySelectorAll('#radar-chart-mode .seg-btn').forEach((b) => b.classList.remove('active'));
@@ -1430,13 +1802,30 @@
 
     document.querySelectorAll<HTMLButtonElement>('#radar-segment-tabs .seg-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
-        const t = btn.dataset.tab as 'category' | 'viewer' | 'age' | 'uptime';
+        const t = btn.dataset.tab as typeof segmentTab;
         if (!t || t === segmentTab) return;
         segmentTab = t;
         showAllCategories = false;
         document.querySelectorAll('#radar-segment-tabs .seg-btn').forEach((b) => b.classList.remove('active'));
         btn.classList.add('active');
-        if (currentData) renderSegments(currentData);
+        if (currentData) {
+          renderMacroGenres(currentData);
+          renderSegments(currentData);
+        }
+      });
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('#radar-cat-genre-pills .sort-pill').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const g = btn.dataset.genre as typeof catGenreFilter;
+        if (!g || g === catGenreFilter) return;
+        catGenreFilter = g;
+        showAllCategories = false;
+        syncGenrePillUI();
+        if (currentData) {
+          renderMacroGenres(currentData);
+          renderSegments(currentData);
+        }
       });
     });
 
@@ -1453,13 +1842,13 @@
 
     elRetryBtn.addEventListener('click', loadStats);
 
-    // Initial client-side fetch + quiet 10-minute auto-refresh when tab is visible
+    // Initial client-side fetch + quiet 5-minute auto-refresh when tab is visible
     loadStats();
     window.setInterval(() => {
       if (document.visibilityState === 'visible') {
         loadStats();
       }
-    }, 10 * 60 * 1000);
+    }, 5 * 60 * 1000);
   })();
 </script>
 
@@ -1475,7 +1864,7 @@
     justify-content: space-between;
     gap: 16px;
     flex-wrap: wrap;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
 
   .radar-title-cluster h2 {
@@ -1551,23 +1940,31 @@
   }
 
   .weather-ratio {
-    font-size: 0.74rem;
-    opacity: 0.88;
+    font-size: 0.73rem;
+    opacity: 0.9;
     padding-left: 6px;
     border-left: 1px solid currentColor;
   }
 
   .radar-collection-badge {
-    font-size: 0.76rem;
+    font-size: 0.75rem;
     font-weight: 600;
     color: #cbd5e1;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 4px 10px;
     border-radius: 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   }
 
   .radar-meta-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+
+  .radar-meta-line {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -1575,18 +1972,44 @@
   }
 
   .radar-updated-time {
-    font-size: 0.82rem;
+    font-size: 0.81rem;
     color: #94a3b8;
-    font-family: monospace;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   }
 
   .radar-auto-badge {
-    font-size: 0.82rem;
-    color: #94a3b8;
+    font-size: 0.78rem;
+    color: #cbd5e1;
     background: rgba(255, 255, 255, 0.05);
-    padding: 5px 11px;
-    border-radius: 8px;
+    padding: 4px 10px;
+    border-radius: 7px;
     border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .radar-live-hour-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.75rem;
+    color: #a7f3d0;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.28);
+    padding: 4px 11px;
+    border-radius: 999px;
+  }
+
+  :global(.live-hr-dot) {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 8px #10b981;
+    flex-shrink: 0;
+  }
+
+  :global(.radar-live-hour-pill strong) {
+    color: #34d399;
+    font-family: monospace;
   }
 
   /* Privacy Bar */
@@ -1599,7 +2022,7 @@
     border-radius: 12px;
     padding: 11px 16px;
     margin-bottom: 18px;
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     color: #cbd5e1;
     line-height: 1.5;
   }
@@ -1611,13 +2034,13 @@
   /* Loading & Error & Warmup States */
   .skeleton-kpi-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
     margin-bottom: 16px;
   }
 
   .skel-card {
-    height: 102px;
+    height: 104px;
     border-radius: 14px;
     background: linear-gradient(90deg, #111420 25%, #192036 50%, #111420 75%);
     background-size: 200% 100%;
@@ -1681,7 +2104,6 @@
     border: 1px solid rgba(56, 189, 248, 0.32);
     border-radius: 14px;
     padding: 14px 18px;
-    margin-bottom: 18px;
   }
 
   .warmup-icon {
@@ -1710,10 +2132,10 @@
     gap: 18px;
   }
 
-  /* KPI Grid */
+  /* 5-Card Executive KPI Grid */
   .radar-kpi-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    grid-template-columns: repeat(5, 1fr);
     gap: 12px;
   }
 
@@ -1726,6 +2148,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     gap: 6px;
   }
 
@@ -1744,7 +2167,6 @@
   :global(.kpi-amber::before) { background: #f59e0b; }
   :global(.kpi-purple::before) { background: #a855f7; }
   :global(.kpi-rose::before) { background: #f43f5e; }
-  :global(.kpi-slate::before) { background: #64748b; }
 
   :global(.kpi-top) {
     display: flex;
@@ -1754,13 +2176,13 @@
   }
 
   :global(.kpi-label) {
-    font-size: 0.8rem;
-    font-weight: 600;
+    font-size: 0.78rem;
+    font-weight: 700;
     color: #94a3b8;
   }
 
   :global(.kpi-value) {
-    font-size: 1.45rem;
+    font-size: 1.42rem;
     font-weight: 800;
     color: #f8fafc;
     letter-spacing: -0.02em;
@@ -1768,13 +2190,20 @@
   }
 
   :global(.kpi-sub) {
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     color: #94a3b8;
     line-height: 1.4;
   }
 
+  :global(.kpi-sub-caption) {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.72rem;
+    color: #64748b;
+  }
+
   :global(.kpi-trend) {
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     font-weight: 700;
     padding: 2px 6px;
     border-radius: 5px;
@@ -1800,11 +2229,11 @@
 
   :global(.mini-split-bar) {
     display: flex;
-    height: 7px;
+    height: 6px;
     border-radius: 999px;
     overflow: hidden;
     background: #1e2438;
-    margin-top: 4px;
+    margin-top: 2px;
   }
 
   :global(.sb-ai) { background: #818cf8; }
@@ -1813,7 +2242,7 @@
   /* Highlights Strip */
   .radar-highlights-strip {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 10px;
   }
 
@@ -1846,7 +2275,7 @@
   }
 
   :global(.hl-detail) {
-    font-size: 0.85rem;
+    font-size: 0.84rem;
     color: #f1f5f9;
     font-weight: 700;
   }
@@ -1910,6 +2339,9 @@
     padding: 4px 9px;
     border-radius: 7px;
     white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
   }
 
   /* Donut & Legend */
@@ -1925,8 +2357,8 @@
   }
 
   :global(.donut-svg) {
-    width: 126px;
-    height: 126px;
+    width: 128px;
+    height: 128px;
   }
 
   :global(.donut-legend),
@@ -1934,7 +2366,7 @@
   :global(.funnel-list) {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 11px;
   }
 
   :global(.legend-row),
@@ -2074,7 +2506,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    font-size: 0.75rem;
+    font-size: 0.74rem;
     color: #94a3b8;
   }
 
@@ -2091,17 +2523,21 @@
     margin-left: 2px;
   }
 
+  /* Message Patterns */
   :global(.pattern-scope-note) {
-    font-size: 0.74rem;
+    font-size: 0.75rem;
     color: #93c5fd;
     background: rgba(56, 189, 248, 0.08);
-    border: 1px solid rgba(56, 189, 248, 0.2);
-    border-radius: 7px;
-    padding: 6px 10px;
-    margin-bottom: 4px;
+    border: 1px solid rgba(56, 189, 248, 0.22);
+    border-radius: 8px;
+    padding: 7px 11px;
+    margin-bottom: 2px;
   }
 
-  /* Message Patterns */
+  :global(.pattern-scope-note strong) {
+    color: #e0f2fe;
+  }
+
   :global(.pat-name) {
     color: #e2e8f0;
     font-weight: 600;
@@ -2115,8 +2551,9 @@
 
   :global(.pat-pct) {
     font-family: monospace;
+    font-size: 0.78rem;
     font-weight: 700;
-    color: #f8fafc;
+    color: #cbd5e1;
   }
 
   :global(.risk-badge) {
@@ -2165,7 +2602,7 @@
     background: transparent;
     border: none;
     color: #94a3b8;
-    font-size: 0.8rem;
+    font-size: 0.79rem;
     font-weight: 700;
     padding: 6px 12px;
     border-radius: 6px;
@@ -2208,10 +2645,11 @@
     border-radius: 0;
   }
 
-  :global(.timeline-legend-row i.partial-i) {
-    background: rgba(129, 140, 248, 0.35);
-    border: 1px dashed #38bdf8;
-    box-sizing: border-box;
+  :global(.timeline-legend-row i.line-i) {
+    width: 14px;
+    height: 0;
+    border-top: 2.5px solid #38bdf8;
+    border-radius: 0;
   }
 
   .timeline-chart-wrap {
@@ -2224,7 +2662,7 @@
 
   :global(.timeline-svg) {
     width: 100%;
-    min-width: 580px;
+    min-width: 600px;
     height: auto;
     display: block;
   }
@@ -2266,9 +2704,9 @@
     border: 1px solid rgba(99, 102, 241, 0.45);
     border-radius: 10px;
     padding: 10px 12px;
-    width: 220px;
+    width: 242px;
     box-shadow: 0 12px 28px rgba(0, 0, 0, 0.65);
-    font-size: 0.76rem;
+    font-size: 0.75rem;
   }
 
   :global(.tt-head) {
@@ -2287,15 +2725,6 @@
     font-weight: 800;
     color: #fca5a5;
     background: rgba(239, 68, 68, 0.2);
-    padding: 1px 5px;
-    border-radius: 4px;
-  }
-
-  :global(.tt-partial) {
-    font-size: 0.68rem;
-    font-weight: 800;
-    color: #7dd3fc;
-    background: rgba(56, 189, 248, 0.16);
     padding: 1px 5px;
     border-radius: 4px;
   }
@@ -2378,6 +2807,8 @@
   :global(.tz-meta) {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
     font-size: 0.72rem;
     color: #64748b;
   }
@@ -2390,7 +2821,7 @@
     display: grid;
     grid-template-columns: repeat(24, 1fr);
     gap: 4px;
-    height: 158px;
+    height: 162px;
     box-sizing: border-box;
   }
 
@@ -2423,19 +2854,139 @@
     height: 12px;
   }
 
-  /* Category / Segment Table */
-  .cat-sort-bar {
+  /* Two-Tier Macro Genres */
+  .macro-genre-section {
+    background: #0d101a;
+    border: 1px solid #1e2438;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+
+  :global(.macro-head-row) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+
+  :global(.macro-lbl) {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #e2e8f0;
+  }
+
+  :global(.macro-hint) {
+    font-size: 0.72rem;
+    color: #64748b;
+  }
+
+  :global(.macro-share-bar) {
+    height: 9px;
+    margin-bottom: 12px;
+  }
+
+  :global(.macro-cards-grid) {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+
+  :global(.macro-genre-card) {
+    background: #111420;
+    border: 1px solid #232a42;
+    border-radius: 10px;
+    padding: 11px 12px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    transition: border-color 0.15s, transform 0.15s, background 0.15s;
+    color: inherit;
+    font-family: inherit;
+  }
+
+  :global(.macro-genre-card:hover) {
+    border-color: rgba(99, 102, 241, 0.5);
+    transform: translateY(-1px);
+  }
+
+  :global(.macro-genre-card.is-selected) {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.08);
+    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25);
+  }
+
+  :global(.mg-top) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+  }
+
+  :global(.mg-title) {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #f1f5f9;
+  }
+
+  :global(.mg-share) {
+    font-size: 0.76rem;
+    font-weight: 800;
+    font-family: monospace;
+  }
+
+  :global(.mg-main-stat) {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  :global(.mg-main-stat strong) {
+    font-size: 0.92rem;
+    color: #fcd34d;
+    font-family: monospace;
+  }
+
+  :global(.mg-main-stat small) {
+    font-size: 0.7rem;
+    color: #94a3b8;
+  }
+
+  :global(.mg-sub-row) {
+    display: flex;
+    justify-content: space-between;
+    gap: 4px;
+    font-size: 0.69rem;
+    color: #64748b;
+  }
+
+  /* Category Controls & Table */
+  .cat-controls-wrap {
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: space-between;
+    gap: 12px;
     flex-wrap: wrap;
     margin-bottom: 12px;
   }
 
+  .cat-filter-bar,
+  .cat-sort-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
   .sort-label {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: #94a3b8;
-    font-weight: 600;
+    font-weight: 700;
   }
 
   .sort-pills {
@@ -2448,7 +2999,7 @@
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.09);
     color: #94a3b8;
-    font-size: 0.76rem;
+    font-size: 0.75rem;
     font-weight: 700;
     padding: 4px 10px;
     border-radius: 6px;
@@ -2466,6 +3017,16 @@
     color: #7dd3fc;
   }
 
+  :global(.macro-fallback-banner) {
+    font-size: 0.8rem;
+    color: #bae6fd;
+    background: rgba(56, 189, 248, 0.09);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 9px;
+    padding: 9px 13px;
+    margin-bottom: 10px;
+  }
+
   :global(.seg-table-scroll) {
     overflow-x: auto;
   }
@@ -2473,12 +3034,12 @@
   :global(.radar-table) {
     width: 100%;
     border-collapse: collapse;
-    min-width: 640px;
+    min-width: 680px;
   }
 
   :global(.radar-table th) {
     text-align: left;
-    font-size: 0.76rem;
+    font-size: 0.75rem;
     font-weight: 700;
     color: #93c5fd;
     background: #161c2e;
@@ -2489,7 +3050,7 @@
 
   :global(.radar-table td) {
     padding: 10px 12px;
-    font-size: 0.84rem;
+    font-size: 0.83rem;
     color: #e2e8f0;
     border-bottom: 1px solid #1a2033;
   }
@@ -2498,10 +3059,20 @@
     background: #161b2c;
   }
 
+  :global(.radar-table tbody tr.folded-summary-row td) {
+    background: rgba(15, 23, 42, 0.72);
+    border-top: 1px dashed #2b3655;
+  }
+
   :global(.num-col) {
     text-align: right !important;
     font-family: monospace;
     white-space: nowrap;
+  }
+
+  :global(.cell-sub) {
+    color: #64748b;
+    font-size: 0.72rem;
   }
 
   :global(.highlight-col) {
@@ -2513,12 +3084,13 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
-    min-width: 160px;
+    min-width: 180px;
   }
 
   :global(.seg-title-line) {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 6px;
   }
 
@@ -2532,9 +3104,19 @@
     border-radius: 4px;
   }
 
+  :global(.cat-folded-chip) {
+    font-size: 0.66rem;
+    font-weight: 700;
+    color: #a5b4fc;
+    background: rgba(99, 102, 241, 0.14);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+
   :global(.seg-name-wrap strong) {
     color: #f8fafc;
-    font-size: 0.86rem;
+    font-size: 0.85rem;
   }
 
   :global(.seg-inline-bar) {
@@ -2586,12 +3168,12 @@
   :global(.calm-hero-callout) {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
     background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(14, 165, 233, 0.08));
     border: 1px solid rgba(16, 185, 129, 0.28);
     border-radius: 12px;
-    padding: 14px 16px;
-    margin-bottom: 14px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
   }
 
   :global(.calm-hero-left) {
@@ -2601,62 +3183,62 @@
   }
 
   :global(.calm-hero-kicker) {
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     color: #6ee7b7;
     font-weight: 700;
   }
 
   :global(.calm-hero-pct) {
-    font-size: 1.7rem;
+    font-size: 1.55rem;
     font-weight: 900;
     color: #34d399;
     font-family: monospace;
-    line-height: 1.1;
+    line-height: 1.15;
   }
 
   :global(.calm-hero-desc) {
     margin: 0;
-    font-size: 0.83rem;
+    font-size: 0.8rem;
     color: #cbd5e1;
-    line-height: 1.5;
+    line-height: 1.45;
   }
 
   :global(.calm-grid) {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: 8px;
   }
 
   :global(.calm-tile) {
     background: #0d101a;
     border: 1px solid #1e2438;
     border-radius: 10px;
-    padding: 11px 12px;
+    padding: 9px 11px;
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 2px;
   }
 
   :global(.calm-tile-head) {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     color: #cbd5e1;
   }
 
   :global(.calm-tile-pct) {
-    font-size: 1.2rem;
+    font-size: 1.12rem;
     color: #f8fafc;
     font-family: monospace;
   }
 
   :global(.calm-tile-cnt) {
-    font-size: 0.74rem;
+    font-size: 0.72rem;
     color: #64748b;
   }
 
-  /* Troll Funnel & Tiers */
+  /* Troll Funnel & Summary Strip */
   :global(.fn-label) {
     color: #cbd5e1;
     font-weight: 600;
@@ -2671,24 +3253,49 @@
     color: #94a3b8;
   }
 
-  :global(.tiers-divider) {
-    margin: 16px 0 10px;
+  :global(.troll-summary-strip) {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-top: 14px;
     padding-top: 14px;
     border-top: 1px solid #1e2438;
-    font-size: 0.78rem;
+  }
+
+  :global(.tss-item) {
+    background: #0d101a;
+    border: 1px solid #1e2438;
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  :global(.tss-lbl) {
+    font-size: 0.72rem;
+    color: #94a3b8;
+  }
+
+  :global(.tss-item strong) {
+    font-size: 0.9rem;
+    color: #f8fafc;
+    font-family: monospace;
+  }
+
+  :global(.tss-item small) {
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  :global(.tiers-divider) {
+    margin: 14px 0 8px;
+    font-size: 0.76rem;
     font-weight: 700;
     color: #94a3b8;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  :global(.tiers-divider small) {
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: #64748b;
   }
 
   :global(.tier-pills-grid) {
@@ -2731,13 +3338,140 @@
     font-family: monospace;
   }
 
+  /* 7. Methodology & Zero-PII Box */
+  .radar-methodology-box {
+    background: #111420;
+    border: 1px solid #232a42;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .methodology-summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    user-select: none;
+  }
+
+  .methodology-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .meth-sum-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .meth-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: #34d399;
+    background: rgba(16, 185, 129, 0.14);
+    border: 1px solid rgba(16, 185, 129, 0.32);
+    padding: 3px 8px;
+    border-radius: 5px;
+  }
+
+  .meth-sum-left strong {
+    font-size: 0.88rem;
+    color: #e2e8f0;
+  }
+
+  .meth-toggle-hint {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    font-weight: 600;
+  }
+
+  .radar-methodology-box[open] .meth-toggle-hint {
+    color: #7dd3fc;
+  }
+
+  .methodology-content {
+    padding: 16px 18px 18px;
+    border-top: 1px solid #1e2438;
+    background: #0d101a;
+  }
+
+  :global(.meth-grid) {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    gap: 20px;
+  }
+
+  :global(.meth-col h4) {
+    margin: 0 0 10px;
+    font-size: 0.86rem;
+    color: #f8fafc;
+  }
+
+  :global(.meth-tax-list) {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  :global(.meth-tax-item) {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.8rem;
+  }
+
+  :global(.meth-tax-item .leg-dot) {
+    margin-top: 5px;
+  }
+
+  :global(.meth-tax-item strong) {
+    color: #e2e8f0;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  :global(.meth-tax-item p) {
+    margin: 0;
+    font-size: 0.76rem;
+    color: #94a3b8;
+    line-height: 1.45;
+  }
+
+  :global(.meth-policy-list) {
+    margin: 0;
+    padding-left: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.78rem;
+    color: #94a3b8;
+    line-height: 1.55;
+  }
+
+  :global(.meth-policy-list strong) {
+    color: #e2e8f0;
+  }
+
   /* Responsive */
-  @media (max-width: 1080px) {
+  @media (max-width: 1140px) {
+    .radar-kpi-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    :global(.macro-cards-grid) {
+      grid-template-columns: repeat(3, 1fr);
+    }
     .radar-three-col {
       grid-template-columns: 1fr;
     }
     .radar-two-col,
-    .time-of-day-grid {
+    .time-of-day-grid,
+    :global(.meth-grid) {
       grid-template-columns: 1fr;
     }
     .skeleton-kpi-grid {
@@ -2745,20 +3479,34 @@
     }
   }
 
-  @media (max-width: 680px) {
+  @media (max-width: 720px) {
     .radar-top-header {
       align-items: flex-start;
     }
-    :global(.timeout-mini-grid) {
-      grid-template-columns: 1fr;
+    .radar-meta-actions {
+      align-items: flex-start;
     }
-    :global(.tier-pills-grid) {
+    .radar-kpi-grid {
       grid-template-columns: repeat(2, 1fr);
+    }
+    :global(.macro-cards-grid) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    :global(.timeout-mini-grid),
+    :global(.troll-summary-strip) {
+      grid-template-columns: 1fr;
     }
     :global(.calm-hero-callout) {
       flex-direction: column;
       align-items: flex-start;
       gap: 8px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .radar-kpi-grid,
+    :global(.macro-cards-grid) {
+      grid-template-columns: 1fr;
     }
   }
 </style>
